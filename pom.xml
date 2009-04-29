@@ -30,21 +30,13 @@
   <modelVersion>4.0.0</modelVersion>
 
   <!-- ************************************************************************
-    * Parent Module Definition
-    ************************************************************************* -->
-  <parent>
-    <groupId>org.efaps</groupId>
-    <artifactId>efaps</artifactId>
-    <version>1.0-SNAPSHOT</version>
-  </parent>
-
-  <!-- ************************************************************************
     * Module Definition
     ************************************************************************* -->
   <packaging>jar</packaging>
   <groupId>org.efaps</groupId>
   <artifactId>eFaps-WebApp</artifactId>
-
+  <version>1.0-SNAPSHOT</version>
+  
   <name>webapp</name>
   <description>eFaps-WebApp provides a web interface as the User Interface for eFaps which can be easily expanded and altered.</description>
 
@@ -212,6 +204,13 @@
       <groupId>xerces</groupId>
       <artifactId>xercesImpl</artifactId>
       <version>2.8.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.5</version>
+      <scope>provided</scope>
     </dependency>
 
     <!-- fop used to create pdf from formated object on the fly -->
