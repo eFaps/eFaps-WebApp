@@ -24,14 +24,23 @@ import org.apache.wicket.behavior.StringHeaderContributor;
 import org.apache.wicket.util.string.JavascriptUtils;
 
 /**
- * @author jmox
+ * Header Contributer that adds a javascript to the header needed to executed
+ * a method for a child in the parent frame.
+ *
+ * @author Jan Moxter
  * @version $Id$
  */
 public class ChildCallBackHeaderContributer extends StringHeaderContributor {
 
+  /**
+   * The Constant serialVersionUID.
+   */
   private static final long serialVersionUID = 1L;
 
-  private final static String javaScript =
+  /**
+   * The Constant javaScript.
+   */
+  private static final String JAVASCRIPT =
       JavascriptUtils.SCRIPT_OPEN_TAG
           + "function childCallBack(_call){\n"
           + "  _call = _call.replace(/^javascript:/, \"\");\n"
@@ -39,8 +48,13 @@ public class ChildCallBackHeaderContributer extends StringHeaderContributor {
           + "}\n"
           + JavascriptUtils.SCRIPT_CLOSE_TAG;
 
+  /**
+   * Instantiates a new child call back header contributer.
+   */
   public ChildCallBackHeaderContributer() {
-    super(javaScript);
+    super(JAVASCRIPT);
   }
+
+
 
 }

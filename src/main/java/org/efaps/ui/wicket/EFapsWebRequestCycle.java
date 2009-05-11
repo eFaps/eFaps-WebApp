@@ -44,7 +44,7 @@ import org.efaps.ui.wicket.pages.login.LoginPage;
  * {@link org.apache.wicket.protocol.http.WebRequestCycle} to throw a own
  * ErrorPage and to open/close the Context on begin/end of a Request.
  *
- * @author jmox
+ * @author Jan Moxter
  * @version $Id$
  */
 public class EFapsWebRequestCycle extends WebRequestCycle {
@@ -55,6 +55,9 @@ public class EFapsWebRequestCycle extends WebRequestCycle {
   private static final Logger LOG =
       LoggerFactory.getLogger(EFapsWebRequestCycle.class);
 
+  /**
+   * Map used as a cache.
+   */
   private final Map<String, Object> cache = new HashMap<String, Object>();
 
   /**
@@ -86,7 +89,7 @@ public class EFapsWebRequestCycle extends WebRequestCycle {
   }
 
   /**
-   * method to get the EFapsSession
+   * Method to get the EFapsSession.
    *
    * @return EFapsSession
    */
@@ -112,11 +115,12 @@ public class EFapsWebRequestCycle extends WebRequestCycle {
     }
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.apache.wicket.RequestCycle#onRuntimeException(org.apache.wicket.Page,
-   *      java.lang.RuntimeException)
+
+  /**
+   * @see org.apache.wicket.RequestCycle#onRuntimeException(org.apache.wicket.Page, java.lang.RuntimeException)
+   * @param _page       Page that throws the error
+   * @param _exception  exception that was thrown
+   * @return Page
    */
   @Override
   public Page onRuntimeException(final Page _page,
@@ -128,8 +132,8 @@ public class EFapsWebRequestCycle extends WebRequestCycle {
       final EFapsSession session = (EFapsSession) Session.get();
       if (session.isTemporary() || !session.isLogedIn()) {
         // this was an actual session expiry or the user has loged out
-        LOG
-            .info("session expired and request cannot be honored, redirected to LoginPage");
+        LOG.info("session expired and request cannot be honored, "
+                  + "redirected to LoginPage");
         return new LoginPage();
       } else {
         LOG.error("unable to find page for an active session!");
@@ -139,7 +143,8 @@ public class EFapsWebRequestCycle extends WebRequestCycle {
       }
     }
     // we don't make a difference between deployment and development, do we?
-    if (Application.DEPLOYMENT.equals(Application.get().getConfigurationType())) {
+    if (Application.DEPLOYMENT.equals(
+                                    Application.get().getConfigurationType())) {
       return new ErrorPage(_exception);
     } else {
       return new ErrorPage(_exception);
@@ -150,7 +155,7 @@ public class EFapsWebRequestCycle extends WebRequestCycle {
    * This Method stores a Component in the Cache.
    *
    * @param _key        Key the Component should be stored in
-   * @param _component  Component to be stored
+   * @param _object     Object to be stored
    * @see #componentcache
    */
   public void putIntoCache(final String _key, final Object _object) {

@@ -35,22 +35,28 @@ import org.apache.wicket.protocol.http.WebRequest;
 import org.efaps.ui.wicket.pages.login.LoginPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
 
+
 /**
- * This Class presents the WebApplication for eFaps usinf the Wicket-Framework.
+ * This Class presents the WebApplication for eFaps using the Wicket-Framework.
  * <br/>
- * It is the first class wich is instanciated from the WicketServlet. Here the
- * Sessioins for each user a created and basic Settings are set.
+ * It is the first class which is instantiated from the WicketServlet. Here the
+ * Sessions for each user a created and basic Settings are set.
  *
- * @author jmox
+ * @author Jan Moxter
  * @version $Id$
  */
 public class EFapsApplication extends WebApplication {
 
-  /*
-   * (non-Javadoc)
+
+  /**
+   * New request cycle.
    *
-   * @see org.apache.wicket.protocol.http.WebApplication#newRequestCycle(org.apache.wicket.Request,
-   *      org.apache.wicket.Response)
+   * @param _request    the request
+   * @param _response   the response
+   *
+   * @return the request cycle
+   *
+   * @see org.apache.wicket.protocol.http.WebApplication#newRequestCycle(org.apache.wicket.Request, org.apache.wicket.Response)
    */
   @Override
   public RequestCycle newRequestCycle(final Request _request,
@@ -58,19 +64,16 @@ public class EFapsApplication extends WebApplication {
     return new EFapsWebRequestCycle(this, (WebRequest) _request, _response);
   }
 
-  /*
-   * (non-Javadoc)
-   *
+  /**
    * @see org.apache.wicket.Application#getHomePage()
+   * @return Class of the main page
    */
   @Override
   public Class<MainPage> getHomePage() {
     return MainPage.class;
   }
 
-  /*
-   * (non-Javadoc)
-   *
+  /**
    * @see org.apache.wicket.protocol.http.WebApplication#init()
    */
   @Override
@@ -85,11 +88,11 @@ public class EFapsApplication extends WebApplication {
         new EFapsFormBasedAuthorizationStartegy());
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.apache.wicket.protocol.http.WebApplication#newSession(org.apache.wicket.Request,
-   *      org.apache.wicket.Response)
+  /**
+   * @see org.apache.wicket.protocol.http.WebApplication#newSession(org.apache.wicket.Request, org.apache.wicket.Response)
+   * @param _request    the request
+   * @param _response   the response
+   * @return a new Session for the request
    */
   @Override
   public Session newSession(final Request _request, final Response _response) {
@@ -103,11 +106,15 @@ public class EFapsApplication extends WebApplication {
   private class EFapsFormBasedAuthorizationStartegy implements
       IAuthorizationStrategy {
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Wicket has got the possibility to check for specific actions like
+     * render or enable if this given action is authorized. eFaps does not
+     * use this check and returns always true.
      *
-     * @see org.apache.wicket.authorization.IAuthorizationStrategy#isActionAuthorized(org.apache.wicket.Component,
-     *      org.apache.wicket.authorization.Action)
+     * @see org.apache.wicket.authorization.IAuthorizationStrategy#isActionAuthorized(org.apache.wicket.Component, org.apache.wicket.authorization.Action)
+     * @param _component  Component to be checked
+     * @param _action     action to be checked
+     * @return  true
      */
     public boolean isActionAuthorized(final Component _component,
                                       final Action _action) {
@@ -118,8 +125,10 @@ public class EFapsApplication extends WebApplication {
      * For all Pages it will be checked if a User is logged in or if the Page
      * implements the EFapsNoAuthendPageInterface, if non of both we will
      * redirect to the LoginPage.
+     *
      * @param _componentClass class to be checked
      *
+     * @return true, if checks if is instantiation authorized
      */
     @SuppressWarnings("unchecked")
     public boolean isInstantiationAuthorized(final Class _componentClass) {
@@ -135,5 +144,4 @@ public class EFapsApplication extends WebApplication {
       return true;
     }
   }
-
 }

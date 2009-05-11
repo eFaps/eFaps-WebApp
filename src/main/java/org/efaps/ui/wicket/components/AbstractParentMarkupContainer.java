@@ -29,70 +29,94 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
 
 /**
- * @author jmox
+ * The Class AbstractParentMarkupContainer is used for repeaters.
+ *
+ * @author Jan Moxter
  * @version $Id$
  */
 public abstract class AbstractParentMarkupContainer extends WebMarkupContainer {
 
+  /**
+   * The Constant serialVersionUID.
+   */
   private static final long serialVersionUID = 1L;
 
-  public AbstractParentMarkupContainer(String id) {
-    super(id);
+  /**
+   * Instantiates a new abstract parent markup container.
+   *
+   * @param _wicketId the wicket id of this component
+   */
+  public AbstractParentMarkupContainer(final String _wicketId) {
+    super(_wicketId);
   }
 
-  public AbstractParentMarkupContainer(String id, IModel<?> _model) {
-    super(id, _model);
+  /**
+   * Instantiates a new abstract parent markup container.
+   *
+   * @param _wicketId   the wicket id of this component
+   * @param _model      the model for this component
+   */
+  public AbstractParentMarkupContainer(final String _wicketId,
+                                       final IModel<?> _model) {
+    super(_wicketId, _model);
   }
 
 
+  /**
+   * @see org.apache.wicket.Component#getMarkupId()
+   * @return the id
+   */
   @Override
   public String getMarkupId() {
     return getId();
   }
 
+  /**
+   * @see org.apache.wicket.MarkupContainer#onRender(org.apache.wicket.markup.MarkupStream)
+   * @param _markupStream the markup stream
+   */
   @Override
-  protected void onRender(MarkupStream markupStream) {
-    final int markupStart = markupStream.getCurrentIndex();
+  protected void onRender(final MarkupStream _markupStream) {
+    final int markupStart = _markupStream.getCurrentIndex();
 
     // Get mutable copy of next tag
-    final ComponentTag openTag = markupStream.getTag();
+    final ComponentTag openTag = _markupStream.getTag();
     final ComponentTag tag = openTag.mutable();
 
     // Call any tag handler
     onComponentTag(tag);
 
     // Render open tag
-    if (getRenderBodyOnly() == false) {
+    if (!getRenderBodyOnly()) {
       renderComponentTag(tag);
     }
-    markupStream.next();
+    _markupStream.next();
 
     // Render the body only if open-body-close. Do not render if
     // open-close.
     if (tag.isOpen()) {
       // Render the body
-      onComponentTagBody(markupStream, tag);
+      onComponentTagBody(_markupStream, tag);
     }
-    markupStream.setCurrentIndex(markupStart);
+    _markupStream.setCurrentIndex(markupStart);
 
     final Iterator<?> childs = this.iterator();
     while (childs.hasNext()) {
-      markupStream.setCurrentIndex(markupStart);
+      _markupStream.setCurrentIndex(markupStart);
 
       final Component child = (Component) childs.next();
 
       child.render(getMarkupStream());
-
     }
 
-    markupStream.setCurrentIndex(markupStart);
-    markupStream.next();
+    _markupStream.setCurrentIndex(markupStart);
+    _markupStream.next();
     // Render close tag
 
     if (tag.isOpen()) {
       if (openTag.isOpen()) {
         // Get the close tag from the stream
-        ComponentTag closeTag = markupStream.getTag();
+        ComponentTag closeTag = _markupStream.getTag();
 
         // If the open tag had its id changed
         if (tag.getNameChanged()) {
@@ -102,13 +126,9 @@ public abstract class AbstractParentMarkupContainer extends WebMarkupContainer {
         }
 
         // Render the close tag
-
         renderComponentTag(closeTag);
-
-        markupStream.next();
+        _markupStream.next();
       }
-
     }
   }
-
 }

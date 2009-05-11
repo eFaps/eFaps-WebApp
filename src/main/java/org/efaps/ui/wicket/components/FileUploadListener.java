@@ -24,14 +24,16 @@ import org.apache.wicket.behavior.IBehavior;
 
 
 /**
- * TODO description
+ * Listener that will be executed on a file upload.
  *
- * @author jmox
+ * @author Jan Moxter
  * @version $Id$
  *
  */
-public interface FileUploadListener extends IBehavior{
+public interface FileUploadListener extends IBehavior {
 
+  /**
+   * Method will be executed on submition .
+   */
   void onSubmit();
-
 }
