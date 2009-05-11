@@ -76,8 +76,6 @@ public class CheckoutServlet extends HttpServlet {
       }
     } catch (final IOException e) {
       throw e;
-    } catch (final ServletException e) {
-      throw e;
     } catch (final Throwable e) {
       throw new ServletException(e);
     }
