@@ -23,7 +23,6 @@ package org.efaps.ui.wicket.components;
 import java.util.List;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.behavior.IBehavior;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.form.Form;
@@ -32,34 +31,52 @@ import org.apache.wicket.util.string.AppendingStringBuffer;
 
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 
-
 /**
- * TODO description
+ * Class for a form. Needed for file upload.
  *
- * @author jmox
+ * @author Jan Moxter
  * @version $Id$
- *
  */
 public class FormContainer extends Form<Object> {
 
+  /**
+   * Needed for serialization.
+   */
   private static final long serialVersionUID = 1L;
 
+  /**
+   * Component that will be committed by default.
+   */
   private Component defaultSubmit;
 
+  /**
+   * Url for the action that must be called.
+   */
   private String actionUrl;
 
-  public FormContainer(final String id) {
-    super(id);
-    // super.setMultiPart(true);
-  }
-
+  /**
+   * Is this form a used to upload a file.
+   */
   private boolean fileUpload = false;
 
-  /*
-   * (non-Javadoc)
+  /**
+   * Constructor setting the wicket id of this component.
    *
-   * @see org.apache.wicket.markup.html.form.Form#onComponentTagBody(org.apache.wicket.markup.MarkupStream,
-   *      org.apache.wicket.markup.ComponentTag)
+   * @param _wicketId wicket id of this component
+   */
+  public FormContainer(final String _wicketId) {
+    super(_wicketId);
+  }
+
+  /**
+   * If a default component exists it must be appended.
+   *
+   * @param _markupstream   the markupstream
+   * @param _tag            the tag
+   *
+   * @see org.apache.wicket.markup.html.form
+   * .Form#onComponentTagBody(org.apache.wicket.markup.MarkupStream,
+   * org.apache.wicket.markup.ComponentTag)
    */
   @Override
   protected void onComponentTagBody(final MarkupStream _markupstream,
@@ -70,10 +87,13 @@ public class FormContainer extends Form<Object> {
     }
   }
 
-  /*
-   * (non-Javadoc)
+  /**
+   * On component tag.
    *
-   * @see org.apache.wicket.markup.html.form.Form#onComponentTag(org.apache.wicket.markup.ComponentTag)
+   * @param _tag  the tag
+   *
+   * @see org.apache.wicket.markup.html.form.Form
+   * #onComponentTag(org.apache.wicket.markup.ComponentTag)
    */
   @Override
   protected void onComponentTag(final ComponentTag _tag) {
@@ -81,24 +101,37 @@ public class FormContainer extends Form<Object> {
     this.actionUrl = urlFor(IFormSubmitListener.INTERFACE).toString();
     if (getPage().getDefaultModelObject() != null) {
       if ((((AbstractUIObject) getPage().getDefaultModelObject()).isCreateMode()
-          || ((AbstractUIObject) getPage().getDefaultModelObject()).isEditMode())) {
+          || ((AbstractUIObject) getPage().getDefaultModelObject())
+            .isEditMode())) {
         _tag.put("enctype", "multipart/form-data");
       }
       // only on SearchMode we want normal submit, in any other case we use
       // AjaxSubmit
-      if (!((AbstractUIObject) getPage().getDefaultModelObject()).isSearchMode()) {
+      if (!((AbstractUIObject) getPage().getDefaultModelObject())
+          .isSearchMode()) {
         _tag.put("onSubmit", "return false;");
         _tag.put("action", "");
       }
     }
   }
 
+  /**
+   * Sets the default submit.
+   *
+   * @param _component the new default submit
+   */
   public void setDefaultSubmit(final Component _component) {
     this.defaultSubmit = _component;
   }
 
-  protected void appendDefaultSubmit(final MarkupStream markupStream,
-                                     final ComponentTag openTag) {
+  /**
+   * Append default submit.
+   *
+   * @param _markupStream   the markup stream
+   * @param _openTag        the open tag
+   */
+  protected void appendDefaultSubmit(final MarkupStream _markupStream,
+                                     final ComponentTag _openTag) {
 
     final AppendingStringBuffer buffer = new AppendingStringBuffer();
 
@@ -128,14 +161,20 @@ public class FormContainer extends Form<Object> {
   }
 
 
+  /**
+   * On submit it is checked if it is a file upload from and in case that it is
+   * the listeners executed.
+   *
+   * @see org.apache.wicket.markup.html.form.Form#onSubmit()
+   */
   @Override
   protected void onSubmit() {
     super.onSubmit();
     if (this.fileUpload) {
-      final List<IBehavior> uploadListeners =
+      final List<FileUploadListener> uploadListeners =
           this.getBehaviors(FileUploadListener.class);
-      for (final IBehavior listener : uploadListeners) {
-        ((FileUploadListener)listener).onSubmit();
+      for (final FileUploadListener listener : uploadListeners) {
+        listener.onSubmit();
       }
     }
   }
@@ -152,11 +191,9 @@ public class FormContainer extends Form<Object> {
   /**
    * This is the setter method for the instance variable {@link #fileUpload}.
    *
-   * @param _fileUpload
-   *                the fileUpload to set
+   * @param _fileUpload the fileUpload to set
    */
   public void setFileUpload(final boolean _fileUpload) {
     this.fileUpload = _fileUpload;
   }
-
 }
