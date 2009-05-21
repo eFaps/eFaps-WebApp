@@ -27,6 +27,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.util.string.AppendingStringBuffer;
 
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.Opener;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
@@ -69,6 +70,7 @@ public class ModalWindowContainer extends ModalWindow {
   public ModalWindowContainer(final String _wicketId) {
     super(_wicketId);
     super.setCssClassName(ModalWindow.CSS_CLASS_GRAY);
+    setTitle(DBProperties.getProperty("Logo.Version.Label"));
   }
 
   /**
