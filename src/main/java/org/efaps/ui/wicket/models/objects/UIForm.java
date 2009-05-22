@@ -76,6 +76,8 @@ public class UIForm extends AbstractUIObject
         FORM,
         /** Element is a Heading. */
         HEADING,
+        /** Element is SubForm. e.g. for classification*/
+        SUBFORM,
         /** Element is a table.*/
         TABLE
     }
@@ -110,6 +112,10 @@ public class UIForm extends AbstractUIObject
      */
     private final Map<String, String[]> newValues = new HashMap<String, String[]>();
 
+    /**
+     * In case that the Form has got a classification the name of the
+     * CLassification type is stored here.
+     */
     private String classification;
 
     /**
@@ -176,80 +182,95 @@ public class UIForm extends AbstractUIObject
             if (isCreateMode() || isSearchMode() || getInstance() == null) {
                 execute4NoInstance();
             } else {
-                int rowgroupcount = 1;
-                int rowspan = 1;
-                FormRow row = new FormRow();
+                execute4Instance();
+            }
+        } catch (final EFapsException e) {
+            throw new RestartResponseException(new ErrorPage(e));
+        }
+        super.setInitialised(true);
+    }
 
-                final Form form = Form.get(this.formUUID);
-                // evaluate the ListQuery
-                final ListQuery query = evaluateListQuery(form);
-                query.execute();
+    /**
+     * Method to execute the form in case that a instance is existing.
+     *
+     * @throws EFapsException on error
+     */
+    private void execute4Instance() throws EFapsException
+    {
+        int rowgroupcount = 1;
+        int rowspan = 1;
+        FormRow row = new FormRow();
 
-                if (query.next()) {
-                    FormElement formelement = null;
-                    boolean addNew = true;
-                    for (final Field field : form.getFields()) {
-                        if (field.hasAccess(getMode())) {
-                            if (field instanceof FieldGroup) {
-                                final FieldGroup group = (FieldGroup) field;
-                                if (getMaxGroupCount() < group.getGroupCount()) {
-                                    setMaxGroupCount(group.getGroupCount());
-                                }
-                                rowgroupcount = group.getGroupCount();
-                            } else if (field instanceof FieldTable) {
-                                if (!isEditMode()) {
-                                    final UIFieldTable tablemodel = new UIFieldTable(getCommandUUID(),
-                                                    getInstanceKey(), ((FieldTable) field));
-                                    this.elements.add(new Element(UIForm.ElementType.TABLE, tablemodel));
-                                    addNew = true;
-                                }
-                            } else if (field instanceof FieldHeading) {
-                                if (!isEditMode()) {
-                                    this.elements.add(new Element(UIForm.ElementType.HEADING,
-                                                                  new UIHeading((FieldHeading) field)));
-                                    addNew = true;
-                                }
-                            } else if (field instanceof FieldClassification) {
-                                this.elements.add(new Element(UIForm.ElementType.CLASSIFICATION,
-                                                                  new UIClassification((FieldClassification) field)));
-                                addNew = true;
-                                this.classification = ((FieldClassification) field).getClassificationName();
-                            } else if (!(isViewMode() && !field.isViewable())) {
-                                if (addNew) {
-                                    formelement = new FormElement();
-                                    this.elements.add(new Element(UIForm.ElementType.FORM, formelement));
-                                    addNew = false;
-                                }
-                                addCell2FormRow(row, query, field);
+        final Form form = Form.get(this.formUUID);
+        // evaluate the ListQuery
+        final ListQuery query = evaluateListQuery(form);
+        query.execute();
+        FormElement formElement = null;
+        if (query.next()) {
+            boolean addNew = true;
+            for (final Field field : form.getFields()) {
+                if (field.hasAccess(getMode())) {
+                    if (field instanceof FieldGroup) {
+                        final FieldGroup group = (FieldGroup) field;
+                        if (getMaxGroupCount() < group.getGroupCount()) {
+                            setMaxGroupCount(group.getGroupCount());
+                        }
+                        rowgroupcount = group.getGroupCount();
+                    } else if (field instanceof FieldTable) {
+                        if (!isEditMode()) {
+                            final UIFieldTable uiFieldTable = new UIFieldTable(getCommandUUID(), getInstanceKey(),
+                                                                               ((FieldTable) field));
+                            this.elements.add(new Element(UIForm.ElementType.TABLE, uiFieldTable));
+                            addNew = true;
+                        }
+                    } else if (field instanceof FieldHeading) {
+                        if (!isEditMode()) {
+                            this.elements.add(new Element(UIForm.ElementType.HEADING,
+                                                          new UIHeading((FieldHeading) field)));
+                            addNew = true;
+                        }
+                    } else if (field instanceof FieldClassification) {
+                        this.elements.add(new Element(UIForm.ElementType.CLASSIFICATION,
+                                                          new UIClassification((FieldClassification) field)));
+                        addNew = true;
+                        this.classification = ((FieldClassification) field).getClassificationName();
+                    } else if (!(isViewMode() && !field.isViewable())) {
+                        if (addNew) {
+                            formElement = new FormElement();
+                            this.elements.add(new Element(UIForm.ElementType.FORM, formElement));
+                            addNew = false;
+                        }
+                        addCell2FormRow(row, query, field);
 
-                                if (field.getRowSpan() > 0) {
-                                    rowspan = field.getRowSpan();
-                                }
-                                rowgroupcount--;
-                                if (rowgroupcount < 1) {
-                                    rowgroupcount = 1;
-                                    if (row.getGroupCount() > 0) {
-                                        formelement.addRowModel(row);
-                                        row = new FormRow();
-                                        if (rowspan > 1) {
-                                            rowspan--;
-                                            row.setRowSpan(true);
-                                        }
-                                    }
+                        if (field.getRowSpan() > 0) {
+                            rowspan = field.getRowSpan();
+                        }
+                        rowgroupcount--;
+                        if (rowgroupcount < 1) {
+                            rowgroupcount = 1;
+                            if (row.getGroupCount() > 0) {
+                                formElement.addRowModel(row);
+                                row = new FormRow();
+                                if (rowspan > 1) {
+                                    rowspan--;
+                                    row.setRowSpan(true);
                                 }
                             }
                         }
                     }
-
-                    if (this.classification != null) {
-                        UIClassification.getClassification(this.classification, getInstance());
-                    }
                 }
             }
-        } catch (final Exception exception) {
-            throw new RestartResponseException(new ErrorPage(exception));
+
+            if (this.classification != null) {
+                final List<String> instanceKeys = UIClassification.getClassification(this.classification,
+                                                                                     getInstance());
+                for (final String instanceKey : instanceKeys) {
+                    this.elements.add(new Element(UIForm.ElementType.SUBFORM, new UIFieldForm(getCommandUUID(),
+                                                                                              instanceKey)));
+
+                }
+            }
         }
-        super.setInitialised(true);
     }
 
     /**
@@ -289,9 +310,10 @@ public class UIForm extends AbstractUIObject
      * @param _row FormRow to add the cell to
      * @param _query query containing the values
      * @param _field field the cell belongs to
-     * @throws Exception on error
+     * @throws EFapsException on error
      */
-    private void addCell2FormRow(final FormRow _row, final ListQuery _query, final Field _field) throws Exception
+    private void addCell2FormRow(final FormRow _row, final ListQuery _query, final Field _field)
+            throws EFapsException
     {
 
         Attribute attr = null;
@@ -774,12 +796,12 @@ public class UIForm extends AbstractUIObject
          * Constructor setting the instance variables.
          *
          * @param _type ElementType of this Element
-         * @param _model Model of this Element
+         * @param _formElement Model of this Element
          */
-        public Element(final ElementType _type, final IFormElement _model)
+        public Element(final ElementType _type, final IFormElement _formElement)
         {
             this.type = _type;
-            this.element = _model;
+            this.element = _formElement;
         }
 
         /**

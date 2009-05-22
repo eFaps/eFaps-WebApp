@@ -20,6 +20,7 @@
 
 package org.efaps.ui.wicket.pages.content.form;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.apache.wicket.IPageMap;
@@ -40,6 +41,7 @@ import org.efaps.ui.wicket.models.ClassificationModel;
 import org.efaps.ui.wicket.models.FormModel;
 import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.objects.UIClassification;
+import org.efaps.ui.wicket.models.objects.UIFieldForm;
 import org.efaps.ui.wicket.models.objects.UIFieldTable;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIHeading;
@@ -74,7 +76,7 @@ public class FormPage extends AbstractContentPage
     }
 
     /**
-     * @param _model    model for the page
+     * @param _model model for the page
      */
     public FormPage(final IModel<?> _model)
     {
@@ -83,9 +85,9 @@ public class FormPage extends AbstractContentPage
     }
 
     /**
-     * @param _pageMap      pagemap to be used
-     * @param _commandUUID  UUID of the command
-     * @param _oid          oid of the instance
+     * @param _pageMap pagemap to be used
+     * @param _commandUUID UUID of the command
+     * @param _oid oid of the instance
      */
     public FormPage(final IPageMap _pageMap, final UUID _commandUUID, final String _oid)
     {
@@ -94,10 +96,10 @@ public class FormPage extends AbstractContentPage
     }
 
     /**
-     * @param _pageMap      pagemap to be used
-     * @param _commandUUID  UUID of the command
-     * @param _oid          oid of the instance
-     * @param _openerId     id of the opener
+     * @param _pageMap pagemap to be used
+     * @param _commandUUID UUID of the command
+     * @param _oid oid of the instance
+     * @param _openerId id of the opener
      */
     public FormPage(final IPageMap _pageMap, final UUID _commandUUID, final String _oid, final String _openerId)
     {
@@ -106,8 +108,8 @@ public class FormPage extends AbstractContentPage
     }
 
     /**
-     * @param _commandUUID  UUID of the command
-     * @param _oid          oid of the instance
+     * @param _commandUUID UUID of the command
+     * @param _oid oid of the instance
      */
     public FormPage(final UUID _commandUUID, final String _oid)
     {
@@ -115,9 +117,9 @@ public class FormPage extends AbstractContentPage
     }
 
     /**
-     * @param _commandUUID  UUID of the command
-     * @param _oid          oid of the instance
-     * @param _modalWindow  modal window of this page
+     * @param _commandUUID UUID of the command
+     * @param _oid oid of the instance
+     * @param _modalWindow modal window of this page
      */
     public FormPage(final UUID _commandUUID, final String _oid, final ModalWindowContainer _modalWindow)
     {
@@ -150,23 +152,24 @@ public class FormPage extends AbstractContentPage
 
     /**
      * Method used to update the Form Container.
-     * @param _page     page
-     * @param _form     formcontainer
-     * @param _model    model
+     *
+     * @param _page page
+     * @param _form formcontainer
+     * @param _uiForm model
      */
-    public static void updateFormContainer(final Page _page, final FormContainer _form, final UIForm _model)
+    public static void updateFormContainer(final Page _page, final FormContainer _form, final UIForm _uiForm)
     {
 
-        if (!_model.isInitialised()) {
-            _model.execute();
+        if (!_uiForm.isInitialised()) {
+            _uiForm.execute();
         }
 
         int i = 0;
         final RepeatingView elementRepeater = new RepeatingView("elementRepeater");
         _form.add(elementRepeater);
-        for (final Element element : _model.getElements()) {
+        for (final Element element : _uiForm.getElements()) {
             if (element.getType().equals(ElementType.FORM)) {
-                elementRepeater.add(new FormPanel(elementRepeater.newChildId(), _page, new FormModel(_model),
+                elementRepeater.add(new FormPanel(elementRepeater.newChildId(), _page, new FormModel(_uiForm),
                                 (FormElement) element.getElement(), _form));
             } else if (element.getType().equals(ElementType.HEADING)) {
                 final UIHeading headingmodel = (UIHeading) element.getElement();
@@ -182,8 +185,33 @@ public class FormPage extends AbstractContentPage
                 elementRepeater.add(header);
                 elementRepeater.add(table);
             } else if (element.getType().equals(ElementType.CLASSIFICATION)) {
-                elementRepeater.add(new ClassificationPathPanel(elementRepeater.newChildId(),
-                                        new ClassificationModel((UIClassification) element.getElement())));
+                elementRepeater.add(new ClassificationPathPanel(elementRepeater.newChildId(), new ClassificationModel(
+                                (UIClassification) element.getElement())));
+            } else if (element.getType().equals(ElementType.SUBFORM)) {
+                final UIFieldForm uiFieldForm = (UIFieldForm) element.getElement();
+                if (!uiFieldForm.isInitialised()) {
+                    uiFieldForm.execute();
+                }
+                final List<Element> elements = uiFieldForm.getElements();
+                for (final Element subElement : elements) {
+                    if (subElement.getType().equals(ElementType.FORM)) {
+                        elementRepeater.add(new FormPanel(elementRepeater.newChildId(), _page,
+                                        new FormModel(uiFieldForm), (FormElement) subElement.getElement(), _form));
+                    } else if (subElement.getType().equals(ElementType.HEADING)) {
+                        final UIHeading headingmodel = (UIHeading) subElement.getElement();
+                        elementRepeater.add(new HeadingPanel(elementRepeater.newChildId(), headingmodel.getLabel(),
+                                        headingmodel.getLevel()));
+                    } else if (subElement.getType().equals(ElementType.TABLE)) {
+                        i++;
+                        final UIFieldTable fieldTable = (UIFieldTable) subElement.getElement();
+                        fieldTable.setTableId(i);
+                        final TablePanel table = new TablePanel(elementRepeater.newChildId(),
+                                                                new TableModel(fieldTable), _page);
+                        final HeaderPanel header = new HeaderPanel(elementRepeater.newChildId(), table);
+                        elementRepeater.add(header);
+                        elementRepeater.add(table);
+                    }
+                }
             }
         }
     }

@@ -20,7 +20,9 @@
 
 package org.efaps.ui.wicket.models.objects;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -32,7 +34,6 @@ import org.apache.wicket.IClusterable;
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.dbproperty.DBProperties;
-import org.efaps.admin.ui.Form;
 import org.efaps.admin.ui.field.FieldClassification;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
@@ -61,42 +62,24 @@ public class UIClassification implements IFormElement, IClusterable
      */
     private final String classificationName;
 
+    /**
+     * Is this UIClassification initialized.
+     */
     private final boolean initialized = false;
 
+    /**
+     * Label for this UIClassification.
+     */
     private String label;
 
+    /**
+     * Is this Classification selected.
+     */
     private boolean selected;
 
     /**
-     * Getter method for instance variable {@link #selected}.
-     *
-     * @return value of instance variable {@link #selected}
+     * Set containing the children of this UIClassification.
      */
-    public boolean isSelected()
-    {
-        return this.selected;
-    }
-
-    /**
-     * Setter method for instance variable {@link #selected}.
-     *
-     * @param selected value for instance variable {@link #selected}
-     */
-    public void setSelected(final boolean selected)
-    {
-        this.selected = selected;
-    }
-
-    /**
-     * Getter method for instance variable {@link #label}.
-     *
-     * @return value of instance variable {@link #label}
-     */
-    public String getLabel()
-    {
-        return this.label;
-    }
-
     private final Set<UIClassification> children = new HashSet<UIClassification>();
 
     /**
@@ -108,6 +91,10 @@ public class UIClassification implements IFormElement, IClusterable
         this.classificationName = _field.getClassificationName();
     }
 
+    /**
+     * Private constructor used for instantiating child UIClassification.
+     * @param _classificationName
+     */
     private UIClassification(final String _classificationName)
     {
         this.fieldId = 0;
@@ -153,6 +140,36 @@ public class UIClassification implements IFormElement, IClusterable
       }
 
     /**
+     * Getter method for instance variable {@link #selected}.
+     *
+     * @return value of instance variable {@link #selected}
+     */
+    public boolean isSelected()
+    {
+        return this.selected;
+    }
+
+    /**
+     * Setter method for instance variable {@link #selected}.
+     *
+     * @param _selected value for instance variable {@link #selected}
+     */
+    public void setSelected(final boolean _selected)
+    {
+        this.selected = _selected;
+    }
+
+    /**
+     * Getter method for instance variable {@link #label}.
+     *
+     * @return value of instance variable {@link #label}
+     */
+    public String getLabel()
+    {
+        return this.label;
+    }
+
+    /**
      * Recursive method used to fill the TreeModel.
      *
      * @see #getTreeModel()
@@ -193,16 +210,32 @@ public class UIClassification implements IFormElement, IClusterable
      * @param instance
      * @throws EFapsException
      */
-    public static void getClassification(final String _classification, final Instance _instance) throws EFapsException
+    public static List<String> getClassification(final String _classification, final Instance _instance) throws EFapsException
     {
+        final List<String> ret = new ArrayList<String>();
         final Classification classType = (Classification) Type.get(_classification);
         final SearchQuery query = new SearchQuery();
         query.setExpand(_instance,
                         classType.getClassifyRelation().getName() + "\\" + classType.getRelLinkAttribute());
         query.addSelect(classType.getRelTypeAttribute());
         query.execute();
-        Form.getTypeForm(classType);
-
+        while (query.next()) {
+            final Long typeid = (Long) query.get(classType.getRelTypeAttribute());
+            final Classification subClassType = (Classification) Type.get(typeid);
+            final SearchQuery subquery = new SearchQuery();
+            subquery.setExpand(_instance,
+                               subClassType.getName() + "\\" + subClassType.getLinkAttribute());
+            subquery.addSelect("OID");
+            subquery.execute();
+            if (subquery.next()) {
+                //TODO must return an instanceKey!!! not necessary the oid
+                final String instanceKey = (String) subquery.get("OID");
+                ret.add(instanceKey);
+            }
+            subquery.close();
+        }
+        query.close();
+        return ret;
     }
 
 
