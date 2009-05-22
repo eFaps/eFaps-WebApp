@@ -20,12 +20,11 @@
 
 package org.efaps.ui.wicket.pages.classification;
 
-import org.apache.wicket.Page;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.model.IModel;
 
+import org.efaps.ui.wicket.components.classification.ClassificationPathPanel;
 import org.efaps.ui.wicket.components.classification.ClassificationTree;
-import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.objects.UIClassification;
 
 /**
@@ -36,11 +35,14 @@ import org.efaps.ui.wicket.models.objects.UIClassification;
  */
 public class ClassificationPage extends WebPage
 {
-
-    public ClassificationPage(final IModel<UIClassification> _model, final ModalWindowContainer _modal, final Page page) {
+    /**
+     * @param _model
+     * @param _panel
+     */
+    public ClassificationPage(final IModel<UIClassification> _model, final ClassificationPathPanel _panel)
+    {
         super(_model);
-        final UIClassification classifi = (UIClassification) getDefaultModelObject();
-        final ClassificationTree tree = new ClassificationTree("tree", classifi.getTreeModel(), _modal, page);
+        final ClassificationTree tree = new ClassificationTree("tree", _model, _panel);
         this.add(tree);
     }
 

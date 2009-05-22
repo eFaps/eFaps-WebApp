@@ -483,7 +483,7 @@ public class UIForm extends AbstractUIObject
 
         Type type = null;
         if (isCreateMode()) {
-            type = getCommand().getTargetCreateType();
+            type = getCreateTargetType();
         } else {
             final List<EventDefinition> events = getCommand().getEvents(EventType.UI_TABLE_EVALUATE);
             if (events != null) {
@@ -579,6 +579,16 @@ public class UIForm extends AbstractUIObject
                 }
             }
         }
+    }
+
+    /**
+     * Method to get the type that will be created by a form. A method must be
+     * used so it can be overwritten.
+     * @return Type to be created
+     */
+    protected Type getCreateTargetType()
+    {
+        return getCommand().getTargetCreateType();
     }
 
     /**

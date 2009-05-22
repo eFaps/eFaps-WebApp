@@ -21,10 +21,8 @@
 package org.efaps.ui.wicket.components.classification;
 
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeModel;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.tree.BaseTree;
@@ -32,7 +30,6 @@ import org.apache.wicket.markup.html.tree.WicketTreeModel;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.ui.wicket.components.button.Button;
-import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.tree.StructurBrowserTree;
 import org.efaps.ui.wicket.models.objects.UIClassification;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
@@ -58,19 +55,20 @@ public class ClassificationTree extends BaseTree
      */
     private static final long serialVersionUID = 1L;
 
+
     /**
-     * @param _wicketId wicket id of this component
-     * @param _modal
-     * @param page
+     * @param _wicketId     wicketId of this component
+     * @param _model        model for this component
+     * @param _panel        panel this tree is called from
      */
-    public ClassificationTree(final String _wicketId, final TreeModel _model, final ModalWindowContainer _modal, final Page page)
+    public ClassificationTree(final String _wicketId, final IModel<UIClassification> _model,
+                              final ClassificationPathPanel _panel)
     {
         super(_wicketId, new WicketTreeModel());
-        setModelObject(_model);
         this.add(StaticHeaderContributor.forCss(ClassificationTree.CSS));
-
-        add(new Button("submitClose", new AjaxSubmitCloseLink(Button.LINKID, _modal, page), "jaaa!", Button.ICON_ACCEPT));
-
+        final UIClassification classification = _model.getObject();
+        setModelObject(classification.getTreeModel());
+        add(new Button("submitClose", new AjaxSubmitCloseLink(Button.LINKID, _model, _panel), "jaaa!", Button.ICON_ACCEPT));
     }
 
     /**
@@ -83,24 +81,24 @@ public class ClassificationTree extends BaseTree
     protected Component newNodeComponent(final String _wicketId, final IModel<Object> _model)
     {
         final DefaultMutableTreeNode node = (DefaultMutableTreeNode) _model.getObject();
-        return new ClassificationLabelPanel(_wicketId, (UIClassification) node.getUserObject());
+        return new ClassificationTreeLabelPanel(_wicketId, (UIClassification) node.getUserObject());
     }
 
-    public class AjaxSubmitCloseLink extends AjaxLink {
+    public class AjaxSubmitCloseLink extends AjaxLink<UIClassification> {
 
-        private final ModalWindowContainer modal;
-        private final Page page;
+        private final ClassificationPathPanel classPathPanel;
 
         /**
          * @param _wicketId
+         * @param _model
          * @param _modal
          * @param page
          */
-        public AjaxSubmitCloseLink(final String _wicketId, final ModalWindowContainer _modal, final Page page)
+        public AjaxSubmitCloseLink(final String _wicketId, final IModel<UIClassification> _model,
+                                   final ClassificationPathPanel _panel)
         {
-            super(_wicketId);
-            this.modal = _modal;
-            this.page = page;
+            super(_wicketId, _model);
+            this.classPathPanel = _panel;
         }
 
         private static final long serialVersionUID = 1L;
@@ -112,9 +110,8 @@ public class ClassificationTree extends BaseTree
         @Override
         public void onClick(final AjaxRequestTarget _target)
         {
-            this.modal.close(_target);
-
+            this.classPathPanel.setUpdateForm(true);
+            this.classPathPanel.getModal().close(_target);
         }
-
-      }
+    }
 }

@@ -23,6 +23,7 @@ package org.efaps.ui.wicket.models.objects;
 import java.util.UUID;
 
 import org.efaps.admin.datamodel.Classification;
+import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.ui.Form;
 import org.efaps.util.EFapsException;
 
@@ -42,20 +43,55 @@ public class UIFieldForm extends UIForm  implements IFormElement
     private static final long serialVersionUID = 1L;
 
     /**
-     * Constructor.
+     * Stores the uuid of the classification in case that the constructor for
+     * create is used.
+     */
+    private UUID classificationUUID;
+
+    /**
+     * Constructor for the case that a instance is given e.g. view, edit.
      *
-     * @param _commanduuid      the uuid of the command that opened the parent
+     * @param _commandUuid      the uuid of the command that opened the parent
      *                          form
      * @param _instanceKey      instance key for this UIFieldForm
      * @throws EFapsException on error
      */
-    public UIFieldForm(final UUID _commanduuid, final String _instanceKey)
+    public UIFieldForm(final UUID _commandUuid, final String _instanceKey)
             throws EFapsException
     {
-        super(_commanduuid, _instanceKey);
+        super(_commandUuid, _instanceKey);
         if (getInstance().getType() instanceof Classification) {
             final Form form = Form.getTypeForm(getInstance().getType());
             setFormUUID(form.getUUID());
         }
     }
+
+    /**
+     * Constructor used during create.
+     * @param _commandUuid      the uuid of the command that opened the parent
+     *                          form
+     * @param _classification   the classificationto be created
+     */
+    public UIFieldForm(final UUID _commandUuid, final UIClassification _classification)
+    {
+        super(_commandUuid, null);
+        final Type type = Type.get(_classification.getClassificationName());
+        this.classificationUUID = type.getUUID();
+        final Form form = Form.getTypeForm(type);
+        setFormUUID(form.getUUID());
+    }
+
+    /**
+     * Must be overwritten to set the create type to the underlying
+     * classification.
+     *
+     * @see org.efaps.ui.wicket.models.objects.UIForm#getCreateTargetType()
+     * @return the classification type
+     */
+    @Override
+    protected Type getCreateTargetType()
+    {
+        return Type.get(this.classificationUUID);
+    }
+
 }

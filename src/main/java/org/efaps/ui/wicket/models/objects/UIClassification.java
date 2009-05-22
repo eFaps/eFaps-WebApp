@@ -83,6 +83,16 @@ public class UIClassification implements IFormElement, IClusterable
     private final Set<UIClassification> children = new HashSet<UIClassification>();
 
     /**
+     * Getter method for instance variable {@link #children}.
+     *
+     * @return value of instance variable {@link #children}
+     */
+    public Set<UIClassification> getChildren()
+    {
+        return this.children;
+    }
+
+    /**
      * @param _field FielClassification
      */
     public UIClassification(final FieldClassification _field)
@@ -205,6 +215,9 @@ public class UIClassification implements IFormElement, IClusterable
             this.children.add(childUI);
         }
     }
+
+
+
 
     /**
      * @param classification
