@@ -65,7 +65,7 @@ public class UIClassification implements IFormElement, IClusterable
     /**
      * Is this UIClassification initialized.
      */
-    private final boolean initialized = false;
+    private boolean initialized = false;
 
     /**
      * Label for this UIClassification.
@@ -93,7 +93,7 @@ public class UIClassification implements IFormElement, IClusterable
 
     /**
      * Private constructor used for instantiating child UIClassification.
-     * @param _classificationName
+     * @param _classificationName name of the classificaton type
      */
     private UIClassification(final String _classificationName)
     {
@@ -130,6 +130,7 @@ public class UIClassification implements IFormElement, IClusterable
     {
         if (!this.initialized) {
             execute();
+
         }
         final DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(this);
 
@@ -137,7 +138,7 @@ public class UIClassification implements IFormElement, IClusterable
 
         final TreeModel model = new DefaultTreeModel(rootNode);
         return model;
-      }
+    }
 
     /**
      * Getter method for instance variable {@link #selected}.
@@ -173,17 +174,16 @@ public class UIClassification implements IFormElement, IClusterable
      * Recursive method used to fill the TreeModel.
      *
      * @see #getTreeModel()
-     * @param _parent   ParentNode children should be added
-     * @param _childs   to be added as childs
+     * @param _parent ParentNode children should be added
+     * @param _children to be added as childs
      */
-    private void addNodes(final DefaultMutableTreeNode _parent,
-                         final Set<UIClassification> _children)
+    private void addNodes(final DefaultMutableTreeNode _parent, final Set<UIClassification> _children)
     {
-      for (final UIClassification child : _children) {
-          final DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(child);
-          child.addNodes(childNode, child.children);
-          _parent.add(childNode);
-      }
+        for (final UIClassification child : _children) {
+            final DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(child);
+            child.addNodes(childNode, child.children);
+            _parent.add(childNode);
+        }
     }
 
 
@@ -192,6 +192,7 @@ public class UIClassification implements IFormElement, IClusterable
      */
     private void execute()
     {
+        this.initialized = true;
         this.label = DBProperties.getProperty(this.classificationName + ".Label");
         final Classification type = (Classification) Type.get(this.classificationName);
         addChildren(type.getChildClassifications());
@@ -210,7 +211,8 @@ public class UIClassification implements IFormElement, IClusterable
      * @param instance
      * @throws EFapsException
      */
-    public static List<String> getClassification(final String _classification, final Instance _instance) throws EFapsException
+    public static List<String> getClassification(final String _classification, final Instance _instance)
+            throws EFapsException
     {
         final List<String> ret = new ArrayList<String>();
         final Classification classType = (Classification) Type.get(_classification);
@@ -237,6 +239,4 @@ public class UIClassification implements IFormElement, IClusterable
         query.close();
         return ret;
     }
-
-
 }
