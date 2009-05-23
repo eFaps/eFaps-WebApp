@@ -75,7 +75,7 @@ public class UIFieldForm extends UIForm  implements IFormElement
     public UIFieldForm(final UUID _commandUuid, final UIClassification _classification)
     {
         super(_commandUuid, null);
-        final Type type = Type.get(_classification.getClassificationName());
+        final Type type = Type.get(_classification.getClassificationUUID());
         this.classificationUUID = type.getUUID();
         final Form form = Form.getTypeForm(type);
         setFormUUID(form.getUUID());

@@ -113,12 +113,6 @@ public class UIForm extends AbstractUIObject
     private final Map<String, String[]> newValues = new HashMap<String, String[]>();
 
     /**
-     * In case that the Form has got a classification the name of the
-     * CLassification type is stored here.
-     */
-    private String classification;
-
-    /**
      * Constructor using PageParameters.
      *
      * @param _parameters PageParameters from wicket
@@ -208,6 +202,7 @@ public class UIForm extends AbstractUIObject
         FormElement formElement = null;
         if (query.next()) {
             boolean addNew = true;
+            UIClassification uiclass = null;
             for (final Field field : form.getFields()) {
                 if (field.hasAccess(getMode())) {
                     if (field instanceof FieldGroup) {
@@ -230,10 +225,9 @@ public class UIForm extends AbstractUIObject
                             addNew = true;
                         }
                     } else if (field instanceof FieldClassification) {
-                        this.elements.add(new Element(UIForm.ElementType.CLASSIFICATION,
-                                                          new UIClassification((FieldClassification) field)));
+                        uiclass = new UIClassification((FieldClassification) field);
+                        this.elements.add(new Element(UIForm.ElementType.CLASSIFICATION, uiclass));
                         addNew = true;
-                        this.classification = ((FieldClassification) field).getClassificationName();
                     } else if (!(isViewMode() && !field.isViewable())) {
                         if (addNew) {
                             formElement = new FormElement();
@@ -260,14 +254,11 @@ public class UIForm extends AbstractUIObject
                     }
                 }
             }
-
-            if (this.classification != null) {
-                final List<String> instanceKeys = UIClassification.getClassification(this.classification,
-                                                                                     getInstance());
+            if (uiclass != null) {
+                final List<String> instanceKeys = uiclass.getClassInstanceKeys(getInstance());
                 for (final String instanceKey : instanceKeys) {
                     this.elements.add(new Element(UIForm.ElementType.SUBFORM, new UIFieldForm(getCommandUUID(),
                                                                                               instanceKey)));
-
                 }
             }
         }

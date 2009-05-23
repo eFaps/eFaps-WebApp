@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -58,11 +59,6 @@ public class UIClassification implements IFormElement, IClusterable
     private final long fieldId;
 
     /**
-     * Name of the base classification type.
-     */
-    private final String classificationName;
-
-    /**
      * Is this UIClassification initialized.
      */
     private boolean initialized = false;
@@ -83,14 +79,20 @@ public class UIClassification implements IFormElement, IClusterable
     private final Set<UIClassification> children = new HashSet<UIClassification>();
 
     /**
-     * Getter method for instance variable {@link #children}.
-     *
-     * @return value of instance variable {@link #children}
+     * UUID of the classification this UIClassification belongs to.
      */
-    public Set<UIClassification> getChildren()
-    {
-        return this.children;
-    }
+    private final UUID classificationUUID;
+
+    /**
+     * List of classification UUIDs that are connected to the given base
+     * instance. This variable is used only for the root. In any instances
+     * it will be empty.
+     */
+    private final Set<UUID> selectedUUID = new HashSet<UUID>();
+
+    private UIClassification parent;
+
+    private final boolean root;
 
     /**
      * @param _field FielClassification
@@ -98,18 +100,20 @@ public class UIClassification implements IFormElement, IClusterable
     public UIClassification(final FieldClassification _field)
     {
         this.fieldId = _field.getId();
-        this.classificationName = _field.getClassificationName();
+        this.classificationUUID = Type.get(_field.getClassificationName()).getUUID();
+        this.root = true;
     }
 
     /**
      * Private constructor used for instantiating child UIClassification.
      * @param _classificationName name of the classificaton type
      */
-    private UIClassification(final String _classificationName)
+    private UIClassification(final UUID _uuid)
     {
         this.fieldId = 0;
-        this.classificationName = _classificationName;
-        this.label = DBProperties.getProperty(this.classificationName + ".Label");
+        this.classificationUUID = _uuid;
+        this.label = DBProperties.getProperty(Type.get(this.classificationUUID).getName() + ".Label");
+        this.root = false;
     }
 
     /**
@@ -123,16 +127,6 @@ public class UIClassification implements IFormElement, IClusterable
     }
 
     /**
-     * Getter method for instance variable {@link #classificationName}.
-     *
-     * @return value of instance variable {@link #classificationName}
-     */
-    public String getClassificationName()
-    {
-        return this.classificationName;
-    }
-
-    /**
      * Method to get the tree for the classification.
      * @return a TreeModel containing the classification hirachy
      */
@@ -140,12 +134,9 @@ public class UIClassification implements IFormElement, IClusterable
     {
         if (!this.initialized) {
             execute();
-
         }
         final DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(this);
-
         addNodes(rootNode, this.children);
-
         final TreeModel model = new DefaultTreeModel(rootNode);
         return model;
     }
@@ -200,35 +191,40 @@ public class UIClassification implements IFormElement, IClusterable
     /**
      *
      */
-    private void execute()
+    public void execute()
     {
         this.initialized = true;
-        this.label = DBProperties.getProperty(this.classificationName + ".Label");
-        final Classification type = (Classification) Type.get(this.classificationName);
-        addChildren(type.getChildClassifications());
+        final Classification type = (Classification) Type.get(this.classificationUUID);
+        if (this.selectedUUID.contains(this.classificationUUID)) {
+            this.selected = true;
+        }
+        this.label = DBProperties.getProperty(type.getName() + ".Label");
+        addChildren(this, type.getChildClassifications(), this.selectedUUID);
     }
 
-    private void addChildren(final Set<Classification> _children) {
+    private void addChildren(final UIClassification parent, final Set<Classification> _children,
+                             final Set<UUID> _selectedUUID) {
         for (final Classification child : _children) {
-            final UIClassification childUI = new UIClassification(child.getName());
-            childUI.addChildren(child.getChildClassifications());
-            this.children.add(childUI);
+            final UIClassification childUI = new UIClassification(child.getUUID());
+            if (_selectedUUID.contains(child.getUUID())) {
+                childUI.selected = true;
+            }
+            childUI.addChildren(childUI, child.getChildClassifications(), _selectedUUID);
+            parent.children.add(childUI);
+            childUI.setParent(parent);
         }
     }
-
-
-
 
     /**
      * @param classification
      * @param instance
      * @throws EFapsException
      */
-    public static List<String> getClassification(final String _classification, final Instance _instance)
+    public List<String> getClassInstanceKeys(final Instance _instance)
             throws EFapsException
     {
         final List<String> ret = new ArrayList<String>();
-        final Classification classType = (Classification) Type.get(_classification);
+        final Classification classType = (Classification) Type.get(this.classificationUUID);
         final SearchQuery query = new SearchQuery();
         query.setExpand(_instance,
                         classType.getClassifyRelation().getName() + "\\" + classType.getRelLinkAttribute());
@@ -246,10 +242,71 @@ public class UIClassification implements IFormElement, IClusterable
                 //TODO must return an instanceKey!!! not necessary the oid
                 final String instanceKey = (String) subquery.get("OID");
                 ret.add(instanceKey);
+                this.selectedUUID.add(subquery.getType().getUUID());
             }
             subquery.close();
         }
         query.close();
         return ret;
+    }
+
+    /**
+     * Getter method for instance variable {@link #initialized}.
+     *
+     * @return value of instance variable {@link #initialized}
+     */
+    public boolean isInitialized()
+    {
+        return this.initialized;
+    }
+
+    /**
+     * Getter method for instance variable {@link #classificationUUID}.
+     *
+     * @return value of instance variable {@link #classificationUUID}
+     */
+    public UUID getClassificationUUID()
+    {
+        return this.classificationUUID;
+    }
+
+    /**
+     * Getter method for instance variable {@link #children}.
+     *
+     * @return value of instance variable {@link #children}
+     */
+    public Set<UIClassification> getChildren()
+    {
+        return this.children;
+    }
+
+    /**
+     * Getter method for instance variable {@link #parent}.
+     *
+     * @return value of instance variable {@link #parent}
+     */
+    public UIClassification getParent()
+    {
+        return this.parent;
+    }
+
+
+
+    /**
+     * @param parent
+     */
+    private void setParent(final UIClassification _parent)
+    {
+       this.parent = _parent;
+    }
+
+    /**
+     * Getter method for instance variable {@link #root}.
+     *
+     * @return value of instance variable {@link #root}
+     */
+    public boolean isRoot()
+    {
+        return this.root;
     }
 }

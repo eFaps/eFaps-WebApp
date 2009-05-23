@@ -30,7 +30,6 @@ import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebComponent;
-import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 
@@ -90,8 +89,7 @@ public class ClassificationPathPanel extends Panel
     public ClassificationPathPanel(final String _wicketId, final IModel<UIClassification> _model)
     {
         super(_wicketId, _model);
-        final UIClassification classification = _model.getObject();
-        this.add(new Label("breadCrumb", classification.getClassificationName()));
+        this.add(new ClassificationPath("path", _model));
         this.add(new ClassTreeOpener("button", _model));
 
         this.modal = new ModalWindowContainer("modal");
