@@ -113,6 +113,11 @@ public class UIForm extends AbstractUIObject
     private final Map<String, String[]> newValues = new HashMap<String, String[]>();
 
     /**
+     * Is this form classified by classification.
+     */
+    private boolean classified = false;
+
+    /**
      * Constructor using PageParameters.
      *
      * @param _parameters PageParameters from wicket
@@ -163,7 +168,7 @@ public class UIForm extends AbstractUIObject
     @Override
     public void resetModel()
     {
-        setInitialised(false);
+        setInitialized(false);
         this.elements.clear();
     }
 
@@ -181,7 +186,7 @@ public class UIForm extends AbstractUIObject
         } catch (final EFapsException e) {
             throw new RestartResponseException(new ErrorPage(e));
         }
-        super.setInitialised(true);
+        super.setInitialized(true);
     }
 
     /**
@@ -228,6 +233,7 @@ public class UIForm extends AbstractUIObject
                         uiclass = new UIClassification((FieldClassification) field);
                         this.elements.add(new Element(UIForm.ElementType.CLASSIFICATION, uiclass));
                         addNew = true;
+                        this.classified  = true;
                     } else if (!(isViewMode() && !field.isViewable())) {
                         if (addNew) {
                             formElement = new FormElement();
@@ -511,6 +517,7 @@ public class UIForm extends AbstractUIObject
                                                       new UIClassification((FieldClassification) field)));
                         formelement = new FormElement();
                         this.elements.add(new Element(UIForm.ElementType.FORM, formelement));
+                        this.classified = true;
                     } else if (field.isCreatable() && isCreateMode() || field.isSearchable() && isSearchMode()
                                     || field.isViewable() && isViewMode()) {
                         //if it is the first element
@@ -661,6 +668,16 @@ public class UIForm extends AbstractUIObject
     public Map<String, String[]> getNewValues()
     {
         return this.newValues;
+    }
+
+    /**
+     * Getter method for instance variable {@link #classified}.
+     *
+     * @return value of instance variable {@link #classified}
+     */
+    public boolean isClassified()
+    {
+        return this.classified;
     }
 
     /**

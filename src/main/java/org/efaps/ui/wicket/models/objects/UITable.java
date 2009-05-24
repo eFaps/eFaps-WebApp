@@ -312,7 +312,7 @@ public class UITable extends AbstractUIObject
             if (this.sortKey != null) {
                 sort();
             }
-            super.setInitialised(true);
+            super.setInitialized(true);
         } catch (final Exception e) {
             throw new RestartResponseException(new ErrorPage(e));
         }
@@ -842,7 +842,7 @@ public class UITable extends AbstractUIObject
     @Override
     public void resetModel()
     {
-        super.setInitialised(false);
+        super.setInitialized(false);
         this.values.clear();
         this.headers.clear();
     }

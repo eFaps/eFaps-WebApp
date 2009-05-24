@@ -36,68 +36,97 @@ import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 
 /**
- * @author jmox
+ * CLass renders a page containing a table.
+ *
+ * @author The Faps Team
  * @version $Id:TablePage.java 1491 2007-10-15 23:40:43Z jmox $
  */
-public class TablePage extends AbstractContentPage {
+public class TablePage extends AbstractContentPage
+{
+    /**
+     * Reference to the style sheet.
+     */
+    private static final EFapsContentReference CSS = new EFapsContentReference(TablePage.class, "TablePage.css");
 
-  private static final long serialVersionUID = 7564911406648729094L;
-
-  private static final EFapsContentReference CSS =
-      new EFapsContentReference(TablePage.class, "TablePage.css");
-
-  /**
-   * Constructor called from the client directly by using parameters. Normally
-   * it should only contain one parameter Opener.OPENER_PARAKEY to access the
-   * opener.
-   *
-   * @param _parameters PageParameters
-   */
-  public TablePage(final PageParameters _parameters) {
-    this(new TableModel(new UITable(_parameters)));
-  }
-
-  public TablePage(final IModel<UITable> _model) {
-    super(_model);
-    this.addComponents();
-  }
-
-  public TablePage(final IPageMap _pagemap, final UUID _uuid, final String _oid) {
-    this(_pagemap, _uuid, _oid, null);
-  }
-
-  public TablePage(final IPageMap _pagemap, final UUID _uuid, final String _oid, final String _openerId) {
-    this(_pagemap, new TableModel(new UITable(_uuid, _oid, _openerId)));
-  }
-
-  public TablePage(final IPageMap _pagemap, final TableModel _model) {
-    super(_pagemap, _model, null);
-    this.addComponents();
-  }
-
-  /**
-   * @param _uuid
-   * @param _oid
-   */
-  public TablePage(final UUID _uuid, final String _oid) {
-    this(new TableModel(new UITable(_uuid, _oid)));
-  }
-
-  protected void addComponents() {
-    this.add(StaticHeaderContributor.forCss(CSS));
-
-    final UITable table = (UITable) super.getDefaultModelObject();
-    if (!table.isInitialised()) {
-      table.execute();
+    /**
+     * Constructor called from the client directly by using parameters. Normally
+     * it should only contain one parameter Opener.OPENER_PARAKEY to access the
+     * opener.
+     *
+     * @param _parameters PageParameters
+     */
+    public TablePage(final PageParameters _parameters)
+    {
+        this(new TableModel(new UITable(_parameters)));
     }
-    final TablePanel tablebody = new TablePanel("tablebody", new TableModel(table), this);
-    this.add(new HeaderPanel("header", tablebody));
 
-    final FormContainer form = new FormContainer("form");
-    this.add(form);
-    super.addComponents(form);
+    /**
+     * @param _model modle for the table
+     */
+    public TablePage(final IModel<UITable> _model)
+    {
+        super(_model);
+        this.addComponents();
+    }
 
-    form.add(tablebody);
+    /**
+     * @param _pagemap      pagemap
+     * @param _uuid         uuid of a command
+     * @param _instanceKey  key to an instance
+     */
+    public TablePage(final IPageMap _pagemap, final UUID _uuid, final String _instanceKey)
+    {
+        this(_pagemap, _uuid, _instanceKey, null);
+    }
 
-  }
+    /**
+     * @param _pagemap      pagemap
+     * @param _uuid         uuid of a command
+     * @param _instanceKey  key to an instance
+     * @param _openerId     id of an opener
+     */
+    public TablePage(final IPageMap _pagemap, final UUID _uuid, final String _instanceKey, final String _openerId)
+    {
+        this(_pagemap, new TableModel(new UITable(_uuid, _instanceKey, _openerId)));
+    }
+
+    /**
+     * @param _pagemap  pagemap
+     * @param _model    modle for the table
+     */
+    public TablePage(final IPageMap _pagemap, final TableModel _model)
+    {
+        super(_pagemap, _model, null);
+        this.addComponents();
+    }
+
+    /**
+     * @param _uuid         uuid of a commmand
+     * @param _instanceKey  key to an instance
+     */
+    public TablePage(final UUID _uuid, final String _instanceKey)
+    {
+        this(new TableModel(new UITable(_uuid, _instanceKey)));
+    }
+
+    /**
+     *
+     */
+    protected void addComponents()
+    {
+        this.add(StaticHeaderContributor.forCss(TablePage.CSS));
+
+        final UITable table = (UITable) super.getDefaultModelObject();
+        if (!table.isInitialized()) {
+            table.execute();
+        }
+        final TablePanel tablebody = new TablePanel("tablebody", new TableModel(table), this);
+        this.add(new HeaderPanel("header", tablebody));
+
+        final FormContainer form = new FormContainer("form");
+        this.add(form);
+        super.addComponents(form);
+
+        form.add(tablebody);
+    }
 }

@@ -41,7 +41,7 @@ import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
 /**
- * TODO comment!
+ * Class is used as a model for a classification.
  *
  * @author The eFaps Team
  * @version $Id$
@@ -90,8 +90,14 @@ public class UIClassification implements IFormElement, IClusterable
      */
     private final Set<UUID> selectedUUID = new HashSet<UUID>();
 
+    /**
+     * Contains the parent UIClassification;
+     */
     private UIClassification parent;
 
+    /**
+     * Is this UIClassification the root.
+     */
     private final boolean root;
 
     /**
@@ -106,7 +112,8 @@ public class UIClassification implements IFormElement, IClusterable
 
     /**
      * Private constructor used for instantiating child UIClassification.
-     * @param _classificationName name of the classificaton type
+     *
+     * @param _uuid UUID of the classification type
      */
     private UIClassification(final UUID _uuid)
     {
@@ -202,23 +209,32 @@ public class UIClassification implements IFormElement, IClusterable
         addChildren(this, type.getChildClassifications(), this.selectedUUID);
     }
 
-    private void addChildren(final UIClassification parent, final Set<Classification> _children,
-                             final Set<UUID> _selectedUUID) {
+    /**
+     * Recursive method used to add the children to this UIClassification.
+     * @param _parent        parent
+     * @param _children     children
+     * @param _selectedUUID set of selected classification uuids
+     */
+    private void addChildren(final UIClassification _parent, final Set<Classification> _children,
+                             final Set<UUID> _selectedUUID)
+    {
         for (final Classification child : _children) {
             final UIClassification childUI = new UIClassification(child.getUUID());
             if (_selectedUUID.contains(child.getUUID())) {
                 childUI.selected = true;
             }
             childUI.addChildren(childUI, child.getChildClassifications(), _selectedUUID);
-            parent.children.add(childUI);
-            childUI.setParent(parent);
+            _parent.children.add(childUI);
+            childUI.setParent(_parent);
         }
     }
 
     /**
-     * @param classification
-     * @param instance
-     * @throws EFapsException
+     * Method to get the key to the instances related to this classification.
+     *
+     * @param _instance          Instance the related instance key are searched for
+     * @return list of instance keys
+     * @throws EFapsException on error
      */
     public List<String> getClassInstanceKeys(final Instance _instance)
             throws EFapsException
@@ -227,15 +243,15 @@ public class UIClassification implements IFormElement, IClusterable
         final Classification classType = (Classification) Type.get(this.classificationUUID);
         final SearchQuery query = new SearchQuery();
         query.setExpand(_instance,
-                        classType.getClassifyRelation().getName() + "\\" + classType.getRelLinkAttribute());
-        query.addSelect(classType.getRelTypeAttribute());
+                        classType.getClassifyRelationType().getName() + "\\" + classType.getRelLinkAttributeName());
+        query.addSelect(classType.getRelTypeAttributeName());
         query.execute();
         while (query.next()) {
-            final Long typeid = (Long) query.get(classType.getRelTypeAttribute());
+            final Long typeid = (Long) query.get(classType.getRelTypeAttributeName());
             final Classification subClassType = (Classification) Type.get(typeid);
             final SearchQuery subquery = new SearchQuery();
             subquery.setExpand(_instance,
-                               subClassType.getName() + "\\" + subClassType.getLinkAttribute());
+                               subClassType.getName() + "\\" + subClassType.getLinkAttributeName());
             subquery.addSelect("OID");
             subquery.execute();
             if (subquery.next()) {
@@ -290,10 +306,9 @@ public class UIClassification implements IFormElement, IClusterable
         return this.parent;
     }
 
-
-
     /**
-     * @param parent
+     * Setter method for instance variable {@link #parent}.
+     * @param _parent value for instance variable {@link #parent}
      */
     private void setParent(final UIClassification _parent)
     {

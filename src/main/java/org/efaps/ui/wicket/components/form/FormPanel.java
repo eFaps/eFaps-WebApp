@@ -40,82 +40,110 @@ import org.efaps.ui.wicket.models.objects.UIForm.FormRow;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 
-
 /**
  * TODO description
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  *
  */
-public class FormPanel extends Panel {
+public class FormPanel extends Panel
+{
+    /**
+     * Reference to the style sheet.
+     */
+    public static final EFapsContentReference CSS = new EFapsContentReference(FormPanel.class, "FormPanel.css");
 
-  private static final long serialVersionUID = 1550111712776698728L;
+    /**
+     * Reference to the javascript for file input.
+     */
+    public static final EFapsContentReference FILEINPUT
+                                                      = new EFapsContentReference(FormPanel.class, "EFapsFileInput.js");
 
-  public static EFapsContentReference CSS =
-      new EFapsContentReference(FormPanel.class, "FormPanel.css");
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
-  public static final EFapsContentReference FILEINPUT =
-      new EFapsContentReference(FormPanel.class, "EFapsFileInput.js");
+    /**
+     * Map containing the required Components. Used for the check if this
+     * components are filled in.
+     */
+    private final Map<String, Label> requiredComponents = new HashMap<String, Label>();
 
-  private final Map<String, Label> requiredComponents =
-      new HashMap<String, Label>();
+    /**
+     * Set contains the date components of this formpanel.
+     */
+    private final Set<DateFieldWithPicker> dateComponents = new HashSet<DateFieldWithPicker>();
 
-  private final Set<DateFieldWithPicker> dateComponents
-                                      = new HashSet<DateFieldWithPicker>();
+    /**
+     * @param _wicketId             wicket id of this component
+     * @param _page                 page this component is in
+     * @param _model                model of this component
+     * @param _formelementmodel     model of the form element
+     * @param _form                 fom container
+     */
+    public FormPanel(final String _wicketId, final Page _page, final IModel<UIForm> _model,
+                     final FormElement _formelementmodel, final FormContainer _form)
+    {
+        super(_wicketId, _model);
+        final UIForm uiForm = _model.getObject();
+        if (!uiForm.isInitialized()) {
+            uiForm.execute();
+        }
 
-  public FormPanel(final String _wicketId, final Page _page,
-                   final IModel<UIForm> _model,
-                   final FormElement _formelementmodel,
-                   final FormContainer _form) {
-    super(_wicketId, _model);
-    final UIForm uiForm = _model.getObject();
-    if (!uiForm.isInitialised()) {
-      uiForm.execute();
+        add(StaticHeaderContributor.forCss(FormPanel.CSS));
+        if (uiForm.isFileUpload()) {
+            add(StaticHeaderContributor.forJavaScript(FormPanel.FILEINPUT));
+        }
+        final RepeatingView rowRepeater = new RepeatingView("rowRepeater");
+        this.add(rowRepeater);
+
+        for (final FormRow rowmodel : _formelementmodel.getRowModels()) {
+
+            final RowPanel row = new RowPanel(rowRepeater.newChildId(), new FormRowModel(rowmodel), uiForm, _page,
+                            this, _form);
+            rowRepeater.add(row);
+        }
     }
 
-    add(StaticHeaderContributor.forCss(CSS));
-    if (uiForm.isFileUpload()) {
-      add(StaticHeaderContributor.forJavaScript(FILEINPUT));
-    }
-    final RepeatingView rowRepeater = new RepeatingView("rowRepeater");
-    this.add(rowRepeater);
+    /**
+     * This is the getter method for the instance variable
+     * {@link #requiredComponents}.
+     *
+     * @return value of instance variable {@link #requiredComponents}
+     */
 
-    for (final FormRow rowmodel : _formelementmodel.getRowModels()) {
-
-      final RowPanel row = new RowPanel(rowRepeater.newChildId(),
-                                        new FormRowModel(rowmodel),
-                                        uiForm,
-                                        _page,
-                                        this,
-                                        _form);
-      rowRepeater.add(row);
-
+    public Map<String, Label> getRequiredComponents()
+    {
+        return this.requiredComponents;
     }
 
-  }
+    /**
+     * Add a required component.
+     * @param _name     Name of the component
+     * @param _label    label of the component
+     */
+    public void addRequiredComponent(final String _name, final Label _label)
+    {
+        this.requiredComponents.put(_name, _label);
+    }
 
-  /**
-   * This is the getter method for the instance variable
-   * {@link #requiredComponents}.
-   *
-   * @return value of instance variable {@link #requiredComponents}
-   */
+    /**
+     * Add a date component.
+     * @param _datePicker date picker
+     */
+    public void addDateComponent(final DateFieldWithPicker _datePicker)
+    {
+        this.dateComponents.add(_datePicker);
+    }
 
-  public Map<String, Label> getRequiredComponents() {
-    return this.requiredComponents;
-  }
-
-  public void addRequiredComponent(final String _name, final Label _label) {
-    this.requiredComponents.put(_name, _label);
-  }
-
-  public void addDateComponent(final DateFieldWithPicker _datePicker) {
-    this.dateComponents.add(_datePicker);
-  }
-
-  public Set<DateFieldWithPicker> getDateComponents() {
-    return this.dateComponents;
-  }
-
+    /**
+     * Getter method for instance variable {@link #dateComponents}.
+     * @return instance variable {@link #dateComponents}
+     */
+    public Set<DateFieldWithPicker> getDateComponents()
+    {
+        return this.dateComponents;
+    }
 }

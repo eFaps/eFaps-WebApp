@@ -28,6 +28,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
+
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.components.table.row.RowPanel;
 import org.efaps.ui.wicket.models.RowModel;
@@ -37,53 +38,64 @@ import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 
-public class TablePanel extends Panel {
+/**
+ * Class renders a table.
+ *
+ * @author The eFaps Team
+ * @version $Id$
+ */
+public class TablePanel extends Panel
+{
+    /**
+     * Reference to the style sheet.
+     */
+    public static final EFapsContentReference CSS = new EFapsContentReference(TablePanel.class, "TablePanel.css");
 
-  private static final long serialVersionUID = 1L;
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
-  public static final EFapsContentReference CSS =
-      new EFapsContentReference(TablePanel.class, "TablePanel.css");
+    /**
+     * @param _wicketId wicket id of this component
+     * @param _model    model for this component
+     * @param _page     page this component is in
+     */
+    public TablePanel(final String _wicketId, final IModel<?> _model, final Page _page)
+    {
+        super(_wicketId, _model);
 
-  public TablePanel(final String _id, final IModel<?> _model, final Page _page) {
-    super(_id, _model);
+        final UITable model = (UITable) super.getDefaultModelObject();
 
-    final UITable  model =(UITable) super.getDefaultModelObject();
-
-    if (!model.isInitialised()) {
-      model.execute();
-    }
-    this.setOutputMarkupId(true);
-    this.add(new SimpleAttributeModifier("class", "eFapsTableBody"));
-
-    add(StaticHeaderContributor.forCss(CSS));
-
-    final RepeatingView rowsRepeater = new RepeatingView("rowRepeater");
-    add(rowsRepeater);
-
-    if (model.getValues().isEmpty()) {
-      final Label nodata =
-          new Label(rowsRepeater.newChildId(), DBProperties
-              .getProperty("WebTable.NoData"));
-      nodata.add(new SimpleAttributeModifier("class", "eFapsTableNoData"));
-      rowsRepeater.add(nodata);
-    } else {
-      boolean odd = true;
-
-      for (final Iterator<UIRow> rowIter = model.getValues().iterator(); rowIter
-          .hasNext(); odd = !odd) {
-
-        final RowPanel row =
-            new RowPanel(rowsRepeater.newChildId(), new RowModel(rowIter.next()), this,
-                ContentContainerPage.IFRAME_PAGEMAP_NAME.equals(_page
-                    .getPageMapName()));
-        row.setOutputMarkupId(true);
-        if (odd) {
-          row.add(new SimpleAttributeModifier("class", "eFapsTableRowOdd"));
-        } else {
-          row.add(new SimpleAttributeModifier("class", "eFapsTableRowEven"));
+        if (!model.isInitialized()) {
+            model.execute();
         }
-        rowsRepeater.add(row);
-      }
+        setOutputMarkupId(true);
+        this.add(new SimpleAttributeModifier("class", "eFapsTableBody"));
+
+        add(StaticHeaderContributor.forCss(TablePanel.CSS));
+
+        final RepeatingView rowsRepeater = new RepeatingView("rowRepeater");
+        add(rowsRepeater);
+
+        if (model.getValues().isEmpty()) {
+            final Label nodata = new Label(rowsRepeater.newChildId(), DBProperties.getProperty("WebTable.NoData"));
+            nodata.add(new SimpleAttributeModifier("class", "eFapsTableNoData"));
+            rowsRepeater.add(nodata);
+        } else {
+            boolean odd = true;
+            for (final Iterator<UIRow> rowIter = model.getValues().iterator(); rowIter.hasNext(); odd = !odd) {
+
+                final RowPanel row = new RowPanel(rowsRepeater.newChildId(), new RowModel(rowIter.next()), this,
+                                ContentContainerPage.IFRAME_PAGEMAP_NAME.equals(_page.getPageMapName()));
+                row.setOutputMarkupId(true);
+                if (odd) {
+                    row.add(new SimpleAttributeModifier("class", "eFapsTableRowOdd"));
+                } else {
+                    row.add(new SimpleAttributeModifier("class", "eFapsTableRowEven"));
+                }
+                rowsRepeater.add(row);
+            }
+        }
     }
-  }
 }

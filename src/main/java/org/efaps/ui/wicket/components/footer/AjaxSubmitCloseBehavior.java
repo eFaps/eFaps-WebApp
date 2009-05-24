@@ -20,6 +20,7 @@
 
 package org.efaps.ui.wicket.components.footer;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -37,7 +38,10 @@ import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 
+import org.efaps.admin.datamodel.Classification;
+import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.Return;
+import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.ui.wicket.EFapsSession;
@@ -49,7 +53,10 @@ import org.efaps.ui.wicket.components.form.FormPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
+import org.efaps.ui.wicket.models.objects.UIFieldForm;
 import org.efaps.ui.wicket.models.objects.UIForm;
+import org.efaps.ui.wicket.models.objects.UIForm.Element;
+import org.efaps.ui.wicket.models.objects.UIForm.ElementType;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
@@ -58,7 +65,8 @@ import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 
 /**
- * TODO description.
+ * Class renders the footer in a form. It is responsible for performing the
+ * actions like executing the related esjp etc.
  *
  * @author The eFaps Team
  * @version $Id$
@@ -106,6 +114,7 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
 
         final Map<String, String[]> others = new HashMap<String, String[]>();
         final String[] other = getComponent().getRequestCycle().getRequest().getParameters("selectedRow");
+        final List<Classification> classifications = new ArrayList<Classification>();
         others.put("selectedRow", other);
 
         convertDateFieldValues();
@@ -115,11 +124,21 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
                 doFileUpload(_target);
             } else {
                 if (this.uiObject instanceof UIForm) {
-                    others.putAll(((UIForm) this.uiObject).getNewValues());
+                    final UIForm uiform = (UIForm) this.uiObject;
+                    others.putAll(uiform.getNewValues());
+                    // if the form contains classifications, they are added to a list and passed on to the esjp
+                    if (uiform.isClassified()) {
+                        for (final Element element : uiform.getElements()) {
+                            if (element.getType().equals(ElementType.SUBFORM)) {
+                                final UIFieldForm uifieldform = (UIFieldForm) element.getElement();
+                                classifications.add((Classification) Type.get(uifieldform.getClassificationUUID()));
+                            }
+                        }
+                    }
                 }
                 boolean error = false;
                 try {
-                    if (!executeEvents(_target, others)) {
+                    if (!executeEvents(_target, others, classifications)) {
                         error = true;
                     }
                 } catch (final EFapsException e) {
@@ -244,18 +263,31 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
     /**
      * Execute the events which are related to CommandAbstract calling the Form.
      *
-     * @param _target AjaxRequestTarget to be used in the case a ModalPage
-     *            should be called
-     * @param _other Parameters to be passed on to the Event
+     * @param _target   AjaxRequestTarget to be used in the case a ModalPage
+     *                  should be called
+     * @param _other    Parameters to be passed on to the Event, defined as
+     *                  {@link org.efaps.admin.event.Parameter.ParameterValues.OTHERS}
+     * @param _classifications  List of uuid of classifcationsto be passed on
+     *                  to the Event, defined as
+     *                  {@link org.efaps.admin.event.Parameter.ParameterValues.OTHERS}
      * @return true if the events where executed successfully, otherwise false
      * @throws EFapsException on error
      */
-    private boolean executeEvents(final AjaxRequestTarget _target, final Map<String, String[]> _other)
+    private boolean executeEvents(final AjaxRequestTarget _target, final Map<String, String[]> _other,
+                                  final List<Classification> _classifications)
                     throws EFapsException
     {
         boolean ret = true;
-        final List<Return> returns = ((AbstractUIObject) this.form.getParent().getDefaultModelObject())
-                        .executeEvents(_other);
+        final List<Return> returns;
+        if (_classifications.size() > 0) {
+            returns = ((AbstractUIObject) this.form.getParent().getDefaultModelObject()).executeEvents(
+                            ParameterValues.OTHERS, _other,
+                            ParameterValues.CLASSIFICATIONS, _classifications);
+        } else {
+            returns = ((AbstractUIObject) this.form.getParent().getDefaultModelObject()).executeEvents(
+                            ParameterValues.OTHERS, _other);
+        }
+
         for (final Return oneReturn : returns) {
             if (oneReturn.get(ReturnValues.TRUE) == null && !oneReturn.isEmpty()) {
                 boolean sniplett = false;

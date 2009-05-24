@@ -34,6 +34,7 @@ import org.apache.wicket.behavior.StringHeaderContributor;
 import org.apache.wicket.util.string.JavascriptUtils;
 
 import org.efaps.admin.event.Return;
+import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.ui.wicket.EFapsSession;
@@ -53,125 +54,116 @@ import org.efaps.util.EFapsException;
 /**
  * Behavior enabling a form to make file uploads.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public class UploadBehavior extends AbstractBehavior implements
-    FileUploadListener {
+public class UploadBehavior extends AbstractBehavior implements FileUploadListener
+{
 
-  /**
-   * Needed for serialization.
-   */
-  private static final long serialVersionUID = 1L;
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
-  /**
-   * This instance variable stores the Component this IBhevaior is bind to.
-   */
-  private Component component;
+    /**
+     * This instance variable stores the Component this IBhevaior is bind to.
+     */
+    private Component component;
 
-  /**
-   * It this UploadBehavior is used inside a modal window it is stored.
-   */
-  private final ModalWindowContainer modalWindow;
+    /**
+     * It this UploadBehavior is used inside a modal window it is stored.
+     */
+    private final ModalWindowContainer modalWindow;
 
-  /**
-   * Constructor setting the modal window.
-   *
-   * @param _modalWindow modal window to set
-   */
-  public UploadBehavior(final ModalWindowContainer _modalWindow) {
-    this.modalWindow = _modalWindow;
-  }
-
-  /**
-   * The component this behavior belongs to must be stored.
-   * @param _form component to bind to
-   */
-  @Override
-  public void bind(final Component _form) {
-    super.bind(_form);
-    this.component = _form;
-  }
-
-  /**
-   * @see org.efaps.ui.wicket.components.FileUploadListener#onSubmit()
-   */
-  public void onSubmit() {
-
-    final UIForm uiForm = (UIForm) this.component.getPage()
-        .getDefaultModelObject();
-
-    try {
-      executeEvents(uiForm.getNewValues());
-    } catch (final EFapsException e) {
-      throw new RestartResponseException(new ErrorPage(e));
+    /**
+     * Constructor setting the modal window.
+     *
+     * @param _modalWindow modal window to set
+     */
+    public UploadBehavior(final ModalWindowContainer _modalWindow)
+    {
+        this.modalWindow = _modalWindow;
     }
 
-    final StringBuilder script = new StringBuilder();
-    if (uiForm.getTarget() == Target.MODAL) {
-
-      script.append(JavascriptUtils.SCRIPT_OPEN_TAG)
-        .append("  window.onload = function() {")
-        .append(this.modalWindow.getReloadJavaScript())
-        .append(ModalWindowContainer.getCloseJavacript())
-        .append("}")
-        .append(JavascriptUtils.SCRIPT_CLOSE_TAG);
-
-    } else {
-
-      final AbstractModel<?> openermodel
-          = (AbstractModel<?>) ((EFapsSession) Session.get())
-                                  .getOpener(uiForm.getOpenerId()).getModel();
-      Class<? extends Page> clazz;
-      if (openermodel instanceof TableModel) {
-        clazz = TablePage.class;
-      } else {
-        clazz = FormPage.class;
-      }
-
-      final PageParameters parameters = new PageParameters();
-      parameters.add(Opener.OPENER_PARAKEY, uiForm.getOpenerId());
-
-      final CharSequence url
-          = this.component.urlFor(PageMap.forName(MainPage.IFRAME_PAGEMAP_NAME),
-                                  clazz,
-                                  parameters);
-
-      script.append(JavascriptUtils.SCRIPT_OPEN_TAG)
-        .append("  window.onload = function() {")
-        .append(" opener.location.href = '")
-        .append(url)
-        .append("'; self.close();")
-        .append("  top.window.close();}")
-        .append(JavascriptUtils.SCRIPT_CLOSE_TAG);
-
+    /**
+     * The component this behavior belongs to must be stored.
+     *
+     * @param _form component to bind to
+     */
+    @Override
+    public void bind(final Component _form)
+    {
+        super.bind(_form);
+        this.component = _form;
     }
-    this.component.getRequestCycle().getResponsePage().add(
-        new StringHeaderContributor(script.toString()));
-  }
 
-  /**
-   * Method that executes the events which are related to the Model of the
-   * ParentComponent.
-   *
-   * @param _other others
-   * @return true if the ESJP returned the ReturnValue.TRUE , else false
-   * @throws EFapsException on error
-   */
-  private boolean executeEvents(final Map<String, String[]> _other)
-      throws EFapsException {
+    /**
+     * @see org.efaps.ui.wicket.components.FileUploadListener#onSubmit()
+     */
+    public void onSubmit()
+    {
+        final UIForm uiForm = (UIForm) this.component.getPage().getDefaultModelObject();
 
-    boolean ret = true;
-    final List<Return> returns =
-        ((AbstractUIObject) this.component.getParent().getDefaultModelObject())
-            .executeEvents(_other);
-    for (final Return oneReturn : returns) {
-      if (oneReturn.get(ReturnValues.TRUE) == null && !oneReturn.isEmpty()) {
-        ret = false;
-        break;
-      }
+        try {
+            executeEvents(uiForm.getNewValues());
+        } catch (final EFapsException e) {
+            throw new RestartResponseException(new ErrorPage(e));
+        }
+
+        final StringBuilder script = new StringBuilder();
+        if (uiForm.getTarget() == Target.MODAL) {
+
+            script.append(JavascriptUtils.SCRIPT_OPEN_TAG)
+                .append("  window.onload = function() {")
+                .append(this.modalWindow.getReloadJavaScript())
+                .append(ModalWindowContainer.getCloseJavacript())
+                .append("}")
+                .append(JavascriptUtils.SCRIPT_CLOSE_TAG);
+
+        } else {
+            final AbstractModel<?> openermodel = (AbstractModel<?>) ((EFapsSession) Session.get()).getOpener(
+                            uiForm.getOpenerId()).getModel();
+            Class<? extends Page> clazz;
+            if (openermodel instanceof TableModel) {
+                clazz = TablePage.class;
+            } else {
+                clazz = FormPage.class;
+            }
+
+            final PageParameters parameters = new PageParameters();
+            parameters.add(Opener.OPENER_PARAKEY, uiForm.getOpenerId());
+
+            final CharSequence url = this.component.urlFor(PageMap.forName(MainPage.IFRAME_PAGEMAP_NAME), clazz,
+                            parameters);
+
+            script.append(JavascriptUtils.SCRIPT_OPEN_TAG).append("  window.onload = function() {").append(
+                            " opener.location.href = '").append(url).append("'; self.close();").append(
+                            "  top.window.close();}").append(JavascriptUtils.SCRIPT_CLOSE_TAG);
+
+        }
+        this.component.getRequestCycle().getResponsePage().add(new StringHeaderContributor(script.toString()));
     }
-    return ret;
-  }
+
+    /**
+     * Method that executes the events which are related to the Model of the
+     * ParentComponent.
+     *
+     * @param _other others
+     * @return true if the ESJP returned the ReturnValue.TRUE , else false
+     * @throws EFapsException on error
+     */
+    private boolean executeEvents(final Map<String, String[]> _other) throws EFapsException
+    {
+        boolean ret = true;
+        final List<Return> returns = ((AbstractUIObject) this.component.getParent().getDefaultModelObject())
+                        .executeEvents(ParameterValues.OTHERS, _other);
+        for (final Return oneReturn : returns) {
+            if (oneReturn.get(ReturnValues.TRUE) == null && !oneReturn.isEmpty()) {
+                ret = false;
+                break;
+            }
+        }
+        return ret;
+    }
 
 }

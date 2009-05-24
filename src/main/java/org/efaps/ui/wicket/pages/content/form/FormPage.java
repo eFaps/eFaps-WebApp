@@ -134,7 +134,7 @@ public class FormPage extends AbstractContentPage
     {
         final UIForm model = (UIForm) super.getDefaultModelObject();
 
-        if (!model.isInitialised()) {
+        if (!model.isInitialized()) {
             model.execute();
         }
 
@@ -160,7 +160,7 @@ public class FormPage extends AbstractContentPage
     public static void updateFormContainer(final Page _page, final FormContainer _form, final UIForm _uiForm)
     {
 
-        if (!_uiForm.isInitialised()) {
+        if (!_uiForm.isInitialized()) {
             _uiForm.execute();
         }
 
@@ -189,7 +189,7 @@ public class FormPage extends AbstractContentPage
                                 (UIClassification) element.getElement())));
             } else if (element.getType().equals(ElementType.SUBFORM)) {
                 final UIFieldForm uiFieldForm = (UIFieldForm) element.getElement();
-                if (!uiFieldForm.isInitialised()) {
+                if (!uiFieldForm.isInitialized()) {
                     uiFieldForm.execute();
                 }
                 final List<Element> elements = uiFieldForm.getElements();

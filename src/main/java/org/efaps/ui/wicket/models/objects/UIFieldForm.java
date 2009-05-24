@@ -35,7 +35,7 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class UIFieldForm extends UIForm  implements IFormElement
+public class UIFieldForm extends UIForm implements IFormElement
 {
     /**
      * Needed for serialization.
@@ -94,4 +94,13 @@ public class UIFieldForm extends UIForm  implements IFormElement
         return Type.get(this.classificationUUID);
     }
 
+    /**
+     * Getter method for instance variable {@link #classificationUUID}.
+     *
+     * @return value of instance variable {@link #classificationUUID}
+     */
+    public UUID getClassificationUUID()
+    {
+        return this.classificationUUID;
+    }
 }
