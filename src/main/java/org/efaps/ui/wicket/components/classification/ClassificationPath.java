@@ -29,6 +29,8 @@ import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.ui.wicket.models.objects.UIClassification;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 
 /**
  * TODO comment!
@@ -38,19 +40,25 @@ import org.efaps.ui.wicket.models.objects.UIClassification;
  */
 public class ClassificationPath extends WebComponent
 {
+    /**
+     * Reference to the style sheet.
+     */
+    public static final EFapsContentReference CSS = new EFapsContentReference(ClassificationPath.class,
+                                                                              "ClassificationPath.css");
 
     /**
-     *
+     * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
 
     /**
-     * @param _wicketId
-     * @param model
+     * @param _wicketId wicket id of this component
+     * @param _model    model for this component
      */
     public ClassificationPath(final String _wicketId, final IModel<UIClassification> _model)
     {
         super(_wicketId, _model);
+        add(StaticHeaderContributor.forCss(ClassificationPath.CSS));
     }
 
     /**
@@ -73,7 +81,7 @@ public class ClassificationPath extends WebComponent
             findSelectedLeafs(leafs, uiclass);
         }
         for (final UIClassification leaf : leafs) {
-            html.append("<div>");
+            html.append("<div class=\"classPath\">");
             buildHtml(html, leaf);
             html.append("</div>");
         }
@@ -98,10 +106,10 @@ public class ClassificationPath extends WebComponent
     private void buildHtml(final StringBuilder _bldr, final UIClassification _uiclass)
     {
         UIClassification tmp  = _uiclass;
-        String path = "<span>" + tmp.getLabel() + "</span>";
+        String path = "<span class=\"classPathEntry\">" + tmp.getLabel() + "</span>";
         while (!tmp.isRoot()) {
             tmp = tmp.getParent();
-            path = "<span>" + tmp.getLabel() + "</span>" + path;
+            path = "<span class=\"classPathEntry\">" + tmp.getLabel() + "</span>" + path;
         }
         _bldr.append(path);
     }
