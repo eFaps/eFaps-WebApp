@@ -62,6 +62,7 @@ public class UIFieldForm extends UIForm implements IFormElement
         super(_commandUuid, _instanceKey);
         if (getInstance().getType() instanceof Classification) {
             final Form form = Form.getTypeForm(getInstance().getType());
+            this.classificationUUID = getInstance().getType().getUUID();
             setFormUUID(form.getUUID());
         }
     }
