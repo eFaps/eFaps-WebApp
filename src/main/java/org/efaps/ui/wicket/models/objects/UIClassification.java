@@ -35,6 +35,7 @@ import org.apache.wicket.IClusterable;
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.dbproperty.DBProperties;
+import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.field.FieldClassification;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
@@ -91,7 +92,7 @@ public class UIClassification implements IFormElement, IClusterable
     private final Set<UUID> selectedUUID = new HashSet<UUID>();
 
     /**
-     * Contains the parent UIClassification;
+     * Contains the parent UIClassification.
      */
     private UIClassification parent;
 
@@ -100,14 +101,25 @@ public class UIClassification implements IFormElement, IClusterable
      */
     private final boolean root;
 
+    private final TargetMode mode;
+
+    /**
+     * Stores the name of the command that called this object. Needed for
+     * getting DBProperties.
+     */
+    private String commandName;
+
     /**
      * @param _field FielClassification
      */
-    public UIClassification(final FieldClassification _field)
+    public UIClassification(final FieldClassification _field, final AbstractUIObject _uiObject)
     {
         this.fieldId = _field.getId();
         this.classificationUUID = Type.get(_field.getClassificationName()).getUUID();
         this.root = true;
+        this.mode = _uiObject.getMode();
+        this.commandName = _uiObject.getCommand().getName();
+
     }
 
     /**
@@ -115,12 +127,13 @@ public class UIClassification implements IFormElement, IClusterable
      *
      * @param _uuid UUID of the classification type
      */
-    private UIClassification(final UUID _uuid)
+    private UIClassification(final UUID _uuid, final TargetMode _mode)
     {
         this.fieldId = 0;
         this.classificationUUID = _uuid;
         this.label = DBProperties.getProperty(Type.get(this.classificationUUID).getName() + ".Label");
         this.root = false;
+        this.mode = _mode;
     }
 
     /**
@@ -219,7 +232,7 @@ public class UIClassification implements IFormElement, IClusterable
                              final Set<UUID> _selectedUUID)
     {
         for (final Classification child : _children) {
-            final UIClassification childUI = new UIClassification(child.getUUID());
+            final UIClassification childUI = new UIClassification(child.getUUID(), _parent.mode);
             if (_selectedUUID.contains(child.getUUID())) {
                 childUI.selected = true;
             }
@@ -324,4 +337,26 @@ public class UIClassification implements IFormElement, IClusterable
     {
         return this.root;
     }
+
+    /**
+     * Getter method for instance variable {@link #mode}.
+     *
+     * @return value of instance variable {@link #mode}
+     */
+    public TargetMode getMode()
+    {
+        return this.mode;
+    }
+
+    /**
+     * Getter method for instance variable {@link #commandName}.
+     *
+     * @return value of instance variable {@link #commandName}
+     */
+    public String getCommandName()
+    {
+        return this.commandName;
+    }
+
+
 }

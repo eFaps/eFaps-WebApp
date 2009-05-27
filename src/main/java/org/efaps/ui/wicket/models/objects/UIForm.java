@@ -230,7 +230,7 @@ public class UIForm extends AbstractUIObject
                             addNew = true;
                         }
                     } else if (field instanceof FieldClassification) {
-                        uiclass = new UIClassification((FieldClassification) field);
+                        uiclass = new UIClassification((FieldClassification) field, this);
                         this.elements.add(new Element(UIForm.ElementType.CLASSIFICATION, uiclass));
                         addNew = true;
                         this.classified  = true;
@@ -514,7 +514,7 @@ public class UIForm extends AbstractUIObject
                         this.elements.add(new Element(UIForm.ElementType.FORM, formelement));
                     } else if (field instanceof FieldClassification && field.isCreatable()) {
                         this.elements.add(new Element(UIForm.ElementType.CLASSIFICATION,
-                                                      new UIClassification((FieldClassification) field)));
+                                                      new UIClassification((FieldClassification) field, this)));
                         formelement = new FormElement();
                         this.elements.add(new Element(UIForm.ElementType.FORM, formelement));
                         this.classified = true;

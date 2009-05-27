@@ -29,6 +29,7 @@ import org.apache.wicket.markup.html.tree.BaseTree;
 import org.apache.wicket.markup.html.tree.WicketTreeModel;
 import org.apache.wicket.model.IModel;
 
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.components.tree.StructurBrowserTree;
 import org.efaps.ui.wicket.models.objects.UIClassification;
@@ -49,6 +50,12 @@ public class ClassificationTree extends BaseTree
     private static final EFapsContentReference CSS =
         new EFapsContentReference(StructurBrowserTree.class, "StructurTree.css");
 
+    /**
+     * Reference to the style sheet.
+     */
+    private static final EFapsContentReference TCSS = new EFapsContentReference(ClassificationPath.class,
+                                                                              "ClassificationTree.css");
+
 
     /**
      * Needed for serialization.
@@ -66,9 +73,18 @@ public class ClassificationTree extends BaseTree
     {
         super(_wicketId, new WicketTreeModel());
         this.add(StaticHeaderContributor.forCss(ClassificationTree.CSS));
+        this.add(StaticHeaderContributor.forCss(ClassificationTree.TCSS));
         final UIClassification classification = _model.getObject();
         setModelObject(classification.getTreeModel());
-        add(new Button("submitClose", new AjaxSubmitCloseLink(Button.LINKID, _model, _panel), "jaaa!", Button.ICON_ACCEPT));
+
+        final String label;
+        if (DBProperties.hasProperty(classification.getCommandName() + ".Button.ClassTreeUpdate")) {
+            label = DBProperties.getProperty(classification.getCommandName() + ".Button.ClassTreeUpdate");
+        } else {
+            label = DBProperties.getProperty("default.Button.ClassTreeUpdate");
+        }
+        add(new Button("submitClose", new AjaxSubmitCloseLink(Button.LINKID, _model, _panel),
+                       label, Button.ICON_ACCEPT));
     }
 
     /**

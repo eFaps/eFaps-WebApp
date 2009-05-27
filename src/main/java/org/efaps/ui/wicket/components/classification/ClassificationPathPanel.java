@@ -30,9 +30,11 @@ import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebComponent;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 
+import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.form.valuepicker.ValuePicker;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
@@ -90,7 +92,12 @@ public class ClassificationPathPanel extends Panel
     {
         super(_wicketId, _model);
         this.add(new ClassificationPath("path", _model));
-        this.add(new ClassTreeOpener("button", _model));
+        if (_model.getObject().getMode().equals(TargetMode.EDIT)
+                        || _model.getObject().getMode().equals(TargetMode.CREATE)) {
+            this.add(new ClassTreeOpener("button", _model));
+        } else {
+            this.add(new WebMarkupContainer("button").setVisible(false));
+        }
 
         this.modal = new ModalWindowContainer("modal");
         add(this.modal);
