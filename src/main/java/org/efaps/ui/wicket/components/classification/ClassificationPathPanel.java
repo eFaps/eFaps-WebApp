@@ -20,7 +20,10 @@
 
 package org.efaps.ui.wicket.components.classification;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.UUID;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
@@ -38,6 +41,7 @@ import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.form.valuepicker.ValuePicker;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
+import org.efaps.ui.wicket.models.objects.IFormElement;
 import org.efaps.ui.wicket.models.objects.UIClassification;
 import org.efaps.ui.wicket.models.objects.UIFieldForm;
 import org.efaps.ui.wicket.models.objects.UIForm;
@@ -46,6 +50,7 @@ import org.efaps.ui.wicket.models.objects.UIForm.ElementType;
 import org.efaps.ui.wicket.pages.classification.ClassificationPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.util.EFapsException;
 
 /**
  * TODO comment!
@@ -55,34 +60,25 @@ import org.efaps.ui.wicket.resources.EFapsContentReference;
  */
 public class ClassificationPathPanel extends Panel
 {
+    /**
+     * Reference to the Icon.
+     */
     public static final EFapsContentReference ICON = new EFapsContentReference(ValuePicker.class, "valuepicker.png");
 
     /** Needed for serialization. */
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Modal window used to display the page containing the classification
+     * tree.
+     */
     private final ModalWindowContainer modal;
 
+    /**
+     * Must the form be updated after closing the modal window containing
+     * the classification tree.
+     */
     private boolean updateForm = false;
-
-    /**
-     * Getter method for instance variable {@link #updateForm}.
-     *
-     * @return value of instance variable {@link #updateForm}
-     */
-    public boolean isUpdateForm()
-    {
-        return this.updateForm;
-    }
-
-    /**
-     * Setter method for instance variable {@link #updateForm}.
-     *
-     * @param updateForm value for instance variable {@link #updateForm}
-     */
-    public void setUpdateForm(final boolean updateForm)
-    {
-        this.updateForm = updateForm;
-    }
 
     /**
      * @param _wicketId wicket id of this component
@@ -119,18 +115,49 @@ public class ClassificationPathPanel extends Panel
     }
 
     /**
-     * @return
+     * Getter method for instance variable {@link #modal}.
+     *
+     * @return value of instance variable {@link #modal}
      */
     public ModalWindowContainer getModal()
     {
         return this.modal;
     }
 
+    /**
+     * Getter method for instance variable {@link #updateForm}.
+     *
+     * @return value of instance variable {@link #updateForm}
+     */
+    public boolean isUpdateForm()
+    {
+        return this.updateForm;
+    }
+
+    /**
+     * Setter method for instance variable {@link #updateForm}.
+     *
+     * @param _updateForm value for instance variable {@link #updateForm}
+     */
+    public void setUpdateForm(final boolean _updateForm)
+    {
+        this.updateForm = _updateForm;
+    }
+
+    /**
+     * Class renders a button to open the form containing the classifcation
+     * tree.
+     */
     public class ClassTreeOpener extends WebComponent
     {
+        /**
+         *  Needed for serialization.
+         */
+        private static final long serialVersionUID = 1L;
 
         /**
-         * @param id
+         * @param _wicketId wicket id for this component
+         * @param _model    model for this component
          */
         public ClassTreeOpener(final String _wicketId, final IModel<UIClassification> _model)
         {
@@ -141,23 +168,24 @@ public class ClassificationPathPanel extends Panel
         /**
          * @see org.apache.wicket.Component#onComponentTagBody(org.apache.wicket.markup.MarkupStream,
          *      org.apache.wicket.markup.ComponentTag)
-         * @param _markupStream
-         * @param _openTag
+         * @param _markupStream markup stream
+         * @param _openTag      tag
          */
         @Override
         protected void onComponentTagBody(final MarkupStream _markupStream, final ComponentTag _openTag)
         {
             super.onComponentTagBody(_markupStream, _openTag);
             final StringBuilder html = new StringBuilder();
-            html.append("<img alt=\"\" src=\"").append(ICON.getImageUrl()).append("\"/>");
+            html.append("<img alt=\"\" src=\"").append(ClassificationPathPanel.ICON.getImageUrl()).append("\"/>");
             replaceComponentTagBody(_markupStream, _openTag, html);
         }
-
     }
 
+    /**
+     * Behavior used to open the form with the classification tree.
+     */
     public class AjaxOpenClassTreeBehavior extends AjaxEventBehavior
     {
-
         /**
          * Needed for serialization.
          */
@@ -208,11 +236,19 @@ public class ClassificationPathPanel extends Panel
         }
     }
 
-    public class UpdateCallback implements ModalWindow.WindowClosedCallback {
+    /**
+     * Ajax callback that is called on closing the modal window.
+     */
+    public class UpdateCallback implements ModalWindow.WindowClosedCallback
+    {
+        /**
+         * Needed for serialization.
+         */
+        private static final long serialVersionUID = 1L;
 
         /**
          * @see org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow.WindowClosedCallback#onClose(org.apache.wicket.ajax.AjaxRequestTarget)
-         * @param _target
+         * @param _target ajax target
          */
         public void onClose(final AjaxRequestTarget _target)
         {
@@ -231,12 +267,22 @@ public class ClassificationPathPanel extends Panel
                 form.removeAll();
                 // remove previous added classification forms
                 final Iterator<Element> iter2 = uiform.getElements().iterator();
+                final Map<UUID, String> uuid2InstanceKey = new HashMap<UUID, String>();
                 while (iter2.hasNext()) {
-                    if (iter2.next().getElement() instanceof UIFieldForm) {
+                    final IFormElement element = iter2.next().getElement();
+                    if (element instanceof UIFieldForm) {
+                        final String instanceKey = ((UIFieldForm) element).getInstanceKey();
+                        final UUID classUUID = ((UIFieldForm) element).getClassificationUUID();
+                        uuid2InstanceKey.put(classUUID, instanceKey);
                         iter2.remove();
                     }
                 }
-                add2Elements(uiform, (UIClassification) getDefaultModelObject());
+                try {
+                    add2Elements(uiform, (UIClassification) getDefaultModelObject(), uuid2InstanceKey);
+                } catch (final EFapsException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
                 FormPage.updateFormContainer(page, form, uiform);
                 _target.addComponent(form);
             }
@@ -246,18 +292,33 @@ public class ClassificationPathPanel extends Panel
          * Recursive method that adds the classification forms as elements to the
          * form by walking down the tree.
          *
-         * @param _uiForm
-         * @param _parentClass
+         * @param _uiForm       uiForm the elements must be added to
+         * @param _parentClass  the classification to be added
+         * @param _uuid2InstanceKey map from uuid to instance keys
+         * @throws EFapsException on error
          */
-        private void add2Elements(final UIForm _uiForm, final UIClassification _parentClass) {
+        private void add2Elements(final UIForm _uiForm, final UIClassification _parentClass,
+                                  final Map<UUID, String> _uuid2InstanceKey)
+                throws EFapsException
+        {
             if (_parentClass.isSelected()) {
-                final UIFieldForm fieldform = new UIFieldForm(_uiForm.getCommandUUID(), _parentClass);
+                final UIFieldForm fieldform;
+                if (_uiForm.isEditMode()) {
+                    if (_uuid2InstanceKey.containsKey(_parentClass.getClassificationUUID())) {
+                        fieldform = new UIFieldForm(_uiForm.getCommandUUID(),
+                                                    _uuid2InstanceKey.get(_parentClass.getClassificationUUID()));
+                    } else {
+                        fieldform = new UIFieldForm(_uiForm.getCommandUUID(), _parentClass);
+                        fieldform.setMode(TargetMode.CREATE);
+                    }
+                } else {
+                    fieldform = new UIFieldForm(_uiForm.getCommandUUID(), _parentClass);
+                }
                 _uiForm.getElements().add(_uiForm.new Element(ElementType.SUBFORM, fieldform));
             }
             for (final UIClassification child : _parentClass.getChildren()) {
-                add2Elements(_uiForm, child);
+                add2Elements(_uiForm, child, _uuid2InstanceKey);
             }
-
         }
     }
 }

@@ -409,7 +409,7 @@ public abstract class AbstractUIObject extends AbstractInstanceObject
      * @see #mode
      * @see #getMode
      */
-    protected void setMode(final TargetMode _mode)
+    public void setMode(final TargetMode _mode)
     {
         this.mode = _mode;
     }

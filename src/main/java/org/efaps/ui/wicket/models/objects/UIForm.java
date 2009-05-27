@@ -479,7 +479,7 @@ public class UIForm extends AbstractUIObject
         final Form form = Form.get(this.formUUID);
 
         Type type = null;
-        if (isCreateMode()) {
+        if (isCreateMode() || isEditMode()) {
             type = getCreateTargetType();
         } else {
             final List<EventDefinition> events = getCommand().getEvents(EventType.UI_TABLE_EVALUATE);
@@ -518,9 +518,9 @@ public class UIForm extends AbstractUIObject
                         formelement = new FormElement();
                         this.elements.add(new Element(UIForm.ElementType.FORM, formelement));
                         this.classified = true;
-                    } else if (field.isCreatable() && isCreateMode() || field.isSearchable() && isSearchMode()
-                                    || field.isViewable() && isViewMode()) {
-                        //if it is the first element
+                    } else if ((field.isEditable() && isEditMode()) || (field.isCreatable() && isCreateMode())
+                                  || (field.isSearchable() && isSearchMode()) || (field.isViewable() && isViewMode())) {
+                        // if it is the first element
                         if (this.elements.size() == 0) {
                             this.elements.add(new Element(UIForm.ElementType.FORM, formelement));
                         }
