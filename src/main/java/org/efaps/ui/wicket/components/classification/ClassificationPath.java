@@ -29,8 +29,6 @@ import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.ui.wicket.models.objects.UIClassification;
-import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 
 /**
  * TODO comment!
@@ -40,11 +38,6 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
  */
 public class ClassificationPath extends WebComponent
 {
-    /**
-     * Reference to the style sheet.
-     */
-    public static final EFapsContentReference CSS = new EFapsContentReference(ClassificationPath.class,
-                                                                              "ClassificationPath.css");
 
     /**
      * Needed for serialization.
@@ -58,7 +51,6 @@ public class ClassificationPath extends WebComponent
     public ClassificationPath(final String _wicketId, final IModel<UIClassification> _model)
     {
         super(_wicketId, _model);
-        add(StaticHeaderContributor.forCss(ClassificationPath.CSS));
     }
 
     /**

@@ -50,6 +50,7 @@ import org.efaps.ui.wicket.models.objects.UIForm.ElementType;
 import org.efaps.ui.wicket.pages.classification.ClassificationPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 import org.efaps.util.EFapsException;
 
 /**
@@ -60,6 +61,13 @@ import org.efaps.util.EFapsException;
  */
 public class ClassificationPathPanel extends Panel
 {
+    /**
+     * Reference to the style sheet.
+     */
+    public static final EFapsContentReference CSS = new EFapsContentReference(ClassificationPathPanel.class,
+                                                                              "ClassificationPathPanel.css");
+
+
     /**
      * Reference to the Icon.
      */
@@ -87,6 +95,7 @@ public class ClassificationPathPanel extends Panel
     public ClassificationPathPanel(final String _wicketId, final IModel<UIClassification> _model)
     {
         super(_wicketId, _model);
+        add(StaticHeaderContributor.forCss(ClassificationPathPanel.CSS));
         this.add(new ClassificationPath("path", _model));
         if (_model.getObject().getMode().equals(TargetMode.EDIT)
                         || _model.getObject().getMode().equals(TargetMode.CREATE)) {

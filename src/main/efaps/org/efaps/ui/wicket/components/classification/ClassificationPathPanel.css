@@ -25,6 +25,14 @@
  * @eFapsRevision $Rev$
  */
 
+.classButtonContainer span{
+  cursor: pointer;
+}
+
+.classPathContainer {
+  
+}
+
 .classPath {
   border-bottom: lightgrey solid 1px;
   margin: 1px;

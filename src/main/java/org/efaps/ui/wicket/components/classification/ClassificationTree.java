@@ -77,6 +77,7 @@ public class ClassificationTree extends BaseTree
         final UIClassification classification = _model.getObject();
         setModelObject(classification.getTreeModel());
 
+        getTreeState().expandAll();
         final String label;
         if (DBProperties.hasProperty(classification.getCommandName() + ".Button.ClassTreeUpdate")) {
             label = DBProperties.getProperty(classification.getCommandName() + ".Button.ClassTreeUpdate");
