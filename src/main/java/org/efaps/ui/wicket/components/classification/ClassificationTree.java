@@ -20,6 +20,9 @@
 
 package org.efaps.ui.wicket.components.classification;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.apache.wicket.Component;
@@ -54,7 +57,7 @@ public class ClassificationTree extends BaseTree
      * Reference to the style sheet.
      */
     private static final EFapsContentReference TCSS = new EFapsContentReference(ClassificationPath.class,
-                                                                              "ClassificationTree.css");
+                                                                               "ClassificationTree.css");
 
 
     /**
@@ -62,7 +65,11 @@ public class ClassificationTree extends BaseTree
      */
     private static final long serialVersionUID = 1L;
 
-
+    /**
+     * Mapping between the node from the swing tree and the child components.
+     */
+    private final Map<DefaultMutableTreeNode, Component> node2Component
+                                                                    = new HashMap<DefaultMutableTreeNode, Component>();
     /**
      * @param _wicketId     wicketId of this component
      * @param _model        model for this component
@@ -88,27 +95,51 @@ public class ClassificationTree extends BaseTree
                        label, Button.ICON_ACCEPT));
     }
 
+
     /**
      * @see org.apache.wicket.markup.html.tree.BaseTree#newNodeComponent(java.lang.String, org.apache.wicket.model.IModel)
-     * @param arg0
-     * @param arg1
-     * @return
+     * @param _wicketId wicket id for the new component
+     * @param _model    model for the new component
+     * @return new ClassificationTreeLabelPanel
      */
     @Override
     protected Component newNodeComponent(final String _wicketId, final IModel<Object> _model)
     {
-        final DefaultMutableTreeNode node = (DefaultMutableTreeNode) _model.getObject();
-        return new ClassificationTreeLabelPanel(_wicketId, (UIClassification) node.getUserObject());
+        final ClassificationTreeLabelPanel comp = new ClassificationTreeLabelPanel(_wicketId, _model);
+        this.node2Component.put((DefaultMutableTreeNode) _model.getObject(), comp);
+        return comp;
     }
 
-    public class AjaxSubmitCloseLink extends AjaxLink<UIClassification> {
+    /**
+     * Get the component related to a node from the treemodel.
+     *
+     * @param _node node the component is wanted for
+     * @return component related to the given node
+     */
+    protected Component getComponent(final DefaultMutableTreeNode _node)
+    {
+        return this.node2Component.get(_node);
+    }
 
+    /**
+     * Render a link that submits an closes the form.
+     */
+    public class AjaxSubmitCloseLink extends AjaxLink<UIClassification>
+    {
+        /**
+         * Needed for serialization.
+         */
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * The panel this tree sits in.
+         */
         private final ClassificationPathPanel classPathPanel;
 
         /**
-         * @param _wicketId
-         * @param _model
-         * @param _modal
+         * @param _wicketId wicket id for this component
+         * @param _model    model for tihs component
+         * @param _panel    classifcation panel this link belongs to
          * @param page
          */
         public AjaxSubmitCloseLink(final String _wicketId, final IModel<UIClassification> _model,
@@ -118,11 +149,9 @@ public class ClassificationTree extends BaseTree
             this.classPathPanel = _panel;
         }
 
-        private static final long serialVersionUID = 1L;
-
         /**
          * @see org.apache.wicket.ajax.markup.html.AjaxLink#onClick(org.apache.wicket.ajax.AjaxRequestTarget)
-         * @param ajaxrequesttarget
+         * @param _target ajax request target
          */
         @Override
         public void onClick(final AjaxRequestTarget _target)

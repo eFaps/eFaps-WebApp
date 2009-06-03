@@ -20,11 +20,16 @@
 
 package org.efaps.ui.wicket.components.classification;
 
+import java.util.Enumeration;
+
+import javax.swing.tree.DefaultMutableTreeNode;
+
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.model.IModel;
 
 import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.models.objects.UIClassification;
@@ -42,22 +47,25 @@ public class ClassificationTreeLabelPanel extends Panel
      */
     private static final long serialVersionUID = 1L;
 
-    private final UIClassification classification;
-
     /**
      * @param _wicketId         wicket id for this component
-     * @param _classification   classifcation of this leaf
+     * @param _model            model of this leaf
      */
-    public ClassificationTreeLabelPanel(final String _wicketId, final UIClassification _classification)
+    public ClassificationTreeLabelPanel(final String _wicketId, final IModel<Object> _model)
     {
-        super(_wicketId);
-        this.classification = _classification;
-        add(new AjaxCheckBox("checkbox"));
-        add(new LabelComponent("content", this.classification.getLabel()));
+        super(_wicketId, _model);
+        setOutputMarkupId(true);
+        final DefaultMutableTreeNode node = (DefaultMutableTreeNode) _model.getObject();
+        add(new AjaxCheckBox("checkbox", _model));
+        add(new LabelComponent("content",  ((UIClassification) node.getUserObject()).getLabel()));
     }
 
-    public class AjaxCheckBox extends WebComponent {
-
+    /**
+     * Renders a checkbox, that stores the click on the checkbox in the model
+     * and updates parent or child nodes.
+     */
+    public class AjaxCheckBox extends WebComponent
+    {
         /**
          * Needed for serialization.
          */
@@ -65,11 +73,11 @@ public class ClassificationTreeLabelPanel extends Panel
 
         /**
          * @param _wicketId         wicket id for this component
-         * @param _classification   classifcation of this leaf
+         * @param _model            model of this leaf
          */
-        public AjaxCheckBox(final String _wicketId)
+        public AjaxCheckBox(final String _wicketId, final IModel<Object> _model)
         {
-            super(_wicketId);
+            super(_wicketId, _model);
             add(new AjaxCheckBoxClickBehavior());
         }
 
@@ -81,14 +89,18 @@ public class ClassificationTreeLabelPanel extends Panel
         protected void onComponentTag(final ComponentTag _tag)
         {
             super.onComponentTag(_tag);
-            if (ClassificationTreeLabelPanel.this.classification.isSelected()) {
+            final DefaultMutableTreeNode node = (DefaultMutableTreeNode) getDefaultModelObject();
+            if (((UIClassification) node.getUserObject()).isSelected()) {
                 _tag.put("checked", "checked");
             }
         }
     }
 
-    public class AjaxCheckBoxClickBehavior extends AjaxEventBehavior {
-
+    /**
+     * Behavior that will be executed on click.
+     */
+    public class AjaxCheckBoxClickBehavior extends AjaxEventBehavior
+    {
         /**
          * Needed for serialization.
          */
@@ -105,13 +117,49 @@ public class ClassificationTreeLabelPanel extends Panel
 
         /**
          * @see org.apache.wicket.ajax.AjaxEventBehavior#onEvent(org.apache.wicket.ajax.AjaxRequestTarget)
-         * @param _target
+         * @param _target   target for the ajaxcall
          */
         @Override
         protected void onEvent(final AjaxRequestTarget _target)
         {
-            ClassificationTreeLabelPanel.this.classification
-                            .setSelected(!ClassificationTreeLabelPanel.this.classification.isSelected());
+            final DefaultMutableTreeNode node = (DefaultMutableTreeNode) getComponent().getDefaultModelObject();
+            final UIClassification classification = ((UIClassification) node.getUserObject());
+            classification.setSelected(!classification.isSelected());
+
+            // if it was unselected all children must be unselected also
+            if (!classification.isSelected() && node.getChildCount() > 0) {
+                final ClassificationTree tree = getComponent().findParent(ClassificationTree.class);
+                unselect(node, tree, _target);
+            // if it was selected all parent must be selected
+            } else if (classification.isSelected() && !node.isRoot()) {
+                final ClassificationTree tree = getComponent().findParent(ClassificationTree.class);
+                DefaultMutableTreeNode parent = node;
+                while (!parent.isRoot()) {
+                    parent = (DefaultMutableTreeNode) parent.getParent();
+                    final UIClassification parentClass = ((UIClassification) parent.getUserObject());
+                    parentClass.setSelected(true);
+                    _target.addComponent(tree.getComponent(parent));
+                }
+            }
+        }
+
+        /**
+         * Recursive method used to uncheck all children of a given node.
+         * @param _node     node the children must be unchecked of
+         * @param _tree     tree the node belongs to
+         * @param _target   ajax request target
+         */
+        private void unselect(final DefaultMutableTreeNode _node, final ClassificationTree _tree,
+                              final AjaxRequestTarget _target)
+        {
+            final Enumeration<?> enumer = _node.children();
+            while (enumer.hasMoreElements()) {
+                final DefaultMutableTreeNode node = (DefaultMutableTreeNode) enumer.nextElement();
+                unselect(node, _tree, _target);
+                final UIClassification classification = ((UIClassification) node.getUserObject());
+                classification.setSelected(false);
+                _target.addComponent(_tree.getComponent(node));
+            }
         }
     }
 }
