@@ -30,6 +30,7 @@ import org.efaps.ui.wicket.models.cell.UITableCell;
 
 /**
  * Class represents one row in the UITable.
+ *
  * @author The eFaps Team
  * @version $Id$
  */

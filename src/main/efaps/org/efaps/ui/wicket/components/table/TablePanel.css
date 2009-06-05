@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Author:          jmox
+ * Author:          The eFaps Team
  * Revision:        $Rev$
  * Last Changed:    $Date$
  * Last Changed By: $Author$
@@ -76,6 +76,12 @@
 }
 
 .eFapsTableCheckBoxCell {
+  padding-left: 0;
+  float: left;
+  height: 18px;
+  width: 14px;
+}
+.eFapsTableRemoveRowCell {
   padding-left: 0;
   float: left;
   height: 18px;

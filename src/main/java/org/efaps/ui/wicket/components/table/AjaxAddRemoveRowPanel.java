@@ -23,12 +23,12 @@ package org.efaps.ui.wicket.components.table;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
-import org.efaps.ui.wicket.components.form.set.YPanel;
 import org.efaps.ui.wicket.components.table.row.RowPanel;
 import org.efaps.ui.wicket.models.RowModel;
 import org.efaps.ui.wicket.models.objects.UIRow;
@@ -41,33 +41,46 @@ import org.efaps.ui.wicket.resources.EFapsContentReference;
  * @author The eFaps Team
  * @version $Id$
  */
-public class AjaxAddRowPanel extends Panel
+public class AjaxAddRemoveRowPanel extends Panel
 {
     /**
      * Content reference for the delete icon.
      */
-    private static final EFapsContentReference ICON_ADD = new EFapsContentReference(YPanel.class, "add.png");
+    private static final EFapsContentReference ICON_ADD = new EFapsContentReference(AjaxAddRemoveRowPanel.class,
+                                                                                    "add.png");
+    /**
+     * Content reference for the delete icon.
+     */
+    private static final EFapsContentReference ICON_DELETE = new EFapsContentReference(AjaxAddRemoveRowPanel.class,
+                                                                                       "delete.png");
 
     /**
-     *
+     * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
 
     /**
-     * @param _wicketId
-     * @param _model
-     * @param rowsRepeater
+     * @param _wicketId     wicket id for thic component
+     * @param _model        model for this component
+     * @param rowsRepeater  repeater
      */
-    public AjaxAddRowPanel(final String _wicketId, final IModel<UITable> _model, final RepeatingView _rowsRepeater)
+    public AjaxAddRemoveRowPanel(final String _wicketId, final IModel<UITable> _model,
+                                 final RepeatingView _rowsRepeater, final boolean _add)
     {
         super(_wicketId, _model);
         setOutputMarkupId(true);
-        final AjaxAddRow add = new AjaxAddRow("add", _model, _rowsRepeater);
-        this.add(add);
-        final StaticImageComponent image = new StaticImageComponent("addIcon");
-        image.setReference(AjaxAddRowPanel.ICON_ADD);
-        add.add(image);
 
+        final WebMarkupContainer link;
+        final StaticImageComponent image = new StaticImageComponent("icon");
+        if (_add) {
+            link = new AjaxAddRow("link", _model, _rowsRepeater);
+            image.setReference(AjaxAddRemoveRowPanel.ICON_ADD);
+        } else {
+            link = new AjaxRemoveRow("link", _model, _rowsRepeater);
+            image.setReference(AjaxAddRemoveRowPanel.ICON_DELETE);
+        }
+        this.add(link);
+        link.add(image);
     }
 
     public class AjaxAddRow extends AjaxLink<UITable>
@@ -97,14 +110,15 @@ public class AjaxAddRowPanel extends Panel
             final UIRow uirow = uitable.getValues().get(0);
             final TablePanel tablepanel = this.findParent(TablePanel.class);
             // create the new repeater item and add it to the repeater
-            final RowPanel row = new RowPanel(this.rowsRepeater.newChildId(), new RowModel(uirow), tablepanel, false);
+            final RowPanel row = new RowPanel(this.rowsRepeater.newChildId(), new RowModel(uirow), tablepanel, false,
+                                             tablepanel.getNewRowNumber());
             row.add(new SimpleAttributeModifier("class", "eFapsTableRowOdd"));
             row.setOutputMarkupId(true);
             this.rowsRepeater.add(row);
             // first execute javascript which creates a placeholder tag in
             // markup for this item
             _target.prependJavascript(String.format("var item=document.createElement('%s');item.id='%s';"
-                        + "Wicket.$('%s').insertBefore(item, Wicket.$('" + AjaxAddRowPanel.this.getMarkupId() + "'));",
+                        + "Wicket.$('%s').insertBefore(item, Wicket.$('" + AjaxAddRemoveRowPanel.this.getMarkupId() + "'));",
                          "tr", row.getMarkupId(), tablepanel.getMarkupId()));
 
             // notice how we set the newly created item tag's id to that of the newly created
@@ -113,6 +127,34 @@ public class AjaxAddRowPanel extends Panel
 
             // all thats left is to repaint the new item via Ajax
             _target.addComponent(row);
+        }
+    }
+
+
+    public class AjaxRemoveRow extends AjaxLink<UITable>
+    {
+
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
+        private final RepeatingView rowsRepeater;
+
+        /**
+         * @param _wicket
+         * @param _rowsRepeater
+         * @param model
+         */
+        public AjaxRemoveRow(final String _wicket, final IModel<UITable> _model, final RepeatingView _rowsRepeater)
+        {
+            super(_wicket, _model);
+            this.rowsRepeater = _rowsRepeater;
+        }
+
+        @Override
+        public void onClick(final AjaxRequestTarget _target)
+        {
+
         }
     }
 }

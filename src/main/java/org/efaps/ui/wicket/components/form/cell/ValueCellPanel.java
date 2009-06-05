@@ -33,9 +33,9 @@ import org.apache.wicket.model.Model;
 import org.joda.time.DateTime;
 
 import org.efaps.admin.ui.AbstractCommand.Target;
+import org.efaps.ui.wicket.components.AutoCompleteField;
 import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
-import org.efaps.ui.wicket.components.form.AutoCompleteField;
 import org.efaps.ui.wicket.components.form.DateFieldWithPicker;
 import org.efaps.ui.wicket.components.form.FormPanel;
 import org.efaps.ui.wicket.components.form.valuepicker.Value4Picker;

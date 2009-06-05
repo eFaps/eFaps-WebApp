@@ -50,6 +50,10 @@ import org.efaps.util.EFapsException;
  */
 public class UITableCell extends AbstractInstanceObject
 {
+    /**
+     * Needed foer serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
     /**
      * instance variable storing the reference of the field.
@@ -108,12 +112,17 @@ public class UITableCell extends AbstractInstanceObject
     private final String cellTitle;
 
     /**
+     * Stores if the field has an esjp used for auto completion.
+     */
+    private final boolean autoComplete;
+
+    /**
      * Constructor.
-     *
-     * @param _fieldValue FieldValue
-     * @param _cellvalue Value for the cell
-     * @param _icon icon of the cell
-     * @param instance
+     * @param _parent       parent ui object
+     * @param _fieldValue   FieldValue
+     * @param _cellvalue    Value for the cell
+     * @param _icon         icon of the cell
+     * @param _instance     Instance
      * @throws EFapsException on error
      */
     public UITableCell(final AbstractUIObject _parent, final FieldValue _fieldValue, final Instance _instance,
@@ -134,7 +143,7 @@ public class UITableCell extends AbstractInstanceObject
         this.editable = _fieldValue.getField().isEditable();
         this.searchable = _fieldValue.getField().isSearchable();
         this.viewable = _fieldValue.getField().isViewable();
-
+        this.autoComplete = _fieldValue.getField().hasEvents(EventType.UI_FIELD_AUTOCOMPLETE);
 
         // check if the user has access to the typemenu, if not set the reference to null
         if (_fieldValue.getField().getReference() != null) {
@@ -337,6 +346,22 @@ public class UITableCell extends AbstractInstanceObject
                         || (this.parent.getMode() == TargetMode.SEARCH && this.searchable)
                         || (this.parent.getMode() == TargetMode.VIEW && this.viewable)
                         || this.parent.getMode() == TargetMode.UNKNOWN || this.parent.getMode() == TargetMode.CONNECT);
+    }
+
+    /**
+     * Getter method for instance variable {@link #autoComplete}.
+     *
+     * @return value of instance variable {@link #autoComplete}
+     */
+    public boolean isAutoComplete()
+    {
+      return this.autoComplete;
+    }
+
+    public List<Return> getAutoCompletion (final Object _others)
+        throws EFapsException
+    {
+      return executeEvents(_others, EventType.UI_FIELD_AUTOCOMPLETE);
     }
 
     /**

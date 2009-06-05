@@ -26,10 +26,10 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 
+import org.efaps.ui.wicket.components.AutoCompleteField;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.button.Button;
-import org.efaps.ui.wicket.components.form.AutoCompleteField;
 import org.efaps.ui.wicket.models.cell.UIFormCellCmd;
 import org.efaps.ui.wicket.models.objects.UIForm;
 

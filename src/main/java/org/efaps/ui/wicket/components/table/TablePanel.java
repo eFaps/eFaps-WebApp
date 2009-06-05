@@ -57,6 +57,11 @@ public class TablePanel extends Panel
     private static final long serialVersionUID = 1L;
 
     /**
+     * Stores the number of the actual row.
+     */
+    private int rowNumber = 0;
+
+    /**
      * @param _wicketId wicket id of this component
      * @param _model    model for this component
      * @param _page     page this component is in
@@ -87,7 +92,8 @@ public class TablePanel extends Panel
             for (final Iterator<UIRow> rowIter = model.getValues().iterator(); rowIter.hasNext(); odd = !odd) {
 
                 final RowPanel row = new RowPanel(rowsRepeater.newChildId(), new RowModel(rowIter.next()), this,
-                                ContentContainerPage.IFRAME_PAGEMAP_NAME.equals(_page.getPageMapName()));
+                                                ContentContainerPage.IFRAME_PAGEMAP_NAME.equals(_page.getPageMapName()),
+                                                this.rowNumber++);
                 row.setOutputMarkupId(true);
                 if (odd) {
                     row.add(new SimpleAttributeModifier("class", "eFapsTableRowOdd"));
@@ -98,7 +104,25 @@ public class TablePanel extends Panel
             }
         }
         if (model.isCreateMode()) {
-            rowsRepeater.add(new AjaxAddRowPanel(rowsRepeater.newChildId(), _model, rowsRepeater));
+            rowsRepeater.add(new AjaxAddRemoveRowPanel(rowsRepeater.newChildId(), _model, rowsRepeater, true));
         }
+    }
+
+    /**
+     * Getter method for instance variable {@link #rowCount}.
+     *
+     * @return value of instance variable {@link #rowCount}
+     */
+    public int getRowCount()
+    {
+        return this.rowNumber;
+    }
+
+    /**
+     * @return a new number for the row
+     */
+    public int getNewRowNumber()
+    {
+        return this.rowNumber++;
     }
 }
