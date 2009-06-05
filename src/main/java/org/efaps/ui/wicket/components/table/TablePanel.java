@@ -61,7 +61,7 @@ public class TablePanel extends Panel
      * @param _model    model for this component
      * @param _page     page this component is in
      */
-    public TablePanel(final String _wicketId, final IModel<?> _model, final Page _page)
+    public TablePanel(final String _wicketId, final IModel<UITable> _model, final Page _page)
     {
         super(_wicketId, _model);
 
@@ -96,6 +96,9 @@ public class TablePanel extends Panel
                 }
                 rowsRepeater.add(row);
             }
+        }
+        if (model.isCreateMode()) {
+            rowsRepeater.add(new AjaxAddRowPanel(rowsRepeater.newChildId(), _model, rowsRepeater));
         }
     }
 }

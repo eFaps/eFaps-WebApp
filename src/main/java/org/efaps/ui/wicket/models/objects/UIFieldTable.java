@@ -26,11 +26,13 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractCommand.SortDirection;
+import org.efaps.admin.ui.field.Field;
 import org.efaps.admin.ui.field.FieldTable;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
@@ -40,63 +42,72 @@ import org.efaps.util.EFapsException;
  * @author jmox
  * @version $Id$
  */
-public class UIFieldTable extends UITable implements IFormElement{
+public class UIFieldTable extends UITable implements IFormElement
+{
 
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  /**
-   * Logging instance used in this class.
-   */
-  private static final Logger LOG = LoggerFactory.getLogger(UIFieldTable.class);
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(UIFieldTable.class);
 
-  private final long id;
+    private final long id;
 
-  private final String name;
+    private final String name;
 
-  public UIFieldTable(final UUID _commanduuid, final String _instanceKey,
-      final FieldTable _fieldTable) {
-    super(_commanduuid, _instanceKey);
-    setTableUUID(_fieldTable.getTargetTable().getUUID());
-    this.id = _fieldTable.getId();
-    this.name = _fieldTable.getName();
-    try {
-      if (Context.getThreadContext().containsUserAttribute(
-          getUserAttributeKey(UserAttributeKey.SORTKEY))) {
-        setSortKey(Context.getThreadContext().getUserAttribute(
-            getUserAttributeKey(UserAttributeKey.SORTKEY)));
-      }
-      if (Context.getThreadContext().containsUserAttribute(
-          getUserAttributeKey(UserAttributeKey.SORTDIRECTION))) {
-        setSortDirection(SortDirection
-            .getEnum((Context.getThreadContext()
-                .getUserAttribute(getUserAttributeKey(UserAttributeKey
-                                                            .SORTDIRECTION)))));
-      }
-    } catch (final EFapsException e) {
-      // we don't throw an error because this are only Usersettings
-      LOG.error("error during the retrieve of UserAttributes", e);
+    public UIFieldTable(final UUID _commanduuid, final String _instanceKey, final FieldTable _fieldTable)
+    {
+        super(_commanduuid, _instanceKey);
+        setTableUUID(_fieldTable.getTargetTable().getUUID());
+        this.id = _fieldTable.getId();
+        this.name = _fieldTable.getName();
+        try {
+            if (Context.getThreadContext().containsUserAttribute(getUserAttributeKey(UserAttributeKey.SORTKEY))) {
+                setSortKey(Context.getThreadContext().getUserAttribute(getUserAttributeKey(UserAttributeKey.SORTKEY)));
+            }
+            if (Context.getThreadContext().containsUserAttribute(getUserAttributeKey(UserAttributeKey.SORTDIRECTION))) {
+                setSortDirection(SortDirection.getEnum((Context.getThreadContext()
+                                .getUserAttribute(getUserAttributeKey(UserAttributeKey.SORTDIRECTION)))));
+            }
+        } catch (final EFapsException e) {
+            // we don't throw an error because this are only Usersettings
+            LOG.error("error during the retrieve of UserAttributes", e);
+        }
     }
-  }
 
-  @SuppressWarnings("unchecked")
-  @Override
-  protected List<List<Instance>> getInstanceLists() throws EFapsException {
-    final List<Return> ret =
-        FieldTable.get(this.id).executeEvents(EventType.UI_TABLE_EVALUATE,
-            ParameterValues.INSTANCE, getInstance());
-    final List<List<Instance>> lists =
-        (List<List<Instance>>) ret.get(0).get(ReturnValues.VALUES);
-    return lists;
-  }
+    @SuppressWarnings("unchecked")
+    @Override
+    protected List<List<Instance>> getInstanceLists() throws EFapsException
+    {
+        final List<Return> ret = FieldTable.get(this.id).executeEvents(EventType.UI_TABLE_EVALUATE,
+                        ParameterValues.INSTANCE, getInstance());
+        final List<List<Instance>> lists = (List<List<Instance>>) ret.get(0).get(ReturnValues.VALUES);
+        return lists;
+    }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.efaps.ui.wicket.models.TableModel#getUserAttributeKey(org.efaps.ui.wicket.models.TableModel.UserAttributeKey)
-   */
-  @Override
-  public String getUserAttributeKey(final UserAttributeKey _key) {
-    return super.getCommandUUID() + "-" + this.name + "-" + _key.getValue();
-  }
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * org.efaps.ui.wicket.models.TableModel#getUserAttributeKey(org.efaps.ui
+     * .wicket.models.TableModel.UserAttributeKey)
+     */
+    @Override
+    public String getUserAttributeKey(final UserAttributeKey _key)
+    {
+        return super.getCommandUUID() + "-" + this.name + "-" + _key.getValue();
+    }
+
+    /**
+     * Method to get the events that are related to this UITable.
+     * @param _eventType eventype to get
+     * @return List of events
+     */
+    @Override
+    protected List<EventDefinition> getEvents(final EventType _eventType)
+    {
+        return Field.get(this.id).getEvents(_eventType);
+    }
 
 }

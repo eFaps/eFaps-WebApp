@@ -35,7 +35,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.datamodel.Attribute;
+import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.FieldValue;
+import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
@@ -254,40 +256,35 @@ public class UITable extends AbstractUIObject
     }
 
     /**
-     * this method executes the TableModel, that means this method has to be
-     * called so that this model contains actual data from the eFaps-DataBase.
-     * The method works in conjunction with
-     * {@link #executeRowResult(Map, ListQuery)}.
+     * Method is used to execute the UIForm. (Fill it with data).
      */
     public void execute()
     {
         try {
-            // first get list of object ids
-
-            final List<List<Instance>> lists = getInstanceLists();
-
-            final List<Instance> instances = new ArrayList<Instance>();
-            final Map<Instance, List<Instance>> instMapper = new HashMap<Instance, List<Instance>>();
-            for (final List<Instance> oneList : lists) {
-                final Instance inst = oneList.get(oneList.size() - 1);
-                instances.add(inst);
-                instMapper.put(inst, oneList);
+            if (isCreateMode()) {
+                execute4NoInstance();
+            } else {
+                execute4Instance();
             }
+        } catch (final EFapsException e) {
+            throw new RestartResponseException(new ErrorPage(e));
+        }
+        super.setInitialized(true);
+    }
 
-            // evaluate for all expressions in the table
-            final ListQuery query = new ListQuery(instances);
-            final List<Integer> userWidthList = getUserWidths();
+    /**
+     * Executes this model for the case that no instance is given.
+     * Currently only create!
+     * @throws EFapsException on error
+     */
+    private void execute4NoInstance() throws EFapsException
+    {
+        final List<Field> fields = getUserSortedColumns();
+        final List<Integer> userWidthList = getUserWidths();
 
-            final List<Field> fields = getUserSortedColumns();
-
-            for (int i = 0; i < fields.size(); i++) {
-                final Field field = fields.get(i);
-                if (field.getExpression() != null) {
-                    query.addSelect(field.getExpression());
-                }
-                if (field.getAlternateOID() != null) {
-                    query.addSelect(field.getAlternateOID());
-                }
+        for (int i = 0; i < fields.size(); i++) {
+            final Field field = fields.get(i);
+            if (field.isCreatable() && isCreateMode()) {
                 SortDirection sortdirection = SortDirection.NONE;
                 if (field.getName().equals(this.sortKey)) {
                     sortdirection = getSortDirection();
@@ -304,100 +301,184 @@ public class UITable extends AbstractUIObject
                     }
                     this.widthWeight += field.getWidth();
                 }
-            }
-            query.execute();
 
-            executeRowResult(instMapper, query, fields);
-
-            if (this.sortKey != null) {
-                sort();
             }
-            super.setInitialized(true);
-        } catch (final Exception e) {
-            throw new RestartResponseException(new ErrorPage(e));
+        }
+        String typeName = null;
+        final List<EventDefinition> events = getEvents(EventType.UI_TABLE_EVALUATE);
+        if (events.size() > 1) {
+            throw new EFapsException(this.getClass(), "execute4NoInstance.moreThanOneEvaluate");
+        } else {
+            final EventDefinition event = events.get(0);
+            if (event.getProperty("Expand") != null) {
+                final String tmp = event.getProperty("Expand");
+                typeName = tmp.substring(0, tmp.indexOf("\\"));
+            } else if (event.getProperty("Type") != null) {
+                typeName = event.getProperty("Type");
+            }
+        }
+        final Type type = Type.get(typeName);
+        final UIRow row = new UIRow();
+        Attribute attr = null;
+        for (final Field field : fields) {
+            if (field.getExpression() != null) {
+                attr = type.getAttribute(field.getExpression());
+            }
+            final FieldValue fieldvalue = new FieldValue(field, attr, null, null);
+            String strValue;
+            if (isCreateMode() && field.isCreatable()) {
+                strValue = fieldvalue.getCreateHtml(getInstance(), null);
+            } else {
+                strValue = fieldvalue.getViewHtml(getInstance(), null);
+            }
+            if (strValue == null) {
+                strValue = "";
+            }
+            row.add(new UITableCell(this, fieldvalue, null, strValue, null));
+        }
+        this.values.add(row);
+
+
+        if (this.sortKey != null) {
+            sort();
+        }
+    }
+    /**
+     * This method executes the TableModel, that means this method has to be
+     * called so that this model contains actual data from the eFaps-DataBase.
+     * The method works in conjunction with
+     * {@link #executeRowResult(Map, ListQuery)}.
+     * @throws EFapsException on error
+     */
+    private void execute4Instance() throws EFapsException
+    {
+        // first get list of object ids
+        final List<List<Instance>> lists = getInstanceLists();
+
+        final List<Instance> instances = new ArrayList<Instance>();
+        final Map<Instance, List<Instance>> instMapper = new HashMap<Instance, List<Instance>>();
+        for (final List<Instance> oneList : lists) {
+            final Instance inst = oneList.get(oneList.size() - 1);
+            instances.add(inst);
+            instMapper.put(inst, oneList);
+        }
+
+        // evaluate for all expressions in the table
+        final ListQuery query = new ListQuery(instances);
+        final List<Integer> userWidthList = getUserWidths();
+
+        final List<Field> fields = getUserSortedColumns();
+
+        for (int i = 0; i < fields.size(); i++) {
+            final Field field = fields.get(i);
+            if (field.getExpression() != null) {
+                query.addSelect(field.getExpression());
+            }
+            if (field.getAlternateOID() != null) {
+                query.addSelect(field.getAlternateOID());
+            }
+            SortDirection sortdirection = SortDirection.NONE;
+            if (field.getName().equals(this.sortKey)) {
+                sortdirection = getSortDirection();
+            }
+            final UITableHeader headermodel = new UITableHeader(field, sortdirection);
+            this.headers.add(headermodel);
+            if (!field.isFixedWidth()) {
+                if (userWidthList != null) {
+                    if (isShowCheckBoxes()) {
+                        headermodel.setWidth(userWidthList.get(i + 1));
+                    } else {
+                        headermodel.setWidth(userWidthList.get(i));
+                    }
+                }
+                this.widthWeight += field.getWidth();
+            }
+        }
+        query.execute();
+
+        executeRowResult(instMapper, query, fields);
+
+        if (this.sortKey != null) {
+            sort();
         }
     }
 
     /**
-     * This method works together with {@link #execute()} to fill this Model
+     * This method works together with {@link #execute4Instance()} to fill this Model
      * with Data.
      *
      * @param _instMapper Map of instances
      * @param _query Query with results
      * @param _fields List of the Fields
+     * @throws EFapsException on error
      */
     private void executeRowResult(final Map<Instance, List<Instance>> _instMapper, final ListQuery _query,
-                    final List<Field> _fields)
+                    final List<Field> _fields) throws EFapsException
     {
-        try {
-            while (_query.next()) {
 
-                // get all found oids (typically more than one if it is an
-                // expand)
-                Instance instance = _query.getInstance();
-                final StringBuilder instanceKeys = new StringBuilder();
-                boolean first = true;
-                if (_instMapper.get(instance) != null) {
-                    final List<Instance> list = _instMapper.get(instance);
-                    final Instance inst = list.get(list.size() - 1);
-                    if (!instance.getKey().equals(inst.getKey())) {
-                        instance = inst;
-                    }
-                    for (final Instance oneInstance : list) {
-                        if (first) {
-                            first = false;
-                        } else {
-                            instanceKeys.append("|");
-                        }
-                        instanceKeys.append(oneInstance.getKey());
-                    }
+        while (_query.next()) {
+            // get all found oids (typically more than one if it is an expand)
+            Instance instance = _query.getInstance();
+            final StringBuilder instanceKeys = new StringBuilder();
+            boolean first = true;
+            if (_instMapper.get(instance) != null) {
+                final List<Instance> list = _instMapper.get(instance);
+                final Instance inst = list.get(list.size() - 1);
+                if (!instance.getKey().equals(inst.getKey())) {
+                    instance = inst;
                 }
-                final UIRow row = new UIRow(instanceKeys.toString());
-                Attribute attr = null;
-
-                String strValue = "";
-                for (final Field field : _fields) {
-                    Object value = null;
-
-                    if (field.getExpression() != null) {
-                        value = _query.get(field.getExpression());
-                        attr = _query.getAttribute(field.getExpression());
-                    }
-
-                    final FieldValue fieldvalue = new FieldValue(field, attr, value, instance);
-                    if (isCreateMode() && field.isEditable()) {
-                        strValue = fieldvalue.getCreateHtml(getInstance(), instance);
-                    } else if (isEditMode() && field.isEditable()) {
-                        strValue = fieldvalue.getEditHtml(getInstance(), instance);
+                for (final Instance oneInstance : list) {
+                    if (first) {
+                        first = false;
                     } else {
-                        strValue = fieldvalue.getViewHtml(getInstance(), instance);
+                        instanceKeys.append("|");
                     }
-                    if (strValue == null) {
-                        strValue = "";
-                    }
-                    String icon = field.getIcon();
-                    if (field.getAlternateOID() == null) {
-                        if (field.isShowTypeIcon()) {
-                            final Image image = Image.getTypeIcon(instance.getType());
-                            if (image != null) {
-                                icon = image.getUrl();
-                            }
-                        }
-                    } else {
-                        final Instance inst = Instance.get((String) _query.get(field.getAlternateOID()));
-                        if (field.isShowTypeIcon()) {
-                            final Image image = Image.getTypeIcon(inst.getType());
-                            if (image != null) {
-                                icon = image.getUrl();
-                            }
-                        }
-                    }
-                    row.add(new UITableCell(this, fieldvalue, instance, strValue, icon));
+                    instanceKeys.append(oneInstance.getKey());
                 }
-                this.values.add(row);
             }
-        } catch (final Exception e) {
-            throw new RestartResponseException(new ErrorPage(e));
+            final UIRow row = new UIRow(instanceKeys.toString());
+            Attribute attr = null;
+
+            String strValue = "";
+            for (final Field field : _fields) {
+                Object value = null;
+
+                if (field.getExpression() != null) {
+                    value = _query.get(field.getExpression());
+                    attr = _query.getAttribute(field.getExpression());
+                }
+
+                final FieldValue fieldvalue = new FieldValue(field, attr, value, instance);
+                if (isCreateMode() && field.isEditable()) {
+                    strValue = fieldvalue.getCreateHtml(getInstance(), instance);
+                } else if (isEditMode() && field.isEditable()) {
+                    strValue = fieldvalue.getEditHtml(getInstance(), instance);
+                } else {
+                    strValue = fieldvalue.getViewHtml(getInstance(), instance);
+                }
+                if (strValue == null) {
+                    strValue = "";
+                }
+                String icon = field.getIcon();
+                if (field.getAlternateOID() == null) {
+                    if (field.isShowTypeIcon()) {
+                        final Image image = Image.getTypeIcon(instance.getType());
+                        if (image != null) {
+                            icon = image.getUrl();
+                        }
+                    }
+                } else {
+                    final Instance inst = Instance.get((String) _query.get(field.getAlternateOID()));
+                    if (field.isShowTypeIcon()) {
+                        final Image image = Image.getTypeIcon(inst.getType());
+                        if (image != null) {
+                            icon = image.getUrl();
+                        }
+                    }
+                }
+                row.add(new UITableCell(this, fieldvalue, instance, strValue, icon));
+            }
+            this.values.add(row);
         }
     }
 
@@ -882,6 +963,16 @@ public class UITable extends AbstractUIObject
     protected void setTableUUID(final UUID _tableUUID)
     {
         this.tableUUID = _tableUUID;
+    }
+
+    /**
+     * Method to get the events that are related to this UITable.
+     * @param _eventType eventype to get
+     * @return List of events
+     */
+    protected List<EventDefinition> getEvents(final EventType _eventType)
+    {
+        return this.getCommand().getEvents(_eventType);
     }
 
     /**

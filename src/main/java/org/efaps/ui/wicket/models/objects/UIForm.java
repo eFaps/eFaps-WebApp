@@ -499,83 +499,86 @@ public class UIForm extends AbstractUIObject
         for (final Field field : form.getFields()) {
             if (field.hasAccess(getMode())) {
                 // if it is a FieldTable we don't do anything
-                if (!(field instanceof FieldTable)) {
-                    if (field instanceof FieldGroup) {
-                        if (field.isCreatable()) {
-                            final FieldGroup group = (FieldGroup) field;
-                            if (getMaxGroupCount() < group.getGroupCount()) {
-                                setMaxGroupCount(group.getGroupCount());
-                            }
-                            rowgroupcount = group.getGroupCount();
+                if (field instanceof FieldGroup) {
+                    if (field.isCreatable()) {
+                        final FieldGroup group = (FieldGroup) field;
+                        if (getMaxGroupCount() < group.getGroupCount()) {
+                            setMaxGroupCount(group.getGroupCount());
                         }
-                    } else if (field instanceof FieldHeading && field.isCreatable()) {
-                        this.elements.add(new Element(UIForm.ElementType.HEADING, new UIHeading((FieldHeading) field)));
-                        formelement = new FormElement();
+                        rowgroupcount = group.getGroupCount();
+                    }
+                } else if (field instanceof FieldHeading && field.isCreatable()) {
+                    this.elements.add(new Element(UIForm.ElementType.HEADING, new UIHeading((FieldHeading) field)));
+                    formelement = new FormElement();
+                    this.elements.add(new Element(UIForm.ElementType.FORM, formelement));
+                } else if (field instanceof FieldClassification && field.isCreatable()) {
+                    this.elements.add(new Element(UIForm.ElementType.CLASSIFICATION,
+                                                  new UIClassification((FieldClassification) field, this)));
+                    formelement = new FormElement();
+                    this.elements.add(new Element(UIForm.ElementType.FORM, formelement));
+                    this.classified = true;
+                } else if (field instanceof FieldTable && field.isCreatable()) {
+                    final UIFieldTable uiFieldTable = new UIFieldTable(getCommandUUID(), getInstanceKey(),
+                                                                       ((FieldTable) field));
+                    this.elements.add(new Element(UIForm.ElementType.TABLE, uiFieldTable));
+                } else if ((field.isEditable() && isEditMode()) || (field.isCreatable() && isCreateMode())
+                              || (field.isSearchable() && isSearchMode()) || (field.isViewable() && isViewMode())) {
+                    // if it is the first element
+                    if (this.elements.size() == 0) {
                         this.elements.add(new Element(UIForm.ElementType.FORM, formelement));
-                    } else if (field instanceof FieldClassification && field.isCreatable()) {
-                        this.elements.add(new Element(UIForm.ElementType.CLASSIFICATION,
-                                                      new UIClassification((FieldClassification) field, this)));
-                        formelement = new FormElement();
-                        this.elements.add(new Element(UIForm.ElementType.FORM, formelement));
-                        this.classified = true;
-                    } else if ((field.isEditable() && isEditMode()) || (field.isCreatable() && isCreateMode())
-                                  || (field.isSearchable() && isSearchMode()) || (field.isViewable() && isViewMode())) {
-                        // if it is the first element
-                        if (this.elements.size() == 0) {
-                            this.elements.add(new Element(UIForm.ElementType.FORM, formelement));
-                        }
+                    }
 
-                        final Attribute attr = type != null ? type.getAttribute(field.getExpression()) : null;
+                    final Attribute attr = type != null ? type.getAttribute(field.getExpression()) : null;
 
-                        String label;
-                        if (field.getLabel() != null) {
-                            label = field.getLabel();
-                        } else if (attr != null) {
-                            label = attr.getParent().getName() + "/" + attr.getName() + ".Label";
-                        } else {
-                            label = "Unknown";
-                        }
-                        final Instance fieldInstance = getInstance();
-                        final FieldValue fieldvalue = new FieldValue(field, attr,
-                                        super.isWizardCall() ? getValue4Wizard(field.getName()) : null, fieldInstance);
+                    String label;
+                    if (field.getLabel() != null) {
+                        label = field.getLabel();
+                    } else if (attr != null) {
+                        label = attr.getParent().getName() + "/" + attr.getName() + ".Label";
+                    } else {
+                        label = "Unknown";
+                    }
+                    final Instance fieldInstance = getInstance();
+                    final FieldValue fieldvalue = new FieldValue(field, attr,
+                                    super.isWizardCall() ? getValue4Wizard(field.getName()) : null, fieldInstance);
 
-                        String strValue = null;
-                        if (isCreateMode()) {
-                            strValue = fieldvalue.getCreateHtml(getInstance(), null);
-                        } else if (isSearchMode()) {
-                            strValue = fieldvalue.getSearchHtml(getInstance(), null);
-                        } else if (isViewMode()) {
-                            strValue = fieldvalue.getViewHtml(getInstance(), null);
-                        }
-                        final String attrTypeName = attr != null ? attr.getAttributeType().getName() : null;
+                    String strValue = null;
+                    if (isCreateMode()) {
+                        strValue = fieldvalue.getCreateHtml(getInstance(), null);
+                    } else if (isSearchMode()) {
+                        strValue = fieldvalue.getSearchHtml(getInstance(), null);
+                    } else if (isViewMode()) {
+                        strValue = fieldvalue.getViewHtml(getInstance(), null);
+                    }
+                    final String attrTypeName = attr != null ? attr.getAttributeType().getName() : null;
 
-                        final UIFormCell cell;
-                        if (field instanceof FieldCommand) {
-                            cell = new UIFormCellCmd(this, (FieldCommand) field, null, label);
-                        } else {
-                            cell = new UIFormCell(this, fieldvalue, strValue, label, attrTypeName);
-                            if (isSearchMode()) {
-                                cell.setReference(null);
-                            } else if (strValue != null && !this.fileUpload) {
-                                final String tmp = strValue.replaceAll(" ", "");
-                                if (tmp.toLowerCase().contains("type=\"file\"")) {
-                                    this.fileUpload = true;
-                                }
+                    final UIFormCell cell;
+                    if (field instanceof FieldCommand) {
+                        cell = new UIFormCellCmd(this, (FieldCommand) field, null, label);
+                    } else {
+                        cell = new UIFormCell(this, fieldvalue, strValue, label, attrTypeName);
+                        if (isSearchMode()) {
+                            cell.setReference(null);
+                        } else if (strValue != null && !this.fileUpload) {
+                            final String tmp = strValue.replaceAll(" ", "");
+                            if (tmp.toLowerCase().contains("type=\"file\"")) {
+                                this.fileUpload = true;
                             }
                         }
+                    }
 
-                        row.add(cell);
-                        rowgroupcount--;
-                        if (rowgroupcount < 1) {
-                            rowgroupcount = 1;
-                            if (row.getGroupCount() > 0) {
-                                formelement.addRowModel(row);
-                                row = new FormRow();
-                            }
+                    row.add(cell);
+                    rowgroupcount--;
+                    if (rowgroupcount < 1) {
+                        rowgroupcount = 1;
+                        if (row.getGroupCount() > 0) {
+                            formelement.addRowModel(row);
+                            row = new FormRow();
                         }
                     }
                 }
             }
+
         }
     }
 

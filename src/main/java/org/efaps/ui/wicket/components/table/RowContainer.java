@@ -25,24 +25,25 @@ import org.apache.wicket.markup.ComponentTag;
 import org.efaps.ui.wicket.components.AbstractParentMarkupContainer;
 
 /**
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  *
  */
-public class RowContainer extends AbstractParentMarkupContainer {
+public class RowContainer extends AbstractParentMarkupContainer
+{
 
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  public RowContainer(String id) {
-    super(id);
+    public RowContainer(final String _wicketId)
+    {
+        super(_wicketId);
+    }
 
-  }
-
-  @Override
-  protected void onComponentTag(ComponentTag tag) {
-    super.onComponentTag(tag);
-    tag.setName("tr");
-    tag.setHasNoCloseTag(true);
-  }
-
+    @Override
+    protected void onComponentTag(final ComponentTag _tag)
+    {
+        super.onComponentTag(_tag);
+        _tag.setName("tr");
+        _tag.setHasNoCloseTag(true);
+    }
 }

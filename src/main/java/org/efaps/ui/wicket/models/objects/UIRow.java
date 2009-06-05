@@ -28,78 +28,94 @@ import org.apache.wicket.IClusterable;
 import org.efaps.admin.datamodel.AttributeTypeInterface;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 
+/**
+ * Class represents one row in the UITable.
+ * @author The eFaps Team
+ * @version $Id$
+ */
+public class UIRow implements IClusterable
+{
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
-public class UIRow implements IClusterable {
-  private static final long serialVersionUID = 1L;
+    /**
+     * The instance variable stores all oids in a string.
+     *
+     * @see #getOids
+     */
+    private final String instanceKeys;
 
-  /**
-   * The instance variable stores all oids in a string.
-   *
-   * @see #getOids
-   */
-  private final String instanceKeys;
+    /**
+     * The instance variable stores the values for the table.
+     *
+     * @see #getValues
+     */
+    private final List<UITableCell> values = new ArrayList<UITableCell>();
 
-  /**
-   * The instance variable stores the values for the table.
-   *
-   * @see #getValues
-   */
-  private final List<UITableCell> values = new ArrayList<UITableCell>();
 
-  /**
-   * The constructor creates a new instance of class Row.
-   *
-   * @param _instanceKeys
-   *                string with all oids for this row
-   */
-  public UIRow(final String _instanceKeys) {
-    super();
-    this.instanceKeys = _instanceKeys;
-  }
+    /**
+     * Constructor used in case that no instances are given. e.g. on create.
+     */
+    public UIRow()
+    {
+        this(null);
+    }
+    /**
+     * The constructor creates a new instance of class Row.
+     *
+     * @param _instanceKeys string with all oids for this row
+     */
+    public UIRow(final String _instanceKeys)
+    {
+        super();
+        this.instanceKeys = _instanceKeys;
+    }
 
-  // /////////////////////////////////////////////////////////////////////////
-  // instance methods
+    /**
+     * The instance method adds a new attribute value (from instance
+     * {@link AttributeTypeInterface}) to the values.
+     * @param _cellmodel cell model to add
+     * @see #values
+     */
+    public void add(final UITableCell _cellmodel)
+    {
 
-  /**
-   * The instance method adds a new attribute value (from instance
-   * {@link AttributeTypeInterface}) to the values.
-   *
-   * @see #values
-   */
-  public void add(final UITableCell _cellmodel) {
+        this.values.add(_cellmodel);
+    }
 
-    this.values.add(_cellmodel);
-  }
+    /**
+     * This is the getter method for the instance variable {@link #instanceKeys}
+     * .
+     *
+     * @return value of instance variable {@link #instanceKeys}
+     * @see #instanceKeys
+     */
+    public String getInstanceKeys()
+    {
+        return this.instanceKeys;
+    }
 
-  /**
-   * This is the getter method for the instance variable {@link #instanceKeys}.
-   *
-   * @return value of instance variable {@link #instanceKeys}
-   * @see #instanceKeys
-   */
-  public String getInstanceKeys() {
-    return this.instanceKeys;
-  }
+    /**
+     * The instance method returns the size of the array list {@link #values}.
+     *
+     * @see #values
+     * @return size of instance variable {@link #values}
+     */
+    public int getSize()
+    {
+        return getValues().size();
+    }
 
-  // /////////////////////////////////////////////////////////////////////////
-
-  /**
-   * The instance method returns the size of the array list {@link #values}.
-   *
-   * @see #values
-   */
-  public int getSize() {
-    return getValues().size();
-  }
-
-  /**
-   * This is the getter method for the values variable {@link #values}.
-   *
-   * @return value of values variable {@link #values}
-   * @see #values
-   */
-  public List<UITableCell> getValues() {
-    return this.values;
-  }
-
+    /**
+     * This is the getter method for the values variable {@link #values}.
+     *
+     * @return value of values variable {@link #values}
+     * @see #values
+     */
+    public List<UITableCell> getValues()
+    {
+        return this.values;
+    }
 }
