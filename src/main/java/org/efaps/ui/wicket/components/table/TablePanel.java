@@ -98,7 +98,7 @@ public class TablePanel extends Panel
             }
         }
         if (model.isCreateMode()) {
-            rowsRepeater.add(new AjaxAddRemoveRowPanel(rowsRepeater.newChildId(), _model, rowsRepeater, true));
+            rowsRepeater.add(new AjaxAddRemoveRowPanel(rowsRepeater.newChildId(), _model, rowsRepeater));
         }
     }
 }

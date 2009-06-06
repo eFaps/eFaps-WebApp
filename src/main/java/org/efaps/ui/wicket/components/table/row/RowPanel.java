@@ -79,7 +79,7 @@ public class RowPanel extends Panel
         }
         if (uiTable.isCreateMode()) {
             final AjaxAddRemoveRowPanel remove = new AjaxAddRemoveRowPanel(cellRepeater.newChildId(),
-                                                                           new TableModel(uiTable), null, false);
+                                                                           new TableModel(uiTable), this);
             remove.setOutputMarkupId(true);
             remove.add(new SimpleAttributeModifier("class", "eFapsTableRemoveRowCell"));
             cellRepeater.add(remove);

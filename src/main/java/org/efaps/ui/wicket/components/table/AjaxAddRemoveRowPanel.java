@@ -23,6 +23,7 @@ package org.efaps.ui.wicket.components.table;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
+import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
@@ -60,49 +61,71 @@ public class AjaxAddRemoveRowPanel extends Panel
     private static final long serialVersionUID = 1L;
 
     /**
-     * @param _wicketId     wicket id for thic component
+     * Constructor for ajax add link.
+     * @param _wicketId     wicket id for this component
      * @param _model        model for this component
-     * @param rowsRepeater  repeater
+     * @param _rowsRepeater  repeater
      */
     public AjaxAddRemoveRowPanel(final String _wicketId, final IModel<UITable> _model,
-                                 final RepeatingView _rowsRepeater, final boolean _add)
+                                 final RepeatingView _rowsRepeater)
     {
         super(_wicketId, _model);
         setOutputMarkupId(true);
-
-        final WebMarkupContainer link;
-        final StaticImageComponent image = new StaticImageComponent("icon");
-        if (_add) {
-            link = new AjaxAddRow("link", _model, _rowsRepeater);
-            image.setReference(AjaxAddRemoveRowPanel.ICON_ADD);
-        } else {
-            link = new AjaxRemoveRow("link", _model, _rowsRepeater);
-            image.setReference(AjaxAddRemoveRowPanel.ICON_DELETE);
-        }
+        final AjaxAddRow link = new AjaxAddRow("link", _model, _rowsRepeater);
         this.add(link);
+        final StaticImageComponent image = new StaticImageComponent("icon");
+        image.setReference(AjaxAddRemoveRowPanel.ICON_ADD);
         link.add(image);
     }
 
+
+    /**
+     * Constructor for remove script component.
+     * @param _wicketId     wicket id for this component
+     * @param _model        model for this component
+     * @param _rowPanel     rowpanel that must be removed
+     */
+    public AjaxAddRemoveRowPanel(final String _wicketId, final IModel<UITable> _model, final RowPanel _rowPanel)
+    {
+        super(_wicketId, _model);
+        final RemoveRow link = new RemoveRow("link", _rowPanel);
+        this.add(link);
+        final StaticImageComponent image = new StaticImageComponent("icon");
+        image.setReference(AjaxAddRemoveRowPanel.ICON_DELETE);
+        link.add(image);
+    }
+
+    /**
+     * Class renders an ajax link that adds a row to the table.
+     */
     public class AjaxAddRow extends AjaxLink<UITable>
     {
-
         /**
-         *
+         *Needed for serialization.
          */
         private static final long serialVersionUID = 1L;
+
+        /**
+         * RepeatingView.
+         */
         private final RepeatingView rowsRepeater;
 
         /**
-         * @param _wicket
-         * @param _rowsRepeater
-         * @param model
+         * @param _wicketId     wicket id for this component
+         * @param _model        model for this component
+         * @param _rowsRepeater row repeater
+         *
          */
-        public AjaxAddRow(final String _wicket, final IModel<UITable> _model, final RepeatingView _rowsRepeater)
+        public AjaxAddRow(final String _wicketId, final IModel<UITable> _model, final RepeatingView _rowsRepeater)
         {
-            super(_wicket, _model);
+            super(_wicketId, _model);
             this.rowsRepeater = _rowsRepeater;
         }
 
+        /**
+         * @see org.apache.wicket.ajax.markup.html.AjaxLink#onClick(org.apache.wicket.ajax.AjaxRequestTarget)
+         * @param _target target
+         */
         @Override
         public void onClick(final AjaxRequestTarget _target)
         {
@@ -117,7 +140,7 @@ public class AjaxAddRemoveRowPanel extends Panel
             // first execute javascript which creates a placeholder tag in
             // markup for this item
             _target.prependJavascript(String.format("var item=document.createElement('%s');item.id='%s';"
-                        + "Wicket.$('%s').insertBefore(item, Wicket.$('" + AjaxAddRemoveRowPanel.this.getMarkupId() + "'));",
+                   + "Wicket.$('%s').insertBefore(item, Wicket.$('" + AjaxAddRemoveRowPanel.this.getMarkupId() + "'));",
                          "tr", row.getMarkupId(), tablepanel.getMarkupId()));
 
             // notice how we set the newly created item tag's id to that of the newly created
@@ -130,30 +153,45 @@ public class AjaxAddRemoveRowPanel extends Panel
     }
 
 
-    public class AjaxRemoveRow extends AjaxLink<UITable>
+    /**
+     * Class renders a component containing a script to remove a row from a
+     * table.
+     */
+    public class RemoveRow extends WebMarkupContainer
     {
-
         /**
-         *
+         * Needed for serialization.
          */
         private static final long serialVersionUID = 1L;
-        private final RepeatingView rowsRepeater;
 
         /**
-         * @param _wicket
-         * @param _rowsRepeater
-         * @param model
+         * Rowpanel that must be removed.
          */
-        public AjaxRemoveRow(final String _wicket, final IModel<UITable> _model, final RepeatingView _rowsRepeater)
+        private final RowPanel rowPanel;
+
+        /**
+         * @param _wicketId wicket id for this component
+         * @param _rowPanel Rowpanel that must be removed
+         */
+        public RemoveRow(final String _wicketId, final RowPanel _rowPanel)
         {
-            super(_wicket, _model);
-            this.rowsRepeater = _rowsRepeater;
+            super(_wicketId);
+            this.rowPanel = _rowPanel;
         }
 
+        /**
+         * @see org.apache.wicket.Component#onComponentTag(org.apache.wicket.markup.ComponentTag)
+         * @param _tag tag
+         */
         @Override
-        public void onClick(final AjaxRequestTarget _target)
+        protected void onComponentTag(final ComponentTag _tag)
         {
-
+            super.onComponentTag(_tag);
+            final StringBuilder js = new StringBuilder();
+            js.append("var e = document.getElementById('").append(this.rowPanel.getMarkupId()).append("');")
+                .append("var p = e.parentNode;")
+                .append("p.removeChild(e);");
+            _tag.put("onclick", js);
         }
     }
 }
