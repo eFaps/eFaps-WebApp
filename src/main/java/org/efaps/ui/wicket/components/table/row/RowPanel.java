@@ -20,6 +20,10 @@
 
 package org.efaps.ui.wicket.components.table.row;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.wicket.Component;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
@@ -37,6 +41,7 @@ import org.efaps.ui.wicket.models.objects.UITable;
 /**
  * @author The eFaps Team
  * @version $Id$
+ *
  */
 public class RowPanel extends Panel
 {
@@ -51,10 +56,10 @@ public class RowPanel extends Panel
      * @param _model            model for this component
      * @param _tablePanel       tablepanel this row is in
      * @param _updateListMenu   must the listmenu be updated
-     * @param _rowNumber        number of this row
+     *
      */
     public RowPanel(final String _wicketId, final IModel<UIRow> _model, final TablePanel _tablePanel,
-                    final boolean _updateListMenu, final int _rowNumber)
+                    final boolean _updateListMenu)
     {
         super(_wicketId, _model);
         final UIRow uirow = (UIRow) super.getDefaultModelObject();
@@ -80,10 +85,11 @@ public class RowPanel extends Panel
             cellRepeater.add(remove);
             i++;
         }
-        int cellNumber = 0;
+
+        final Map<String, Component> name2comp = new HashMap<String, Component>();
         for (final UITableCell cellmodel : uirow.getValues()) {
-            final CellPanel   cell = new CellPanel(cellRepeater.newChildId(), new TableCellModel(cellmodel),
-                                                      _updateListMenu, uiTable, _rowNumber, cellNumber++);
+            final CellPanel cell = new CellPanel(cellRepeater.newChildId(), new TableCellModel(cellmodel),
+                                                      _updateListMenu, uiTable);
             cell.setOutputMarkupId(true);
             if (cellmodel.isFixedWidth()) {
                 cell.add(new SimpleAttributeModifier("class", "eFapsTableCell eFapsCellFixedWidth" + i));
@@ -92,6 +98,7 @@ public class RowPanel extends Panel
             }
             cellRepeater.add(cell);
             i++;
+            name2comp.put(cellmodel.getName(), cell);
         }
-    }
+     }
 }

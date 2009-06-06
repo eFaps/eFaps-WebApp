@@ -18,24 +18,24 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.ui.wicket.components;
+package org.efaps.ui.wicket.components.autocomplete;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
+import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteBehavior;
+import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteSettings;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
+import org.apache.wicket.extensions.ajax.markup.html.autocomplete.IAutoCompleteRenderer;
 import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
 
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
-import org.efaps.db.Context;
 import org.efaps.ui.wicket.components.form.command.AjaxCmdBehavior;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
@@ -48,14 +48,13 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class AutoCompleteField extends AutoCompleteTextField<String>
+public class AutoCompleteField extends AutoCompleteTextField<Map<String, String>>
 {
-
     /**
      * Reference to the stylesheet.
      */
     public static final EFapsContentReference CSS = new EFapsContentReference(AutoCompleteField.class,
-                    "AutoCompleteField.css");
+                                                                              "AutoCompleteField.css");
 
     /** Needed for serialization. */
     private static final long serialVersionUID = 1L;
@@ -76,7 +75,7 @@ public class AutoCompleteField extends AutoCompleteTextField<String>
      */
     private final String fieldName;
 
-    private Map<String, String> valuesMap;
+
 
     /**
      * @param _wicketId     wicket id for this component
@@ -95,48 +94,13 @@ public class AutoCompleteField extends AutoCompleteTextField<String>
     public AutoCompleteField(final String _wicketId, final IModel<?> _model, final String _fieldName)
     {
         super(_wicketId);
-        super.setModel(new Model<String>(""));
         this.model = _model;
         this.fieldName = _fieldName;
         add(StaticHeaderContributor.forCss(AutoCompleteField.CSS));
-
-        add(new AjaxFormSubmitBehavior("onKeyDown") {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            protected void onSubmit(final AjaxRequestTarget _target)
-            {
-                try {
-                    String fieldvalue = Context.getThreadContext().getParameter(AutoCompleteField.this.fieldName);
-                    if (AutoCompleteField.this.valuesMap != null) {
-                        for (final Entry<String, String> entry : AutoCompleteField.this.valuesMap.entrySet()) {
-                            if (entry.getValue().equals(fieldvalue)) {
-                                fieldvalue = entry.getKey();
-                                break;
-                            }
-                        }
-                        AutoCompleteField.this.setModel(new Model<String>(fieldvalue));
-                        _target.addComponent(AutoCompleteField.this);
-                    }
-                    if (AutoCompleteField.this.cmdBehavior != null) {
-                        AutoCompleteField.this.cmdBehavior.onSubmit4AutoComplete(_target, fieldvalue);
-                    }
-                } catch (final EFapsException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            protected void onError(final AjaxRequestTarget _target)
-            {
-            }
-        });
     }
 
     /**
-     * The Name must be set too use the name from eFaps.
+     * The Name must be set too trick the parent classes.
      *
      * @param _tag tag to modify
      */
@@ -145,25 +109,72 @@ public class AutoCompleteField extends AutoCompleteTextField<String>
     {
         _tag.setName("input");
         super.onComponentTag(_tag);
-        _tag.put("name", this.fieldName);
     }
 
+
+    /**
+     * Factory method for autocomplete behavior that will be added to this
+     * textfield.
+     *
+     * @param _renderer     auto complete renderer
+     * @param _settings     auto complete settings
+     * @return auto complete behavior
+     */
+    @Override
+    protected AutoCompleteBehavior<Map<String, String>> newAutoCompleteBehavior(
+                    final IAutoCompleteRenderer<Map<String, String>> _renderer, final AutoCompleteSettings _settings)
+    {
+        final AutoCompleteRenderer renderer = new AutoCompleteRenderer(this);
+        return new AutoCompleteBehavior<Map<String, String>>(renderer, _settings) {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            protected Iterator<Map<String, String>> getChoices(final String _input)
+            {
+                return AutoCompleteField.this.getChoices(_input);
+            }
+        };
+    }
+
+    /**
+     * @see org.apache.wicket.MarkupContainer#onComponentTagBody(org.apache.wicket.markup.MarkupStream, org.apache.wicket.markup.ComponentTag)
+     * @param _markupStream  markup stream
+     * @param _tag           tag
+     */
+    /**
+     * @see org.apache.wicket.MarkupContainer#onComponentTagBody(org.apache.wicket.markup.MarkupStream, org.apache.wicket.markup.ComponentTag)
+     * @param _markupStream
+     * @param _tag
+     */
+    @Override
+    protected void onComponentTagBody(final MarkupStream _markupStream, final ComponentTag _tag)
+    {
+
+        final StringBuilder cmp = new StringBuilder();
+        cmp.append("<input type=\"hidden\"").append("name=\"").append(this.fieldName)
+            .append("\" id=\"").append(_tag.getString("id")).append("_hidden\" >");
+        replaceComponentTagBody(_markupStream, _tag, cmp);
+    }
+
+    /**
+     * Method to get the values from the esjp.
+     *
+     * @see org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField#getChoices(java.lang.String)
+     * @param _input    input from the webform
+     * @return  iterator
+     */
     @SuppressWarnings("unchecked")
     @Override
-    protected Iterator<String> getChoices(final String _input)
+    protected Iterator<Map<String, String>> getChoices(final String _input)
     {
         final UITableCell uiObject = (UITableCell) this.model.getObject();
-        final List<String> retList = new ArrayList<String>();
+        final List<Map<String, String>> retList = new ArrayList<Map<String, String>>();
         try {
             final List<Return> returns = uiObject.getAutoCompletion(_input);
             for (final Return aReturn : returns) {
                 final Object ob = aReturn.get(ReturnValues.VALUES);
                 if (ob instanceof List) {
-                    final List<String> list = (List<String>) ob;
-                    retList.addAll(list);
-                } else if (ob instanceof Map) {
-                    retList.addAll(((Map) ob).values());
-                    this.valuesMap = (Map) ob;
+                    retList.addAll((Collection<? extends Map<String, String>>) ob);
                 }
             }
         } catch (final EFapsException e) {
@@ -181,5 +192,15 @@ public class AutoCompleteField extends AutoCompleteTextField<String>
     public void addCmdBehavior(final AjaxCmdBehavior _cmdBehavior)
     {
         this.cmdBehavior = _cmdBehavior;
+    }
+
+    /**
+     * Getter method for instance variable {@link #fieldName}.
+     *
+     * @return value of instance variable {@link #fieldName}
+     */
+    public String getFieldName()
+    {
+        return this.fieldName;
     }
 }

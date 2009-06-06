@@ -45,13 +45,13 @@ import org.efaps.util.EFapsException;
  * one cell inside a Table.It uses a {@link org.efaps.admin.ui.field.Field} as
  * the base for the data.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id:CellModel.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class UITableCell extends AbstractInstanceObject
 {
     /**
-     * Needed foer serialization.
+     * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
 
@@ -117,6 +117,11 @@ public class UITableCell extends AbstractInstanceObject
     private final boolean autoComplete;
 
     /**
+     * Stores if the field has an esjp used for the update of other fields.
+     */
+    private final boolean fieldUpdate;
+
+    /**
      * Constructor.
      * @param _parent       parent ui object
      * @param _fieldValue   FieldValue
@@ -144,6 +149,7 @@ public class UITableCell extends AbstractInstanceObject
         this.searchable = _fieldValue.getField().isSearchable();
         this.viewable = _fieldValue.getField().isViewable();
         this.autoComplete = _fieldValue.getField().hasEvents(EventType.UI_FIELD_AUTOCOMPLETE);
+        this.fieldUpdate = _fieldValue.getField().hasEvents(EventType.UI_FIELD_UPDATE);
 
         // check if the user has access to the typemenu, if not set the reference to null
         if (_fieldValue.getField().getReference() != null) {
@@ -355,13 +361,29 @@ public class UITableCell extends AbstractInstanceObject
      */
     public boolean isAutoComplete()
     {
-      return this.autoComplete;
+        return this.autoComplete;
     }
 
-    public List<Return> getAutoCompletion (final Object _others)
+    public List<Return> getAutoCompletion(final Object _others)
         throws EFapsException
     {
-      return executeEvents(_others, EventType.UI_FIELD_AUTOCOMPLETE);
+        return executeEvents(_others, EventType.UI_FIELD_AUTOCOMPLETE);
+    }
+
+    /**
+     * Getter method for instance variable {@link #fieldUpdate}.
+     *
+     * @return value of instance variable {@link #fieldUpdate}
+     */
+    public boolean isFieldUpdate()
+    {
+        return this.fieldUpdate;
+    }
+
+    public List<Return> getFieldUpdate(final Object _others)
+            throws EFapsException
+    {
+        return executeEvents(_others, EventType.UI_FIELD_UPDATE);
     }
 
     /**

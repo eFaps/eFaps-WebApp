@@ -110,8 +110,7 @@ public class AjaxAddRemoveRowPanel extends Panel
             final UIRow uirow = uitable.getValues().get(0);
             final TablePanel tablepanel = this.findParent(TablePanel.class);
             // create the new repeater item and add it to the repeater
-            final RowPanel row = new RowPanel(this.rowsRepeater.newChildId(), new RowModel(uirow), tablepanel, false,
-                                             tablepanel.getNewRowNumber());
+            final RowPanel row = new RowPanel(this.rowsRepeater.newChildId(), new RowModel(uirow), tablepanel, false);
             row.add(new SimpleAttributeModifier("class", "eFapsTableRowOdd"));
             row.setOutputMarkupId(true);
             this.rowsRepeater.add(row);

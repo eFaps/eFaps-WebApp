@@ -320,6 +320,7 @@ public class UITable extends AbstractUIObject
         final Type type = Type.get(typeName);
         final UIRow row = new UIRow();
         Attribute attr = null;
+
         for (final Field field : fields) {
             if (field.getExpression() != null) {
                 attr = type.getAttribute(field.getExpression());
@@ -334,10 +335,10 @@ public class UITable extends AbstractUIObject
             if (strValue == null) {
                 strValue = "";
             }
-            row.add(new UITableCell(this, fieldvalue, null, strValue, null));
+            final UITableCell cell = new UITableCell(this, fieldvalue, null, strValue, null);
+            row.add(cell);
         }
         this.values.add(row);
-
 
         if (this.sortKey != null) {
             sort();
