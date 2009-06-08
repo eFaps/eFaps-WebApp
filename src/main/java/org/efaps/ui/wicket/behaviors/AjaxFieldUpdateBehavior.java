@@ -142,7 +142,26 @@ public class AjaxFieldUpdateBehavior extends AjaxFormSubmitBehavior
     }
 
 
-    protected String getComponentMarkupId() {
+    /**
+     * Method to get the ComponentMarkupId.
+     * @return markup id of the component.
+     */
+    protected String getComponentMarkupId()
+    {
         return getComponent().getMarkupId();
+    }
+
+    /**
+     * Overwritten to deactivate the visit of all other components
+     * and the setting of model objects. This would lead to an
+     * error, because this component does not have a model.
+     *
+     * @see org.apache.wicket.ajax.form.AjaxFormSubmitBehavior#onEvent(org.apache.wicket.ajax.AjaxRequestTarget)
+     * @param _target AjaxRequestTarget
+     */
+    @Override
+    protected void onEvent(final AjaxRequestTarget _target)
+    {
+        onSubmit(_target);
     }
 }

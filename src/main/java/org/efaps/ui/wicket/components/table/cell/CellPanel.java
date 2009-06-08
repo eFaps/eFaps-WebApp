@@ -28,6 +28,8 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.ui.AbstractCommand.Target;
+import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
+import org.efaps.ui.wicket.behaviors.SetSelectedRowBehavior;
 import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.autocomplete.AutoCompleteField;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
@@ -130,7 +132,14 @@ public class CellPanel extends Panel
                 add(new WebMarkupContainer("icon").setVisible(false));
                 add(new WebMarkupContainer("label").setVisible(false));
             } else {
-                add(new LabelComponent("label", cellmodel.getCellValue()));
+                final LabelComponent label = new LabelComponent("label", cellmodel.getCellValue());
+                if (_uitable.isCreateMode()) {
+                    label.add(new SetSelectedRowBehavior());
+                    if (cellmodel.isFieldUpdate()) {
+                        label.add(new AjaxFieldUpdateBehavior("onchange", _model));
+                    }
+                }
+                add(label);
                 if (cellmodel.getIcon() == null) {
                     add(new WebMarkupContainer("icon").setVisible(false));
                 } else {

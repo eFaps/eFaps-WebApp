@@ -26,7 +26,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteBehavior;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteSettings;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
@@ -115,20 +114,6 @@ public class AutoCompleteField extends AutoCompleteTextField<Map<String, String>
 
                 /** Needed for serialization. */
                 private static final long serialVersionUID = 1L;
-
-                /**
-                 * Overwritten to deactivate the visit of all other components
-                 * and the setting of model objects. This would lead to an
-                 * error, because this component does not have a model.
-                 *
-                 * @see org.apache.wicket.ajax.form.AjaxFormSubmitBehavior#onEvent(org.apache.wicket.ajax.AjaxRequestTarget)
-                 * @param target AjaxRequestTarget
-                 */
-                @Override
-                protected void onEvent(final AjaxRequestTarget _target)
-                {
-                    onSubmit(_target);
-                }
 
                 @Override
                 protected String getComponentMarkupId()
