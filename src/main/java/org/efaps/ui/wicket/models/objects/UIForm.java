@@ -495,7 +495,7 @@ public class UIForm extends AbstractUIObject
         }
 
         FormElement formelement = new FormElement();
-
+        boolean addNew = true;
         for (final Field field : form.getFields()) {
             if (field.hasAccess(getMode())) {
                 // if it is a FieldTable we don't do anything
@@ -509,23 +509,23 @@ public class UIForm extends AbstractUIObject
                     }
                 } else if (field instanceof FieldHeading && field.isCreatable()) {
                     this.elements.add(new Element(UIForm.ElementType.HEADING, new UIHeading((FieldHeading) field)));
-                    formelement = new FormElement();
-                    this.elements.add(new Element(UIForm.ElementType.FORM, formelement));
+                    addNew = true;
                 } else if (field instanceof FieldClassification && field.isCreatable()) {
                     this.elements.add(new Element(UIForm.ElementType.CLASSIFICATION,
                                                   new UIClassification((FieldClassification) field, this)));
-                    formelement = new FormElement();
-                    this.elements.add(new Element(UIForm.ElementType.FORM, formelement));
                     this.classified = true;
+                    addNew = true;
                 } else if (field instanceof FieldTable && field.isCreatable()) {
                     final UIFieldTable uiFieldTable = new UIFieldTable(getCommandUUID(), getInstanceKey(),
                                                                        ((FieldTable) field));
                     this.elements.add(new Element(UIForm.ElementType.TABLE, uiFieldTable));
+                    addNew = true;
                 } else if ((field.isEditable() && isEditMode()) || (field.isCreatable() && isCreateMode())
                               || (field.isSearchable() && isSearchMode()) || (field.isViewable() && isViewMode())) {
-                    // if it is the first element
-                    if (this.elements.size() == 0) {
+                    if (addNew) {
+                        formelement = new FormElement();
                         this.elements.add(new Element(UIForm.ElementType.FORM, formelement));
+                        addNew = false;
                     }
 
                     final Attribute attr = type != null ? type.getAttribute(field.getExpression()) : null;
