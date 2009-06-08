@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteBehavior;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteSettings;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
@@ -36,6 +37,8 @@ import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
+import org.efaps.ui.wicket.behaviors.SetSelectedRowBehavior;
 import org.efaps.ui.wicket.components.form.command.AjaxCmdBehavior;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
@@ -54,7 +57,7 @@ public class AutoCompleteField extends AutoCompleteTextField<Map<String, String>
      * Reference to the stylesheet.
      */
     public static final EFapsContentReference CSS = new EFapsContentReference(AutoCompleteField.class,
-                                                                              "AutoCompleteField.css");
+                    "AutoCompleteField.css");
 
     /** Needed for serialization. */
     private static final long serialVersionUID = 1L;
@@ -75,28 +78,66 @@ public class AutoCompleteField extends AutoCompleteTextField<Map<String, String>
      */
     private final String fieldName;
 
-
+    /**
+     * Must this row be selected. Used if this completefield is inside a table.
+     */
+    private final boolean selectRow;
 
     /**
-     * @param _wicketId     wicket id for this component
-     * @param _model        model for this component
+     * @param _wicketId wicket id for this component
+     * @param _model model for this component
      */
-    public AutoCompleteField(final String _wicketId, final IModel<?> _model)
+    public AutoCompleteField(final String _wicketId, final IModel<?> _model, final boolean _selectRow)
     {
-        this(_wicketId, _model, ((UITableCell) _model.getObject()).getName());
+        this(_wicketId, _model, ((UITableCell) _model.getObject()).getName(), _selectRow);
     }
 
     /**
-     * @param _wicketId     wicket id for this component
-     * @param _model        model for this component
-     * @param _fieldName    name for the field
+     * @param _wicketId wicket id for this component
+     * @param _model model for this component
+     * @param _fieldName name for the field
      */
-    public AutoCompleteField(final String _wicketId, final IModel<?> _model, final String _fieldName)
+    public AutoCompleteField(final String _wicketId, final IModel<?> _model, final String _fieldName,
+                             final boolean _selectRow)
     {
         super(_wicketId);
+        this.selectRow = _selectRow;
         this.model = _model;
         this.fieldName = _fieldName;
         add(StaticHeaderContributor.forCss(AutoCompleteField.CSS));
+
+        if (_selectRow) {
+            this.add(new SetSelectedRowBehavior());
+        }
+        final UITableCell uiObject = (UITableCell) this.model.getObject();
+        if (uiObject.isFieldUpdate()) {
+            this.add(new AjaxFieldUpdateBehavior("onchange", this.model) {
+
+                /** Needed for serialization. */
+                private static final long serialVersionUID = 1L;
+
+                /**
+                 * Overwritten to deactivate the visit of all other components
+                 * and the setting of model objects. This would lead to an
+                 * error, because this component does not have a model.
+                 *
+                 * @see org.apache.wicket.ajax.form.AjaxFormSubmitBehavior#onEvent(org.apache.wicket.ajax.AjaxRequestTarget)
+                 * @param target AjaxRequestTarget
+                 */
+                @Override
+                protected void onEvent(final AjaxRequestTarget _target)
+                {
+                    onSubmit(_target);
+                }
+
+                @Override
+                protected String getComponentMarkupId()
+                {
+                   return getMarkupId() + "_hidden";
+                }
+
+            });
+        }
     }
 
     /**
@@ -109,22 +150,25 @@ public class AutoCompleteField extends AutoCompleteTextField<Map<String, String>
     {
         _tag.setName("input");
         super.onComponentTag(_tag);
+        _tag.put("name", this.fieldName + "AutoComplete");
     }
-
 
     /**
      * Factory method for autocomplete behavior that will be added to this
      * textfield.
      *
-     * @param _renderer     auto complete renderer
-     * @param _settings     auto complete settings
+     * @param _renderer auto complete renderer
+     * @param _settings auto complete settings
      * @return auto complete behavior
      */
     @Override
     protected AutoCompleteBehavior<Map<String, String>> newAutoCompleteBehavior(
                     final IAutoCompleteRenderer<Map<String, String>> _renderer, final AutoCompleteSettings _settings)
     {
+        _settings.setAdjustInputWidth(false);
+
         final AutoCompleteRenderer renderer = new AutoCompleteRenderer(this);
+
         return new AutoCompleteBehavior<Map<String, String>>(renderer, _settings) {
             private static final long serialVersionUID = 1L;
 
@@ -137,22 +181,18 @@ public class AutoCompleteField extends AutoCompleteTextField<Map<String, String>
     }
 
     /**
-     * @see org.apache.wicket.MarkupContainer#onComponentTagBody(org.apache.wicket.markup.MarkupStream, org.apache.wicket.markup.ComponentTag)
-     * @param _markupStream  markup stream
-     * @param _tag           tag
-     */
-    /**
-     * @see org.apache.wicket.MarkupContainer#onComponentTagBody(org.apache.wicket.markup.MarkupStream, org.apache.wicket.markup.ComponentTag)
-     * @param _markupStream
-     * @param _tag
+     * @see org.apache.wicket.MarkupContainer#onComponentTagBody(org.apache.wicket.markup.MarkupStream,
+     *      org.apache.wicket.markup.ComponentTag)
+     * @param _markupStream markup stream
+     * @param _tag tag
      */
     @Override
     protected void onComponentTagBody(final MarkupStream _markupStream, final ComponentTag _tag)
     {
 
         final StringBuilder cmp = new StringBuilder();
-        cmp.append("<input type=\"hidden\"").append("name=\"").append(this.fieldName)
-            .append("\" id=\"").append(_tag.getString("id")).append("_hidden\" >");
+        cmp.append("<input type=\"hidden\"").append("name=\"").append(this.fieldName).append("\" id=\"").append(
+                        _tag.getString("id")).append("_hidden\" >");
         replaceComponentTagBody(_markupStream, _tag, cmp);
     }
 
@@ -160,8 +200,8 @@ public class AutoCompleteField extends AutoCompleteTextField<Map<String, String>
      * Method to get the values from the esjp.
      *
      * @see org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField#getChoices(java.lang.String)
-     * @param _input    input from the webform
-     * @return  iterator
+     * @param _input input from the webform
+     * @return iterator
      */
     @SuppressWarnings("unchecked")
     @Override

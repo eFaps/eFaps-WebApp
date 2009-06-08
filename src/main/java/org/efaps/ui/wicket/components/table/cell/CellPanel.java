@@ -80,7 +80,7 @@ public class CellPanel extends Panel
         // set the title of the cell
         add(new SimpleAttributeModifier("title", cellmodel.getCellTitle()));
         if (cellmodel.isAutoComplete() && _uitable.isCreateMode()) {
-            add(new AutoCompleteField("checkbox", _model));
+            add(new AutoCompleteField("checkbox", _model, true));
             add(new WebMarkupContainer("link").setVisible(false));
             add(new WebMarkupContainer("icon").setVisible(false));
             add(new WebMarkupContainer("label").setVisible(false));

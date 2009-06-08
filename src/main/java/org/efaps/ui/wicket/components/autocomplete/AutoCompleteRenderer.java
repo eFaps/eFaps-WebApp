@@ -36,17 +36,23 @@ public class AutoCompleteRenderer extends AbstractAutoCompleteTextRenderer<Map<S
     /**
      * Key used for the value in the map.
      */
-    public static String VALUE = "eFapsAutoCompleteVALUE";
+    private static String VALUE = "eFapsAutoCompleteVALUE";
 
     /**
      * Key used for the choice in the map.
      */
-    public static String CHOICE = "eFapsAutoCompleteCHOICE";
+    private static String CHOICE = "eFapsAutoCompleteCHOICE";
 
     /**
      * Key used for the key in the map.
      */
-    public static String KEY = "eFapsAutoCompleteKEY";
+    private static String KEY = "eFapsAutoCompleteKEY";
+
+    /**
+     * Key used for the javascript in the map.
+     */
+    private static String JS = "eFapsAutoCompleteJS";
+
 
     /**
      *  Needed for serialization.
@@ -63,7 +69,7 @@ public class AutoCompleteRenderer extends AbstractAutoCompleteTextRenderer<Map<S
      */
     public AutoCompleteRenderer(final AutoCompleteField _autoCompleteField)
     {
-       this.autoCompleteField = _autoCompleteField;
+        this.autoCompleteField = _autoCompleteField;
     }
 
     /**
@@ -108,10 +114,16 @@ public class AutoCompleteRenderer extends AbstractAutoCompleteTextRenderer<Map<S
         boolean isUpdater = false;
         final StringBuilder updater = new StringBuilder();
         for (final String keyString : _map.keySet()) {
+            // if the map contains a key that is not defined in this class it is assumed to be the name of a field
             if (!(AutoCompleteRenderer.KEY.equals(keyString) || AutoCompleteRenderer.VALUE.equals(keyString)
-                            || AutoCompleteRenderer.CHOICE.equals(keyString))) {
-                updater.append("document.getElementsByName('").append(keyString).append("')[pos].value ='")
-                    .append(_map.get(keyString)).append("';");
+                       || AutoCompleteRenderer.CHOICE.equals(keyString) || AutoCompleteRenderer.JS.equals(keyString))) {
+                updater.append("var ").append(keyString).append(" = document.getElementsByName('").append(keyString)
+                    .append("');")
+                    .append("if (").append(keyString).append(".length > 1) {")
+                    .append(keyString).append("[pos].value ='").append(_map.get(keyString)).append("';")
+                    .append("} else {")
+                    .append(keyString).append("[0].value ='").append(_map.get(keyString)).append("';")
+                    .append("}");
                 isUpdater = true;
             }
         }
@@ -120,8 +132,11 @@ public class AutoCompleteRenderer extends AbstractAutoCompleteTextRenderer<Map<S
                 .append(this.autoCompleteField.getFieldName()).append("');")
                 .append(" for (var i = 0; i < eFapsFields.length; i++) {")
                 .append(" if (eFapsFields[i].id=='").append(this.autoCompleteField.getMarkupId()).append("_hidden'){")
-            .append(" pos = i; break;}}");
+                .append(" pos = i; break;}}");
             js.append(updater);
+        }
+        if (_map.containsKey(AutoCompleteRenderer.JS)) {
+            js.append(_map.get(AutoCompleteRenderer.JS));
         }
         js.append("input");
         return js.toString();

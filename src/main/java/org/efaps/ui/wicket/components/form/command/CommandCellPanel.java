@@ -64,7 +64,7 @@ public class CommandCellPanel extends Panel
 
         if (uiObject.isAutoComplete()
                         && (_formmodel.isCreateMode() || _formmodel.isCreateMode() || _formmodel.isSearchMode())) {
-            auto = new AutoCompleteField("autocomplete", _model);
+            auto = new AutoCompleteField("autocomplete", _model, false);
             add2Auto = true;
         } else {
             auto = new WebComponent("autocomplete").setVisible(false);
