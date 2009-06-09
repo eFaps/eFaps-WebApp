@@ -284,7 +284,7 @@ public class UITable extends AbstractUIObject
 
         for (int i = 0; i < fields.size(); i++) {
             final Field field = fields.get(i);
-            if (field.isCreatable() && isCreateMode()) {
+            if (!isCreateMode()) {
                 SortDirection sortdirection = SortDirection.NONE;
                 if (field.getName().equals(this.sortKey)) {
                     sortdirection = getSortDirection();
@@ -322,21 +322,25 @@ public class UITable extends AbstractUIObject
         Attribute attr = null;
 
         for (final Field field : fields) {
-            if (field.getExpression() != null) {
-                attr = type.getAttribute(field.getExpression());
+            if (!field.isNoneDisplay(getMode())) {
+                if (field.getExpression() != null) {
+                    attr = type.getAttribute(field.getExpression());
+                }
+                final FieldValue fieldvalue = new FieldValue(field, attr, null, null);
+                String strValue;
+                if (isCreateMode() && field.isEditableDisplay(getMode())) {
+                    strValue = fieldvalue.getEditHtml(getMode(), getInstance(), null);
+                } else if (field.isHiddenDisplay(getMode())) {
+                    strValue = fieldvalue.getHiddenHtml(getMode(), getInstance(), null);
+                } else {
+                    strValue = fieldvalue.getReadOnlyHtml(getMode(), getInstance(), null);
+                }
+                if (strValue == null) {
+                    strValue = "";
+                }
+                final UITableCell cell = new UITableCell(this, fieldvalue, null, strValue, null);
+                row.add(cell);
             }
-            final FieldValue fieldvalue = new FieldValue(field, attr, null, null);
-            String strValue;
-            if (isCreateMode() && field.isCreatable()) {
-                strValue = fieldvalue.getCreateHtml(getInstance(), null);
-            } else {
-                strValue = fieldvalue.getViewHtml(getInstance(), null);
-            }
-            if (strValue == null) {
-                strValue = "";
-            }
-            final UITableCell cell = new UITableCell(this, fieldvalue, null, strValue, null);
-            row.add(cell);
         }
         this.values.add(row);
 
@@ -450,12 +454,12 @@ public class UITable extends AbstractUIObject
                 }
 
                 final FieldValue fieldvalue = new FieldValue(field, attr, value, instance);
-                if (isCreateMode() && field.isEditable()) {
-                    strValue = fieldvalue.getCreateHtml(getInstance(), instance);
-                } else if (isEditMode() && field.isEditable()) {
-                    strValue = fieldvalue.getEditHtml(getInstance(), instance);
+                if ((isCreateMode() || isEditMode()) && field.isEditableDisplay(getMode())) {
+                    strValue = fieldvalue.getEditHtml(getMode(), getInstance(), instance);
+                } else if (field.isHiddenDisplay(getMode())) {
+                    strValue = fieldvalue.getHiddenHtml(getMode(), getInstance(), instance);
                 } else {
-                    strValue = fieldvalue.getViewHtml(getInstance(), instance);
+                    strValue = fieldvalue.getReadOnlyHtml(getMode(), getInstance(), instance);
                 }
                 if (strValue == null) {
                     strValue = "";

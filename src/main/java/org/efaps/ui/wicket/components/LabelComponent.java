@@ -88,7 +88,7 @@ public class LabelComponent extends WebComponent
         String value = (String) super.getDefaultModelObject();
         // if the value contains the EFAPSTMPTAG all tags from this component
         // will be moved to the subcomponent
-        if (value.contains(UIInterface.EFAPSTMPTAG)) {
+        if (value != null && value.contains(UIInterface.EFAPSTMPTAG)) {
             final StringBuilder tagBldr = new StringBuilder();
             final List<IBehavior> behaviors = getBehaviors();
             final ComponentTag tmpTag = new ComponentTag(_openTag);

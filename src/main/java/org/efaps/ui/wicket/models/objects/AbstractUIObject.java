@@ -445,7 +445,7 @@ public abstract class AbstractUIObject extends AbstractInstanceObject
                 if (query.selectSize() > 0) {
                     query.execute();
                     if (query.next()) {
-                        title = list.makeString(getInstance(), query);
+                        title = list.makeString(getInstance(), query, getMode());
                     }
                     query.close();
                 }

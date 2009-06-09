@@ -319,7 +319,7 @@ public class UIStructurBrowser extends AbstractUIObject
                 if (!instance.getKey().equals(inst.getKey())) {
                     instance = inst;
                 }
-                value = valuelist.makeString(getInstance(), query);
+                value = valuelist.makeString(getInstance(), query, getMode());
                 final UIStructurBrowser child = new UIStructurBrowser(Menu.getTypeTreeMenu(instance.getType())
                                 .getUUID(), instance.getKey(), false, this.sortDirection);
                 this.childs.add(child);
@@ -400,15 +400,12 @@ public class UIStructurBrowser extends AbstractUIObject
                         value = query.get(field.getExpression());
                         attr = query.getAttribute(field.getExpression());
                     }
-
                     final FieldValue fieldvalue = new FieldValue(field, attr, value, instance);
                     if (value != null) {
-                        if (isCreateMode() && field.isEditable()) {
-                            strValue = fieldvalue.getCreateHtml(getInstance(), instance);
-                        } else if (isEditMode() && field.isEditable()) {
-                            strValue = fieldvalue.getEditHtml(getInstance(), instance);
+                        if ((isCreateMode() || isEditMode()) &&  field.isEditableDisplay(getMode())) {
+                            strValue = fieldvalue.getEditHtml(getMode(), getInstance(), instance);
                         } else {
-                            strValue = fieldvalue.getViewHtml(getInstance(), instance);
+                            strValue = fieldvalue.getReadOnlyHtml(getMode(), getInstance(), instance);
                         }
                     } else {
                         strValue = "";
@@ -714,7 +711,7 @@ public class UIStructurBrowser extends AbstractUIObject
             valList.makeSelect(query);
             query.execute();
             if (query.next()) {
-                setLabel(valList.makeString(getInstance(), query).toString());
+                setLabel(valList.makeString(getInstance(), query, getMode()).toString());
             }
         } catch (final Exception e) {
             throw new RestartResponseException(new ErrorPage(e));

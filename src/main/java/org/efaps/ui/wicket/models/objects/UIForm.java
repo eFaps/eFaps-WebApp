@@ -234,7 +234,7 @@ public class UIForm extends AbstractUIObject
                         this.elements.add(new Element(UIForm.ElementType.CLASSIFICATION, uiclass));
                         addNew = true;
                         this.classified  = true;
-                    } else if (!(isViewMode() && !field.isViewable())) {
+                    } else if (!field.isNoneDisplay(getMode())) {
                         if (addNew) {
                             formElement = new FormElement();
                             this.elements.add(new Element(UIForm.ElementType.FORM, formElement));
@@ -386,8 +386,7 @@ public class UIForm extends AbstractUIObject
                 final Attribute child = set.getAttribute(attrName);
                 if (isEditMode()) {
                     final FieldValue fValue = new FieldValue(_field, child, "", getInstance());
-
-                    cellset.addDefiniton(idx, fValue.getCreateHtml(getInstance(), null));
+                    cellset.addDefiniton(idx, fValue.getEditHtml(getMode(), getInstance(), null));
                 }
                 if (tmp == null) {
                     add = false;
@@ -399,10 +398,10 @@ public class UIForm extends AbstractUIObject
                         final FieldValue fieldvalue = new FieldValue(_field, child, value, getInstance());
 
                         String tmpStr = null;
-                        if (isEditMode() && _field.isEditable()) {
-                            tmpStr = fieldvalue.getEditHtml(getInstance(), null);
-                        } else if (_field.isViewable()) {
-                            tmpStr = fieldvalue.getViewHtml(getInstance(), null);
+                        if (_field.isEditableDisplay(getMode())) {
+                            tmpStr = fieldvalue.getEditHtml(getMode(), getInstance(), null);
+                        } else if (_field.isReadonlyDisplay(getMode())) {
+                            tmpStr = fieldvalue.getReadOnlyHtml(getMode(), getInstance(), null);
                         }
                         cellset.add(idx, idy, tmpStr);
                     } else {
@@ -442,10 +441,10 @@ public class UIForm extends AbstractUIObject
         final FieldValue fieldvalue = new FieldValue(_field, _attr, value, _fieldInstance);
 
         String strValue = null;
-        if (isEditMode() && _field.isEditable()) {
-            strValue = fieldvalue.getEditHtml(getInstance(), null);
-        } else if (_field.isViewable()) {
-            strValue = fieldvalue.getViewHtml(getInstance(), null);
+        if (isEditMode() && _field.isEditableDisplay(getMode())) {
+            strValue = fieldvalue.getEditHtml(getMode(), getInstance(), null);
+        } else if (_field.isReadonlyDisplay(getMode())) {
+            strValue = fieldvalue.getReadOnlyHtml(getMode(), getInstance(), null);
         }
         if (strValue != null && !this.fileUpload) {
             final String tmp = strValue.replaceAll(" ", "");
@@ -497,31 +496,27 @@ public class UIForm extends AbstractUIObject
         FormElement formelement = new FormElement();
         boolean addNew = true;
         for (final Field field : form.getFields()) {
-            if (field.hasAccess(getMode())) {
-                // if it is a FieldTable we don't do anything
+            if (field.hasAccess(getMode()) && !field.isNoneDisplay(getMode())) {
                 if (field instanceof FieldGroup) {
-                    if (field.isCreatable()) {
-                        final FieldGroup group = (FieldGroup) field;
+                    final FieldGroup group = (FieldGroup) field;
                         if (getMaxGroupCount() < group.getGroupCount()) {
                             setMaxGroupCount(group.getGroupCount());
                         }
-                        rowgroupcount = group.getGroupCount();
-                    }
-                } else if (field instanceof FieldHeading && field.isCreatable()) {
+                    rowgroupcount = group.getGroupCount();
+                } else if (field instanceof FieldHeading) {
                     this.elements.add(new Element(UIForm.ElementType.HEADING, new UIHeading((FieldHeading) field)));
                     addNew = true;
-                } else if (field instanceof FieldClassification && field.isCreatable()) {
+                } else if (field instanceof FieldClassification) {
                     this.elements.add(new Element(UIForm.ElementType.CLASSIFICATION,
                                                   new UIClassification((FieldClassification) field, this)));
                     this.classified = true;
                     addNew = true;
-                } else if (field instanceof FieldTable && field.isCreatable()) {
+                } else if (field instanceof FieldTable) {
                     final UIFieldTable uiFieldTable = new UIFieldTable(getCommandUUID(), getInstanceKey(),
                                                                        ((FieldTable) field));
                     this.elements.add(new Element(UIForm.ElementType.TABLE, uiFieldTable));
                     addNew = true;
-                } else if ((field.isEditable() && isEditMode()) || (field.isCreatable() && isCreateMode())
-                              || (field.isSearchable() && isSearchMode()) || (field.isViewable() && isViewMode())) {
+                } else {
                     if (addNew) {
                         formelement = new FormElement();
                         this.elements.add(new Element(UIForm.ElementType.FORM, formelement));
@@ -543,12 +538,10 @@ public class UIForm extends AbstractUIObject
                                     super.isWizardCall() ? getValue4Wizard(field.getName()) : null, fieldInstance);
 
                     String strValue = null;
-                    if (isCreateMode()) {
-                        strValue = fieldvalue.getCreateHtml(getInstance(), null);
-                    } else if (isSearchMode()) {
-                        strValue = fieldvalue.getSearchHtml(getInstance(), null);
+                    if (isCreateMode() || isSearchMode()) {
+                        strValue = fieldvalue.getEditHtml(getMode(), getInstance(), null);
                     } else if (isViewMode()) {
-                        strValue = fieldvalue.getViewHtml(getInstance(), null);
+                        strValue = fieldvalue.getReadOnlyHtml(getMode(), getInstance(), null);
                     }
                     final String attrTypeName = attr != null ? attr.getAttributeType().getName() : null;
 

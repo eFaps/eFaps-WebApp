@@ -33,6 +33,7 @@ import org.apache.wicket.model.Model;
 import org.joda.time.DateTime;
 
 import org.efaps.admin.ui.AbstractCommand.Target;
+import org.efaps.admin.ui.field.Field.Display;
 import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.autocomplete.AutoCompleteField;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
@@ -101,7 +102,7 @@ public class ValueCellPanel extends Panel
                 if (uiFormCell.isAutoComplete() && (_formmodel.isCreateMode() || _formmodel.isSearchMode())) {
                     this.add(new AutoCompleteField("label", _model, true));
                 } else {
-                    if (uiFormCell.isValuePicker() && uiFormCell.render()) {
+                    if (uiFormCell.isValuePicker() && uiFormCell.getDisplay().equals(Display.EDITABLE)) {
                         final Value4Picker value = new Value4Picker("label", _model);
                         value.setValue(_formmodel.isSearchMode() ? "*" : "0", _formmodel.isSearchMode() ? "*" : "0");
                         this.add(value);

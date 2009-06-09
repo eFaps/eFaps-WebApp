@@ -32,8 +32,8 @@ import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.AbstractCommand.Target;
-import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.field.Field;
+import org.efaps.admin.ui.field.Field.Display;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.models.AbstractInstanceObject;
@@ -99,14 +99,6 @@ public class UITableCell extends AbstractInstanceObject
 
     private final long fieldId;
 
-    private final boolean creatable;
-
-    private final boolean editable;
-
-    private final boolean searchable;
-
-    private final boolean viewable;
-
     private final AbstractUIObject parent;
 
     private final String cellTitle;
@@ -120,6 +112,8 @@ public class UITableCell extends AbstractInstanceObject
      * Stores if the field has an esjp used for the update of other fields.
      */
     private final boolean fieldUpdate;
+
+    private final Display display;
 
     /**
      * Constructor.
@@ -144,12 +138,9 @@ public class UITableCell extends AbstractInstanceObject
         this.cellTitle = _parent.isCreateMode() ? "" : _cellvalue;
         this.icon = _icon;
         this.fieldId = _fieldValue.getField().getId();
-        this.creatable = _fieldValue.getField().isCreatable();
-        this.editable = _fieldValue.getField().isEditable();
-        this.searchable = _fieldValue.getField().isSearchable();
-        this.viewable = _fieldValue.getField().isViewable();
         this.autoComplete = _fieldValue.getField().hasEvents(EventType.UI_FIELD_AUTOCOMPLETE);
         this.fieldUpdate = _fieldValue.getField().hasEvents(EventType.UI_FIELD_UPDATE);
+        this.display = _fieldValue.getField().getDisplay(_parent.getMode());
 
         // check if the user has access to the typemenu, if not set the reference to null
         if (_fieldValue.getField().getReference() != null) {
@@ -306,52 +297,13 @@ public class UITableCell extends AbstractInstanceObject
     }
 
     /**
-     * Getter method for instance variable {@link #creatable}.
+     * Getter method for instance variable {@link #display}.
      *
-     * @return value of instance variable {@link #creatable}
+     * @return value of instance variable {@link #display}
      */
-    public boolean isCreatable()
+    public Display getDisplay()
     {
-        return this.creatable;
-    }
-
-    /**
-     * Getter method for instance variable {@link #editable}.
-     *
-     * @return value of instance variable {@link #editable}
-     */
-    public boolean isEditable()
-    {
-        return this.editable;
-    }
-
-    /**
-     * Getter method for instance variable {@link #searchable}.
-     *
-     * @return value of instance variable {@link #searchable}
-     */
-    public boolean isSearchable()
-    {
-        return this.searchable;
-    }
-
-    /**
-     * Getter method for instance variable {@link #viewable}.
-     *
-     * @return value of instance variable {@link #viewable}
-     */
-    public boolean isViewable()
-    {
-        return this.viewable;
-    }
-
-    public boolean render()
-    {
-        return ((this.parent.getMode() == TargetMode.CREATE && this.creatable)
-                        || (this.parent.getMode() == TargetMode.EDIT && this.editable)
-                        || (this.parent.getMode() == TargetMode.SEARCH && this.searchable)
-                        || (this.parent.getMode() == TargetMode.VIEW && this.viewable)
-                        || this.parent.getMode() == TargetMode.UNKNOWN || this.parent.getMode() == TargetMode.CONNECT);
+        return this.display;
     }
 
     /**
