@@ -284,7 +284,7 @@ public class UITable extends AbstractUIObject
 
         for (int i = 0; i < fields.size(); i++) {
             final Field field = fields.get(i);
-            if (!isCreateMode()) {
+            if (!field.isNoneDisplay(getMode())) {
                 SortDirection sortdirection = SortDirection.NONE;
                 if (field.getName().equals(this.sortKey)) {
                     sortdirection = getSortDirection();
@@ -301,7 +301,6 @@ public class UITable extends AbstractUIObject
                     }
                     this.widthWeight += field.getWidth();
                 }
-
             }
         }
         String typeName = null;

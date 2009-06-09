@@ -25,6 +25,9 @@ import java.util.Map;
 import org.apache.wicket.Response;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AbstractAutoCompleteTextRenderer;
 
+import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
+import org.efaps.ui.wicket.resources.StaticHeaderContributor;
+
 /**
  * TODO comment!
  *
@@ -70,6 +73,7 @@ public class AutoCompleteRenderer extends AbstractAutoCompleteTextRenderer<Map<S
     public AutoCompleteRenderer(final AutoCompleteField _autoCompleteField)
     {
         this.autoCompleteField = _autoCompleteField;
+        this.autoCompleteField.add(StaticHeaderContributor.forJavaScript(AjaxFieldUpdateBehavior.JS));
     }
 
     /**
@@ -111,29 +115,13 @@ public class AutoCompleteRenderer extends AbstractAutoCompleteTextRenderer<Map<S
         final StringBuilder js = new StringBuilder();
         js.append("wicketGet('").append(this.autoCompleteField.getMarkupId()).append("_hidden').value ='")
             .append(key).append("';");
-        boolean isUpdater = false;
-        final StringBuilder updater = new StringBuilder();
         for (final String keyString : _map.keySet()) {
             // if the map contains a key that is not defined in this class it is assumed to be the name of a field
             if (!(AutoCompleteRenderer.KEY.equals(keyString) || AutoCompleteRenderer.VALUE.equals(keyString)
                        || AutoCompleteRenderer.CHOICE.equals(keyString) || AutoCompleteRenderer.JS.equals(keyString))) {
-                updater.append("var ").append(keyString).append(" = document.getElementsByName('").append(keyString)
-                    .append("');")
-                    .append("if (").append(keyString).append(".length > 1) {")
-                    .append(keyString).append("[pos].value ='").append(_map.get(keyString)).append("';")
-                    .append("} else {")
-                    .append(keyString).append("[0].value ='").append(_map.get(keyString)).append("';")
-                    .append("}");
-                isUpdater = true;
+                js.append("eFapsSetFieldValue('").append(this.autoCompleteField.getMarkupId()).append("','")
+                    .append(keyString).append("','").append(_map.get(keyString)).append("');");
             }
-        }
-        if (isUpdater) {
-            js.append("var pos = 0; var eFapsFields = document.getElementsByName('")
-                .append(this.autoCompleteField.getFieldName()).append("');")
-                .append(" for (var i = 0; i < eFapsFields.length; i++) {")
-                .append(" if (eFapsFields[i].id=='").append(this.autoCompleteField.getMarkupId()).append("_hidden'){")
-                .append(" pos = i; break;}}");
-            js.append(updater);
         }
         if (_map.containsKey(AutoCompleteRenderer.JS)) {
             js.append(_map.get(AutoCompleteRenderer.JS));

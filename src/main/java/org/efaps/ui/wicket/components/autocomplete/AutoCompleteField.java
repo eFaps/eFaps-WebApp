@@ -118,9 +118,8 @@ public class AutoCompleteField extends AutoCompleteTextField<Map<String, String>
                 @Override
                 protected String getComponentMarkupId()
                 {
-                   return getMarkupId() + "_hidden";
+                    return getMarkupId() + "_hidden";
                 }
-
             });
         }
     }

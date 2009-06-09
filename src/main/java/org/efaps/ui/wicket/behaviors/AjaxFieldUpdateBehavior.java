@@ -31,6 +31,8 @@ import org.apache.wicket.model.IModel;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.ui.wicket.models.cell.UITableCell;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 import org.efaps.util.EFapsException;
 
 /**
@@ -42,6 +44,12 @@ import org.efaps.util.EFapsException;
 public class AjaxFieldUpdateBehavior extends AjaxFormSubmitBehavior
 {
     /**
+     * Reference to the javascript.
+     */
+    public static final EFapsContentReference JS = new EFapsContentReference(AjaxFieldUpdateBehavior.class,
+                                                                             "FieldUpdate.js");
+
+    /**
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
@@ -49,8 +57,7 @@ public class AjaxFieldUpdateBehavior extends AjaxFormSubmitBehavior
     /**
      * Key used for the javascript in the map.
      */
-    private static String JS = "eFapsFieldUpdateJS";
-
+    private static String JSKEY = "eFapsFieldUpdateJS";
 
     /**
      * Model that will be used on submit (if not null).
@@ -73,6 +80,16 @@ public class AjaxFieldUpdateBehavior extends AjaxFormSubmitBehavior
     {
         super(_event);
         this.model = _model;
+    }
+
+    /**
+     * @see org.apache.wicket.ajax.AbstractDefaultAjaxBehavior#onBind()
+     */
+    @Override
+    protected void onBind()
+    {
+        super.onBind();
+        getComponent().add(StaticHeaderContributor.forJavaScript(AjaxFieldUpdateBehavior.JS));
     }
 
     /**
@@ -116,31 +133,20 @@ public class AjaxFieldUpdateBehavior extends AjaxFormSubmitBehavior
         }
         final StringBuilder js = new StringBuilder();
         if (map.size() > 0) {
-            js.append("var pos = 0; var eFapsFields = document.getElementsByName('")
-                .append(uiObject.getName()).append("');")
-                .append(" for (var i = 0; i < eFapsFields.length; i++) {")
-                .append(" if (eFapsFields[i].id=='").append(getComponentMarkupId()).append("'){")
-                .append(" pos = i; break;}}");
             for (final String keyString : map.keySet()) {
                 // if the map contains a key that is not defined in this class it is assumed to be the name of a field
-                if (!(AjaxFieldUpdateBehavior.JS.equals(keyString))) {
-                    js.append("var ").append(keyString).append(" = document.getElementsByName('").append(keyString)
-                        .append("');")
-                        .append("if (").append(keyString).append(".length > 1) {")
-                        .append(keyString).append("[pos].value ='").append(map.get(keyString)).append("';")
-                        .append("} else {")
-                        .append(keyString).append("[0].value ='").append(map.get(keyString)).append("';")
-                        .append("}");
+                if (!(AjaxFieldUpdateBehavior.JSKEY.equals(keyString))) {
+                    js.append("eFapsSetFieldValue('").append(getComponentMarkupId()).append("','").append(keyString)
+                        .append("','").append(map.get(keyString)).append("');");
                 }
             }
         }
-        if (map.containsKey(AjaxFieldUpdateBehavior.JS)) {
-            js.append(map.get(AjaxFieldUpdateBehavior.JS));
+        if (map.containsKey(AjaxFieldUpdateBehavior.JSKEY)) {
+            js.append(map.get(AjaxFieldUpdateBehavior.JSKEY));
         }
 
         _target.appendJavascript(js.toString());
     }
-
 
     /**
      * Method to get the ComponentMarkupId.
