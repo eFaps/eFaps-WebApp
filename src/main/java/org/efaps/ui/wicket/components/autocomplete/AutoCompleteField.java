@@ -33,6 +33,7 @@ import org.apache.wicket.extensions.ajax.markup.html.autocomplete.IAutoCompleteR
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
@@ -96,10 +97,11 @@ public class AutoCompleteField extends AutoCompleteTextField<Map<String, String>
      * @param _model model for this component
      * @param _fieldName name for the field
      */
+    @SuppressWarnings("unchecked")
     public AutoCompleteField(final String _wicketId, final IModel<?> _model, final String _fieldName,
                              final boolean _selectRow)
     {
-        super(_wicketId);
+        super(_wicketId, new Model());
         this.selectRow = _selectRow;
         this.model = _model;
         this.fieldName = _fieldName;

@@ -206,11 +206,10 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
      */
     private void convertDateFieldValues()
     {
-        final FormPanel formpl = getFormPanel();
-        if (formpl != null) {
-            for (final DateFieldWithPicker datepicker : formpl.getDateComponents()) {
+        final List<FormPanel> formpl = getFormPanels();
+        for (final FormPanel panel : formpl) {
+            for (final DateFieldWithPicker datepicker : panel.getDateComponents()) {
                 final Map<String, String[]> map = getComponent().getRequestCycle().getRequest().getParameterMap();
-
                 if (map.containsKey(datepicker.getInputName())) {
                     final String[] value = map.get(datepicker.getInputName());
                     map.put(datepicker.getInputName(), new String[] { datepicker.getDateAsString(value[0]) });
@@ -218,6 +217,7 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
             }
         }
     }
+
 
     /**
      * Method to enable file upload.
@@ -350,14 +350,17 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
         boolean ret = true;
         if (!(this.form.getParent().getDefaultModel() instanceof TableModel)) {
             final Map<?, ?> map = getComponent().getRequestCycle().getRequest().getParameterMap();
-            for (final Entry<String, Label> entry : getFormPanel().getRequiredComponents().entrySet()) {
-                final String[] values = (String[]) map.get(entry.getKey());
-                final String value = values[0];
-                if (value == null || value.length() == 0) {
-                    final Label label = entry.getValue();
-                    label.add(new SimpleAttributeModifier("class", "eFapsFormLabelRequiredForce"));
-                    _target.addComponent(label);
-                    ret = false;
+            final List<FormPanel> panels = getFormPanels();
+            for (final FormPanel panel : panels) {
+                for (final Entry<String, Label> entry : panel.getRequiredComponents().entrySet()) {
+                    final String[] values = (String[]) map.get(entry.getKey());
+                    final String value = values[0];
+                    if (value == null || value.length() == 0) {
+                        final Label label = entry.getValue();
+                        label.add(new SimpleAttributeModifier("class", "eFapsFormLabelRequiredForce"));
+                        _target.addComponent(label);
+                        ret = false;
+                    }
                 }
             }
             if (!ret) {
@@ -372,9 +375,9 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
      *
      * @return FormPanel
      */
-    private FormPanel getFormPanel()
+    private List<FormPanel> getFormPanels()
     {
-        FormPanel ret = null;
+        final List<FormPanel> ret = new ArrayList<FormPanel>();
         final Iterator<?> iterator = this.form.iterator();
         while (iterator.hasNext()) {
             final Object object = iterator.next();
@@ -383,11 +386,9 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
                 while (iterator2.hasNext()) {
                     final Object object2 = iterator2.next();
                     if (object2 instanceof FormPanel) {
-                        ret = (FormPanel) object2;
-                        break;
+                        ret.add((FormPanel) object2);
                     }
                 }
-                break;
             }
         }
         return ret;
