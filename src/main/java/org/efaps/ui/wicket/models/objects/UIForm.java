@@ -211,7 +211,7 @@ public class UIForm extends UIAbstractPageObject
             boolean addNew = true;
             UIClassification uiclass = null;
             for (final Field field : form.getFields()) {
-                if (field.hasAccess(getMode())) {
+                if (field.hasAccess(getMode()) && !field.isNoneDisplay(getMode())) {
                     if (field instanceof FieldGroup) {
                         final FieldGroup group = (FieldGroup) field;
                         if (getMaxGroupCount() < group.getGroupCount()) {
@@ -236,26 +236,27 @@ public class UIForm extends UIAbstractPageObject
                         this.elements.add(new Element(UIForm.ElementType.CLASSIFICATION, uiclass));
                         addNew = true;
                         this.classified  = true;
-                    } else if (!field.isNoneDisplay(getMode())) {
+                    } else {
                         if (addNew) {
                             formElement = new FormElement();
                             this.elements.add(new Element(UIForm.ElementType.FORM, formElement));
                             addNew = false;
                         }
-                        addCell2FormRow(row, query, field);
+                        if (addCell2FormRow(row, query, field)) {
 
-                        if (field.getRowSpan() > 0) {
-                            rowspan = field.getRowSpan();
-                        }
-                        rowgroupcount--;
-                        if (rowgroupcount < 1) {
-                            rowgroupcount = 1;
-                            if (row.getGroupCount() > 0) {
-                                formElement.addRowModel(row);
-                                row = new FormRow();
-                                if (rowspan > 1) {
-                                    rowspan--;
-                                    row.setRowSpan(true);
+                            if (field.getRowSpan() > 0) {
+                                rowspan = field.getRowSpan();
+                            }
+                            rowgroupcount--;
+                            if (rowgroupcount < 1) {
+                                rowgroupcount = 1;
+                                if (row.getGroupCount() > 0) {
+                                    formElement.addRowModel(row);
+                                    row = new FormRow();
+                                    if (rowspan > 1) {
+                                        rowspan--;
+                                        row.setRowSpan(true);
+                                    }
                                 }
                             }
                         }
@@ -310,11 +311,12 @@ public class UIForm extends UIAbstractPageObject
      * @param _query query containing the values
      * @param _field field the cell belongs to
      * @throws EFapsException on error
+     * @return true if the cell was actually added, else false
      */
-    private void addCell2FormRow(final FormRow _row, final ListQuery _query, final Field _field)
+    private boolean addCell2FormRow(final FormRow _row, final ListQuery _query, final Field _field)
             throws EFapsException
     {
-
+        boolean ret = true;
         Attribute attr = null;
         if (_field.getExpression() != null) {
             attr = _query.getAttribute(_field.getExpression());
@@ -336,16 +338,27 @@ public class UIForm extends UIAbstractPageObject
         } else {
             fieldInstance = getInstance();
         }
-
-        // fieldset
-        if (_field instanceof FieldSet) {
-            evaluateFieldSet(_row, _query, _field, fieldInstance, label);
-        } else if (_field instanceof FieldCommand) {
-            final UIFormCellCmd fieldCmd = new UIFormCellCmd(this, (FieldCommand) _field, fieldInstance, label);
-            _row.add(fieldCmd);
+        if (_field.isHiddenDisplay(getMode())) {
+            Object value = null;
+            if (_field.getExpression() != null) {
+                value = _query.get(_field.getExpression());
+            }
+            final FieldValue fieldvalue = new FieldValue(_field, attr, value, fieldInstance);
+            final String strValue = fieldvalue.getHiddenHtml(getMode(), getInstance(), null);
+            addHidden(new UIHiddenCell(this, fieldvalue, null, strValue));
+            ret = false;
         } else {
-            evaluateField(_row, _query, _field, fieldInstance, label, attr);
+            // fieldset
+            if (_field instanceof FieldSet) {
+                evaluateFieldSet(_row, _query, _field, fieldInstance, label);
+            } else if (_field instanceof FieldCommand) {
+                final UIFormCellCmd fieldCmd = new UIFormCellCmd(this, (FieldCommand) _field, fieldInstance, label);
+                _row.add(fieldCmd);
+            } else {
+                evaluateField(_row, _query, _field, fieldInstance, label, attr);
+            }
         }
+        return ret;
     }
 
     /**
