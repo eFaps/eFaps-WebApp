@@ -49,10 +49,10 @@ import org.efaps.admin.ui.field.FieldSet;
 import org.efaps.admin.ui.field.FieldTable;
 import org.efaps.db.Instance;
 import org.efaps.db.ListQuery;
-import org.efaps.ui.wicket.models.cell.UIHiddenCell;
 import org.efaps.ui.wicket.models.cell.UIFormCell;
 import org.efaps.ui.wicket.models.cell.UIFormCellCmd;
 import org.efaps.ui.wicket.models.cell.UIFormCellSet;
+import org.efaps.ui.wicket.models.cell.UIHiddenCell;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 
@@ -176,6 +176,7 @@ public class UIForm extends UIAbstractPageObject
     /**
      * Method is used to execute the UIForm. (Fill it with data).
      */
+    @Override
     public void execute()
     {
         try {
@@ -442,10 +443,14 @@ public class UIForm extends UIAbstractPageObject
         final FieldValue fieldvalue = new FieldValue(_field, _attr, value, _fieldInstance);
 
         String strValue = null;
-        if (isEditMode() && _field.isEditableDisplay(getMode())) {
-            strValue = fieldvalue.getEditHtml(getMode(), getInstance(), null);
-        } else if (_field.isReadonlyDisplay(getMode())) {
-            strValue = fieldvalue.getReadOnlyHtml(getMode(), getInstance(), null);
+        if (isPrintMode()) {
+            strValue = fieldvalue.getStringValue(getMode(), getInstance(), null);
+        } else {
+            if (isEditMode() && _field.isEditableDisplay(getMode())) {
+                strValue = fieldvalue.getEditHtml(getMode(), getInstance(), null);
+            } else if (_field.isReadonlyDisplay(getMode())) {
+                strValue = fieldvalue.getReadOnlyHtml(getMode(), getInstance(), null);
+            }
         }
         if (strValue != null && !this.fileUpload) {
             final String tmp = strValue.replaceAll(" ", "");
@@ -540,13 +545,17 @@ public class UIForm extends UIAbstractPageObject
 
                     String strValue = null;
                     boolean hidden = false;
-                    if ((isCreateMode() || isSearchMode()) && field.isEditableDisplay(getMode())) {
-                        strValue = fieldvalue.getEditHtml(getMode(), getInstance(), null);
-                    } else if (field.isHiddenDisplay(getMode())) {
-                        strValue = fieldvalue.getHiddenHtml(getMode(), getInstance(), null);
-                        hidden = true;
+                    if (isPrintMode()) {
+                        strValue = fieldvalue.getStringValue(getMode(), getInstance(), null);
                     } else {
-                        strValue = fieldvalue.getReadOnlyHtml(getMode(), getInstance(), null);
+                        if ((isCreateMode() || isSearchMode()) && field.isEditableDisplay(getMode())) {
+                            strValue = fieldvalue.getEditHtml(getMode(), getInstance(), null);
+                        } else if (field.isHiddenDisplay(getMode())) {
+                            strValue = fieldvalue.getHiddenHtml(getMode(), getInstance(), null);
+                            hidden = true;
+                        } else {
+                            strValue = fieldvalue.getReadOnlyHtml(getMode(), getInstance(), null);
+                        }
                     }
 
                     final String attrTypeName = attr != null ? attr.getAttributeType().getName() : null;

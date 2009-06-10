@@ -474,4 +474,14 @@ public class UIMenuItem extends AbstractUIObject
 
     }
 
+    /**
+     * @see org.efaps.ui.wicket.models.objects.AbstractUIObject#execute()
+     */
+    @Override
+    public void execute()
+    {
+        // TODO Auto-generated method stub
+
+    }
+
 }

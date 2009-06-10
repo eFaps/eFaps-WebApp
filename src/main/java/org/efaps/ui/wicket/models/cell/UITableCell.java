@@ -102,7 +102,7 @@ public class UITableCell extends UIAbstractCell
 
         this.compareValue = _fieldValue.getObject4Compare();
         this.fixedWidth = _fieldValue.getField().isFixedWidth();
-        this.cellTitle = _parent.isCreateMode() ? "" : _cellvalue;
+        this.cellTitle = _parent.isCreateMode() ? "" : _fieldValue.getStringValue(_parent.getMode(), null, _instance);
         this.icon = _icon;
         this.autoComplete = _fieldValue.getField().hasEvents(EventType.UI_FIELD_AUTOCOMPLETE);
         this.fieldUpdate = _fieldValue.getField().hasEvents(EventType.UI_FIELD_UPDATE);
@@ -157,7 +157,7 @@ public class UITableCell extends UIAbstractCell
      */
     public String getCellTitle()
     {
-        return this.cellTitle;
+        return this.cellTitle == null ? "" : this.cellTitle;
     }
 
     /**

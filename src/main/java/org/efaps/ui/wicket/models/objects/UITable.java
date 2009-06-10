@@ -258,6 +258,7 @@ public class UITable extends UIAbstractPageObject
     /**
      * Method is used to execute the UIForm. (Fill it with data).
      */
+    @Override
     public void execute()
     {
         try {
@@ -453,13 +454,18 @@ public class UITable extends UIAbstractPageObject
                 }
 
                 final FieldValue fieldvalue = new FieldValue(field, attr, value, instance);
-                if ((isCreateMode() || isEditMode()) && field.isEditableDisplay(getMode())) {
-                    strValue = fieldvalue.getEditHtml(getMode(), getInstance(), instance);
-                } else if (field.isHiddenDisplay(getMode())) {
-                    strValue = fieldvalue.getHiddenHtml(getMode(), getInstance(), instance);
+                if (isPrintMode()) {
+                    strValue = fieldvalue.getStringValue(getMode(), getInstance(), instance);
                 } else {
-                    strValue = fieldvalue.getReadOnlyHtml(getMode(), getInstance(), instance);
+                    if ((isCreateMode() || isEditMode()) && field.isEditableDisplay(getMode())) {
+                        strValue = fieldvalue.getEditHtml(getMode(), getInstance(), instance);
+                    } else if (field.isHiddenDisplay(getMode())) {
+                        strValue = fieldvalue.getHiddenHtml(getMode(), getInstance(), instance);
+                    } else {
+                        strValue = fieldvalue.getReadOnlyHtml(getMode(), getInstance(), instance);
+                    }
                 }
+
                 if (strValue == null) {
                     strValue = "";
                 }

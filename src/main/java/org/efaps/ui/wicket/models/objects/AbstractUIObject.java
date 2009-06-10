@@ -241,6 +241,8 @@ public abstract class AbstractUIObject extends AbstractInstanceObject
         return getCommand().hasEvents(EventType.UI_INSTANCEMANAGER);
     }
 
+    public abstract void execute();
+
     /**
      * This Method resets the Model, so that the next time the Model is going to
      * be connected, the underlying Data will be received newly from the
@@ -503,6 +505,10 @@ public abstract class AbstractUIObject extends AbstractInstanceObject
     public boolean isViewMode()
     {
         return getMode() == TargetMode.VIEW || getMode() == TargetMode.UNKNOWN;
+    }
+
+    public boolean isPrintMode() {
+        return getMode() == TargetMode.PRINT;
     }
 
     /**
