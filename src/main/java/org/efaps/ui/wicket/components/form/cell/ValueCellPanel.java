@@ -101,6 +101,7 @@ public class ValueCellPanel extends Panel
             } else {
                 if (uiFormCell.isAutoComplete() && (_formmodel.isCreateMode() || _formmodel.isSearchMode())) {
                     this.add(new AutoCompleteField("label", _model, true));
+                    this.add(new WebComponent("valuePicker").setVisible(false));
                 } else {
                     if (uiFormCell.isValuePicker() && uiFormCell.getDisplay().equals(Display.EDITABLE)) {
                         final Value4Picker value = new Value4Picker("label", _model);
