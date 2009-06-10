@@ -24,19 +24,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.efaps.admin.datamodel.ui.FieldValue;
-import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
-import org.efaps.admin.event.Return.ReturnValues;
-import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Menu;
-import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.admin.ui.field.Field;
-import org.efaps.admin.ui.field.Field.Display;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
-import org.efaps.ui.wicket.models.AbstractInstanceObject;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.util.EFapsException;
 
@@ -48,7 +42,7 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id:CellModel.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class UITableCell extends AbstractInstanceObject
+public class UITableCell extends UIAbstractCell
 {
     /**
      * Needed for serialization.
@@ -68,19 +62,9 @@ public class UITableCell extends AbstractInstanceObject
     private final Object compareValue;
 
     /**
-     * Variable storing the string representation of the value. of the field.
-     */
-    private final String cellValue;
-
-    /**
      * instance variable storing the icon of the field.
      */
     private final String icon;
-
-    /**
-     * instance variable storing the target of the field.
-     */
-    private final Target target;
 
     /**
      * instance variable storing if the cell is fixed width.
@@ -88,19 +72,8 @@ public class UITableCell extends AbstractInstanceObject
     private final boolean fixedWidth;
 
     /**
-     * Instance variable storing the name of the field.
+     * Title for the cell. Will be e.g rendered as title in a div.
      */
-    private final String name;
-
-    /**
-     * Stores the underlying user interface class for this cell.
-     */
-    private final UIInterface uiClass;
-
-    private final long fieldId;
-
-    private final AbstractUIObject parent;
-
     private final String cellTitle;
 
     /**
@@ -112,8 +85,6 @@ public class UITableCell extends AbstractInstanceObject
      * Stores if the field has an esjp used for the update of other fields.
      */
     private final boolean fieldUpdate;
-
-    private final Display display;
 
     /**
      * Constructor.
@@ -127,26 +98,20 @@ public class UITableCell extends AbstractInstanceObject
     public UITableCell(final AbstractUIObject _parent, final FieldValue _fieldValue, final Instance _instance,
                        final String _cellvalue, final String _icon) throws EFapsException
     {
-        super(_instance == null ? null : _instance.getKey());
-        this.parent = _parent;
-        this.uiClass = _fieldValue.getClassUI();
+        super(_parent, _fieldValue, _instance == null ? null : _instance.getKey(), _cellvalue);
+
         this.compareValue = _fieldValue.getObject4Compare();
-        this.target = _fieldValue.getField().getTarget();
-        this.name = _fieldValue.getField().getName();
         this.fixedWidth = _fieldValue.getField().isFixedWidth();
-        this.cellValue = _cellvalue;
         this.cellTitle = _parent.isCreateMode() ? "" : _cellvalue;
         this.icon = _icon;
-        this.fieldId = _fieldValue.getField().getId();
         this.autoComplete = _fieldValue.getField().hasEvents(EventType.UI_FIELD_AUTOCOMPLETE);
         this.fieldUpdate = _fieldValue.getField().hasEvents(EventType.UI_FIELD_UPDATE);
-        this.display = _fieldValue.getField().getDisplay(_parent.getMode());
 
         // check if the user has access to the typemenu, if not set the reference to null
         if (_fieldValue.getField().getReference() != null) {
             if (getInstanceKey() != null) {
                 final Menu menu = Menu.getTypeTreeMenu(_instance.getType());
-                if (menu != null && menu.hasAccess(this.parent.getMode())) {
+                if (menu != null && menu.hasAccess(getParent().getMode())) {
                     this.reference = _fieldValue.getField().getReference();
                 }
             }
@@ -186,16 +151,6 @@ public class UITableCell extends AbstractInstanceObject
     }
 
     /**
-     * This is the getter method for the instance variable {@link #cellvalue}.
-     *
-     * @return value of instance variable {@link #cellvalue}
-     */
-    public String getCellValue()
-    {
-        return this.cellValue;
-    }
-
-    /**
      * This is the getter method for the instance variable {@link #cellTitle}.
      *
      * @return value of instance variable {@link #cellTitle}
@@ -214,17 +169,6 @@ public class UITableCell extends AbstractInstanceObject
     public String getIcon()
     {
         return this.icon;
-    }
-
-    /**
-     * This is the getter method for the instance variable {@link #target}.
-     *
-     * @return value of instance variable {@link #target}
-     */
-
-    public Target getTarget()
-    {
-        return this.target;
     }
 
     /**
@@ -247,41 +191,6 @@ public class UITableCell extends AbstractInstanceObject
         return this.reference.contains("/servlet/checkout");
     }
 
-    /**
-     * This is the getter method for the instance variable {@link #name}.
-     *
-     * @return value of instance variable {@link #name}
-     */
-    public String getName()
-    {
-        return this.name;
-    }
-
-    /**
-     * This is the getter method for the instance variable {@link #uiClass}.
-     *
-     * @return value of instance variable {@link #uiClass}
-     */
-    public UIInterface getUiClass()
-    {
-        return this.uiClass;
-    }
-
-    /**
-     * Getter method for instance variable {@link #fieldId}.
-     *
-     * @return value of instance variable {@link #fieldId}
-     */
-    public long getFieldId()
-    {
-        return this.fieldId;
-    }
-
-    public Field getField()
-    {
-        return Field.get(this.fieldId);
-    }
-
     public List<Return> executeEvents(final Object _others, final EventType _eventType) throws EFapsException
     {
         List<Return> ret = new ArrayList<Return>();
@@ -294,16 +203,6 @@ public class UITableCell extends AbstractInstanceObject
                             _others, ParameterValues.PARAMETERS, context.getParameters(), ParameterValues.CLASS, this);
         }
         return ret;
-    }
-
-    /**
-     * Getter method for instance variable {@link #display}.
-     *
-     * @return value of instance variable {@link #display}
-     */
-    public Display getDisplay()
-    {
-        return this.display;
     }
 
     /**
@@ -336,33 +235,5 @@ public class UITableCell extends AbstractInstanceObject
             throws EFapsException
     {
         return executeEvents(_others, EventType.UI_FIELD_UPDATE);
-    }
-
-    /**
-     * @see org.efaps.ui.wicket.models.AbstractInstanceObject#getInstanceFromManager()
-     * @return
-     * @throws EFapsException
-     */
-    @Override
-    public Instance getInstanceFromManager() throws EFapsException
-    {
-        Instance ret = null;
-        if (this.parent != null) {
-            final AbstractCommand cmd = this.parent.getCommand();
-            final List<Return> rets = cmd.executeEvents(EventType.UI_INSTANCEMANAGER, ParameterValues.OTHERS,
-                            getInstanceKey(), ParameterValues.PARAMETERS, Context.getThreadContext().getParameters());
-            ret = (Instance) rets.get(0).get(ReturnValues.VALUES);
-        }
-        return ret;
-    }
-
-    /**
-     * @see org.efaps.ui.wicket.models.AbstractInstanceObject#hasInstanceManager()
-     * @return false
-     */
-    @Override
-    public boolean hasInstanceManager()
-    {
-        return this.parent != null ? this.parent.hasInstanceManager() : false;
     }
 }

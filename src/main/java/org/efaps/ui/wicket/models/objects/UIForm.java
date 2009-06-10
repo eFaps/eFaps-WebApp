@@ -49,6 +49,7 @@ import org.efaps.admin.ui.field.FieldSet;
 import org.efaps.admin.ui.field.FieldTable;
 import org.efaps.db.Instance;
 import org.efaps.db.ListQuery;
+import org.efaps.ui.wicket.models.cell.UIHiddenCell;
 import org.efaps.ui.wicket.models.cell.UIFormCell;
 import org.efaps.ui.wicket.models.cell.UIFormCellCmd;
 import org.efaps.ui.wicket.models.cell.UIFormCellSet;
@@ -62,7 +63,7 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class UIForm extends AbstractUIObject
+public class UIForm extends UIAbstractPageObject
 {
 
     /**
@@ -499,9 +500,9 @@ public class UIForm extends AbstractUIObject
             if (field.hasAccess(getMode()) && !field.isNoneDisplay(getMode())) {
                 if (field instanceof FieldGroup) {
                     final FieldGroup group = (FieldGroup) field;
-                        if (getMaxGroupCount() < group.getGroupCount()) {
-                            setMaxGroupCount(group.getGroupCount());
-                        }
+                    if (getMaxGroupCount() < group.getGroupCount()) {
+                        setMaxGroupCount(group.getGroupCount());
+                    }
                     rowgroupcount = group.getGroupCount();
                 } else if (field instanceof FieldHeading) {
                     this.elements.add(new Element(UIForm.ElementType.HEADING, new UIHeading((FieldHeading) field)));
@@ -538,40 +539,46 @@ public class UIForm extends AbstractUIObject
                                     super.isWizardCall() ? getValue4Wizard(field.getName()) : null, fieldInstance);
 
                     String strValue = null;
-                    if (isCreateMode() || isSearchMode()) {
+                    boolean hidden = false;
+                    if ((isCreateMode() || isSearchMode()) && field.isEditableDisplay(getMode())) {
                         strValue = fieldvalue.getEditHtml(getMode(), getInstance(), null);
-                    } else if (isViewMode()) {
+                    } else if (field.isHiddenDisplay(getMode())) {
+                        strValue = fieldvalue.getHiddenHtml(getMode(), getInstance(), null);
+                        hidden = true;
+                    } else {
                         strValue = fieldvalue.getReadOnlyHtml(getMode(), getInstance(), null);
                     }
-                    final String attrTypeName = attr != null ? attr.getAttributeType().getName() : null;
 
-                    final UIFormCell cell;
-                    if (field instanceof FieldCommand) {
-                        cell = new UIFormCellCmd(this, (FieldCommand) field, null, label);
+                    final String attrTypeName = attr != null ? attr.getAttributeType().getName() : null;
+                    if (hidden) {
+                        addHidden(new UIHiddenCell(this, fieldvalue, null, strValue));
                     } else {
-                        cell = new UIFormCell(this, fieldvalue, strValue, label, attrTypeName);
-                        if (isSearchMode()) {
-                            cell.setReference(null);
-                        } else if (strValue != null && !this.fileUpload) {
-                            final String tmp = strValue.replaceAll(" ", "");
-                            if (tmp.toLowerCase().contains("type=\"file\"")) {
-                                this.fileUpload = true;
+                        final UIFormCell cell;
+                        if (field instanceof FieldCommand) {
+                            cell = new UIFormCellCmd(this, (FieldCommand) field, null, label);
+                        } else {
+                            cell = new UIFormCell(this, fieldvalue, strValue, label, attrTypeName);
+                            if (isSearchMode()) {
+                                cell.setReference(null);
+                            } else if (strValue != null && !this.fileUpload) {
+                                final String tmp = strValue.replaceAll(" ", "");
+                                if (tmp.toLowerCase().contains("type=\"file\"")) {
+                                    this.fileUpload = true;
+                                }
                             }
                         }
-                    }
-
-                    row.add(cell);
-                    rowgroupcount--;
-                    if (rowgroupcount < 1) {
-                        rowgroupcount = 1;
-                        if (row.getGroupCount() > 0) {
-                            formelement.addRowModel(row);
-                            row = new FormRow();
+                        row.add(cell);
+                        rowgroupcount--;
+                        if (rowgroupcount < 1) {
+                            rowgroupcount = 1;
+                            if (row.getGroupCount() > 0) {
+                                formelement.addRowModel(row);
+                                row = new FormRow();
+                            }
                         }
                     }
                 }
             }
-
         }
     }
 

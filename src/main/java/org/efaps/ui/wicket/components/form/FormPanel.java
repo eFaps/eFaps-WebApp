@@ -32,8 +32,10 @@ import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.ui.wicket.components.FormContainer;
+import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.form.row.RowPanel;
 import org.efaps.ui.wicket.models.FormRowModel;
+import org.efaps.ui.wicket.models.cell.UIHiddenCell;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIForm.FormElement;
 import org.efaps.ui.wicket.models.objects.UIForm.FormRow;
@@ -100,10 +102,18 @@ public class FormPanel extends Panel
         this.add(rowRepeater);
 
         for (final FormRow rowmodel : _formelementmodel.getRowModels()) {
-
             final RowPanel row = new RowPanel(rowRepeater.newChildId(), new FormRowModel(rowmodel), uiForm, _page,
-                            this, _form);
+                                              this, _form);
             rowRepeater.add(row);
+        }
+
+        final RepeatingView hiddenRepeater = new RepeatingView("hiddenRepeater");
+        this.add(hiddenRepeater);
+        for (final UIHiddenCell cell : uiForm.getHiddenCells()) {
+            if (!cell.isAdded()) {
+                hiddenRepeater.add(new LabelComponent(hiddenRepeater.newChildId(), cell.getCellValue()));
+                cell.setAdded(true);
+            }
         }
     }
 

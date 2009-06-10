@@ -60,7 +60,7 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class UITable extends AbstractUIObject
+public class UITable extends UIAbstractPageObject
 {
 
     /**
