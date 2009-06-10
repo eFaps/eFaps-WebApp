@@ -66,7 +66,7 @@
       <fo:table-column column-width="25%" />
       <fo:table-column column-width="25%" />
       <fo:table-body>
-        <xsl:for-each select="/eFaps/form/f_row">
+        <xsl:for-each select=".//f_row">
           <fo:table-row>
             <xsl:for-each select="f_cell">
               <fo:table-cell>
@@ -136,7 +136,7 @@
           </fo:table-row>
         </fo:table-header>
 
-        <xsl:if test="count(/eFaps/table/t_body) &lt; 1">
+        <xsl:if test="count(.//t_body) &lt; 1">
           <fo:table-body>
             <fo:table-row>
               <fo:table-cell>
