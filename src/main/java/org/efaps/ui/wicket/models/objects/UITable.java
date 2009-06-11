@@ -327,18 +327,20 @@ public class UITable extends UIAbstractPageObject
                     attr = type.getAttribute(field.getExpression());
                 }
                 final FieldValue fieldvalue = new FieldValue(field, attr, null, null);
-                String strValue;
+                String htmlValue;
+                String htmlTitle = null;
                 if (isCreateMode() && field.isEditableDisplay(getMode())) {
-                    strValue = fieldvalue.getEditHtml(getMode(), getInstance(), null);
+                    htmlValue = fieldvalue.getEditHtml(getMode(), getInstance(), null);
                 } else if (field.isHiddenDisplay(getMode())) {
-                    strValue = fieldvalue.getHiddenHtml(getMode(), getInstance(), null);
+                    htmlValue = fieldvalue.getHiddenHtml(getMode(), getInstance(), null);
                 } else {
-                    strValue = fieldvalue.getReadOnlyHtml(getMode(), getInstance(), null);
+                    htmlValue = fieldvalue.getReadOnlyHtml(getMode(), getInstance(), null);
+                    htmlTitle = fieldvalue.getStringValue(getMode(), getInstance(), null);
                 }
-                if (strValue == null) {
-                    strValue = "";
+                if (htmlValue == null) {
+                    htmlValue = "";
                 }
-                final UITableCell cell = new UITableCell(this, fieldvalue, null, strValue, null);
+                final UITableCell cell = new UITableCell(this, fieldvalue, null, htmlValue, htmlTitle, null);
                 row.add(cell);
             }
         }
@@ -454,6 +456,7 @@ public class UITable extends UIAbstractPageObject
                 }
 
                 final FieldValue fieldvalue = new FieldValue(field, attr, value, instance);
+                String htmlTitle = null;
                 if (isPrintMode()) {
                     strValue = fieldvalue.getStringValue(getMode(), getInstance(), instance);
                 } else {
@@ -463,6 +466,7 @@ public class UITable extends UIAbstractPageObject
                         strValue = fieldvalue.getHiddenHtml(getMode(), getInstance(), instance);
                     } else {
                         strValue = fieldvalue.getReadOnlyHtml(getMode(), getInstance(), instance);
+                        htmlTitle = fieldvalue.getStringValue(getMode(), getInstance(), instance);
                     }
                 }
 
@@ -486,7 +490,7 @@ public class UITable extends UIAbstractPageObject
                         }
                     }
                 }
-                row.add(new UITableCell(this, fieldvalue, instance, strValue, icon));
+                row.add(new UITableCell(this, fieldvalue, instance, strValue, htmlTitle, icon));
             }
             this.values.add(row);
         }

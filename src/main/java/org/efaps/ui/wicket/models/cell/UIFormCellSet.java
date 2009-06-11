@@ -66,7 +66,7 @@ public class UIFormCellSet extends UIFormCell {
                        final String _value, final String _icon,
                        final String _label, final boolean _edit)
       throws EFapsException {
-    super(_parent, _fieldValue, _instance, _value, _icon, _label, "");
+    super(_parent, _fieldValue, _instance, _value, null, _icon, _label, "");
     this.editMode = _edit;
   }
 

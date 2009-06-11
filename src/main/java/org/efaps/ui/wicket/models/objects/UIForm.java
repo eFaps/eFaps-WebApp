@@ -481,7 +481,7 @@ public class UIForm extends UIAbstractPageObject
             }
             final String uiType = (_attr != null) ? _attr.getAttributeType().getName() : "";
 
-            _row.add(new UIFormCell(this, fieldvalue, _fieldInstance, strValue, icon, _label, uiType));
+            _row.add(new UIFormCell(this, fieldvalue, _fieldInstance, strValue, null, icon, _label, uiType));
         }
     }
 
@@ -579,7 +579,7 @@ public class UIForm extends UIAbstractPageObject
                         if (field instanceof FieldCommand) {
                             cell = new UIFormCellCmd(this, (FieldCommand) field, null, label);
                         } else {
-                            cell = new UIFormCell(this, fieldvalue, strValue, label, attrTypeName);
+                            cell = new UIFormCell(this, fieldvalue, strValue, null, label, attrTypeName);
                             if (isSearchMode()) {
                                 cell.setReference(null);
                             } else if (strValue != null && !this.fileUpload) {

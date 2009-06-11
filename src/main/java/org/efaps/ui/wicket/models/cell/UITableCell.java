@@ -91,18 +91,19 @@ public class UITableCell extends UIAbstractCell
      * @param _parent       parent ui object
      * @param _fieldValue   FieldValue
      * @param _cellvalue    Value for the cell
+     * @param _cellTitle    title for the cell, if null will be set to _cellvalue
      * @param _icon         icon of the cell
      * @param _instance     Instance
      * @throws EFapsException on error
      */
     public UITableCell(final AbstractUIObject _parent, final FieldValue _fieldValue, final Instance _instance,
-                       final String _cellvalue, final String _icon) throws EFapsException
+                       final String _cellvalue, final String _cellTitle, final String _icon) throws EFapsException
     {
         super(_parent, _fieldValue, _instance == null ? null : _instance.getKey(), _cellvalue);
 
         this.compareValue = _fieldValue.getObject4Compare();
         this.fixedWidth = _fieldValue.getField().isFixedWidth();
-        this.cellTitle = _parent.isCreateMode() ? "" : _fieldValue.getStringValue(_parent.getMode(), null, _instance);
+        this.cellTitle = _cellTitle == null ? _cellvalue : _cellTitle;
         this.icon = _icon;
         this.autoComplete = _fieldValue.getField().hasEvents(EventType.UI_FIELD_AUTOCOMPLETE);
         this.fieldUpdate = _fieldValue.getField().hasEvents(EventType.UI_FIELD_UPDATE);
