@@ -24,6 +24,7 @@ import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow.WindowClosedCallback;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 
@@ -124,7 +125,7 @@ public class FooterPanel extends Panel
 
         String label = null;
         String closelabelkey = "Cancel";
-        if (uiObject.hasTargetCommand()) {
+        if (uiObject.hasTargetCmd()) {
             label = uiObject.getCommand().getLabelProperty();
         } else if (uiObject.isCreateMode()) {
             label = getLabel(uiObject.getCommand().getName(), "Create");
@@ -140,7 +141,7 @@ public class FooterPanel extends Panel
             _form.add(new UploadBehavior(this.modalWindow));
         }
 
-        if (uiObject.hasTargetCommand()) {
+        if (uiObject.hasTargetCmd()) {
             final Button button = new Button("createeditsearch",
                                              new AjaxSubmitCloseLink(Button.LINKID, uiObject, _form),
                                              label, Button.ICON_NEXT);
@@ -168,6 +169,15 @@ public class FooterPanel extends Panel
         } else {
             add(new Button("cancel", new AjaxCancelLink(Button.LINKID), getLabel(uiObject.getCommand().getName(),
                             closelabelkey), Button.ICON_CANCEL));
+        }
+
+        if (uiObject.isPartOfWizardCall() && uiObject.isRenderRevise()) {
+            label = getLabel(uiObject.getCommand().getName(), "Revise");
+            final Button prev = new Button("prev", new AjaxReviseLink(Button.LINKID, uiObject),
+                                           label, Button.ICON_PREVIOUS);
+            this.add(prev);
+        } else  {
+            add(new WebMarkupContainer("prev").setVisible(false));
         }
     }
 

@@ -53,7 +53,6 @@ public abstract class UIAbstractPageObject extends AbstractUIObject
     /**
      * This instance variable stores the UUID of the CommandAbstract that is
      * the target of this Page.
-     *
      */
     private UUID targetCmdUUID;
 
@@ -66,6 +65,16 @@ public abstract class UIAbstractPageObject extends AbstractUIObject
      * Is this uiobject used in a wizard call.
      */
     private boolean partOfWizardCall;
+
+    /**
+     * Should the target of this object render a butto for revise.
+     */
+    private boolean targetCmdRevise;
+
+    /**
+     * Should a revise button be rendered.
+     */
+    private boolean renderRevise = false;
 
     /**
      * Constructor evaluating the UUID for the command and the oid from an
@@ -91,7 +100,9 @@ public abstract class UIAbstractPageObject extends AbstractUIObject
         if (_commandUUID != null) {
             final AbstractCommand cmd = getCommand();
             if (cmd.getTargetCommand() != null) {
-                this.targetCmdUUID = cmd.getTargetCommand().getUUID();
+                final AbstractCommand trgCmd = cmd.getTargetCommand();
+                this.targetCmdUUID = trgCmd.getUUID();
+                this.targetCmdRevise = trgCmd.isTargetCmdRevise();
             }
         }
     }
@@ -134,7 +145,7 @@ public abstract class UIAbstractPageObject extends AbstractUIObject
      * @see #targetCmdUUID
      * @return the calling CommandAbstract
      */
-    public AbstractCommand getTargetCommand()
+    public AbstractCommand getTargetCmd()
     {
         AbstractCommand cmd = Command.get(this.targetCmdUUID);
         if (cmd == null) {
@@ -168,9 +179,29 @@ public abstract class UIAbstractPageObject extends AbstractUIObject
      * Method returns if this pageobject has a target command.
      * @return true if targetCmdUUID !=null
      */
-    public boolean hasTargetCommand()
+    public boolean hasTargetCmd()
     {
         return this.targetCmdUUID != null;
+    }
+
+    /**
+     * Getter method for instance variable {@link #targetCmdRevise}.
+     *
+     * @return value of instance variable {@link #targetCmdRevise}
+     */
+    public boolean isTargetCmdRevise()
+    {
+        return this.targetCmdRevise;
+    }
+
+    /**
+     * Setter method for instance variable {@link #targetCmdRevise}.
+     *
+     * @param _targetCmdRevise value for instance variable {@link #targetCmdRevise}
+     */
+    public void setTargetCmdRevise(final boolean _targetCmdRevise)
+    {
+        this.targetCmdRevise = _targetCmdRevise;
     }
 
     /**
@@ -228,6 +259,26 @@ public abstract class UIAbstractPageObject extends AbstractUIObject
             ret = value[0];
         }
         return ret;
+    }
+
+    /**
+     * Getter method for instance variable {@link #renderRevise}.
+     *
+     * @return value of instance variable {@link #renderRevise}
+     */
+    public boolean isRenderRevise()
+    {
+        return this.renderRevise;
+    }
+
+    /**
+     * Setter method for instance variable {@link #renderRevise}.
+     *
+     * @param _renderRevise value for instance variable {@link #renderRevise}
+     */
+    public void setRenderRevise(final boolean _renderRevise)
+    {
+        this.renderRevise = _renderRevise;
     }
 
 }

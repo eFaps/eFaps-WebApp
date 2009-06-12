@@ -162,8 +162,8 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
                     error = true;
                 }
                 if (!error) {
-                    if (this.uiObject.hasTargetCommand()) {
-                        final AbstractCommand targetCmd = this.uiObject.getTargetCommand();
+                    if (this.uiObject.hasTargetCmd()) {
+                        final AbstractCommand targetCmd = this.uiObject.getTargetCmd();
                         UIAbstractPageObject newUIObject;
                         if (targetCmd.getTargetTable() != null) {
                             newUIObject = new UITable(this.uiObject.getTargetCmdUUID(), this.uiObject.getInstanceKey(),
@@ -184,6 +184,7 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
                         wizard.insertBefore(this.uiObject);
                         newUIObject.setWizard(wizard);
                         newUIObject.setPartOfWizardCall(true);
+                        newUIObject.setRenderRevise(this.uiObject.isTargetCmdRevise());
                         if (this.uiObject.isSubmit()) {
                             newUIObject.setSubmit(true);
                             newUIObject.setCallingCommandUUID(this.uiObject.getCallingCommandUUID());

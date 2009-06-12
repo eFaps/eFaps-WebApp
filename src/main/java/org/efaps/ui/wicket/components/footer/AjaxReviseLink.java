@@ -24,12 +24,17 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.model.Model;
 
+import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.FormModel;
+import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.UIAbstractPageObject;
 import org.efaps.ui.wicket.models.objects.UIForm;
+import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.models.objects.UIWizardObject;
+import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
+import org.efaps.ui.wicket.pages.content.table.TablePage;
 
 /**
  * Class renders a Link used on a search result to return to the previous page
@@ -65,10 +70,17 @@ public class AjaxReviseLink extends AjaxLink<AbstractUIObject>
     {
         final UIAbstractPageObject uiobject = (UIAbstractPageObject) getDefaultModelObject();
         final UIWizardObject wizard = uiobject.getWizard();
-        final UIAbstractPageObject newForm = wizard.getPrevious();
-        newForm.setPartOfWizardCall(true);
-        newForm.resetModel();
-        final FormPage page = new FormPage(new FormModel((UIForm) newForm));
+        final UIAbstractPageObject prevObject = wizard.getPrevious();
+        prevObject.setPartOfWizardCall(true);
+        prevObject.resetModel();
+        final FooterPanel footer = findParent(FooterPanel.class);
+        final ModalWindowContainer modal = footer.getModalWindow();
+        final AbstractContentPage page;
+        if (prevObject instanceof UITable) {
+            page = new TablePage(new TableModel((UITable) prevObject), modal);
+        } else {
+            page = new FormPage(new FormModel((UIForm) prevObject), modal);
+        }
         getRequestCycle().setResponsePage(page);
     }
 }
