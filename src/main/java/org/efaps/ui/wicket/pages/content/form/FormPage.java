@@ -80,9 +80,19 @@ public class FormPage extends AbstractContentPage
      */
     public FormPage(final IModel<?> _model)
     {
-        super(_model, null);
+        this(_model, null);
+    }
+
+    /**
+     *  @param _model model for the page
+     * @param _modalWindow modal window
+     */
+    public FormPage(final IModel<?> _model, final ModalWindowContainer _modalWindow)
+    {
+        super(_model, _modalWindow);
         this.addComponents();
     }
+
 
     /**
      * @param _pageMap pagemap to be used

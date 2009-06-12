@@ -43,7 +43,9 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractCommand.Target;
+import org.efaps.db.Context;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.Opener;
 import org.efaps.ui.wicket.behaviors.update.UpdateInterface;
@@ -51,10 +53,14 @@ import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.form.DateFieldWithPicker;
 import org.efaps.ui.wicket.components.form.FormPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
+import org.efaps.ui.wicket.models.FormModel;
 import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
+import org.efaps.ui.wicket.models.objects.UIAbstractPageObject;
 import org.efaps.ui.wicket.models.objects.UIFieldForm;
 import org.efaps.ui.wicket.models.objects.UIForm;
+import org.efaps.ui.wicket.models.objects.UITable;
+import org.efaps.ui.wicket.models.objects.UIWizardObject;
 import org.efaps.ui.wicket.models.objects.UIForm.Element;
 import org.efaps.ui.wicket.models.objects.UIForm.ElementType;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
@@ -83,7 +89,7 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
      * Instance variable storing the model, because the super classes of a
      * behavior, doesn't store the model.
      */
-    private final AbstractUIObject uiObject;
+    private final UIAbstractPageObject uiObject;
 
     /**
      * Instance variable storing the form to be submited.
@@ -96,7 +102,7 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
      * @param _uiobject UUIOBject
      * @param _form form
      */
-    public AjaxSubmitCloseBehavior(final AbstractUIObject _uiobject, final FormContainer _form)
+    public AjaxSubmitCloseBehavior(final UIAbstractPageObject _uiobject, final FormContainer _form)
     {
         super(_form, "onclick");
         this.uiObject = _uiobject;
@@ -156,42 +162,80 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
                     error = true;
                 }
                 if (!error) {
-                    final FooterPanel footer = getComponent().findParent(FooterPanel.class);
-                    // if inside a modal
-                    if (this.uiObject.getCommand().getTarget() == Target.MODAL) {
-                        footer.getModalWindow().setReloadChild(true);
-                        footer.getModalWindow().close(_target);
-                    } else {
-                        final Opener opener = ((EFapsSession) Session.get()).getOpener(this.uiObject.getOpenerId());
-                        // mark the opener that it can be removed
-                        opener.setMarked4Remove(true);
-
-                        Class<? extends Page> clazz;
-                        if (opener.getModel() instanceof TableModel) {
-                            clazz = TablePage.class;
+                    if (this.uiObject.hasTargetCommand()) {
+                        final AbstractCommand targetCmd = this.uiObject.getTargetCommand();
+                        UIAbstractPageObject newUIObject;
+                        if (targetCmd.getTargetTable() != null) {
+                            newUIObject = new UITable(this.uiObject.getTargetCmdUUID(), this.uiObject.getInstanceKey(),
+                                                      this.uiObject.getOpenerId());
                         } else {
-                            clazz = FormPage.class;
+                            newUIObject = new UIForm(this.uiObject.getTargetCmdUUID(), this.uiObject.getInstanceKey(),
+                                                     this.uiObject.getOpenerId());
                         }
 
-                        final PageParameters parameters = new PageParameters();
-                        parameters.add(Opener.OPENER_PARAKEY, this.uiObject.getOpenerId());
+                        final UIWizardObject wizard = new UIWizardObject(newUIObject);
+                        this.uiObject.setWizard(wizard);
+                        try {
+                            wizard.addParameters(this.uiObject, Context.getThreadContext().getParameters());
+                        } catch (final EFapsException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                        wizard.insertBefore(this.uiObject);
+                        newUIObject.setWizard(wizard);
+                        newUIObject.setPartOfWizardCall(true);
+                        if (this.uiObject.isSubmit()) {
+                            newUIObject.setSubmit(true);
+                            newUIObject.setCallingCommandUUID(this.uiObject.getCallingCommandUUID());
+                        }
+                        final FooterPanel footer = getComponent().findParent(FooterPanel.class);
+                        final ModalWindowContainer modal = footer.getModalWindow();
+                        final AbstractContentPage page;
+                        if (targetCmd.getTargetTable() != null) {
+                            page = new TablePage(new TableModel((UITable) newUIObject), modal);
+                        } else {
+                            page = new FormPage(new FormModel((UIForm) newUIObject), modal);
+                        }
+                        page.setMenuTreeKey(((AbstractContentPage) getComponent().getPage()).getMenuTreeKey());
+                        getComponent().getPage().getRequestCycle().setResponsePage(page);
+                    } else {
+                        final FooterPanel footer = getComponent().findParent(FooterPanel.class);
+                        // if inside a modal
+                        if (this.uiObject.getCommand().getTarget() == Target.MODAL) {
+                            footer.getModalWindow().setReloadChild(true);
+                            footer.getModalWindow().close(_target);
+                        } else {
+                            final Opener opener = ((EFapsSession) Session.get()).getOpener(this.uiObject.getOpenerId());
+                            // mark the opener that it can be removed
+                            opener.setMarked4Remove(true);
 
-                        final CharSequence url = this.form.urlFor(PageMap.forName(opener.getPageMapName()), clazz,
-                                        parameters);
+                            Class<? extends Page> clazz;
+                            if (opener.getModel() instanceof TableModel) {
+                                clazz = TablePage.class;
+                            } else {
+                                clazz = FormPage.class;
+                            }
 
-                        _target.appendJavascript("opener.location.href = '" + url + "'; self.close();");
-                    }
-                    footer.setSuccess(true);
+                            final PageParameters parameters = new PageParameters();
+                            parameters.add(Opener.OPENER_PARAKEY, this.uiObject.getOpenerId());
 
-                    // execute the CallBacks
-                    final List<UpdateInterface> updates = ((EFapsSession) getComponent().getSession())
-                                    .getUpdateBehavior(this.uiObject.getInstanceKey());
-                    if (updates != null) {
-                        for (final UpdateInterface update : updates) {
-                            if (update.isAjaxCallback()) {
-                                update.setInstanceKey(this.uiObject.getInstanceKey());
-                                update.setMode(this.uiObject.getMode());
-                                _target.prependJavascript(update.getAjaxCallback());
+                            final CharSequence url = this.form.urlFor(PageMap.forName(opener.getPageMapName()), clazz,
+                                            parameters);
+
+                            _target.appendJavascript("opener.location.href = '" + url + "'; self.close();");
+                        }
+                        footer.setSuccess(true);
+
+                        // execute the CallBacks
+                        final List<UpdateInterface> updates = ((EFapsSession) getComponent().getSession())
+                                        .getUpdateBehavior(this.uiObject.getInstanceKey());
+                        if (updates != null) {
+                            for (final UpdateInterface update : updates) {
+                                if (update.isAjaxCallback()) {
+                                    update.setInstanceKey(this.uiObject.getInstanceKey());
+                                    update.setMode(this.uiObject.getMode());
+                                    _target.prependJavascript(update.getAjaxCallback());
+                                }
                             }
                         }
                     }

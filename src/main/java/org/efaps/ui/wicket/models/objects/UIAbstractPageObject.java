@@ -22,10 +22,14 @@ package org.efaps.ui.wicket.models.objects;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.apache.wicket.PageParameters;
 
+import org.efaps.admin.ui.AbstractCommand;
+import org.efaps.admin.ui.Command;
+import org.efaps.admin.ui.Menu;
 import org.efaps.ui.wicket.models.cell.UIHiddenCell;
 
 /**
@@ -36,13 +40,32 @@ import org.efaps.ui.wicket.models.cell.UIHiddenCell;
  */
 public abstract class UIAbstractPageObject extends AbstractUIObject
 {
-
     /**
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
 
+    /**
+     * A list of cells that will be rendered hidden in tht page.
+     */
     private final List<UIHiddenCell> hiddenCells = new ArrayList<UIHiddenCell>();
+
+    /**
+     * This instance variable stores the UUID of the CommandAbstract that is
+     * the target of this Page.
+     *
+     */
+    private UUID targetCmdUUID;
+
+    /**
+     * Stores a wizard object.
+     */
+    private UIWizardObject wizard;
+
+    /**
+     * Is this uiobject used in a wizard call.
+     */
+    private boolean partOfWizardCall;
 
     /**
      * Constructor evaluating the UUID for the command and the oid from an
@@ -65,6 +88,12 @@ public abstract class UIAbstractPageObject extends AbstractUIObject
     public UIAbstractPageObject(final UUID _commandUUID, final String _instanceKey, final String _openerId)
     {
         super(_commandUUID, _instanceKey, _openerId);
+        if (_commandUUID != null) {
+            final AbstractCommand cmd = getCommand();
+            if (cmd.getTargetCommand() != null) {
+                this.targetCmdUUID = cmd.getTargetCommand().getUUID();
+            }
+        }
     }
 
     /**
@@ -92,8 +121,113 @@ public abstract class UIAbstractPageObject extends AbstractUIObject
      * Method to add a hidden Cell to the list {@link #hiddenCells}.
      * @param _hiddenCell cell to add
      */
-    public void addHidden(final UIHiddenCell _hiddenCell) {
+    public void addHidden(final UIHiddenCell _hiddenCell)
+    {
         this.hiddenCells.add(_hiddenCell);
+    }
+
+    /**
+     * Get the CommandAbstract that is
+     * the target of this Page.
+     *
+     *
+     * @see #targetCmdUUID
+     * @return the calling CommandAbstract
+     */
+    public AbstractCommand getTargetCommand()
+    {
+        AbstractCommand cmd = Command.get(this.targetCmdUUID);
+        if (cmd == null) {
+            cmd = Menu.get(this.targetCmdUUID);
+        }
+        return cmd;
+    }
+
+
+    /**
+     * Getter method for instance variable {@link #targetCmdUUID}.
+     *
+     * @return value of instance variable {@link #targetCmdUUID}
+     */
+    public UUID getTargetCmdUUID()
+    {
+        return this.targetCmdUUID;
+    }
+
+    /**
+     * Setter method for instance variable {@link #targetCmdUUID}.
+     *
+     * @param _targetCmdUUID value for instance variable {@link #targetCmdUUID}
+     */
+    public void setTargetCmdUUID(final UUID _targetCmdUUID)
+    {
+        this.targetCmdUUID = _targetCmdUUID;
+    }
+
+    /**
+     * Method returns if this pageobject has a target command.
+     * @return true if targetCmdUUID !=null
+     */
+    public boolean hasTargetCommand()
+    {
+        return this.targetCmdUUID != null;
+    }
+
+    /**
+     * Getter method for instance variable {@link #wizard}.
+     *
+     * @return value of instance variable {@link #wizard}
+     */
+    public UIWizardObject getWizard()
+    {
+        return this.wizard;
+    }
+
+    /**
+     * Setter method for instance variable {@link #wizard}.
+     *
+     * @param _wizard value for instance variable {@link #wizard}
+     */
+    public void setWizard(final UIWizardObject _wizard)
+    {
+        this.wizard = _wizard;
+    }
+
+    /**
+     * Setter method for instance variable {@link #partOfWizardCall}.
+     *
+     * @param _wizardCall value for instance variable {@link #partOfWizardCall}
+     */
+    public void setPartOfWizardCall(final boolean _wizardCall)
+    {
+        this.partOfWizardCall = _wizardCall;
+    }
+
+    /**
+     * Getter method for instance variable {@link #partOfWizardCall}.
+     *
+     * @return value of instance variable {@link #partOfWizardCall}
+     */
+    public boolean isPartOfWizardCall()
+    {
+        return this.partOfWizardCall;
+    }
+
+    /**
+     * Method to get the value for a key in case of wizard.
+     *
+     * @param _key key for the value
+     * @return value for the object, if found, else null
+     */
+    protected Object getValue4Wizard(final String _key)
+    {
+        Object ret = null;
+        final Map<String, String[]> para = this.wizard.getParameters(this);
+        if (para != null && para.containsKey(_key)) {
+            final String[] value = para.get(_key);
+            ret = value[0];
+        }
+        return ret;
     }
 
 }

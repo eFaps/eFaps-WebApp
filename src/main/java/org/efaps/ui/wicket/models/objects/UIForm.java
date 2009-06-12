@@ -554,7 +554,7 @@ public class UIForm extends UIAbstractPageObject
                     }
                     final Instance fieldInstance = getInstance();
                     final FieldValue fieldvalue = new FieldValue(field, attr,
-                                    super.isWizardCall() ? getValue4Wizard(field.getName()) : null, fieldInstance);
+                                    super.isPartOfWizardCall() ? getValue4Wizard(field.getName()) : null, fieldInstance);
 
                     String strValue = null;
                     boolean hidden = false;

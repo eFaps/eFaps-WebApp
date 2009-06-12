@@ -21,25 +21,34 @@
 package org.efaps.ui.wicket.components.footer;
 
 import org.apache.wicket.markup.html.form.SubmitLink;
+
 import org.efaps.ui.wicket.components.FormContainer;
-import org.efaps.ui.wicket.models.objects.AbstractUIObject;
+import org.efaps.ui.wicket.models.objects.UIAbstractPageObject;
 
 /**
  * Link using Ajax to submit the Form and close the ModalWindow or the PopUp
- * this FooterPanel is imbeded.
+ * this FooterPanel is build in.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public class AjaxSubmitCloseLink extends SubmitLink {
+public class AjaxSubmitCloseLink extends SubmitLink
+{
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
-  private static final long serialVersionUID = 1L;
-
-  public AjaxSubmitCloseLink(final String _wicketid,
-                             final AbstractUIObject _model,
-                             final FormContainer _form) {
-    super(_wicketid, _form);
-    this.add(new AjaxSubmitCloseBehavior(_model, _form));
-    _form.setDefaultSubmit(this);
-  }
+    /**
+     * @param _wicketid     wicket id for this component
+     * @param _modelObject  model object for this component
+     * @param _form         formthis button is in
+     */
+    public AjaxSubmitCloseLink(final String _wicketid, final UIAbstractPageObject _modelObject,
+                               final FormContainer _form)
+    {
+        super(_wicketid, _form);
+        this.add(new AjaxSubmitCloseBehavior(_modelObject, _form));
+        _form.setDefaultSubmit(this);
+    }
 }

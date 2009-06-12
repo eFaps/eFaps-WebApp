@@ -27,6 +27,7 @@ import org.apache.wicket.PageParameters;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.ui.wicket.components.FormContainer;
+import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.table.TablePanel;
 import org.efaps.ui.wicket.components.table.header.HeaderPanel;
 import org.efaps.ui.wicket.models.TableModel;
@@ -65,9 +66,19 @@ public class TablePage extends AbstractContentPage
      */
     public TablePage(final IModel<UITable> _model)
     {
-        super(_model);
+        this(_model, null);
+    }
+
+    /**
+     *  @param _model model for the page
+     * @param _modalWindow modal window
+     */
+    public TablePage(final IModel<?> _model, final ModalWindowContainer _modalWindow)
+    {
+        super(_model, _modalWindow);
         this.addComponents();
     }
+
 
     /**
      * @param _pagemap      pagemap

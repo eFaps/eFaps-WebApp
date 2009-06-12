@@ -31,102 +31,112 @@ import org.apache.wicket.IClusterable;
  * Class is used to create wizard like behavior for a webpage. Meaning that it
  * is possible to go forward and backward in the pages without loosing
  * parameters, which were already given from the user.<br>
- * It contains a list that stores the UIObjects hirachically so that they
- * can be accessed using methods like previous.
+ * It contains a list that stores the UIObjects hyrachical so that they can be
+ * accessed using methods like previous.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public class UIWizardObject implements IClusterable {
+public class UIWizardObject implements IClusterable
+{
 
-  /**
-   * Needed for serialization.
-   */
-  private static final long serialVersionUID = 1L;
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
-  /**
-   * Mapping between UIObject and parameters.
-   */
-  private final Map<AbstractUIObject, Map<String, String[]>> parameters
-                      = new HashMap<AbstractUIObject, Map<String, String[]>>();
+    /**
+     * Mapping between UIObject and parameters.
+     */
+    private final Map<AbstractUIObject, Map<String, String[]>> parameters
+                                                              = new HashMap<AbstractUIObject, Map<String, String[]>>();
 
-  /**
-   * List of UIObjects in this wizard.
-   */
-  private final List<AbstractUIObject> uiObjects
-                                            = new ArrayList<AbstractUIObject>();
+    /**
+     * List of UIObjects in this wizard.
+     */
+    private final List<UIAbstractPageObject> uiObjects = new ArrayList<UIAbstractPageObject>();
 
-  /**
-   * Current UIObject.
-   */
-  private AbstractUIObject current = null;
+    /**
+     * Current UIObject.
+     */
+    private AbstractUIObject current = null;
 
-  /**
-   * Constructor setting the current UIObject.
-   *
-   * @param _uiObject  current UIOBject
-   */
-  public UIWizardObject(final AbstractUIObject _uiObject) {
-    this.uiObjects.add(_uiObject);
-    this.current = _uiObject;
-  }
-
-  /**
-   * Add a UIOBject to the list of objects.
-   * @param _uiObject Object to add
-   */
-  public void add(final AbstractUIObject _uiObject) {
-    this.uiObjects.add(_uiObject);
-  }
-
-  /**
-   * Insert a UIObject before the current one.
-   * @param _uiObject Object to insert
-   */
-  public void insertBefore(final AbstractUIObject _uiObject) {
-    int i = 0;
-    for (final AbstractUIObject uiObject : this.uiObjects) {
-      if (uiObject == this.current) {
-        this.uiObjects.add(i, _uiObject);
-        break;
-      }
-      i++;
+    /**
+     * Constructor setting the current UIObject.
+     *
+     * @param _uiObject current UIOBject
+     */
+    public UIWizardObject(final UIAbstractPageObject _uiObject)
+    {
+        this.uiObjects.add(_uiObject);
+        this.current = _uiObject;
     }
-  }
 
-  /**
-   * Method to get the previous object.
-   * @return previous object
-   */
-  public AbstractUIObject getPrevious() {
-    AbstractUIObject ret = null;
-    for (final AbstractUIObject uiObject : this.uiObjects) {
-      if (uiObject == this.current) {
-        break;
-      } else {
-        ret = uiObject;
-      }
+    /**
+     * Add a UIOBject to the list of objects.
+     *
+     * @param _uiObject Object to add
+     */
+    public void add(final UIAbstractPageObject _uiObject)
+    {
+        this.uiObjects.add(_uiObject);
     }
-    this.current = ret;
-    return ret;
-  }
 
-  /**
-   * Add parameters.
-   * @param _uiObject object used as key
-   * @param _parameters parameters
-   */
-  public void addParameters(final AbstractUIObject _uiObject,
-      final Map<String, String[]> _parameters) {
-    this.parameters.put(_uiObject, _parameters);
-  }
+    /**
+     * Insert a UIObject before the current one.
+     *
+     * @param _uiObject Object to insert
+     */
+    public void insertBefore(final UIAbstractPageObject _uiObject)
+    {
+        int i = 0;
+        for (final AbstractUIObject uiObject : this.uiObjects) {
+            if (uiObject == this.current) {
+                this.uiObjects.add(i, _uiObject);
+                break;
+            }
+            i++;
+        }
+    }
 
-  /**
-   * Get a parameter map from the mapping.
-   * @param _uiObject key fot the parameter map.
-   * @return parameter map
-   */
-  public Map<String, String[]> getParameters(final AbstractUIObject _uiObject) {
-    return this.parameters.get(_uiObject);
-  }
+    /**
+     * Method to get the previous object.
+     *
+     * @return previous object
+     */
+    public UIAbstractPageObject getPrevious()
+    {
+        UIAbstractPageObject ret = null;
+        for (final UIAbstractPageObject uiObject : this.uiObjects) {
+            if (uiObject == this.current) {
+                break;
+            } else {
+                ret = uiObject;
+            }
+        }
+        this.current = ret;
+        return ret;
+    }
+
+    /**
+     * Add parameters.
+     *
+     * @param _uiObject object used as key
+     * @param _parameters parameters
+     */
+    public void addParameters(final AbstractUIObject _uiObject, final Map<String, String[]> _parameters)
+    {
+        this.parameters.put(_uiObject, _parameters);
+    }
+
+    /**
+     * Get a parameter map from the mapping.
+     *
+     * @param _uiObject key fot the parameter map.
+     * @return parameter map
+     */
+    public Map<String, String[]> getParameters(final AbstractUIObject _uiObject)
+    {
+        return this.parameters.get(_uiObject);
+    }
 }

@@ -23,7 +23,6 @@ package org.efaps.ui.wicket.models.objects;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import org.apache.wicket.PageParameters;
@@ -134,16 +133,6 @@ public abstract class AbstractUIObject extends AbstractInstanceObject
      * In case of a form or table the key to the menu tree is stored.
      */
     private String menuTreeKey;
-
-    /**
-     * Stores a wizard object.
-     */
-    private UIWizardObject wizard;
-
-    /**
-     * Is this uiobject used in a wizard call.
-     */
-    private boolean wizardCall;
 
     /**
      * Constructor evaluating the UUID for the command and the oid from an
@@ -630,62 +619,5 @@ public abstract class AbstractUIObject extends AbstractInstanceObject
     public String getMenuTreeKey()
     {
         return this.menuTreeKey;
-    }
-
-    /**
-     * Getter method for instance variable {@link #wizard}.
-     *
-     * @return value of instance variable {@link #wizard}
-     */
-    public UIWizardObject getWizard()
-    {
-        return this.wizard;
-    }
-
-    /**
-     * Setter method for instance variable {@link #wizard}.
-     *
-     * @param _wizard value for instance variable {@link #wizard}
-     */
-    public void setWizard(final UIWizardObject _wizard)
-    {
-        this.wizard = _wizard;
-    }
-
-    /**
-     * Setter method for instance variable {@link #wizardCall}.
-     *
-     * @param _wizardCall value for instance variable {@link #wizardCall}
-     */
-    public void setWizardCall(final boolean _wizardCall)
-    {
-        this.wizardCall = _wizardCall;
-    }
-
-    /**
-     * Getter method for instance variable {@link #wizardCall}.
-     *
-     * @return value of instance variable {@link #wizardCall}
-     */
-    public boolean isWizardCall()
-    {
-        return this.wizardCall;
-    }
-
-    /**
-     * Method to get the value for a key in case of wizard.
-     *
-     * @param _key key for the value
-     * @return value for the object, if found, else null
-     */
-    protected Object getValue4Wizard(final String _key)
-    {
-        Object ret = null;
-        final Map<String, String[]> para = this.wizard.getParameters(this);
-        if (para != null && para.containsKey(_key)) {
-            final String[] value = para.get(_key);
-            ret = value[0];
-        }
-        return ret;
     }
 }
