@@ -24,6 +24,7 @@ import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -56,6 +57,7 @@ public class AjaxAddRemoveRowPanel extends Panel
     private static final EFapsContentReference ICON_DELETE = new EFapsContentReference(AjaxAddRemoveRowPanel.class,
                                                                                        "delete.png");
 
+    private CharSequence script;
     /**
      * Needed for serialization.
      */
@@ -78,23 +80,28 @@ public class AjaxAddRemoveRowPanel extends Panel
         image.setReference(AjaxAddRemoveRowPanel.ICON_ADD);
         link.add(image);
 
-        add(new WebComponent("new")
-        {
+        add(new WebComponent("script") {
+
             /**
              * Needed for serialization.
              */
             private static final long serialVersionUID = 1L;
 
             /**
-             * TODO why not use a parameter in the xml definitions to set the 1??
-             * @see org.apache.wicket.Component#onComponentTag(org.apache.wicket.markup.ComponentTag)
-             * @param _tag
+             * @see org.apache.wicket.Component#onComponentTagBody(org.apache.wicket.markup.MarkupStream, org.apache.wicket.markup.ComponentTag)
+             * @param markupstream
+             * @param componenttag
              */
             @Override
-            protected void onComponentTag(final ComponentTag _tag)
+            protected void onComponentTagBody(final MarkupStream markupstream, final ComponentTag componenttag)
             {
-                super.onComponentTag(_tag);
-                _tag.put("value", 1);
+                super.onComponentTagBody(markupstream, componenttag);
+                final StringBuilder js = new StringBuilder();
+                js.append("<script type=\"text/javascript\">")
+                    .append("function addNewRows(_count, _successHandler) {")
+                    .append(AjaxAddRemoveRowPanel.this.script)
+                    .append("}</script>");
+                replaceComponentTagBody(markupstream, componenttag, js);
             }
         });
     }
@@ -114,7 +121,7 @@ public class AjaxAddRemoveRowPanel extends Panel
         final StaticImageComponent image = new StaticImageComponent("icon");
         image.setReference(AjaxAddRemoveRowPanel.ICON_DELETE);
         link.add(image);
-        add(new WebComponent("new").setVisible(false));
+        add(new WebComponent("script").setVisible(false));
     }
 
     /**
@@ -189,8 +196,9 @@ public class AjaxAddRemoveRowPanel extends Panel
                 @Override
                 protected CharSequence getCallbackScript()
                 {
-                    return generateCallbackScript("wicketAjaxGet('" + getCallbackUrl(false)
-                                    + "&eFapsNewRows=' + document.getElementById('eFapsNewRows').value");
+                    AjaxAddRemoveRowPanel.this.script  = "var w = wicketAjaxGet('" + getCallbackUrl(false)
+                                    + "&eFapsNewRows=' + _count,_successHandler,null,null)";
+                    return "addNewRows(1, null)";
                 }
             });
         }

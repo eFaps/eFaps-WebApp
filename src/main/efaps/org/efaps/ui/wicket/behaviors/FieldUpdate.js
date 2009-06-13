@@ -26,7 +26,7 @@
  */
 
 function eFapsSetFieldValue(_referenceId, _fieldName, _fieldValue ) {
-  // get the position in the field collection of the given reference
+  /* get the position in the field collection of the given reference */
   var refField = document.getElementById(_referenceId);
   var name = refField.getAttribute('name');
   var eFapsFields = document.getElementsByName(name); 
@@ -36,13 +36,13 @@ function eFapsSetFieldValue(_referenceId, _fieldName, _fieldValue ) {
       pos = i; break;
     }
   }
-  // get the field collection
+  /*  get the field collection */
   var fields = document.getElementsByName(_fieldName);
   var cp = 0;
   if (fields.length > 1) {
     var cp = pos;
   }
-  // if it is an input, the value can be set directly, else the dom must be used
+  /*  if it is an input, the value can be set directly, else the dom must be used */
   if (fields[cp].nodeName=='INPUT') {
     fields[cp].value = _fieldValue;
   } else {
