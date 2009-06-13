@@ -20,10 +20,11 @@
 
 package org.efaps.ui.wicket.components.table;
 
+import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
@@ -76,6 +77,26 @@ public class AjaxAddRemoveRowPanel extends Panel
         final StaticImageComponent image = new StaticImageComponent("icon");
         image.setReference(AjaxAddRemoveRowPanel.ICON_ADD);
         link.add(image);
+
+        add(new WebComponent("new")
+        {
+            /**
+             * Needed for serialization.
+             */
+            private static final long serialVersionUID = 1L;
+
+            /**
+             * TODO why not use a parameter in the xml definitions to set the 1??
+             * @see org.apache.wicket.Component#onComponentTag(org.apache.wicket.markup.ComponentTag)
+             * @param _tag
+             */
+            @Override
+            protected void onComponentTag(final ComponentTag _tag)
+            {
+                super.onComponentTag(_tag);
+                _tag.put("value", 1);
+            }
+        });
     }
 
 
@@ -93,12 +114,13 @@ public class AjaxAddRemoveRowPanel extends Panel
         final StaticImageComponent image = new StaticImageComponent("icon");
         image.setReference(AjaxAddRemoveRowPanel.ICON_DELETE);
         link.add(image);
+        add(new WebComponent("new").setVisible(false));
     }
 
     /**
      * Class renders an ajax link that adds a row to the table.
      */
-    public class AjaxAddRow extends AjaxLink<UITable>
+    public class AjaxAddRow extends WebMarkupContainer
     {
         /**
          *Needed for serialization.
@@ -120,35 +142,57 @@ public class AjaxAddRemoveRowPanel extends Panel
         {
             super(_wicketId, _model);
             this.rowsRepeater = _rowsRepeater;
-        }
+            add(new AjaxEventBehavior("onclick")
+            {
+                private static final long serialVersionUID = 1L;
 
-        /**
-         * @see org.apache.wicket.ajax.markup.html.AjaxLink#onClick(org.apache.wicket.ajax.AjaxRequestTarget)
-         * @param _target target
-         */
-        @Override
-        public void onClick(final AjaxRequestTarget _target)
-        {
-            final UITable uitable = (UITable) getDefaultModelObject();
-            final UIRow uirow = uitable.getValues().get(0);
-            final TablePanel tablepanel = this.findParent(TablePanel.class);
-            // create the new repeater item and add it to the repeater
-            final RowPanel row = new RowPanel(this.rowsRepeater.newChildId(), new RowModel(uirow), tablepanel, false);
-            row.add(new SimpleAttributeModifier("class", "eFapsTableRowOdd"));
-            row.setOutputMarkupId(true);
-            this.rowsRepeater.add(row);
-            // first execute javascript which creates a placeholder tag in
-            // markup for this item
-            _target.prependJavascript(String.format("var item=document.createElement('%s');item.id='%s';"
-                   + "Wicket.$('%s').insertBefore(item, Wicket.$('" + AjaxAddRemoveRowPanel.this.getMarkupId() + "'));",
-                         "tr", row.getMarkupId(), tablepanel.getMarkupId()));
+                @Override
+                protected void onEvent(final AjaxRequestTarget _target)
+                {
+                    final String newRows = getComponent().getRequest().getParameter("eFapsNewRows");
+                    final int count = Integer.parseInt(newRows);
+                    final UITable uitable = (UITable) getDefaultModelObject();
+                    final UIRow uirow = uitable.getValues().get(0);
+                    final TablePanel tablepanel = getComponent().findParent(TablePanel.class);
 
-            // notice how we set the newly created item tag's id to that of the newly created
-            // Wicket component, this is what will link this markup tag to Wicket component
-            // during Ajax repaint
+                    for (int i = 0; i < count; i++) {
+                        // create the new repeater item and add it to the repeater
+                        final RowPanel row
+                                        = new RowPanel(AjaxAddRemoveRowPanel.AjaxAddRow.this.rowsRepeater.newChildId(),
+                                                       new RowModel(uirow), tablepanel, false);
+                        row.add(new SimpleAttributeModifier("class", "eFapsTableRowOdd"));
+                        row.setOutputMarkupId(true);
+                        AjaxAddRemoveRowPanel.AjaxAddRow.this.rowsRepeater.add(row);
+                        // first execute javascript which creates a placeholder tag in
+                        // markup for this item
+                        final StringBuilder js = new StringBuilder();
+                        js.append("var item=document.createElement('").append("tr").append("');")
+                            .append("item.id='").append(row.getMarkupId()).append("';")
+                            .append("Wicket.$('").append(tablepanel.getMarkupId())
+                            .append("').insertBefore(item, Wicket.$('")
+                            .append(AjaxAddRemoveRowPanel.this.getMarkupId())
+                            .append("'));");
+                        _target.prependJavascript(js.toString());
+                        // notice how we set the newly created item tag's id to that of the newly created
+                        // Wicket component, this is what will link this markup tag to Wicket component
+                        // during Ajax repaint
 
-            // all thats left is to repaint the new item via Ajax
-            _target.addComponent(row);
+                        // all thats left is to repaint the new item via Ajax
+                        _target.addComponent(row);
+                    }
+                }
+
+                /**
+                 * @see org.apache.wicket.ajax.AbstractDefaultAjaxBehavior#getCallbackScript()
+                 * @return
+                 */
+                @Override
+                protected CharSequence getCallbackScript()
+                {
+                    return generateCallbackScript("wicketAjaxGet('" + getCallbackUrl(false)
+                                    + "&eFapsNewRows=' + document.getElementById('eFapsNewRows').value");
+                }
+            });
         }
     }
 
