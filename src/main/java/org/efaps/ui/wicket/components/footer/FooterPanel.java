@@ -126,7 +126,7 @@ public class FooterPanel extends Panel
         String label = null;
         String closelabelkey = "Cancel";
         if (uiObject.hasTargetCmd()) {
-            label = uiObject.getCommand().getLabelProperty();
+            label = uiObject.getTargetCmd().getLabelProperty();
         } else if (uiObject.isCreateMode()) {
             label = getLabel(uiObject.getCommand().getName(), "Create");
         } else if (uiObject.isEditMode()) {
