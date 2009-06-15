@@ -150,7 +150,7 @@ public class XMLExport
      * @param _mimeType
      * @throws EFapsException
      */
-    public void generateDocument(final MimeTypes _mimeType) throws EFapsException
+    public void generateDocument(final MimeTypes _mimeType, final String _xslResourceName) throws EFapsException
     {
         OutputStream out = null;
         try {
@@ -223,7 +223,9 @@ public class XMLExport
         this.xmlDocument = generateXMLDocument();
         // Generate a XML String
         this.xmlDocument.normalizeDocument();
-        // System.out.print(generateXMLString(this.xmlDocument));
+
+        System.out.print(generateXMLString(this.xmlDocument));
+
         this.fileStoreFolder = getDefaultFileStoreFolder();
         this.fileStoreFolder.mkdirs();
     }
@@ -324,6 +326,7 @@ public class XMLExport
                 final Element fcell = _xmlDoc.createElement(TAG.FORM_CELL.value);
                 frow.appendChild(fcell);
                 fcell.setAttribute("type", "Label");
+                fcell.setAttribute("name", formcellmodel.getName());
 
                 final Element flabel = _xmlDoc.createElement(TAG.VALUE.value);
                 fcell.appendChild(flabel);
@@ -331,6 +334,7 @@ public class XMLExport
 
                 final Element fcellvalue = _xmlDoc.createElement(TAG.FORM_CELL.value);
                 fcellvalue.setAttribute("type", "Value");
+                fcellvalue.setAttribute("name", formcellmodel.getName());
                 fcellvalue.setAttribute("column-span", colspan.toString());
                 frow.appendChild(fcellvalue);
                 final Element value = _xmlDoc.createElement(TAG.VALUE.value);

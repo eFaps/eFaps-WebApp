@@ -21,7 +21,6 @@
 package org.efaps.esjp.ui.xml;
 
 import java.io.File;
-import java.util.HashMap;
 
 import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
@@ -37,7 +36,7 @@ import org.efaps.util.EFapsException;
 /**
  * TODO description!
  *
- * @author jmox
+ * @author The eFasp Team
  * @version $Id$
  */
 @EFapsUUID("fd1ecee1-a882-4fbe-8b3c-5e5c3ed4d6b7")
@@ -45,18 +44,23 @@ import org.efaps.util.EFapsException;
 public class CreateXML implements EventExecution
 {
 
-  public Return execute(final Parameter _parameter) throws EFapsException
-  {
-    final Return ret = new Return();
-    final XMLExport export = new XMLExport(_parameter.get(ParameterValues.OTHERS));
-    final String mimetype =
-        (String) ((HashMap<?, ?>) _parameter.get(ParameterValues.PROPERTIES))
-            .get("MimeType");
+    /**
+     * @see org.efaps.admin.event.EventExecution#execute(org.efaps.admin.event.Parameter)
+     * @param _parameter Parameter
+     * @return return
+     * @throws EFapsException
+     */
+    public Return execute(final Parameter _parameter) throws EFapsException
+    {
+        final Return ret = new Return();
+        final XMLExport export = new XMLExport(_parameter.get(ParameterValues.OTHERS));
 
-    export.generateDocument(MimeTypes.getMimeTypeByEnding(mimetype));
-    final File file = export.getFile();
-    ret.put(ReturnValues.VALUES, file);
+        final String mimetype = _parameter.getParameterValue("MimeType");
+        final String xsl = _parameter.getParameterValue("xsl");
+        export.generateDocument(MimeTypes.getMimeTypeByEnding(mimetype), xsl);
+        final File file = export.getFile();
+        ret.put(ReturnValues.VALUES, file);
 
-    return ret;
-  }
+        return ret;
+    }
 }

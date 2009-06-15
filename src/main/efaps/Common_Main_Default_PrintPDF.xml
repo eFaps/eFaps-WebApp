@@ -16,7 +16,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
   
-  Author:          tmo
+  Author:          The eFaps Team
   Revision:        $Rev$
   Last Changed:    $Date$
   Last Changed By: $Author$
@@ -37,6 +37,7 @@
     <target>
       <execute program="org.efaps.esjp.ui.xml.CreateXML">
         <property name="MimeType">pdf</property>
+        <property name="xsl">xsl.eFapsFO.xsl</property>
       </execute>
     </target>
     <property name="Target">hidden</property>
