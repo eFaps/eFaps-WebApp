@@ -226,11 +226,9 @@ public class UIForm extends UIAbstractPageObject
                             addNew = true;
                         }
                     } else if (field instanceof FieldHeading) {
-                        if (!isEditMode()) {
-                            this.elements.add(new Element(UIForm.ElementType.HEADING,
+                        this.elements.add(new Element(UIForm.ElementType.HEADING,
                                                           new UIHeading((FieldHeading) field)));
-                            addNew = true;
-                        }
+                        addNew = true;
                     } else if (field instanceof FieldClassification) {
                         uiclass = new UIClassification((FieldClassification) field, this);
                         this.elements.add(new Element(UIForm.ElementType.CLASSIFICATION, uiclass));
