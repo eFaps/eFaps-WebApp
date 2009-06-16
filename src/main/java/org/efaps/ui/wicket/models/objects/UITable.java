@@ -285,7 +285,7 @@ public class UITable extends UIAbstractPageObject
 
         for (int i = 0; i < fields.size(); i++) {
             final Field field = fields.get(i);
-            if (!field.isNoneDisplay(getMode())) {
+            if (field.hasAccess(getMode()) && !field.isNoneDisplay(getMode())) {
                 SortDirection sortdirection = SortDirection.NONE;
                 if (field.getName().equals(this.sortKey)) {
                     sortdirection = getSortDirection();
@@ -322,7 +322,7 @@ public class UITable extends UIAbstractPageObject
         Attribute attr = null;
 
         for (final Field field : fields) {
-            if (!field.isNoneDisplay(getMode())) {
+            if (field.hasAccess(getMode()) && !field.isNoneDisplay(getMode())) {
                 if (field.getExpression() != null) {
                     attr = type.getAttribute(field.getExpression());
                 }
@@ -378,27 +378,29 @@ public class UITable extends UIAbstractPageObject
 
         for (int i = 0; i < fields.size(); i++) {
             final Field field = fields.get(i);
-            if (field.getExpression() != null) {
-                query.addSelect(field.getExpression());
-            }
-            if (field.getAlternateOID() != null) {
-                query.addSelect(field.getAlternateOID());
-            }
-            SortDirection sortdirection = SortDirection.NONE;
-            if (field.getName().equals(this.sortKey)) {
-                sortdirection = getSortDirection();
-            }
-            final UITableHeader headermodel = new UITableHeader(field, sortdirection);
-            this.headers.add(headermodel);
-            if (!field.isFixedWidth()) {
-                if (userWidthList != null) {
-                    if (isShowCheckBoxes()) {
-                        headermodel.setWidth(userWidthList.get(i + 1));
-                    } else {
-                        headermodel.setWidth(userWidthList.get(i));
-                    }
+            if (field.hasAccess(getMode()) && !field.isNoneDisplay(getMode())) {
+                if (field.getExpression() != null) {
+                    query.addSelect(field.getExpression());
                 }
-                this.widthWeight += field.getWidth();
+                if (field.getAlternateOID() != null) {
+                    query.addSelect(field.getAlternateOID());
+                }
+                SortDirection sortdirection = SortDirection.NONE;
+                if (field.getName().equals(this.sortKey)) {
+                    sortdirection = getSortDirection();
+                }
+                final UITableHeader headermodel = new UITableHeader(field, sortdirection);
+                this.headers.add(headermodel);
+                if (!field.isFixedWidth()) {
+                    if (userWidthList != null) {
+                        if (isShowCheckBoxes()) {
+                            headermodel.setWidth(userWidthList.get(i + 1));
+                        } else {
+                            headermodel.setWidth(userWidthList.get(i));
+                        }
+                    }
+                    this.widthWeight += field.getWidth();
+                }
             }
         }
         query.execute();
@@ -448,49 +450,51 @@ public class UITable extends UIAbstractPageObject
 
             String strValue = "";
             for (final Field field : _fields) {
-                Object value = null;
+                if (field.hasAccess(getMode()) && !field.isNoneDisplay(getMode())) {
+                    Object value = null;
 
-                if (field.getExpression() != null) {
-                    value = _query.get(field.getExpression());
-                    attr = _query.getAttribute(field.getExpression());
-                }
+                    if (field.getExpression() != null) {
+                        value = _query.get(field.getExpression());
+                        attr = _query.getAttribute(field.getExpression());
+                    }
 
-                final FieldValue fieldvalue = new FieldValue(field, attr, value, instance);
-                String htmlTitle = null;
-                if (isPrintMode()) {
-                    strValue = fieldvalue.getStringValue(getMode(), getInstance(), instance);
-                } else {
-                    if ((isCreateMode() || isEditMode()) && field.isEditableDisplay(getMode())) {
-                        strValue = fieldvalue.getEditHtml(getMode(), getInstance(), instance);
-                    } else if (field.isHiddenDisplay(getMode())) {
-                        strValue = fieldvalue.getHiddenHtml(getMode(), getInstance(), instance);
+                    final FieldValue fieldvalue = new FieldValue(field, attr, value, instance);
+                    String htmlTitle = null;
+                    if (isPrintMode()) {
+                        strValue = fieldvalue.getStringValue(getMode(), getInstance(), instance);
                     } else {
-                        strValue = fieldvalue.getReadOnlyHtml(getMode(), getInstance(), instance);
-                        htmlTitle = fieldvalue.getStringValue(getMode(), getInstance(), instance);
+                        if ((isCreateMode() || isEditMode()) && field.isEditableDisplay(getMode())) {
+                            strValue = fieldvalue.getEditHtml(getMode(), getInstance(), instance);
+                        } else if (field.isHiddenDisplay(getMode())) {
+                            strValue = fieldvalue.getHiddenHtml(getMode(), getInstance(), instance);
+                        } else {
+                            strValue = fieldvalue.getReadOnlyHtml(getMode(), getInstance(), instance);
+                            htmlTitle = fieldvalue.getStringValue(getMode(), getInstance(), instance);
+                        }
                     }
-                }
 
-                if (strValue == null) {
-                    strValue = "";
-                }
-                String icon = field.getIcon();
-                if (field.getAlternateOID() == null) {
-                    if (field.isShowTypeIcon()) {
-                        final Image image = Image.getTypeIcon(instance.getType());
-                        if (image != null) {
-                            icon = image.getUrl();
+                    if (strValue == null) {
+                        strValue = "";
+                    }
+                    String icon = field.getIcon();
+                    if (field.getAlternateOID() == null) {
+                        if (field.isShowTypeIcon()) {
+                            final Image image = Image.getTypeIcon(instance.getType());
+                            if (image != null) {
+                                icon = image.getUrl();
+                            }
+                        }
+                    } else {
+                        final Instance inst = Instance.get((String) _query.get(field.getAlternateOID()));
+                        if (field.isShowTypeIcon()) {
+                            final Image image = Image.getTypeIcon(inst.getType());
+                            if (image != null) {
+                                icon = image.getUrl();
+                            }
                         }
                     }
-                } else {
-                    final Instance inst = Instance.get((String) _query.get(field.getAlternateOID()));
-                    if (field.isShowTypeIcon()) {
-                        final Image image = Image.getTypeIcon(inst.getType());
-                        if (image != null) {
-                            icon = image.getUrl();
-                        }
-                    }
+                    row.add(new UITableCell(this, fieldvalue, instance, strValue, htmlTitle, icon));
                 }
-                row.add(new UITableCell(this, fieldvalue, instance, strValue, htmlTitle, icon));
             }
             this.values.add(row);
         }
