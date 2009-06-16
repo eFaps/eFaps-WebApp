@@ -21,6 +21,7 @@
 package org.efaps.esjp.ui.xml;
 
 import java.io.File;
+import java.util.HashMap;
 
 import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
@@ -54,9 +55,9 @@ public class CreateXML implements EventExecution
     {
         final Return ret = new Return();
         final XMLExport export = new XMLExport(_parameter.get(ParameterValues.OTHERS));
+        final String mimetype = (String) ((HashMap<?, ?>) _parameter.get(ParameterValues.PROPERTIES)).get("MimeType");
+        final String xsl = (String) ((HashMap<?, ?>) _parameter.get(ParameterValues.PROPERTIES)).get("xsl");
 
-        final String mimetype = _parameter.getParameterValue("MimeType");
-        final String xsl = _parameter.getParameterValue("xsl");
         export.generateDocument(MimeTypes.getMimeTypeByEnding(mimetype), xsl);
         final File file = export.getFile();
         ret.put(ReturnValues.VALUES, file);

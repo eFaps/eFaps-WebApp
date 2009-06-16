@@ -174,7 +174,7 @@ public class XMLExport
 
             // Setup XSLT
             final TransformerFactory factory = TransformerFactory.newInstance();
-            final XSLResource resource = XSLResource.get("xsl.eFapsFO.xsl");
+            final XSLResource resource = XSLResource.get(_xslResourceName);
 
             final Transformer transformer = factory.newTransformer(new StreamSource(resource.getResourceStream()
                             .getInputStream()));
