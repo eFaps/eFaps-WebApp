@@ -136,8 +136,9 @@ public class AjaxFieldUpdateBehavior extends AjaxFormSubmitBehavior
             for (final String keyString : map.keySet()) {
                 // if the map contains a key that is not defined in this class it is assumed to be the name of a field
                 if (!(AjaxFieldUpdateBehavior.JSKEY.equals(keyString))) {
-                    js.append("eFapsSetFieldValue('").append(getComponentMarkupId()).append("','").append(keyString)
-                        .append("','").append(map.get(keyString)).append("');");
+                    js.append("eFapsSetFieldValue('").append(getComponentMarkupId()).append("','")
+                        .append(keyString).append("',").append(map.get(keyString).contains("Array(") ? "" : "'")
+                      .append(map.get(keyString)).append(map.get(keyString).contains("Array(") ? "" : "'").append(");");
                 }
             }
         }

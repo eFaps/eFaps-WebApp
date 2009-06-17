@@ -120,10 +120,10 @@ public class AutoCompleteRenderer extends AbstractAutoCompleteTextRenderer<Map<S
             if (!(AutoCompleteRenderer.KEY.equals(keyString) || AutoCompleteRenderer.VALUE.equals(keyString)
                        || AutoCompleteRenderer.CHOICE.equals(keyString) || AutoCompleteRenderer.JS.equals(keyString))) {
                 js.append("eFapsSetFieldValue('").append(this.autoCompleteField.getMarkupId()).append("','")
-                    .append(keyString).append("','").append(_map.get(keyString)).append("');");
+                    .append(keyString).append("',").append(_map.get(keyString).contains("Array(") ? "" : "'")
+                    .append(_map.get(keyString)).append(_map.get(keyString).contains("Array(") ? "" : "'").append(");");
             }
-        }
-        if (_map.containsKey(AutoCompleteRenderer.JS)) {
+        } if (_map.containsKey(AutoCompleteRenderer.JS)) {
             js.append(_map.get(AutoCompleteRenderer.JS));
         }
         js.append("input");
