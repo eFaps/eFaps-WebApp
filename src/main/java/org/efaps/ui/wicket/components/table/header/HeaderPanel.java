@@ -246,7 +246,8 @@ public class HeaderPanel extends Panel
                 Context.getThreadContext().setUserAttribute(
                                 ((UITable) getComponent().getDefaultModelObject())
                                                 .getUserAttributeKey(UserAttributeKey.COLUMNWIDTH), widths);
-                ((UITable) getComponent().getDefaultModelObject()).resetModel();
+                // why did we have that??
+                //((UITable) getComponent().getDefaultModelObject()).resetModel();
             } catch (final EFapsException e) {
                 throw new RestartResponseException(new ErrorPage(e));
             }

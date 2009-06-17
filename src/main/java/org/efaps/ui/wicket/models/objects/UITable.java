@@ -282,15 +282,15 @@ public class UITable extends UIAbstractPageObject
     {
         final List<Field> fields = getUserSortedColumns();
         final List<Integer> userWidthList = getUserWidths();
-
-        for (int i = 0; i < fields.size(); i++) {
-            final Field field = fields.get(i);
+        int i = 1;
+        for (final Field field : fields) {
             if (field.hasAccess(getMode()) && !field.isNoneDisplay(getMode())) {
                 SortDirection sortdirection = SortDirection.NONE;
                 if (field.getName().equals(this.sortKey)) {
                     sortdirection = getSortDirection();
                 }
                 final UITableHeader headermodel = new UITableHeader(field, sortdirection);
+                headermodel.setSortable(false);
                 this.headers.add(headermodel);
                 if (!field.isFixedWidth()) {
                     if (userWidthList != null) {
@@ -302,6 +302,7 @@ public class UITable extends UIAbstractPageObject
                     }
                     this.widthWeight += field.getWidth();
                 }
+                i++;
             }
         }
         String typeName = null;
@@ -375,9 +376,8 @@ public class UITable extends UIAbstractPageObject
         final List<Integer> userWidthList = getUserWidths();
 
         final List<Field> fields = getUserSortedColumns();
-
-        for (int i = 0; i < fields.size(); i++) {
-            final Field field = fields.get(i);
+        int i = 0;
+        for (final Field field : fields) {
             if (field.hasAccess(getMode()) && !field.isNoneDisplay(getMode())) {
                 if (field.getExpression() != null) {
                     query.addSelect(field.getExpression());
@@ -401,6 +401,7 @@ public class UITable extends UIAbstractPageObject
                     }
                     this.widthWeight += field.getWidth();
                 }
+                i++;
             }
         }
         query.execute();

@@ -30,155 +30,193 @@ import org.efaps.admin.ui.field.Field;
  * @author jmox
  * @version $Id$
  */
-public class UITableHeader  implements IClusterable{
+public class UITableHeader implements IClusterable
+{
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
-  private static final long serialVersionUID = 1L;
+    /**
+     * The label for this header.
+     */
+    private final String label;
 
-  private final String label;
+    /**
+     * Is this header sortable.
+     */
+    private boolean sortable;
 
-  private final boolean sortable;
+    /**
+     * Name of the header.
+     */
+    private final String name;
 
-  private final String name;
+    /**
+     * Is this header filterable.
+     */
+    private final boolean filterable;
 
-  private final boolean filterable;
+    /**
+     * has this header a fixed width.
+     */
+    private final boolean fixedWidth;
 
-  private final boolean fixedWidth;
+    /**
+     * Sort direction.
+     */
+    private SortDirection sortDirection;
 
-  private SortDirection sortDirection;
+    /**
+     * Width of this header;
+     */
+    private int width;
 
-  private int width;
+    /**
+     * Markup id of this header.
+     */
+    private String markupId;
 
-  private String markupId;
-
-  public UITableHeader(final Field _field, final SortDirection _sortdirection) {
-    this.label = _field.getLabel();
-    this.sortable = _field.isSortAble();
-    this.name = _field.getName();
-    this.filterable = _field.isFilterable();
-    this.sortDirection = _sortdirection;
-    this.width = _field.getWidth();
-    this.fixedWidth = _field.isFixedWidth();
-  }
-
-  public String getLabel() {
-    if (this.label != null) {
-      return DBProperties.getProperty(this.label);
-    } else {
-      return "";
+    /**
+     * @param _field            field
+     * @param _sortdirection    sort direction
+     */
+    public UITableHeader(final Field _field, final SortDirection _sortdirection)
+    {
+        this.label = _field.getLabel();
+        this.sortable = _field.isSortAble();
+        this.name = _field.getName();
+        this.filterable = _field.isFilterable();
+        this.sortDirection = _sortdirection;
+        this.width = _field.getWidth();
+        this.fixedWidth = _field.isFixedWidth();
     }
-  }
 
-  /**
-   * This is the getter method for the instance variable {@link #sortable}.
-   *
-   * @return value of instance variable {@link #sortable}
-   */
+    /**
+     * @return translated label
+     */
+    public String getLabel()
+    {
+        String ret = "";
+        if (this.label != null) {
+            ret = DBProperties.getProperty(this.label);
+        }
+        return ret;
+    }
 
-  public boolean isSortable() {
-    return this.sortable;
-  }
+    /**
+     * This is the getter method for the instance variable {@link #sortable}.
+     *
+     * @return value of instance variable {@link #sortable}
+     */
 
-  /**
-   * This is the getter method for the instance variable {@link #name}.
-   *
-   * @return value of instance variable {@link #name}
-   */
+    public boolean isSortable()
+    {
+        return this.sortable;
+    }
 
-  public String getName() {
-    return this.name;
-  }
+    /**
+     * Setter method for instance variable {@link #sortable}.
+     *
+     * @param _sortable value for instance variable {@link #sortable}
+     */
+    public void setSortable(final boolean _sortable)
+    {
+        this.sortable = _sortable;
+    }
 
-  /**
-   * This is the getter method for the instance variable {@link #filterable}.
-   *
-   * @return value of instance variable {@link #filterable}
-   */
+    /**
+     * This is the getter method for the instance variable {@link #name}.
+     *
+     * @return value of instance variable {@link #name}
+     */
 
-  public boolean isFilterable() {
-    return this.filterable;
-  }
+    public String getName()
+    {
+        return this.name;
+    }
 
-  /**
-   * This is the getter method for the instance variable {@link #sortDirection}.
-   *
-   * @return value of instance variable {@link #sortDirection}
-   */
+    /**
+     * This is the getter method for the instance variable {@link #filterable}.
+     *
+     * @return value of instance variable {@link #filterable}
+     */
 
-  public SortDirection getSortDirection() {
-    return this.sortDirection;
-  }
+    public boolean isFilterable()
+    {
+        return this.filterable;
+    }
 
-  /**
-   * This is the setter method for the instance variable {@link #sortDirection}.
-   *
-   * @param sortDirection
-   *                the sortDirection to set
-   */
-  public void setSortDirection(SortDirection sortDirection) {
-    this.sortDirection = sortDirection;
-  }
+    /**
+     * This is the getter method for the instance variable
+     * {@link #sortDirection}.
+     *
+     * @return value of instance variable {@link #sortDirection}
+     */
 
-  /**
-   * This is the getter method for the instance variable {@link #width}.
-   *
-   * @return value of instance variable {@link #width}
-   */
-  public int getWidth() {
-    return this.width;
-  }
+    public SortDirection getSortDirection()
+    {
+        return this.sortDirection;
+    }
 
-  /**
-   * This is the setter method for the instance variable {@link #width}.
-   *
-   * @param width
-   *                the width to set
-   */
-  public void setWidth(int width) {
-    this.width = width;
-  }
+    /**
+     * This is the setter method for the instance variable
+     * {@link #sortDirection}.
+     *
+     * @param _sortDirection the sortDirection to set
+     */
+    public void setSortDirection(final SortDirection _sortDirection)
+    {
+        this.sortDirection = _sortDirection;
+    }
 
-  /**
-   * This is the getter method for the instance variable {@link #fixedWidth}.
-   *
-   * @return value of instance variable {@link #fixedWidth}
-   */
-  public boolean isFixedWidth() {
-    return this.fixedWidth;
-  }
+    /**
+     * This is the getter method for the instance variable {@link #width}.
+     *
+     * @return value of instance variable {@link #width}
+     */
+    public int getWidth()
+    {
+        return this.width;
+    }
 
-  /**
-   * This is the getter method for the instance variable {@link #markupId}.
-   *
-   * @return value of instance variable {@link #markupId}
-   */
-  public String getMarkupId() {
-    return this.markupId;
-  }
+    /**
+     * This is the setter method for the instance variable {@link #width}.
+     *
+     * @param _width the width to set
+     */
+    public void setWidth(final int _width)
+    {
+        this.width = _width;
+    }
 
-  /**
-   * This is the setter method for the instance variable {@link #markupId}.
-   *
-   * @param _markupId
-   *                the markupId to set
-   */
-  public void setMarkupId(final String _markupId) {
-    this.markupId = _markupId;
-  }
+    /**
+     * This is the getter method for the instance variable {@link #fixedWidth}.
+     *
+     * @return value of instance variable {@link #fixedWidth}
+     */
+    public boolean isFixedWidth()
+    {
+        return this.fixedWidth;
+    }
 
-  public UITableHeader getObject() {
-    // TODO Auto-generated method stub
-    return null;
-  }
+    /**
+     * This is the getter method for the instance variable {@link #markupId}.
+     *
+     * @return value of instance variable {@link #markupId}
+     */
+    public String getMarkupId()
+    {
+        return this.markupId;
+    }
 
-  public void setObject(UITableHeader arg0) {
-    // TODO Auto-generated method stub
-
-  }
-
-  public void detach() {
-    // TODO Auto-generated method stub
-
-  }
-
-
+    /**
+     * This is the setter method for the instance variable {@link #markupId}.
+     *
+     * @param _markupId the markupId to set
+     */
+    public void setMarkupId(final String _markupId)
+    {
+        this.markupId = _markupId;
+    }
 }
