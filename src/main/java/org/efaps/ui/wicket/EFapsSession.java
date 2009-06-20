@@ -276,7 +276,6 @@ public class EFapsSession extends WebSession {
    * Logs a user out and stores the UserAttribues in the eFaps database.
    */
   public final void logout() {
-    this.userName = null;
     if (this.sessionAttributes.containsKey(UserAttributesSet.CONTEXTMAPKEY)) {
       try {
         ((UserAttributesSet) this.sessionAttributes
@@ -288,6 +287,7 @@ public class EFapsSession extends WebSession {
       removeAttribute(LOGIN_ATTRIBUTE_NAME);
     }
     closeContext();
+    this.userName = null;
   }
 
   /**
