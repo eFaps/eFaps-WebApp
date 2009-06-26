@@ -25,7 +25,6 @@ import java.util.List;
 
 import org.apache.wicket.IClusterable;
 
-import org.efaps.admin.datamodel.AttributeTypeInterface;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 
 /**
