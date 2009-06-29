@@ -21,6 +21,8 @@
 package org.efaps.ui.wicket.models.objects;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -77,7 +79,7 @@ public class UIClassification implements IFormElement, IClusterable
     /**
      * Set containing the children of this UIClassification.
      */
-    private final Set<UIClassification> children = new HashSet<UIClassification>();
+    private final List<UIClassification> children = new ArrayList<UIClassification>();
 
     /**
      * UUID of the classification this UIClassification belongs to.
@@ -101,6 +103,9 @@ public class UIClassification implements IFormElement, IClusterable
      */
     private final boolean root;
 
+    /**
+     * Target mode.
+     */
     private final TargetMode mode;
 
     /**
@@ -110,7 +115,8 @@ public class UIClassification implements IFormElement, IClusterable
     private String commandName;
 
     /**
-     * @param _field FielClassification
+     * @param _field        FielClassification
+     * @param _uiObject     ui object
      */
     public UIClassification(final FieldClassification _field, final AbstractUIObject _uiObject)
     {
@@ -119,13 +125,13 @@ public class UIClassification implements IFormElement, IClusterable
         this.root = true;
         this.mode = _uiObject.getMode();
         this.commandName = _uiObject.getCommand().getName();
-
     }
 
     /**
      * Private constructor used for instantiating child UIClassification.
      *
-     * @param _uuid UUID of the classification type
+     * @param _uuid     UUID of the classification type
+     * @param _mode     target mode
      */
     private UIClassification(final UUID _uuid, final TargetMode _mode)
     {
@@ -198,7 +204,7 @@ public class UIClassification implements IFormElement, IClusterable
      * @param _parent ParentNode children should be added
      * @param _children to be added as childs
      */
-    private void addNodes(final DefaultMutableTreeNode _parent, final Set<UIClassification> _children)
+    private void addNodes(final DefaultMutableTreeNode _parent, final List<UIClassification> _children)
     {
         for (final UIClassification child : _children) {
             final DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(child);
@@ -207,9 +213,8 @@ public class UIClassification implements IFormElement, IClusterable
         }
     }
 
-
     /**
-     *
+     * Execute the model.
      */
     public void execute()
     {
@@ -229,7 +234,7 @@ public class UIClassification implements IFormElement, IClusterable
      * @param _selectedUUID set of selected classification uuids
      */
     private void addChildren(final UIClassification _parent, final Set<Classification> _children,
-                             final Set<UUID> _selectedUUID)
+                    final Set<UUID> _selectedUUID)
     {
         for (final Classification child : _children) {
             final UIClassification childUI = new UIClassification(child.getUUID(), _parent.mode);
@@ -240,6 +245,12 @@ public class UIClassification implements IFormElement, IClusterable
             _parent.children.add(childUI);
             childUI.setParent(_parent);
         }
+        Collections.sort(_parent.children, new Comparator<UIClassification>() {
+            public int compare(final UIClassification _class0, final UIClassification _class2)
+            {
+                return _class0.getLabel().compareTo(_class2.getLabel());
+            }
+        });
     }
 
     /**
@@ -304,7 +315,7 @@ public class UIClassification implements IFormElement, IClusterable
      *
      * @return value of instance variable {@link #children}
      */
-    public Set<UIClassification> getChildren()
+    public List<UIClassification> getChildren()
     {
         return this.children;
     }
@@ -325,7 +336,7 @@ public class UIClassification implements IFormElement, IClusterable
      */
     private void setParent(final UIClassification _parent)
     {
-       this.parent = _parent;
+        this.parent = _parent;
     }
 
     /**
@@ -357,6 +368,4 @@ public class UIClassification implements IFormElement, IClusterable
     {
         return this.commandName;
     }
-
-
 }

@@ -40,7 +40,7 @@ import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 
 /**
- * TODO comment!
+ * Renders the tree for selecting a clqssification.
  *
  * @author The eFaps Team
  * @version $Id$

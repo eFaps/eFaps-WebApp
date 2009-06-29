@@ -32,3 +32,7 @@
   right:0;
 }
 
+td.content {
+  font-family:arial,verdana,helvetica,sans-serif;
+  font-size:8pt;
+}
