@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.apache.wicket.IClusterable;
 
+import org.efaps.ui.wicket.models.cell.UIHiddenCell;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 
 /**
@@ -54,6 +55,10 @@ public class UIRow implements IClusterable
      */
     private final List<UITableCell> values = new ArrayList<UITableCell>();
 
+    /**
+     * This list contains the hidden cells for this row.
+     */
+    private final List<UIHiddenCell> hidden = new ArrayList<UIHiddenCell>();
 
     /**
      * Constructor used in case that no instances are given. e.g. on create.
@@ -85,6 +90,24 @@ public class UIRow implements IClusterable
         this.values.add(_cellmodel);
     }
 
+    /**
+     * Add a hidden cell to this row.
+     * @param _hiddenCell hidden cell to be added
+     */
+    public void addHidden(final UIHiddenCell _hiddenCell)
+    {
+        this.hidden.add(_hiddenCell);
+    }
+
+    /**
+     * Getter method for instance variable {@link #hidden}.
+     *
+     * @return value of instance variable {@link #hidden}
+     */
+    public List<UIHiddenCell> getHidden()
+    {
+        return this.hidden;
+    }
     /**
      * This is the getter method for the instance variable {@link #instanceKeys}
      * .

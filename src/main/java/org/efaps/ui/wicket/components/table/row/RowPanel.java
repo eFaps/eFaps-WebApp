@@ -29,11 +29,13 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 
+import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.table.AjaxAddRemoveRowPanel;
 import org.efaps.ui.wicket.components.table.TablePanel;
 import org.efaps.ui.wicket.components.table.cell.CellPanel;
 import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.cell.TableCellModel;
+import org.efaps.ui.wicket.models.cell.UIHiddenCell;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.models.objects.UIRow;
 import org.efaps.ui.wicket.models.objects.UITable;
@@ -100,5 +102,11 @@ public class RowPanel extends Panel
             i++;
             name2comp.put(cellmodel.getName(), cell);
         }
-     }
+
+        final RepeatingView hiddenRepeater = new RepeatingView("hiddenRepeater");
+        this.add(hiddenRepeater);
+        for (final UIHiddenCell cell : uirow.getHidden()) {
+            hiddenRepeater.add(new LabelComponent(hiddenRepeater.newChildId(), cell.getCellValue()));
+        }
+    }
 }

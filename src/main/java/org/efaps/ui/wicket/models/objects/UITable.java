@@ -50,6 +50,7 @@ import org.efaps.admin.ui.field.Field;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.ListQuery;
+import org.efaps.ui.wicket.models.cell.UIHiddenCell;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
@@ -284,7 +285,7 @@ public class UITable extends UIAbstractPageObject
         final List<Integer> userWidthList = getUserWidths();
         int i = 1;
         for (final Field field : fields) {
-            if (field.hasAccess(getMode()) && !field.isNoneDisplay(getMode())) {
+            if (field.hasAccess(getMode()) && !field.isNoneDisplay(getMode()) && !field.isHiddenDisplay(getMode())) {
                 SortDirection sortdirection = SortDirection.NONE;
                 if (field.getName().equals(this.sortKey)) {
                     sortdirection = getSortDirection();
@@ -330,10 +331,13 @@ public class UITable extends UIAbstractPageObject
                 final FieldValue fieldvalue = new FieldValue(field, attr, null, null);
                 String htmlValue;
                 String htmlTitle = null;
+                boolean hidden = false;
                 if (isCreateMode() && field.isEditableDisplay(getMode())) {
                     htmlValue = fieldvalue.getEditHtml(getMode(), getInstance(), null);
+                    htmlTitle = fieldvalue.getStringValue(getMode(), getInstance(), null);
                 } else if (field.isHiddenDisplay(getMode())) {
                     htmlValue = fieldvalue.getHiddenHtml(getMode(), getInstance(), null);
+                    hidden = true;
                 } else {
                     htmlValue = fieldvalue.getReadOnlyHtml(getMode(), getInstance(), null);
                     htmlTitle = fieldvalue.getStringValue(getMode(), getInstance(), null);
@@ -341,8 +345,12 @@ public class UITable extends UIAbstractPageObject
                 if (htmlValue == null) {
                     htmlValue = "";
                 }
-                final UITableCell cell = new UITableCell(this, fieldvalue, null, htmlValue, htmlTitle, null);
-                row.add(cell);
+                if (hidden) {
+                    row.addHidden(new UIHiddenCell(this, fieldvalue, null, htmlValue));
+                } else {
+                    final UITableCell cell = new UITableCell(this, fieldvalue, null, htmlValue, htmlTitle, null);
+                    row.add(cell);
+                }
             }
         }
         this.values.add(row);
@@ -378,7 +386,7 @@ public class UITable extends UIAbstractPageObject
         final List<Field> fields = getUserSortedColumns();
         int i = 0;
         for (final Field field : fields) {
-            if (field.hasAccess(getMode()) && !field.isNoneDisplay(getMode())) {
+            if (field.hasAccess(getMode()) && !field.isNoneDisplay(getMode()) && !field.isHiddenDisplay(getMode())) {
                 if (field.getExpression() != null) {
                     query.addSelect(field.getExpression());
                 }
@@ -461,13 +469,16 @@ public class UITable extends UIAbstractPageObject
 
                     final FieldValue fieldvalue = new FieldValue(field, attr, value, instance);
                     String htmlTitle = null;
+                    boolean hidden = false;
                     if (isPrintMode()) {
                         strValue = fieldvalue.getStringValue(getMode(), getInstance(), instance);
                     } else {
                         if ((isCreateMode() || isEditMode()) && field.isEditableDisplay(getMode())) {
                             strValue = fieldvalue.getEditHtml(getMode(), getInstance(), instance);
+                            htmlTitle = fieldvalue.getStringValue(getMode(), getInstance(), instance);
                         } else if (field.isHiddenDisplay(getMode())) {
                             strValue = fieldvalue.getHiddenHtml(getMode(), getInstance(), instance);
+                            hidden = true;
                         } else {
                             strValue = fieldvalue.getReadOnlyHtml(getMode(), getInstance(), instance);
                             htmlTitle = fieldvalue.getStringValue(getMode(), getInstance(), instance);
@@ -494,7 +505,11 @@ public class UITable extends UIAbstractPageObject
                             }
                         }
                     }
-                    row.add(new UITableCell(this, fieldvalue, instance, strValue, htmlTitle, icon));
+                    if (hidden) {
+                        row.addHidden(new UIHiddenCell(this, fieldvalue, null, strValue));
+                    } else {
+                        row.add(new UITableCell(this, fieldvalue, instance, strValue, htmlTitle, icon));
+                    }
                 }
             }
             this.values.add(row);
