@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.efaps.admin.datamodel.ui.FieldValue;
+import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
@@ -87,6 +88,11 @@ public class UITableCell extends UIAbstractCell
     private final boolean fieldUpdate;
 
     /**
+     * Stores the update event for the field update. Default is "onchange";
+     */
+    private String fieldUpdateEvent;
+
+    /**
      * Constructor.
      * @param _parent       parent ui object
      * @param _fieldValue   FieldValue
@@ -107,7 +113,12 @@ public class UITableCell extends UIAbstractCell
         this.icon = _icon;
         this.autoComplete = _fieldValue.getField().hasEvents(EventType.UI_FIELD_AUTOCOMPLETE);
         this.fieldUpdate = _fieldValue.getField().hasEvents(EventType.UI_FIELD_UPDATE);
-
+        if (this.fieldUpdate) {
+            final List<EventDefinition> events = _fieldValue.getField().getEvents(EventType.UI_FIELD_UPDATE);
+            for (final EventDefinition event : events) {
+                this.fieldUpdateEvent = event.getProperty("Event") == null ? "onchange" : event.getProperty("Event");
+            }
+        }
         // check if the user has access to the typemenu, if not set the reference to null
         if (_fieldValue.getField().getReference() != null) {
             if (getInstanceKey() != null) {
@@ -230,6 +241,16 @@ public class UITableCell extends UIAbstractCell
     public boolean isFieldUpdate()
     {
         return this.fieldUpdate;
+    }
+
+    /**
+     * Getter method for instance variable {@link #fieldUpdateEvent}.
+     *
+     * @return value of instance variable {@link #fieldUpdateEvent}
+     */
+    public String getFieldUpdateEvent()
+    {
+        return this.fieldUpdateEvent;
     }
 
     public List<Return> getFieldUpdate(final Object _others)

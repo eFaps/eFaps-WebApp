@@ -136,7 +136,7 @@ public class CellPanel extends Panel
                 if (_uitable.isCreateMode()) {
                     label.add(new SetSelectedRowBehavior());
                     if (cellmodel.isFieldUpdate()) {
-                        label.add(new AjaxFieldUpdateBehavior("onchange", _model));
+                        label.add(new AjaxFieldUpdateBehavior(cellmodel.getFieldUpdateEvent(), _model));
                     }
                 }
                 add(label);
