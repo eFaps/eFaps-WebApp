@@ -368,4 +368,16 @@ public class UIClassification implements IFormElement, IClusterable
     {
         return this.commandName;
     }
+
+    /**
+     * Method to add a uuid to the set of selected classifications. This method
+     * should only be called on a root classification. e.;g. on cretae mode
+     * to set the default selected classifications.
+     *
+     * @param _uuid uuid to set as selected
+     */
+    public void addSelectedUUID(final UUID _uuid)
+    {
+        this.selectedUUID.add(_uuid);
+    }
 }

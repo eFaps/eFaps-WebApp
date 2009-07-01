@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import org.apache.wicket.IClusterable;
@@ -33,6 +34,7 @@ import org.apache.wicket.RestartResponseException;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeSet;
+import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.event.EventDefinition;
@@ -40,6 +42,7 @@ import org.efaps.admin.event.EventType;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Form;
 import org.efaps.admin.ui.Image;
+import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.admin.ui.field.FieldClassification;
 import org.efaps.admin.ui.field.FieldCommand;
@@ -512,6 +515,7 @@ public class UIForm extends UIAbstractPageObject
 
         FormElement formelement = new FormElement();
         boolean addNew = true;
+        UIClassification uiclass = null;
         for (final Field field : form.getFields()) {
             if (field.hasAccess(getMode()) && !field.isNoneDisplay(getMode())) {
                 if (field instanceof FieldGroup) {
@@ -524,8 +528,8 @@ public class UIForm extends UIAbstractPageObject
                     this.elements.add(new Element(UIForm.ElementType.HEADING, new UIHeading((FieldHeading) field)));
                     addNew = true;
                 } else if (field instanceof FieldClassification) {
-                    this.elements.add(new Element(UIForm.ElementType.CLASSIFICATION,
-                                                  new UIClassification((FieldClassification) field, this)));
+                    uiclass = new UIClassification((FieldClassification) field, this);
+                    this.elements.add(new Element(UIForm.ElementType.CLASSIFICATION, uiclass));
                     this.classified = true;
                     addNew = true;
                 } else if (field instanceof FieldTable) {
@@ -552,7 +556,8 @@ public class UIForm extends UIAbstractPageObject
                     }
                     final Instance fieldInstance = getInstance();
                     final FieldValue fieldvalue = new FieldValue(field, attr,
-                                    super.isPartOfWizardCall() ? getValue4Wizard(field.getName()) : null, fieldInstance);
+                                    super.isPartOfWizardCall() ? getValue4Wizard(field.getName()) : null,
+                                                    fieldInstance);
 
                     String strValue = null;
                     boolean hidden = false;
@@ -600,7 +605,42 @@ public class UIForm extends UIAbstractPageObject
                 }
             }
         }
+        if (uiclass != null) {
+            final Set<Classification> clazzes = getCommand().getTargetCreateClassification();
+            for (final Classification clazz : clazzes) {
+                uiclass.addSelectedUUID(clazz.getUUID());
+                Classification parent = (Classification) clazz.getParentClassification();
+                while (parent != null) {
+                    uiclass.addSelectedUUID(parent.getUUID());
+                    parent = (Classification) parent.getParentClassification();
+                }
+            }
+            if (!uiclass.isInitialized()) {
+                uiclass.execute();
+            }
+            add2Elements4Create(uiclass);
+        }
     }
+
+    /**
+     * Recursive method that adds the classification forms as elements to the
+     * form by walking down the tree.
+     *
+     * @param _parentClass the classification to be added
+     * @throws EFapsException on error
+     */
+    private void add2Elements4Create(final UIClassification _parentClass) throws EFapsException
+    {
+        if (_parentClass.isSelected()) {
+            final UIFieldForm fieldform = new UIFieldForm(getCommandUUID(), _parentClass);
+            fieldform.setMode(TargetMode.CREATE);
+            this.elements.add(new Element(UIForm.ElementType.SUBFORM, fieldform));
+        }
+        for (final UIClassification child : _parentClass.getChildren()) {
+            add2Elements4Create(child);
+        }
+    }
+
 
     /**
      * Method to get the type that will be created by a form. A method must be
