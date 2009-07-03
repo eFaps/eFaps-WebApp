@@ -265,12 +265,34 @@ public class UIForm extends UIAbstractPageObject
                 }
             }
             if (uiclass != null) {
-                final List<String> instanceKeys = uiclass.getClassInstanceKeys(getInstance());
-                for (final String instanceKey : instanceKeys) {
-                    this.elements.add(new Element(UIForm.ElementType.SUBFORM, new UIFieldForm(getCommandUUID(),
-                                                                                              instanceKey)));
+                final Map<UUID, String> instanceKeys = uiclass.getClassInstanceKeys(getInstance());
+                if (!uiclass.isInitialized()) {
+                    uiclass.execute();
                 }
+                // add the root classification
+                this.elements.add(new Element(UIForm.ElementType.SUBFORM, new UIFieldForm(getCommandUUID(),
+                                 instanceKeys.get(uiclass.getClassificationUUID()))));
+
+                addChildrenClassificationForms(uiclass, instanceKeys);
             }
+        }
+    }
+
+    /**
+     * Recursive method to add the children classification forms.
+     * @param _uiclass      parent classification form
+     * @param _instanceKeys mapo of instancekeys
+     * @throws EFapsException o nerro
+     */
+    private void addChildrenClassificationForms(final UIClassification _uiclass, final Map<UUID, String> _instanceKeys)
+            throws EFapsException
+    {
+        for (final UIClassification childClass : _uiclass.getChildren()) {
+            if (_instanceKeys.containsKey(childClass.getClassificationUUID())) {
+                this.elements.add(new Element(UIForm.ElementType.SUBFORM, new UIFieldForm(getCommandUUID(),
+                                    _instanceKeys.get(childClass.getClassificationUUID()))));
+            }
+            addChildrenClassificationForms(childClass, _instanceKeys);
         }
     }
 

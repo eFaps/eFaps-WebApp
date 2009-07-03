@@ -23,8 +23,10 @@ package org.efaps.ui.wicket.models.objects;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -257,13 +259,13 @@ public class UIClassification implements IFormElement, IClusterable
      * Method to get the key to the instances related to this classification.
      *
      * @param _instance          Instance the related instance key are searched for
-     * @return list of instance keys
+     * @return Map of instance keys
      * @throws EFapsException on error
      */
-    public List<String> getClassInstanceKeys(final Instance _instance)
+    public Map<UUID, String> getClassInstanceKeys(final Instance _instance)
             throws EFapsException
     {
-        final List<String> ret = new ArrayList<String>();
+        final Map<UUID, String> ret = new HashMap<UUID, String>();
         final Classification classType = (Classification) Type.get(this.classificationUUID);
         final SearchQuery query = new SearchQuery();
         query.setExpand(_instance,
@@ -281,7 +283,7 @@ public class UIClassification implements IFormElement, IClusterable
             if (subquery.next()) {
                 //TODO must return an instanceKey!!! not necessary the oid
                 final String instanceKey = (String) subquery.get("OID");
-                ret.add(instanceKey);
+                ret.put(subquery.getType().getUUID(), instanceKey);
                 this.selectedUUID.add(subquery.getType().getUUID());
             }
             subquery.close();
