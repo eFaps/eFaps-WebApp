@@ -455,13 +455,13 @@ public class UITable extends UIAbstractPageObject
                 }
             }
             final UIRow row = new UIRow(instanceKeys.toString());
-            Attribute attr = null;
+
 
             String strValue = "";
             for (final Field field : _fields) {
                 if (field.hasAccess(getMode()) && !field.isNoneDisplay(getMode())) {
                     Object value = null;
-
+                    Attribute attr = null;
                     if (field.getExpression() != null) {
                         value = _query.get(field.getExpression());
                         attr = _query.getAttribute(field.getExpression());
