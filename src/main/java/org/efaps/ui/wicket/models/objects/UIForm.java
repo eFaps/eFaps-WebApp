@@ -311,7 +311,7 @@ public class UIForm extends UIAbstractPageObject
         final ListQuery ret = new ListQuery(instances);
 
         for (final Field field : _form.getFields()) {
-            if (field.hasAccess(getMode())) {
+            if (field.hasAccess(getMode()) && !field.isNoneDisplay(getMode())) {
                 if (field.getExpression() != null) {
                     ret.addSelect(field.getExpression());
                 }
