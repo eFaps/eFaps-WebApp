@@ -562,6 +562,11 @@ public abstract class AbstractUIObject extends AbstractInstanceObject
     public List<Return> executeEvents(final Object... _objectTuples)
             throws EFapsException
     {
+        return executeEvents(EventType.UI_COMMAND_EXECUTE, _objectTuples);
+    }
+
+    private List<Return> executeEvents(final EventType _eventType, final Object... _objectTuples) throws EFapsException
+    {
         List<Return> ret = new ArrayList<Return>();
         AbstractCommand command;
         if (this.callingCmdUUID == null) {
@@ -570,7 +575,7 @@ public abstract class AbstractUIObject extends AbstractInstanceObject
             command = getCallingCommand();
         }
 
-        if (command.hasEvents(EventType.UI_COMMAND_EXECUTE)) {
+        if (command.hasEvents(_eventType)) {
             final Parameter param = new Parameter();
             if (_objectTuples != null) {
                 // add all parameters
@@ -587,28 +592,22 @@ public abstract class AbstractUIObject extends AbstractInstanceObject
                 param.put(ParameterValues.CALL_INSTANCE, getInstance());
                 param.put(ParameterValues.INSTANCE, getInstance());
             }
-            ret = command.executeEvents(EventType.UI_COMMAND_EXECUTE, param);
+            ret = command.executeEvents(_eventType, param);
         }
         return ret;
     }
-
     /**
      * This method executes the Validate-Events which are related to this Model.
      * It will take the Events of the Command {@link #cmdUUID}.
      *
      * @param _others Object to add to the event
      * @return List with Return from the esjp
+     * @throws EFapsException
      */
-    public List<Return> validate(final Object _others)
+    public List<Return> validate(final Object... _objectTuples)
+            throws EFapsException
     {
-        final AbstractCommand command = this.getCommand();
-        try {
-            return command.executeEvents(EventType.UI_VALIDATE,
-                                         ParameterValues.OTHERS, _others,
-                                         ParameterValues.PARAMETERS, Context.getThreadContext().getParameters());
-        } catch (final EFapsException e) {
-            throw new RestartResponseException(new ErrorPage(e));
-        }
+        return executeEvents(EventType.UI_VALIDATE, _objectTuples);
     }
 
     /**

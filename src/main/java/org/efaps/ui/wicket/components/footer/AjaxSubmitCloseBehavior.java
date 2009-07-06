@@ -124,124 +124,119 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
         others.put("selectedRow", other);
 
         convertDateFieldValues();
-        if (checkForRequired(_target) && (validateForm(_target, others))) {
-
-            if (this.uiObject instanceof UIForm && ((UIForm) this.uiObject).isFileUpload()) {
-                doFileUpload(_target);
-            } else {
-                if (this.uiObject instanceof UIForm) {
-                    final UIForm uiform = (UIForm) this.uiObject;
-                    others.putAll(uiform.getNewValues());
-                    // if the form contains classifications, they are added to a list and passed on to the esjp
-                    if (uiform.isClassified()) {
-                        for (final Element element : uiform.getElements()) {
-                            if (element.getType().equals(ElementType.SUBFORM)) {
-                                final UIFieldForm uifieldform = (UIFieldForm) element.getElement();
-                                classifications.add((Classification) Type.get(uifieldform.getClassificationUUID()));
-                            }
-                        }
+        if (this.uiObject instanceof UIForm) {
+            final UIForm uiform = (UIForm) this.uiObject;
+            others.putAll(uiform.getNewValues());
+            // if the form contains classifications, they are added to a list and passed on to the esjp
+            if (uiform.isClassified()) {
+                for (final Element element : uiform.getElements()) {
+                    if (element.getType().equals(ElementType.SUBFORM)) {
+                        final UIFieldForm uifieldform = (UIFieldForm) element.getElement();
+                        classifications.add((Classification) Type.get(uifieldform.getClassificationUUID()));
                     }
                 }
-                boolean error = false;
-                try {
-                    if (!executeEvents(_target, others, classifications)) {
-                        error = true;
-                    }
-                } catch (final EFapsException e) {
-                    final ModalWindowContainer modal = ((AbstractContentPage) getComponent().getPage()).getModal();
-                    modal.setPageCreator(new ModalWindow.PageCreator() {
-
-                        private static final long serialVersionUID = 1L;
-
-                        public Page createPage()
-                        {
-                            return new ErrorPage(e);
-                        }
-                    });
-                    modal.show(_target);
-                    error = true;
-                }
-                if (!error) {
-                    if (this.uiObject.hasTargetCmd()) {
-                        final AbstractCommand targetCmd = this.uiObject.getTargetCmd();
-                        UIAbstractPageObject newUIObject;
-                        if (targetCmd.getTargetTable() != null) {
-                            newUIObject = new UITable(this.uiObject.getTargetCmdUUID(), this.uiObject.getInstanceKey(),
-                                                      this.uiObject.getOpenerId());
-                        } else {
-                            newUIObject = new UIForm(this.uiObject.getTargetCmdUUID(), this.uiObject.getInstanceKey(),
-                                                     this.uiObject.getOpenerId());
-                        }
-
-                        final UIWizardObject wizard = new UIWizardObject(newUIObject);
-                        this.uiObject.setWizard(wizard);
-                        try {
-                            wizard.addParameters(this.uiObject, Context.getThreadContext().getParameters());
-                        } catch (final EFapsException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
-                        wizard.insertBefore(this.uiObject);
-                        newUIObject.setWizard(wizard);
-                        newUIObject.setPartOfWizardCall(true);
-                        newUIObject.setRenderRevise(this.uiObject.isTargetCmdRevise());
-                        if (this.uiObject.isSubmit()) {
-                            newUIObject.setSubmit(true);
-                            newUIObject.setCallingCommandUUID(this.uiObject.getCallingCommandUUID());
-                        }
-                        final FooterPanel footer = getComponent().findParent(FooterPanel.class);
-                        final ModalWindowContainer modal = footer.getModalWindow();
-                        final AbstractContentPage page;
-                        if (targetCmd.getTargetTable() != null) {
-                            page = new TablePage(new TableModel((UITable) newUIObject), modal);
-                        } else {
-                            page = new FormPage(new FormModel((UIForm) newUIObject), modal);
-                        }
-                        page.setMenuTreeKey(((AbstractContentPage) getComponent().getPage()).getMenuTreeKey());
-                        getComponent().getPage().getRequestCycle().setResponsePage(page);
-                    } else {
-                        final FooterPanel footer = getComponent().findParent(FooterPanel.class);
-                        // if inside a modal
-                        if (this.uiObject.getCommand().getTarget() == Target.MODAL) {
-                            footer.getModalWindow().setReloadChild(true);
-                            footer.getModalWindow().close(_target);
-                        } else {
-                            final Opener opener = ((EFapsSession) Session.get()).getOpener(this.uiObject.getOpenerId());
-                            // mark the opener that it can be removed
-                            opener.setMarked4Remove(true);
-
-                            Class<? extends Page> clazz;
-                            if (opener.getModel() instanceof TableModel) {
-                                clazz = TablePage.class;
+            }
+        }
+        try {
+            if (checkForRequired(_target) && (validateForm(_target, others, classifications))) {
+                if (this.uiObject instanceof UIForm && ((UIForm) this.uiObject).isFileUpload()) {
+                    doFileUpload(_target);
+                } else {
+                    if (executeEvents(_target, others, classifications)) {
+                        if (this.uiObject.hasTargetCmd()) {
+                            final AbstractCommand targetCmd = this.uiObject.getTargetCmd();
+                            UIAbstractPageObject newUIObject;
+                            if (targetCmd.getTargetTable() != null) {
+                                newUIObject = new UITable(this.uiObject.getTargetCmdUUID(), this.uiObject
+                                                .getInstanceKey(), this.uiObject.getOpenerId());
                             } else {
-                                clazz = FormPage.class;
+                                newUIObject = new UIForm(this.uiObject.getTargetCmdUUID(), this.uiObject
+                                                .getInstanceKey(), this.uiObject.getOpenerId());
                             }
 
-                            final PageParameters parameters = new PageParameters();
-                            parameters.add(Opener.OPENER_PARAKEY, this.uiObject.getOpenerId());
+                            final UIWizardObject wizard = new UIWizardObject(newUIObject);
+                            this.uiObject.setWizard(wizard);
+                            try {
+                                wizard.addParameters(this.uiObject, Context.getThreadContext().getParameters());
+                            } catch (final EFapsException e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                            }
+                            wizard.insertBefore(this.uiObject);
+                            newUIObject.setWizard(wizard);
+                            newUIObject.setPartOfWizardCall(true);
+                            newUIObject.setRenderRevise(this.uiObject.isTargetCmdRevise());
+                            if (this.uiObject.isSubmit()) {
+                                newUIObject.setSubmit(true);
+                                newUIObject.setCallingCommandUUID(this.uiObject.getCallingCommandUUID());
+                            }
+                            final FooterPanel footer = getComponent().findParent(FooterPanel.class);
+                            final ModalWindowContainer modal = footer.getModalWindow();
+                            final AbstractContentPage page;
+                            if (targetCmd.getTargetTable() != null) {
+                                page = new TablePage(new TableModel((UITable) newUIObject), modal);
+                            } else {
+                                page = new FormPage(new FormModel((UIForm) newUIObject), modal);
+                            }
+                            page.setMenuTreeKey(((AbstractContentPage) getComponent().getPage()).getMenuTreeKey());
+                            getComponent().getPage().getRequestCycle().setResponsePage(page);
+                        } else {
+                            final FooterPanel footer = getComponent().findParent(FooterPanel.class);
+                            // if inside a modal
+                            if (this.uiObject.getCommand().getTarget() == Target.MODAL) {
+                                footer.getModalWindow().setReloadChild(true);
+                                footer.getModalWindow().close(_target);
+                            } else {
+                                final Opener opener = ((EFapsSession) Session.get()).getOpener(this.uiObject
+                                                .getOpenerId());
+                                // mark the opener that it can be removed
+                                opener.setMarked4Remove(true);
 
-                            final CharSequence url = this.form.urlFor(PageMap.forName(opener.getPageMapName()), clazz,
-                                            parameters);
+                                Class<? extends Page> clazz;
+                                if (opener.getModel() instanceof TableModel) {
+                                    clazz = TablePage.class;
+                                } else {
+                                    clazz = FormPage.class;
+                                }
 
-                            _target.appendJavascript("opener.location.href = '" + url + "'; self.close();");
-                        }
-                        footer.setSuccess(true);
+                                final PageParameters parameters = new PageParameters();
+                                parameters.add(Opener.OPENER_PARAKEY, this.uiObject.getOpenerId());
 
-                        // execute the CallBacks
-                        final List<UpdateInterface> updates = ((EFapsSession) getComponent().getSession())
-                                        .getUpdateBehavior(this.uiObject.getInstanceKey());
-                        if (updates != null) {
-                            for (final UpdateInterface update : updates) {
-                                if (update.isAjaxCallback()) {
-                                    update.setInstanceKey(this.uiObject.getInstanceKey());
-                                    update.setMode(this.uiObject.getMode());
-                                    _target.prependJavascript(update.getAjaxCallback());
+                                final CharSequence url = this.form.urlFor(PageMap.forName(opener.getPageMapName()),
+                                                clazz, parameters);
+
+                                _target.appendJavascript("opener.location.href = '" + url + "'; self.close();");
+                            }
+                            footer.setSuccess(true);
+
+                            // execute the CallBacks
+                            final List<UpdateInterface> updates = ((EFapsSession) getComponent().getSession())
+                                            .getUpdateBehavior(this.uiObject.getInstanceKey());
+                            if (updates != null) {
+                                for (final UpdateInterface update : updates) {
+                                    if (update.isAjaxCallback()) {
+                                        update.setInstanceKey(this.uiObject.getInstanceKey());
+                                        update.setMode(this.uiObject.getMode());
+                                        _target.prependJavascript(update.getAjaxCallback());
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
+        } catch (final EFapsException e) {
+            final ModalWindowContainer modal = ((AbstractContentPage) getComponent().getPage()).getModal();
+            modal.setPageCreator(new ModalWindow.PageCreator() {
+
+                private static final long serialVersionUID = 1L;
+
+                public Page createPage()
+                {
+                    return new ErrorPage(e);
+                }
+            });
+            modal.show(_target);
         }
     }
 
@@ -358,15 +353,24 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
      *                  should be called
      * @param _other    other parameters
      * @return true if the Validation was valid, otherwise false
+     * @throws EFapsException
      */
-    private boolean validateForm(final AjaxRequestTarget _target, final Map<String, String[]> _other)
+    private boolean validateForm(final AjaxRequestTarget _target, final Map<String, String[]> _other,
+                                 final List<Classification> _classifications)
+            throws EFapsException
     {
         boolean ret = true;
+        final List<Return> returns;
+        if (_classifications.size() > 0) {
+            returns = ((AbstractUIObject) this.form.getParent().getDefaultModelObject()).validate(
+                            ParameterValues.OTHERS, _other,
+                            ParameterValues.CLASSIFICATIONS, _classifications);
+        } else {
+            returns = ((AbstractUIObject) this.form.getParent().getDefaultModelObject()).validate(
+                            ParameterValues.OTHERS, _other);
+        }
 
-        final List<Return> validation = ((AbstractUIObject) this.form.getParent().getDefaultModelObject())
-                        .validate(_other);
-
-        for (final Return oneReturn : validation) {
+        for (final Return oneReturn : returns) {
             if (oneReturn.get(ReturnValues.TRUE) == null) {
                 boolean sniplett = false;
                 String key = (String) oneReturn.get(ReturnValues.VALUES);
