@@ -266,14 +266,16 @@ public class UIForm extends UIAbstractPageObject
             }
             if (uiclass != null) {
                 final Map<UUID, String> instanceKeys = uiclass.getClassInstanceKeys(getInstance());
-                if (!uiclass.isInitialized()) {
-                    uiclass.execute();
-                }
-                // add the root classification
-                this.elements.add(new Element(UIForm.ElementType.SUBFORM, new UIFieldForm(getCommandUUID(),
-                                 instanceKeys.get(uiclass.getClassificationUUID()))));
+                if (instanceKeys.size() > 0) {
+                    if (!uiclass.isInitialized()) {
+                        uiclass.execute();
+                    }
+                    // add the root classification
+                    this.elements.add(new Element(UIForm.ElementType.SUBFORM, new UIFieldForm(getCommandUUID(),
+                                     instanceKeys.get(uiclass.getClassificationUUID()))));
 
-                addChildrenClassificationForms(uiclass, instanceKeys);
+                    addChildrenClassificationForms(uiclass, instanceKeys);
+                }
             }
         }
     }
