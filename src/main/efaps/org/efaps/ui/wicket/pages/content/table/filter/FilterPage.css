@@ -25,6 +25,27 @@
  * @eFapsRevision $Rev$
  */
  
+body {
+  background-color: #E1E1E1;;
+  overflow: hidden;
+}
+
+body,th,td,p,div {
+  font-family: arial, verdana, helvetica, sans-serif;
+  font-size: 8pt;
+  margin: 0;
+}
+
+a:visited, a:link {
+  color:#00A000;
+  font-weight:bold;
+  text-decoration:none;
+}
+
+.eFapsFilterForm {
+  text-align: center;
+}
+
 .eFapsFilterTable {
   font-family: arial, verdana, helvetica, sans-serif;
   font-size: 8pt;
@@ -45,15 +66,20 @@ tr.eFapsTableRowOdd {
   background-color: #ffffff;
 }
 
-.eFapsFilterSubmit {
+.eFapsFilterCancel, .eFapsFilterClear, .eFapsFilterSubmit {
   float: left;
 }
 
-.eFapsFilterSubmit:hover {
+.eFapsFilterCancel:hover, .eFapsFilterClear:hover, .eFapsFilterSubmit:hover {
   cursor: pointer;
 }
 
-.eFapsFilterCancel {
-  float: left;
+.eFapsFilterButtons {
+  margin-top: 9px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
+.eFapsFilterText {
+  display: block;
+}

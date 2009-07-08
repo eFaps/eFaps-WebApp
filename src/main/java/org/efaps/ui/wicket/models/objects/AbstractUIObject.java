@@ -230,6 +230,9 @@ public abstract class AbstractUIObject extends AbstractInstanceObject
         return getCommand().hasEvents(EventType.UI_INSTANCEMANAGER);
     }
 
+    /**
+     *  Method is used to execute the UIObject (Fill it with data).
+     */
     public abstract void execute();
 
     /**

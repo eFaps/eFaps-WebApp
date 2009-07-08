@@ -38,66 +38,68 @@ import org.joda.time.format.ISODateTimeFormat;
  * @author jmox
  * @version $Id$
  */
-public class DateFieldWithPicker extends DateTextField {
+public class DateFieldWithPicker extends DateTextField
+{
 
-  /**
-   * Needed for serialization.
-   */
-  private static final long serialVersionUID = 1L;
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
-  /**
-   * Name of the inputfield.
-   */
-  private final String inputName;
+    /**
+     * Name of the inputfield.
+     */
+    private final String inputName;
 
-  /**
-   * @param _wicketId   wicketId of the Component
-   * @param _model      model for the Component
-   * @param _converter  converter for the Component
-   * @param _inputName  name of the input field
-   */
-  public DateFieldWithPicker(final String _wicketId,
-                             final IModel<Date> _model,
-                             final DateConverter _converter,
-                             final String _inputName) {
+    /**
+     * @param _wicketId wicketId of the Component
+     * @param _model model for the Component
+     * @param _converter converter for the Component
+     * @param _inputName name of the input field
+     */
+    public DateFieldWithPicker(final String _wicketId, final IModel<Date> _model, final DateConverter _converter,
+                               final String _inputName)
+    {
 
-    super(_wicketId, _model, _converter);
-    this.inputName = _inputName;
-    this.add(new DatePicker() {
-      private static final long serialVersionUID = 1L;
+        super(_wicketId, _model, _converter);
+        this.inputName = _inputName;
+        this.add(new DatePicker() {
+            private static final long serialVersionUID = 1L;
 
-      @Override
-      protected boolean enableMonthYearSelection() {
-        return true;
-      }
-    });
-  }
+            @Override
+            protected boolean enableMonthYearSelection()
+            {
+                return true;
+            }
+        });
+    }
 
-  public String getDateAsString(final String _value) {
-    String ret = null;
+    public String getDateAsString(final String _value)
+    {
+        String ret = null;
 
-    final DateTimeFormatter fmt =
-                              DateTimeFormat.forPattern(getTextFormat());
-    fmt.withLocale(getLocale());
-    final DateTime dt = fmt.parseDateTime(_value);
-    final DateTimeFormatter isofmt = ISODateTimeFormat.dateTime();
+        final DateTimeFormatter fmt = DateTimeFormat.forPattern(getTextFormat());
+        fmt.withLocale(getLocale());
+        final DateTime dt = fmt.parseDateTime(_value);
+        final DateTimeFormatter isofmt = ISODateTimeFormat.dateTime();
 
-    ret = dt.toString(isofmt);
+        ret = dt.toString(isofmt);
 
-    return ret;
-  }
+        return ret;
+    }
 
+    @Override
+    protected void onComponentTag(final ComponentTag _tag)
+    {
+        _tag.setName("input");
+        _tag.put("size", 12);
+        super.onComponentTag(_tag);
+    }
 
-  @Override
-  protected void onComponentTag(final ComponentTag _tag) {
-    _tag.setName("input");
-    super.onComponentTag(_tag);
-  }
-
-  @Override
-  public String getInputName() {
-    return this.inputName;
-  }
-
+    @Override
+    public String getInputName()
+    {
+        return this.inputName;
+    }
 
 }

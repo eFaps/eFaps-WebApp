@@ -369,7 +369,7 @@ public class XMLExport
 
         for (final UITableHeader headermodel : _model.getHeaders()) {
             final Element t_cell = _xmlDoc.createElement(TAG.TABLE_CELL.value);
-            t_cell.setAttribute("name", headermodel.getName());
+            t_cell.setAttribute("name", headermodel.getFieldName());
             String width;
             if (headermodel.isFixedWidth()) {
                 width = headermodel.getWidth() + "pt";

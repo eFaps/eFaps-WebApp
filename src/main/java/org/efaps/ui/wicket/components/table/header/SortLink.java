@@ -39,49 +39,48 @@ import org.efaps.ui.wicket.pages.content.table.TablePage;
  * @author jmox
  * @version $Id:SortLinkContainer.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class SortLink extends Link<UITableHeader> {
+public class SortLink extends Link<UITableHeader>
+{
 
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-
-  public SortLink(final String _id, final IModel<UITableHeader> _model) {
-    super(_id, _model);
-  }
-
-  @Override
-  public void onClick() {
-
-    final UITable uiTable = (UITable) (this
-        .findParent(HeaderPanel.class)).getDefaultModelObject();
-    final UITableHeader uiTableHeader = super.getModelObject();
-    uiTable.setSortKey(uiTableHeader.getName());
-
-    for (final UITableHeader headermodel : uiTable.getHeaders()) {
-      if (!headermodel.equals(uiTableHeader)) {
-        headermodel.setSortDirection(SortDirection.NONE);
-      }
+    public SortLink(final String _id, final IModel<UITableHeader> _model)
+    {
+        super(_id, _model);
     }
 
-    if (uiTableHeader.getSortDirection() == SortDirection.NONE
-        || uiTableHeader.getSortDirection() == SortDirection.DESCENDING) {
-      uiTableHeader.setSortDirection(SortDirection.ASCENDING);
-    } else {
-      uiTableHeader.setSortDirection(SortDirection.DESCENDING);
-    }
+    @Override
+    public void onClick()
+    {
 
-    uiTable.setSortDirection(uiTableHeader.getSortDirection());
-    uiTable.sort();
+        final UITable uiTable = (UITable) (this.findParent(HeaderPanel.class)).getDefaultModelObject();
+        final UITableHeader uiTableHeader = super.getModelObject();
+        uiTable.setSortKey(uiTableHeader.getFieldName());
 
-    final String menuTreeKey
-                           = ((AbstractContentPage) getPage()).getMenuTreeKey();
-    AbstractContentPage page;
-    if (getPage() instanceof TablePage) {
-      page = new TablePage(new TableModel(uiTable));
-    } else {
-      page = new FormPage(new FormModel((UIForm) getPage()
-          .getDefaultModelObject()));
+        for (final UITableHeader headermodel : uiTable.getHeaders()) {
+            if (!headermodel.equals(uiTableHeader)) {
+                headermodel.setSortDirection(SortDirection.NONE);
+            }
+        }
+
+        if (uiTableHeader.getSortDirection() == SortDirection.NONE
+                        || uiTableHeader.getSortDirection() == SortDirection.DESCENDING) {
+            uiTableHeader.setSortDirection(SortDirection.ASCENDING);
+        } else {
+            uiTableHeader.setSortDirection(SortDirection.DESCENDING);
+        }
+
+        uiTable.setSortDirection(uiTableHeader.getSortDirection());
+        uiTable.sort();
+
+        final String menuTreeKey = ((AbstractContentPage) getPage()).getMenuTreeKey();
+        AbstractContentPage page;
+        if (getPage() instanceof TablePage) {
+            page = new TablePage(new TableModel(uiTable));
+        } else {
+            page = new FormPage(new FormModel((UIForm) getPage().getDefaultModelObject()));
+        }
+        page.setMenuTreeKey(menuTreeKey);
+        getRequestCycle().setResponsePage(page);
     }
-    page.setMenuTreeKey(menuTreeKey);
-    getRequestCycle().setResponsePage(page);
-  }
 }

@@ -80,7 +80,7 @@ public class StructurBrowserTreeTablePanel extends Panel
         columns[0] = new SelectColumn(new ColumnLocation(Alignment.LEFT, 16, Unit.PX), "");
 
         for (int i = 0; i < model.getHeaders().size(); i++) {
-            if (model.getHeaders().get(i).getName().equals(model.getBrowserFieldName())) {
+            if (model.getHeaders().get(i).getFieldName().equals(model.getBrowserFieldName())) {
                 columns[i + 1] = new TreeColumn(new ColumnLocation(Alignment.MIDDLE, 2, Unit.PROPORTIONAL), model
                                 .getHeaders().get(i).getLabel(), _model);
             } else {

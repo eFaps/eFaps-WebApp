@@ -268,6 +268,7 @@ public class UIStructurBrowser extends AbstractUIObject
      * @see #executeTree(List)
      * @see #executeTreeTable(List)
      */
+    @Override
     @SuppressWarnings("unchecked")
     public void execute()
     {
@@ -357,14 +358,16 @@ public class UIStructurBrowser extends AbstractUIObject
             // evaluate for all expressions in the table
             final ListQuery query = new ListQuery(instances);
             for (final Field field : getTable().getFields()) {
+                Attribute attr = null;
                 if (field.getExpression() != null) {
                     query.addSelect(field.getExpression());
+                    attr = instances.get(0).getType().getAttribute(field.getExpression());
                 }
                 if (field.getAlternateOID() != null) {
                     query.addSelect(field.getAlternateOID());
                 }
                 if (this.root) {
-                    this.headers.add(new UITableHeader(field, this.sortDirection));
+                    this.headers.add(new UITableHeader(field, this.sortDirection, attr));
                 }
             }
 

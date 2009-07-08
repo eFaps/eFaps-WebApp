@@ -20,18 +20,37 @@
 
 package org.efaps.ui.wicket.models.objects;
 
+import java.util.UUID;
+
 import org.apache.wicket.IClusterable;
 
+import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.AbstractCommand.SortDirection;
 import org.efaps.admin.ui.field.Field;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
 public class UITableHeader implements IClusterable
 {
+    /**
+     * Enum for the different types of filter.
+     */
+    public static enum FilterType {
+        /** Date. */
+        DATE,
+        /** Decimal. */
+        DECIMAL,
+        /** Integer. */
+        INTEGER,
+        /** none. */
+        NONE,
+        /** Text. */
+        TEXT;
+    }
     /**
      * Needed for serialization.
      */
@@ -50,12 +69,42 @@ public class UITableHeader implements IClusterable
     /**
      * Name of the header.
      */
-    private final String name;
+    private final String fieldName;
 
     /**
      * Is this header filterable.
      */
-    private final boolean filterable;
+    private boolean filter;
+
+    /**
+     * Is the filter related to this UITableHeader applied to the Table.
+     */
+    private boolean filterApplied;
+
+    /**
+     * Is the filter a picklist or a FreeText filter.
+     */
+    private final boolean filterPickList;
+
+    /**
+     * Is the filter memory or database based.
+     */
+    private final boolean filterMemoryBased;
+
+    /**
+     * Is this filter required.
+     */
+    private final boolean filterRequired;
+
+    /**
+     * Set the default value for a filter.
+     */
+    private final String filterDefault;
+
+    /**
+     * The type of the filter.
+     */
+    private FilterType filterType = UITableHeader.FilterType.NONE;
 
     /**
      * has this header a fixed width.
@@ -68,7 +117,7 @@ public class UITableHeader implements IClusterable
     private SortDirection sortDirection;
 
     /**
-     * Width of this header;
+     * Width of this header.
      */
     private int width;
 
@@ -78,18 +127,64 @@ public class UITableHeader implements IClusterable
     private String markupId;
 
     /**
+     * Id of the attribute this UITableHeader is based on.
+     */
+    private long attrId;
+
+    /**
+     * Id of the field this UITableHeader belongs to.
+     */
+    private final long fieldId;
+
+    /**
      * @param _field            field
      * @param _sortdirection    sort direction
+     * @param _attr             attribute this field is used for
      */
-    public UITableHeader(final Field _field, final SortDirection _sortdirection)
+    public UITableHeader(final Field _field, final SortDirection _sortdirection, final Attribute _attr)
     {
         this.label = _field.getLabel();
         this.sortable = _field.isSortAble();
-        this.name = _field.getName();
-        this.filterable = _field.isFilterable();
+        this.fieldName = _field.getName();
+        this.filter = _field.isFilter();
+        this.filterMemoryBased = _field.isFilterMemoryBased();
+        this.filterPickList = _field.isFilterPickList();
+        this.filterRequired = _field.isFilterRequired();
+        setFilterApplied(this.filterRequired);
+        this.filterDefault = _field.getFilterDefault();
         this.sortDirection = _sortdirection;
         this.width = _field.getWidth();
         this.fixedWidth = _field.isFixedWidth();
+        this.fieldId = _field.getId();
+
+        if (!this.filterPickList && _attr != null) {
+            this.attrId = _attr.getId();
+            final UUID attrTypeUUId = _attr.getAttributeType().getUUID();
+            //String
+            if (UUID.fromString("72221a59-df5d-4c56-9bec-c9167de80f2b").equals(attrTypeUUId)) {
+                this.filterType = UITableHeader.FilterType.TEXT;
+            // Integer
+            } else if (UUID.fromString("41451b64-cb24-4e77-8d9e-5b6eb58df56f").equals(attrTypeUUId)) {
+                this.filterType = UITableHeader.FilterType.INTEGER;
+            // Decimal
+            } else if  (UUID.fromString("358d1f0e-43ae-425d-a4a0-8d5bad6f40d7").equals(attrTypeUUId)) {
+                this.filterType = UITableHeader.FilterType.DECIMAL;
+            // Date or DateTime
+            } else if (UUID.fromString("68ce3aa6-e3e8-40bb-b48f-2a67948c2e7e").equals(attrTypeUUId)
+                        || UUID.fromString("e764db0f-70f2-4cd4-b2fe-d23d3da72f78").equals(attrTypeUUId)) {
+                this.filterType = UITableHeader.FilterType.DATE;
+            }
+        }
+    }
+
+    /**
+     * Get the Attribute belonging to this UITableHeader.
+     * @return  Attribute
+     * @throws CacheReloadException on error
+     */
+    public Attribute getAttribute() throws CacheReloadException
+    {
+        return Attribute.get(this.attrId);
     }
 
     /**
@@ -116,6 +211,16 @@ public class UITableHeader implements IClusterable
     }
 
     /**
+     * Setter method for instance variable {@link #filter}.
+     *
+     * @param _filter value for instance variable {@link #filter}
+     */
+    public void setFilter(final boolean _filter)
+    {
+        this.filter = _filter;
+    }
+
+    /**
      * Setter method for instance variable {@link #sortable}.
      *
      * @param _sortable value for instance variable {@link #sortable}
@@ -126,25 +231,45 @@ public class UITableHeader implements IClusterable
     }
 
     /**
-     * This is the getter method for the instance variable {@link #name}.
+     * This is the getter method for the instance variable {@link #fieldName}.
      *
-     * @return value of instance variable {@link #name}
+     * @return value of instance variable {@link #fieldName}
      */
 
-    public String getName()
+    public String getFieldName()
     {
-        return this.name;
+        return this.fieldName;
     }
 
     /**
-     * This is the getter method for the instance variable {@link #filterable}.
+     * Getter method for instance variable {@link #fieldId}.
      *
-     * @return value of instance variable {@link #filterable}
+     * @return value of instance variable {@link #fieldId}
+     */
+    public long getFieldId()
+    {
+        return this.fieldId;
+    }
+
+    /**
+     * This is the getter method for the instance variable {@link #filter}.
+     *
+     * @return value of instance variable {@link #filter}
      */
 
-    public boolean isFilterable()
+    public boolean isFilter()
     {
-        return this.filterable;
+        return this.filter;
+    }
+
+    /**
+     * Getter method for instance variable {@link #filterType}.
+     *
+     * @return value of instance variable {@link #filterType}
+     */
+    public FilterType getFilterType()
+    {
+        return this.filterType;
     }
 
     /**
@@ -218,5 +343,65 @@ public class UITableHeader implements IClusterable
     public void setMarkupId(final String _markupId)
     {
         this.markupId = _markupId;
+    }
+
+    /**
+     * Getter method for instance variable {@link #filterPickList}.
+     *
+     * @return value of instance variable {@link #filterPickList}
+     */
+    public boolean isFilterPickList()
+    {
+        return this.filterPickList;
+    }
+
+    /**
+     * Getter method for instance variable {@link #filterMemoryBased}.
+     *
+     * @return value of instance variable {@link #filterMemoryBased}
+     */
+    public boolean isFilterMemoryBased()
+    {
+        return this.filterMemoryBased;
+    }
+
+    /**
+     * Getter method for instance variable {@link #filterRequired}.
+     *
+     * @return value of instance variable {@link #filterRequired}
+     */
+    public boolean isFilterRequired()
+    {
+        return this.filterRequired;
+    }
+
+    /**
+     * Getter method for instance variable {@link #filterDefault}.
+     *
+     * @return value of instance variable {@link #filterDefault}
+     */
+    public String getFilterDefault()
+    {
+        return this.filterDefault;
+    }
+
+    /**
+     * Getter method for instance variable {@link #filterApplied}.
+     *
+     * @return value of instance variable {@link #filterApplied}
+     */
+    public boolean isFilterApplied()
+    {
+        return this.filterApplied;
+    }
+
+    /**
+     * Setter method for instance variable {@link #filterApplied}.
+     *
+     * @param _filterApplied value for instance variable {@link #filterApplied}
+     */
+    public void setFilterApplied(final boolean _filterApplied)
+    {
+        this.filterApplied = _filterApplied;
     }
 }

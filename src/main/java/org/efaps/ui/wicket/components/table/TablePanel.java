@@ -65,10 +65,10 @@ public class TablePanel extends Panel
     {
         super(_wicketId, _model);
 
-        final UITable model = (UITable) super.getDefaultModelObject();
+        final UITable uiTable = (UITable) super.getDefaultModelObject();
 
-        if (!model.isInitialized()) {
-            model.execute();
+        if (!uiTable.isInitialized()) {
+            uiTable.execute();
         }
         setOutputMarkupId(true);
         this.add(new SimpleAttributeModifier("class", "eFapsTableBody"));
@@ -78,13 +78,19 @@ public class TablePanel extends Panel
         final RepeatingView rowsRepeater = new RepeatingView("rowRepeater");
         add(rowsRepeater);
 
-        if (model.getValues().isEmpty()) {
-            final Label nodata = new Label(rowsRepeater.newChildId(), DBProperties.getProperty("WebTable.NoData"));
+        if (uiTable.getValues().isEmpty()) {
+            String text;
+            if (uiTable.isFiltered()) {
+                text = DBProperties.getProperty("WebTable.NoData");
+            } else {
+                text = DBProperties.getProperty("WebTable.NoDataWithFilter");
+            }
+            final Label nodata = new Label(rowsRepeater.newChildId(), text);
             nodata.add(new SimpleAttributeModifier("class", "eFapsTableNoData"));
             rowsRepeater.add(nodata);
         } else {
             boolean odd = true;
-            for (final Iterator<UIRow> rowIter = model.getValues().iterator(); rowIter.hasNext(); odd = !odd) {
+            for (final Iterator<UIRow> rowIter = uiTable.getValues().iterator(); rowIter.hasNext(); odd = !odd) {
 
                 final RowPanel row = new RowPanel(rowsRepeater.newChildId(), new RowModel(rowIter.next()), this,
                                                ContentContainerPage.IFRAME_PAGEMAP_NAME.equals(_page.getPageMapName()));
@@ -97,7 +103,7 @@ public class TablePanel extends Panel
                 rowsRepeater.add(row);
             }
         }
-        if (model.isCreateMode()) {
+        if (uiTable.isCreateMode()) {
             rowsRepeater.add(new AjaxAddRemoveRowPanel(rowsRepeater.newChildId(), _model, rowsRepeater));
         }
     }

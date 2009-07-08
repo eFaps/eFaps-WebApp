@@ -38,39 +38,57 @@ import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 
 /**
- * This class renders the Cells inside a Header, providing all necessary Links
+ * This class renders the Cells inside a Header, providing all necessary Links.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
 public class HeaderCellPanel extends Panel
 {
-
-    private static final long serialVersionUID = 1L;
-
+    /**
+     * Reference to an icon from the eFaps DataBase.
+     */
     public static final EFapsContentReference ICON_FILTER = new EFapsContentReference(HeaderCellPanel.class,
-                    "Filter.gif");
-
-    public static final EFapsContentReference ICON_FILTERACTIVE = new EFapsContentReference(HeaderCellPanel.class,
-                    "FilterActive.gif");
-
-    public static final EFapsContentReference ICON_SORTDESC = new EFapsContentReference(HeaderCellPanel.class,
-                    "SortDescending.gif");
-
-    public static final EFapsContentReference ICON_SORTASC = new EFapsContentReference(HeaderCellPanel.class,
-                    "SortAscending.gif");
-
-    public static final EFapsContentReference CSS = new EFapsContentReference(HeaderCellPanel.class,
-                    "HeaderCellPanel.css");
+                                                                                      "Filter.gif");
 
     /**
-     * Constructor used to render only a CheckBoxCell
-     *
-     * @param _id
+     * Reference to an icon from the eFaps DataBase.
      */
-    public HeaderCellPanel(final String _id, final boolean _checkbox)
+    public static final EFapsContentReference ICON_FILTERACTIVE = new EFapsContentReference(HeaderCellPanel.class,
+                                                                                            "FilterActive.gif");
+
+    /**
+     * Reference to an icon from the eFaps DataBase.
+     */
+    public static final EFapsContentReference ICON_SORTDESC = new EFapsContentReference(HeaderCellPanel.class,
+                                                                                        "SortDescending.gif");
+
+    /**
+     * Reference to an icon from the eFaps DataBase.
+     */
+    public static final EFapsContentReference ICON_SORTASC = new EFapsContentReference(HeaderCellPanel.class,
+                                                                                       "SortAscending.gif");
+
+    /**
+     * Reference to a stylesheet from the eFaps DataBase.
+     */
+    public static final EFapsContentReference CSS = new EFapsContentReference(HeaderCellPanel.class,
+                                                                              "HeaderCellPanel.css");
+
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * Constructor used to render only a CheckBoxCell.
+     *
+     * @param _wicketId wicket id for this component
+     * @param _checkbox render a checkbox
+     */
+    public HeaderCellPanel(final String _wicketId, final boolean _checkbox)
     {
-        super(_id);
+        super(_wicketId);
         this.add(new SimpleAttributeModifier("class", "eFapsTableCheckBoxCell eFapsCellFixedWidth0"));
         if (_checkbox) {
             this.add(new Checkbox("checkBox"));
@@ -86,17 +104,17 @@ public class HeaderCellPanel extends Panel
      * Constructor used to render a Cell for the Header with (depending on the
      * model) SortLink, Filterlink etc.
      *
-     * @param _id
-     * @param _model
-     * @param _uitable
+     * @param _wicketId wicket id for this component
+     * @param _model    model for this component
+     * @param _uitable  uitable this component sits in
      */
-    public HeaderCellPanel(final String _id, final IModel<UITableHeader> _model, final UITable _uitable)
+    public HeaderCellPanel(final String _wicketId, final IModel<UITableHeader> _model, final UITable _uitable)
     {
-        super(_id, _model);
+        super(_wicketId, _model);
 
         final UITableHeader uiTableHeader = (UITableHeader) super.getDefaultModelObject();
 
-        add(StaticHeaderContributor.forCss(CSS));
+        add(StaticHeaderContributor.forCss(HeaderCellPanel.CSS));
 
         this.add(new SimpleAttributeModifier("title", uiTableHeader.getLabel()));
 
@@ -110,14 +128,14 @@ public class HeaderCellPanel extends Panel
             } else if (uiTableHeader.getSortDirection() == SortDirection.ASCENDING) {
                 sortlink.add(new SimpleAttributeModifier("class", "eFapsHeaderSortAscending"));
                 sortlink.add(new SimpleAttributeModifier("style", " background-image: url("
-                                + ICON_SORTASC.getImageUrl() + ");"));
+                                + HeaderCellPanel.ICON_SORTASC.getImageUrl() + ");"));
             } else if (uiTableHeader.getSortDirection() == SortDirection.DESCENDING) {
                 sortlink.add(new SimpleAttributeModifier("class", "eFapsHeaderSortDescending"));
                 sortlink.add(new SimpleAttributeModifier("style", " background-image: url("
-                                + ICON_SORTDESC.getImageUrl() + ");"));
+                                + HeaderCellPanel.ICON_SORTDESC.getImageUrl() + ");"));
             }
 
-            if (uiTableHeader.isFilterable()) {
+            if (uiTableHeader.isFilter()) {
                 sortlink.add(new AttributeAppender("style", new Model<String>("width:80%"), ";"));
             }
             this.add(sortlink);
@@ -132,30 +150,28 @@ public class HeaderCellPanel extends Panel
             this.add(label);
         }
 
-        if (uiTableHeader.isFilterable()) {
+        if (uiTableHeader.isFilter()) {
 
-            final AjaxFilterLinkContainer filterlink = new AjaxFilterLinkContainer("filterlink", _model);
+            final AjaxFilterLink filterlink = new AjaxFilterLink("filterlink", _model);
 
-            if (uiTableHeader.getName().equals(_uitable.getFilterKey()) && _uitable.isFiltered()) {
+            if (uiTableHeader.isFilterApplied() && _uitable.isFiltered()) {
                 filterlink.add(new SimpleAttributeModifier("class", "eFapsHeaderFilterActive"));
                 filterlink.add(new SimpleAttributeModifier("style", " background-image: url("
-                                + ICON_FILTERACTIVE.getImageUrl() + ");"));
+                                + HeaderCellPanel.ICON_FILTERACTIVE.getImageUrl() + ");"));
             } else {
                 filterlink.add(new SimpleAttributeModifier("class", "eFapsHeaderFilter"));
                 filterlink.add(new SimpleAttributeModifier("style", " background-image: url("
-                                + ICON_FILTER.getImageUrl() + ");"));
+                                + HeaderCellPanel.ICON_FILTER.getImageUrl() + ");"));
             }
             this.add(filterlink);
-
         } else {
             this.add(new WebComponent("filterlink").setVisible(false));
-
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
+
+    /**
+     * Set the markupid into the model.
      * @see org.apache.wicket.Component#onAfterRender()
      */
     @Override
@@ -168,22 +184,29 @@ public class HeaderCellPanel extends Panel
         }
     }
 
+    /**
+     * Class to render a checkbox that selects all checkboxes in this row.
+     */
     public class Checkbox extends WebComponent
     {
-
+        /**
+         * Needed for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
-        public Checkbox(final String _id)
+        /**
+         * @param _wicketId wicket id for this component
+         */
+        public Checkbox(final String _wicketId)
         {
-            super(_id);
+            super(_wicketId);
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see
-         * org.apache.wicket.Component#onComponentTag(org.apache.wicket.markup
-         * .ComponentTag)
+
+        /**
+         * Make a checkbox.
+         * @see org.apache.wicket.Component#onComponentTag(org.apache.wicket.markup.ComponentTag)
+         * @param _tag tag
          */
         @Override
         protected void onComponentTag(final ComponentTag _tag)
@@ -193,6 +216,10 @@ public class HeaderCellPanel extends Panel
             _tag.put("onClick", getScript());
         }
 
+        /**
+         * Get the script that will be added to the checkbox.
+         * @return String containing the script
+         */
         private String getScript()
         {
             return "var cb=document.getElementsByName('selectedRow');" + "if(!isNaN(cb.length)) {"

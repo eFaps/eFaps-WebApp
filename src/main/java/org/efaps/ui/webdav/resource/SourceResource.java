@@ -33,86 +33,79 @@ import org.efaps.ui.webdav.WebDAVInterface;
  * @version $Id$
  * @todo description
  */
-public class SourceResource extends AbstractResource  {
+public class SourceResource extends AbstractResource
+{
 
-  /////////////////////////////////////////////////////////////////////////////
-  // instance variables
+     /**
+     * File length of the source resource.
+     *
+     * @see #getLength
+     */
+    private final long length;
 
-  /**
-   * File length of the source resource.
-   *
-   * @see #getLength
-   */
-  private final long length;
 
-  /////////////////////////////////////////////////////////////////////////////
-  // constructor / desctructors
+    public SourceResource(final WebDAVInterface _webDAVImpl, final String _name, final Instance _instance,
+                    final Date _created, final Date _modified, final String _description, final long _length)
+    {
+        super(_webDAVImpl, _name, _instance, _created, _modified, _description);
+        this.length = _length;
+    }
 
-  public SourceResource(final WebDAVInterface _webDAVImpl,
-                        final String _name,
-                        final Instance _instance,
-                        final Date _created,
-                        final Date _modified,
-                        final String _description,
-                        final long _length)  {
-    super(_webDAVImpl, _name, _instance, _created, _modified, _description);
-    this.length = _length;
-  }
+    /**
+     * Deletes this source resource.
+     *
+     * @return <i>true</i> if deleted, otherwise <i>false</i>
+     */
+    @Override
+    public boolean delete()
+    {
+        return getWebDAVImpl().deleteSource(this);
+    }
 
-  /**
-   * Deletes this source resource.
-   *
-   * @return <i>true</i> if deleted, otherwise <i>false</i>
-   */
-  @Override
-  public boolean delete()  {
-    return getWebDAVImpl().deleteSource(this);
-  }
+    /**
+     * Moves this source resource to a new location.
+     *
+     * @param _collection new parent collection to move
+     * @param _newName new name of the source in the parent collection
+     * @return <i>true</i> if moved, otherwise <i>false</i>
+     */
+    @Override
+    public boolean move(final CollectionResource _collection, final String _newName)
+    {
+        return getWebDAVImpl().moveSource(this, _collection, _newName);
+    }
 
-  /**
-   * Moves this source resource to a new location.
-   *
-   * @param _collection   new parent collection to move
-   * @param _newName      new name of the source in the parent collection
-   * @return <i>true</i> if moved, otherwise <i>false</i>
-   */
-  @Override
-  public boolean move(final CollectionResource _collection,
-                      final String _newName)  {
-    return getWebDAVImpl().moveSource(this, _collection, _newName);
-  }
+    /**
+     * Copies this source resource to a new location.
+     *
+     * @param _collection new parent collection to copy on
+     * @param _newName new name of the source in the parent collection
+     * @return <i>true</i> if copied, otherwise <i>false</i>
+     */
+    @Override
+    public boolean copy(final CollectionResource _collection, final String _newName)
+    {
+        return getWebDAVImpl().copySource(this, _collection, _newName);
+    }
 
-  /**
-   * Copies this source resource to a new location.
-   *
-   * @param _collection   new parent collection to copy on
-   * @param _newName      new name of the source in the parent collection
-   * @return <i>true</i> if copied, otherwise <i>false</i>
-   */
-  @Override
-  public boolean copy(final CollectionResource _collection,
-                      final String _newName)  {
-    return getWebDAVImpl().copySource(this, _collection, _newName);
-  }
+    public boolean checkout(final OutputStream _outputStream)
+    {
+        return getWebDAVImpl().checkoutSource(this, _outputStream);
+    }
 
-  public boolean checkout(final OutputStream _outputStream)  {
-    return getWebDAVImpl().checkoutSource(this, _outputStream);
-  }
+    public boolean checkin(final InputStream _inputStream)
+    {
+        return getWebDAVImpl().checkinSource(this, _inputStream);
+    }
 
-  public boolean checkin(final InputStream _inputStream)  {
-    return getWebDAVImpl().checkinSource(this, _inputStream);
-  }
-
-  /////////////////////////////////////////////////////////////////////////////
-  // getter / setter methods for instance variables
-
-  /**
-   * This is the getter method for instance variable {@table #length}.
-   *
-   * @return value of instance variable {@table #length}
-   * @see #length
-   */
-  public long getLength()  {
-    return this.length;
-  }
+    /**
+     * This is the getter method for instance variable {@link #length}.
+     *
+     * @return value of instance variable {@link #length}
+     * @see #length
+     */
+    public long getLength()
+    {
+        return this.length;
+    }
 }

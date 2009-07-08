@@ -44,7 +44,7 @@ public class UIRow implements IClusterable
     /**
      * The instance variable stores all oids in a string.
      *
-     * @see #getOids
+     * @see #getInstanceKeys()
      */
     private final String instanceKeys;
 

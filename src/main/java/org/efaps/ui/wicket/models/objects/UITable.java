@@ -26,16 +26,21 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.UUID;
 
+import org.apache.wicket.IClusterable;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.RestartResponseException;
+import org.joda.time.DateTime;
+import org.joda.time.Interval;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.datamodel.attributetype.DateTimeType;
 import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
@@ -52,6 +57,7 @@ import org.efaps.db.Instance;
 import org.efaps.db.ListQuery;
 import org.efaps.ui.wicket.models.cell.UIHiddenCell;
 import org.efaps.ui.wicket.models.cell.UITableCell;
+import org.efaps.ui.wicket.models.objects.UITableHeader.FilterType;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 
@@ -121,30 +127,7 @@ public class UITable extends UIAbstractPageObject
      */
     private static final long serialVersionUID = 1L;
 
-    /**
-     * The instance variable stores the current selected filterKey as the name
-     * of the field of this web table representation.
-     */
-    private String filterKey;
-
-    /**
-     * The instance variable stores the current selected filterKey as the
-     * sequential number of the field of this web table representation.
-     *
-     * @see #getFilterKey
-     * @see #setFilterKey(String)
-     */
-    private int filterKeyInt = 0;
-
-    /**
-     * Contains the sequential numbers of the filter.
-     */
-    private String[] filterSequence;
-
-    /**
-     * The instance Map contains the Values to be filtered.
-     */
-    private List<String> filterValues = new ArrayList<String>();
+    private final Map<UITableHeader,Filter> filters = new HashMap<UITableHeader, Filter>();
 
     /**
      * The instance Array holds the Label for the Columns.
@@ -257,7 +240,7 @@ public class UITable extends UIAbstractPageObject
     }
 
     /**
-     * Method is used to execute the UIForm. (Fill it with data).
+     * {@inheritDoc}
      */
     @Override
     public void execute()
@@ -290,8 +273,9 @@ public class UITable extends UIAbstractPageObject
                 if (field.getName().equals(this.sortKey)) {
                     sortdirection = getSortDirection();
                 }
-                final UITableHeader headermodel = new UITableHeader(field, sortdirection);
+                final UITableHeader headermodel = new UITableHeader(field, sortdirection, null);
                 headermodel.setSortable(false);
+                headermodel.setFilter(false);
                 this.headers.add(headermodel);
                 if (!field.isFixedWidth()) {
                     if (userWidthList != null) {
@@ -387,8 +371,12 @@ public class UITable extends UIAbstractPageObject
         int i = 0;
         for (final Field field : fields) {
             if (field.hasAccess(getMode()) && !field.isNoneDisplay(getMode()) && !field.isHiddenDisplay(getMode())) {
+                Attribute attr = null;
                 if (field.getExpression() != null) {
                     query.addSelect(field.getExpression());
+                    if (instances.size() > 0) {
+                        attr = instances.get(0).getType().getAttribute(field.getExpression());
+                    }
                 }
                 if (field.getAlternateOID() != null) {
                     query.addSelect(field.getAlternateOID());
@@ -397,14 +385,18 @@ public class UITable extends UIAbstractPageObject
                 if (field.getName().equals(this.sortKey)) {
                     sortdirection = getSortDirection();
                 }
-                final UITableHeader headermodel = new UITableHeader(field, sortdirection);
-                this.headers.add(headermodel);
+
+                final UITableHeader uiTableHeader = new UITableHeader(field, sortdirection, attr);
+                if (uiTableHeader.isFilterRequired()) {
+                    this.filters.put(uiTableHeader, new Filter(uiTableHeader));
+                }
+                this.headers.add(uiTableHeader);
                 if (!field.isFixedWidth()) {
                     if (userWidthList != null) {
                         if (isShowCheckBoxes()) {
-                            headermodel.setWidth(userWidthList.get(i + 1));
+                            uiTableHeader.setWidth(userWidthList.get(i + 1));
                         } else {
-                            headermodel.setWidth(userWidthList.get(i));
+                            uiTableHeader.setWidth(userWidthList.get(i));
                         }
                     }
                     this.widthWeight += field.getWidth();
@@ -517,85 +509,54 @@ public class UITable extends UIAbstractPageObject
     }
 
     /**
-     * Prepares the filter to be used in getValues.
-     *
-     * @see #getValues()
-     */
-    public void filter()
-    {
-        if (this.filterSequence != null) {
-            final List<String> filterList = new ArrayList<String>();
-            for (int i = 0; i < this.filterSequence.length; i++) {
-                final Integer intpos = Integer.valueOf(this.filterSequence[i]);
-                filterList.add(this.filterValues.get(intpos));
-            }
-            this.filterValues = filterList;
-        }
-    }
-
-    /**
-     * This is the getter method for the instance variable {@link #filterKeyInt}
-     * .
-     *
-     * @return value of instance variable {@link #filterKeyInt}
-     * @see #filterKey
-     * @see #setFilterKey
-     */
-    public String getFilterKey()
-    {
-        return this.filterKey;
-    }
-
-    /**
-     * This is the setter method for the instance variable {@link #filterKeyInt}
-     * .
-     *
-     * @param _filterkey new value for instance variable {@link #filterKeyInt}
-     * @see #filterKeyInt
-     * @see #getFilterKey
-     */
-    public void setFilterKey(final String _filterkey)
-    {
-        this.filterKey = _filterkey;
-        for (int i = 0; i < getTable().getFields().size(); i++) {
-            final Field field = getTable().getFields().get(i);
-            if (field.getName().equals(_filterkey)) {
-                this.filterKeyInt = i;
-                break;
-            }
-        }
-
-    }
-
-    /**
      * This is the setter method for the instance variable
      * {@link #filterSequence}.
      *
-     * @param _filter new value for instance variable {@link #filterSequence}
+     * @param _list new value for instance variable {@link #filterSequence}
      */
-    public void setFilter(final String[] _filter)
+    public void addFilterList(final UITableHeader _uitableHeader, final Set<?> _list)
     {
-        this.filterSequence = _filter;
+        final Filter filter = new Filter(_uitableHeader, _list);
+        this.filters.put(_uitableHeader, filter);
+        _uitableHeader.setFilterApplied(true);
     }
 
     /**
-     *
-     * @return Map
-     * @throws EFapsException
+     * @param _uitableHeader
+     * @param _from
+     * @param _to
      */
-    public List<String> getFilterList()
+    public void addFilterRange(final UITableHeader _uitableHeader, final String _from, final String _to)
     {
-        final List<String> filterList = new ArrayList<String>();
-        this.filterValues = filterList;
+        final Filter filter = new Filter(_uitableHeader, _from, _to);
+        this.filters.put(_uitableHeader, filter);
+        _uitableHeader.setFilterApplied(true);
+    }
 
+    public Filter getFilter(final UITableHeader _uitableHeader) {
+        return this.filters.get(_uitableHeader);
+    }
+
+    /**
+     * @param uitableHeader
+     * @return
+     */
+    public List<?> getFilterPickList(final UITableHeader _uitableHeader)
+    {
+        final List<String> ret = new ArrayList<String>();
         for (final UIRow rowmodel : this.values) {
-            final UITableCell cellmodel = rowmodel.getValues().get(this.filterKeyInt);
-            final String value = cellmodel.getCellValue();
-            if (!filterList.contains(value)) {
-                filterList.add(value);
+            final List<UITableCell> cells = rowmodel.getValues();
+            for (final UITableCell cell : cells) {
+                if (cell.getFieldId() == _uitableHeader.getFieldId()) {
+                    final String value = cell.getCellValue();
+                    if (!ret.contains(value)) {
+                        ret.add(value);
+                    }
+                    break;
+                }
             }
         }
-        return filterList;
+        return ret;
     }
 
     /**
@@ -814,13 +775,13 @@ public class UITable extends UIAbstractPageObject
         if (isFiltered()) {
             for (final UIRow row : this.values) {
                 boolean filtered = false;
-                final String value = (row.getValues().get(this.filterKeyInt)).getCellValue();
-                for (final String key : this.filterValues) {
-                    if (value.equals(key)) {
-                        filtered = true;
+                for (final Filter filter : this.filters.values()) {
+                    filtered = filter.filterRow(row);
+                    if (filtered) {
+                        break;
                     }
                 }
-                if (filtered) {
+                if (!filtered) {
                     ret.add(row);
                 }
             }
@@ -859,20 +820,8 @@ public class UITable extends UIAbstractPageObject
                 this.sortDirection = command.getTargetTableSortDirection();
             }
 
-            // set show check boxes
-            // final boolean showCheckBoxesTmp =
-            // command.isTargetShowCheckBoxes() &&
-            // command.hasEvents(EventType.UI_COMMAND_EXECUTE);
-            // if (!showCheckBoxesTmp) {
-            // final UUID cldUUID = UUID.fromString(getParameter("command"));
-            // if (cldUUID != null) {
-            // final AbstractCommand cmd = getCommand(cldUUID);
-            // showCheckBoxesTmp =
-            // (cmd != null) && command.hasEvents(EventType.UI_COMMAND_EXECUTE);
-            // }
-            // }
             this.showCheckBoxes = command.isTargetShowCheckBoxes();
-            // get the User spesific Attributes if exist overwrite the defaults
+            // get the User specific Attributes if exist overwrite the defaults
             try {
                 if (Context.getThreadContext().containsUserAttribute(
                                 getUserAttributeKey(UITable.UserAttributeKey.SORTKEY))) {
@@ -899,7 +848,7 @@ public class UITable extends UIAbstractPageObject
      */
     public boolean isFiltered()
     {
-        return !this.filterValues.isEmpty();
+        return !this.filters.isEmpty();
     }
 
     /**
@@ -940,13 +889,12 @@ public class UITable extends UIAbstractPageObject
     }
 
     /**
-     * Method to remove the filter.
+     * Method to remove a filter from the filters.
      */
-    public void removeFilter()
+    public void removeFilter(final UITableHeader _uiTableHeader)
     {
-        this.filterSequence = null;
-        this.filterKey = null;
-        this.filterValues.clear();
+        this.filters.remove(_uiTableHeader);
+        _uiTableHeader.setFilterApplied(false);
     }
 
     /**
@@ -975,7 +923,7 @@ public class UITable extends UIAbstractPageObject
             final String markupId = tokens.nextToken();
             for (final UITableHeader header : this.headers) {
                 if (markupId.equals(header.getMarkupId())) {
-                    columnOrder.append(header.getName()).append(";");
+                    columnOrder.append(header.getFieldName()).append(";");
                     break;
                 }
             }
@@ -1046,6 +994,123 @@ public class UITable extends UIAbstractPageObject
             if (getSortDirection() == SortDirection.DESCENDING) {
                 Collections.reverse(this.values);
             }
+        }
+    }
+
+    public class Filter implements IClusterable {
+
+        /**
+         * Needed foer serialization.
+         */
+        private static final long serialVersionUID = 1L;
+        private final UITableHeader uiTableHeader;
+        private Set<?> filterList;
+        private String from;
+        private String to;
+        private DateTime dateFrom;
+
+        private DateTime dateTo;
+
+
+        /**
+         * Constructor is used in case that a filter is required, during
+         * loading the date first time.
+         *
+         * @param _uitableHeader UITableHeader this filter lies in
+         * @throws EFapsException
+         * @throws EFapsException
+         */
+        public Filter(final UITableHeader _uitableHeader) throws EFapsException
+        {
+            this.uiTableHeader = _uitableHeader;
+            if (_uitableHeader.getFilterDefault() != null) {
+                if (_uitableHeader.getFilterType().equals(FilterType.DATE)
+                                && "today".equalsIgnoreCase(_uitableHeader.getFilterDefault())) {
+                    final DateTimeType dateType = new DateTimeType();
+                    dateType.set(new DateTime[] { new DateTime() });
+                    this.dateFrom = dateType.getValue().toDateMidnight().toDateTime();
+                    this.dateTo = this.dateFrom.plusDays(1);
+                }
+            }
+        }
+
+        /**
+         * @param _uitableHeader
+         * @param _from
+         * @param _to
+         */
+        public Filter(final UITableHeader _uitableHeader, final String _from, final String _to)
+        {
+            this.uiTableHeader = _uitableHeader;
+            this.from = _from;
+            this.to = _to;
+            if (_uitableHeader.getFilterType().equals(FilterType.DATE)) {
+                final DateTimeType dateType = new DateTimeType();
+                dateType.set(new String[] { _from });
+                this.dateFrom = dateType.getValue();
+                dateType.set(new String[] { _to });
+                this.dateTo = dateType.getValue();
+                this.dateTo = this.dateTo == null ? null : this.dateTo.plusDays(1);
+            }
+        }
+
+        /**
+         * @param _uitableHeader
+         * @param _filter
+         */
+        public Filter(final UITableHeader _uitableHeader, final Set<?> _filterList)
+        {
+            this.uiTableHeader = _uitableHeader;
+            this.filterList = _filterList;
+        }
+
+        public boolean filterRow(final UIRow _uiRow)
+        {
+            boolean ret = false;
+            final List<UITableCell> cells = _uiRow.getValues();
+            for (final UITableCell cell : cells) {
+                if (cell.getFieldId() == this.uiTableHeader.getFieldId()) {
+                    if (this.filterList != null) {
+                        final String value = cell.getCellValue();
+                        if (!this.filterList.contains(value)) {
+                            ret = true;
+                        }
+                    } else if (this.uiTableHeader.getFilterType().equals(FilterType.DATE)) {
+                        if (this.dateFrom == null || this.dateTo == null) {
+                            ret = true;
+                        } else {
+                            final Interval interval = new Interval(this.dateFrom, this.dateTo);
+                            final DateTime value = (DateTime) cell.getCompareValue();
+                            if (!(interval.contains(value) || value.isEqual(this.dateFrom)
+                                            || value.isEqual(this.dateTo))) {
+                                ret = true;
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+            return ret;
+        }
+
+        /**
+         * Getter method for instance variable {@link #dateFrom}.
+         *
+         * @return value of instance variable {@link #dateFrom}
+         */
+        public DateTime getDateFrom()
+        {
+            return this.dateFrom;
+        }
+
+        /**
+         * Getter method for instance variable {@link #dateTo}.
+         *
+         * @return value of instance variable {@link #dateTo}
+         */
+        public DateTime getDateTo()
+        {
+            return this.dateTo;
         }
     }
 }

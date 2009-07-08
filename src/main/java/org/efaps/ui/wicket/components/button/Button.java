@@ -29,113 +29,137 @@ import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 
 /**
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public class Button extends Panel {
+public class Button extends Panel
+{
+    /**
+     * Wicket id that must be used for the link component.
+     */
+    public static final String LINKID = "buttonLink";
 
-  private static final long serialVersionUID = 1L;
+    /**
+     * Reference to an icon in the eFaps Database.
+     */
+    public static final EFapsContentReference ICON_CANCEL = new EFapsContentReference(Button.class, "cancel.png");
 
-  public static final String LINKID = "buttonLink";
+    /**
+     * Reference to an icon in the eFaps Database.
+     */
+    public static final EFapsContentReference ICON_ACCEPT = new EFapsContentReference(Button.class, "accept.png");
 
-  public static final EFapsContentReference ICON_CANCEL =
-      new EFapsContentReference(Button.class, "cancel.png");
+    /**
+     * Reference to an icon in the eFaps Database.
+     */
+    public static final EFapsContentReference ICON_NEXT = new EFapsContentReference(Button.class, "next.png");
 
-  public static final EFapsContentReference ICON_ACCEPT =
-      new EFapsContentReference(Button.class, "accept.png");
+    /**
+     * Reference to an icon in the eFaps Database.
+     */
+    public static final EFapsContentReference ICON_PREVIOUS = new EFapsContentReference(Button.class, "previous.png");
 
-  public static final EFapsContentReference ICON_NEXT =
-      new EFapsContentReference(Button.class, "next.png");
-
-  public static final EFapsContentReference ICON_PREVIOUS
-                     = new EFapsContentReference(Button.class, "previous.png");
-
+    /**
+     * Reference to an icon in the eFaps Database.
+     */
+    public static final EFapsContentReference ICON_DELETE = new EFapsContentReference(Button.class, "delete.png");
 
 
-  private final ButtonImage imagediv = new ButtonImage("icon");
-
-  public Button(final String _wicketId, final WebMarkupContainer _link,
-                final String _label) {
-    this(_wicketId, _link, _label, null);
-  }
-
-  public Button(final String _wicketId, final WebMarkupContainer _link,
-                final String _label, final EFapsContentReference _icon) {
-    super(_wicketId);
-    this.add(_link);
-    _link.add(new ButtonStyleBehavior());
-    final Label buttonlabel = new Label("buttonLabel", _label);
-    buttonlabel.add(new ButtonStyleBehavior());
-    _link.add(buttonlabel);
-
-    _link.add(this.imagediv);
-
-    if (_icon != null) {
-      this.imagediv.setReference(_icon);
-    }
-
-  }
-
-  public String getLinkWicketId() {
-    return LINKID;
-  }
-
-  public void setIconReference(final EFapsContentReference _icon) {
-    this.imagediv.setReference(_icon);
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.apache.wicket.Component#onBeforeRender()
-   */
-  @Override
-  protected void onBeforeRender() {
-    if (!this.imagediv.hasReference()) {
-      this.imagediv.setVisible(false);
-    }
-    super.onBeforeRender();
-  }
-
-  public class ButtonImage extends StaticImageComponent {
-
+    /**
+     * Needed foer serialization.
+     */
     private static final long serialVersionUID = 1L;
 
-    private boolean reference = false;
 
-    public ButtonImage(final String _wicketId) {
-      super(_wicketId);
+    private final ButtonImage imagediv = new ButtonImage("icon");
+
+    public Button(final String _wicketId, final WebMarkupContainer _link, final String _label)
+    {
+        this(_wicketId, _link, _label, null);
     }
 
-    public boolean hasReference() {
-      return this.reference;
+    public Button(final String _wicketId, final WebMarkupContainer _link, final String _label,
+                    final EFapsContentReference _icon)
+    {
+        super(_wicketId);
+        this.add(_link);
+        _link.add(new ButtonStyleBehavior());
+        final Label buttonlabel = new Label("buttonLabel", _label);
+        buttonlabel.add(new ButtonStyleBehavior());
+        _link.add(buttonlabel);
+
+        _link.add(this.imagediv);
+
+        if (_icon != null) {
+            this.imagediv.setReference(_icon);
+        }
+
+    }
+
+    public String getLinkWicketId()
+    {
+        return LINKID;
+    }
+
+    public void setIconReference(final EFapsContentReference _icon)
+    {
+        this.imagediv.setReference(_icon);
     }
 
     /*
      * (non-Javadoc)
      *
-     * @see org.efaps.ui.wicket.components.efapscontent.StaticImageComponent#setReference(org.efaps.ui.wicket.components.efapscontent.EFapsContentReference)
+     * @see org.apache.wicket.Component#onBeforeRender()
      */
     @Override
-    public void setReference(final EFapsContentReference _reference) {
-      super.setReference(_reference);
-      this.reference = true;
+    protected void onBeforeRender()
+    {
+        if (!this.imagediv.hasReference()) {
+            this.imagediv.setVisible(false);
+        }
+        super.onBeforeRender();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.apache.wicket.Component#onComponentTag(org.apache.wicket.markup.ComponentTag)
-     */
-    @Override
-    protected void onComponentTag(final ComponentTag _tag) {
-      _tag.put("style", "background-repeat: no-repeat; "
-          + "background-position: left top; "
-          + "background-image:url("
-          + super.getUrl()
-          + ")");
-    }
+    public class ButtonImage extends StaticImageComponent
+    {
 
-  }
+        private static final long serialVersionUID = 1L;
+
+        private boolean reference = false;
+
+        public ButtonImage(final String _wicketId)
+        {
+            super(_wicketId);
+        }
+
+        public boolean hasReference()
+        {
+            return this.reference;
+        }
+
+
+        /**
+         * @see org.efaps.ui.wicket.components.efapscontent.StaticImageComponent#setReference(org.efaps.ui.wicket.resources.EFapsContentReference)
+         * @param _reference EFapsContentReference
+         */
+        @Override
+        public void setReference(final EFapsContentReference _reference)
+        {
+            super.setReference(_reference);
+            this.reference = true;
+        }
+
+        /**
+         * @see org.efaps.ui.wicket.components.efapscontent.StaticImageComponent#onComponentTag(org.apache.wicket.markup.ComponentTag)
+         * @param _tag ComponentTag
+         */
+        @Override
+        protected void onComponentTag(final ComponentTag _tag)
+        {
+            _tag.put("style", "background-repeat: no-repeat; " + "background-position: left top; "
+                            + "background-image:url(" + super.getUrl() + ")");
+        }
+
+    }
 
 }
