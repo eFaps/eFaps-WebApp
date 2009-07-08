@@ -35,113 +35,120 @@ import org.apache.wicket.protocol.http.WebRequest;
 import org.efaps.ui.wicket.pages.login.LoginPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
 
-
 /**
- * This Class presents the WebApplication for eFaps using the Wicket-Framework.
- * <br/>
+ * This Class presents the WebApplication for eFaps using the Wicket-Framework. <br/>
  * It is the first class which is instantiated from the WicketServlet. Here the
  * Sessions for each user a created and basic Settings are set.
  *
  * @author Jan Moxter
  * @version $Id$
  */
-public class EFapsApplication extends WebApplication {
-
-
-  /**
-   * New request cycle.
-   *
-   * @param _request    the request
-   * @param _response   the response
-   *
-   * @return the request cycle
-   *
-   * @see org.apache.wicket.protocol.http.WebApplication#newRequestCycle(org.apache.wicket.Request, org.apache.wicket.Response)
-   */
-  @Override
-  public RequestCycle newRequestCycle(final Request _request,
-                                      final Response _response) {
-    return new EFapsWebRequestCycle(this, (WebRequest) _request, _response);
-  }
-
-  /**
-   * @see org.apache.wicket.Application#getHomePage()
-   * @return Class of the main page
-   */
-  @Override
-  public Class<MainPage> getHomePage() {
-    return MainPage.class;
-  }
-
-  /**
-   * @see org.apache.wicket.protocol.http.WebApplication#init()
-   */
-  @Override
-  protected void init() {
-    super.init();
-    getMarkupSettings().setStripWicketTags(true);
-    getMarkupSettings().setStripComments(true);
-    getMarkupSettings().setCompressWhitespace(true);
-    getRequestCycleSettings().setGatherExtendedBrowserInfo(true);
-    getDebugSettings().setAjaxDebugModeEnabled(true);
-    super.getSecuritySettings().setAuthorizationStrategy(
-        new EFapsFormBasedAuthorizationStartegy());
-  }
-
-  /**
-   * @see org.apache.wicket.protocol.http.WebApplication#newSession(org.apache.wicket.Request, org.apache.wicket.Response)
-   * @param _request    the request
-   * @param _response   the response
-   * @return a new Session for the request
-   */
-  @Override
-  public Session newSession(final Request _request, final Response _response) {
-    return new EFapsSession(_request);
-
-  }
-
-  /**
-   * The Class presents the Strategy to authorize pages in this WebApplication.
-   */
-  private class EFapsFormBasedAuthorizationStartegy implements
-      IAuthorizationStrategy {
+public class EFapsApplication extends WebApplication
+{
 
     /**
-     * Wicket has got the possibility to check for specific actions like
-     * render or enable if this given action is authorized. eFaps does not
-     * use this check and returns always true.
+     * New request cycle.
      *
-     * @see org.apache.wicket.authorization.IAuthorizationStrategy#isActionAuthorized(org.apache.wicket.Component, org.apache.wicket.authorization.Action)
-     * @param _component  Component to be checked
-     * @param _action     action to be checked
-     * @return  true
+     * @param _request the request
+     * @param _response the response
+     *
+     * @return the request cycle
+     *
+     * @see org.apache.wicket.protocol.http.WebApplication#newRequestCycle(org.apache.wicket.Request,
+     *      org.apache.wicket.Response)
      */
-    public boolean isActionAuthorized(final Component _component,
-                                      final Action _action) {
-      return true;
+    @Override
+    public RequestCycle newRequestCycle(final Request _request, final Response _response)
+    {
+        return new EFapsWebRequestCycle(this, (WebRequest) _request, _response);
     }
 
     /**
-     * For all Pages it will be checked if a User is logged in or if the Page
-     * implements the EFapsNoAuthendPageInterface, if non of both we will
-     * redirect to the LoginPage.
-     *
-     * @param _componentClass class to be checked
-     *
-     * @return true, if checks if is instantiation authorized
+     * @see org.apache.wicket.Application#getHomePage()
+     * @return Class of the main page
      */
-    @SuppressWarnings("unchecked")
-    public boolean isInstantiationAuthorized(final Class _componentClass) {
+    @Override
+    public Class<MainPage> getHomePage()
+    {
+        return MainPage.class;
+    }
 
-      if (WebPage.class.isAssignableFrom(_componentClass)) {
-        if (((EFapsSession) Session.get()).isLogedIn()
-            || EFapsNoAuthorizationNeededInterface.class
-                .isAssignableFrom(_componentClass)) {
-          return true;
+    /**
+     * @see org.apache.wicket.protocol.http.WebApplication#init()
+     */
+    @Override
+    protected void init()
+    {
+        super.init();
+        getMarkupSettings().setStripWicketTags(true);
+        getMarkupSettings().setStripComments(true);
+        getMarkupSettings().setCompressWhitespace(true);
+        getRequestCycleSettings().setGatherExtendedBrowserInfo(true);
+        getDebugSettings().setAjaxDebugModeEnabled(true);
+        super.getSecuritySettings().setAuthorizationStrategy(new EFapsFormBasedAuthorizationStartegy());
+        getApplicationSettings().setPageExpiredErrorPage(LoginPage.class);
+        getPageSettings().setAutomaticMultiWindowSupport(true);
+    }
+
+    /**
+     * @see org.apache.wicket.protocol.http.WebApplication#newSession(org.apache.wicket.Request,
+     *      org.apache.wicket.Response)
+     * @param _request the request
+     * @param _response the response
+     * @return a new Session for the request
+     */
+    @Override
+    public Session newSession(final Request _request, final Response _response)
+    {
+        return new EFapsSession(_request);
+
+    }
+
+    /**
+     * The Class presents the Strategy to authorize pages in this
+     * WebApplication.
+     */
+    private class EFapsFormBasedAuthorizationStartegy implements IAuthorizationStrategy
+    {
+
+        /**
+         * Wicket has got the possibility to check for specific actions like
+         * render or enable if this given action is authorized. eFaps does not
+         * use this check and returns always true.
+         *
+         * @see org.apache.wicket.authorization.IAuthorizationStrategy#isActionAuthorized(org.apache.wicket.Component,
+         *      org.apache.wicket.authorization.Action)
+         * @param _component Component to be checked
+         * @param _action action to be checked
+         * @return true
+         */
+        public boolean isActionAuthorized(final Component _component, final Action _action)
+        {
+            return true;
         }
-        throw new RestartResponseAtInterceptPageException(LoginPage.class);
-      }
-      return true;
+
+        /**
+         * For all Pages it will be checked if a User is logged in or if the
+         * Page implements the EFapsNoAuthendPageInterface, if non of both we
+         * will redirect to the LoginPage.
+         *
+         * @param _componentClass class to be checked
+         *
+         * @return true, if checks if is instantiation authorized
+         */
+        @SuppressWarnings("unchecked")
+        public boolean isInstantiationAuthorized(final Class _componentClass)
+        {
+            boolean ret = true;
+            if (WebPage.class.isAssignableFrom(_componentClass)) {
+                if (((EFapsSession) Session.get()).isLogedIn()
+                                || EFapsNoAuthorizationNeededInterface.class.isAssignableFrom(_componentClass)) {
+                    ret = true;
+                } else {
+                    throw new RestartResponseAtInterceptPageException(LoginPage.class);
+                }
+            }
+            return ret;
+        }
     }
-  }
 }
