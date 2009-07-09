@@ -177,8 +177,9 @@ public abstract class AbstractContentPage extends AbstractMergePage {
    * @param _menuTreeKey
    *                the listMenuName to set
    */
-  public void setMenuTreeKey(final String _menuTreeKey) {
+  public AbstractContentPage setMenuTreeKey(final String _menuTreeKey) {
     this.menuTreeKey = _menuTreeKey;
+    return this;
   }
 
   /**

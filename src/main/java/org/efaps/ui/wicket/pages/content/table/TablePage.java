@@ -35,6 +35,7 @@ import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
+import org.efaps.util.EFapsException;
 
 /**
  * CLass renders a page containing a table.
@@ -55,8 +56,10 @@ public class TablePage extends AbstractContentPage
      * opener.
      *
      * @param _parameters PageParameters
+     * @throws EFapsException
      */
     public TablePage(final PageParameters _parameters)
+            throws EFapsException
     {
         this(new TableModel(new UITable(_parameters)));
     }
@@ -84,8 +87,9 @@ public class TablePage extends AbstractContentPage
      * @param _pagemap      pagemap
      * @param _uuid         uuid of a command
      * @param _instanceKey  key to an instance
+     * @throws EFapsException
      */
-    public TablePage(final IPageMap _pagemap, final UUID _uuid, final String _instanceKey)
+    public TablePage(final IPageMap _pagemap, final UUID _uuid, final String _instanceKey) throws EFapsException
     {
         this(_pagemap, _uuid, _instanceKey, null);
     }
@@ -95,8 +99,9 @@ public class TablePage extends AbstractContentPage
      * @param _uuid         uuid of a command
      * @param _instanceKey  key to an instance
      * @param _openerId     id of an opener
+     * @throws EFapsException
      */
-    public TablePage(final IPageMap _pagemap, final UUID _uuid, final String _instanceKey, final String _openerId)
+    public TablePage(final IPageMap _pagemap, final UUID _uuid, final String _instanceKey, final String _openerId) throws EFapsException
     {
         this(_pagemap, new TableModel(new UITable(_uuid, _instanceKey, _openerId)));
     }
@@ -114,8 +119,9 @@ public class TablePage extends AbstractContentPage
     /**
      * @param _uuid         uuid of a commmand
      * @param _instanceKey  key to an instance
+     * @throws EFapsException
      */
-    public TablePage(final UUID _uuid, final String _instanceKey)
+    public TablePage(final UUID _uuid, final String _instanceKey) throws EFapsException
     {
         this(new TableModel(new UITable(_uuid, _instanceKey)));
     }

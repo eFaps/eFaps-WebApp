@@ -24,11 +24,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.UUID;
+import java.util.Map.Entry;
 
 import org.apache.wicket.IClusterable;
 import org.apache.wicket.PageParameters;
@@ -127,8 +129,20 @@ public class UITable extends UIAbstractPageObject
      */
     private static final long serialVersionUID = 1L;
 
-    private final Map<UITableHeader,Filter> filters = new HashMap<UITableHeader, Filter>();
+    /**
+     * Map contains the applied filters to this table.
+     */
+    private final Map<UITableHeader, Filter> filters = new HashMap<UITableHeader, Filter>();
 
+    /**
+     * Map is used to store the filters in relation to a field name. It is used
+     * temporarily when the table is (due to a database based filter)
+     * requeried, to be able to set the filters to the headers by copying it
+     * from the old header to the new one.
+     * @see #getInstanceLists()
+     * @see #execute4Instance()
+     */
+    private final Map<String, Filter> filterTempCache = new HashMap<String, Filter>();
     /**
      * The instance Array holds the Label for the Columns.
      */
@@ -192,8 +206,11 @@ public class UITable extends UIAbstractPageObject
      * Constructor setting the parameters.
      *
      * @param _parameters PageParameters
+     * @throws EFapsException on error
      */
     public UITable(final PageParameters _parameters)
+
+            throws EFapsException
     {
         super(_parameters);
         initialise();
@@ -204,8 +221,10 @@ public class UITable extends UIAbstractPageObject
      *
      * @param _commandUUID UUID of the Command
      * @param _instanceKey Key of the instance
+     * @throws EFapsException on error
      */
     public UITable(final UUID _commandUUID, final String _instanceKey)
+            throws EFapsException
     {
         super(_commandUUID, _instanceKey);
         initialise();
@@ -217,11 +236,63 @@ public class UITable extends UIAbstractPageObject
      * @param _commandUUID UUID of the Command
      * @param _instanceKey Key of the instance
      * @param _openerId id of the opener
+     * @throws EFapsException on error
      */
     public UITable(final UUID _commandUUID, final String _instanceKey, final String _openerId)
+            throws EFapsException
     {
         super(_commandUUID, _instanceKey, _openerId);
         initialise();
+    }
+
+    /**
+     * Method that initializes the TableModel.
+     * @throws EFapsException on error
+     */
+    private void initialise()
+            throws EFapsException
+    {
+        final AbstractCommand command = getCommand();
+        if (command == null) {
+            this.showCheckBoxes = false;
+        } else {
+            // set target table
+            if (command.getTargetTable() != null) {
+                this.tableUUID = command.getTargetTable().getUUID();
+                // add the filter here, if it is a required filter that must be
+                //applied against the database
+                for (final Field field : command.getTargetTable().getFields()) {
+                    if (field.isFilterRequired() && !field.isFilterMemoryBased()) {
+                        this.filters.put(new UITableHeader(field, SortDirection.NONE, null), new Filter());
+                    }
+                }
+            }
+            // set default sort
+            if (command.getTargetTableSortKey() != null) {
+                this.sortKey = command.getTargetTableSortKey();
+                this.sortDirection = command.getTargetTableSortDirection();
+            }
+
+            this.showCheckBoxes = command.isTargetShowCheckBoxes();
+            // get the User specific Attributes if exist overwrite the defaults
+            try {
+                if (Context.getThreadContext().containsUserAttribute(
+                                getUserAttributeKey(UITable.UserAttributeKey.SORTKEY))) {
+                    this.sortKey = Context.getThreadContext().getUserAttribute(
+                                    getUserAttributeKey(UITable.UserAttributeKey.SORTKEY));
+                }
+                if (Context.getThreadContext().containsUserAttribute(
+                                getUserAttributeKey(UITable.UserAttributeKey.SORTDIRECTION))) {
+                    this.sortDirection = SortDirection.getEnum((Context.getThreadContext()
+                                    .getUserAttribute(getUserAttributeKey(UITable.UserAttributeKey.SORTDIRECTION))));
+                }
+            } catch (final EFapsException e) {
+                // we don't throw an error because this are only Usersettings
+                UITable.LOG.error("error during the retrieve of UserAttributes", e);
+            }
+        }
+
+
     }
 
     /**
@@ -233,8 +304,23 @@ public class UITable extends UIAbstractPageObject
     @SuppressWarnings("unchecked")
     protected List<List<Instance>> getInstanceLists() throws EFapsException
     {
-        final List<Return> ret = getCommand().executeEvents(EventType.UI_TABLE_EVALUATE, ParameterValues.INSTANCE,
-                        getInstance());
+        // get the filters that must be applied against the database
+        final Map<String, Map<String, String>> dataBasefilters = new HashMap<String, Map<String, String>>();
+        final Iterator<Entry<UITableHeader, Filter>> iter = this.filters.entrySet().iterator();
+        this.filterTempCache.clear();
+        while (iter.hasNext()) {
+            final Entry<UITableHeader, Filter> entry = iter.next();
+            if (!entry.getKey().isFilterMemoryBased()) {
+                final Map<String, String> map = entry.getValue().getMap4esjp();
+                dataBasefilters.put(entry.getKey().getFieldName(), map);
+            }
+            this.filterTempCache.put(entry.getKey().getFieldName(), entry.getValue());
+            iter.remove();
+        }
+
+        final List<Return> ret = getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
+                                                            ParameterValues.INSTANCE, getInstance(),
+                                                            ParameterValues.OTHERS, dataBasefilters);
         final List<List<Instance>> lists = (List<List<Instance>>) ret.get(0).get(ReturnValues.VALUES);
         return lists;
     }
@@ -290,20 +376,7 @@ public class UITable extends UIAbstractPageObject
                 i++;
             }
         }
-        String typeName = null;
-        final List<EventDefinition> events = getEvents(EventType.UI_TABLE_EVALUATE);
-        if (events.size() > 1) {
-            throw new EFapsException(this.getClass(), "execute4NoInstance.moreThanOneEvaluate");
-        } else {
-            final EventDefinition event = events.get(0);
-            if (event.getProperty("Expand") != null) {
-                final String tmp = event.getProperty("Expand");
-                typeName = tmp.substring(0, tmp.indexOf("\\"));
-            } else if (event.getProperty("Type") != null) {
-                typeName = event.getProperty("Type");
-            }
-        }
-        final Type type = Type.get(typeName);
+        final Type type = getTypeFromEvent();
         final UIRow row = new UIRow();
         Attribute attr = null;
 
@@ -369,13 +442,19 @@ public class UITable extends UIAbstractPageObject
 
         final List<Field> fields = getUserSortedColumns();
         int i = 0;
+        Type type;
+        if (instances.size() > 0) {
+            type = instances.get(0).getType();
+        } else {
+            type = getTypeFromEvent();
+        }
         for (final Field field : fields) {
             if (field.hasAccess(getMode()) && !field.isNoneDisplay(getMode()) && !field.isHiddenDisplay(getMode())) {
                 Attribute attr = null;
                 if (field.getExpression() != null) {
                     query.addSelect(field.getExpression());
-                    if (instances.size() > 0) {
-                        attr = instances.get(0).getType().getAttribute(field.getExpression());
+                    if (type != null) {
+                        attr = type.getAttribute(field.getExpression());
                     }
                 }
                 if (field.getAlternateOID() != null) {
@@ -387,7 +466,11 @@ public class UITable extends UIAbstractPageObject
                 }
 
                 final UITableHeader uiTableHeader = new UITableHeader(field, sortdirection, attr);
-                if (uiTableHeader.isFilterRequired()) {
+                if (this.filterTempCache.containsKey(uiTableHeader.getFieldName())
+                                && this.filterTempCache.get(uiTableHeader.getFieldName()).getUiTableHeader() != null) {
+                    this.filters.put(uiTableHeader, this.filterTempCache.get(uiTableHeader.getFieldName()));
+                    uiTableHeader.setFilterApplied(true);
+                } else if (uiTableHeader.isFilterRequired()) {
                     this.filters.put(uiTableHeader, new Filter(uiTableHeader));
                 }
                 this.headers.add(uiTableHeader);
@@ -509,10 +592,34 @@ public class UITable extends UIAbstractPageObject
     }
 
     /**
-     * This is the setter method for the instance variable
-     * {@link #filterSequence}.
+     * Method used to evaluate the type for this table from the connected events.
+     * @return type if found
+     * @throws EFapsException on error
+     */
+    private Type getTypeFromEvent()
+            throws EFapsException
+    {
+        final List<EventDefinition> events = getEvents(EventType.UI_TABLE_EVALUATE);
+        String typeName = null;
+        if (events.size() > 1) {
+            throw new EFapsException(this.getClass(), "execute4NoInstance.moreThanOneEvaluate");
+        } else {
+            final EventDefinition event = events.get(0);
+            if (event.getProperty("Expand") != null) {
+                final String tmp = event.getProperty("Expand");
+                typeName = tmp.substring(0, tmp.indexOf("\\"));
+            } else if (event.getProperty("Types") != null) {
+                typeName = event.getProperty("Types");
+            }
+        }
+        return Type.get(typeName);
+    }
+
+    /**
+     * Add a filterlist to the filters of this UiTable.
      *
-     * @param _list new value for instance variable {@link #filterSequence}
+     * @param _uitableHeader    UitableHeader this filter belongs to
+     * @param _list             lsi of value to filter
      */
     public void addFilterList(final UITableHeader _uitableHeader, final Set<?> _list)
     {
@@ -522,9 +629,11 @@ public class UITable extends UIAbstractPageObject
     }
 
     /**
-     * @param _uitableHeader
-     * @param _from
-     * @param _to
+     * Add a range to the filters of this UiTable.
+     *
+     * @param _uitableHeader    UitableHeader this filter belongs to
+     * @param _from             from value
+     * @param _to               to value
      */
     public void addFilterRange(final UITableHeader _uitableHeader, final String _from, final String _to)
     {
@@ -533,13 +642,21 @@ public class UITable extends UIAbstractPageObject
         _uitableHeader.setFilterApplied(true);
     }
 
-    public Filter getFilter(final UITableHeader _uitableHeader) {
+    /**
+     * Method to get a Filter from the list of filters belonging to this
+     * UITable.
+     * @param _uitableHeader  UitableHeader this filter belongs to
+     * @return filter
+     */
+    public Filter getFilter(final UITableHeader _uitableHeader)
+    {
         return this.filters.get(_uitableHeader);
     }
 
     /**
-     * @param uitableHeader
-     * @return
+     * Get the List of values for a PICKERLIST.
+     * @param _uitableHeader  UitableHeader this filter belongs to
+     * @return List of Values
      */
     public List<?> getFilterPickList(final UITableHeader _uitableHeader)
     {
@@ -802,46 +919,6 @@ public class UITable extends UIAbstractPageObject
     }
 
     /**
-     * Method that initializes the TableModel.
-     */
-    private void initialise()
-    {
-        final AbstractCommand command = getCommand();
-        if (command == null) {
-            this.showCheckBoxes = false;
-        } else {
-            // set target table
-            if (command.getTargetTable() != null) {
-                this.tableUUID = command.getTargetTable().getUUID();
-            }
-            // set default sort
-            if (command.getTargetTableSortKey() != null) {
-                this.sortKey = command.getTargetTableSortKey();
-                this.sortDirection = command.getTargetTableSortDirection();
-            }
-
-            this.showCheckBoxes = command.isTargetShowCheckBoxes();
-            // get the User specific Attributes if exist overwrite the defaults
-            try {
-                if (Context.getThreadContext().containsUserAttribute(
-                                getUserAttributeKey(UITable.UserAttributeKey.SORTKEY))) {
-                    this.sortKey = Context.getThreadContext().getUserAttribute(
-                                    getUserAttributeKey(UITable.UserAttributeKey.SORTKEY));
-                }
-                if (Context.getThreadContext().containsUserAttribute(
-                                getUserAttributeKey(UITable.UserAttributeKey.SORTDIRECTION))) {
-                    this.sortDirection = SortDirection.getEnum((Context.getThreadContext()
-                                    .getUserAttribute(getUserAttributeKey(UITable.UserAttributeKey.SORTDIRECTION))));
-                }
-            } catch (final EFapsException e) {
-                // we don't throw an error because this are only Usersettings
-                UITable.LOG.error("error during the retrieve of UserAttributes", e);
-            }
-        }
-
-    }
-
-    /**
      * Are the values of the Rows filtered or not.
      *
      * @return true if filtered, else false
@@ -890,6 +967,7 @@ public class UITable extends UIAbstractPageObject
 
     /**
      * Method to remove a filter from the filters.
+     * @param _uiTableHeader UITableHeader the filter is removed for
      */
     public void removeFilter(final UITableHeader _uiTableHeader)
     {
@@ -898,9 +976,7 @@ public class UITable extends UIAbstractPageObject
     }
 
     /**
-     * Method to reset the Model.
-     *
-     * @see org.efaps.ui.wicket.models.AbstractModel#resetModel()
+     * {@inheritDoc}
      */
     @Override
     public void resetModel()
@@ -997,30 +1073,78 @@ public class UITable extends UIAbstractPageObject
         }
     }
 
-    public class Filter implements IClusterable {
+    /**
+     * Class represents one filter applied to this UITable.
+     */
+    public class Filter implements IClusterable
+    {
 
         /**
-         * Needed foer serialization.
+         * Key to the value for "from" in the nap for the esjp.
+         */
+        public final static String FROM = "from";
+
+        /**
+         * Key to the value for "to" in the nap for the esjp.
+         */
+        public final static String TO = "to";
+
+        /**
+         * Needed for serialization.
          */
         private static final long serialVersionUID = 1L;
+
+        /**
+         * UITableHeader this filter belohngs to.
+         */
         private final UITableHeader uiTableHeader;
+
+        /**
+         * Set of value for the filter. Only used for filter using a
+         * PICKERLIST.
+         */
         private Set<?> filterList;
+
+        /**
+         * Value of the from Field from the website.
+         */
         private String from;
+
+        /**
+         * Value of the to Field from the website.
+         */
         private String to;
+
+        /**
+         * DateTime value for {@link #from} in case that the filter is for a
+         * date field.
+         */
         private DateTime dateFrom;
 
+        /**
+         * DateTime value for {@link #to} in case that the filter is for a
+         * date field.
+         */
         private DateTime dateTo;
 
+        /**
+         * Constructor is used for a database based filter in case that it
+         * is required.
+         */
+        public Filter()
+        {
+            this.uiTableHeader = null;
+        }
 
         /**
          * Constructor is used in case that a filter is required, during
-         * loading the date first time.
+         * loading the date first time for a memory base filter.
          *
          * @param _uitableHeader UITableHeader this filter lies in
-         * @throws EFapsException
-         * @throws EFapsException
+         * @throws EFapsException on error
          */
-        public Filter(final UITableHeader _uitableHeader) throws EFapsException
+        public Filter(final UITableHeader _uitableHeader)
+                throws EFapsException
         {
             this.uiTableHeader = _uitableHeader;
             if (_uitableHeader.getFilterDefault() != null) {
@@ -1035,9 +1159,10 @@ public class UITable extends UIAbstractPageObject
         }
 
         /**
-         * @param _uitableHeader
-         * @param _from
-         * @param _to
+         * Standard Constructor for a Filter containing a range.
+         * @param _uitableHeader UITableHeader this filter lies in
+         * @param _from value for from
+         * @param _to   value for to
          */
         public Filter(final UITableHeader _uitableHeader, final String _from, final String _to)
         {
@@ -1055,8 +1180,9 @@ public class UITable extends UIAbstractPageObject
         }
 
         /**
-         * @param _uitableHeader
-         * @param _filter
+         * Standard Constructor for a Filter using a PICKLIST.
+         * @param _uitableHeader    UITableHeader this filter lies in
+         * @param _filterList       set of values for the filter
          */
         public Filter(final UITableHeader _uitableHeader, final Set<?> _filterList)
         {
@@ -1064,30 +1190,63 @@ public class UITable extends UIAbstractPageObject
             this.filterList = _filterList;
         }
 
+        /**
+         * Getter method for instance variable {@link #uiTableHeader}.
+         *
+         * @return value of instance variable {@link #uiTableHeader}
+         */
+        public UITableHeader getUiTableHeader()
+        {
+            return this.uiTableHeader;
+        }
+
+        /**
+         * Method to get the map that must be passed for this filter to the
+         * esjp.
+         * @return Map
+         */
+        public Map<String, String> getMap4esjp()
+        {
+            final Map<String, String> ret = new HashMap<String, String>();
+            if (this.filterList == null) {
+                ret.put(UITable.Filter.FROM, this.from);
+                ret.put(UITable.Filter.TO, this.to);
+            }
+            return ret;
+        }
+
+        /**
+         * Method is used for memory based filters to filter one row.
+         * @param _uiRow    UIRow to filter
+         * @return  false if the row must be shown to the user, true if the row
+         *          must be filtered
+         */
         public boolean filterRow(final UIRow _uiRow)
         {
             boolean ret = false;
-            final List<UITableCell> cells = _uiRow.getValues();
-            for (final UITableCell cell : cells) {
-                if (cell.getFieldId() == this.uiTableHeader.getFieldId()) {
-                    if (this.filterList != null) {
-                        final String value = cell.getCellValue();
-                        if (!this.filterList.contains(value)) {
-                            ret = true;
-                        }
-                    } else if (this.uiTableHeader.getFilterType().equals(FilterType.DATE)) {
-                        if (this.dateFrom == null || this.dateTo == null) {
-                            ret = true;
-                        } else {
-                            final Interval interval = new Interval(this.dateFrom, this.dateTo);
-                            final DateTime value = (DateTime) cell.getCompareValue();
-                            if (!(interval.contains(value) || value.isEqual(this.dateFrom)
-                                            || value.isEqual(this.dateTo))) {
+            if (this.uiTableHeader.isFilterMemoryBased()) {
+                final List<UITableCell> cells = _uiRow.getValues();
+                for (final UITableCell cell : cells) {
+                    if (cell.getFieldId() == this.uiTableHeader.getFieldId()) {
+                        if (this.filterList != null) {
+                            final String value = cell.getCellValue();
+                            if (!this.filterList.contains(value)) {
                                 ret = true;
                             }
+                        } else if (this.uiTableHeader.getFilterType().equals(FilterType.DATE)) {
+                            if (this.dateFrom == null || this.dateTo == null) {
+                                ret = true;
+                            } else {
+                                final Interval interval = new Interval(this.dateFrom, this.dateTo);
+                                final DateTime value = (DateTime) cell.getCompareValue();
+                                if (!(interval.contains(value) || value.isEqual(this.dateFrom)
+                                                || value.isEqual(this.dateTo))) {
+                                    ret = true;
+                                }
+                            }
                         }
+                        break;
                     }
-                    break;
                 }
             }
             return ret;

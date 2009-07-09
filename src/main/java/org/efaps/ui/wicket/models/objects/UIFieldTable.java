@@ -57,6 +57,7 @@ public class UIFieldTable extends UITable implements IFormElement
     private final String name;
 
     public UIFieldTable(final UUID _commanduuid, final String _instanceKey, final FieldTable _fieldTable)
+            throws EFapsException
     {
         super(_commanduuid, _instanceKey);
         setTableUUID(_fieldTable.getTargetTable().getUUID());

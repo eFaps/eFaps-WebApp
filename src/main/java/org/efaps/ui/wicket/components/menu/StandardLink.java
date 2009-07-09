@@ -89,60 +89,64 @@ public class StandardLink extends AbstractMenuItemLink
                 opener.setMenuTreeKey(((AbstractContentPage) getPage()).getMenuTreeKey());
             }
         }
+        try {
+            if (command.getTargetTable() != null) {
 
-        if (command.getTargetTable() != null) {
+                if (command.getProperty("TargetStructurBrowserField") != null) {
+                    final StructurBrowserPage page = new StructurBrowserPage(PageMap
+                                    .forName(MainPage.IFRAME_PAGEMAP_NAME), model.getCommandUUID(), model
+                                    .getInstanceKey());
 
-            if (command.getProperty("TargetStructurBrowserField") != null) {
-                final StructurBrowserPage page = new StructurBrowserPage(PageMap.forName(MainPage.IFRAME_PAGEMAP_NAME),
-                                model.getCommandUUID(), model.getInstanceKey());
-
-                final InlineFrame iframe = new InlineFrame(MainPage.IFRAME_WICKETID, page);
-                getPage().addOrReplace(iframe);
-            } else {
-                if (getPage() instanceof MainPage) {
-                    final TablePage page = new TablePage(PageMap.forName(MainPage.IFRAME_PAGEMAP_NAME), model
-                                    .getCommandUUID(), model.getInstanceKey());
                     final InlineFrame iframe = new InlineFrame(MainPage.IFRAME_WICKETID, page);
-
                     getPage().addOrReplace(iframe);
                 } else {
-                    final TablePage table = new TablePage(getPopupSettings().getPageMap(null), model.getCommandUUID(),
+                    if (getPage() instanceof MainPage) {
+                        final TablePage page = new TablePage(PageMap.forName(MainPage.IFRAME_PAGEMAP_NAME), model
+                                        .getCommandUUID(), model.getInstanceKey());
+                        final InlineFrame iframe = new InlineFrame(MainPage.IFRAME_WICKETID, page);
+
+                        getPage().addOrReplace(iframe);
+                    } else {
+                        final TablePage table = new TablePage(getPopupSettings().getPageMap(null), model
+                                        .getCommandUUID(), model.getInstanceKey(), openerId);
+                        if (getPage() instanceof AbstractContentPage) {
+                            table.setMenuTreeKey(((AbstractContentPage) getPage()).getMenuTreeKey());
+                        }
+                        setResponsePage(table);
+                    }
+                }
+            } else if (command.getTargetForm() != null || command.getTargetSearch() != null) {
+                if (getPage() instanceof MainPage && command.getTargetSearch() == null) {
+                    final FormPage page = new FormPage(PageMap.forName(MainPage.IFRAME_PAGEMAP_NAME), model
+                                    .getCommandUUID(), model.getInstanceKey());
+                    final InlineFrame iframe = new InlineFrame(MainPage.IFRAME_WICKETID, page);
+                    getPage().addOrReplace(iframe);
+                } else {
+                    final FormPage formpage = new FormPage(getPopupSettings().getPageMap(null), model.getCommandUUID(),
                                     model.getInstanceKey(), openerId);
                     if (getPage() instanceof AbstractContentPage) {
-                        table.setMenuTreeKey(((AbstractContentPage) getPage()).getMenuTreeKey());
+                        formpage.setMenuTreeKey(((AbstractContentPage) getPage()).getMenuTreeKey());
                     }
-                    setResponsePage(table);
+                    setResponsePage(formpage);
                 }
-            }
-        } else if (command.getTargetForm() != null || command.getTargetSearch() != null) {
-            if (getPage() instanceof MainPage && command.getTargetSearch() == null) {
-                final FormPage page = new FormPage(PageMap.forName(MainPage.IFRAME_PAGEMAP_NAME), model
-                                .getCommandUUID(), model.getInstanceKey());
-                final InlineFrame iframe = new InlineFrame(MainPage.IFRAME_WICKETID, page);
-                getPage().addOrReplace(iframe);
             } else {
-                final FormPage formpage = new FormPage(getPopupSettings().getPageMap(null), model.getCommandUUID(),
-                                model.getInstanceKey(), openerId);
-                if (getPage() instanceof AbstractContentPage) {
-                    formpage.setMenuTreeKey(((AbstractContentPage) getPage()).getMenuTreeKey());
-                }
-                setResponsePage(formpage);
-            }
-        } else {
-            try {
-                final List<Return> rets = model.executeEvents(ParameterValues.OTHERS, this);
-                if ("true".equals(command.getProperty("TargetShowFile"))) {
-                    final Object object = rets.get(0).get(ReturnValues.VALUES);
-                    if (object instanceof File) {
-                        getRequestCycle().setRequestTarget(new FileRequestTarget((File) object));
+                try {
+                    final List<Return> rets = model.executeEvents(ParameterValues.OTHERS, this);
+                    if ("true".equals(command.getProperty("TargetShowFile"))) {
+                        final Object object = rets.get(0).get(ReturnValues.VALUES);
+                        if (object instanceof File) {
+                            getRequestCycle().setRequestTarget(new FileRequestTarget((File) object));
+                        }
                     }
+                } catch (final EFapsException e) {
+                    throw new RestartResponseException(new ErrorPage(e));
                 }
-            } catch (final EFapsException e) {
-                throw new RestartResponseException(new ErrorPage(e));
+                if ("true".equals(command.getProperty("NoUpdateAfterCOMMAND"))) {
+                    getRequestCycle().setRequestTarget(null);
+                }
             }
-            if ("true".equals(command.getProperty("NoUpdateAfterCOMMAND"))) {
-                getRequestCycle().setRequestTarget(null);
-            }
+        } catch (final EFapsException e) {
+            setResponsePage(new ErrorPage(e));
         }
     }
 }

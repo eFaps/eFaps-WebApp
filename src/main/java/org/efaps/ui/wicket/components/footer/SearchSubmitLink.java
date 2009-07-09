@@ -31,6 +31,7 @@ import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.models.objects.UIWizardObject;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
+import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 
 /**
@@ -68,28 +69,24 @@ public class SearchSubmitLink extends SubmitLink
     {
         super.onSubmit();
         final UIAbstractPageObject uiObject = (UIAbstractPageObject) getDefaultModelObject();
-
-        final UITable newTable = new UITable(uiObject.getCommandUUID(), uiObject.getInstanceKey(), uiObject
-                        .getOpenerId());
-        final UIWizardObject wizard = new UIWizardObject(newTable);
-        uiObject.setWizard(wizard);
         try {
+            final UITable newTable = new UITable(uiObject.getCommandUUID(), uiObject.getInstanceKey(), uiObject
+                            .getOpenerId());
+            final UIWizardObject wizard = new UIWizardObject(newTable);
+            uiObject.setWizard(wizard);
             wizard.addParameters(uiObject, Context.getThreadContext().getParameters());
+            wizard.insertBefore(uiObject);
+            newTable.setWizard(wizard);
+            if (uiObject.isSubmit()) {
+                newTable.setSubmit(true);
+                newTable.setCallingCommandUUID(uiObject.getCallingCommandUUID());
+            }
+            final TablePage page = new TablePage(new TableModel(newTable));
+
+            page.setMenuTreeKey(((AbstractContentPage) getPage()).getMenuTreeKey());
+            getRequestCycle().setResponsePage(page);
         } catch (final EFapsException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            getRequestCycle().setResponsePage(new ErrorPage(e));
         }
-
-        wizard.insertBefore(uiObject);
-        newTable.setWizard(wizard);
-        if (uiObject.isSubmit()) {
-            newTable.setSubmit(true);
-            newTable.setCallingCommandUUID(uiObject.getCallingCommandUUID());
-        }
-        final TablePage page = new TablePage(new TableModel(newTable));
-
-        page.setMenuTreeKey(((AbstractContentPage) getPage()).getMenuTreeKey());
-        getRequestCycle().setResponsePage(page);
-
     }
 }

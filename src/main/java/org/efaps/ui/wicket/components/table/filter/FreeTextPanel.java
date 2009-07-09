@@ -46,21 +46,27 @@ import org.efaps.ui.wicket.models.objects.UITableHeader.FilterType;
  */
 public class FreeTextPanel extends Panel
 {
-
     /**
-     *
+     * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
+    /**
+     * Name of the fromfield.
+     */
     private String fromFieldName;
+    /**
+     * Naem of the toField.
+     */
     private String toFieldName;
 
     /**
-     * @param _id
-     * @param model
+     * @param _wicketId         wicket id for this component
+     * @param _model            model for this component
+     * @param _uitableHeader    UITableHeader this panel belongs to
      */
-    public FreeTextPanel(final String _id, final IModel<UITable> model, final UITableHeader _uitableHeader)
+    public FreeTextPanel(final String _wicketId, final IModel<UITable> _model, final UITableHeader _uitableHeader)
     {
-        super(_id, model);
+        super(_wicketId, _model);
         final UITable uitable = (UITable) super.getDefaultModelObject();
         final FilterType filterType = _uitableHeader.getFilterType();
 
@@ -94,7 +100,7 @@ public class FreeTextPanel extends Panel
                 .append(dateStr).append("';document.getElementsByName('dateFrom')[0].value='")
                 .append(dateStr).append("';\">")
                 .append(DBProperties.getProperty("FilterPage.Today")).append("</a>");
-            if (filter.getDateFrom() == null) {
+            if (filter == null || filter.getDateFrom() == null) {
                 js.append("<script type=\"text/javascript\">")
                     .append("Wicket.Event.add(window, \"domready\", function(event) {")
                     .append("document.getElementsByName('dateTo')[0].value='';")

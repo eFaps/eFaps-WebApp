@@ -26,55 +26,63 @@ import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
+import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.util.EFapsException;
 
 /**
  * Thic Class is used to create a page inside a modal window lazily.
+ *
  * @author jmox
  * @version $Id:ModalWindowAjaxPageCreator.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class ModalWindowAjaxPageCreator implements ModalWindow.PageCreator {
+public class ModalWindowAjaxPageCreator implements ModalWindow.PageCreator
+{
 
-  /**
-   * Needed foer serialization.
-   */
-  private static final long serialVersionUID = 1L;
+    /**
+     * Needed foer serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
-  /**
-   * Model for the page to be created.
-   */
-  private final UIMenuItem imodel;
+    /**
+     * Model for the page to be created.
+     */
+    private final UIMenuItem imodel;
 
-  /**
-   * The modal window the page will be created in.
-   */
-  private final ModalWindowContainer modalWindow;
+    /**
+     * The modal window the page will be created in.
+     */
+    private final ModalWindowContainer modalWindow;
 
-  /**
-   * Constructor.
-   *
-   * @param _model        model for the page to create
-   * @param _modalWindow  modal window the page will be created in
-   */
-  public ModalWindowAjaxPageCreator(final UIMenuItem _model,
-                                    final ModalWindowContainer _modalWindow) {
-    this.imodel = _model;
-    this.modalWindow = _modalWindow;
-  }
-  /**
-   * Method that creates the page.
-   * @return new Page
-   */
-  public Page createPage() {
-    Page ret = null;
-    final UIMenuItem model = this.imodel;
-
-    if (model.getCommand().getTargetTable() != null) {
-      ret = new TablePage(model.getCommandUUID(), model.getInstanceKey());
-    } else {
-      ret = new FormPage(model.getCommandUUID(),
-                         model.getInstanceKey(),
-                         this.modalWindow);
+    /**
+     * Constructor.
+     *
+     * @param _model model for the page to create
+     * @param _modalWindow modal window the page will be created in
+     */
+    public ModalWindowAjaxPageCreator(final UIMenuItem _model, final ModalWindowContainer _modalWindow)
+    {
+        this.imodel = _model;
+        this.modalWindow = _modalWindow;
     }
-    return ret;
-  }
+
+    /**
+     * Method that creates the page.
+     *
+     * @return new Page
+     */
+    public Page createPage()
+    {
+        Page ret = null;
+        final UIMenuItem model = this.imodel;
+        try {
+            if (model.getCommand().getTargetTable() != null) {
+                ret = new TablePage(model.getCommandUUID(), model.getInstanceKey());
+            } else {
+                ret = new FormPage(model.getCommandUUID(), model.getInstanceKey(), this.modalWindow);
+            }
+        } catch (final EFapsException e) {
+            ret = new ErrorPage(e);
+        }
+        return ret;
+    }
 }

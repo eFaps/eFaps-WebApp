@@ -139,6 +139,9 @@ public class FilterPage extends WebPage
                         }
                     }
                     uiTable.addFilterRange(_uitableHeader, from, to);
+                    if (!_uitableHeader.isFilterMemoryBased()) {
+                        uiTable.resetModel();
+                    }
                     _modalwindow.setUpdateParent(true);
                     _modalwindow.close(_target);
                 }
