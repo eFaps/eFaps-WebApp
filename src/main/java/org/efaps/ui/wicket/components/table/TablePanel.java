@@ -81,9 +81,9 @@ public class TablePanel extends Panel
         if (uiTable.getValues().isEmpty()) {
             String text;
             if (uiTable.isFiltered()) {
-                text = DBProperties.getProperty("WebTable.NoData");
-            } else {
                 text = DBProperties.getProperty("WebTable.NoDataWithFilter");
+            } else {
+                text = DBProperties.getProperty("WebTable.NoData");
             }
             final Label nodata = new Label(rowsRepeater.newChildId(), text);
             nodata.add(new SimpleAttributeModifier("class", "eFapsTableNoData"));
