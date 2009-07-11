@@ -542,6 +542,10 @@ public class UITable extends UIAbstractPageObject
                         attr = _query.getAttribute(field.getExpression());
                     }
 
+                    if (field.getAlternateOID() != null) {
+                        instance = Instance.get((String) _query.get(field.getAlternateOID()));
+                    }
+
                     final FieldValue fieldvalue = new FieldValue(field, attr, value, instance);
                     String htmlTitle = null;
                     boolean hidden = false;
@@ -564,20 +568,10 @@ public class UITable extends UIAbstractPageObject
                         strValue = "";
                     }
                     String icon = field.getIcon();
-                    if (field.getAlternateOID() == null) {
-                        if (field.isShowTypeIcon()) {
-                            final Image image = Image.getTypeIcon(instance.getType());
-                            if (image != null) {
-                                icon = image.getUrl();
-                            }
-                        }
-                    } else {
-                        final Instance inst = Instance.get((String) _query.get(field.getAlternateOID()));
-                        if (field.isShowTypeIcon()) {
-                            final Image image = Image.getTypeIcon(inst.getType());
-                            if (image != null) {
-                                icon = image.getUrl();
-                            }
+                    if (field.isShowTypeIcon()) {
+                        final Image image = Image.getTypeIcon(instance.getType());
+                        if (image != null) {
+                            icon = image.getUrl();
                         }
                     }
                     if (hidden) {
