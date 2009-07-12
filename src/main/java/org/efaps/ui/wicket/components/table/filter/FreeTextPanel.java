@@ -28,7 +28,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
+import org.joda.time.DateTime;
 
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.components.LabelComponent;
@@ -82,42 +82,42 @@ public class FreeTextPanel extends Panel
             this.fromFieldName = "from";
 
         } else if (filterType.equals(FilterType.DATE)) {
-            final Date fromDate;
-            final Date toDate;
+            DateTime fromDate = null;
+            DateTime toDate = null;
             final Filter filter = uitable.getFilter(_uitableHeader);
             if (filter != null) {
-                fromDate = filter.getDateFrom() == null ? new Date(0) : filter.getDateFrom().toDate();
-                toDate = filter.getDateTo() == null ? new Date(0) : filter.getDateTo().minusDays(1).toDate();
-            } else {
-                fromDate = new Date();
-                toDate = new Date();
+                fromDate = filter.getDateFrom();
+                toDate = filter.getDateTo().minusDays(1);
             }
+
+            this.add(new Label("textFrom", DBProperties.getProperty("FilterPage.textFrom")));
+            this.add(new Label("textTo", DBProperties.getProperty("FilterPage.textTo")));
+
+            final DateTimePanel dateFrom = new DateTimePanel("dateFrom", fromDate,
+                                                             new StyleDateConverter(false), "dateFrom", false);
+            this.add(dateFrom);
+            final DateTimePanel dateTo = new DateTimePanel("dateTo", toDate,
+                                                           new StyleDateConverter(false), "dateTo", false);
+            this.add(dateTo);
 
             final StyleDateConverter conv = new StyleDateConverter(false);
             final String dateStr = conv.convertToString(new Date(), getLocale());
             final StringBuilder js = new StringBuilder();
-            js.append("<a href=\"#\" onclick=\"document.getElementsByName('dateTo')[0].value='")
-                .append(dateStr).append("';document.getElementsByName('dateFrom')[0].value='")
+            js.append("<a href=\"#\" onclick=\"document.getElementsByName('").append(dateFrom.getDateFieldName())
+                .append("')[0].value='").append(dateStr)
+                .append("';document.getElementsByName('").append(dateTo.getDateFieldName()).append("')[0].value='")
                 .append(dateStr).append("';\">")
                 .append(DBProperties.getProperty("FilterPage.Today")).append("</a>");
             if (filter == null || filter.getDateFrom() == null) {
                 js.append("<script type=\"text/javascript\">")
                     .append("Wicket.Event.add(window, \"domready\", function(event) {")
-                    .append("document.getElementsByName('dateTo')[0].value='';")
-                    .append("document.getElementsByName('dateFrom')[0].value='';")
+                    .append("document.getElementsByName('").append(dateFrom.getDateFieldName())
+                    .append("')[0].value='';")
+                    .append("document.getElementsByName('").append(dateTo.getDateFieldName()).append("')[0].value='';")
                     .append(" });")
                     .append("</script>");
             }
             this.add(new LabelComponent("js", js.toString()));
-            this.add(new Label("textFrom", DBProperties.getProperty("FilterPage.textFrom")));
-            this.add(new Label("textTo", DBProperties.getProperty("FilterPage.textTo")));
-
-            final DateTimePanel dateFrom = new DateTimePanel("dateFrom", new Model<Date>(fromDate),
-                                                             new StyleDateConverter(false), "dateFrom", false);
-            this.add(dateFrom);
-            final DateTimePanel dateTo = new DateTimePanel("dateTo", new Model<Date>(toDate),
-                                                           new StyleDateConverter(false), "dateTo", false);
-            this.add(dateTo);
 
             this.fromFieldName = "dateFrom";
             this.toFieldName = "dateTo";
