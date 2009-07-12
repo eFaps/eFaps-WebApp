@@ -28,6 +28,7 @@ import org.apache.wicket.extensions.yui.calendar.DatePicker;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebComponent;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 import org.joda.time.DateTime;
@@ -174,7 +175,7 @@ public class DateTimePanel extends Panel
         if (!use12HourFormat()) {
             ampm.setVisible(false);
         }
-        this.add(new WebComponent("seperator").setVisible(_time));
+        this.add(new WebMarkupContainer("seperator").setVisible(_time));
     }
 
     /**
