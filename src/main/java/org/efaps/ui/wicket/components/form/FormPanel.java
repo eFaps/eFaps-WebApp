@@ -33,6 +33,7 @@ import org.apache.wicket.model.IModel;
 
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.LabelComponent;
+import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.form.row.RowPanel;
 import org.efaps.ui.wicket.models.FormRowModel;
 import org.efaps.ui.wicket.models.cell.UIHiddenCell;
@@ -76,7 +77,7 @@ public class FormPanel extends Panel
     /**
      * Set contains the date components of this formpanel.
      */
-    private final Set<DateFieldWithPicker> dateComponents = new HashSet<DateFieldWithPicker>();
+    private final Set<DateTimePanel> dateComponents = new HashSet<DateTimePanel>();
 
     /**
      * @param _wicketId             wicket id of this component
@@ -143,16 +144,16 @@ public class FormPanel extends Panel
      * Add a date component.
      * @param _datePicker date picker
      */
-    public void addDateComponent(final DateFieldWithPicker _datePicker)
+    public void addDateComponent(final DateTimePanel _dateTimePanel)
     {
-        this.dateComponents.add(_datePicker);
+        this.dateComponents.add(_dateTimePanel);
     }
 
     /**
      * Getter method for instance variable {@link #dateComponents}.
      * @return instance variable {@link #dateComponents}
      */
-    public Set<DateFieldWithPicker> getDateComponents()
+    public Set<DateTimePanel> getDateComponents()
     {
         return this.dateComponents;
     }

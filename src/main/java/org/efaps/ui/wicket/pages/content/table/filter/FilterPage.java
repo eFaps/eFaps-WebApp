@@ -38,7 +38,7 @@ import org.apache.wicket.model.IModel;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.button.Button;
-import org.efaps.ui.wicket.components.form.DateFieldWithPicker;
+import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.table.filter.FreeTextPanel;
 import org.efaps.ui.wicket.components.table.filter.PickerPanel;
@@ -121,19 +121,19 @@ public class FilterPage extends WebPage
                     String to = null;
                     while (iter.hasNext()) {
                         final Component comp = iter.next();
-                        if (comp instanceof DateFieldWithPicker) {
-                            final DateFieldWithPicker datepicker = (DateFieldWithPicker) comp;
-                            if (datepicker.getId().equals(freeTextPanel.getFromFieldName())) {
-                                final String tmp = getRequestCycle().getRequest().getParameter(
-                                                freeTextPanel.getFromFieldName());
-                                if (tmp.length() > 0) {
-                                    from = datepicker.getDateAsString(tmp);
+                        if (comp instanceof DateTimePanel) {
+                            final DateTimePanel datePanel = (DateTimePanel) comp;
+                            if (datePanel.getId().equals(freeTextPanel.getFromFieldName())) {
+                                final String[] tmp = getRequestCycle().getRequest().getParameters(
+                                                datePanel.getDateFieldName());
+                                if (tmp.length > 0) {
+                                    from = datePanel.getDateAsString(tmp, null, null, null);
                                 }
                             } else {
-                                final String tmp = getRequestCycle().getRequest().getParameter(
-                                                freeTextPanel.getToFieldName());
-                                if (tmp.length() > 0) {
-                                    to = datepicker.getDateAsString(tmp);
+                                final String[] tmp = getRequestCycle().getRequest().getParameters(
+                                                datePanel.getDateFieldName());
+                                if (tmp.length > 0) {
+                                    to = datePanel.getDateAsString(tmp, null, null, null);
                                 }
                             }
                         }

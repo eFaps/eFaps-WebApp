@@ -32,7 +32,7 @@ import org.apache.wicket.model.Model;
 
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.components.LabelComponent;
-import org.efaps.ui.wicket.components.form.DateFieldWithPicker;
+import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.models.objects.UITableHeader;
 import org.efaps.ui.wicket.models.objects.UITable.Filter;
@@ -112,11 +112,11 @@ public class FreeTextPanel extends Panel
             this.add(new Label("textFrom", DBProperties.getProperty("FilterPage.textFrom")));
             this.add(new Label("textTo", DBProperties.getProperty("FilterPage.textTo")));
 
-            final DateFieldWithPicker dateFrom = new DateFieldWithPicker("dateFrom", new Model<Date>(fromDate),
-                                new StyleDateConverter(false), "dateFrom");
+            final DateTimePanel dateFrom = new DateTimePanel("dateFrom", new Model<Date>(fromDate),
+                                                             new StyleDateConverter(false), "dateFrom", false);
             this.add(dateFrom);
-            final DateFieldWithPicker dateTo = new DateFieldWithPicker("dateTo", new Model<Date>(toDate),
-                                new StyleDateConverter(false), "dateTo");
+            final DateTimePanel dateTo = new DateTimePanel("dateTo", new Model<Date>(toDate),
+                                                           new StyleDateConverter(false), "dateTo", false);
             this.add(dateTo);
 
             this.fromFieldName = "dateFrom";

@@ -50,7 +50,7 @@ import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.Opener;
 import org.efaps.ui.wicket.behaviors.update.UpdateInterface;
 import org.efaps.ui.wicket.components.FormContainer;
-import org.efaps.ui.wicket.components.form.DateFieldWithPicker;
+import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.form.FormPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.FormModel;
@@ -248,11 +248,14 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
     {
         final List<FormPanel> formpl = getFormPanels();
         for (final FormPanel panel : formpl) {
-            for (final DateFieldWithPicker datepicker : panel.getDateComponents()) {
+            for (final DateTimePanel datepicker : panel.getDateComponents()) {
                 final Map<String, String[]> map = getComponent().getRequestCycle().getRequest().getParameterMap();
-                if (map.containsKey(datepicker.getInputName())) {
-                    final String[] value = map.get(datepicker.getInputName());
-                    map.put(datepicker.getInputName(), new String[] { datepicker.getDateAsString(value[0]) });
+                if (map.containsKey(datepicker.getDateFieldName())) {
+                    final String[] date = map.get(datepicker.getDateFieldName());
+                    final String[] hour = map.get(datepicker.getHourFieldName());
+                    final String[] minute = map.get(datepicker.getMinuteFieldName());
+                    final String[] ampm = map.get(datepicker.getAmPmFieldName());
+                    map.put(datepicker.getFieldName(), new String[] {datepicker.getDateAsString(date, hour, minute, ampm)});
                 }
             }
         }
@@ -352,8 +355,9 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
      * @param _target   AjaxRequestTarget to be used in the case a ModalPage
      *                  should be called
      * @param _other    other parameters
+     * @param _classifications lis of classifications
      * @return true if the Validation was valid, otherwise false
-     * @throws EFapsException
+     * @throws EFapsException on error
      */
     private boolean validateForm(final AjaxRequestTarget _target, final Map<String, String[]> _other,
                                  final List<Classification> _classifications)

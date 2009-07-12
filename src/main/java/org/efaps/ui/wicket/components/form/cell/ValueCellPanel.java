@@ -20,8 +20,6 @@
 
 package org.efaps.ui.wicket.components.form.cell;
 
-import java.util.Date;
-
 import org.apache.wicket.PageMap;
 import org.apache.wicket.datetime.StyleDateConverter;
 import org.apache.wicket.markup.html.WebComponent;
@@ -30,14 +28,13 @@ import org.apache.wicket.markup.html.link.PopupSettings;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.joda.time.DateTime;
 
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.admin.ui.field.Field.Display;
 import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.autocomplete.AutoCompleteField;
+import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
-import org.efaps.ui.wicket.components.form.DateFieldWithPicker;
 import org.efaps.ui.wicket.components.form.FormPanel;
 import org.efaps.ui.wicket.components.form.valuepicker.Value4Picker;
 import org.efaps.ui.wicket.components.form.valuepicker.ValuePicker;
@@ -62,7 +59,7 @@ public class ValueCellPanel extends Panel
     /**
      * Instance field needed in case that a field needs a datefield.
      */
-    private DateFieldWithPicker dateTextField = null;
+    private DateTimePanel dateTextField = null;
 
     /**
      * Constructor.
@@ -85,16 +82,13 @@ public class ValueCellPanel extends Panel
             } else {
                 this.add(new StaticImageComponent("icon", uiFormCell.getIcon()));
             }
-            // in case of create or edit for a Date
-            if ((_formmodel.isCreateMode() || _formmodel.isEditMode()) && "Date".equals(uiFormCell.getTypeName())) {
+            // in case of create or edit for a Date or DateTime
+            if ((_formmodel.isCreateMode() || _formmodel.isEditMode())
+                          && ("Date".equals(uiFormCell.getTypeName()) || "DateTime".equals(uiFormCell.getTypeName()))) {
 
-                final Date date = (uiFormCell.getCompareValue() == null
-                                    || !(uiFormCell.getCompareValue() instanceof DateTime))
-                                  ? new Date()
-                                  : ((DateTime) uiFormCell.getCompareValue()).toDate();
-
-                this.dateTextField = new DateFieldWithPicker("label", new Model<Date>(date), new StyleDateConverter(
-                                false), uiFormCell.getName());
+                this.dateTextField = new DateTimePanel("label", uiFormCell.getCompareValue(),
+                                                       new StyleDateConverter(false), uiFormCell.getName(),
+                                                       "DateTime".equals(uiFormCell.getTypeName()));
 
                 this.add(this.dateTextField);
                 this.add(new WebComponent("valuePicker").setVisible(false));
