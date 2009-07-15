@@ -37,9 +37,11 @@ import org.apache.wicket.model.Model;
 
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.ui.field.Field;
 import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
 import org.efaps.ui.wicket.behaviors.SetSelectedRowBehavior;
 import org.efaps.ui.wicket.components.form.command.AjaxCmdBehavior;
+import org.efaps.ui.wicket.models.cell.UIAbstractCell;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
@@ -74,23 +76,19 @@ public class AutoCompleteField extends AutoCompleteTextField<Map<String, String>
     private AjaxCmdBehavior cmdBehavior;
 
     /**
-     * The name of this field.
-     */
-    private final String fieldName;
-
-    /**
      * Must this row be selected. Used if this completefield is inside a table.
      */
     private final boolean selectRow;
 
     /**
-     * @param _wicketId wicket id for this component
-     * @param _model model for this component
+     * Name of the field this AutoCompleteField belongs to.
      */
-    public AutoCompleteField(final String _wicketId, final IModel<?> _model, final boolean _selectRow)
-    {
-        this(_wicketId, _model, ((UITableCell) _model.getObject()).getName(), _selectRow);
-    }
+    private final String fieldName;
+
+    /**
+     * NUmber of cols this field has got.
+     */
+    private int cols;
 
     /**
      * @param _wicketId wicket id for this component
@@ -98,13 +96,18 @@ public class AutoCompleteField extends AutoCompleteTextField<Map<String, String>
      * @param _fieldName name for the field
      */
     @SuppressWarnings("unchecked")
-    public AutoCompleteField(final String _wicketId, final IModel<?> _model, final String _fieldName,
-                             final boolean _selectRow)
+    public AutoCompleteField(final String _wicketId, final IModel<?> _model, final boolean _selectRow)
     {
         super(_wicketId, new Model());
         this.selectRow = _selectRow;
         this.model = _model;
-        this.fieldName = _fieldName;
+        final UIAbstractCell uiAbstractCell = ((UIAbstractCell) _model.getObject());
+        this.fieldName = uiAbstractCell.getName();
+
+        final Field field = Field.get(uiAbstractCell.getFieldId());
+        if (field != null) {
+            this.cols = field.getCols();
+        }
         add(StaticHeaderContributor.forCss(AutoCompleteField.CSS));
 
         if (_selectRow) {
@@ -137,6 +140,9 @@ public class AutoCompleteField extends AutoCompleteTextField<Map<String, String>
         _tag.setName("input");
         super.onComponentTag(_tag);
         _tag.put("name", this.fieldName + "AutoComplete");
+        if (this.cols > 0) {
+            _tag.put("size", this.cols);
+        }
     }
 
     /**
@@ -175,7 +181,6 @@ public class AutoCompleteField extends AutoCompleteTextField<Map<String, String>
     @Override
     protected void onComponentTagBody(final MarkupStream _markupStream, final ComponentTag _tag)
     {
-
         final StringBuilder cmp = new StringBuilder();
         cmp.append("<input type=\"hidden\"").append("name=\"").append(this.fieldName).append("\" id=\"").append(
                         _tag.getString("id")).append("_hidden\" >");
@@ -218,15 +223,5 @@ public class AutoCompleteField extends AutoCompleteTextField<Map<String, String>
     public void addCmdBehavior(final AjaxCmdBehavior _cmdBehavior)
     {
         this.cmdBehavior = _cmdBehavior;
-    }
-
-    /**
-     * Getter method for instance variable {@link #fieldName}.
-     *
-     * @return value of instance variable {@link #fieldName}
-     */
-    public String getFieldName()
-    {
-        return this.fieldName;
     }
 }
