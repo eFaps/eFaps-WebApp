@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Author:          jmox
+ * Author:          The eFaps Team
  * Revision:        $Rev$
  * Last Changed:    $Date$
  * Last Changed By: $Author$
@@ -21,68 +21,12 @@
 
 /* 
  * @eFapsPackage  org.efaps.ui.wicket.components.form
- * @eFapsUUID     950998a2-38b1-4d1e-8ae5-95b337cce789
+ * @eFapsUUID     fbb2dfe6-452d-4be5-ae54-24f74bb29fb3
  * @eFapsRevision $Rev$
+ * @eFapsExtends  org.efaps.ui.wicket.components.form.FormPanel_Base.css
+ *
+ * This stylesheet must be replaced for customization, therefore it is left empty.
+ * Functional description can be found in the related "<code>_Base</code>"
+ * stylesheet.
  */
 
-.eFapsForm {
-  width: 99%;
-}
-
-.eFapsFormRow {
-  height: 24px;
-}
-
-.eFapsFormLabel,.eFapsFormLabelRequired,.eFapsFormLabelRequiredForce {
-  background-color: #D0EDB8;
-  font-weight: bold;
-  padding-left: 4px;
-  padding-right: 4px;
-  width: 150px;
-  white-space: nowrap;
-}
-
-.eFapsFormLabel {
-  color: #008800;
-  border-style: solid;
-  border-color: #008800;
-  border-width: 2px;
-}
-
-.eFapsFormLabelRequired {
-  color: black;
-  font-style: italic;
-  border-style: double;
-  border-color: #008800;
-}
-
-.eFapsFormLabelRequiredForce {
-  background-color: red;
-  color: black;
-  font-style: italic;
-  border-style: double;
-  border-color: black;
-}
-
-.eFapsFormValue {
-  padding-left: 4px;
-  padding-right: 4px;
-  white-space: nowrap;
-  background-color: white;
-  background-image: url("../../servlet/image/org.efaps.ui.wicket.components.form.dotted-line.png");
-  background-repeat: repeat-x;
-  background-position: bottom;
-  border-right: 1px solid #ddd;
-}
-
-/* For firefox this must be set especially for input and textarea */
-.eFapsFormValue INPUT, .eFapsFormValue TEXTAREA {
-  font-family: arial, verdana, helvetica, sans-serif;
-  font-size: 9pt;
-}
-
-/* Input Field Appearance */
-.eFapsFormInputField {
-  background-color: #eeeeee;
-  font-size: 12px;
-}

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Author:          jmox
+ * Author:          The eFaps Team
  * Revision:        $Rev$
  * Last Changed:    $Date$
  * Last Changed By: $Author$
@@ -21,40 +21,12 @@
 
 /* 
  * @eFapsPackage  org.efaps.ui.wicket.pages.content.form
- * @eFapsUUID     fc702787-b573-42f5-91b5-38f70981a240
+ * @eFapsUUID     7e58b178-37f6-4c3f-8d7d-fd7437eedc7c
  * @eFapsRevision $Rev$
+ * @eFapsExtends org.efaps.ui.wicket.pages.content.form.FormPage_Base.css
+ *
+ * This stylesheet must be replaced for customization, therefore it is left empty.
+ * Functional description can be found in the related "<code>_Base</code>"
+ * stylesheet.
  */
-
-.eFapsContentDiv {
-  position: absolute;
-  width: 100%;
-  top: 50px;
-  bottom: 0px;
-  overflow: auto;
-  padding-bottom: 20px;
-}
-
-.eFapsContentDiv img {
-  width: 16px;
-  height: 16px;
-  border: 0;
-  vertical-align: bottom;
-}
-
-.eFapsHeading1 {
-  margin-top: 15px;
-  margin-bottom: 3px;
-  color: #008800;
-  font-weight: bold;
-  font-size: 11pt;
-  padding: 3px;
-}
-
-.eFapsHeading2 {
-  margin-top: 20px;
-  margin-bottom: 5px;
-  color: #008800;
-  font-weight: bold;
-  font-size: 9pt;
-  text-decoration: underline;
-}
+ 
