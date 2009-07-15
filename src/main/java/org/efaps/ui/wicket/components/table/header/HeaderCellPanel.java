@@ -140,13 +140,17 @@ public class HeaderCellPanel extends Panel
             }
             this.add(sortlink);
             final Label sortlabel = new Label("sortlabel", uiTableHeader.getLabel());
-            sortlabel.add(DnDBehavior.getHandleBehavior());
+            if (!(_uitable.isCreateMode() || _uitable.isEditMode())) {
+                sortlabel.add(DnDBehavior.getHandleBehavior());
+            }
             sortlink.add(sortlabel);
             this.add(new WebComponent("label").setVisible(false));
         } else {
             this.add(new WebMarkupContainer("sortlink").setVisible(false));
             final Label label = new Label("label", uiTableHeader.getLabel());
-            label.add(DnDBehavior.getHandleBehavior());
+            if (!(_uitable.isCreateMode() || _uitable.isEditMode())) {
+                label.add(DnDBehavior.getHandleBehavior());
+            }
             this.add(label);
         }
 
