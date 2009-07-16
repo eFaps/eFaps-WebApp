@@ -39,121 +39,122 @@ import org.efaps.ui.wicket.models.cell.XYValue;
 import org.efaps.ui.wicket.models.objects.UIForm;
 
 /**
- * TODO comment
+ * TODO comment.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public class ValuePanel extends Panel {
-  /**
+public class ValuePanel extends Panel
+{
+    /**
    *
    */
-  private static final long serialVersionUID = 1L;
-
-  /**
-   * @param id
-   * @param model
-   */
-  public ValuePanel(final String _wicketId, final IModel<?> model,
-                    final Item<XYValue> _item) {
-    super(_wicketId, model);
-    final XYValue asd = (XYValue) _item.getDefaultModelObject();
-    final UIFormCellSet set = (UIFormCellSet) super.getDefaultModelObject();
-    final Pattern tagpattern = Pattern
-        .compile("</?\\w+((\\s+\\w+(\\s*=\\s*(?:\".*?\"|'.*?'|[^'\">\\s]+))?)+\\s*|\\s*)/?>");
-    final StringBuilder regex = new StringBuilder()
-      .append("(?i)name\\s*=\\s*\"(?-i)").append(set.getName()).append("\"");
-    final NumberFormat nf = NumberFormat.getInstance();
-    nf.setMinimumIntegerDigits(2);
-    nf.setMaximumIntegerDigits(2);
-
-    long valueid = 0;
-
-    final StringBuilder bld = new StringBuilder();
-    if (set.isEditMode()) {
-      valueid = set.getInstance(asd.getY()).getId();
-      bld.append("<input type=\"hidden\" value=\"")
-        .append(valueid).append("\" name=\"hiddenId")
-        .append(set.getName()).append(nf.format(asd.getY())).append("\"/>");
-    }
-    for (int x = 0; x < asd.getX(); x++) {
-      bld.append("<td>");
-      final String value = set.getXYValue(x, asd.getY());
-      final Matcher matcher = tagpattern.matcher(value);
-      int start = 0;
-      while (matcher.find()) {
-        value.substring(start , matcher.start());
-        bld.append(value.substring(start , matcher.start()));
-        final String tag = matcher.group();
-        final StringBuilder name = new StringBuilder()
-          .append(" name=\"").append(set.getName())
-          .append(nf.format(asd.getY())).append(nf.format(x)).append("\" ");
-
-        bld.append(tag.replaceAll(regex.toString(), name.toString()));
-        start = matcher.end();
-      }
-      bld.append(value.substring(start, value.length()));
-      bld.append("</td>");
-    }
-    final WebMarkupContainer table = new WebMarkupContainer("eFpasSetValueTable");
-    add(table);
-    table.setOutputMarkupId(true);
-
-    table.add(new LabelComponent("label", bld.toString()));
-    if (set.isEditMode()) {
-      final WebMarkupContainer td = new WebMarkupContainer("removeTD");
-      table.add(td);
-      final AjaxRemove remove = new AjaxRemove("remove",
-                                               valueid,
-                                               set.getName());
-      td.add(remove);
-      final StaticImageComponent image = new StaticImageComponent("removeIcon");
-      image.setReference(YPanel.ICON_DELETE);
-      remove.add(image);
-    } else {
-      table.add(new WebMarkupContainer("removeTD").setVisible(false));
-    }
-  }
-
-  public class AjaxRemove extends AjaxLink<UIFormCellSet> {
+    private static final long serialVersionUID = 1L;
 
     /**
+     * @param _wicketId wicket id for this component
+     * @param _model     model for this component
+     * @param _item     item
+     */
+    public ValuePanel(final String _wicketId, final IModel<?> _model, final Item<XYValue> _item)
+    {
+        super(_wicketId, _model);
+        final XYValue xyValue = (XYValue) _item.getDefaultModelObject();
+        final UIFormCellSet set = (UIFormCellSet) super.getDefaultModelObject();
+        final Pattern tagpattern = Pattern
+                        .compile("</?\\w+((\\s+\\w+(\\s*=\\s*(?:\".*?\"|'.*?'|[^'\">\\s]+))?)+\\s*|\\s*)/?>");
+        final StringBuilder regex = new StringBuilder().append("(?i)name\\s*=\\s*\"(?-i)").append(set.getName())
+                        .append("\"");
+        final NumberFormat nf = NumberFormat.getInstance();
+        nf.setMinimumIntegerDigits(2);
+        nf.setMaximumIntegerDigits(2);
+
+        long valueid = 0;
+
+        final StringBuilder bld = new StringBuilder();
+        // in edit mode store the old id
+        if (set.isEditMode()) {
+            valueid = set.getInstance(xyValue.getY()).getId();
+            bld.append("<input type=\"hidden\" value=\"").append(valueid).append("\" name=\"hiddenId_").append(
+                            set.getName()).append("_").append(nf.format(xyValue.getY())).append("\"/>");
+        }
+        for (int x = 0; x < xyValue.getX(); x++) {
+            bld.append("<td>");
+            final String value = set.getXYValue(x, xyValue.getY());
+            final Matcher matcher = tagpattern.matcher(value);
+            int start = 0;
+            while (matcher.find()) {
+                value.substring(start, matcher.start());
+                bld.append(value.substring(start, matcher.start()));
+                final String tag = matcher.group();
+                final StringBuilder name = new StringBuilder().append(" name=\"").append(set.getName())
+                    .append("_").append(nf.format(xyValue.getY())).append(nf.format(x)).append("\" ");
+
+                bld.append(tag.replaceAll(regex.toString(), name.toString()));
+                start = matcher.end();
+            }
+            bld.append(value.substring(start, value.length()));
+            bld.append("</td>");
+        }
+        final WebMarkupContainer table = new WebMarkupContainer("eFpasSetValueTable");
+        add(table);
+        table.setOutputMarkupId(true);
+
+        table.add(new LabelComponent("label", bld.toString()));
+        if (set.isEditMode()) {
+            final WebMarkupContainer td = new WebMarkupContainer("removeTD");
+            table.add(td);
+            final AjaxRemove remove = new AjaxRemove("remove", valueid, set.getName());
+            td.add(remove);
+            final StaticImageComponent image = new StaticImageComponent("removeIcon");
+            image.setReference(YPanel.ICON_DELETE);
+            remove.add(image);
+        } else {
+            table.add(new WebMarkupContainer("removeTD").setVisible(false));
+        }
+    }
+
+    public class AjaxRemove extends AjaxLink<UIFormCellSet>
+    {
+
+        /**
      *
      */
-    private static final long serialVersionUID = 1L;
-    private final Long valueID;
-    private final String name;
+        private static final long serialVersionUID = 1L;
+        private final Long valueID;
+        private final String name;
 
-    /**
-     * @param id
-     * @param model
-     */
-    public AjaxRemove(final String id, final long _valueid,final String _name) {
-      super(id);
-      this.valueID = _valueid;
-      this.name = _name;
-   }
-
-
-    @Override
-    public void onClick(final AjaxRequestTarget _target) {
-      final UIForm formmodel = (UIForm) this.getPage().getDefaultModelObject();
-
-      final Map<String, String[]> newmap = formmodel.getNewValues();
-      final String keyString = this.name + "eFapsRemove";
-      if (!newmap.containsKey(keyString)){
-        newmap.put(keyString, new String[]{this.valueID.toString()});
-      } else {
-        final String[] oldvalues = newmap.get(keyString);
-        final String[] newvalues = new String[oldvalues.length+1];
-        for (int i = 0;i<oldvalues.length;i++) {
-          newvalues[i] = oldvalues[i];
+        /**
+         * @param id
+         * @param model
+         */
+        public AjaxRemove(final String id, final long _valueid, final String _name)
+        {
+            super(id);
+            this.valueID = _valueid;
+            this.name = _name;
         }
-        newvalues[oldvalues.length] = this.valueID.toString();
-        newmap.put(keyString,newvalues);
-      }
-      this.getParent().getParent().setVisible(false);
-      _target.addComponent(this.getParent().getParent());
+
+        @Override
+        public void onClick(final AjaxRequestTarget _target)
+        {
+            final UIForm formmodel = (UIForm) getPage().getDefaultModelObject();
+
+            final Map<String, String[]> newmap = formmodel.getNewValues();
+            final String keyString = this.name + "eFapsRemove";
+            if (!newmap.containsKey(keyString)) {
+                newmap.put(keyString, new String[] { this.valueID.toString() });
+            } else {
+                final String[] oldvalues = newmap.get(keyString);
+                final String[] newvalues = new String[oldvalues.length + 1];
+                for (int i = 0; i < oldvalues.length; i++) {
+                    newvalues[i] = oldvalues[i];
+                }
+                newvalues[oldvalues.length] = this.valueID.toString();
+                newmap.put(keyString, newvalues);
+            }
+            getParent().getParent().setVisible(false);
+            _target.addComponent(getParent().getParent());
+        }
     }
-  }
 }
