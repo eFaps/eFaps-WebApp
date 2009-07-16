@@ -603,7 +603,20 @@ public class UIForm extends UIAbstractPageObject
                         addHidden(new UIHiddenCell(this, fieldvalue, null, strValue));
                     } else {
                         final UIFormCell cell;
-                        if (field instanceof FieldCommand) {
+                        if (field instanceof FieldSet) {
+                            cell = new UIFormCellSet(this, fieldvalue, null, "", "", label, isCreateMode());
+                            final AttributeSet set = AttributeSet.find(type.getName(), field.getExpression());
+                            int idx = 0;
+                            for (final String attrName : ((FieldSet) field).getOrder()) {
+                                final Attribute child = set.getAttribute(attrName);
+                                if (isCreateMode()) {
+                                    final FieldValue fValue = new FieldValue(field, child, "", getInstance());
+                                    ((UIFormCellSet) cell).addDefiniton(idx, fValue.getEditHtml(getMode(),
+                                                    getInstance(), null));
+                                }
+                                idx++;
+                            }
+                        } else if (field instanceof FieldCommand) {
                             cell = new UIFormCellCmd(this, (FieldCommand) field, null, label);
                         } else {
                             cell = new UIFormCell(this, fieldvalue, strValue, null, label, attrTypeName);
