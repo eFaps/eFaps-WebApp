@@ -87,7 +87,7 @@ public class FileRequestTarget implements IRequestTarget {
       final WebResponse response = (WebResponse) _requestCycle.getResponse();
       response.setAttachmentHeader(this.file.getName());
       response.setContentType(this.mime.getContentType());
-
+      response.setAjax(false);
       Streams.copy(input, response.getOutputStream());
     } catch (final IOException e) {
       throw new RuntimeException(e);

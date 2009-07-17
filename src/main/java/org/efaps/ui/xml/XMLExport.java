@@ -28,6 +28,7 @@ import java.io.OutputStream;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.UUID;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -60,7 +61,7 @@ import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.ui.wicket.EFapsApplication;
 import org.efaps.ui.wicket.models.cell.UIFormCell;
 import org.efaps.ui.wicket.models.cell.UITableCell;
-import org.efaps.ui.wicket.models.objects.AbstractUIObject;
+import org.efaps.ui.wicket.models.objects.UIAbstractPageObject;
 import org.efaps.ui.wicket.models.objects.UIFieldTable;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIHeading;
@@ -122,7 +123,7 @@ public class XMLExport
     /**
      * this variable contains the model used in this XMLExport
      */
-    private AbstractUIObject modelObject;
+    private UIAbstractPageObject modelObject;
 
     /**
      * the document
@@ -131,8 +132,14 @@ public class XMLExport
 
     private static String APPNAME = Application.get().getApplicationKey();
 
+
+    public XMLExport(final UUID _commandUUID, final String _oid) throws EFapsException {
+        final UIForm uiform = new UIForm(_commandUUID, _oid);
+        initialise(uiform);
+    }
+
     // Constructor
-    public XMLExport(final AbstractUIObject _model) throws EFapsException
+    public XMLExport(final UIAbstractPageObject _model) throws EFapsException
     {
         initialise(_model);
     }
@@ -140,7 +147,7 @@ public class XMLExport
     public XMLExport(final Object object) throws EFapsException
     {
         if (object instanceof Component) {
-            initialise((AbstractUIObject) ((Component) object).getPage().getDefaultModelObject());
+            initialise((UIAbstractPageObject) ((Component) object).getPage().getDefaultModelObject());
         }
     }
 
@@ -210,7 +217,7 @@ public class XMLExport
      * @param _model
      * @throws EFapsException
      */
-    private void initialise(final AbstractUIObject _model) throws EFapsException
+    private void initialise(final UIAbstractPageObject _model) throws EFapsException
     {
         this.msgTimeStamp = new Date();
         this.modelObject = _model;

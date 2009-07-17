@@ -77,6 +77,11 @@ public abstract class UIAbstractPageObject extends AbstractUIObject
     private boolean renderRevise = false;
 
     /**
+     * Must a file be shown that is returned from the esjp.
+     */
+    private boolean isTargetShowFile;
+
+    /**
      * Constructor evaluating the UUID for the command and the oid from an
      * Opener instance.
      *
@@ -104,6 +109,7 @@ public abstract class UIAbstractPageObject extends AbstractUIObject
                 this.targetCmdUUID = trgCmd.getUUID();
                 this.targetCmdRevise = trgCmd.isTargetCmdRevise();
             }
+            this.isTargetShowFile = cmd.isTargetShowFile();
         }
     }
 
@@ -192,6 +198,16 @@ public abstract class UIAbstractPageObject extends AbstractUIObject
     public boolean isTargetCmdRevise()
     {
         return this.targetCmdRevise;
+    }
+
+    /**
+     * Getter method for instance variable {@link #isTargetShowFile}.
+     *
+     * @return value of instance variable {@link #isTargetShowFile}
+     */
+    public boolean isTargetShowFile()
+    {
+        return this.isTargetShowFile;
     }
 
     /**

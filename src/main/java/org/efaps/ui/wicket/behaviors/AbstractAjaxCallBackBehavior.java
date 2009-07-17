@@ -23,80 +23,85 @@ package org.efaps.ui.wicket.behaviors;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 
 /**
- * @author jmox
+ * @author The eFasp Team
  * @version $Id:AbstractAjaxCallBackBehavior.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public abstract class AbstractAjaxCallBackBehavior extends AjaxEventBehavior {
-
-  /**
-   * Enum used to define the targets.
-   */
-  public enum Target {
-    /** The target is the parent window. */
-    PARENT("parent"),
-    /** The target is the top window. */
-    TOP("top"),
-    /** The target is the self window. */
-    SELF("");
-
+public abstract class AbstractAjaxCallBackBehavior extends AjaxEventBehavior
+{
     /**
-     * stores the target.
+     * Enum used to define the targets.
      */
-    public final String jstarget;
+    public enum Target
+    {
+        /** The target is the parent window. */
+        PARENT("parent"),
+        /** The target is the top window. */
+        TOP("top"),
+        /** The target is the self window. */
+        SELF("");
 
-    /**
-     * @param _target target to set
-     */
-    private Target(final String _target) {
-      this.jstarget = _target;
+        /**
+         * stores the target.
+         */
+        private final String jstarget;
+
+        /**
+         * @param _target target to set
+         */
+        private Target(final String _target)
+        {
+            this.jstarget = _target;
+        }
+
     }
 
-  }
+    /**
+     * Neeed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
-  /**
-   * Neeed for serialization.
-   */
-  private static final long serialVersionUID = 1L;
+    /**
+     * Target for this callback.
+     */
+    private final Target target;
 
-  /**
-   * Target for this callback.
-   */
-  private final Target target;
-
-  /**
-   * @param _event    event the behavior should be executed on
-   * @param _target   target of the javascript
-   */
-  public AbstractAjaxCallBackBehavior(final String _event,
-                                      final Target _target) {
-    super(_event);
-    this.target = _target;
-  }
-
-  /**
-  * Get the call back script.
-  * @see org.apache.wicket.ajax.AbstractDefaultAjaxBehavior#getCallbackScript()
-  * @return JavaScript
-  */
-  @Override
-  protected CharSequence getCallbackScript() {
-    final String str =
-        super.getCallbackScript().toString().replace("return !wcall;", "");
-    CharSequence ret = null;
-    if (this.target != Target.SELF) {
-      ret = this.target.jstarget + ".childCallBack(\"javascript:" + str + "\")";
-    } else {
-      ret = str.replace("'", "\"");
+    /**
+     * @param _event event the behavior should be executed on
+     * @param _target target of the javascript
+     */
+    public AbstractAjaxCallBackBehavior(final String _event, final Target _target)
+    {
+        super(_event);
+        this.target = _target;
     }
-    return ret;
-  }
 
-  /**
-   * The precondition script must be overwritten to prevent JavaScript error.
-   * @return null
-   */
-  @Override
-  protected CharSequence getPreconditionScript() {
-    return null;
-  }
+    /**
+     * Get the call back script.
+     *
+     * @see org.apache.wicket.ajax.AbstractDefaultAjaxBehavior#getCallbackScript()
+     * @return JavaScript
+     */
+    @Override
+    protected CharSequence getCallbackScript()
+    {
+        final String str = super.getCallbackScript().toString().replace("return !wcall;", "");
+        CharSequence ret = null;
+        if (this.target != AbstractAjaxCallBackBehavior.Target.SELF) {
+            ret = this.target.jstarget + ".childCallBack(\"javascript:" + str + "\")";
+        } else {
+            ret = str.replace("'", "\"");
+        }
+        return ret;
+    }
+
+    /**
+     * The precondition script must be overwritten to prevent JavaScript error.
+     *
+     * @return null
+     */
+    @Override
+    protected CharSequence getPreconditionScript()
+    {
+        return null;
+    }
 }

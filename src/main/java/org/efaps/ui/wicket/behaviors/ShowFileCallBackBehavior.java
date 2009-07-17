@@ -1,0 +1,85 @@
+/*
+ * Copyright 2003 - 2009 The eFaps Team
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
+ */
+
+package org.efaps.ui.wicket.behaviors;
+
+import java.io.File;
+
+import org.apache.wicket.Component;
+import org.apache.wicket.RequestCycle;
+import org.apache.wicket.Session;
+import org.apache.wicket.behavior.AbstractBehavior;
+import org.apache.wicket.behavior.IBehaviorListener;
+
+import org.efaps.ui.wicket.EFapsSession;
+import org.efaps.ui.wicket.components.menu.FileRequestTarget;
+
+/**
+ * TODO comment!
+ *
+ * @author The eFaps Team
+ * @version $Id$
+ */
+public class ShowFileCallBackBehavior extends AbstractBehavior implements IBehaviorListener
+{
+
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+    private Component component;
+
+    /**
+     * @see org.apache.wicket.behavior.IBehaviorListener#onRequest()
+     */
+    public void onRequest()
+    {
+        final File file = ((EFapsSession) Session.get()).getFile();
+        RequestCycle.get().setRequestTarget(new FileRequestTarget(file));
+    }
+
+    /**
+     * @see org.apache.wicket.behavior.AbstractBehavior#bind(org.apache.wicket.Component)
+     * @param _component
+     */
+    @Override
+    public void bind(final Component _component)
+    {
+        super.bind(_component);
+        this.component = _component;
+    }
+
+    public String getCallbackScript()
+    {
+        if (getComponent() == null) {
+            throw new IllegalArgumentException("Behavior must be bound to a component to create the URL");
+        }
+        final StringBuilder script = new StringBuilder();
+        script.append("top.frames[\"eFapsFrameHidden\"].location.href=\"")
+            .append(getComponent().urlFor(this, IBehaviorListener.INTERFACE)).append("\"");
+        return script.toString();
+    }
+
+    protected Component getComponent()
+    {
+        return this.component;
+    }
+
+}

@@ -37,85 +37,86 @@ import org.efaps.ui.wicket.pages.content.table.TablePage;
  * Class implements the WindowClosedCallback to be able to update the parent
  * page on closing a modal window.
  *
- * @author jmox
+ * @author The eFaps TEam
  * @version $Id$
  */
-public class UpdateParentCallback implements ModalWindow.WindowClosedCallback {
+public class UpdateParentCallback implements ModalWindow.WindowClosedCallback
+{
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
-  /**
-   * Needed for serialization.
-   */
-  private static final long serialVersionUID = 1L;
+    /**
+     * Panel this call back belongs to.
+     */
+    private final Component panel;
 
-  /**
-   * Panel this call back belongs to.
-   */
-  private final Component panel;
+    /**
+     * Modal window this call back belongs to.
+     */
+    private final ModalWindowContainer modalwindow;
 
-  /**
-   * Modal window this call back belongs to.
-   */
-  private final ModalWindowContainer modalwindow;
+    /**
+     * Must the model of the page be updated on update of the parent page.
+     */
+    private final boolean clearmodel;
 
-  /**
-   * Must the model of the page be updated on update of the parent page.
-   */
-  private final boolean clearmodel;
-
-  /**
-   * Constructor setting the panel and the modal window.
-   *
-   * @see #UpdateParentCallback(Component, ModalWindowContainer, boolean)
-   *
-   * @param _panel        Panel belonging to this call back
-   * @param _modalwindow  modal window belonging to this call back
-   *
-   */
-  public UpdateParentCallback(final Component _panel,
-                              final ModalWindowContainer _modalwindow) {
-    this(_panel, _modalwindow, true);
-  }
-
-  /**
-   * Constructor setting the panel and the modal window.
-   *
-   *
-   *
-   * @param _panel        Panel belonging to this call back
-   * @param _modalwindow  modal window belonging to this call back
-   * @param _clearmodel   must the model of the page be updated
-   */
-  public UpdateParentCallback(final Component _panel,
-                              final ModalWindowContainer _modalwindow,
-                              final boolean _clearmodel) {
-    this.panel = _panel;
-    this.modalwindow = _modalwindow;
-    this.clearmodel = _clearmodel;
-  }
-
-  /**
-   * Method is executed on close of the modal window.
-   * @param _target Target
-   */
-  public void onClose(final AjaxRequestTarget _target) {
-    if (this.modalwindow.isUpdateParent()) {
-
-      final AbstractUIObject uiObject
-              = (AbstractUIObject) this.panel.getPage().getDefaultModelObject();
-
-      if (this.clearmodel) {
-        uiObject.resetModel();
-      }
-
-      AbstractContentPage page = null;
-      if (uiObject instanceof UITable) {
-        page = new TablePage(new TableModel((UITable) uiObject));
-      } else if (uiObject instanceof UIForm) {
-        page = new FormPage(new FormModel((UIForm) uiObject));
-      }
-      //copy the MenuKey to the new page
-      page.setMenuTreeKey(((TablePage) this.panel.getPage()).getMenuTreeKey());
-      this.panel.setResponsePage(page);
+    /**
+     * Constructor setting the panel and the modal window.
+     *
+     * @see #UpdateParentCallback(Component, ModalWindowContainer, boolean)
+     *
+     * @param _panel Panel belonging to this call back
+     * @param _modalwindow modal window belonging to this call back
+     *
+     */
+    public UpdateParentCallback(final Component _panel, final ModalWindowContainer _modalwindow)
+    {
+        this(_panel, _modalwindow, true);
     }
-  }
+
+    /**
+     * Constructor setting the panel and the modal window.
+     *
+     *
+     *
+     * @param _panel Panel belonging to this call back
+     * @param _modalwindow modal window belonging to this call back
+     * @param _clearmodel must the model of the page be updated
+     */
+    public UpdateParentCallback(final Component _panel, final ModalWindowContainer _modalwindow,
+                                final boolean _clearmodel)
+    {
+        this.panel = _panel;
+        this.modalwindow = _modalwindow;
+        this.clearmodel = _clearmodel;
+    }
+
+    /**
+     * Method is executed on close of the modal window.
+     *
+     * @param _target Target
+     */
+    public void onClose(final AjaxRequestTarget _target)
+    {
+        if (this.modalwindow.isUpdateParent()) {
+
+            final AbstractUIObject uiObject = (AbstractUIObject) this.panel.getPage().getDefaultModelObject();
+
+            if (this.clearmodel) {
+                uiObject.resetModel();
+            }
+
+            AbstractContentPage page = null;
+            if (uiObject instanceof UITable) {
+                page = new TablePage(new TableModel((UITable) uiObject));
+            } else if (uiObject instanceof UIForm) {
+                page = new FormPage(new FormModel((UIForm) uiObject));
+            }
+            // copy the MenuKey to the new page
+            page.setMenuTreeKey(((TablePage) this.panel.getPage()).getMenuTreeKey());
+            this.panel.setResponsePage(page);
+        }
+    }
 }

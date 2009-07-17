@@ -20,6 +20,7 @@
 
 package org.efaps.ui.wicket.components.footer;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -48,6 +49,7 @@ import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.Opener;
+import org.efaps.ui.wicket.behaviors.ShowFileCallBackBehavior;
 import org.efaps.ui.wicket.behaviors.update.UpdateInterface;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
@@ -184,11 +186,17 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
                             final FooterPanel footer = getComponent().findParent(FooterPanel.class);
                             // if inside a modal
                             if (this.uiObject.getCommand().getTarget() == Target.MODAL) {
+                                if (this.uiObject.isTargetShowFile()) {
+                                    final ShowFileCallBackBehavior callback
+                                                               = ((EFapsSession) footer.getSession()).getFileCallBack();
+                                    _target.prependJavascript(callback.getCallbackScript());
+                                }
                                 footer.getModalWindow().setReloadChild(true);
                                 footer.getModalWindow().close(_target);
+
                             } else {
-                                final Opener opener = ((EFapsSession) Session.get()).getOpener(this.uiObject
-                                                .getOpenerId());
+                                final Opener opener
+                                             = ((EFapsSession) Session.get()).getOpener(this.uiObject.getOpenerId());
                                 // mark the opener that it can be removed
                                 opener.setMarked4Remove(true);
 
@@ -255,7 +263,8 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
                     final String[] hour = map.get(datepicker.getHourFieldName());
                     final String[] minute = map.get(datepicker.getMinuteFieldName());
                     final String[] ampm = map.get(datepicker.getAmPmFieldName());
-                    map.put(datepicker.getFieldName(), new String[] {datepicker.getDateAsString(date, hour, minute, ampm)});
+                    map.put(datepicker.getFieldName(),
+                            new String[] {datepicker.getDateAsString(date, hour, minute, ampm)});
                 }
             }
         }
@@ -322,13 +331,13 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
     {
         boolean ret = true;
         final List<Return> returns;
+        final UIAbstractPageObject uiPageObject
+                                        = ((UIAbstractPageObject) this.form.getParent().getDefaultModelObject());
         if (_classifications.size() > 0) {
-            returns = ((AbstractUIObject) this.form.getParent().getDefaultModelObject()).executeEvents(
-                            ParameterValues.OTHERS, _other,
-                            ParameterValues.CLASSIFICATIONS, _classifications);
+            returns = uiPageObject.executeEvents(ParameterValues.OTHERS, _other,
+                                                 ParameterValues.CLASSIFICATIONS, _classifications);
         } else {
-            returns = ((AbstractUIObject) this.form.getParent().getDefaultModelObject()).executeEvents(
-                            ParameterValues.OTHERS, _other);
+            returns = uiPageObject.executeEvents(ParameterValues.OTHERS, _other);
         }
 
         for (final Return oneReturn : returns) {
@@ -343,6 +352,12 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
 
                 ret = false;
                 break;
+            } else if (oneReturn.get(ReturnValues.TRUE) != null && !oneReturn.isEmpty()
+                            && uiPageObject.isTargetShowFile()) {
+                if (oneReturn.get(ReturnValues.VALUES) instanceof File) {
+                    final File file = (File) oneReturn.get(ReturnValues.VALUES);
+                    ((EFapsSession) getComponent().getSession()).setFile(file);
+                }
             }
         }
         return ret;

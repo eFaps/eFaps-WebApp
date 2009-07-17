@@ -52,20 +52,21 @@ public class UIMenuItem extends AbstractUIObject
 {
 
     /**
-     * Needed foer serialization.
+     * Needed for serialization.
      */
     private static final long serialVersionUID = 505704924081527139L;
 
     /**
      * this instance variable stores in the case that this MenuItem is part of a
-     * {@link #org.efaps.ui.wicket.components.menutree.MenuTree} if it was steped into the ancestor of this menuitem.
+     * {@link #org.efaps.ui.wicket.components.menutree.MenuTree} if it
+     * was steped into the ancestor of this menuitem.
      *
      * @see #ancestor
      */
     private DefaultMutableTreeNode ancestor;
 
     /**
-     * in the case that the MenuItem is used for a submit, setteing this to true
+     * in the case that the MenuItem is used for a submit, setting this to true
      * opens a Dialog to ask the user "do you really want to..?".
      */
     private boolean askUser = false;
@@ -78,7 +79,7 @@ public class UIMenuItem extends AbstractUIObject
     /**
      * this instance variable stores in the case that this MenuItem is part of a
      * {@link #org.efaps.ui.wicket.components.menutree.MenuTree}
-     * if it is selected by default and therefor the Form or Tabel
+     * if it is selected by default and therefore the Form or Tabel
      * connected to this MenuItem must be opened.
      */
     private boolean defaultSelected = false;
@@ -140,7 +141,7 @@ public class UIMenuItem extends AbstractUIObject
     public UIMenuItem(final UUID _uuid, final String _instanceKey)
     {
         super(_uuid, _instanceKey);
-        initialise();
+        initialize();
     }
 
     /**
@@ -241,7 +242,7 @@ public class UIMenuItem extends AbstractUIObject
     /**
      * This is the setter method for the instance variable {@link #url}.
      *
-     * @param url the url to set
+     * @param _url the url to set
      */
     public void setURL(final String _url)
     {
@@ -272,9 +273,9 @@ public class UIMenuItem extends AbstractUIObject
     }
 
     /**
-     * this method initialises this MenuItem
+     * this method initializes this MenuItem.
      */
-    private void initialise()
+    private void initialize()
     {
         final AbstractCommand command = super.getCommand();
         this.image = command.getIcon();
@@ -285,7 +286,6 @@ public class UIMenuItem extends AbstractUIObject
         this.defaultSelected = command.isDefaultSelected();
         this.description = "";
         requeryLabel();
-
         try {
             if (command instanceof AbstractMenu) {
                 for (final AbstractCommand subCmd : ((AbstractMenu) command).getCommands()) {
@@ -358,11 +358,11 @@ public class UIMenuItem extends AbstractUIObject
     /**
      * This is the setter method for the instance variable {@link #header}.
      *
-     * @param header the header to set
+     * @param _header the header to set
      */
-    public void setHeader(final boolean header)
+    public void setHeader(final boolean _header)
     {
-        this.header = header;
+        this.header = _header;
     }
 
     /**
@@ -378,11 +378,11 @@ public class UIMenuItem extends AbstractUIObject
     /**
      * This is the setter method for the instance variable {@link #stepInto}.
      *
-     * @param stepInto the stepInto to set
+     * @param _stepInto the stepInto to set
      */
-    public void setStepInto(final boolean stepInto)
+    public void setStepInto(final boolean _stepInto)
     {
-        this.stepInto = stepInto;
+        this.stepInto = _stepInto;
     }
 
     @Override
@@ -404,7 +404,7 @@ public class UIMenuItem extends AbstractUIObject
     }
 
     /**
-     * get a Node of this MenuItemModel including the Childs
+     * get a Node of this MenuItemModel including the Childs.
      *
      * @see #addNode(DefaultMutableTreeNode, List)
      * @return DefaultMutableTreeNode of this MenuItemModel including the
@@ -419,19 +419,19 @@ public class UIMenuItem extends AbstractUIObject
     }
 
     /**
-     * recursive method used to fill the TreeModel
+     * recursive method used to fill the TreeModel.
      *
      * @see #getTreeModel()
-     * @param parent ParentNode children schould be added
-     * @param childs List<StructurBrowserModel>to be added as childs
+     * @param _parent ParentNode children schould be added
+     * @param _childs List<StructurBrowserModel>to be added as childs
      */
-    private void addNode(final DefaultMutableTreeNode parent, final List<UIMenuItem> childs)
+    private void addNode(final DefaultMutableTreeNode _parent, final List<UIMenuItem> _childs)
     {
-        for (int i = 0; i < childs.size(); i++) {
-            final DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(childs.get(i));
-            parent.add(childNode);
-            if (childs.get(i).hasChilds()) {
-                addNode(childNode, childs.get(i).childs);
+        for (int i = 0; i < _childs.size(); i++) {
+            final DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(_childs.get(i));
+            _parent.add(childNode);
+            if (_childs.get(i).hasChilds()) {
+                addNode(childNode, _childs.get(i).childs);
             }
         }
     }
