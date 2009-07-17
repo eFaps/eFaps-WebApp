@@ -82,9 +82,10 @@ public class ValueCellPanel extends Panel
             } else {
                 this.add(new StaticImageComponent("icon", uiFormCell.getIcon()));
             }
-            // in case of create or edit for a Date or DateTime
+            // in case of create or edit for a Date or DateTime that is editable
             if ((_formmodel.isCreateMode() || _formmodel.isEditMode())
-                          && ("Date".equals(uiFormCell.getTypeName()) || "DateTime".equals(uiFormCell.getTypeName()))) {
+                          && ("Date".equals(uiFormCell.getTypeName()) || "DateTime".equals(uiFormCell.getTypeName()))
+                          && uiFormCell.getDisplay().equals(Display.EDITABLE)) {
 
                 this.dateTextField = new DateTimePanel("label", uiFormCell.getCompareValue(),
                                                        new StyleDateConverter(false), uiFormCell.getName(),
