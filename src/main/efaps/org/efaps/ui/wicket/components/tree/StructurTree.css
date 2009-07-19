@@ -1,85 +1,31 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * Copyright 2003 - 2009 The eFaps Team
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * Author:          The eFaps Team
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 /* 
  * @eFapsPackage  org.efaps.ui.wicket.components.tree
- * @eFapsUUID     9f4accae-350a-4fa1-802a-180bb67455c1
+ * @eFapsUUID     86fa0d6e-0c85-4919-97da-c3fbafa4b599
  * @eFapsRevision $Rev$
- * @eFapsExtends  org.efaps.ui.wicket.components.tree.tree.css
+ * @eFapsExtends  org.efaps.ui.wicket.components.tree.StructurTree_Base.css
  *
- * Extends the original from wicket to fit into eFaps.
+ * This stylesheet must be replaced for customization, therefore it is left empty.
+ * Functional description can be found in the related "<code>_Base</code>"
+ * stylesheet.
  */
-
-
-div.wicket-tree {
-  font-family: arial, verdana, helvetica, sans-serif;
-  font-size: 9pt;  
-  border: 0px solid #ccc;
-  margin: 0;
-  width:100%;
-}
-
-div.wicket-tree a {
-  color: #00A000;
-}
-
-div.wicket-tree div.a_ {
-  padding-left: 0;
-}
-
-div.wicket-tree span.junction {
-  background-image: url("../../servlet/image/org.efaps.ui.wicket.components.tree.tree-images.png"); 
-}
-
-div.wicket-tree span.junction-last {
-  background-image: url("../../servlet/image/org.efaps.ui.wicket.components.tree.tree-images.png"); 
-}
-
-div.wicket-tree span.plus {
-  background-image: url("../../servlet/image/org.efaps.ui.wicket.components.tree.tree-images.png"); 
-}
-
-div.wicket-tree span.minus {
-  background-image: url("../../servlet/image/org.efaps.ui.wicket.components.tree.tree-images.png"); 
-}
-
-div.wicket-tree span.corner {
-  background-image: url("../../servlet/image/org.efaps.ui.wicket.components.tree.tree-images.png"); 
-}
-
-div.wicket-tree span.icon {
-  margin-right: 1px;
-}
-
-div.wicket-tree span.indent-line {
-  background-image: url("../../servlet/image/org.efaps.ui.wicket.components.tree.tree-images.png"); 
-}
-
-.directionDown{
-  background-image: url("../../servlet/image/org.efaps.ui.wicket.components.tree.Direction.png");
-  float: left;
-  height: 17px;
-  width: 11px;
-}
-
-.directionUp{
-  background-image: url("../../servlet/image/org.efaps.ui.wicket.components.tree.Direction.png");
-  float: left;
-  height: 17px;
-  width: 11px;
-  background-position:-13px;
-}

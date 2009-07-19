@@ -20,12 +20,33 @@
  */
 
 /* 
- * @eFapsPackage  org.efaps.ui.wicket.components.tree
- * @eFapsUUID     ecb31530-00f6-4e92-8809-e7e6753941fd
+ * @eFapsPackage  org.efaps.ui.wicket.components.footer
+ * @eFapsUUID     f4ed6682-e08c-4963-a422-ef39ea28ce6f
  * @eFapsRevision $Rev$
- * @eFapsExtends  org.efaps.ui.wicket.components.tree.StructurTreeTable_Base.css
- *
- * This stylesheet must be replaced for customization, therefore it is left empty.
- * Functional description can be found in the related "<code>_Base</code>"
- * stylesheet.
  */
+ 
+.eFapsFooter {
+  background: #DDDECB;
+  border-bottom: 1px solid;
+  border-top: 1px solid;
+  bottom: 0px;
+  height: 40px;
+  margin: 0pt;
+  padding: 0pt;
+  position: absolute;
+  width: 100%;
+}
+
+.eFapsFooterButtons {
+  position: absolute;
+  right: 10px;
+  top: 5px;
+}
+
+.eFapsFooterButton1,.eFapsFooterButton2, .eFapsFooterButton3 {
+  float: left;
+}
+
+#eFapsContentDiv {
+  bottom: 42px;
+}

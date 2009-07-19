@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Author:          jmox
+ * Author:          The eFaps Team
  * Revision:        $Rev$
  * Last Changed:    $Date$
  * Last Changed By: $Author$
@@ -21,27 +21,11 @@
 
 /* 
  * @eFapsPackage  org.efaps.ui.wicket.components.split
- * @eFapsUUID     a03aac76-c0a8-4727-ad1d-b55a366ff08a
+ * @eFapsUUID     ee00797d-4060-45f5-8b43-dd545ec63f44
  * @eFapsRevision $Rev$
+ * @eFapsExtends  org.efaps.ui.wicket.components.split.StructBrowsSplitPanel_Base.css
+ *
+ * This stylesheet must be replaced for customization, therefore it is left empty.
+ * Functional description can be found in the related "<code>_Base</code>"
+ * stylesheet.
  */
-
-.eFapsListMenuOverflow {
-  position: absolute;
-  top: 0px;
-  bottom: 0px;
-  overflow: auto;
-  width: 100%;
-}
-
-.eFapsListMenuWidthTable {
-  border-collapse: collapse;
-  width: 100%;
-}
-
-.eFapsStructBrows{
-  position: absolute;
-  top: 20px;
-  bottom: 0px;
-  overflow: auto;
-  width: 100%;
-}

@@ -14,18 +14,22 @@
  * limitations under the License.
  *
  * Author:          The eFaps Team
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1491 $
+ * Last Changed:    $Date:2007-10-15 18:40:43 -0500 (Mon, 15 Oct 2007) $
+ * Last Changed By: $Author:jmox $
  */
-
-/* 
- * @eFapsPackage  org.efaps.ui.wicket.components.tree
- * @eFapsUUID     ecb31530-00f6-4e92-8809-e7e6753941fd
+ 
+  /* 
+ * @eFapsPackage  org.efaps.ui.wicket.pages.content.table
+ * @eFapsUUID     bc399180-055c-4149-ac41-5b1a3c11ca80
  * @eFapsRevision $Rev$
- * @eFapsExtends  org.efaps.ui.wicket.components.tree.StructurTreeTable_Base.css
- *
- * This stylesheet must be replaced for customization, therefore it is left empty.
- * Functional description can be found in the related "<code>_Base</code>"
- * stylesheet.
  */
+ 
+#eFapsContentDiv {
+  position: absolute;
+  width: 100%;
+  top: 68px;
+  bottom: 0px;
+  overflow: auto;
+}
+

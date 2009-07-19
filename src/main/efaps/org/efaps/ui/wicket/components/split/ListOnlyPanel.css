@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Author:          jmox
+ * Author:          The eFaps Team
  * Revision:        $Rev$
  * Last Changed:    $Date$
  * Last Changed By: $Author$
@@ -21,19 +21,11 @@
 
 /* 
  * @eFapsPackage  org.efaps.ui.wicket.components.split
- * @eFapsUUID     b93f31c6-bdfa-4770-93fc-0515873e5e43
+ * @eFapsUUID     4101691d-a768-43f0-ba5a-fea211461b6c
  * @eFapsRevision $Rev$
+ * @eFapsExtends  org.efaps.ui.wicket.components.split.ListOnlyPanel_Base.css
+ *
+ * This stylesheet must be replaced for customization, therefore it is left empty.
+ * Functional description can be found in the related "<code>_Base</code>"
+ * stylesheet.
  */
-
-.eFapsListMenuOverflow {
-  position: absolute;
-  top: 20px;
-  bottom: 0px;
-  overflow: auto;
-  width: 100%;
-}
-
-.eFapsListMenuWidthTable {
-  border-collapse: collapse;
-  width: 100%;
-}

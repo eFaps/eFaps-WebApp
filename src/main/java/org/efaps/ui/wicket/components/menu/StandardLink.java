@@ -132,7 +132,7 @@ public class StandardLink extends AbstractMenuItemLink
             } else {
                 try {
                     final List<Return> rets = model.executeEvents(ParameterValues.OTHERS, this);
-                    if ("true".equals(command.getProperty("TargetShowFile"))) {
+                    if (command.isTargetShowFile()) {
                         final Object object = rets.get(0).get(ReturnValues.VALUES);
                         if (object instanceof File) {
                             getRequestCycle().setRequestTarget(new FileRequestTarget((File) object));

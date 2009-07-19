@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Author:          jmox
+ * Author:          The eFasp Team
  * Revision:        $Rev$
  * Last Changed:    $Date$
  * Last Changed By: $Author$
@@ -21,71 +21,11 @@
 
 /* 
  * @eFapsPackage  org.efaps.ui.wicket.components.button
- * @eFapsUUID     a742d113-b1c7-4cd2-918d-87c8c522fa50
+ * @eFapsUUID     78583691-e488-471e-a327-527d4864cdc6
  * @eFapsRevision $Rev$
+ * @eFapsExtends org.efaps.ui.wicket.components.button.ButtonStyleBehavior_Base.css
+ *
+ * This stylesheet must be replaced for customization, therefore it is left empty.
+ * Functional description can be found in the related "<code>_Base</code>"
+ * stylesheet.
  */
-
-.eFapsButton {
-  background-color: transparent;
-  background-image: url(../../servlet/image/org.efaps.ui.wicket.components.button.button-rb.png);
-  background-position: right top;
-  background-repeat: no-repeat;
-  border-style: none;
-  border-width: 0pt;
-  display: block;
-  height: 28px;
-  line-height: normal;
-  margin-right: 6px;
-  padding-right: 18px;
-  text-decoration: none;
-}
-
-.efapsButtonLeftBorder {
-  background-image: url(../../servlet/image/org.efaps.ui.wicket.components.button.button-lb.png);
-  background-position: left top;
-  background-repeat: no-repeat;
-  background-color: transparent;
-}
-
-.eFapsButtonImage {
-  background-color: transparent;
-  border-style: none;
-  margin-left: 9px;
-  padding: 0;
-  margin-top: 5px;
-  float: left;
-  background: transparent;
-  height: 16px;
-  width: 16px;
-}
-
-.eFapsButtonLabel {
-  background-color: transparent;
-  color: #00A000;
-  font-family: arial;
-  font-size: 11px;
-  line-height: 28px;
-  padding-bottom: 5px;
-  padding-left: 4px;
-  padding-top: 5px;
-  text-decoration: none;
-  font-weight: normal;
-}
-
-.eFapsButton:active {
-  background-position: bottom right;
-  color: #000;
-  outline: none; /* hide dotted outline in Firefox */
-}
-
-.eFapsButton:active .efapsButtonLeftBorder {
-  background-position: left bottom;
-}
-
-.eFapsButton:active .eFapsButtonImage {
-  margin-top: 7px;
-}
-
-.eFapsButton:active .eFapsButtonLabel {
-  padding-top: 6px;
-}

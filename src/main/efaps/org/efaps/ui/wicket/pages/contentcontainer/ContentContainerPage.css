@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Author:          jmox
+ * Author:          The eFaps Team
  * Revision:        $Rev$
  * Last Changed:    $Date$
  * Last Changed By: $Author$
@@ -21,36 +21,11 @@
 
 /* 
  * @eFapsPackage  org.efaps.ui.wicket.pages.contentcontainer
- * @eFapsUUID     de79d0bd-814f-4b07-914d-faf67aaf1c93
+ * @eFapsUUID     b5980e78-9070-436a-a74c-89c39e1f28df
  * @eFapsRevision $Rev$
- * 
+ * @eFapsExtends  org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage_Base.css
+ *
+ * This stylesheet must be replaced for customization, therefore it is left empty.
+ * Functional description can be found in the related "<code>_Base</code>"
+ * stylesheet.
  */
-
-html,body {
-  width: 100%; /* make the body expand to fill the visible window */
-  height: 100%;
-  overflow: hidden; /* erase window level scrollbars */
-  padding: 0 0 0 0;
-  margin: 0 0 0 0;
-}
-
-/**
- * Content iframe
- */
-.eFapsContentContainerFrame {
-  position: absolute;
-  top: 0px;
-  width: 100%;
-  height: 100%; 
-  bottom: 0px;
-  left: 0px;
-  right: 0px;
-  overflow: auto;
-  padding: 0px;
-  margin: 0px;
-  border: 0;
-}
-.eFapsBorderContainer {
-  height: 100%;
-  width: 100%;
-}

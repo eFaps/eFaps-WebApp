@@ -21,18 +21,11 @@
 
 /* 
  * @eFapsPackage  org.efaps.ui.wicket.components.classification
- * @eFapsUUID     8d7e8bf8-c118-42ff-955d-d76099c0eeda
+ * @eFapsUUID     83d23a2b-af3b-4049-bad4-b714c57f99f1
  * @eFapsRevision $Rev$
+ * @eFapsExtends  org.efaps.ui.wicket.components.classification.ClassificationTree_Base.css
+ *
+ * This stylesheet must be replaced for customization, therefore it is left empty.
+ * Functional description can be found in the related "<code>_Base</code>"
+ * stylesheet.
  */
-
-.classFooter {
-  bottom:0;
-  padding:4px;
-  position:absolute;
-  right:0;
-}
-
-td.content {
-  font-family:arial,verdana,helvetica,sans-serif;
-  font-size:8pt;
-}

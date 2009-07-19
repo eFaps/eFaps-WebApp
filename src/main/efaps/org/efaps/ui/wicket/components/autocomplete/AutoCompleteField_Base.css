@@ -17,15 +17,33 @@
  * Revision:        $Rev$
  * Last Changed:    $Date$
  * Last Changed By: $Author$
+ */ /* 
+ * @eFapsPackage  org.efaps.ui.wicket.components.autocomplete
+ * @eFapsUUID     779c9fd0-4685-4548-ae84-290bdd8c8c1e
+ * @eFapsRevision $Rev$
  */
 
-/* 
- * @eFapsPackage  org.efaps.ui.wicket.components.tree
- * @eFapsUUID     ecb31530-00f6-4e92-8809-e7e6753941fd
- * @eFapsRevision $Rev$
- * @eFapsExtends  org.efaps.ui.wicket.components.tree.StructurTreeTable_Base.css
- *
- * This stylesheet must be replaced for customization, therefore it is left empty.
- * Functional description can be found in the related "<code>_Base</code>"
- * stylesheet.
- */
+
+div.wicket-aa {
+  font-family: "Lucida Grande", "Lucida Sans Unicode", Tahoma, Verdana;
+  font-size: 12px;
+  background-color: white;
+  border-width: 1px;
+  border-color: #cccccc;
+  border-style: solid;
+  padding: 2px;
+  margin: 1px 0 0 0;
+  text-align: left;
+}
+
+div.wicket-aa ul {
+  list-style: none;
+  padding: 2px;
+  margin: 0;
+}
+
+div.wicket-aa ul li.selected {
+  background-color: #FFFF00;
+  padding: 2px;
+  margin: 0;
+}

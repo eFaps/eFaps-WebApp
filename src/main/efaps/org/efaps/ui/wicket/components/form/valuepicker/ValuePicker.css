@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Author:          jmox
+ * Author:          The eFaps Team
  * Revision:        $Rev$
  * Last Changed:    $Date$
  * Last Changed By: $Author$
@@ -21,54 +21,11 @@
 
 /* 
  * @eFapsPackage  org.efaps.ui.wicket.components.form.valuepicker
- * @eFapsUUID     3371fa4a-a9f3-40b7-afdb-0367da3dfe5a
+ * @eFapsUUID     4fb47b46-aeff-4356-b281-5931132a6a6d
  * @eFapsRevision $Rev$
+ * @eFapsExtends  org.efaps.ui.wicket.components.form.valuepicker.ValuePicker_Base.css
+ *
+ * This stylesheet must be replaced for customization, therefore it is left empty.
+ * Functional description can be found in the related "<code>_Base</code>"
+ * stylesheet.
  */
-
-.eFapsPickerLink:hover {
-  cursor: pointer;
-}
-.eFapsPickerLink img {
-  vertical-align: text-bottom;
-}
-
-.eFapsPickerTitle {
-  color:#008800;
-  display:block;
-  font-size:11pt;
-  font-weight:bold;
-  height:24px;
-  margin-bottom:10px;
-  margin-top:10px;
-  padding-top:10px;
-  text-align:center;
-  white-space:nowrap;
-}
-
-.eFapsPickerForm {
-  text-align: center;
-}
-.eFapsPickerLabel {
-  margin-right:10px;
-}
-
-.eFapsPickerInput {
-
-}
-.eFapsPickerTable {
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 6px;
-}
-
-.eFapsPickerTable tr {
-  background-image:url(../../servlet/image/org.efaps.ui.wicket.components.form.dotted-line.png);
-  background-position:center bottom;
-  background-repeat:repeat-x;
-}
-
-.eFapsPickerTable td {
-  border-right:1px solid #DDDDDD;
-  padding-left:5px;
-  padding-right:5px;
-}

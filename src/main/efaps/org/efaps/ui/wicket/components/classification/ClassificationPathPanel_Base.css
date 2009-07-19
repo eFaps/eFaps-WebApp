@@ -20,12 +20,28 @@
  */
 
 /* 
- * @eFapsPackage  org.efaps.ui.wicket.components.tree
- * @eFapsUUID     ecb31530-00f6-4e92-8809-e7e6753941fd
+ * @eFapsPackage  org.efaps.ui.wicket.components.classification
+ * @eFapsUUID     34055a8c-ef22-4534-ad3e-acbe7b85ca11
  * @eFapsRevision $Rev$
- * @eFapsExtends  org.efaps.ui.wicket.components.tree.StructurTreeTable_Base.css
- *
- * This stylesheet must be replaced for customization, therefore it is left empty.
- * Functional description can be found in the related "<code>_Base</code>"
- * stylesheet.
  */
+
+.classButtonContainer span{
+  cursor: pointer;
+}
+
+.classPathContainer {
+  
+}
+
+.classPath {
+  border-bottom: lightgrey solid 1px;
+  margin: 1px;
+}
+
+.classPathEntry {
+  background-image: url("../../servlet/image/org.efaps.ui.wicket.components.classification.pathEntry.png"); 
+  background-position:left center;
+  background-repeat:no-repeat;
+  padding-left:15px;
+  padding-right:10px;
+}

@@ -21,11 +21,48 @@
 
 /* 
  * @eFapsPackage  org.efaps.ui.wicket.components.table.header
- * @eFapsUUID     18a14557-8493-4738-8b88-38cc8c182684
+ * @eFapsUUID     e45e029b-d7d3-477f-89ce-529f84d4e894
  * @eFapsRevision $Rev$
- * @eFapsExtends  org.efaps.ui.wicket.components.table.header.HeaderCellPanel_Base.css
- *
- * This stylesheet must be replaced for customization, therefore it is left empty.
- * Functional description can be found in the related "<code>_Base</code>"
- * stylesheet.
  */
+
+.eFapsHeaderSort,.eFapsHeaderSortAscending,.eFapsHeaderSortDescending {
+  cursor: pointer;
+  float: left;
+  width: 100%;
+}
+
+.eFapsHeaderSortAscending,.eFapsHeaderSortDescending {
+  background-repeat: no-repeat;
+  background-position: right;
+}
+
+.eFapsHeaderFilterActive,.eFapsHeaderFilter {
+  background-position: center;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  width: 18px;
+  float: right;
+}
+
+.dojoDndAvatar {
+  border: 2px solid #ccc;
+  font-size: 75%;
+  -moz-border-radius: 8pt 8pt;
+  radius: 8pt;
+}
+
+.dojoDndAvatarHeader {
+  display: none;
+}
+
+.dojoDndAvatarItem {
+  background: #008800;
+}
+
+.dojoDndItemAfter {
+  border-right: 4px solid red;
+}
+
+.dojoDndHandle {
+  cursor: pointer;
+}

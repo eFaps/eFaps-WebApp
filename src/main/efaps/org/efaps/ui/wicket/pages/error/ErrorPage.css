@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Author:          jmox
+ * Author:          The eFaps Team
  * Revision:        $Rev$
  * Last Changed:    $Date$
  * Last Changed By: $Author$
@@ -21,31 +21,11 @@
 
 /* 
  * @eFapsPackage  org.efaps.ui.wicket.pages.error
- * @eFapsUUID     791e4baf-64cc-47ff-9ef5-000d5dc49fd6
+ * @eFapsUUID     3efd260e-1533-405a-a56c-d5b57fb727f0
  * @eFapsRevision $Rev$
- * 
+ * @eFapsExtends  org.efaps.ui.wicket.pages.error.ErrorPage_Base.css
+ *
+ * This stylesheet must be replaced for customization, therefore it is left empty.
+ * Functional description can be found in the related "<code>_Base</code>"
+ * stylesheet.
  */
-
-table.eFapsErrorTable {
-  border-style: solid;
-  border-color: #FF0000;
-  width: 100%;
-  font-family: arial, verdana, helvetica, sans-serif;
-  font-size: 12px;
-}
-
-/* Error Label Appearance */
-td.eFapsErrorLabel {
-  background-color: #FFB0B0;
-  color: black;
-  font-weight: bold;
-  width: 1%;
-  padding: 3px;
-  vertical-align: top;
-}
-
-/* Error Text Appearance */
-td.eFapsErrorText {
-  background-color: #FFD0D0;
-  padding: 3px;
-}

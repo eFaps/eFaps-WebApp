@@ -13,36 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Author:          jmox
+ * Author:          The eFaps Team
  * Revision:        $Rev$
  * Last Changed:    $Date$
  * Last Changed By: $Author$
  */ /* 
  * @eFapsPackage  org.efaps.ui.wicket.components.menu
- * @eFapsUUID     35fd2fde-fb64-4eed-86a7-c7aa8726f4bb
+ * @eFapsUUID     22a31f28-3643-4413-ad21-911df06daa2d
  * @eFapsRevision $Rev$
- * @eFapsExtends  org.efaps.ui.wicket.components.menu.theme.css
+ * @eFapsExtends  org.efaps.ui.wicket.components.menu.EFapsMenu_Base.css
+ *
+ * This stylesheet must be replaced for customization, therefore it is left empty.
+ * Functional description can be found in the related "<code>_Base</code>"
+ * stylesheet.
  */
-
-span.eFapsMenuLabel {
-  vertical-align: middle;
-}
-
-img.eFapsMenuMainImage {
-  padding-left:2px;
-  vertical-align:bottom;
-  width:16px;
-  height:16px;
-}
-
-img.eFapsMenuMainBlankImage {
-  vertical-align:bottom;
-  width:2px;
-  height:16px;
-}
-
-img.eFapsMenuSubImage {
-  vertical-align:bottom;
-  width:16px;
-  height:16px;
-}

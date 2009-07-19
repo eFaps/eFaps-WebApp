@@ -132,8 +132,8 @@ public class XMLExport
 
     private static String APPNAME = Application.get().getApplicationKey();
 
-
-    public XMLExport(final UUID _commandUUID, final String _oid) throws EFapsException {
+    public XMLExport(final UUID _commandUUID, final String _oid) throws EFapsException
+    {
         final UIForm uiform = new UIForm(_commandUUID, _oid);
         initialise(uiform);
     }
@@ -151,13 +151,19 @@ public class XMLExport
         }
     }
 
+    public void generateDocument(final MimeTypes _mimeType, final String _xslResourceName) throws EFapsException
+    {
+        generateDocument(_mimeType, _xslResourceName, "print-" + this.modelObject.getInstanceKey());
+    }
+
     /**
      * this method creates the Document
      *
      * @param _mimeType
      * @throws EFapsException
      */
-    public void generateDocument(final MimeTypes _mimeType, final String _xslResourceName) throws EFapsException
+    public void generateDocument(final MimeTypes _mimeType, final String _xslResourceName, final String _name)
+            throws EFapsException
     {
         OutputStream out = null;
         try {
@@ -171,8 +177,7 @@ public class XMLExport
 
             final File sessionFolder = getSessionFolder(this.fileStoreFolder, "-print");
 
-            this.file = new File(sessionFolder, "print-" + this.modelObject.getInstanceKey() + "."
-                            + this.mimeType.getEnding());
+            this.file = new File(sessionFolder, _name + "." + this.mimeType.getEnding());
 
             out = new FileOutputStream(this.file);
 
@@ -279,8 +284,8 @@ public class XMLExport
             for (final UIForm.Element formelement : ((UIForm) this.modelObject).getElements()) {
                 if (formelement.getType().equals(ElementType.FORM)) {
                     root.appendChild(xmlDoc.createComment("form"));
-                    root.appendChild(getFormElement(xmlDoc, (UIForm) this.modelObject,
-                                                    (FormElement) formelement.getElement()));
+                    root.appendChild(getFormElement(xmlDoc, (UIForm) this.modelObject, (FormElement) formelement
+                                    .getElement()));
                 } else if (formelement.getType().equals(ElementType.HEADING)) {
                     root.appendChild(getHeadingElement(xmlDoc, (UIHeading) formelement.getElement()));
                 } else if (formelement.getType().equals(ElementType.TABLE)) {
@@ -296,7 +301,7 @@ public class XMLExport
      * create a DOM-Element for a Heading.
      *
      * @param _xmlDoc Document this DOMElemrnt should be added
-     * @param _model  heading model
+     * @param _model heading model
      * @return the Element for a Heading
      */
     protected Element getHeadingElement(final Document _xmlDoc, final UIHeading _model)
@@ -312,9 +317,9 @@ public class XMLExport
     /**
      * create a DOM-Element for a Form.
      *
-     * @param _xmlDoc   Document this DOMElement should be added
+     * @param _xmlDoc Document this DOMElement should be added
      * @param _formmodel model for the form
-     * @param _model    model for the element
+     * @param _model model for the element
      *
      * @return the Element for a Form
      */
