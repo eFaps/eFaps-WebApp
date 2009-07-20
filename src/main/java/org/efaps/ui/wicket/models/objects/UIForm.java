@@ -52,6 +52,7 @@ import org.efaps.admin.ui.field.FieldSet;
 import org.efaps.admin.ui.field.FieldTable;
 import org.efaps.db.Instance;
 import org.efaps.db.ListQuery;
+import org.efaps.db.PrintQuery;
 import org.efaps.ui.wicket.models.cell.UIFormCell;
 import org.efaps.ui.wicket.models.cell.UIFormCellCmd;
 import org.efaps.ui.wicket.models.cell.UIFormCellSet;
@@ -186,7 +187,11 @@ public class UIForm extends UIAbstractPageObject
             if (isCreateMode() || isSearchMode() || getInstance() == null) {
                 execute4NoInstance();
             } else {
-                execute4Instance();
+                if (isNewWay()) {
+                    execute4Instance();
+                } else {
+                    execute4InstanceOld();
+                }
             }
         } catch (final EFapsException e) {
             throw new RestartResponseException(new ErrorPage(e));
@@ -196,6 +201,7 @@ public class UIForm extends UIAbstractPageObject
 
     /**
      * Method to execute the form in case that a instance is existing.
+     * @throws EFapsException
      *
      * @throws EFapsException on error
      */
@@ -206,8 +212,321 @@ public class UIForm extends UIAbstractPageObject
         FormRow row = new FormRow();
 
         final Form form = Form.get(this.formUUID);
+        // evaluate the Form to make the query
+        final PrintQuery query = new PrintQuery(getInstance());
+        for (final Field field : form.getFields()) {
+            if (field.hasAccess(getMode()) && !field.isNoneDisplay(getMode())) {
+                if (field.getSelect() != null) {
+                    query.addSelect(field.getSelect());
+                } else if (field.getAttribute() != null) {
+                    query.addAttribute(field.getAttribute());
+                } else if (field.getPhrase() != null) {
+                    query.addPhrase(field.getName(), field.getPhrase());
+                } else if (field.getExpression() != null) {
+                    query.addExpression(field.getName(), field.getExpression());
+                }
+                if (field.getSelectAlternateOID() != null) {
+                    query.addSelect(field.getSelectAlternateOID());
+                }
+            }
+        }
+        if (query.execute()) {
+            FormElement formElement = null;
+            boolean addNew = true;
+            UIClassification uiclass = null;
+            for (final Field field : form.getFields()) {
+                if (field.hasAccess(getMode()) && !field.isNoneDisplay(getMode())) {
+                    if (field instanceof FieldGroup) {
+                        final FieldGroup group = (FieldGroup) field;
+                        if (getMaxGroupCount() < group.getGroupCount()) {
+                            setMaxGroupCount(group.getGroupCount());
+                        }
+                        rowgroupcount = group.getGroupCount();
+                    } else if (field instanceof FieldTable) {
+                        if (!isEditMode()) {
+                            final UIFieldTable uiFieldTable = new UIFieldTable(getCommandUUID(), getInstanceKey(),
+                                                                               ((FieldTable) field));
+                            this.elements.add(new Element(UIForm.ElementType.TABLE, uiFieldTable));
+                            addNew = true;
+                        }
+                    } else if (field instanceof FieldHeading) {
+                        this.elements.add(new Element(UIForm.ElementType.HEADING,
+                                                          new UIHeading((FieldHeading) field)));
+                        addNew = true;
+                    } else if (field instanceof FieldClassification) {
+                        uiclass = new UIClassification((FieldClassification) field, this);
+                        this.elements.add(new Element(UIForm.ElementType.CLASSIFICATION, uiclass));
+                        addNew = true;
+                        this.classified  = true;
+                    } else {
+                        if (addNew) {
+                            formElement = new FormElement();
+                            this.elements.add(new Element(UIForm.ElementType.FORM, formElement));
+                            addNew = false;
+                        }
+                        if (addCell2FormRow(row, query, field)) {
+                            if (field.getRowSpan() > 0) {
+                                rowspan = field.getRowSpan();
+                            }
+                            rowgroupcount--;
+                            if (rowgroupcount < 1) {
+                                rowgroupcount = 1;
+                                if (row.getGroupCount() > 0) {
+                                    formElement.addRowModel(row);
+                                    row = new FormRow();
+                                    if (rowspan > 1) {
+                                        rowspan--;
+                                        row.setRowSpan(true);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (uiclass != null) {
+                final Map<UUID, String> instanceKeys = uiclass.getClassInstanceKeys(getInstance());
+                if (instanceKeys.size() > 0) {
+                    if (!uiclass.isInitialized()) {
+                        uiclass.execute();
+                    }
+                    // add the root classification
+                    this.elements.add(new Element(UIForm.ElementType.SUBFORM, new UIFieldForm(getCommandUUID(),
+                                     instanceKeys.get(uiclass.getClassificationUUID()))));
+                    addChildrenClassificationForms(uiclass, instanceKeys);
+                }
+            }
+        }
+    }
+
+    /**
+     * Method to add a Cell to the given Row.
+     *
+     * @see #evaluateField(FormRow, ListQuery, Field, Instance, String,
+     *      Attribute)
+     * @see #evaluateFieldSet(FormRow, ListQuery, Field, String, String)
+     *
+     * @param _row FormRow to add the cell to
+     * @param _query query containing the values
+     * @param _field field the cell belongs to
+     * @throws EFapsException on error
+     * @return true if the cell was actually added, else false
+     */
+    private boolean addCell2FormRow(final FormRow _row, final PrintQuery _query, final Field _field)
+            throws EFapsException
+    {
+        boolean ret = true;
+        Attribute attr = null;
+        if (_field.getAttribute() != null) {
+            attr = _query.getAttribute4Attribute(_field.getAttribute());
+        } else if (_field.getSelect() != null) {
+            attr = _query.getAttribute4Select(_field.getSelect());
+        }
+
+        // evaluate the label of the field
+        String label;
+        if (_field.getLabel() != null) {
+            label = _field.getLabel();
+        } else if (attr != null) {
+            label = attr.getParent().getName() + "/" + attr.getName() + ".Label";
+        } else {
+            label = "Unknown";
+        }
+
+        Instance fieldInstance;
+        if (_field.getSelectAlternateOID() != null) {
+            fieldInstance = Instance.get((String) _query.getSelect(_field.getSelectAlternateOID()));
+        } else {
+            fieldInstance = getInstance();
+        }
+        if (_field.isHiddenDisplay(getMode())) {
+            Object value = null;
+            if (_field.getAttribute() != null) {
+                value = _query.getAttribute(_field.getAttribute());
+            } else if (_field.getSelect() != null) {
+                value = _query.getSelect(_field.getSelect());
+            } else if (_field.getPhrase() != null) {
+                value = _query.getPhrase(_field.getPhrase());
+            }
+            final FieldValue fieldvalue = new FieldValue(_field, attr, value, fieldInstance);
+            final String strValue = fieldvalue.getHiddenHtml(getMode(), getInstance(), null);
+            addHidden(new UIHiddenCell(this, fieldvalue, null, strValue));
+            ret = false;
+        } else {
+            // fieldset
+            if (_field instanceof FieldSet) {
+                evaluateFieldSet(_row, _query, _field, fieldInstance, label);
+            } else if (_field instanceof FieldCommand) {
+                final UIFormCellCmd fieldCmd = new UIFormCellCmd(this, (FieldCommand) _field, fieldInstance, label);
+                _row.add(fieldCmd);
+            } else {
+                evaluateField(_row, _query, _field, fieldInstance, label, attr);
+            }
+        }
+        return ret;
+
+    }
+
+    /**
+     * Method evaluates a Field and adds it to the row.
+     *
+     * @param _row              FormRow to add the cell to
+     * @param _query            query containing the values
+     * @param _field            field the cell belongs to
+     * @param _fieldInstance    instance of the Field
+     * @param _label            label for the Field
+     * @param _attr             attribute for the Field
+     * @throws EFapsException on error
+     */
+    private void evaluateField(final FormRow _row, final PrintQuery _query, final Field _field,
+                               final Instance _fieldInstance, final String _label, final Attribute _attr)
+            throws EFapsException
+    {
+        Object value = null;
+        if (_field.getAttribute() != null) {
+            value = _query.getAttribute(_field.getAttribute());
+        } else if (_field.getSelect() != null) {
+            value = _query.getSelect(_field.getSelect());
+        } else if (_field.getPhrase() != null) {
+            value = _query.getPhrase(_field.getPhrase());
+        }
+
+        final FieldValue fieldvalue = new FieldValue(_field, _attr, value, _fieldInstance);
+
+        String strValue = null;
+        if (isPrintMode()) {
+            strValue = fieldvalue.getStringValue(getMode(), getInstance(), null);
+        } else {
+            if (isEditMode() && _field.isEditableDisplay(getMode())) {
+                strValue = fieldvalue.getEditHtml(getMode(), getInstance(), null);
+            } else if (_field.isReadonlyDisplay(getMode())) {
+                strValue = fieldvalue.getReadOnlyHtml(getMode(), getInstance(), null);
+            }
+        }
+        if (strValue != null && !this.fileUpload) {
+            final String tmp = strValue.replaceAll(" ", "");
+            if (tmp.toLowerCase().contains("type=\"file\"")) {
+                this.fileUpload = true;
+            }
+        }
+        String icon = _field.getIcon();
+        if (_fieldInstance != null) {
+            if (_field.isShowTypeIcon() && _fieldInstance.getType() != null) {
+                final Image image = Image.getTypeIcon(_fieldInstance.getType());
+                if (image != null) {
+                    icon = image.getUrl();
+                }
+            }
+            final String uiType = (_attr != null) ? _attr.getAttributeType().getName() : "";
+            _row.add(new UIFormCell(this, fieldvalue, _fieldInstance, strValue, null, icon, _label, uiType));
+        }
+    }
+
+    /**
+     * Method evaluates a FieldSet and adds it to the row.
+     *
+     * @param _row              FormRow to add the cell to
+     * @param _query            query containing the values
+     * @param _field            field the cell belongs to
+     * @param _fieldInstance    instance of the FieldSet
+     * @param _label            label for the FieldSet
+     * @throws EFapsException on error
+     */
+    private void evaluateFieldSet(final FormRow _row, final PrintQuery _query, final Field _field,
+                                  final Instance _fieldInstance, final String _label)
+            throws EFapsException
+    {
+        final AttributeSet set = AttributeSet.find(getInstance().getType().getName(), _field.getAttribute());
+
+        final Map<?, ?> tmp = (Map<?, ?>) _query.getAttributeSet(_field.getAttribute());
+
+        final List<Instance> fieldins = new ArrayList<Instance>();
+
+        if (tmp != null) {
+            fieldins.addAll(_query.getInstances4Attribute(_field.getAttribute()));
+        }
+        int idy = 0;
+        boolean add = true;
+        final UIFormCellSet cellset = new UIFormCellSet(this, new FieldValue(_field, null, "", getInstance()),
+                                                        _fieldInstance, "", "", _label, isEditMode());
+
+        final Iterator<Instance> iter = fieldins.iterator();
+
+        while (add) {
+            int idx = 0;
+            if (iter.hasNext()) {
+                cellset.addInstance(idy, iter.next());
+            }
+            for (final String attrName : ((FieldSet) _field).getOrder()) {
+                final Attribute child = set.getAttribute(attrName);
+                if (isEditMode()) {
+                    final FieldValue fValue = new FieldValue(_field, child, "", getInstance());
+                    cellset.addDefiniton(idx, fValue.getEditHtml(getMode(), getInstance(), null));
+                }
+                if (tmp == null) {
+                    add = false;
+                } else {
+                    final List<?> tmplist = (List<?>) tmp.get(child.getName());
+                    if (idy < tmplist.size()) {
+                        final Object value = tmplist.get(idy);
+
+                        final FieldValue fieldvalue = new FieldValue(_field, child, value, getInstance());
+
+                        String tmpStr = null;
+                        if (_field.isEditableDisplay(getMode())) {
+                            tmpStr = fieldvalue.getEditHtml(getMode(), getInstance(), null);
+                        } else if (_field.isReadonlyDisplay(getMode())) {
+                            tmpStr = fieldvalue.getReadOnlyHtml(getMode(), getInstance(), null);
+                        }
+                        cellset.add(idx, idy, tmpStr);
+                    } else {
+                        add = false;
+                    }
+                }
+                idx++;
+            }
+            idy++;
+        }
+        // we only add multiline if we have a value or we are in
+        // editmodus
+        if (tmp != null || isEditMode()) {
+            _row.add(cellset);
+        }
+    }
+
+    /**
+     * TODO to be removed
+     * Temporary method to decide which method of selct must be used
+     * @return true if the new way
+     */
+    private boolean isNewWay() {
+        boolean ret = false;
+        final Form form = Form.get(this.formUUID);
+        for (final Field field : form.getFields()) {
+            if (field.getAttribute() != null || field.getSelect() != null || field.getPhrase() != null
+                          ||  field.getSelectAlternateOID() != null) {
+                ret = true;
+                break;
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * TODO to be removed
+     * Method to execute the form in case that a instance is existing.
+     *
+     * @throws EFapsException on error
+     */
+    private void execute4InstanceOld() throws EFapsException
+    {
+        int rowgroupcount = 1;
+        int rowspan = 1;
+        FormRow row = new FormRow();
+
+        final Form form = Form.get(this.formUUID);
         // evaluate the ListQuery
-        final ListQuery query = evaluateListQuery(form);
+        final ListQuery query = evaluateListQueryOld(form);
         query.execute();
         FormElement formElement = null;
         if (query.next()) {
@@ -243,7 +562,7 @@ public class UIForm extends UIAbstractPageObject
                             this.elements.add(new Element(UIForm.ElementType.FORM, formElement));
                             addNew = false;
                         }
-                        if (addCell2FormRow(row, query, field)) {
+                        if (addCell2FormRowOld(row, query, field)) {
 
                             if (field.getRowSpan() > 0) {
                                 rowspan = field.getRowSpan();
@@ -299,6 +618,7 @@ public class UIForm extends UIAbstractPageObject
     }
 
     /**
+     * TODO to be removed
      * Method to evaluate the ListQuery for the form. Meaning the selects are
      * added.
      *
@@ -306,7 +626,7 @@ public class UIForm extends UIAbstractPageObject
      * @return ListQury with all selects for the form
      * @throws EFapsException if error on accesscheck
      */
-    private ListQuery evaluateListQuery(final Form _form) throws EFapsException
+    private ListQuery evaluateListQueryOld(final Form _form) throws EFapsException
     {
         final List<Instance> instances = new ArrayList<Instance>();
         instances.add(getInstance());
@@ -326,6 +646,7 @@ public class UIForm extends UIAbstractPageObject
     }
 
     /**
+     * TODO to be removed
      * Method to add a Cell to the given Row.
      *
      * @see #evaluateField(FormRow, ListQuery, Field, Instance, String,
@@ -338,7 +659,7 @@ public class UIForm extends UIAbstractPageObject
      * @throws EFapsException on error
      * @return true if the cell was actually added, else false
      */
-    private boolean addCell2FormRow(final FormRow _row, final ListQuery _query, final Field _field)
+    private boolean addCell2FormRowOld(final FormRow _row, final ListQuery _query, final Field _field)
             throws EFapsException
     {
         boolean ret = true;
@@ -375,12 +696,12 @@ public class UIForm extends UIAbstractPageObject
         } else {
             // fieldset
             if (_field instanceof FieldSet) {
-                evaluateFieldSet(_row, _query, _field, fieldInstance, label);
+                evaluateFieldSetOld(_row, _query, _field, fieldInstance, label);
             } else if (_field instanceof FieldCommand) {
                 final UIFormCellCmd fieldCmd = new UIFormCellCmd(this, (FieldCommand) _field, fieldInstance, label);
                 _row.add(fieldCmd);
             } else {
-                evaluateField(_row, _query, _field, fieldInstance, label, attr);
+                evaluateFieldOld(_row, _query, _field, fieldInstance, label, attr);
             }
         }
         return ret;
@@ -396,7 +717,7 @@ public class UIForm extends UIAbstractPageObject
      * @param _label        label for the FieldSet
      * @throws EFapsException on error
      */
-    private void evaluateFieldSet(final FormRow _row, final ListQuery _query, final Field _field,
+    private void evaluateFieldSetOld(final FormRow _row, final ListQuery _query, final Field _field,
                                   final Instance _instance, final String _label)
             throws EFapsException
     {
@@ -470,7 +791,7 @@ public class UIForm extends UIAbstractPageObject
      * @param _attr attribute for the Field
      * @throws EFapsException on error
      */
-    private void evaluateField(final FormRow _row, final ListQuery _query, final Field _field,
+    private void evaluateFieldOld(final FormRow _row, final ListQuery _query, final Field _field,
                     final Instance _fieldInstance, final String _label, final Attribute _attr) throws EFapsException
     {
         Object value = null;
@@ -567,8 +888,11 @@ public class UIForm extends UIAbstractPageObject
                         this.elements.add(new Element(UIForm.ElementType.FORM, formelement));
                         addNew = false;
                     }
-
-                    final Attribute attr = type != null ? type.getAttribute(field.getExpression()) : null;
+                    // TODO getExpression must be removed
+                    final String fieldAttrName = field.getExpression() == null
+                                                    ? field.getAttribute()
+                                                    : field.getExpression();
+                    final Attribute attr = type != null ? type.getAttribute(fieldAttrName) : null;
 
                     String label;
                     if (field.getLabel() != null) {
@@ -605,7 +929,7 @@ public class UIForm extends UIAbstractPageObject
                         final UIFormCell cell;
                         if (field instanceof FieldSet) {
                             cell = new UIFormCellSet(this, fieldvalue, null, "", "", label, isCreateMode());
-                            final AttributeSet set = AttributeSet.find(type.getName(), field.getExpression());
+                            final AttributeSet set = AttributeSet.find(type.getName(), fieldAttrName);
                             int idx = 0;
                             for (final String attrName : ((FieldSet) field).getOrder()) {
                                 final Attribute child = set.getAttribute(attrName);
