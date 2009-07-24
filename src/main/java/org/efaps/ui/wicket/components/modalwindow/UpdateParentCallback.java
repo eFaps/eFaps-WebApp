@@ -115,7 +115,7 @@ public class UpdateParentCallback implements ModalWindow.WindowClosedCallback
                 page = new FormPage(new FormModel((UIForm) uiObject));
             }
             // copy the MenuKey to the new page
-            page.setMenuTreeKey(((TablePage) this.panel.getPage()).getMenuTreeKey());
+            page.setMenuTreeKey(((AbstractContentPage) this.panel.getPage()).getMenuTreeKey());
             this.panel.setResponsePage(page);
         }
     }
