@@ -40,6 +40,7 @@ import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.behaviors.update.UpdateInterface;
 import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.button.Button;
+import org.efaps.ui.wicket.components.footer.AjaxSubmitCloseBehavior;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.modalwindow.UpdateParentCallback;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
@@ -108,38 +109,33 @@ public class DialogPage extends AbstractMergePage
     /**
      * Constructor setting the ModalWindow.
      *
-     * @param _modal        modal window
-     * @param _key          key to a DBProperty
-     * @param _isSniplett   is it a snipplet or not
+     * @param _modal            modal window
+     * @param _value            value is depending on parameter "_isSniplett" the
+     *                          key to a DBProperty or a snipplet
+     * @param _isSniplett       is it a snipplet or not
+     * @param _behavior         if a _behavior is given a button will be
+     *                          rendered to execute it
      */
-    public DialogPage(final ModalWindowContainer _modal, final String _key, final boolean _isSniplett)
+    public DialogPage(final ModalWindowContainer _modal, final String _value, final boolean _isSniplett,
+                      final AjaxSubmitCloseBehavior _behavior)
     {
-        this(_modal, _isSniplett ? _key : DBProperties.getProperty(_key + ".Message"), getLabel(_key, "Close"),
-                        _isSniplett);
-    }
-
-    /**
-     * @param _modal    modal window
-     * @param _message  message to be displayed
-     * @param _button   button
-     * @param _isSniplett   is it a snipplet or not
-     */
-    public DialogPage(final ModalWindowContainer _modal, final String _message, final String _button,
-                     final boolean _isSniplett)
-    {
-        super();
         this.modal = _modal;
         this.add(StaticHeaderContributor.forCss(DialogPage.CSS));
 
         if (_isSniplett) {
-            this.add(new LabelComponent("textLabel", _message));
+            this.add(new LabelComponent("textLabel",  _value));
         } else {
-            this.add(new Label("textLabel", _message));
+            this.add(new Label("textLabel", DBProperties.getProperty(_value + ".Message")));
+        }
+        if (_behavior != null) {
+            final AjaxGoOnLink ajaxGoOnLink = new AjaxGoOnLink(Button.LINKID, _behavior);
+            this.add(new Button("submitButton", ajaxGoOnLink, getLabel(_value, "Create"), Button.ICON_ACCEPT));
+        } else {
+            this.add(new WebMarkupContainer("submitButton").setVisible(false));
         }
 
-        this.add(new WebMarkupContainer("submitButton").setVisible(false));
         final AjaxCloseLink ajaxCloseLink = new AjaxCloseLink(Button.LINKID);
-        this.add(new Button("closeButton", ajaxCloseLink, _button, Button.ICON_CANCEL));
+        this.add(new Button("closeButton", ajaxCloseLink, getLabel(_value, "Close"), Button.ICON_CANCEL));
 
         this.add(new HeaderContributor(new KeyListenerContributor(ajaxCloseLink)));
     }
@@ -162,6 +158,49 @@ public class DialogPage extends AbstractMergePage
         }
         return ret;
     }
+
+
+    /**
+     * AjaxLink that closes the ModalWindow this Page was opened in.
+     */
+    public class AjaxGoOnLink extends AjaxLink<Object>
+    {
+        /** Needed for serialization. */
+        private static final long serialVersionUID = 1L;
+        private final AjaxSubmitCloseBehavior behavior;
+
+
+
+
+        /**
+         * @param _wicketId wicket id of this component
+         * @param onClickScript
+         */
+        public AjaxGoOnLink(final String _wicketId, final AjaxSubmitCloseBehavior _behavior)
+        {
+            super(_wicketId);
+            this.behavior = _behavior;
+        }
+
+        /**
+         * @see org.apache.wicket.ajax.markup.html.AjaxLink#onClick(org.apache.wicket.ajax.AjaxRequestTarget)
+         * @param target
+         */
+        @Override
+        public void onClick(final AjaxRequestTarget _target)
+        {
+            this.behavior.setValidated(true);
+            DialogPage.this.modal.close(_target);
+            final StringBuilder js = new StringBuilder();
+            js.append("var wind = parent.frames[parent.frames.length - 2];")
+                .append("function cllIt(){")
+                .append(this.behavior.getEventHandler().toString().replace("var wcall=wicketSubmitFormById", "wind.wicketSubmitFormById"))
+                .append("};")
+                .append("wind.setTimeout(cllIt(),1);");
+            _target.appendJavascript(js.toString());
+        }
+    }
+
 
     /**
      * AjaxLink that closes the ModalWindow this Page was opened in.

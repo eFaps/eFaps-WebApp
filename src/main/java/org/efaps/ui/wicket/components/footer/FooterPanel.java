@@ -112,7 +112,7 @@ public class FooterPanel extends Panel
                             public Page createPage()
                             {
                                 return new DialogPage(FooterPanel.this.modalWindow, uiObject.getCommand().getName()
-                                                + ".Success", false);
+                                                + ".Success", false, null);
                             }
                         });
 

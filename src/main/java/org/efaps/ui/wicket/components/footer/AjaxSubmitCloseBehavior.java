@@ -83,6 +83,17 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
 {
 
     /**
+     * @see org.apache.wicket.ajax.form.AjaxFormSubmitBehavior#getEventHandler()
+     * @return
+     */
+    @Override
+    public CharSequence getEventHandler()
+    {
+        // TODO Auto-generated method stub
+        return super.getEventHandler();
+    }
+
+    /**
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
@@ -99,6 +110,11 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
     private final FormContainer form;
 
     /**
+     * Has this form been already validated.
+     */
+    private boolean validated = false;
+
+    /**
      * Constructor.
      *
      * @param _uiobject UUIOBject
@@ -110,6 +126,20 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
         this.uiObject = _uiobject;
         this.form = _form;
     }
+
+
+
+    /**
+     * Setter method for instance variable {@link #validated}.
+     *
+     * @param validated value for instance variable {@link #validated}
+     */
+    public void setValidated(final boolean validated)
+    {
+        this.validated = validated;
+    }
+
+
 
     /**
      * On submit the action must be done.
@@ -348,7 +378,7 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
                     key = (String) oneReturn.get(ReturnValues.SNIPLETT);
                     sniplett = true;
                 }
-                showDialog(_target, key, sniplett);
+                showDialog(_target, key, sniplett, false);
 
                 ret = false;
                 break;
@@ -379,28 +409,34 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
             throws EFapsException
     {
         boolean ret = true;
-        final List<Return> returns;
-        if (_classifications.size() > 0) {
-            returns = ((AbstractUIObject) this.form.getParent().getDefaultModelObject()).validate(
-                            ParameterValues.OTHERS, _other,
-                            ParameterValues.CLASSIFICATIONS, _classifications);
-        } else {
-            returns = ((AbstractUIObject) this.form.getParent().getDefaultModelObject()).validate(
-                            ParameterValues.OTHERS, _other);
-        }
+        if (!this.validated) {
+            final List<Return> returns;
+            if (_classifications.size() > 0) {
+                returns = ((AbstractUIObject) this.form.getParent().getDefaultModelObject()).validate(
+                                ParameterValues.OTHERS, _other,
+                                ParameterValues.CLASSIFICATIONS, _classifications);
+            } else {
+                returns = ((AbstractUIObject) this.form.getParent().getDefaultModelObject()).validate(
+                                ParameterValues.OTHERS, _other);
+            }
 
-        for (final Return oneReturn : returns) {
-            if (oneReturn.get(ReturnValues.TRUE) == null) {
-                boolean sniplett = false;
-                String key = (String) oneReturn.get(ReturnValues.VALUES);
-                if (key == null) {
-                    key = (String) oneReturn.get(ReturnValues.SNIPLETT);
-                    sniplett = true;
+            for (final Return oneReturn : returns) {
+                if (oneReturn.get(ReturnValues.VALUES) != null || oneReturn.get(ReturnValues.SNIPLETT) != null) {
+                    boolean sniplett = false;
+                    String key = (String) oneReturn.get(ReturnValues.VALUES);
+                    if (key == null) {
+                        key = (String) oneReturn.get(ReturnValues.SNIPLETT);
+                        sniplett = true;
+                    }
+                    showDialog(_target, key, sniplett, oneReturn.get(ReturnValues.TRUE) != null);
+                    ret = false;
+                    break;
+                } else {
+                    if (oneReturn.get(ReturnValues.TRUE) == null) {
+                        ret = false;
+                        // that is the case if it is wrong configured!
+                    }
                 }
-                showDialog(_target, key, sniplett);
-
-                ret = false;
-                break;
             }
         }
         return ret;
@@ -432,7 +468,7 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
                 }
             }
             if (!ret) {
-                showDialog(_target, "MandatoryDialog", false);
+                showDialog(_target, "MandatoryDialog", false, false);
             }
         }
         return ret;
@@ -465,19 +501,21 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
     /**
      * Shows a modal DialogPage.
      *
-     * @param _target AjaxRequestTarget to be used for opening the modal
-     *            DialogPage
-     * @param _key the Key to get the DBProperties from the eFapsDataBaase or a
-     *            code sniplett
-     * @param _isSniplett is the parameter _key a key to a property or a
-     *            sniplett
+     * @param _target       AjaxRequestTarget to be used for opening the modal
+     *                      DialogPage
+     * @param _key the      Key to get the DBProperties from the eFapsDataBaase or a
+     *                      code sniplett
+     * @param _isSniplett   is the parameter _key a key to a property or a
+     *                       sniplett
+     * @param _goOnButton   should a button to go on be rendered
      */
-    private void showDialog(final AjaxRequestTarget _target, final String _key, final boolean _isSniplett)
+    private void showDialog(final AjaxRequestTarget _target, final String _key, final boolean _isSniplett,
+                            final boolean _goOnButton)
     {
         final ModalWindowContainer modal = ((AbstractContentPage) getComponent().getPage()).getModal();
 
-        modal.setInitialWidth(200);
-        modal.setInitialHeight(150);
+        modal.setInitialWidth(350);
+        modal.setInitialHeight(200);
         modal.setPageMapName("warn");
 
         modal.setPageCreator(new ModalWindow.PageCreator() {
@@ -486,7 +524,7 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
 
             public Page createPage()
             {
-                return new DialogPage(modal, _key, _isSniplett);
+                return new DialogPage(modal, _key, _isSniplett, _goOnButton ? AjaxSubmitCloseBehavior.this : null);
             }
         });
         modal.show(_target);
