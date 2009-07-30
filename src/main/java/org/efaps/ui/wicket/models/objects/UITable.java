@@ -57,6 +57,7 @@ import org.efaps.admin.ui.field.Field;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.ListQuery;
+import org.efaps.db.MultiPrintQuery;
 import org.efaps.ui.wicket.models.cell.UIHiddenCell;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.models.objects.UITableHeader.FilterType;
@@ -139,8 +140,8 @@ public class UITable extends UIAbstractPageObject
      * temporarily when the table is (due to a database based filter)
      * requeried, to be able to set the filters to the headers by copying it
      * from the old header to the new one.
-     * @see #getInstanceLists()
-     * @see #execute4Instance()
+     * @see #getInstanceListsOld()
+     * @see #execute4InstanceOld()
      */
     private final Map<String, Filter> filterTempCache = new HashMap<String, Filter>();
     /**
@@ -302,7 +303,7 @@ public class UITable extends UIAbstractPageObject
      * @throws EFapsException on error
      */
     @SuppressWarnings("unchecked")
-    protected List<List<Instance>> getInstanceLists() throws EFapsException
+    protected List<List<Instance>> getInstanceListsOld() throws EFapsException
     {
         // get the filters that must be applied against the database
         final Map<String, Map<String, String>> dataBasefilters = new HashMap<String, Map<String, String>>();
@@ -325,6 +326,49 @@ public class UITable extends UIAbstractPageObject
         return lists;
     }
 
+
+    protected List<Instance> getInstanceList() throws EFapsException
+    {
+        // get the filters that must be applied against the database
+        final Map<String, Map<String, String>> dataBasefilters = new HashMap<String, Map<String, String>>();
+        final Iterator<Entry<UITableHeader, Filter>> iter = this.filters.entrySet().iterator();
+        this.filterTempCache.clear();
+        while (iter.hasNext()) {
+            final Entry<UITableHeader, Filter> entry = iter.next();
+            if (!entry.getKey().isFilterMemoryBased()) {
+                final Map<String, String> map = entry.getValue().getMap4esjp();
+                dataBasefilters.put(entry.getKey().getFieldName(), map);
+            }
+            this.filterTempCache.put(entry.getKey().getFieldName(), entry.getValue());
+            iter.remove();
+        }
+
+        final List<Return> ret = getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
+                                                            ParameterValues.INSTANCE, getInstance(),
+                                                            ParameterValues.OTHERS, dataBasefilters);
+        final List<Instance> lists = (List<Instance>) ret.get(0).get(ReturnValues.VALUES);
+        return lists;
+    }
+
+    /**
+     * TODO to be removed
+     * Temporary method to decide which method of selct must be used
+     * @return true if the new way
+     */
+    private boolean isNewWay() {
+        boolean ret = false;
+        final Table form = Table.get(this.tableUUID);
+        for (final Field field : form.getFields()) {
+            if (field.getAttribute() != null || field.getSelect() != null || field.getPhrase() != null
+                          ||  field.getSelectAlternateOID() != null) {
+                ret = true;
+                break;
+            }
+        }
+        return ret;
+    }
+
+
     /**
      * {@inheritDoc}
      */
@@ -335,12 +379,163 @@ public class UITable extends UIAbstractPageObject
             if (isCreateMode()) {
                 execute4NoInstance();
             } else {
-                execute4Instance();
+                if (isNewWay()) {
+                    execute4Instance();
+                } else {
+                    execute4InstanceOld();
+                }
             }
         } catch (final EFapsException e) {
             throw new RestartResponseException(new ErrorPage(e));
         }
         super.setInitialized(true);
+    }
+
+    /**
+     * @throws EFapsException
+     *
+     */
+    private void execute4Instance() throws EFapsException
+    {
+     // first get list of object ids
+        final List<Instance> instances = getInstanceList();
+
+        // evaluate for all expressions in the table
+        final MultiPrintQuery query = new MultiPrintQuery(instances);
+        final List<Integer> userWidthList = getUserWidths();
+
+        final List<Field> fields = getUserSortedColumns();
+        int i = 0;
+        Type type;
+        if (instances.size() > 0) {
+            type = instances.get(0).getType();
+        } else {
+            type = getTypeFromEvent();
+        }
+        for (final Field field : fields) {
+            if (field.hasAccess(getMode()) && !field.isNoneDisplay(getMode()) && !field.isHiddenDisplay(getMode())) {
+                Attribute attr = null;
+                if (instances.size() > 0) {
+                    if (field.getSelect() != null) {
+                        query.addSelect(field.getSelect());
+                    } else if (field.getAttribute() != null) {
+                        query.addAttribute(field.getAttribute());
+                        if (type != null) {
+                            attr = type.getAttribute(field.getAttribute());
+                        }
+                    } else if (field.getPhrase() != null) {
+                        query.addPhrase(field.getName(), field.getPhrase());
+                    } else if (field.getExpression() != null) {
+                        query.addExpression(field.getName(), field.getExpression());
+                    }
+                }
+                if (field.getSelectAlternateOID() != null) {
+                    query.addSelect(field.getSelectAlternateOID());
+                }
+                SortDirection sortdirection = SortDirection.NONE;
+                if (field.getName().equals(this.sortKey)) {
+                    sortdirection = getSortDirection();
+                }
+
+                final UITableHeader uiTableHeader = new UITableHeader(field, sortdirection, attr);
+                if (this.filterTempCache.containsKey(uiTableHeader.getFieldName())
+                                && this.filterTempCache.get(uiTableHeader.getFieldName()).getUiTableHeader() != null) {
+                    this.filters.put(uiTableHeader, this.filterTempCache.get(uiTableHeader.getFieldName()));
+                    uiTableHeader.setFilterApplied(true);
+                } else if (uiTableHeader.isFilterRequired()) {
+                    this.filters.put(uiTableHeader, new Filter(uiTableHeader));
+                }
+                this.headers.add(uiTableHeader);
+                if (!field.isFixedWidth()) {
+                    if (userWidthList != null) {
+                        if (isShowCheckBoxes()) {
+                            uiTableHeader.setWidth(userWidthList.get(i + 1));
+                        } else {
+                            uiTableHeader.setWidth(userWidthList.get(i));
+                        }
+                    }
+                    this.widthWeight += field.getWidth();
+                }
+                i++;
+            }
+        }
+        query.execute();
+
+        executeRowResult(query, fields);
+
+        if (this.sortKey != null) {
+            sort();
+        }
+    }
+
+    /**
+     * @param _query
+     * @param _fields
+     * @throws EFapsException
+     */
+    private void executeRowResult(final MultiPrintQuery _query, final List<Field> _fields) throws EFapsException
+    {
+        while (_query.next()) {
+            Instance instance = _query.getCurrentInstance();
+            final UIRow row = new UIRow(instance.getKey());
+
+            String strValue = "";
+            for (final Field field : _fields) {
+                if (field.hasAccess(getMode()) && !field.isNoneDisplay(getMode())) {
+                    Object value = null;
+                    Attribute attr = null;
+                    if (field.getAttribute() != null) {
+                        value = _query.<Object>getAttribute(field.getAttribute());
+                        attr = _query.getAttribute4Attribute(field.getAttribute());
+                    } else if (field.getSelect() != null) {
+                        value = _query.<Object>getSelect(field.getSelect());
+                        attr = _query.getAttribute4Select(field.getSelect());
+                    } else if (field.getPhrase() != null) {
+                        value = _query.getPhrase(field.getPhrase());
+                    }
+
+                    if (field.getSelectAlternateOID() != null) {
+                        instance = Instance.get(_query.<String>getSelect(field.getSelectAlternateOID()));
+                    }
+
+                    final FieldValue fieldvalue = new FieldValue(field, attr, value, instance);
+                    String htmlTitle = null;
+                    boolean hidden = false;
+                    if (isPrintMode()) {
+                        strValue = fieldvalue.getStringValue(getMode(), getInstance(), instance);
+                    } else {
+                        if ((isCreateMode() || isEditMode()) && field.isEditableDisplay(getMode())) {
+                            strValue = fieldvalue.getEditHtml(getMode(), getInstance(), instance);
+                            htmlTitle = fieldvalue.getStringValue(getMode(), getInstance(), instance);
+                        } else if (field.isHiddenDisplay(getMode())) {
+                            strValue = fieldvalue.getHiddenHtml(getMode(), getInstance(), instance);
+                            hidden = true;
+                        } else {
+                            strValue = fieldvalue.getReadOnlyHtml(getMode(), getInstance(), instance);
+                            htmlTitle = fieldvalue.getStringValue(getMode(), getInstance(), instance);
+                        }
+                    }
+
+                    if (strValue == null) {
+                        strValue = "";
+                    }
+                    String icon = field.getIcon();
+                    if (field.isShowTypeIcon()) {
+                        final Image image = Image.getTypeIcon(instance.getType());
+                        if (image != null) {
+                            icon = image.getUrl();
+                        }
+                    }
+                    if (hidden) {
+                        row.addHidden(new UIHiddenCell(this, fieldvalue, null, strValue));
+                    } else {
+                        row.add(new UITableCell(this, fieldvalue, instance, strValue, htmlTitle, icon));
+                    }
+                }
+            }
+            this.values.add(row);
+        }
+
     }
 
     /**
@@ -382,8 +577,12 @@ public class UITable extends UIAbstractPageObject
 
         for (final Field field : fields) {
             if (field.hasAccess(getMode()) && !field.isNoneDisplay(getMode())) {
+                //TODO to be removed!!
                 if (field.getExpression() != null) {
                     attr = type.getAttribute(field.getExpression());
+                }
+                if (field.getAttribute() != null) {
+                    attr = type.getAttribute(field.getAttribute());
                 }
                 final FieldValue fieldvalue = new FieldValue(field, attr, null, null);
                 String htmlValue;
@@ -423,10 +622,10 @@ public class UITable extends UIAbstractPageObject
      * {@link #executeRowResult(Map, ListQuery)}.
      * @throws EFapsException on error
      */
-    private void execute4Instance() throws EFapsException
+    private void execute4InstanceOld() throws EFapsException
     {
         // first get list of object ids
-        final List<List<Instance>> lists = getInstanceLists();
+        final List<List<Instance>> lists = getInstanceListsOld();
 
         final List<Instance> instances = new ArrayList<Instance>();
         final Map<Instance, List<Instance>> instMapper = new HashMap<Instance, List<Instance>>();
@@ -489,7 +688,7 @@ public class UITable extends UIAbstractPageObject
         }
         query.execute();
 
-        executeRowResult(instMapper, query, fields);
+        executeRowResultOld(instMapper, query, fields);
 
         if (this.sortKey != null) {
             sort();
@@ -497,7 +696,7 @@ public class UITable extends UIAbstractPageObject
     }
 
     /**
-     * This method works together with {@link #execute4Instance()} to fill this Model
+     * This method works together with {@link #execute4InstanceOld()} to fill this Model
      * with Data.
      *
      * @param _instMapper Map of instances
@@ -505,7 +704,7 @@ public class UITable extends UIAbstractPageObject
      * @param _fields List of the Fields
      * @throws EFapsException on error
      */
-    private void executeRowResult(final Map<Instance, List<Instance>> _instMapper, final ListQuery _query,
+    private void executeRowResultOld(final Map<Instance, List<Instance>> _instMapper, final ListQuery _query,
                     final List<Field> _fields) throws EFapsException
     {
 

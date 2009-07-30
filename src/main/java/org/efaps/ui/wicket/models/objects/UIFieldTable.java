@@ -79,7 +79,7 @@ public class UIFieldTable extends UITable implements IFormElement
 
     @SuppressWarnings("unchecked")
     @Override
-    protected List<List<Instance>> getInstanceLists() throws EFapsException
+    protected List<List<Instance>> getInstanceListsOld() throws EFapsException
     {
         final List<Return> ret = FieldTable.get(this.id).executeEvents(EventType.UI_TABLE_EVALUATE,
                         ParameterValues.INSTANCE, getInstance());
@@ -87,6 +87,15 @@ public class UIFieldTable extends UITable implements IFormElement
         return lists;
     }
 
+
+    @Override
+    protected List<Instance> getInstanceList() throws EFapsException
+    {
+        final List<Return> ret = FieldTable.get(this.id).executeEvents(EventType.UI_TABLE_EVALUATE,
+                        ParameterValues.INSTANCE, getInstance());
+        final List<Instance> lists = (List<Instance>) ret.get(0).get(ReturnValues.VALUES);
+        return lists;
+    }
     /*
      * (non-Javadoc)
      *

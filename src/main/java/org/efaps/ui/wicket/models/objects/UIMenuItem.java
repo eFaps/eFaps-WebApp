@@ -304,17 +304,19 @@ public class UIMenuItem extends AbstractUIObject
         try {
             this.label = DBProperties.getProperty(getCommand().getLabel());
             if (getInstance() != null) {
-                final SearchQuery query = new SearchQuery();
-                query.setObject(getInstance());
                 final ValueParser parser = new ValueParser(new StringReader(this.label));
                 final ValueList list = parser.ExpressionString();
-                list.makeSelect(query);
-                if (query.selectSize() > 0) {
-                    query.execute();
-                    if (query.next()) {
-                        this.label = list.makeString(getInstance(), query, getMode());
+                if (list.getExpressions().size() > 0) {
+                    final SearchQuery query = new SearchQuery();
+                    query.setObject(getInstance());
+                    list.makeSelect(query);
+                    if (query.selectSize() > 0) {
+                        query.execute();
+                        if (query.next()) {
+                            this.label = list.makeString(getInstance(), query, getMode());
+                        }
+                        query.close();
                     }
-                    query.close();
                 }
             }
         } catch (final Exception e) {
