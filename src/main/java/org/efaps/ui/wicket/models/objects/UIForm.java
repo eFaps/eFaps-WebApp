@@ -388,7 +388,7 @@ public class UIForm extends UIAbstractPageObject
         } else if (_field.getSelect() != null) {
             value = _query.<Object>getSelect(_field.getSelect());
         } else if (_field.getPhrase() != null) {
-            value = _query.getPhrase(_field.getPhrase());
+            value = _query.getPhrase(_field.getName());
         }
 
         final FieldValue fieldvalue = new FieldValue(_field, _attr, value, _fieldInstance);

@@ -92,9 +92,9 @@ public class UIFormCell extends UITableCell
      */
     public UIFormCell(final AbstractUIObject _parent, final FieldValue _fieldvalue, final String _cellValue,
                       final String _cellTitle, final String _label, final String _attrTypeName)
-            throws EFapsException
+        throws EFapsException
     {
-        this(_parent, _fieldvalue, null, _cellValue, _cellTitle, null, _label, _attrTypeName);
+        this(_parent, _fieldvalue, _fieldvalue.getInstance(), _cellValue, _cellTitle, null, _label, _attrTypeName);
     }
 
     /**
@@ -113,7 +113,7 @@ public class UIFormCell extends UITableCell
     public UIFormCell(final AbstractUIObject _parent, final FieldValue _fieldValue, final Instance _instance,
                       final String _cellValue, final String _cellTitle, final String _icon, final String _label,
                       final String _attrTypeName)
-            throws EFapsException
+        throws EFapsException
     {
         super(_parent, _fieldValue, _instance, _cellValue, _cellTitle, _icon);
         this.required = _fieldValue.getField().isRequired()
