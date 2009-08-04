@@ -34,6 +34,7 @@ import org.apache.wicket.model.IModel;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
 import org.efaps.ui.wicket.components.table.row.RowPanel;
 import org.efaps.ui.wicket.models.RowModel;
+import org.efaps.ui.wicket.models.objects.UIFieldTable;
 import org.efaps.ui.wicket.models.objects.UIRow;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
@@ -207,7 +208,13 @@ public class AjaxAddRemoveRowPanel extends Panel
                 @Override
                 protected CharSequence getCallbackScript()
                 {
-                    AjaxAddRemoveRowPanel.this.functionName = "addNewRows" + getComponent().getMarkupId();
+                    final String name;
+                    if (getComponent().getDefaultModelObject() instanceof UIFieldTable) {
+                        name = ((UIFieldTable) getComponent().getDefaultModelObject()).getName();
+                    } else {
+                        name = ((UITable) getComponent().getDefaultModelObject()).getTable().getName();
+                    }
+                    AjaxAddRemoveRowPanel.this.functionName = "addNewRows_" + name;
                     AjaxAddRemoveRowPanel.this.script  = "var w = wicketAjaxGet('" + getCallbackUrl(false)
                                     + "&eFapsNewRows=' + _count,_successHandler,null,null)";
                     return AjaxAddRemoveRowPanel.this.functionName + "(1, null)";

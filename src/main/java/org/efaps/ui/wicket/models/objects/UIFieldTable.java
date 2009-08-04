@@ -77,6 +77,16 @@ public class UIFieldTable extends UITable implements IFormElement
         }
     }
 
+    /**
+     * Getter method for instance variable {@link #name}.
+     *
+     * @return value of instance variable {@link #name}
+     */
+    public String getName()
+    {
+        return this.name;
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     protected List<List<Instance>> getInstanceListsOld() throws EFapsException
