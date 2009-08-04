@@ -57,11 +57,21 @@ public class AjaxAddRemoveRowPanel extends Panel
     private static final EFapsContentReference ICON_DELETE = new EFapsContentReference(AjaxAddRemoveRowPanel.class,
                                                                                        "delete.png");
 
-    private CharSequence script;
     /**
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * Script needed for the ajax call.
+     */
+    private CharSequence script;
+
+    /**
+     * Do be able to have more than one table in a form that can add new rows,
+     * it is necessary to have unique function names.
+     */
+    private String functionName;
 
     /**
      * Constructor for ajax add link.
@@ -89,19 +99,20 @@ public class AjaxAddRemoveRowPanel extends Panel
 
             /**
              * @see org.apache.wicket.Component#onComponentTagBody(org.apache.wicket.markup.MarkupStream, org.apache.wicket.markup.ComponentTag)
-             * @param markupstream
-             * @param componenttag
+             * @param _markupstream
+             * @param _tag
              */
             @Override
-            protected void onComponentTagBody(final MarkupStream markupstream, final ComponentTag componenttag)
+            protected void onComponentTagBody(final MarkupStream _markupstream, final ComponentTag _tag)
             {
-                super.onComponentTagBody(markupstream, componenttag);
+                super.onComponentTagBody(_markupstream, _tag);
                 final StringBuilder js = new StringBuilder();
                 js.append("<script type=\"text/javascript\">")
-                    .append("function addNewRows(_count, _successHandler) {")
+                    .append("function ").append(AjaxAddRemoveRowPanel.this.functionName)
+                    .append("(_count, _successHandler) {")
                     .append(AjaxAddRemoveRowPanel.this.script)
                     .append("}</script>");
-                replaceComponentTagBody(markupstream, componenttag, js);
+                replaceComponentTagBody(_markupstream, _tag, js);
             }
         });
     }
@@ -165,8 +176,8 @@ public class AjaxAddRemoveRowPanel extends Panel
                     for (int i = 0; i < count; i++) {
                         // create the new repeater item and add it to the repeater
                         final RowPanel row
-                                        = new RowPanel(AjaxAddRemoveRowPanel.AjaxAddRow.this.rowsRepeater.newChildId(),
-                                                       new RowModel(uirow), tablepanel, false);
+                                         = new RowPanel(AjaxAddRemoveRowPanel.AjaxAddRow.this.rowsRepeater.newChildId(),
+                                                        new RowModel(uirow), tablepanel, false);
                         row.add(new SimpleAttributeModifier("class", "eFapsTableRowOdd"));
                         row.setOutputMarkupId(true);
                         AjaxAddRemoveRowPanel.AjaxAddRow.this.rowsRepeater.add(row);
@@ -196,9 +207,10 @@ public class AjaxAddRemoveRowPanel extends Panel
                 @Override
                 protected CharSequence getCallbackScript()
                 {
+                    AjaxAddRemoveRowPanel.this.functionName = "addNewRows" + getComponent().getMarkupId();
                     AjaxAddRemoveRowPanel.this.script  = "var w = wicketAjaxGet('" + getCallbackUrl(false)
                                     + "&eFapsNewRows=' + _count,_successHandler,null,null)";
-                    return "addNewRows(1, null)";
+                    return AjaxAddRemoveRowPanel.this.functionName + "(1, null)";
                 }
             });
         }
