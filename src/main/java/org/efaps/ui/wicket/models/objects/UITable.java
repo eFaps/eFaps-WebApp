@@ -413,7 +413,8 @@ public class UITable extends UIAbstractPageObject
             type = getTypeFromEvent();
         }
         for (final Field field : fields) {
-            if (field.hasAccess(getMode()) && !field.isNoneDisplay(getMode()) && !field.isHiddenDisplay(getMode())) {
+            if (field.hasAccess(getMode(), getInstance())
+                            && !field.isNoneDisplay(getMode()) && !field.isHiddenDisplay(getMode())) {
                 Attribute attr = null;
                 if (instances.size() > 0) {
                     if (field.getSelect() != null) {
@@ -481,7 +482,7 @@ public class UITable extends UIAbstractPageObject
 
             String strValue = "";
             for (final Field field : _fields) {
-                if (field.hasAccess(getMode()) && !field.isNoneDisplay(getMode())) {
+                if (field.hasAccess(getMode(), getInstance()) && !field.isNoneDisplay(getMode())) {
                     Object value = null;
                     Attribute attr = null;
                     if (field.getAttribute() != null) {
@@ -549,7 +550,8 @@ public class UITable extends UIAbstractPageObject
         final List<Integer> userWidthList = getUserWidths();
         int i = 1;
         for (final Field field : fields) {
-            if (field.hasAccess(getMode()) && !field.isNoneDisplay(getMode()) && !field.isHiddenDisplay(getMode())) {
+            if (field.hasAccess(getMode(), getInstance())
+                                            && !field.isNoneDisplay(getMode()) && !field.isHiddenDisplay(getMode())) {
                 SortDirection sortdirection = SortDirection.NONE;
                 if (field.getName().equals(this.sortKey)) {
                     sortdirection = getSortDirection();
@@ -576,7 +578,7 @@ public class UITable extends UIAbstractPageObject
         Attribute attr = null;
 
         for (final Field field : fields) {
-            if (field.hasAccess(getMode()) && !field.isNoneDisplay(getMode())) {
+            if (field.hasAccess(getMode(), getInstance()) && !field.isNoneDisplay(getMode())) {
                 //TODO to be removed!!
                 if (field.getExpression() != null) {
                     attr = type.getAttribute(field.getExpression());
@@ -648,7 +650,8 @@ public class UITable extends UIAbstractPageObject
             type = getTypeFromEvent();
         }
         for (final Field field : fields) {
-            if (field.hasAccess(getMode()) && !field.isNoneDisplay(getMode()) && !field.isHiddenDisplay(getMode())) {
+            if (field.hasAccess(getMode(), getInstance()) && !field.isNoneDisplay(getMode())
+                            && !field.isHiddenDisplay(getMode())) {
                 Attribute attr = null;
                 if (field.getExpression() != null) {
                     query.addSelect(field.getExpression());
@@ -733,7 +736,7 @@ public class UITable extends UIAbstractPageObject
 
             String strValue = "";
             for (final Field field : _fields) {
-                if (field.hasAccess(getMode()) && !field.isNoneDisplay(getMode())) {
+                if (field.hasAccess(getMode(), getInstance()) && !field.isNoneDisplay(getMode())) {
                     Object value = null;
                     Attribute attr = null;
                     if (field.getExpression() != null) {

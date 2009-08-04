@@ -289,7 +289,7 @@ public class UIMenuItem extends AbstractUIObject
         try {
             if (command instanceof AbstractMenu) {
                 for (final AbstractCommand subCmd : ((AbstractMenu) command).getCommands()) {
-                    if (subCmd != null && subCmd.hasAccess(getMode())) {
+                    if (subCmd != null && subCmd.hasAccess(getMode(), getInstance())) {
                         this.childs.add(new UIMenuItem(subCmd.getUUID(), getInstanceKey()));
                     }
                 }

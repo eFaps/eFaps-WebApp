@@ -84,7 +84,7 @@ public class EFapsApplication extends WebApplication
         getMarkupSettings().setStripComments(true);
         getMarkupSettings().setCompressWhitespace(true);
         getRequestCycleSettings().setGatherExtendedBrowserInfo(true);
-        getDebugSettings().setAjaxDebugModeEnabled(true);
+        getDebugSettings().setAjaxDebugModeEnabled(false);
         super.getSecuritySettings().setAuthorizationStrategy(new EFapsFormBasedAuthorizationStartegy());
         getApplicationSettings().setPageExpiredErrorPage(LoginPage.class);
         getPageSettings().setAutomaticMultiWindowSupport(true);

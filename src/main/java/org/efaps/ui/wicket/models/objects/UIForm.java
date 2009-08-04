@@ -215,7 +215,7 @@ public class UIForm extends UIAbstractPageObject
         // evaluate the Form to make the query
         final PrintQuery query = new PrintQuery(getInstance());
         for (final Field field : form.getFields()) {
-            if (field.hasAccess(getMode()) && !field.isNoneDisplay(getMode())) {
+            if (field.hasAccess(getMode(), getInstance()) && !field.isNoneDisplay(getMode())) {
                 if (field.getSelect() != null) {
                     query.addSelect(field.getSelect());
                 } else if (field.getAttribute() != null) {
@@ -235,7 +235,7 @@ public class UIForm extends UIAbstractPageObject
             boolean addNew = true;
             UIClassification uiclass = null;
             for (final Field field : form.getFields()) {
-                if (field.hasAccess(getMode()) && !field.isNoneDisplay(getMode())) {
+                if (field.hasAccess(getMode(), getInstance()) && !field.isNoneDisplay(getMode())) {
                     if (field instanceof FieldGroup) {
                         final FieldGroup group = (FieldGroup) field;
                         if (getMaxGroupCount() < group.getGroupCount()) {
@@ -533,7 +533,7 @@ public class UIForm extends UIAbstractPageObject
             boolean addNew = true;
             UIClassification uiclass = null;
             for (final Field field : form.getFields()) {
-                if (field.hasAccess(getMode()) && !field.isNoneDisplay(getMode())) {
+                if (field.hasAccess(getMode(), getInstance()) && !field.isNoneDisplay(getMode())) {
                     if (field instanceof FieldGroup) {
                         final FieldGroup group = (FieldGroup) field;
                         if (getMaxGroupCount() < group.getGroupCount()) {
@@ -633,7 +633,7 @@ public class UIForm extends UIAbstractPageObject
         final ListQuery ret = new ListQuery(instances);
 
         for (final Field field : _form.getFields()) {
-            if (field.hasAccess(getMode()) && !field.isNoneDisplay(getMode())) {
+            if (field.hasAccess(getMode(), getInstance()) && !field.isNoneDisplay(getMode())) {
                 if (field.getExpression() != null) {
                     ret.addSelect(field.getExpression());
                 }
@@ -862,7 +862,7 @@ public class UIForm extends UIAbstractPageObject
         boolean addNew = true;
         UIClassification uiclass = null;
         for (final Field field : form.getFields()) {
-            if (field.hasAccess(getMode()) && !field.isNoneDisplay(getMode())) {
+            if (field.hasAccess(getMode(), getInstance()) && !field.isNoneDisplay(getMode())) {
                 if (field instanceof FieldGroup) {
                     final FieldGroup group = (FieldGroup) field;
                     if (getMaxGroupCount() < group.getGroupCount()) {

@@ -123,7 +123,7 @@ public class UITableCell extends UIAbstractCell
         if (_fieldValue.getField().getReference() != null) {
             if (getInstanceKey() != null) {
                 final Menu menu = Menu.getTypeTreeMenu(_instance.getType());
-                if (menu != null && menu.hasAccess(getParent().getMode())) {
+                if (menu != null && menu.hasAccess(getParent().getMode(), getInstance())) {
                     this.reference = _fieldValue.getField().getReference();
                 }
             }
