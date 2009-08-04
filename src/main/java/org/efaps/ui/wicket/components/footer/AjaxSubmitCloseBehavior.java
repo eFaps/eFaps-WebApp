@@ -215,7 +215,9 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
                         } else {
                             final FooterPanel footer = getComponent().findParent(FooterPanel.class);
                             // if inside a modal
-                            if (this.uiObject.getCommand().getTarget() == Target.MODAL) {
+                            if (this.uiObject.getCommand().getTarget() == Target.MODAL
+                                            || (this.uiObject.getCallingCommand() != null
+                                                    && this.uiObject.getCallingCommand().getTarget() == Target.MODAL)) {
                                 if (this.uiObject.isTargetShowFile()) {
                                     final ShowFileCallBackBehavior callback
                                                                = ((EFapsSession) footer.getSession()).getFileCallBack();
@@ -226,7 +228,7 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
 
                             } else {
                                 final Opener opener
-                                             = ((EFapsSession) Session.get()).getOpener(this.uiObject.getOpenerId());
+                                        = ((EFapsSession) Session.get()).getOpener(this.uiObject.getOpenerId());
                                 // mark the opener that it can be removed
                                 opener.setMarked4Remove(true);
 

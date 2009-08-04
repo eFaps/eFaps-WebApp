@@ -25,6 +25,7 @@ import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.db.Context;
+import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.objects.UIAbstractPageObject;
 import org.efaps.ui.wicket.models.objects.UITable;
@@ -77,11 +78,15 @@ public class SearchSubmitLink extends SubmitLink
             wizard.addParameters(uiObject, Context.getThreadContext().getParameters());
             wizard.insertBefore(uiObject);
             newTable.setWizard(wizard);
+            newTable.setPartOfWizardCall(true);
+            newTable.setRenderRevise(uiObject.isTargetCmdRevise());
             if (uiObject.isSubmit()) {
                 newTable.setSubmit(true);
                 newTable.setCallingCommandUUID(uiObject.getCallingCommandUUID());
             }
-            final TablePage page = new TablePage(new TableModel(newTable));
+            final FooterPanel footer = findParent(FooterPanel.class);
+            final ModalWindowContainer modal = footer.getModalWindow();
+            final TablePage page = new TablePage(new TableModel(newTable), modal);
 
             page.setMenuTreeKey(((AbstractContentPage) getPage()).getMenuTreeKey());
             getRequestCycle().setResponsePage(page);
