@@ -326,14 +326,14 @@ public class XMLExport
     protected Element getFormElement(final Document _xmlDoc, final UIForm _formmodel, final FormElement _model)
     {
         final Element form = _xmlDoc.createElement(TAG.FORM.value);
-        form.setAttribute("maxGroupCount", ((Integer) _formmodel.getMaxGroupCount()).toString());
+        form.setAttribute("maxGroupCount", ((Integer) _model.getMaxGroupCount()).toString());
 
         for (final FormRow rowmodel : _model.getRowModels()) {
 
             final Element frow = _xmlDoc.createElement(TAG.FORM_ROW.value);
             form.appendChild(frow);
             for (final UIFormCell formcellmodel : rowmodel.getValues()) {
-                final Integer colspan = 2 * (_formmodel.getMaxGroupCount() - rowmodel.getGroupCount()) + 1;
+                final Integer colspan = 2 * (_model.getMaxGroupCount() - rowmodel.getGroupCount()) + 1;
 
                 final Element fcell = _xmlDoc.createElement(TAG.FORM_CELL.value);
                 frow.appendChild(fcell);

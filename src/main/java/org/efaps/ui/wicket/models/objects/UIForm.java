@@ -238,8 +238,8 @@ public class UIForm extends UIAbstractPageObject
                 if (field.hasAccess(getMode(), getInstance()) && !field.isNoneDisplay(getMode())) {
                     if (field instanceof FieldGroup) {
                         final FieldGroup group = (FieldGroup) field;
-                        if (getMaxGroupCount() < group.getGroupCount()) {
-                            setMaxGroupCount(group.getGroupCount());
+                        if (formElement.getMaxGroupCount() < group.getGroupCount()) {
+                            formElement.setMaxGroupCount(group.getGroupCount());
                         }
                         rowgroupcount = group.getGroupCount();
                     } else if (field instanceof FieldTable) {
@@ -495,11 +495,12 @@ public class UIForm extends UIAbstractPageObject
     }
 
     /**
-     * TODO to be removed
-     * Temporary method to decide which method of selct must be used
+     * TODO to be removed.
+     * Temporary method to decide which method of select must be used
      * @return true if the new way
      */
-    private boolean isNewWay() {
+    private boolean isNewWay()
+    {
         boolean ret = false;
         final Form form = Form.get(this.formUUID);
         for (final Field field : form.getFields()) {
@@ -536,8 +537,8 @@ public class UIForm extends UIAbstractPageObject
                 if (field.hasAccess(getMode(), getInstance()) && !field.isNoneDisplay(getMode())) {
                     if (field instanceof FieldGroup) {
                         final FieldGroup group = (FieldGroup) field;
-                        if (getMaxGroupCount() < group.getGroupCount()) {
-                            setMaxGroupCount(group.getGroupCount());
+                        if (formElement.getMaxGroupCount() < group.getGroupCount()) {
+                            formElement.setMaxGroupCount(group.getGroupCount());
                         }
                         rowgroupcount = group.getGroupCount();
                     } else if (field instanceof FieldTable) {
@@ -865,8 +866,8 @@ public class UIForm extends UIAbstractPageObject
             if (field.hasAccess(getMode(), getInstance()) && !field.isNoneDisplay(getMode())) {
                 if (field instanceof FieldGroup) {
                     final FieldGroup group = (FieldGroup) field;
-                    if (getMaxGroupCount() < group.getGroupCount()) {
-                        setMaxGroupCount(group.getGroupCount());
+                    if (formelement.getMaxGroupCount() < group.getGroupCount()) {
+                        formelement.setMaxGroupCount(group.getGroupCount());
                     }
                     rowgroupcount = group.getGroupCount();
                 } else if (field instanceof FieldHeading) {
@@ -1187,6 +1188,14 @@ public class UIForm extends UIAbstractPageObject
         private static final long serialVersionUID = 1L;
 
         /**
+         * Stores the maximal group count for a row.
+         *
+         * @see #getMaxGroupCount
+         * @see #setMaxGroupCount
+         */
+        private int maxGroupCount = 1;
+
+        /**
          * Stores the FormRows for this FormElement.
          */
         private final List<UIForm.FormRow> rowModels = new ArrayList<UIForm.FormRow>();
@@ -1210,6 +1219,32 @@ public class UIForm extends UIAbstractPageObject
         public List<UIForm.FormRow> getRowModels()
         {
             return this.rowModels;
+        }
+
+        /**
+         * This is the getter method for the instance variable
+         * {@link #maxGroupCount}.
+         *
+         * @return value of instance variable {@link #maxGroupCount}
+         * @see #maxGroupCount
+         * @see #setMaxGroupCount
+         */
+        public int getMaxGroupCount()
+        {
+            return this.maxGroupCount;
+        }
+
+        /**
+         * This is the setter method for the instance variable
+         * {@link #maxGroupCount}.
+         *
+         * @param _maxGroupCount new value for instance variable {@link #maxGroupCount}
+         * @see #maxGroupCount
+         * @see #getMaxGroupCount
+         */
+        protected void setMaxGroupCount(final int _maxGroupCount)
+        {
+            this.maxGroupCount = _maxGroupCount;
         }
     }
 

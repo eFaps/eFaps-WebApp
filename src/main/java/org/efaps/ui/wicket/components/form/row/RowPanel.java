@@ -39,6 +39,7 @@ import org.efaps.ui.wicket.models.cell.UIFormCell;
 import org.efaps.ui.wicket.models.cell.UIFormCellCmd;
 import org.efaps.ui.wicket.models.cell.UIFormCellSet;
 import org.efaps.ui.wicket.models.objects.UIForm;
+import org.efaps.ui.wicket.models.objects.UIForm.FormElement;
 import org.efaps.ui.wicket.models.objects.UIForm.FormRow;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 
@@ -57,16 +58,17 @@ public class RowPanel extends Panel
     private static final long serialVersionUID = 1L;
 
     /**
-     * @param _wicketId     wicket id for this component
-     * @param _model        model for this component
-     * @param _formmodel    parent model of this row
-     * @param _page page    the RowPanel is in
-     * @param _formPanel    form panel this RowPanel is in
-     * @param _form         form this RowPanel is in
+     * @param _wicketId         wicket id for this component
+     * @param _model            model for this component
+     * @param _formmodel        parent model of this row
+     * @param _page page        the RowPanel is in
+     * @param _formPanel        form panel this RowPanel is in
+     * @param _form             form this RowPanel is in
+     * @param _formelementmodel element this rowpanel belongs to
      *
      */
     public RowPanel(final String _wicketId, final IModel<FormRow> _model, final UIForm _formmodel, final Page _page,
-                    final FormPanel _formPanel, final FormContainer _form)
+                    final FormPanel _formPanel, final FormContainer _form,  final FormElement _formelementmodel)
     {
         super(_wicketId, _model);
 
@@ -104,7 +106,7 @@ public class RowPanel extends Panel
                 valueCell.add(new SimpleAttributeModifier("rowspan", ((Integer) cell.getRowSpan()).toString()));
             }
 
-            Integer colspan = 2 * (_formmodel.getMaxGroupCount() - _model.getObject().getGroupCount()) + 1;
+            Integer colspan = 2 * (_formelementmodel.getMaxGroupCount() - _model.getObject().getGroupCount()) + 1;
 
             if (cell.isHideLabel()) {
                 colspan++;

@@ -93,14 +93,6 @@ public abstract class AbstractUIObject extends AbstractInstanceObject
     private boolean initialized = false;
 
     /**
-     * Stores the maximal group count for a row.
-     *
-     * @see #getMaxGroupCount
-     * @see #setMaxGroupCount
-     */
-    private int maxGroupCount = 1;
-
-    /**
      * The instance variable stores the mode of the form.
      *
      * @see #getMode
@@ -358,33 +350,6 @@ public abstract class AbstractUIObject extends AbstractInstanceObject
     }
 
     /**
-     * This is the getter method for the instance variable
-     * {@link #maxGroupCount}.
-     *
-     * @return value of instance variable {@link #maxGroupCount}
-     * @see #maxGroupCount
-     * @see #setMaxGroupCount
-     */
-    public int getMaxGroupCount()
-    {
-        return this.maxGroupCount;
-    }
-
-    /**
-     * This is the setter method for the instance variable
-     * {@link #maxGroupCount}.
-     *
-     * @param _maxGroupCount new value for instance variable
-     *            {@link #maxGroupCount}
-     * @see #maxGroupCount
-     * @see #getMaxGroupCount
-     */
-    protected void setMaxGroupCount(final int _maxGroupCount)
-    {
-        this.maxGroupCount = _maxGroupCount;
-    }
-
-    /**
      * This is the getter method for the instance variable {@link #mode}.
      *
      * @return value of instance variable {@link #mode}
@@ -499,7 +464,13 @@ public abstract class AbstractUIObject extends AbstractInstanceObject
         return getMode() == TargetMode.VIEW || getMode() == TargetMode.UNKNOWN;
     }
 
-    public boolean isPrintMode() {
+    /**
+     * Method to check if mode is view.
+     * @see #mode
+     * @return true if mode is print
+     */
+    public boolean isPrintMode()
+    {
         return getMode() == TargetMode.PRINT;
     }
 
@@ -568,6 +539,13 @@ public abstract class AbstractUIObject extends AbstractInstanceObject
         return executeEvents(EventType.UI_COMMAND_EXECUTE, _objectTuples);
     }
 
+    /**
+     * Execute the events.
+     * @param _eventType    type of events to be executed
+     * @param _objectTuples tuples of objects passed to the event
+     * @return  Lsit of returns from the events
+     * @throws EFapsException on error
+     */
     private List<Return> executeEvents(final EventType _eventType, final Object... _objectTuples) throws EFapsException
     {
         List<Return> ret = new ArrayList<Return>();
@@ -603,12 +581,11 @@ public abstract class AbstractUIObject extends AbstractInstanceObject
      * This method executes the Validate-Events which are related to this Model.
      * It will take the Events of the Command {@link #cmdUUID}.
      *
-     * @param _others Object to add to the event
+     * @param _objectTuples tuples of Objects to be added to the event
      * @return List with Return from the esjp
-     * @throws EFapsException
+     * @throws EFapsException on error
      */
-    public List<Return> validate(final Object... _objectTuples)
-            throws EFapsException
+    public List<Return> validate(final Object... _objectTuples) throws EFapsException
     {
         return executeEvents(EventType.UI_VALIDATE, _objectTuples);
     }

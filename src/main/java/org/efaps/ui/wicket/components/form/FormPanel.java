@@ -104,7 +104,7 @@ public class FormPanel extends Panel
 
         for (final FormRow rowmodel : _formelementmodel.getRowModels()) {
             final RowPanel row = new RowPanel(rowRepeater.newChildId(), new FormRowModel(rowmodel), uiForm, _page,
-                                              this, _form);
+                                              this, _form, _formelementmodel);
             rowRepeater.add(row);
         }
 
