@@ -439,8 +439,8 @@ public class XMLExport
             outFormat = new OutputFormat();
 
             // Setup format settings
-            outFormat.setEncoding(XML.ENCODING.value);
-            outFormat.setVersion(XML.VERSION.value);
+            outFormat.setEncoding(XMLExport.XML.ENCODING.value);
+            outFormat.setVersion(XMLExport.XML.VERSION.value);
             outFormat.setIndenting(true);
             outFormat.setIndent(2);
 

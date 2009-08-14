@@ -238,6 +238,12 @@ public class UIForm extends UIAbstractPageObject
                 if (field.hasAccess(getMode(), getInstance()) && !field.isNoneDisplay(getMode())) {
                     if (field instanceof FieldGroup) {
                         final FieldGroup group = (FieldGroup) field;
+                        // in case that the first field is a group the element must be initiated
+                        if (formElement == null) {
+                            formElement = new FormElement();
+                            this.elements.add(new Element(UIForm.ElementType.FORM, formElement));
+                            addNew = false;
+                        }
                         if (formElement.getMaxGroupCount() < group.getGroupCount()) {
                             formElement.setMaxGroupCount(group.getGroupCount());
                         }
@@ -537,6 +543,11 @@ public class UIForm extends UIAbstractPageObject
                 if (field.hasAccess(getMode(), getInstance()) && !field.isNoneDisplay(getMode())) {
                     if (field instanceof FieldGroup) {
                         final FieldGroup group = (FieldGroup) field;
+                        if (formElement == null) {
+                            formElement = new FormElement();
+                            this.elements.add(new Element(UIForm.ElementType.FORM, formElement));
+                            addNew = false;
+                        }
                         if (formElement.getMaxGroupCount() < group.getGroupCount()) {
                             formElement.setMaxGroupCount(group.getGroupCount());
                         }
@@ -859,13 +870,19 @@ public class UIForm extends UIAbstractPageObject
             }
         }
 
-        FormElement formelement = new FormElement();
+        FormElement formelement = null;
         boolean addNew = true;
         UIClassification uiclass = null;
         for (final Field field : form.getFields()) {
             if (field.hasAccess(getMode(), getInstance()) && !field.isNoneDisplay(getMode())) {
                 if (field instanceof FieldGroup) {
                     final FieldGroup group = (FieldGroup) field;
+                 // in case that the first field is a group the element must be initiated
+                    if (formelement == null) {
+                        formelement = new FormElement();
+                        this.elements.add(new Element(UIForm.ElementType.FORM, formelement));
+                        addNew = false;
+                    }
                     if (formelement.getMaxGroupCount() < group.getGroupCount()) {
                         formelement.setMaxGroupCount(group.getGroupCount());
                     }
