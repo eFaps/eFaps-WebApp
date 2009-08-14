@@ -125,6 +125,8 @@ public class UITableCell extends UIAbstractCell
                 final Menu menu = Menu.getTypeTreeMenu(_instance.getType());
                 if (menu != null && menu.hasAccess(getParent().getMode(), getInstance())) {
                     this.reference = _fieldValue.getField().getReference();
+                } else if (_fieldValue.getField().getReference().contains("/servlet/checkout")) {
+                    this.reference = _fieldValue.getField().getReference();
                 }
             }
         }
@@ -203,6 +205,13 @@ public class UITableCell extends UIAbstractCell
         return this.reference.contains("/servlet/checkout");
     }
 
+    /**
+     * Method to execute the events.
+     * @param _others       object to be passed to the executed event.
+     * @param _eventType    type of the event to be executed
+     * @return  List of Returns
+     * @throws EFapsException on error
+     */
     public List<Return> executeEvents(final Object _others, final EventType _eventType) throws EFapsException
     {
         List<Return> ret = new ArrayList<Return>();
@@ -227,6 +236,12 @@ public class UITableCell extends UIAbstractCell
         return this.autoComplete;
     }
 
+    /**
+     * Method to get the auto completion event.
+     * @param _others   object to be passed to the executed event
+     * @return List of Returns
+     * @throws EFapsException on error
+     */
     public List<Return> getAutoCompletion(final Object _others)
         throws EFapsException
     {
@@ -253,8 +268,13 @@ public class UITableCell extends UIAbstractCell
         return this.fieldUpdateEvent;
     }
 
-    public List<Return> getFieldUpdate(final Object _others)
-            throws EFapsException
+    /**
+     * Method to get the field update event.
+     * @param _others   object to be passed to the executed event
+     * @return List of Returns
+     * @throws EFapsException on error
+     */
+    public List<Return> getFieldUpdate(final Object _others) throws EFapsException
     {
         return executeEvents(_others, EventType.UI_FIELD_UPDATE);
     }
