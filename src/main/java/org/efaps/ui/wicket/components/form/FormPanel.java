@@ -142,7 +142,7 @@ public class FormPanel extends Panel
 
     /**
      * Add a date component.
-     * @param _datePicker date picker
+     * @param _dateTimePanel date picker
      */
     public void addDateComponent(final DateTimePanel _dateTimePanel)
     {

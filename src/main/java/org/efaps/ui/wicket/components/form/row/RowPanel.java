@@ -87,6 +87,7 @@ public class RowPanel extends Panel
                     _formPanel.addRequiredComponent(cell.getName(), labelCell);
                 } else {
                     labelCell.add(new SimpleAttributeModifier("class", "eFapsFormLabel"));
+                    labelCell.setOutputMarkupId(true);
                 }
                 if (cell.getRowSpan() > 0) {
                     labelCell.add(new SimpleAttributeModifier("rowspan", ((Integer) cell.getRowSpan()).toString()));

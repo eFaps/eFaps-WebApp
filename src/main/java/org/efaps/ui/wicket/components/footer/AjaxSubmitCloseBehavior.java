@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.PageMap;
 import org.apache.wicket.PageParameters;
@@ -41,6 +42,7 @@ import org.apache.wicket.markup.html.basic.Label;
 
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
@@ -57,20 +59,28 @@ import org.efaps.ui.wicket.components.form.FormPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.FormModel;
 import org.efaps.ui.wicket.models.TableModel;
+import org.efaps.ui.wicket.models.cell.UIFormCell;
+import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.UIAbstractPageObject;
 import org.efaps.ui.wicket.models.objects.UIFieldForm;
+import org.efaps.ui.wicket.models.objects.UIFieldTable;
 import org.efaps.ui.wicket.models.objects.UIForm;
+import org.efaps.ui.wicket.models.objects.UIRow;
 import org.efaps.ui.wicket.models.objects.UITable;
+import org.efaps.ui.wicket.models.objects.UITableHeader;
 import org.efaps.ui.wicket.models.objects.UIWizardObject;
 import org.efaps.ui.wicket.models.objects.UIForm.Element;
 import org.efaps.ui.wicket.models.objects.UIForm.ElementType;
+import org.efaps.ui.wicket.models.objects.UIForm.FormElement;
+import org.efaps.ui.wicket.models.objects.UIForm.FormRow;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.dialog.DialogPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * Class renders the footer in a form. It is responsible for performing the
@@ -81,18 +91,6 @@ import org.efaps.util.EFapsException;
  */
 public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
 {
-
-    /**
-     * @see org.apache.wicket.ajax.form.AjaxFormSubmitBehavior#getEventHandler()
-     * @return
-     */
-    @Override
-    public CharSequence getEventHandler()
-    {
-        // TODO Auto-generated method stub
-        return super.getEventHandler();
-    }
-
     /**
      * Needed for serialization.
      */
@@ -127,19 +125,15 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
         this.form = _form;
     }
 
-
-
     /**
      * Setter method for instance variable {@link #validated}.
      *
-     * @param validated value for instance variable {@link #validated}
+     * @param _validated value for instance variable {@link #validated}
      */
-    public void setValidated(final boolean validated)
+    public void setValidated(final boolean _validated)
     {
-        this.validated = validated;
+        this.validated = _validated;
     }
-
-
 
     /**
      * On submit the action must be done.
@@ -170,7 +164,8 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
             }
         }
         try {
-            if (checkForRequired(_target) && (validateForm(_target, others, classifications))) {
+            if (checkForRequired(_target) && validateFieldValues(_target)
+                            && (validateForm(_target, others, classifications))) {
                 if (this.uiObject instanceof UIForm && ((UIForm) this.uiObject).isFileUpload()) {
                     doFileUpload(_target);
                 } else {
@@ -359,7 +354,7 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
      */
     private boolean executeEvents(final AjaxRequestTarget _target, final Map<String, String[]> _other,
                                   final List<Classification> _classifications)
-                    throws EFapsException
+        throws EFapsException
     {
         boolean ret = true;
         final List<Return> returns;
@@ -396,6 +391,110 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
     }
 
     /**
+     * Method to validate the values for fields.
+     * @param _target   AjaxRequestTarget
+     * @return true if validation was valid, else false
+     * @throws EFapsException on error
+     */
+    private boolean validateFieldValues(final AjaxRequestTarget _target)
+        throws EFapsException
+    {
+        boolean ret = true;
+        final AbstractUIObject uiobject = ((AbstractUIObject) this.form.getParent().getDefaultModelObject());
+        final StringBuilder html = new StringBuilder();
+        html.append("<table class=\"eFapsValidateFieldValuesTable\">");
+        if (uiobject instanceof UIForm) {
+            final UIForm uiform = (UIForm) uiobject;
+            ret = evalFormElement(_target, html, uiform);
+        }
+        if (!ret) {
+            html.append("</table>");
+            showDialog(_target, html.toString(), true, false);
+        }
+        return ret;
+    }
+
+    /**
+     * Recursive method to validate the elements of the form.
+     * @param _target   AjaxRequestTarget
+     * @param _html     StringBuilder for the warning message
+     * @param _uiform   UIForm to start the validation
+     * @return true if validation was valid, else false
+     * @throws CacheReloadException on error
+     */
+    private boolean evalFormElement(final AjaxRequestTarget _target, final StringBuilder _html,
+                                    final UIForm _uiform)
+        throws CacheReloadException
+    {
+        boolean ret = true;
+        for (final Element element : _uiform.getElements()) {
+            if (element.getType().equals(ElementType.FORM)) {
+                final FormElement formElement = (FormElement) element.getElement();
+                for (final FormRow row : formElement.getRowModels()) {
+                    for (final UIFormCell cell : row.getValues()) {
+                        final String[] values = getComponent().getRequestCycle().getRequest().getParameters(
+                                        cell.getName());
+                        if (values != null && values.length > 0) {
+                            final String value = values[0];
+                            if (value.length() > 0) {
+                                final UIInterface clazz = cell.getUiClass();
+                                if (clazz != null) {
+                                    final String warn = clazz.validateValue(value, cell.getAttribute());
+                                    if (warn != null) {
+                                        _html.append("<tr><td>").append(cell.getCellLabel()).append(":</td><td>")
+                                            .append(warn).append("</td></tr>");
+                                        ret = false;
+                                        final WebMarkupContainer comp = cell.getComponent();
+                                        final Component label = comp.getParent().get(0);
+                                        label.add(new SimpleAttributeModifier("class", "eFapsFormLabelInvalidValue"));
+                                        _target.addComponent(label);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } else if (element.getType().equals(ElementType.SUBFORM)) {
+                final UIFieldForm uiFieldForm = (UIFieldForm) element.getElement();
+                final boolean tmp = evalFormElement(_target, _html, uiFieldForm);
+                ret = ret ? tmp : ret;
+            } else if (element.getType().equals(ElementType.TABLE)) {
+                final UIFieldTable uiFieldTable = (UIFieldTable) element.getElement();
+                final List<UITableHeader> headers = uiFieldTable.getHeaders();
+                for (final UIRow uiRow : uiFieldTable.getValues()) {
+                    final Iterator<UITableHeader> headerIter = headers.iterator();
+                    for (final UITableCell uiTableCell : uiRow.getValues()) {
+                        final UITableHeader header = headerIter.next();
+                        final String[] values = getComponent().getRequestCycle().getRequest()
+                                                        .getParameters(uiTableCell.getName());
+                        if (values != null && values.length > 0) {
+                            for (int i = 0; i < values.length; i++) {
+                                if (values[i].length() > 0) {
+                                    final UIInterface clazz = uiTableCell.getUiClass();
+                                    if (clazz != null) {
+                                        final String warn = clazz.validateValue(values[i], uiTableCell.getAttribute());
+                                        if (warn != null) {
+                                            _html.append("<tr><td>").append(header.getLabel()).append(" ").append(i + 1)
+                                                .append(":</td><td>").append(warn).append("</td></tr>");
+                                            ret = false;
+                                            final StringBuilder js = new StringBuilder();
+                                            js.append("document.getElementsByName('").append(uiTableCell.getName())
+                                                .append("')[").append(i)
+                                                .append("].setAttribute('class', 'eFapsTableCellInvalidValue');");
+                                            _target.appendJavascript(js.toString());
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+
+    /**
      * Executes the Validation-Events related to the CommandAbstract which
      * called this Form.
      *
@@ -408,7 +507,7 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
      */
     private boolean validateForm(final AjaxRequestTarget _target, final Map<String, String[]> _other,
                                  final List<Classification> _classifications)
-            throws EFapsException
+        throws EFapsException
     {
         boolean ret = true;
         if (!this.validated) {
@@ -445,8 +544,8 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
     }
 
     /**
-     * Method checking if the mandatory field of the Form are filled in, and if
-     * not opens a WarnDialog and marks the fields in the Form via Ajax.
+     * Method checking if the mandatory field of the Form are filled with a value,
+     * and if not opens a WarnDialog and marks the fields in the Form via Ajax.
      *
      * @param _target RequestTarget used for this Request
      * @return true if all mandatory fields are filled, else false
@@ -530,5 +629,18 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
             }
         });
         modal.show(_target);
+    }
+
+
+    /**
+     * Must be overwritten to make it public.
+     *
+     * @see org.apache.wicket.ajax.form.AjaxFormSubmitBehavior#getEventHandler()
+     * @return parent call
+     */
+    @Override
+    public CharSequence getEventHandler()
+    {
+        return super.getEventHandler();
     }
 }

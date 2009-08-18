@@ -75,6 +75,7 @@ public class ValueCellPanel extends Panel
         super(_wicketId, _model);
         setOutputMarkupId(true);
         final UIFormCell uiFormCell = (UIFormCell) super.getDefaultModelObject();
+        uiFormCell.setComponent(this);
         // if we don't have a reference or we are inside a modal window
         if (uiFormCell.getReference() == null || _formmodel.getTarget().equals(Target.MODAL)) {
             if (uiFormCell.getIcon() == null) {

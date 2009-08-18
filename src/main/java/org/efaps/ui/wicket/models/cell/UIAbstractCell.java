@@ -22,6 +22,9 @@ package org.efaps.ui.wicket.models.cell;
 
 import java.util.List;
 
+import org.apache.wicket.markup.html.WebMarkupContainer;
+
+import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.admin.event.EventType;
@@ -37,6 +40,7 @@ import org.efaps.db.Instance;
 import org.efaps.ui.wicket.models.AbstractInstanceObject;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * TODO comment!
@@ -87,6 +91,13 @@ public abstract class UIAbstractCell extends AbstractInstanceObject
     private final String cellValue;
 
     /**
+     * Variable storing the id of the attribute for the field.
+     */
+    private final long attributeId;
+
+    private WebMarkupContainer component;
+
+    /**
      * @param _parent       parent
      * @param _fieldValue   field value
      * @param _instanceKey  instance key
@@ -103,6 +114,8 @@ public abstract class UIAbstractCell extends AbstractInstanceObject
         this.target = _fieldValue.getField().getTarget();
         this.display = _fieldValue.getField().getDisplay(_parent.getMode());
         this.cellValue = _cellvalue;
+        this.attributeId = _fieldValue.getAttribute() == null ? 0 : _fieldValue.getAttribute().getId();
+
     }
 
     /**
@@ -186,6 +199,17 @@ public abstract class UIAbstractCell extends AbstractInstanceObject
     }
 
     /**
+     * Method to get the Attribute used for this cell.
+     *
+     * @return Attribute if exists, else null
+     * @throws CacheReloadException on error
+     */
+    public Attribute getAttribute() throws CacheReloadException
+    {
+        return Attribute.get(this.attributeId);
+    }
+
+    /**
      * @see org.efaps.ui.wicket.models.AbstractInstanceObject#hasInstanceManager()
      * @return false
      */
@@ -211,5 +235,19 @@ public abstract class UIAbstractCell extends AbstractInstanceObject
             ret = (Instance) rets.get(0).get(ReturnValues.VALUES);
         }
         return ret;
+    }
+
+    public void setComponent(final WebMarkupContainer _component) {
+        this.component = _component;
+    }
+
+    /**
+     * Getter method for instance variable {@link #component}.
+     *
+     * @return value of instance variable {@link #component}
+     */
+    public WebMarkupContainer getComponent()
+    {
+        return this.component;
     }
 }
