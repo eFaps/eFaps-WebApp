@@ -17,15 +17,12 @@
  * Revision:        $Rev$
  * Last Changed:    $Date$
  * Last Changed By: $Author$
- */
-
-/* 
+ */ /* 
  * @eFapsPackage  org.efaps.ui.wicket.pages.dialog
  * @eFapsUUID     49e42757-85bd-4dad-88d6-2a6012503f26
  * @eFapsRevision $Rev$
  * 
  */
-
 body {
   font-family: arial, verdana, helvetica, sans-serif;
   font-size: 8pt;
@@ -48,4 +45,20 @@ body {
 
 .eFapsWarnDialogButton2 {
   float: right;
+}
+
+.eFapsValidateFieldValuesTable {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.eFapsValidateFieldValuesTable td:first-child {
+  text-align: left;
+  font-weight: bold;
+  font-style: italic;
+  padding-right: 5px;
+}
+
+.eFapsValidateFieldValuesTable td {
+  text-align: left;
 }

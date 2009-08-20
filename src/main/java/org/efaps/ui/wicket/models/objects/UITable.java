@@ -392,8 +392,7 @@ public class UITable extends UIAbstractPageObject
     }
 
     /**
-     * @throws EFapsException
-     *
+     * @throws EFapsException on error
      */
     private void execute4Instance() throws EFapsException
     {
@@ -421,17 +420,17 @@ public class UITable extends UIAbstractPageObject
                         query.addSelect(field.getSelect());
                     } else if (field.getAttribute() != null) {
                         query.addAttribute(field.getAttribute());
-                        if (type != null) {
-                            attr = type.getAttribute(field.getAttribute());
-                        }
                     } else if (field.getPhrase() != null) {
                         query.addPhrase(field.getName(), field.getPhrase());
                     } else if (field.getExpression() != null) {
                         query.addExpression(field.getName(), field.getExpression());
                     }
+                    if (field.getSelectAlternateOID() != null) {
+                        query.addSelect(field.getSelectAlternateOID());
+                    }
                 }
-                if (field.getSelectAlternateOID() != null) {
-                    query.addSelect(field.getSelectAlternateOID());
+                if (field.getAttribute() != null && type != null) {
+                    attr = type.getAttribute(field.getAttribute());
                 }
                 SortDirection sortdirection = SortDirection.NONE;
                 if (field.getName().equals(this.sortKey)) {
@@ -793,7 +792,7 @@ public class UITable extends UIAbstractPageObject
      * @throws EFapsException on error
      */
     private Type getTypeFromEvent()
-            throws EFapsException
+        throws EFapsException
     {
         final List<EventDefinition> events = getEvents(EventType.UI_TABLE_EVALUATE);
         String typeName = null;
