@@ -491,7 +491,7 @@ public class UITable extends UIAbstractPageObject
                         value = _query.<Object>getSelect(field.getSelect());
                         attr = _query.getAttribute4Select(field.getSelect());
                     } else if (field.getPhrase() != null) {
-                        value = _query.getPhrase(field.getPhrase());
+                        value = _query.getPhrase(field.getName());
                     }
 
                     if (field.getSelectAlternateOID() != null) {
