@@ -113,18 +113,21 @@ public class MainPage extends AbstractMergePage
         this.add(new Label("welcome", DBProperties.getProperty("Logo.Welcome.Label")));
 
         try {
-            this.add(new Label("firstname", Context.getThreadContext().getPerson().getFirstName()));
-            this.add(new Label("lastname", Context.getThreadContext().getPerson().getLastName()));
+            final Context context = Context.getThreadContext();
+            this.add(new Label("firstname", context.getPerson().getFirstName()));
+            this.add(new Label("lastname", context.getPerson().getLastName()));
+            this.add(new Label("company", context.getCompany() == null ? "" : context.getCompany().getName()));
         } catch (final EFapsException e) {
             throw new RestartResponseException(new ErrorPage(e));
         }
 
-        this.add(new Label("version", DBProperties.getProperty("Logo.Version.Label")));
 
         // add the MainToolBar to the Page
         final MenuContainer menu = new MenuContainer("menu", new MenuItemModel(new UIMenuItem(UUID
                         .fromString("87001cc3-c45c-44de-b8f1-776df507f268"))));
         this.add(menu);
+
+        this.add(new Label("version", DBProperties.getProperty("Logo.Version.Label")));
 
         this.add(new InlineFrame(MainPage.IFRAME_WICKETID,
                                  PageMap.forName(MainPage.IFRAME_PAGEMAP_NAME), EmptyPage.class));
