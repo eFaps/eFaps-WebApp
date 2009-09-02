@@ -391,7 +391,8 @@ public class EFapsSession extends WebSession
                     Context.begin(this.userName, super.getLocale(), this.sessionAttributes, parameters, fileParams);
                     // set the locale in the context and in the session
                     setLocale(Context.getThreadContext().getLocale());
-
+                    request.getHttpServletRequest().getSession().setAttribute(UserAttributesSet.CONTEXTMAPKEY,
+                                                                 Context.getThreadContext().getUserAttributes());
                 }
             } catch (final EFapsException e) {
                 EFapsSession.LOG.error("could not initialise the context", e);
