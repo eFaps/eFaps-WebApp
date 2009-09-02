@@ -558,8 +558,11 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
             final List<FormPanel> panels = getFormPanels();
             for (final FormPanel panel : panels) {
                 for (final Entry<String, Label> entry : panel.getRequiredComponents().entrySet()) {
-                    final String[] values = (String[]) map.get(entry.getKey());
-                    final String value = values[0];
+                    String value = null;
+                    if (map.get(entry.getKey()) != null) {
+                        final String[] values = (String[]) map.get(entry.getKey());
+                        value = values[0];
+                    }
                     if (value == null || value.length() == 0) {
                         final Label label = entry.getValue();
                         label.add(new SimpleAttributeModifier("class", "eFapsFormLabelRequiredForce"));
