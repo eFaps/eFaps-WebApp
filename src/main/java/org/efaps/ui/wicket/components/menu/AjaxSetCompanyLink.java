@@ -20,29 +20,36 @@
 
 package org.efaps.ui.wicket.components.menu;
 
+import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow.PageCreator;
 import org.apache.wicket.model.IModel;
 
-import org.efaps.ui.wicket.components.modalwindow.ModalWindowAjaxPageCreator;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
+import org.efaps.ui.wicket.pages.company.CompanyPage;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
 
 /**
  * Class is used as a link inside the JSCookMenu that opens a modal window.
  *
- * @author jmox
+ * @author The eFasp Team
  * @version $Id:AjaxOpenModalComponent.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class AjaxOpenModalComponent extends AbstractMenuItemAjaxComponent
+public class AjaxSetCompanyLink  extends AbstractMenuItemAjaxComponent
 {
-
     /**
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * Must the main page be reloaded or not.
+     */
+    private boolean reload = false;
 
     /**
      * Constructor.
@@ -50,10 +57,10 @@ public class AjaxOpenModalComponent extends AbstractMenuItemAjaxComponent
      * @param _wicketId wicket id of this component
      * @param _model model for this component
      */
-    public AjaxOpenModalComponent(final String _wicketId, final IModel<UIMenuItem> _model)
+    public AjaxSetCompanyLink(final String _wicketId, final IModel<UIMenuItem> _model)
     {
         super(_wicketId, _model);
-        add(new AjaxOpenModalBehavior());
+        add(new OpenSetCompanyPageBehavior());
     }
 
     /**
@@ -64,7 +71,17 @@ public class AjaxOpenModalComponent extends AbstractMenuItemAjaxComponent
     @Override
     public String getJavaScript()
     {
-        return ((AjaxOpenModalBehavior) super.getBehaviors().get(0)).getJavaScript();
+        return ((OpenSetCompanyPageBehavior) super.getBehaviors().get(0)).getJavaScript();
+    }
+
+    /**
+     * Setter method for instance variable {@link #reload}.
+     *
+     * @param _reload value for instance variable {@link #reload}
+     */
+    public void setReload(final boolean _reload)
+    {
+        this.reload = _reload;
     }
 
     /**
@@ -72,7 +89,7 @@ public class AjaxOpenModalComponent extends AbstractMenuItemAjaxComponent
      *
      *
      */
-    public class AjaxOpenModalBehavior extends AjaxEventBehavior
+    public class OpenSetCompanyPageBehavior extends AjaxEventBehavior
     {
 
         /**
@@ -83,7 +100,7 @@ public class AjaxOpenModalComponent extends AbstractMenuItemAjaxComponent
         /**
          * Constructor.
          */
-        public AjaxOpenModalBehavior()
+        public OpenSetCompanyPageBehavior()
         {
             super("onclick");
         }
@@ -108,18 +125,41 @@ public class AjaxOpenModalComponent extends AbstractMenuItemAjaxComponent
         @Override
         protected void onEvent(final AjaxRequestTarget _target)
         {
-            ModalWindowContainer modal;
+            final ModalWindowContainer modal;
             if (getPage() instanceof MainPage) {
                 modal = ((MainPage) getPage()).getModal();
             } else {
                 modal = ((AbstractContentPage) getPage()).getModal();
             }
             modal.reset();
-            final ModalWindowAjaxPageCreator pageCreator = new ModalWindowAjaxPageCreator((UIMenuItem) super
-                            .getComponent().getDefaultModelObject(), modal);
-            modal.setPageCreator(pageCreator);
             modal.setInitialHeight(((UIMenuItem) getDefaultModelObject()).getWindowHeight());
             modal.setInitialWidth(((UIMenuItem) getDefaultModelObject()).getWindowWidth());
+
+            modal.setWindowClosedCallback(new ModalWindow.WindowClosedCallback() {
+
+                private static final long serialVersionUID = 1L;
+
+                public void onClose(final AjaxRequestTarget _target)
+                {
+                    if (AjaxSetCompanyLink.this.reload) {
+                        getRequestCycle().setResponsePage(getPage().getApplication().getHomePage());
+                    }
+                }
+
+            });
+
+            final PageCreator pageCreator = new ModalWindow.PageCreator() {
+
+                private static final long serialVersionUID = 1L;
+
+                public Page createPage()
+                {
+                    return new CompanyPage(modal, AjaxSetCompanyLink.this);
+                }
+
+            };
+            modal.setPageCreator(pageCreator);
+
             modal.show(_target);
         }
 

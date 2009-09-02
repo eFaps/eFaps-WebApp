@@ -165,6 +165,9 @@ public class MenuContainer extends AbstractParentMarkupContainer
             _menuItem.setURL(_menuItem.getReference());
             if (_menuItem.getReference().equals("/" + getSession().getApplication().getApplicationKey() + "/logout?")) {
                 this.add(new LogOutLink(getNewChildId(), model));
+            } else if (_menuItem.getReference().equals(
+                            "/" + getSession().getApplication().getApplicationKey() + "/setcompany?")) {
+                this.add(new AjaxSetCompanyLink(getNewChildId(), model));
             }
         }
         // add the children
