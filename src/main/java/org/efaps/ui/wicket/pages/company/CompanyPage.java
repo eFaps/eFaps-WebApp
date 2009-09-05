@@ -53,7 +53,9 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 import org.efaps.util.EFapsException;
 
 /**
- *
+ * Class renders the page that is used as a dialog to select the current
+ * company. On close of the page the current company in the context will
+ * be set and written to the user properties.
  *
  * @author The eFaps Team
  * @version $Id$
@@ -92,19 +94,29 @@ public class CompanyPage extends AbstractMergePage
 
         this.add(StaticHeaderContributor.forCss(CompanyPage.CSS));
 
-        this
-                        .add(new LabelComponent("title", DBProperties
-                                        .getProperty("org.efaps.ui.wicket.pages.company.title.Label")));
+        this.add(new LabelComponent("title",
+                                    DBProperties.getProperty("org.efaps.ui.wicket.pages.company.title.Label")));
 
         final Form<Object> form = new Form<Object>("form") {
             private static final long serialVersionUID = 1L;
 
+            /**
+             * Implemented only for API reason.
+             * @see org.apache.wicket.ajax.form.AjaxFormSubmitBehavior#onError(org.apache.wicket.ajax.AjaxRequestTarget)
+             * @param _target
+             */
             @Override
             protected void onSubmit()
             {
                 // nothing must be done
             }
 
+            /**
+             * Disable normal submit, because ajax is used.
+             *
+             * @see org.apache.wicket.markup.html.form.Form#onComponentTag(org.apache.wicket.markup.ComponentTag)
+             * @param _tag
+             */
             @Override
             protected void onComponentTag(final ComponentTag _tag)
             {
@@ -154,7 +166,7 @@ public class CompanyPage extends AbstractMergePage
     }
 
     /**
-     * Class to pass the companies.
+     * Class to pass the companies as a serializable Object.
      */
     private final class CompanyObject implements IClusterable
     {
@@ -181,7 +193,6 @@ public class CompanyPage extends AbstractMergePage
             this.id = ((Long) _company.getId()).toString();
             this.name = _company.getName();
         }
-
     }
 
     /**
@@ -194,7 +205,7 @@ public class CompanyPage extends AbstractMergePage
 
         /**
          * @param _wicketId wicket id of this component
-         * @param _form form this link sumbits
+         * @param _form form this link submits
          *
          */
         public AjaxSubmitLink(final String _wicketId, final Form<Object> _form)
@@ -204,12 +215,22 @@ public class CompanyPage extends AbstractMergePage
 
                 private static final long serialVersionUID = 1L;
 
+                /**
+                 * Implemented only for API reason.
+                 * @see org.apache.wicket.ajax.form.AjaxFormSubmitBehavior#onError(org.apache.wicket.ajax.AjaxRequestTarget)
+                 * @param _target
+                 */
                 @Override
                 protected void onError(final AjaxRequestTarget _target)
                 {
                     // Not used here
                 }
 
+                /**
+                 * Close the form and set the current company.
+                 * @see org.apache.wicket.ajax.form.AjaxFormSubmitBehavior#onSubmit(org.apache.wicket.ajax.AjaxRequestTarget)
+                 * @param _target
+                 */
                 @Override
                 protected void onSubmit(final AjaxRequestTarget _target)
                 {
@@ -248,6 +269,8 @@ public class CompanyPage extends AbstractMergePage
         }
 
         /**
+         * Close the form without reload.
+         *
          * @see org.apache.wicket.ajax.markup.html.AjaxLink#onClick(org.apache.wicket.ajax.AjaxRequestTarget)
          * @param _target request target
          */
@@ -258,5 +281,4 @@ public class CompanyPage extends AbstractMergePage
             CompanyPage.this.modal.close(_target);
         }
     }
-
 }
