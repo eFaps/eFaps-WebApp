@@ -34,6 +34,7 @@ import org.efaps.admin.ui.field.Field.Display;
 import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.autocomplete.AutoCompleteField;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
+import org.efaps.ui.wicket.components.editor.EditorPanel;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
 import org.efaps.ui.wicket.components.form.FormPanel;
 import org.efaps.ui.wicket.components.form.valuepicker.Value4Picker;
@@ -93,6 +94,11 @@ public class ValueCellPanel extends Panel
                                                        "DateTime".equals(uiFormCell.getTypeName()));
 
                 this.add(this.dateTextField);
+                this.add(new WebComponent("valuePicker").setVisible(false));
+            } else  if ((_formmodel.isCreateMode() || _formmodel.isEditMode())
+                            && ("FormatedString".equals(uiFormCell.getTypeName()))
+                            && uiFormCell.getDisplay().equals(Display.EDITABLE)) {
+                this.add(new EditorPanel("label", _model));
                 this.add(new WebComponent("valuePicker").setVisible(false));
             } else {
                 if (uiFormCell.isAutoComplete() && (_formmodel.isCreateMode() || _formmodel.isSearchMode())) {

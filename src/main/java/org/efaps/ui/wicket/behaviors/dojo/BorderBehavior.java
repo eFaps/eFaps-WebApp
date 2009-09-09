@@ -26,82 +26,90 @@ import org.apache.wicket.markup.ComponentTag;
 /**
  * Class renders a dojo border. It can be used to render a slipt between the
  * children of this container. BorderContainer operates in a choice of two
- * layout modes: <br>the design attribute may be set to "headline" (by default)
- * or "sidebar". With the "headline" layout, the top and bottom sections extend
- * the entire width of the box and the remaining regions are placed in the
- * middle. With the "sidebar" layout, the side panels take priority, extending
- * the full height of the box.
+ * layout modes: <br>
+ * the design attribute may be set to "headline" (by default) or "sidebar". With
+ * the "headline" layout, the top and bottom sections extend the entire width of
+ * the box and the remaining regions are placed in the middle. With the
+ * "sidebar" layout, the side panels take priority, extending the full height of
+ * the box.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public class BorderBehavior extends AbstractDojoBehavior {
-
-  /**
-   * Needed for serialization.
-   */
-  private static final long serialVersionUID = 1L;
-
-  /**
-   * Enum for the different Designs of a dojo BorderContainer.
-   */
-  public enum Design {
-    /** "headline" design. */
-    HEADLINE("headline"),
-    /** "sidebar" design. */
-    SIDEBAR("sidebar");
+public class BorderBehavior extends AbstractDojoBehavior
+{
 
     /**
-     * Stores the key of the Design.
+     * Needed for serialization.
      */
-    private final String key;
+    private static final long serialVersionUID = 1L;
 
     /**
-     * Private Constructor.
-     * @param _key Key
+     * Enum for the different Designs of a dojo BorderContainer.
      */
-    private Design(final String _key) {
-      this.key = _key;
+    public enum Design
+    {
+        /** "headline" design. */
+        HEADLINE("headline"),
+        /** "sidebar" design. */
+        SIDEBAR("sidebar");
+
+        /**
+         * Stores the key of the Design.
+         */
+        private final String key;
+
+        /**
+         * Private Constructor.
+         *
+         * @param _key Key
+         */
+        private Design(final String _key)
+        {
+            this.key = _key;
+        }
+
+        /**
+         * Getter method for instance variable {@link #key}.
+         *
+         * @return value of instance variable {@link #key}
+         */
+        public String getKey()
+        {
+            return this.key;
+        }
     }
 
     /**
-     * Getter method for instance variable {@link #key}.
+     * Stores the design of this BorderBehavior.
+     */
+    private final Design design;
+
+    /**
+     * Constructor.
      *
-     * @return value of instance variable {@link #key}
+     * @param _design Design for this BorderBehavior.
      */
-    public String getKey() {
-      return this.key;
+    public BorderBehavior(final Design _design)
+    {
+        this.design = _design;
     }
-  }
 
-  /**
-   * Stores the design of this BorderBehavior.
-   */
-  private final Design design;
-
-  /**
-   * Constructor.
-   *
-   * @param _design Design for this BorderBehavior.
-   */
-  public BorderBehavior(final Design _design) {
-    this.design = _design;
-  }
-
-  /**
-   * The tag of the related component must be set, so that a dojo
-   * BorderContainer will be rendered.
-   * @param _component  component this Behavior belongs to
-   * @param _tag        Tag to write to
-   */
-  @Override
-  public void onComponentTag(final Component _component,
-                             final ComponentTag _tag) {
-    super.onComponentTag(_component, _tag);
-    _tag.put("dojoType", "dijit.layout.BorderContainer");
-    _tag.put("design", this.design.getKey());
-    _tag.put("liveSplitters", "false");
-    _tag.put("gutters", "false");
-    _tag.put("class", "tundra eFapsBorderContainer");
-  }
+    /**
+     * The tag of the related component must be set, so that a dojo
+     * BorderContainer will be rendered.
+     *
+     * @param _component component this Behavior belongs to
+     * @param _tag Tag to write to
+     */
+    @Override
+    public void onComponentTag(final Component _component, final ComponentTag _tag)
+    {
+        super.onComponentTag(_component, _tag);
+        _tag.put("dojoType", "dijit.layout.BorderContainer");
+        _tag.put("design", this.design.getKey());
+        _tag.put("liveSplitters", "false");
+        _tag.put("gutters", "false");
+        _tag.put("class", "tundra eFapsBorderContainer");
+    }
 }

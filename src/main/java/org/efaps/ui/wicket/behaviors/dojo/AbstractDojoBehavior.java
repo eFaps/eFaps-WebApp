@@ -24,47 +24,46 @@ import org.apache.wicket.Component;
 import org.apache.wicket.behavior.AbstractBehavior;
 import org.apache.wicket.markup.html.IHeaderResponse;
 
-
 /**
  * This class renders the Links for the JavaScripts in the Head for Behaviors
  * using Dojo.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public abstract class AbstractDojoBehavior extends AbstractBehavior {
+public abstract class AbstractDojoBehavior extends AbstractBehavior
+{
 
-  /**
-   * Needed for serialization.
-   */
-  private static final long serialVersionUID = 1L;
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
+    /**
+     * Render the links for the head.
+     *
+     * @see org.apache.wicket.behavior.AbstractBehavior#renderHead(org.apache.wicket.markup.html.IHeaderResponse)
+     * @param _response resonse to add
+     */
+    @Override
+    public void renderHead(final IHeaderResponse _response)
+    {
+        super.renderHead(_response);
+        _response.renderString(DojoReference.getConfigJavaScript(DojoReference.JS_DOJO));
+        _response.renderString(DojoReference.getConfigJavaScript(DojoReference.JS_EFAPSDOJO));
+        _response.renderCSSReference(DojoReference.CSS_TUNDRA);
+    }
 
-  /**
-   * Render the links for the head.
-   * @see org.apache.wicket.behavior.AbstractBehavior#renderHead(
-   *  org.apache.wicket.markup.html.IHeaderResponse)
-   * @param _response resonse to add
-   */
-  @Override
-  public void renderHead(final IHeaderResponse _response) {
-    super.renderHead(_response);
-    _response.renderString(DojoReference
-        .getConfigJavaScript(DojoReference.JS_DOJO));
-    _response.renderString(DojoReference
-        .getConfigJavaScript(DojoReference.JS_EFAPSDOJO));
-    _response.renderCSSReference(DojoReference.CSS_TUNDRA);
-  }
-
-  /**
-   * All components using dojo must render the id of the component.
-   * @see org.apache.wicket.behavior.AbstractBehavior#beforeRender(
-   * org.apache.wicket.Component)
-   * @param _component component
-   */
-  @Override
-  public void beforeRender(final Component _component) {
-    super.beforeRender(_component);
-    _component.setOutputMarkupId(true);
-  }
+    /**
+     * All components using dojo must render the id of the component.
+     *
+     * @see org.apache.wicket.behavior.AbstractBehavior#beforeRender(org.apache.wicket.Component)
+     * @param _component component
+     */
+    @Override
+    public void beforeRender(final Component _component)
+    {
+        super.beforeRender(_component);
+        _component.setOutputMarkupId(true);
+    }
 }

@@ -32,65 +32,70 @@ import org.apache.wicket.markup.html.resources.JavascriptResourceReference;
  * This class provides static access to the ResourceReferences needed to use the
  * DojoToolKit.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public final class DojoReference {
+public final class DojoReference
+{
 
-  /**
-   * Reference to the stylesheet.
-   */
-  public static final ResourceReference CSS_TUNDRA
-    = new CompressedResourceReference(DojoReference.class,
-          "dijit/themes/tundra/tundra.css");
+    /**
+     * Reference to the stylesheet.
+     */
+    public static final ResourceReference CSS_TUNDRA = new CompressedResourceReference(DojoReference.class,
+                    "dijit/themes/tundra/tundra.css");
 
-  /**
-   * Reference to the JavaScript.
-   */
-  public static final JavascriptResourceReference JS_DOJO =
-      new JavascriptResourceReference(DojoReference.class, "dojo/dojo.js");
+    /**
+     * Reference to the JavaScript.
+     */
+    public static final JavascriptResourceReference JS_DOJO = new JavascriptResourceReference(DojoReference.class,
+                    "dojo/dojo.js");
 
-  /**
-   * Reference to the JavaScript.
-   */
-  public static final JavascriptResourceReference JS_EFAPSDOJO =
-      new JavascriptResourceReference(DojoReference.class, "dojo/eFapsDojo.js");
+    /**
+     * Reference to the JavaScript.
+     */
+    public static final JavascriptResourceReference JS_EFAPSDOJO = new JavascriptResourceReference(DojoReference.class,
+                    "dojo/eFapsDojo.js");
 
-  /**
+    /**
    *
    */
-  private DojoReference() {
-  }
+    private DojoReference()
+    {
+    }
 
-  /**
-   * Method to get a HeaderContibuter for addinf djo to a webpage.
-   * @return HeaderContributor
-   */
-  public static HeaderContributor getHeaderContributerforDojo() {
-    return new HeaderContributor(new IHeaderContributor() {
+    /**
+     * Method to get a HeaderContibuter for addinf djo to a webpage.
+     *
+     * @return HeaderContributor
+     */
+    public static HeaderContributor getHeaderContributerforDojo()
+    {
+        return new HeaderContributor(new IHeaderContributor() {
 
-      private static final long serialVersionUID = 1L;
+            private static final long serialVersionUID = 1L;
 
-      public void renderHead(final IHeaderResponse _response) {
-        _response.renderString(getConfigJavaScript(JS_DOJO));
-      }
-    });
-  }
+            public void renderHead(final IHeaderResponse _response)
+            {
+                _response.renderString(getConfigJavaScript(DojoReference.JS_DOJO));
+            }
+        });
+    }
 
-  /**
-   * method to create the tag for linking JavaScript.
-   *
-   * @param _reference ResourceReference to be linked
-   * @return scriptLink width extension djConfig="parseOnLoad:true"
-   */
-  public static String getConfigJavaScript(final ResourceReference _reference) {
-    final StringBuilder ret = new StringBuilder();
-    ret.append("<script type=\"text/javascript\" ");
-    ret.append("src=\"");
-    ret.append(RequestCycle.get().urlFor(_reference));
-    ret.append("\"");
-    ret.append(" djConfig=\"parseOnLoad: true\"");
-    ret.append("></script>\n");
-    return ret.toString();
-  }
+    /**
+     * method to create the tag for linking JavaScript.
+     *
+     * @param _reference ResourceReference to be linked
+     * @return scriptLink width extension djConfig="parseOnLoad:true"
+     */
+    public static String getConfigJavaScript(final ResourceReference _reference)
+    {
+        final StringBuilder ret = new StringBuilder();
+        ret.append("<script type=\"text/javascript\" ");
+        ret.append("src=\"");
+        ret.append(RequestCycle.get().urlFor(_reference));
+        ret.append("\"");
+        ret.append(" djConfig=\"parseOnLoad: true\"");
+        ret.append("></script>\n");
+        return ret.toString();
+    }
 }

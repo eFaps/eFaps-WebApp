@@ -84,6 +84,26 @@ public class FormPage extends AbstractContentPage
     }
 
     /**
+     * @param _commandUUID UUID of the command
+     * @param _oid oid of the instance
+     */
+    public FormPage(final UUID _commandUUID, final String _oid)
+    {
+        this(_commandUUID, _oid, (ModalWindowContainer) null);
+    }
+
+    /**
+     * @param _commandUUID UUID of the command
+     * @param _oid oid of the instance
+     * @param _modalWindow modal window of this page
+     */
+    public FormPage(final UUID _commandUUID, final String _oid, final ModalWindowContainer _modalWindow)
+    {
+        super(new FormModel(new UIForm(_commandUUID, _oid)), _modalWindow);
+        this.addComponents();
+    }
+
+    /**
      *  @param _model model for the page
      * @param _modalWindow modal window
      */
@@ -114,26 +134,6 @@ public class FormPage extends AbstractContentPage
     public FormPage(final IPageMap _pageMap, final UUID _commandUUID, final String _oid, final String _openerId)
     {
         super(_pageMap, new FormModel(new UIForm(_commandUUID, _oid, _openerId)), null);
-        this.addComponents();
-    }
-
-    /**
-     * @param _commandUUID UUID of the command
-     * @param _oid oid of the instance
-     */
-    public FormPage(final UUID _commandUUID, final String _oid)
-    {
-        this(_commandUUID, _oid, (ModalWindowContainer) null);
-    }
-
-    /**
-     * @param _commandUUID UUID of the command
-     * @param _oid oid of the instance
-     * @param _modalWindow modal window of this page
-     */
-    public FormPage(final UUID _commandUUID, final String _oid, final ModalWindowContainer _modalWindow)
-    {
-        super(new FormModel(new UIForm(_commandUUID, _oid)), _modalWindow);
         this.addComponents();
     }
 
