@@ -20,6 +20,7 @@
 
 package org.efaps.ui.wicket.components.form.cell;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.PageMap;
 import org.apache.wicket.datetime.StyleDateConverter;
 import org.apache.wicket.markup.html.WebComponent;
@@ -31,6 +32,7 @@ import org.apache.wicket.model.Model;
 
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.admin.ui.field.Field.Display;
+import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
 import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.autocomplete.AutoCompleteField;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
@@ -110,11 +112,13 @@ public class ValueCellPanel extends Panel
                         value.setValue(_formmodel.isSearchMode() ? "*" : "0", _formmodel.isSearchMode() ? "*" : "0");
                         this.add(value);
                         this.add(new ValuePicker("valuePicker", _model, value));
-
                     } else {
-                        this.add(new LabelComponent("label", new Model<String>(uiFormCell.getCellValue()))
-                                        .setOutputMarkupId(true));
-
+                        final Component label = new LabelComponent("label",
+                                        new Model<String>(uiFormCell.getCellValue())).setOutputMarkupId(true);
+                        this.add(label);
+                        if (uiFormCell.isFieldUpdate()) {
+                            label.add(new AjaxFieldUpdateBehavior(uiFormCell.getFieldUpdateEvent(), _model));
+                        }
                         this.add(new WebComponent("valuePicker").setVisible(false));
                     }
                 }
