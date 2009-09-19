@@ -134,7 +134,7 @@ public class CellPanel extends Panel
             } else {
                 final LabelComponent label = new LabelComponent("label", cellmodel.getCellValue());
                 if (_uitable.isCreateMode()) {
-                    label.add(new SetSelectedRowBehavior());
+                    label.add(new SetSelectedRowBehavior(cellmodel.getName()));
                     if (cellmodel.isFieldUpdate()) {
                         label.add(new AjaxFieldUpdateBehavior(cellmodel.getFieldUpdateEvent(), _model));
                     }

@@ -111,7 +111,7 @@ public class AutoCompleteField extends AutoCompleteTextField<Map<String, String>
         add(StaticHeaderContributor.forCss(AutoCompleteField.CSS));
 
         if (_selectRow) {
-            this.add(new SetSelectedRowBehavior());
+            this.add(new SetSelectedRowBehavior(this.fieldName));
         }
         final UITableCell uiObject = (UITableCell) this.model.getObject();
         if (uiObject.isFieldUpdate()) {

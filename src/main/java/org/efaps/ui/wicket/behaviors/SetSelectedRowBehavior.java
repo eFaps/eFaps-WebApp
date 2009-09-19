@@ -38,6 +38,19 @@ public class SetSelectedRowBehavior extends AbstractBehavior
     private static final long serialVersionUID = 1L;
 
     /**
+     * Name of the field this behavior belong to.
+     */
+    private final String name;
+
+    /**
+     * @param name
+     */
+    public SetSelectedRowBehavior(final String _name)
+    {
+        this.name = _name;
+    }
+
+    /**
      * @see org.apache.wicket.behavior.AbstractBehavior#onComponentTag(org.apache.wicket.Component, org.apache.wicket.markup.ComponentTag)
      * @param _component
      * @param _tag
@@ -57,10 +70,10 @@ public class SetSelectedRowBehavior extends AbstractBehavior
             .append(" if (c[i]==this) {")
             .append(" p = i; break;}}")
             .append(" var s=document.getElementsByName('eFapsRowSelected');")
-            .append(" for (var i = 0; i < c.length; i++) {")
+            .append(" for (var i = 0; i < s.length; i++) {")
             .append(" s[i].value='';")
             .append(" }")
-            .append(" s[p].value='selected';");
+            .append(" s[p].value='").append(this.name).append("';");
         return ret.toString();
     }
 

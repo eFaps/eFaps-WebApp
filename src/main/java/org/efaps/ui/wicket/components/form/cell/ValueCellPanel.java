@@ -20,9 +20,12 @@
 
 package org.efaps.ui.wicket.components.form.cell;
 
+import java.util.Iterator;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.PageMap;
 import org.apache.wicket.datetime.StyleDateConverter;
+import org.apache.wicket.datetime.markup.html.form.DateTextField;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.link.PopupSettings;
@@ -94,7 +97,17 @@ public class ValueCellPanel extends Panel
                 this.dateTextField = new DateTimePanel("label", uiFormCell.getCompareValue(),
                                                        new StyleDateConverter(false), uiFormCell.getName(),
                                                        "DateTime".equals(uiFormCell.getTypeName()));
-
+                if (uiFormCell.isFieldUpdate()) {
+                    //the update behavior must be added to the inner text field
+                    final Iterator<? extends Component> iter = this.dateTextField.iterator();
+                    while (iter.hasNext()) {
+                        final Component comp = iter.next();
+                        if (comp instanceof DateTextField) {
+                            comp.add(new AjaxFieldUpdateBehavior(uiFormCell.getFieldUpdateEvent(), _model));
+                            break;
+                        }
+                    }
+                }
                 this.add(this.dateTextField);
                 this.add(new WebComponent("valuePicker").setVisible(false));
             } else  if ((_formmodel.isCreateMode() || _formmodel.isEditMode())
