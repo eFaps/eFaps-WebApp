@@ -64,7 +64,7 @@ public final class DojoReference
     }
 
     /**
-     * Method to get a HeaderContibuter for addinf djo to a webpage.
+     * Method to get a HeaderContibuter for adding dojo to a webpage.
      *
      * @return HeaderContributor
      */
@@ -77,6 +77,25 @@ public final class DojoReference
             public void renderHead(final IHeaderResponse _response)
             {
                 _response.renderString(getConfigJavaScript(DojoReference.JS_DOJO));
+            }
+        });
+    }
+
+    /**
+     * Method to get a HeaderContibuter for adding efaps specific part of dojo
+     * to a webpage.
+     *
+     * @return HeaderContributor
+     */
+    public static HeaderContributor getHeaderContributerforEfapsDojo()
+    {
+        return new HeaderContributor(new IHeaderContributor() {
+
+            private static final long serialVersionUID = 1L;
+
+            public void renderHead(final IHeaderResponse _response)
+            {
+                _response.renderString(getConfigJavaScript(DojoReference.JS_EFAPSDOJO));
             }
         });
     }

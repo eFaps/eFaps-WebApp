@@ -21,6 +21,7 @@
 package org.efaps.ui.wicket.components.editor;
 
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Page;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebComponent;
@@ -28,6 +29,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 
+import org.efaps.ui.wicket.behaviors.dojo.DojoReference;
 import org.efaps.ui.wicket.behaviors.dojo.EditorBehavior;
 import org.efaps.ui.wicket.models.cell.UIFormCell;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
@@ -44,8 +46,8 @@ public class EditorPanel extends Panel
     private static final long serialVersionUID = 1L;
 
     /**
-     * @param _wicketId
-     * @param _model
+     * @param _wicketId     wicketID for this component
+     * @param _model        model for this componet
      */
     public EditorPanel(final String _wicketId, final IModel<UIFormCell> _model)
     {
@@ -112,7 +114,21 @@ public class EditorPanel extends Panel
     @Override
     protected void onBeforeRender()
     {
-        ((AbstractContentPage) getPage()).getBody().add(new AttributeModifier("class", true, new Model("tundra")));
+        ((AbstractContentPage) getPage()).getBody().add(
+                        new AttributeModifier("class", true, new Model<String>("tundra")));
         super.onBeforeRender();
+    }
+
+    /**
+     * Prepares a page so that it is able top render this editor correctly,
+     * even when called via ajax.
+     *
+     * @param _page Page the dojo is added to
+     */
+    public static void prepare(final Page _page)
+    {
+        _page.add(DojoReference.getHeaderContributerforDojo());
+        _page.add(DojoReference.getHeaderContributerforEfapsDojo());
+        ((AbstractContentPage) _page).getBody().add(new AttributeModifier("class", true, new Model<String>("tundra")));
     }
 }

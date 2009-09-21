@@ -32,6 +32,7 @@ import org.apache.wicket.model.IModel;
 
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.classification.ClassificationPathPanel;
+import org.efaps.ui.wicket.components.editor.EditorPanel;
 import org.efaps.ui.wicket.components.form.FormPanel;
 import org.efaps.ui.wicket.components.heading.HeadingPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
@@ -173,7 +174,14 @@ public class FormPage extends AbstractContentPage
         if (!_uiForm.isInitialized()) {
             _uiForm.execute();
         }
-
+        // in case of classification the different parts of the form a loaded via ajax, that leads
+        // to problems on parsing the dojo elements (EditorPanel) to prevent this the dojo
+        // scripts are loaded by default. Thats not the optimum, but normally the scripts are
+        // already in the cache of the browser
+        // TODO Is there a better way?
+        if (_uiForm.isClassified() && _uiForm.isEditMode() || _uiForm.isCreateMode()) {
+            EditorPanel.prepare(_page);
+        }
         int i = 0;
         final RepeatingView elementRepeater = new RepeatingView("elementRepeater");
         _form.add(elementRepeater);

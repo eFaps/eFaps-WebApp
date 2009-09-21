@@ -294,6 +294,8 @@ public class ClassificationPathPanel extends Panel
                 }
                 FormPage.updateFormContainer(page, form, uiform);
                 _target.addComponent(form);
+                //TODO this should not be done always, needed for the editor so that it is loaded correctly
+                _target.appendJavascript("dojo.parser.parse(document.body)");
             }
         }
 
