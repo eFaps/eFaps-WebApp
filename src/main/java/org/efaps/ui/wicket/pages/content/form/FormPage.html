@@ -32,10 +32,28 @@
     </form>
     <span wicket:id="selectscript">
       <script type="text/javascript">
-        var inp = document.getElementById('eFapsContentDiv').getElementsByTagName("input");
-        if(inp!=null){
-          inp[0].focus();
+        function setToFirstControl()  {
+          var bFound = false;
+          for (f=0; f < document.forms.length; f++) {
+            for(i=0; i < document.forms[f].length; i++) {
+              if (document.forms[f][i].type != "hidden") {
+                if (document.forms[f][i].disabled != true) {
+                  try {
+                     document.forms[f][i].focus();
+                     var bFound = true;
+                  }
+                  catch(er) {
+                  }
+                }
+              }
+              if (bFound == true)
+                break;
+            }
+            if (bFound == true)
+              break;
+          }
         }
+        setToFirstControl();
       </script>
     </span>
 </wicket:extend>

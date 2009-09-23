@@ -179,7 +179,7 @@ public class FormPage extends AbstractContentPage
         // scripts are loaded by default. Thats not the optimum, but normally the scripts are
         // already in the cache of the browser
         // TODO Is there a better way?
-        if (_uiForm.isClassified() && _uiForm.isEditMode() || _uiForm.isCreateMode()) {
+        if (_uiForm.isClassified() && (_uiForm.isEditMode() || _uiForm.isCreateMode())) {
             EditorPanel.prepare(_page);
         }
         int i = 0;
