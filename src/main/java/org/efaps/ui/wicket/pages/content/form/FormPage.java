@@ -41,6 +41,7 @@ import org.efaps.ui.wicket.components.table.header.HeaderPanel;
 import org.efaps.ui.wicket.models.ClassificationModel;
 import org.efaps.ui.wicket.models.FormModel;
 import org.efaps.ui.wicket.models.TableModel;
+import org.efaps.ui.wicket.models.cell.UIHiddenCell;
 import org.efaps.ui.wicket.models.objects.UIClassification;
 import org.efaps.ui.wicket.models.objects.UIFieldForm;
 import org.efaps.ui.wicket.models.objects.UIFieldTable;
@@ -181,6 +182,10 @@ public class FormPage extends AbstractContentPage
         // TODO Is there a better way?
         if (_uiForm.isClassified() && (_uiForm.isEditMode() || _uiForm.isCreateMode())) {
             EditorPanel.prepare(_page);
+        }
+        // the hidden cells must be marked as not added yet.
+        for (final UIHiddenCell cell : _uiForm.getHiddenCells()) {
+            cell.setAdded(false);
         }
         int i = 0;
         final RepeatingView elementRepeater = new RepeatingView("elementRepeater");
