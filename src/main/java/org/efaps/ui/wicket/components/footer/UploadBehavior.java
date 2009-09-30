@@ -20,6 +20,8 @@
 
 package org.efaps.ui.wicket.components.footer;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -31,15 +33,20 @@ import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.Session;
 import org.apache.wicket.behavior.AbstractBehavior;
 import org.apache.wicket.behavior.StringHeaderContributor;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.util.string.JavascriptUtils;
 
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractCommand.Target;
+import org.efaps.db.Context;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.Opener;
 import org.efaps.ui.wicket.components.FileUploadListener;
+import org.efaps.ui.wicket.components.FormContainer;
+import org.efaps.ui.wicket.components.date.DateTimePanel;
+import org.efaps.ui.wicket.components.form.FormPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.AbstractModel;
 import org.efaps.ui.wicket.models.TableModel;
@@ -103,7 +110,7 @@ public class UploadBehavior extends AbstractBehavior implements FileUploadListen
     public void onSubmit()
     {
         final UIForm uiForm = (UIForm) this.component.getPage().getDefaultModelObject();
-
+        convertDateFieldValues();
         try {
             executeEvents(uiForm.getNewValues());
         } catch (final EFapsException e) {
@@ -112,14 +119,12 @@ public class UploadBehavior extends AbstractBehavior implements FileUploadListen
 
         final StringBuilder script = new StringBuilder();
         if (uiForm.getTarget() == Target.MODAL) {
-
             script.append(JavascriptUtils.SCRIPT_OPEN_TAG)
                 .append("  window.onload = function() {")
                 .append(this.modalWindow.getReloadJavaScript())
                 .append(ModalWindowContainer.getCloseJavacript())
                 .append("}")
                 .append(JavascriptUtils.SCRIPT_CLOSE_TAG);
-
         } else {
             final AbstractModel<?> openermodel = (AbstractModel<?>) ((EFapsSession) Session.get()).getOpener(
                             uiForm.getOpenerId()).getModel();
@@ -136,12 +141,66 @@ public class UploadBehavior extends AbstractBehavior implements FileUploadListen
             final CharSequence url = this.component.urlFor(PageMap.forName(MainPage.IFRAME_PAGEMAP_NAME), clazz,
                             parameters);
 
-            script.append(JavascriptUtils.SCRIPT_OPEN_TAG).append("  window.onload = function() {").append(
-                            " opener.location.href = '").append(url).append("'; self.close();").append(
-                            "  top.window.close();}").append(JavascriptUtils.SCRIPT_CLOSE_TAG);
-
+            script.append(JavascriptUtils.SCRIPT_OPEN_TAG)
+                .append("  window.onload = function() {")
+                .append(" opener.location.href = '").append(url).append("'; self.close();")
+                .append("  top.window.close();}")
+                .append(JavascriptUtils.SCRIPT_CLOSE_TAG);
         }
         this.component.getRequestCycle().getResponsePage().add(new StringHeaderContributor(script.toString()));
+    }
+
+    /**
+     * Method used to convert the date value from the ui in date values for
+     * eFaps.
+     * @throws EFapsException
+     */
+    private void convertDateFieldValues()
+    {
+        final List<FormPanel> formpl = getFormPanels();
+        for (final FormPanel panel : formpl) {
+            for (final DateTimePanel datepicker : panel.getDateComponents()) {
+                Map<String, String[]> map = null;
+                try {
+                    map = Context.getThreadContext().getParameters();
+                } catch (final EFapsException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                if (map.containsKey(datepicker.getDateFieldName())) {
+                    final String[] date = map.get(datepicker.getDateFieldName());
+                    final String[] hour = map.get(datepicker.getHourFieldName());
+                    final String[] minute = map.get(datepicker.getMinuteFieldName());
+                    final String[] ampm = map.get(datepicker.getAmPmFieldName());
+                    map.put(datepicker.getFieldName(),
+                            new String[] {datepicker.getDateAsString(date, hour, minute, ampm)});
+                }
+            }
+        }
+    }
+
+    /**
+     * Method to get the FormPanel of this Page.
+     *
+     * @return FormPanel
+     */
+    private List<FormPanel> getFormPanels()
+    {
+        final List<FormPanel> ret = new ArrayList<FormPanel>();
+        final Iterator<?> iterator = ((FormContainer) this.component).iterator();
+        while (iterator.hasNext()) {
+            final Object object = iterator.next();
+            if (object instanceof WebMarkupContainer) {
+                final Iterator<?> iterator2 = ((WebMarkupContainer) object).iterator();
+                while (iterator2.hasNext()) {
+                    final Object object2 = iterator2.next();
+                    if (object2 instanceof FormPanel) {
+                        ret.add((FormPanel) object2);
+                    }
+                }
+            }
+        }
+        return ret;
     }
 
     /**
