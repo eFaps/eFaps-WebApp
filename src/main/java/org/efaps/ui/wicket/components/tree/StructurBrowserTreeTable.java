@@ -27,6 +27,7 @@ import javax.swing.tree.TreeNode;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.Page;
+import org.apache.wicket.PageMap;
 import org.apache.wicket.ResourceReference;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -48,6 +49,7 @@ import org.efaps.ui.wicket.behaviors.AbstractAjaxCallBackBehavior;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 import org.efaps.util.EFapsException;
@@ -367,8 +369,8 @@ public class StructurBrowserTreeTable extends TreeTable
                     if (model.getTarget() == org.efaps.admin.ui.AbstractCommand.Target.POPUP) {
                         page = new ContentContainerPage(menu.getUUID(), model.getInstanceKey());
                     } else {
-                        page = new ContentContainerPage(getPage().getPageMap(), menu.getUUID(), model
-                                        .getInstanceKey(), true);
+                        page = new ContentContainerPage(PageMap.forName(MainPage.IFRAME_PAGEMAP_NAME), menu.getUUID(),
+                                        model.getInstanceKey(), true);
                     }
                 } catch (final EFapsException e) {
                     page = new ErrorPage(e);
