@@ -36,61 +36,69 @@ import org.efaps.ui.wicket.util.MimeTypes;
  * @author jmox
  * @version $Id$
  */
-public class FileRequestTarget implements IRequestTarget {
+public class FileRequestTarget implements IRequestTarget
+{
 
-  /**
-   * Store the file.
-   */
-  private final File file;
+    /**
+     * Store the file.
+     */
+    private final File file;
 
-  /**
-   * Store the mime type.
-   */
-  private final MimeTypes mime;
+    /**
+     * Store the mime type.
+     */
+    private final MimeTypes mime;
 
-  /**
-   * Constructor.
-   *
-   * @param _file   File for this request
-   */
-  public FileRequestTarget(final File _file) {
-    this.file = _file;
-    this.mime = evaluateMimeType();
-  }
-
-  /**
-   * Method to evaluate the mime type.
-   *
-   * @return  MimeType
-   */
-  private MimeTypes evaluateMimeType() {
-    final String name = this.file.getName();
-    final String end = name.substring(name.lastIndexOf(".") + 1);
-    return MimeTypes.getMimeTypeByEnding(end);
-  }
-
-  /**
-   * Not needed here.
-   * @param _arg RequestCycle
-   */
-  public void detach(final RequestCycle _arg) {
-    // not needed here
-  }
-
-  /**
-   * Respond to the request.
-   * @param _requestCycle RequestCycle
-   */
-  public void respond(final RequestCycle _requestCycle) {
-    try {
-      final InputStream input = new FileInputStream(this.file);
-      final WebResponse response = (WebResponse) _requestCycle.getResponse();
-      response.setAttachmentHeader(this.file.getName());
-      response.setContentType(this.mime.getContentType());
-      response.setAjax(false);
-      Streams.copy(input, response.getOutputStream());
-    } catch (final IOException e) {
-      throw new RuntimeException(e);
+    /**
+     * Constructor.
+     *
+     * @param _file File for this request
+     */
+    public FileRequestTarget(final File _file)
+    {
+        this.file = _file;
+        this.mime = evaluateMimeType();
     }
-  }
+
+    /**
+     * Method to evaluate the mime type.
+     *
+     * @return MimeType
+     */
+    private MimeTypes evaluateMimeType()
+    {
+        final String name = this.file.getName();
+        final String end = name.substring(name.lastIndexOf(".") + 1);
+        final MimeTypes mtype = MimeTypes.getMimeTypeByEnding(end);
+        return mtype == null  ? MimeTypes.TXT : mtype;
+    }
+
+    /**
+     * Not needed here.
+     *
+     * @param _arg RequestCycle
+     */
+    public void detach(final RequestCycle _arg)
+    {
+        // not needed here
+    }
+
+    /**
+     * Respond to the request.
+     *
+     * @param _requestCycle RequestCycle
+     */
+    public void respond(final RequestCycle _requestCycle)
+    {
+        try {
+            final InputStream input = new FileInputStream(this.file);
+            final WebResponse response = (WebResponse) _requestCycle.getResponse();
+            response.setAttachmentHeader(this.file.getName());
+            response.setContentType(this.mime.getContentType());
+            response.setAjax(false);
+            Streams.copy(input, response.getOutputStream());
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

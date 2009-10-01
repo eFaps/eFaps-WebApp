@@ -26,77 +26,86 @@ import java.util.Map;
 /**
  * This enum contains the MimesTypes.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public enum MimeTypes {
-  /** text format. */
-  TXT("txt", "text/plain"),
-  /** pdf format. */
-  PDF("pdf", "application/pdf"),
-  /** xml format. */
-  XML("xml", "text/xml");
-
-  /**
-   * Stores the type of the content.
-   */
-  private final String contentType;
-
-  /**
-   * Stores the ending.
-   */
-  private final String ending;
-
-  /**
-   * Private Constructor.
-   *
-   * @param _ending         ending
-   * @param _contentType    content type
-   */
-  private MimeTypes(final String _ending, final String _contentType) {
-    this.ending = _ending;
-    this.contentType = _contentType;
-    Mapper.ENDING2MIMETYPE.put(_ending, this);
-  }
-
-  /**
-   * Method to get a MimeType by its ending.
-   *
-   * @param _ending   ending the Mimetye is returned
-   * @return  MimeType
-   */
-  public static MimeTypes getMimeTypeByEnding(final String _ending) {
-    return Mapper.ENDING2MIMETYPE.get(_ending);
-  }
-
-  /**
-   * Getter method for instance variable {@link #ending}.
-   *
-   * @return value of instance variable {@link #ending}
-   */
-  public String getEnding() {
-    return this.ending;
-  }
-
-  /**
-   * Getter method for instance variable {@link #contentType}.
-   *
-   * @return value of instance variable {@link #contentType}
-   */
-  public String getContentType() {
-    return this.contentType;
-  }
-
-  /**
-   * Mapper Class. Needed because an enum can not contain static maps.
-   *
-   */
-  private static class Mapper {
+public enum MimeTypes
+{
+    /** ODT. */
+    ODT("odt", "application/vnd.oasis.opendocument.text"),
+    /** ODS. */
+    ODS("ods", "application/vnd.oasis.opendocument.spreadsheet"),
+    /** text format. */
+    TXT("txt", "text/plain"),
+    /** pdf format. */
+    PDF("pdf", "application/pdf"),
+    /** xml format. */
+    XML("xml", "text/xml");
 
     /**
-     * Mapping ending to MimeType.
+     * Stores the type of the content.
      */
-    private static final Map<String, MimeTypes> ENDING2MIMETYPE
-                                            = new HashMap<String, MimeTypes>();
-  }
+    private final String contentType;
+
+    /**
+     * Stores the ending.
+     */
+    private final String ending;
+
+    /**
+     * Private Constructor.
+     *
+     * @param _ending ending
+     * @param _contentType content type
+     */
+    private MimeTypes(final String _ending, final String _contentType)
+    {
+        this.ending = _ending;
+        this.contentType = _contentType;
+        Mapper.ENDING2MIMETYPE.put(_ending, this);
+    }
+
+    /**
+     * Method to get a MimeType by its ending.
+     *
+     * @param _ending ending the Mimetye is returned
+     * @return MimeType
+     */
+    public static MimeTypes getMimeTypeByEnding(final String _ending)
+    {
+        return Mapper.ENDING2MIMETYPE.get(_ending);
+    }
+
+    /**
+     * Getter method for instance variable {@link #ending}.
+     *
+     * @return value of instance variable {@link #ending}
+     */
+    public String getEnding()
+    {
+        return this.ending;
+    }
+
+    /**
+     * Getter method for instance variable {@link #contentType}.
+     *
+     * @return value of instance variable {@link #contentType}
+     */
+    public String getContentType()
+    {
+        return this.contentType;
+    }
+
+    /**
+     * Mapper Class. Needed because an enum can not contain static maps.
+     *
+     */
+    private static class Mapper
+    {
+
+        /**
+         * Mapping ending to MimeType.
+         */
+        private static final Map<String, MimeTypes> ENDING2MIMETYPE = new HashMap<String, MimeTypes>();
+    }
 }
