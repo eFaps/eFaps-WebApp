@@ -68,6 +68,7 @@ public class EditorPanel extends Panel
             {
                 super.onComponentTag(_tag);
                 _tag.put("name", ((UIFormCell) super.getDefaultModelObject()).getName());
+                _tag.put("style", "display:none");
             }
 
             @Override

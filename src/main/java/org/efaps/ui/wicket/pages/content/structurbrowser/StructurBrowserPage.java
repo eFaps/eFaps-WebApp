@@ -31,8 +31,10 @@ import org.efaps.ui.wicket.components.tree.StructurBrowserTreeTablePanel;
 import org.efaps.ui.wicket.models.StructurBrowserModel;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
+import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
+import org.efaps.util.EFapsException;
 
 /**
  * Class renders a page containing a structure browser.
@@ -60,8 +62,9 @@ public class StructurBrowserPage extends AbstractContentPage
      * opener.
      *
      * @param _parameters PageParameters
+     * @throws EFapsException on error
      */
-    public StructurBrowserPage(final PageParameters _parameters)
+    public StructurBrowserPage(final PageParameters _parameters) throws EFapsException
     {
         this(new StructurBrowserModel(new UIStructurBrowser(_parameters)));
     }
@@ -78,8 +81,9 @@ public class StructurBrowserPage extends AbstractContentPage
     /**
      * @param _commandUUID UUID of the calling command
      * @param _oid oid
+     * @throws EFapsException on error
      */
-    public StructurBrowserPage(final UUID _commandUUID, final String _oid)
+    public StructurBrowserPage(final UUID _commandUUID, final String _oid) throws EFapsException
     {
         super(new StructurBrowserModel(new UIStructurBrowser(_commandUUID, _oid)));
         this.addComponents();
@@ -89,8 +93,10 @@ public class StructurBrowserPage extends AbstractContentPage
      * @param _pageMap pagemap
      * @param _commandUUID UUID of the calling command
      * @param _oid oid
+     * @throws EFapsException on error
      */
     public StructurBrowserPage(final IPageMap _pageMap, final UUID _commandUUID, final String _oid)
+        throws EFapsException
     {
         super(_pageMap, new StructurBrowserModel(new UIStructurBrowser(_commandUUID, _oid)), null);
         this.addComponents();
@@ -111,7 +117,7 @@ public class StructurBrowserPage extends AbstractContentPage
         final FormContainer form = new FormContainer("form");
         this.add(form);
         super.addComponents(form);
-
-        form.add(new StructurBrowserTreeTablePanel("structurBrowserTable", new StructurBrowserModel(model)));
+        form.add(new StructurBrowserTreeTablePanel("structurBrowserTable", new StructurBrowserModel(model),
+                          ContentContainerPage.IFRAME_PAGEMAP_NAME.equals(getPageMapName())));
     }
 }

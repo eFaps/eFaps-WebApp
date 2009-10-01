@@ -54,6 +54,7 @@ import org.efaps.ui.wicket.behaviors.update.AbstractAjaxUpdateBehavior;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
+import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
@@ -351,9 +352,9 @@ public class MenuTree extends AbstractTree
      */
     public void changeContent(final UIMenuItem _model, final AjaxRequestTarget _target)
     {
-
         InlineFrame page = null;
         if (_model.getCommand().getTargetTable() != null) {
+
             page = new InlineFrame(ContentContainerPage.IFRAME_WICKETID, PageMap
                             .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME), new IPageLink() {
 
@@ -363,8 +364,12 @@ public class MenuTree extends AbstractTree
                 {
                     Page ret;
                     try {
-                        ret = new TablePage(_model.getCommandUUID(), _model.getInstanceKey())
+                        if (_model.getCommand().getTargetStructurBrowserField()  != null) {
+                            ret = new StructurBrowserPage(_model.getCommandUUID(), _model.getInstanceKey());
+                        } else {
+                            ret = new TablePage(_model.getCommandUUID(), _model.getInstanceKey())
                                         .setMenuTreeKey(getMenuKey());
+                        }
                     } catch (final EFapsException e) {
                         ret = new ErrorPage(e);
                     }

@@ -31,74 +31,80 @@ import org.efaps.ui.wicket.models.objects.UIStructurBrowser.BogusNode;
 
 /**
  *
- * @author jmox
- * @version $Id$
+ * @author The eFasp Team
+ * @version $Id: AsyncronTreeUpdateListener.java 2163 2009-01-31 23:49:24Z jmox
+ *          $
  */
-public class AsyncronTreeUpdateListener implements ITreeStateListener,
-    IClusterable {
+public class AsyncronTreeUpdateListener implements ITreeStateListener, IClusterable
+{
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
-  /**
-   * Needed for serialization.
-   */
-  private static final long serialVersionUID = 1L;
+    /**
+     * Method is called on expand of a node. The expand of the node is stored in
+     * the model.
+     *
+     * @param _treenode TreeNode to expand
+     */
+    public void nodeExpanded(final Object _treenode)
+    {
+        final TreeNode node = (TreeNode) _treenode;
+        final UIStructurBrowser model = (UIStructurBrowser) ((DefaultMutableTreeNode) node).getUserObject();
+        model.setExpanded(true);
 
-  /**
-   * Method is called on expand of a node. The expand of the node is stored
-   * in the model.
-   *
-   * @param _treenode   TreeNode to expand
-   */
-  public void nodeExpanded(final Object _treenode) {
-    final TreeNode node = (TreeNode) _treenode;
-    final UIStructurBrowser model =
-        (UIStructurBrowser) ((DefaultMutableTreeNode) node).getUserObject();
-    model.setExpanded(true);
-
-    if (!node.isLeaf() && node.getChildAt(0) instanceof BogusNode) {
-      model.addChildren((DefaultMutableTreeNode) node);
+        if (!node.isLeaf() && node.getChildAt(0) instanceof BogusNode) {
+            model.addChildren((DefaultMutableTreeNode) node);
+        }
     }
-  }
 
-  /**
-   * Not needed.
-   */
-  public void allNodesCollapsed() {
-    // not needed here
-  }
+    /**
+     * Not needed.
+     */
+    public void allNodesCollapsed()
+    {
+        // not needed here
+    }
 
-  /**
-   * Not needed.
-   */
-  public void allNodesExpanded() {
-    // not needed here
-  }
+    /**
+     * Not needed.
+     */
+    public void allNodesExpanded()
+    {
+        // not needed here
+    }
 
-  /**
-   * Method is called on collapse of a node. The collapse of the node is stored
-   * in the model.
-   *
-   * @param _treenode   TreeNode to expand
-   */
-  public void nodeCollapsed(final Object _treenode) {
-    final TreeNode node = (TreeNode) _treenode;
-    final UIStructurBrowser model =
-      (UIStructurBrowser) ((DefaultMutableTreeNode) node).getUserObject();
-    model.setExpanded(false);
-  }
+    /**
+     * Method is called on collapse of a node. The collapse of the node is
+     * stored in the model.
+     *
+     * @param _treenode TreeNode to expand
+     */
+    public void nodeCollapsed(final Object _treenode)
+    {
+        final TreeNode node = (TreeNode) _treenode;
+        final UIStructurBrowser model = (UIStructurBrowser) ((DefaultMutableTreeNode) node).getUserObject();
+        model.setExpanded(false);
+    }
 
-  /**
-   * Not needed.
-   * @param _obj Object
-   */
-  public void nodeSelected(final Object _obj) {
-    // not needed here
-  }
+    /**
+     * Not needed.
+     *
+     * @param _obj Object
+     */
+    public void nodeSelected(final Object _obj)
+    {
+        // not needed here
+    }
 
-  /**
-   * Not needed.
-   * @param _obj Object
-   */
-  public void nodeUnselected(final Object _obj) {
-    // not needed here
-  }
+    /**
+     * Not needed.
+     *
+     * @param _obj Object
+     */
+    public void nodeUnselected(final Object _obj)
+    {
+        // not needed here
+    }
 }

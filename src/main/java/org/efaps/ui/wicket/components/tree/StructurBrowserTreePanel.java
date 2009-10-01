@@ -27,6 +27,7 @@ import org.apache.wicket.model.IModel;
 
 import org.efaps.ui.wicket.models.StructurBrowserModel;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
+import org.efaps.util.EFapsException;
 
 /**
  * This class renders a Panel containing a StructurBrowserTree.
@@ -48,9 +49,10 @@ public class StructurBrowserTreePanel extends Panel
      * @param _commandUUID  UUID of the related command
      * @param _oid          oid
      * @param _listmenukey  key to the list menu
+     * @throws EFapsException
      */
     public StructurBrowserTreePanel(final String _wicketId, final UUID _commandUUID, final String _oid,
-                    final String _listmenukey)
+                    final String _listmenukey) throws EFapsException
     {
         this(_wicketId, new StructurBrowserModel(new UIStructurBrowser(_commandUUID, _oid)), _listmenukey);
     }

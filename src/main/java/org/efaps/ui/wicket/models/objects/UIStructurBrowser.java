@@ -23,7 +23,7 @@ package org.efaps.ui.wicket.models.objects;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -36,6 +36,7 @@ import org.apache.wicket.PageParameters;
 import org.apache.wicket.RestartResponseException;
 
 import org.efaps.admin.datamodel.Attribute;
+import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.EventType;
@@ -52,6 +53,7 @@ import org.efaps.beans.ValueList;
 import org.efaps.beans.valueparser.ValueParser;
 import org.efaps.db.Instance;
 import org.efaps.db.ListQuery;
+import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.SearchQuery;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
@@ -196,8 +198,9 @@ public class UIStructurBrowser extends AbstractUIObject
      * Constructor.
      *
      * @param _parameters Page parameters
+     * @throws EFapsException
      */
-    public UIStructurBrowser(final PageParameters _parameters)
+    public UIStructurBrowser(final PageParameters _parameters) throws EFapsException
     {
         super(_parameters);
         this.root = true;
@@ -210,9 +213,10 @@ public class UIStructurBrowser extends AbstractUIObject
      *
      * @param _commandUUID UUID of the calling command
      * @param _instanceKey oid
+     * @throws EFapsException
      *
      */
-    public UIStructurBrowser(final UUID _commandUUID, final String _instanceKey)
+    public UIStructurBrowser(final UUID _commandUUID, final String _instanceKey) throws EFapsException
     {
         this(_commandUUID, _instanceKey, true, SortDirection.ASCENDING);
     }
@@ -225,9 +229,10 @@ public class UIStructurBrowser extends AbstractUIObject
      * @param _instanceKey OID
      * @param _root is this STrtucturbrowser the root
      * @param _sortdirection sort direction
+     * @throws EFapsException
      */
     private UIStructurBrowser(final UUID _commandUUID, final String _instanceKey, final boolean _root,
-                    final SortDirection _sortdirection)
+                    final SortDirection _sortdirection) throws EFapsException
     {
         super(_commandUUID, _instanceKey);
         this.root = _root;
@@ -237,24 +242,18 @@ public class UIStructurBrowser extends AbstractUIObject
 
     /**
      * Method used to initialize this StructurBrowserModel.
+     * @throws EFapsException
      */
-    private void initialise()
+    private void initialise() throws EFapsException
     {
         final AbstractCommand command = getCommand();
         if ((command != null) && (command.getTargetTable() != null)) {
             this.tableuuid = command.getTargetTable().getUUID();
-            this.browserFieldName = command.getProperty("TargetStructurBrowserField");
-        } else {
-            if ("true".equals(command.getProperty("TargetStructurBrowser"))) {
-                String tmplabel = null;
-                try {
-                    tmplabel = Menu.getTypeTreeMenu(getInstance().getType()).getLabel();
-                } catch (final EFapsException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
+            this.browserFieldName = command.getTargetStructurBrowserField();
+        } else if (getInstance() != null){
+                final String tmplabel = Menu.getTypeTreeMenu(getInstance().getType()).getLabel();
                 this.valueLabel = DBProperties.getProperty(tmplabel);
-            }
+
         }
     }
 
@@ -276,15 +275,14 @@ public class UIStructurBrowser extends AbstractUIObject
         List<Return> ret;
         try {
             if (this.tableuuid == null) {
-                final List<List<Object[]>> list = new ArrayList<List<Object[]>>();
-                final List<Object[]> instances = new ArrayList<Object[]>(1);
-                instances.add(new Object[] { getInstance(), null });
-                list.add(instances);
-                executeTree(list);
+                final Map<Instance, Boolean> map =  new LinkedHashMap<Instance, Boolean>();
+                map.put(getInstance(), null);
+                executeTree(map);
             } else {
-                ret = getCommand().executeEvents(EventType.UI_TABLE_EVALUATE, ParameterValues.CLASS, this);
-                final List<List<Object[]>> lists = (List<List<Object[]>>) ret.get(0).get(ReturnValues.VALUES);
-                executeTreeTable(lists);
+                ret = getCommand().executeEvents(EventType.UI_TABLE_EVALUATE, ParameterValues.CLASS, this,
+                                                 ParameterValues.INSTANCE, getInstance());
+                final Map<Instance, Boolean> map =  (Map<Instance, Boolean>) ret.get(0).get(ReturnValues.VALUES);
+                executeTreeTable(map);
             }
         } catch (final EFapsException e) {
             throw new RestartResponseException(new ErrorPage(e));
@@ -295,19 +293,15 @@ public class UIStructurBrowser extends AbstractUIObject
      * This method is called in case of a Tree from the {@link #execute()}method
      * to fill this StructurBrowserModel with live.
      *
-     * @param _lists List of Object
+     * @param map List of Object
      */
-    private void executeTree(final List<List<Object[]>> _lists)
+    private void executeTree(final Map<Instance, Boolean> _map)
     {
         try {
             final List<Instance> instances = new ArrayList<Instance>();
-            final Map<Instance, List<Object[]>> instMapper = new HashMap<Instance, List<Object[]>>();
-            for (final List<Object[]> oneList : _lists) {
-                final Object[] inst = oneList.get(oneList.size() - 1);
-                instances.add((Instance) inst[0]);
-                instMapper.put((Instance) inst[0], oneList);
+            for (final Instance inst : _map.keySet()) {
+                instances.add(inst);
             }
-
             final ValueParser parser = new ValueParser(new StringReader(this.valueLabel));
             final ValueList valuelist = parser.ExpressionString();
             final ListQuery query = new ListQuery(instances);
@@ -315,16 +309,12 @@ public class UIStructurBrowser extends AbstractUIObject
             query.execute();
             while (query.next()) {
                 Object value = null;
-                Instance instance = query.getInstance();
-                final Instance inst = (Instance) ((instMapper.get(instance).get(0))[0]);
-                if (!instance.getKey().equals(inst.getKey())) {
-                    instance = inst;
-                }
+                final Instance instance = query.getInstance();
                 value = valuelist.makeString(getInstance(), query, getMode());
                 final UIStructurBrowser child = new UIStructurBrowser(Menu.getTypeTreeMenu(instance.getType())
                                 .getUUID(), instance.getKey(), false, this.sortDirection);
                 this.childs.add(child);
-                child.setDirection((Boolean) ((instMapper.get(instance).get(0))[1]));
+                child.setDirection(_map.get(instance));
                 child.setLabel(value.toString());
                 child.setParent(checkForChildren(instance));
                 child.setImage(Image.getTypeIcon(instance.getType()) != null ? Image.getTypeIcon(instance.getType())
@@ -342,73 +332,78 @@ public class UIStructurBrowser extends AbstractUIObject
      * This method is called in case of a TreeTable from the {@link #execute()}
      * method to fill this StructurBrowserModel with live.
      *
-     * @param _lists List of Objects
+     * @param _map List of Objects
      */
-    private void executeTreeTable(final List<List<Object[]>> _lists)
+    private void executeTreeTable(final Map<Instance, Boolean> _map)
     {
         try {
             final List<Instance> instances = new ArrayList<Instance>();
-            final Map<Instance, List<Object[]>> instMapper = new HashMap<Instance, List<Object[]>>();
-            for (final List<Object[]> oneList : _lists) {
-                final Object[] inst = oneList.get(oneList.size() - 1);
-                instances.add((Instance) inst[0]);
-                instMapper.put((Instance) inst[0], oneList);
+            for (final Instance inst : _map.keySet()) {
+                instances.add(inst);
             }
-
             // evaluate for all expressions in the table
-            final ListQuery query = new ListQuery(instances);
+            final MultiPrintQuery print = new MultiPrintQuery(instances);
+            final Type type = instances.get(0).getType();
             for (final Field field : getTable().getFields()) {
                 Attribute attr = null;
-                if (field.getExpression() != null) {
-                    query.addSelect(field.getExpression());
-                    attr = instances.get(0).getType().getAttribute(field.getExpression());
-                }
-                if (field.getAlternateOID() != null) {
-                    query.addSelect(field.getAlternateOID());
+                if (field.hasAccess(getMode(), getInstance())
+                                && !field.isNoneDisplay(getMode()) && !field.isHiddenDisplay(getMode())) {
+                    if (_map.size() > 0) {
+                        if (field.getSelect() != null) {
+                            print.addSelect(field.getSelect());
+                        } else if (field.getAttribute() != null) {
+                            print.addAttribute(field.getAttribute());
+                        } else if (field.getPhrase() != null) {
+                            print.addPhrase(field.getName(), field.getPhrase());
+                        } else if (field.getExpression() != null) {
+                            print.addExpression(field.getName(), field.getExpression());
+                        }
+                        if (field.getSelectAlternateOID() != null) {
+                            print.addSelect(field.getSelectAlternateOID());
+                        }
+                    }
+                    if (field.getAttribute() != null && type != null) {
+                        attr = type.getAttribute(field.getAttribute());
+                    }
                 }
                 if (this.root) {
                     this.headers.add(new UITableHeader(field, this.sortDirection, attr));
                 }
             }
-
-            query.execute();
+            print.execute();
             Attribute attr = null;
-            while (query.next()) {
-                Instance instance = query.getInstance();
-                final Instance inst = (Instance) ((instMapper.get(instance).get(0))[0]);
-                if (!instance.getKey().equals(inst.getKey())) {
-                    instance = inst;
-                }
-                final StringBuilder instanceKeys = new StringBuilder();
-                boolean first = true;
-                for (final Object[] oneInstance : instMapper.get(instance)) {
-                    if (first) {
-                        first = false;
-                    } else {
-                        instanceKeys.append("|");
-                    }
-                    instanceKeys.append(((Instance) oneInstance[0]).getKey());
-                }
+            while (print.next()) {
+                Instance instance = print.getCurrentInstance();
 
                 String strValue = "";
 
                 final UIStructurBrowser child = new UIStructurBrowser(getCommandUUID(), instance.getKey(), false,
                                 this.sortDirection);
                 this.childs.add(child);
-                child.setDirection((Boolean) ((instMapper.get(instance).get(0))[1]));
+                child.setDirection(_map.get(instance));
                 for (final Field field : getTable().getFields()) {
                     Object value = null;
-
-                    if (field.getExpression() != null) {
-                        value = query.get(field.getExpression());
-                        attr = query.getAttribute(field.getExpression());
+                    if (field.getSelectAlternateOID() != null) {
+                        instance = Instance.get(print.<String>getSelect(field.getSelectAlternateOID()));
                     }
+                    if (field.getSelect() != null) {
+                        value = print.getSelect(field.getSelect());
+                        attr = print.getAttribute4Select(field.getSelect());
+                    } else if (field.getAttribute() != null) {
+                        value = print.getAttribute(field.getAttribute());
+                        attr = print.getAttribute4Attribute(field.getAttribute());
+                    } else if (field.getPhrase() != null) {
+                        value = print.getPhrase(field.getName());
+                    } else if (field.getExpression() != null) {
+                        value = print.getExpression(field.getName());
+                    }
+
                     final FieldValue fieldvalue = new FieldValue(field, attr, value, instance);
                     if (value != null) {
                         if ((isCreateMode() || isEditMode()) &&  field.isEditableDisplay(getMode())) {
                             strValue = fieldvalue.getEditHtml(getMode(), getInstance(), instance);
                         } else {
-                            strValue = fieldvalue.getReadOnlyHtml(getMode(), getInstance(), instance);
+                            strValue = fieldvalue.getStringValue(getMode(), getInstance(), instance);
                         }
                     } else {
                         strValue = "";
@@ -581,12 +576,12 @@ public class UIStructurBrowser extends AbstractUIObject
         try {
             ret = getCommand().executeEvents(EventType.UI_TABLE_EVALUATE, ParameterValues.INSTANCE, getInstance(),
                             ParameterValues.CLASS, this);
-            final List<List<Object[]>> lists = (List<List<Object[]>>) ret.get(0).get(ReturnValues.VALUES);
+            final Map<Instance, Boolean> map =  (Map<Instance, Boolean>) ret.get(0).get(ReturnValues.VALUES);
 
             if (this.tableuuid == null) {
-                executeTree(lists);
+                executeTree(map);
             } else {
-                executeTreeTable(lists);
+                executeTreeTable(map);
             }
             addNode(_parent, this.childs);
         } catch (final EFapsException e) {

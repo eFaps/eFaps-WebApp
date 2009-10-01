@@ -20,8 +20,6 @@
 
 package org.efaps.ui.wicket.components.tree;
 
-import java.util.UUID;
-
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 
@@ -38,12 +36,12 @@ import org.apache.wicket.extensions.markup.html.tree.table.ColumnLocation.Unit;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 
-import org.efaps.ui.wicket.models.StructurBrowserModel;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 
 /**
  * @author The eFaps Team
- * @version $Id$
+ * @version $Id: StructurBrowserTreeTablePanel.java 2757 2009-07-08 21:29:40Z
+ *          jan.moxter $
  */
 public class StructurBrowserTreeTablePanel extends Panel
 {
@@ -53,20 +51,12 @@ public class StructurBrowserTreeTablePanel extends Panel
     private static final long serialVersionUID = 1L;
 
     /**
-     * @param _wicketId     wicket id of this component
-     * @param _uuid         uuid used to create a model
-     * @param _oid          oid used to create a model
+     * @param _wicketId wicket id of this component
+     * @param _model model for this component
+     * @param _parentLink must the link be done using the parent
      */
-    public StructurBrowserTreeTablePanel(final String _wicketId, final UUID _uuid, final String _oid)
-    {
-        this(_wicketId, new StructurBrowserModel(new UIStructurBrowser(_uuid, _oid)));
-    }
-
-    /**
-     * @param _wicketId     wicket id of this component
-     * @param _model        model for this component
-     */
-    public StructurBrowserTreeTablePanel(final String _wicketId, final IModel<UIStructurBrowser> _model)
+    public StructurBrowserTreeTablePanel(final String _wicketId, final IModel<UIStructurBrowser> _model,
+                                         final boolean _parentLink)
     {
         super(_wicketId, _model);
 
@@ -89,7 +79,8 @@ public class StructurBrowserTreeTablePanel extends Panel
             }
         }
 
-        final StructurBrowserTreeTable tree = new StructurBrowserTreeTable("treeTable", model.getTreeModel(), columns);
+        final StructurBrowserTreeTable tree = new StructurBrowserTreeTable("treeTable", model.getTreeModel(), columns,
+                        _parentLink);
         add(tree);
     }
 

@@ -20,6 +20,7 @@
 
 package org.efaps.ui.wicket.components.table.cell;
 
+import org.apache.wicket.Page;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.IModel;
@@ -30,6 +31,7 @@ import org.efaps.db.Instance;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.util.EFapsException;
 
 /**
  * Class extends a Link to work in the content container.
@@ -38,56 +40,57 @@ import org.efaps.ui.wicket.pages.error.ErrorPage;
  * @version $Id:LinkContainer.java 1510 2007-10-18 14:35:40Z jmox $
  * @param <T>
  */
-public class ContentContainerLink<T> extends Link<T> {
+public class ContentContainerLink<T> extends Link<T>
+{
 
-  /**
-   * Needed foper serialization.
-   */
-  private static final long serialVersionUID = 1L;
+    /**
+     * Needed foper serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
-  /**
-   * Constructor.
-   *
-   * @param _wicketId   wicket id of this component
-   * @param _model      model fore this component
-   */
-  public ContentContainerLink(final String _wicketId,
-                              final IModel<T> _model) {
-    super(_wicketId, _model);
-  }
-
-  /**
-   * Method is executed on click.
-   */
-  @Override
-  public void onClick() {
-    Instance instance = null;
-    final UITableCell cellmodel = (UITableCell) super.getModelObject();
-    if (cellmodel.getInstanceKey() != null) {
-      Menu menu = null;
-      try {
-        instance =  cellmodel.getInstance();
-        menu = Menu.getTypeTreeMenu(instance.getType());
-      } catch (final Exception e) {
-        throw new RestartResponseException(new ErrorPage(e));
-      }
-      if (menu == null) {
-        final Exception ex =
-            new Exception("no tree menu defined for type "
-                + instance.getType().getName());
-        throw new RestartResponseException(new ErrorPage(ex));
-      }
-
-      ContentContainerPage page;
-      if (cellmodel.getTarget() == Target.POPUP) {
-        page = new ContentContainerPage(menu.getUUID(),
-                                        cellmodel.getInstanceKey());
-      } else {
-        page = new ContentContainerPage(getPage().getPageMap(),
-                                        menu.getUUID(),
-                                        cellmodel.getInstanceKey());
-      }
-      this.setResponsePage(page);
+    /**
+     * Constructor.
+     *
+     * @param _wicketId wicket id of this component
+     * @param _model model fore this component
+     */
+    public ContentContainerLink(final String _wicketId, final IModel<T> _model)
+    {
+        super(_wicketId, _model);
     }
-  }
+
+    /**
+     * Method is executed on click.
+     */
+    @Override
+    public void onClick()
+    {
+        Instance instance = null;
+        final UITableCell cellmodel = (UITableCell) super.getModelObject();
+        if (cellmodel.getInstanceKey() != null) {
+            Menu menu = null;
+            try {
+                instance = cellmodel.getInstance();
+                menu = Menu.getTypeTreeMenu(instance.getType());
+            } catch (final Exception e) {
+                throw new RestartResponseException(new ErrorPage(e));
+            }
+            if (menu == null) {
+                final Exception ex = new Exception("no tree menu defined for type " + instance.getType().getName());
+                throw new RestartResponseException(new ErrorPage(ex));
+            }
+
+            Page page;
+            try {
+                if (cellmodel.getTarget() == Target.POPUP) {
+                    page = new ContentContainerPage(menu.getUUID(), cellmodel.getInstanceKey());
+                } else {
+                    page = new ContentContainerPage(getPage().getPageMap(), menu.getUUID(), cellmodel.getInstanceKey());
+                }
+            } catch (final EFapsException e) {
+                page = new ErrorPage(e);
+            }
+            this.setResponsePage(page);
+        }
+    }
 }

@@ -60,7 +60,7 @@ import org.efaps.util.EFapsException;
  * reuse the same classes for the ContentPages. The Split contains on the left a
  * menu or tree and on the right an iframe for the content.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id:ContentContainerPage.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class ContentContainerPage extends AbstractMergePage
@@ -132,8 +132,9 @@ public class ContentContainerPage extends AbstractMergePage
      * opener.
      *
      * @param _parameters PageParameters
+     * @throws EFapsException on error
      */
-    public ContentContainerPage(final PageParameters _parameters)
+    public ContentContainerPage(final PageParameters _parameters) throws EFapsException
     {
         super();
         final Opener opener = ((EFapsSession) getSession()).getOpener(_parameters.getString(Opener.OPENER_PARAKEY));
@@ -154,8 +155,9 @@ public class ContentContainerPage extends AbstractMergePage
     /**
      * @param _uuid UUID of the command
      * @param _instanceKey oid
+     * @throws EFapsException on error on error
      */
-    public ContentContainerPage(final UUID _uuid, final String _instanceKey)
+    public ContentContainerPage(final UUID _uuid, final String _instanceKey) throws EFapsException
     {
         super();
         initialise(_uuid, _instanceKey);
@@ -165,8 +167,10 @@ public class ContentContainerPage extends AbstractMergePage
      * @param _pageMap page map
      * @param _uuid UUID of the command
      * @param _instanceKey oid
+     * @throws EFapsException on error
      */
     public ContentContainerPage(final IPageMap _pageMap, final UUID _uuid, final String _instanceKey)
+        throws EFapsException
     {
         this(_pageMap, _uuid, _instanceKey, false);
     }
@@ -176,9 +180,10 @@ public class ContentContainerPage extends AbstractMergePage
      * @param _uuid UUID of the command
      * @param _instanceKey oid
      * @param _addStructurBrowser add a structor browser
+     * @throws EFapsException on error
      */
     public ContentContainerPage(final IPageMap _pageMap, final UUID _uuid, final String _instanceKey,
-                    final boolean _addStructurBrowser)
+                    final boolean _addStructurBrowser) throws EFapsException
     {
         super(_pageMap);
         this.structurbrowser = _addStructurBrowser;
@@ -189,18 +194,19 @@ public class ContentContainerPage extends AbstractMergePage
      * Method to initialize the Page.
      *
      * @param _uuid uuid of the command
-     * @param _instanceId oid
+     * @param _instanceKey key to the instance
+     * @throws EFapsException on error
      */
-    private void initialise(final UUID _uuid, final String _instanceKey)
+    private void initialise(final UUID _uuid, final String _instanceKey) throws EFapsException
     {
         ((EFapsSession) getSession()).getUpdateBehaviors().clear();
 
         final ClientProperties properties = ((WebClientInfo) getRequestCycle().getClientInfo()).getProperties();
         // we use different StyleSheets for different Bowsers
         if (properties.isBrowserInternetExplorer()) {
-            add(StaticHeaderContributor.forCss(CSS_IE));
+            add(StaticHeaderContributor.forCss(ContentContainerPage.CSS_IE));
         } else {
-            add(StaticHeaderContributor.forCss(CSS));
+            add(StaticHeaderContributor.forCss(ContentContainerPage.CSS));
         }
 
         this.menuTreeKey = "MenuTree_" + getPageMapName();
@@ -239,34 +245,34 @@ public class ContentContainerPage extends AbstractMergePage
         }
         final UUID uuid4NewPage = uuidTmp;
         // add the IFrame
-        final InlineFrame inline = new InlineFrame(IFRAME_WICKETID, PageMap.forName(IFRAME_PAGEMAP_NAME),
-                        new IPageLink() {
+        final InlineFrame inline = new InlineFrame(ContentContainerPage.IFRAME_WICKETID, PageMap
+                        .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME), new IPageLink() {
 
-                            private static final long serialVersionUID = 1L;
+            private static final long serialVersionUID = 1L;
 
-                            public Page getPage()
-                            {
-                                Page error = null;
-                                AbstractContentPage page = null;
-                                if (ContentContainerPage.this.webForm) {
-                                    page = new FormPage(uuid4NewPage, _instanceKey);
-                                } else {
-                                    try {
-                                        page = new TablePage(uuid4NewPage, _instanceKey);
-                                    } catch (final EFapsException e) {
-                                        error = new ErrorPage(e);
-                                    }
-                                }
-                                page.setMenuTreeKey(ContentContainerPage.this.menuTreeKey);
+            public Page getPage()
+            {
+                Page error = null;
+                AbstractContentPage page = null;
+                if (ContentContainerPage.this.webForm) {
+                    page = new FormPage(uuid4NewPage, _instanceKey);
+                } else {
+                    try {
+                        page = new TablePage(uuid4NewPage, _instanceKey);
+                    } catch (final EFapsException e) {
+                        error = new ErrorPage(e);
+                    }
+                }
+                page.setMenuTreeKey(ContentContainerPage.this.menuTreeKey);
 
-                                return error == null ? page : error;
-                            }
+                return error == null ? page : error;
+            }
 
-                            public Class<AbstractContentPage> getPageIdentity()
-                            {
-                                return AbstractContentPage.class;
-                            }
-                        });
+            public Class<AbstractContentPage> getPageIdentity()
+            {
+                return AbstractContentPage.class;
+            }
+        });
 
         parent.add(inline);
         // set the Path to the IFrame
