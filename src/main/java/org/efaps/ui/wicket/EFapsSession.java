@@ -368,7 +368,7 @@ public class EFapsSession extends WebSession
                 if (!Context.isTMActive()) {
                     WebRequest request = (WebRequest) RequestCycle.get().getRequest();
 
-                    final String contentType = (request).getHttpServletRequest().getContentType();
+                    final String contentType = request.getHttpServletRequest().getContentType();
 
                     if ((contentType != null) && contentType.startsWith("multipart/form-data")) {
                         request = request.newMultipartWebRequest(getApplication().getApplicationSettings()
@@ -393,6 +393,7 @@ public class EFapsSession extends WebSession
                     setLocale(Context.getThreadContext().getLocale());
                     request.getHttpServletRequest().getSession().setAttribute(UserAttributesSet.CONTEXTMAPKEY,
                                                                  Context.getThreadContext().getUserAttributes());
+                    Context.getThreadContext().setPath(request.getHttpServletRequest().getContextPath());
                 }
             } catch (final EFapsException e) {
                 EFapsSession.LOG.error("could not initialise the context", e);
