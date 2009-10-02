@@ -53,105 +53,111 @@ import org.efaps.util.EFapsException;
  * @author jmox
  * @version $Id:AjaxSubmitComponent.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class AjaxSubmitComponent extends AbstractMenuItemAjaxComponent {
-
-  private static final long serialVersionUID = 1L;
-
-  public AjaxSubmitComponent(final String id, final IModel<UIMenuItem> _menuItem,
-                             final Form<?> _form) {
-    super(id, _menuItem);
-    this.add(new SubmitAndUpdateBehavior(_form));
-  }
-
-  @Override
-  public String getJavaScript() {
-    return ((SubmitAndUpdateBehavior) super.getBehaviors().get(0))
-        .getJavaScript();
-  }
-
-  public class SubmitAndUpdateBehavior extends AjaxFormSubmitBehavior {
+public class AjaxSubmitComponent extends AbstractMenuItemAjaxComponent
+{
 
     private static final long serialVersionUID = 1L;
 
-    private final Form<?> form;
-
-    public String getJavaScript() {
-      final String script = super.getEventHandler().toString();
-      return "javascript:" + script.replace("'", "\"");
-    }
-
-    public SubmitAndUpdateBehavior(final Form<?> _form) {
-      super(_form, "onClick");
-      this.form = _form;
+    public AjaxSubmitComponent(final String id, final IModel<UIMenuItem> _menuItem, final Form<?> _form)
+    {
+        super(id, _menuItem);
+        add(new SubmitAndUpdateBehavior(_form));
     }
 
     @Override
-    protected CharSequence getPreconditionScript() {
-      // we have to override the original Script, because it breaks the eval in
-      // the eFapsScript
-      return null;
+    public String getJavaScript()
+    {
+        return ((SubmitAndUpdateBehavior) super.getBehaviors().get(0)).getJavaScript();
     }
 
-    @Override
-    protected void onSubmit(final AjaxRequestTarget _target) {
-      final UIMenuItem uiMenuItem =
-          (UIMenuItem) super.getComponent().getDefaultModelObject();
+    public class SubmitAndUpdateBehavior extends AjaxFormSubmitBehavior
+    {
 
-      final Map<?, ?> para = this.form.getRequest().getParameterMap();
+        private static final long serialVersionUID = 1L;
 
-      if (uiMenuItem.isAskUser()) {
-        final ModalWindowContainer modal;
-        if (super.getComponent().getPage() instanceof MainPage) {
-          modal = ((MainPage) super.getComponent().getPage()).getModal();
-        } else {
-          modal =
-              ((AbstractContentPage) super.getComponent().getPage()).getModal();
+        private final Form<?> form;
+
+        public String getJavaScript()
+        {
+            final String script = super.getEventHandler().toString();
+            return "javascript:" + script.replace("'", "\"");
         }
-        modal.setPageCreator(new ModalWindow.PageCreator() {
 
-          private static final long serialVersionUID = 1L;
+        public SubmitAndUpdateBehavior(final Form<?> _form)
+        {
+            super(_form, "onClick");
+            this.form = _form;
+        }
 
-          public Page createPage() {
-            return new DialogPage(modal, new MenuItemModel(uiMenuItem), para, AjaxSubmitComponent.this);
-          }
-        });
-        modal.setInitialHeight(150);
-        modal.setInitialWidth(350);
-        modal.show(_target);
-      } else {
-        final AbstractCommand command =
-            ((UIMenuItem) super.getComponent().getDefaultModelObject()).getCommand();
+        @Override
+        protected CharSequence getPreconditionScript()
+        {
+            // we have to override the original Script, because it breaks the
+            // eval in
+            // the eFapsScript
+            return null;
+        }
 
-        if (command.hasEvents(EventType.UI_COMMAND_EXECUTE)) {
-          try {
-            final String[] oids = (String[]) para.get("selectedRow");
-            if (oids != null) {
-              command.executeEvents(EventType.UI_COMMAND_EXECUTE,
-                  ParameterValues.OTHERS, oids);
+        @Override
+        protected void onSubmit(final AjaxRequestTarget _target)
+        {
+            final UIMenuItem uiMenuItem = (UIMenuItem) super.getComponent().getDefaultModelObject();
+
+            final Map<?, ?> para = this.form.getRequest().getParameterMap();
+
+            if (uiMenuItem.isAskUser()) {
+                final ModalWindowContainer modal;
+                if (super.getComponent().getPage() instanceof MainPage) {
+                    modal = ((MainPage) super.getComponent().getPage()).getModal();
+                } else {
+                    modal = ((AbstractContentPage) super.getComponent().getPage()).getModal();
+                }
+                modal.setPageCreator(new ModalWindow.PageCreator() {
+
+                    private static final long serialVersionUID = 1L;
+
+                    public Page createPage()
+                    {
+                        return new DialogPage(modal, new MenuItemModel(uiMenuItem), para, AjaxSubmitComponent.this);
+                    }
+                });
+                modal.setInitialHeight(150);
+                modal.setInitialWidth(350);
+                modal.show(_target);
             } else {
-              command.executeEvents(EventType.UI_COMMAND_EXECUTE);
+                final AbstractCommand command = ((UIMenuItem) super.getComponent().getDefaultModelObject())
+                                .getCommand();
+
+                if (command.hasEvents(EventType.UI_COMMAND_EXECUTE)) {
+                    try {
+                        final String[] oids = (String[]) para.get("selectedRow");
+                        if (oids != null) {
+                            command.executeEvents(EventType.UI_COMMAND_EXECUTE, ParameterValues.OTHERS, oids);
+                        } else {
+                            command.executeEvents(EventType.UI_COMMAND_EXECUTE);
+                        }
+                    } catch (final EFapsException e) {
+                        throw new RestartResponseException(new ErrorPage(e));
+                    }
+                }
+                final AbstractUIObject uiObject = ((AbstractUIObject) this.form.getPage().getDefaultModelObject());
+                uiObject.resetModel();
+
+                Page page = null;
+                if (uiObject instanceof UITable) {
+                    page = new TablePage(new TableModel((UITable) uiObject));
+                } else if (uiObject instanceof UIForm) {
+                    page = new FormPage(new FormModel((UIForm) uiObject));
+                }
+                this.form.setResponsePage(page);
             }
-          } catch (final EFapsException e) {
-            throw new RestartResponseException(new ErrorPage(e));
-          }
         }
-       final AbstractUIObject uiObject = ((AbstractUIObject) this.form.getPage().getDefaultModelObject());
-       uiObject.resetModel();
 
-        Page page = null;
-        if (uiObject instanceof UITable) {
-          page = new TablePage(new TableModel( (UITable)uiObject));
-        } else if (uiObject instanceof UIForm) {
-          page = new FormPage(new FormModel((UIForm)  uiObject));
+        @Override
+        protected void onError(final AjaxRequestTarget arg0)
+        {
+            // TODO Auto-generated method stub
         }
-        this.form.setResponsePage(page);
-      }
     }
-
-    @Override
-    protected void onError(AjaxRequestTarget arg0) {
-      // TODO Auto-generated method stub
-    }
-  }
 
 }

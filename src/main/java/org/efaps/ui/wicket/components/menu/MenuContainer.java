@@ -138,7 +138,8 @@ public class MenuContainer extends AbstractParentMarkupContainer
         if (!_menuItem.hasChilds()) {
             if (_menuItem.getTarget() != Target.UNKNOWN) {
                 if (_menuItem.getTarget() == Target.MODAL) {
-                    final AjaxOpenModalComponent item = new AjaxOpenModalComponent(getNewChildId(), model);
+                    final AjaxOpenModalComponent item = new AjaxOpenModalComponent(getNewChildId(), model,
+                                                                  _menuItem.getCommand().isSubmit() ? this.form : null);
                     this.add(item);
                 } else {
                     final StandardLink item = new StandardLink(getNewChildId(), model);

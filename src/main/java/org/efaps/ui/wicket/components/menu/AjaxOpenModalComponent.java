@@ -22,12 +22,16 @@ package org.efaps.ui.wicket.components.menu;
 
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 
+import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowAjaxPageCreator;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
+import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
 
 /**
@@ -48,12 +52,17 @@ public class AjaxOpenModalComponent extends AbstractMenuItemAjaxComponent
      * Constructor.
      *
      * @param _wicketId wicket id of this component
-     * @param _model model for this component
+     * @param _model    model for this component
+     * @param _form     form in case of a submit
      */
-    public AjaxOpenModalComponent(final String _wicketId, final IModel<UIMenuItem> _model)
+    public AjaxOpenModalComponent(final String _wicketId, final IModel<UIMenuItem> _model, final FormContainer _form)
     {
         super(_wicketId, _model);
-        add(new AjaxOpenModalBehavior());
+        if (_form == null) {
+            add(new AjaxOpenModalBehavior());
+        } else {
+            add(new SubmitAndOpenModalBehavior(_form));
+        }
     }
 
     /**
@@ -64,7 +73,13 @@ public class AjaxOpenModalComponent extends AbstractMenuItemAjaxComponent
     @Override
     public String getJavaScript()
     {
-        return ((AjaxOpenModalBehavior) super.getBehaviors().get(0)).getJavaScript();
+        final String ret;
+        if (super.getBehaviors().get(0) instanceof AjaxOpenModalBehavior) {
+            ret = ((AjaxOpenModalBehavior) super.getBehaviors().get(0)).getJavaScript();
+        } else {
+            ret = ((SubmitAndOpenModalBehavior) super.getBehaviors().get(0)).getJavaScript();
+        }
+        return ret;
     }
 
     /**
@@ -136,4 +151,94 @@ public class AjaxOpenModalComponent extends AbstractMenuItemAjaxComponent
         }
     }
 
+    /**
+     * Open a modal window and submit the values.
+     */
+    public class SubmitAndOpenModalBehavior extends AjaxFormSubmitBehavior
+    {
+        /**
+         * Needed for serialization.
+         */
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * Form to be submitted.
+         */
+        private final Form<?> form;
+
+        /**
+         * @param _form form
+         */
+        public SubmitAndOpenModalBehavior(final Form<?> _form)
+        {
+            super(_form, "onClick");
+            this.form = _form;
+        }
+
+        /**
+         * This Method returns the JavaScript which is executed by the
+         * JSCooKMenu.
+         *
+         * @return String with the JavaScript
+         */
+        public String getJavaScript()
+        {
+            String script = super.getEventHandler().toString();
+            script = "javascript:" + script.replace("'", "\"");
+            script = script.replace("wicketSubmitFormById", "wicketSubmitForm");
+            final String formStr;
+            if (ContentContainerPage.IFRAME_PAGEMAP_NAME.equals(getComponent().getPage().getPageMapName())) {
+                formStr = "top.frames[0].frames[0].document.getElementById(\"" + this.form.getMarkupId() + "\")";
+            } else {
+                formStr = "top.frames[0].document.getElementById(\"" + this.form.getMarkupId() + "\")";
+            }
+            script = script.replace("\"" + this.form.getMarkupId() + "\"", formStr);
+            return script;
+        }
+
+        /**
+         * @see org.apache.wicket.ajax.form.AjaxFormSubmitBehavior#getPreconditionScript()
+         * @return null
+         */
+        @Override
+        protected CharSequence getPreconditionScript()
+        {
+            // we have to override the original Script, because it breaks the
+            // eval in the eFapsScript
+            return null;
+        }
+
+        /**
+         * Open the modal window.
+         * @see org.apache.wicket.ajax.form.AjaxFormSubmitBehavior#onSubmit(org.apache.wicket.ajax.AjaxRequestTarget)
+         * @param _target AjaxRequestTarget
+         */
+        @Override
+        protected void onSubmit(final AjaxRequestTarget _target)
+        {
+            ModalWindowContainer modal;
+            if (getPage() instanceof MainPage) {
+                modal = ((MainPage) getPage()).getModal();
+            } else {
+                modal = ((AbstractContentPage) getPage()).getModal();
+            }
+            modal.reset();
+            final ModalWindowAjaxPageCreator pageCreator = new ModalWindowAjaxPageCreator((UIMenuItem) super
+                            .getComponent().getDefaultModelObject(), modal);
+            modal.setPageCreator(pageCreator);
+            modal.setInitialHeight(((UIMenuItem) getDefaultModelObject()).getWindowHeight());
+            modal.setInitialWidth(((UIMenuItem) getDefaultModelObject()).getWindowWidth());
+            modal.show(_target);
+        }
+
+        /**
+         * @see org.apache.wicket.ajax.form.AjaxFormSubmitBehavior#onError(org.apache.wicket.ajax.AjaxRequestTarget)
+         * @param _target AjaxRequestTarget
+         */
+        @Override
+        protected void onError(final AjaxRequestTarget _target)
+        {
+            // nothing must be done
+        }
+    }
 }
