@@ -355,7 +355,8 @@ public class UITable extends UIAbstractPageObject
      * Temporary method to decide which method of selct must be used
      * @return true if the new way
      */
-    private boolean isNewWay() {
+    private boolean isNewWay()
+    {
         boolean ret = false;
         final Table form = Table.get(this.tableUUID);
         for (final Field field : form.getFields()) {
@@ -1131,7 +1132,7 @@ public class UITable extends UIAbstractPageObject
     public boolean isShowCheckBoxes()
     {
         boolean ret;
-        if (super.isSubmit()) {
+        if (super.isSubmit() && !isCreateMode()) {
             ret = true;
         } else {
             ret = this.showCheckBoxes;
