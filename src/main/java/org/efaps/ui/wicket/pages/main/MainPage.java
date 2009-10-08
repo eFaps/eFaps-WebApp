@@ -24,10 +24,19 @@ import java.util.UUID;
 
 import org.apache.wicket.PageMap;
 import org.apache.wicket.RestartResponseException;
+import org.apache.wicket.ajax.AjaxEventBehavior;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.IAjaxCallDecorator;
+import org.apache.wicket.ajax.calldecorator.AjaxCallThrottlingDecorator;
+import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.behavior.StringHeaderContributor;
+import org.apache.wicket.markup.html.IHeaderContributor;
+import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.InlineFrame;
+import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.util.string.JavascriptUtils;
+import org.apache.wicket.util.time.Duration;
 
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.db.Context;
@@ -77,9 +86,20 @@ public class MainPage extends AbstractMergePage
     private static final EFapsContentReference FRAMEJS = new EFapsContentReference(MainPage.class, "SetFrameHeight.js");
 
     /**
+     * Key to the parameter for storing the height and width of the browser
+     * window.
+     */
+    private static String HEIGTHWIDTH_PARAMETERNAME = "eFapsWindowHeightWidth";
+
+    /**
      * The MainPage has a ModalWindow that can be called from the childPages.
      */
     private final ModalWindowContainer modal = new ModalWindowContainer("modal");
+
+    /**
+     * Event that is fired on resize.
+     */
+    private final ResizeEventBehavior resize;
 
     /**
      * Constructor adding all Components to this Page.
@@ -95,10 +115,6 @@ public class MainPage extends AbstractMergePage
         // we need to add a JavaScript Function to resize the iFrame
         // don't merge it to keep the sequence
         this.add(StaticHeaderContributor.forJavaScript(MainPage.FRAMEJS, true));
-        this.add(new StringHeaderContributor(JavascriptUtils.SCRIPT_OPEN_TAG
-                        + "  window.onresize = eFapsSetIFrameHeight; \n"
-                        + "  window.onload = eFapsSetIFrameHeight; \n"
-                        + JavascriptUtils.SCRIPT_CLOSE_TAG));
 
         // set the title for the Page
         this.add(new StringHeaderContributor("<title>" + DBProperties.getProperty("Logo.Version.Label") + "</title>"));
@@ -107,10 +123,24 @@ public class MainPage extends AbstractMergePage
         this.modal.setPageMapName("modal");
 
         this.add(StaticHeaderContributor.forCss(MainPage.CSS));
-
         this.add(new ChildCallBackHeaderContributer());
 
-        this.add(new Label("welcome", DBProperties.getProperty("Logo.Welcome.Label")));
+        this.resize = new ResizeEventBehavior();
+
+        final Label welcome = new Label("welcome", DBProperties.getProperty("Logo.Welcome.Label"));
+        this.add(welcome);
+        welcome.add(this.resize);
+        welcome.add(new HeaderContributor(new IHeaderContributor() {
+
+            private static final long serialVersionUID = 1L;
+
+            public void renderHead(final IHeaderResponse _response)
+            {
+                final CharSequence resizeScript = MainPage.this.resize.getCallbackScript();
+                _response.renderString(JavascriptUtils.SCRIPT_OPEN_TAG + " window.onresize = " +  resizeScript + "; \n"
+                                + "  window.onload = eFapsSetIFrameHeight; \n" + JavascriptUtils.SCRIPT_CLOSE_TAG);
+            }
+        }));
 
         try {
             final Context context = Context.getThreadContext();
@@ -143,5 +173,80 @@ public class MainPage extends AbstractMergePage
     public final ModalWindowContainer getModal()
     {
         return this.modal;
+    }
+
+    /**
+     * Event that is fired on the resize of the client browser window.
+     */
+    public class ResizeEventBehavior extends AjaxEventBehavior
+    {
+
+        /**
+        * Needed for serialization.
+        */
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * Constructor.
+         */
+        public ResizeEventBehavior()
+        {
+            super("onResize");
+        }
+
+        /**
+         * @see org.apache.wicket.ajax.AbstractDefaultAjaxBehavior#getCallbackScript()
+         * @return script
+         */
+        @Override
+        public CharSequence getCallbackScript()
+        {
+            final StringBuilder ret = new StringBuilder();
+            ret.append("function(){").append("eFapsSetIFrameHeight();").append(
+                            generateCallbackScript("wicketAjaxPost('" + getCallbackUrl(false) + "','"
+                                            + MainPage.HEIGTHWIDTH_PARAMETERNAME + "='"
+                                            + "+window.innerWidth+\";\"+window.innerHeight ")).append("}\n");
+            return ret.toString();
+        }
+
+        /** Overwritten to be deactivated.
+         * @see org.apache.wicket.ajax.AbstractDefaultAjaxBehavior#getPreconditionScript()
+         * @return null
+         */
+        @Override
+        protected CharSequence getPreconditionScript()
+        {
+            return null;
+        }
+
+        /**
+         * Decorator for the call, so that the event is only fired one a
+         * second.
+         * @see org.apache.wicket.ajax.AbstractDefaultAjaxBehavior#getAjaxCallDecorator()
+         * @return CallDecorator
+         */
+        @Override
+        protected IAjaxCallDecorator getAjaxCallDecorator()
+        {
+            return new AjaxCallThrottlingDecorator(getComponent().getMarkupId(), Duration.milliseconds(500));
+        }
+
+        /**
+         * On event the actual size of the browser window is stored in the requestcycle.
+         * @see org.apache.wicket.ajax.AjaxEventBehavior#onEvent(org.apache.wicket.ajax.AjaxRequestTarget)
+         * @param _target AjaxRequestTarget
+         */
+        @Override
+        protected void onEvent(final AjaxRequestTarget _target)
+        {
+            final String size = getComponent().getRequest().getParameter(MainPage.HEIGTHWIDTH_PARAMETERNAME);
+
+            if (size != null) {
+                final String[] sizes = size.split(";");
+                final WebClientInfo asd = (WebClientInfo) getRequestCycle().getClientInfo();
+                asd.getProperties().setBrowserWidth(Integer.parseInt(sizes[0]));
+                asd.getProperties().setBrowserHeight(Integer.parseInt(sizes[1]));
+            }
+        }
     }
 }

@@ -25,6 +25,7 @@ import org.apache.wicket.PageMap;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.util.string.AppendingStringBuffer;
 
 import org.efaps.admin.dbproperty.DBProperties;
@@ -219,6 +220,43 @@ public class ModalWindowContainer extends ModalWindow
             .append("  }, 0);\n")
             .append("}");
         return ret.toString();
+    }
+
+    /**
+     * Check it the size of the modal window is not to big and reduces it
+     * if necessary.
+     * @see org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow#setInitialHeight(int)
+     * @param _initialHeight height
+     * @return this Modalwindow
+     */
+    @Override
+    public ModalWindow setInitialHeight(final int _initialHeight)
+    {
+        int height = _initialHeight;
+        final WebClientInfo asd = (WebClientInfo) getRequestCycle().getClientInfo();
+        asd.getProperties().getBrowserHeight();
+        if (asd.getProperties().getBrowserHeight() < height) {
+            height = asd.getProperties().getBrowserHeight() - 33;
+        }
+        return super.setInitialHeight(height);
+    }
+
+    /**
+     *  Check it the size of the modal window is not to big and reduces it
+     * if necessary.
+     * @see org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow#setInitialWidth(int)
+     * @param _initialWidth width
+     * @return this Modalwindow
+     */
+    @Override
+    public ModalWindow setInitialWidth(final int _initialWidth)
+    {
+        int width = _initialWidth;
+        final WebClientInfo asd = (WebClientInfo) getRequestCycle().getClientInfo();
+        if (asd.getProperties().getBrowserWidth() < _initialWidth) {
+            width = asd.getProperties().getBrowserWidth();
+        }
+        return super.setInitialWidth(width);
     }
 
     /**
