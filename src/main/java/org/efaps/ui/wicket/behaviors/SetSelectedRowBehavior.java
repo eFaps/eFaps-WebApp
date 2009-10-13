@@ -43,7 +43,7 @@ public class SetSelectedRowBehavior extends AbstractBehavior
     private final String name;
 
     /**
-     * @param name
+     * @param _name name
      */
     public SetSelectedRowBehavior(final String _name)
     {
@@ -52,8 +52,8 @@ public class SetSelectedRowBehavior extends AbstractBehavior
 
     /**
      * @see org.apache.wicket.behavior.AbstractBehavior#onComponentTag(org.apache.wicket.Component, org.apache.wicket.markup.ComponentTag)
-     * @param _component
-     * @param _tag
+     * @param _component component
+     * @param _tag       tag
      */
     @Override
     public void onComponentTag(final Component _component, final ComponentTag _tag)
@@ -62,14 +62,18 @@ public class SetSelectedRowBehavior extends AbstractBehavior
         _tag.put("onfocus", getJavaScript());
     }
 
-    private String getJavaScript() {
+    /**
+     * @return get the Javascript
+     */
+    private String getJavaScript()
+    {
         final StringBuilder ret = new StringBuilder();
-        ret.append(" var p=0;")
-            .append(" var c=document.getElementsByName(this.name);")
+        ret.append("var p=0;")
+            .append(" var c=this.form.").append(this.name).append(";")
             .append(" for (var i = 0; i < c.length; i++) {")
             .append(" if (c[i]==this) {")
             .append(" p = i; break;}}")
-            .append(" var s=document.getElementsByName('eFapsRowSelected');")
+            .append(" var s=this.form.eFapsRowSelected;")
             .append(" for (var i = 0; i < s.length; i++) {")
             .append(" s[i].value='';")
             .append(" }")
