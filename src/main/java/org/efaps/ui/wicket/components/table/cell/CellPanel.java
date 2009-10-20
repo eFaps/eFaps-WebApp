@@ -28,6 +28,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.ui.AbstractCommand.Target;
+import org.efaps.admin.ui.field.Field.Display;
 import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
 import org.efaps.ui.wicket.behaviors.SetSelectedRowBehavior;
 import org.efaps.ui.wicket.components.LabelComponent;
@@ -133,7 +134,7 @@ public class CellPanel extends Panel
                 add(new WebMarkupContainer("label").setVisible(false));
             } else {
                 final LabelComponent label = new LabelComponent("label", cellmodel.getCellValue());
-                if (_uitable.isCreateMode()) {
+                if (_uitable.isCreateMode() && cellmodel.getDisplay().equals(Display.EDITABLE)) {
                     label.add(new SetSelectedRowBehavior(cellmodel.getName()));
                     if (cellmodel.isFieldUpdate()) {
                         label.add(new AjaxFieldUpdateBehavior(cellmodel.getFieldUpdateEvent(), _model));

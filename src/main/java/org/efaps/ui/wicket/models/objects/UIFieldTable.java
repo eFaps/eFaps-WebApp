@@ -39,12 +39,15 @@ import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
 
 /**
- * @author jmox
+ * @author The eFasp Team
  * @version $Id$
  */
 public class UIFieldTable extends UITable implements IFormElement
 {
 
+    /**
+     * Needed for serialization.
+     */
     private static final long serialVersionUID = 1L;
 
     /**
@@ -52,12 +55,30 @@ public class UIFieldTable extends UITable implements IFormElement
      */
     private static final Logger LOG = LoggerFactory.getLogger(UIFieldTable.class);
 
+    /**
+     * Id of the FieldTable.
+     */
     private final long id;
 
+    /**
+     * Name of the FieldTable.
+     */
     private final String name;
 
+    /**
+     * Stores if the table is the first table inside a form. because the
+     * first table adds some things to the page that works for all tables
+     * inside the same page.
+     */
+    private boolean firstTable = true;
+    /**
+     * @param _commanduuid  uuid of the command
+     * @param _instanceKey  key to the instance
+     * @param _fieldTable   fieltable
+     * @throws EFapsException on error
+     */
     public UIFieldTable(final UUID _commanduuid, final String _instanceKey, final FieldTable _fieldTable)
-            throws EFapsException
+        throws EFapsException
     {
         super(_commanduuid, _instanceKey);
         setTableUUID(_fieldTable.getTargetTable().getUUID());
@@ -73,8 +94,28 @@ public class UIFieldTable extends UITable implements IFormElement
             }
         } catch (final EFapsException e) {
             // we don't throw an error because this are only Usersettings
-            LOG.error("error during the retrieve of UserAttributes", e);
+            UIFieldTable.LOG.error("error during the retrieve of UserAttributes", e);
         }
+    }
+
+    /**
+     * Getter method for instance variable {@link #firstTable}.
+     *
+     * @return value of instance variable {@link #firstTable}
+     */
+    public boolean isFirstTable()
+    {
+        return this.firstTable;
+    }
+
+    /**
+     * Setter method for instance variable {@link #firstTable}.
+     *
+     * @param _firstTable value for instance variable {@link #firstTable}
+     */
+    public void setFirstTable(final boolean _firstTable)
+    {
+        this.firstTable = _firstTable;
     }
 
     /**
@@ -87,6 +128,9 @@ public class UIFieldTable extends UITable implements IFormElement
         return this.name;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @SuppressWarnings("unchecked")
     @Override
     protected List<List<Instance>> getInstanceListsOld() throws EFapsException
@@ -97,8 +141,11 @@ public class UIFieldTable extends UITable implements IFormElement
         return lists;
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
+    @SuppressWarnings("unchecked")
     protected List<Instance> getInstanceList() throws EFapsException
     {
         final List<Return> ret = FieldTable.get(this.id).executeEvents(EventType.UI_TABLE_EVALUATE,
@@ -106,12 +153,9 @@ public class UIFieldTable extends UITable implements IFormElement
         final List<Instance> lists = (List<Instance>) ret.get(0).get(ReturnValues.VALUES);
         return lists;
     }
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.efaps.ui.wicket.models.TableModel#getUserAttributeKey(org.efaps.ui
-     * .wicket.models.TableModel.UserAttributeKey)
+
+    /**
+     * {@inheritDoc}
      */
     @Override
     public String getUserAttributeKey(final UserAttributeKey _key)
@@ -129,5 +173,4 @@ public class UIFieldTable extends UITable implements IFormElement
     {
         return Field.get(this.id).getEvents(_eventType);
     }
-
 }

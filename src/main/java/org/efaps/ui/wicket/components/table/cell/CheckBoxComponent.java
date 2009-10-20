@@ -29,21 +29,23 @@ import org.apache.wicket.markup.html.WebComponent;
  *
  */
 public class CheckBoxComponent extends WebComponent {
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  private final String oid;
+    private final String oid;
 
-  public CheckBoxComponent(String id, String _oid) {
-    super(id);
-    this.oid = _oid;
-  }
+    public CheckBoxComponent(final String _wicketId, final String _oid)
+    {
+        super(_wicketId);
+        this.oid = _oid;
+    }
 
-  @Override
-  protected void onComponentTag(ComponentTag tag) {
-    tag.getAttributes().put("type", "checkbox");
-    tag.getAttributes().put("name", "selectedRow");
-    tag.getAttributes().put("value", this.oid);
-    tag.setName("input");
-  }
+    @Override
+    protected void onComponentTag(final ComponentTag _tag)
+    {
+        _tag.getAttributes().put("type", "checkbox");
+        _tag.getAttributes().put("name", "selectedRow");
+        _tag.getAttributes().put("value", this.oid);
+        _tag.setName("input");
+    }
 
 }

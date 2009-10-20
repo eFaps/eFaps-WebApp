@@ -873,6 +873,7 @@ public class UIForm extends UIAbstractPageObject
         FormElement formelement = null;
         boolean addNew = true;
         UIClassification uiclass = null;
+        boolean firstTable = true;
         for (final Field field : form.getFields()) {
             if (field.hasAccess(getMode(), getInstance()) && !field.isNoneDisplay(getMode())) {
                 if (field instanceof FieldGroup) {
@@ -900,6 +901,11 @@ public class UIForm extends UIAbstractPageObject
                                                                        ((FieldTable) field));
                     this.elements.add(new Element(UIForm.ElementType.TABLE, uiFieldTable));
                     addNew = true;
+                    if (firstTable) {
+                        firstTable = false;
+                    } else {
+                        uiFieldTable.setFirstTable(false);
+                    }
                 } else {
                     if (addNew) {
                         formelement = new FormElement();

@@ -209,9 +209,7 @@ public class UITable extends UIAbstractPageObject
      * @param _parameters PageParameters
      * @throws EFapsException on error
      */
-    public UITable(final PageParameters _parameters)
-
-            throws EFapsException
+    public UITable(final PageParameters _parameters) throws EFapsException
     {
         super(_parameters);
         initialise();
@@ -224,8 +222,7 @@ public class UITable extends UIAbstractPageObject
      * @param _instanceKey Key of the instance
      * @throws EFapsException on error
      */
-    public UITable(final UUID _commandUUID, final String _instanceKey)
-            throws EFapsException
+    public UITable(final UUID _commandUUID, final String _instanceKey) throws EFapsException
     {
         super(_commandUUID, _instanceKey);
         initialise();
@@ -239,8 +236,7 @@ public class UITable extends UIAbstractPageObject
      * @param _openerId id of the opener
      * @throws EFapsException on error
      */
-    public UITable(final UUID _commandUUID, final String _instanceKey, final String _openerId)
-            throws EFapsException
+    public UITable(final UUID _commandUUID, final String _instanceKey, final String _openerId) throws EFapsException
     {
         super(_commandUUID, _instanceKey, _openerId);
         initialise();
@@ -250,8 +246,7 @@ public class UITable extends UIAbstractPageObject
      * Method that initializes the TableModel.
      * @throws EFapsException on error
      */
-    private void initialise()
-            throws EFapsException
+    private void initialise() throws EFapsException
     {
         final AbstractCommand command = getCommand();
         if (command == null) {
@@ -292,8 +287,6 @@ public class UITable extends UIAbstractPageObject
                 UITable.LOG.error("error during the retrieve of UserAttributes", e);
             }
         }
-
-
     }
 
     /**
@@ -327,6 +320,12 @@ public class UITable extends UIAbstractPageObject
     }
 
 
+    /**
+     * Method to get the list of instance.
+     * @return  List of instances
+     * @throws EFapsException on error
+     */
+    @SuppressWarnings("unchecked")
     protected List<Instance> getInstanceList() throws EFapsException
     {
         // get the filters that must be applied against the database

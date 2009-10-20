@@ -33,6 +33,16 @@ import org.apache.wicket.markup.ComponentTag;
 public class SetSelectedRowBehavior extends AbstractBehavior
 {
     /**
+     * Name of the hidden input for the field name.
+     */
+    public static final String INPUT_NAME = "eFapsRowSelectedName";
+
+    /**
+     * Name of the hidden input for the row number.
+     */
+    public static final String INPUT_ROW = "eFapsRowSelectedRow";
+
+    /**
      *
      */
     private static final long serialVersionUID = 1L;
@@ -68,16 +78,16 @@ public class SetSelectedRowBehavior extends AbstractBehavior
     private String getJavaScript()
     {
         final StringBuilder ret = new StringBuilder();
-        ret.append("var p=0;")
-            .append(" var c=this.form.").append(this.name).append(";")
+        ret.append(" this.form.").append(SetSelectedRowBehavior.INPUT_NAME).append(".value='").append(this.name)
+                .append("';")
+            .append(" c=this.form.elements[this.name];")
+            .append(" if(typeof(c.length)=='undefined'){")
+            .append(" this.form.").append(SetSelectedRowBehavior.INPUT_ROW).append(".value=0;")
+            .append(" }else{")
             .append(" for (var i = 0; i < c.length; i++) {")
             .append(" if (c[i]==this) {")
-            .append(" p = i; break;}}")
-            .append(" var s=this.form.eFapsRowSelected;")
-            .append(" for (var i = 0; i < s.length; i++) {")
-            .append(" s[i].value='';")
-            .append(" }")
-            .append(" s[p].value='").append(this.name).append("';");
+            .append(" this.form.").append(SetSelectedRowBehavior.INPUT_ROW).append(".value=i;")
+            .append(" break;}}}");
         return ret.toString();
     }
 

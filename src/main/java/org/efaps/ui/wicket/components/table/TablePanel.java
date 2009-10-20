@@ -24,14 +24,19 @@ import java.util.Iterator;
 
 import org.apache.wicket.Page;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
+import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.MarkupStream;
+import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.dbproperty.DBProperties;
+import org.efaps.ui.wicket.behaviors.SetSelectedRowBehavior;
 import org.efaps.ui.wicket.components.table.row.RowPanel;
 import org.efaps.ui.wicket.models.RowModel;
+import org.efaps.ui.wicket.models.objects.UIFieldTable;
 import org.efaps.ui.wicket.models.objects.UIRow;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
@@ -58,12 +63,12 @@ public class TablePanel extends Panel
 
     /**
      * @param _wicketId wicket id of this component
-     * @param _model    model for this component
+     * @param _uitable    model for this component
      * @param _page     page this component is in
      */
-    public TablePanel(final String _wicketId, final IModel<UITable> _model, final Page _page)
+    public TablePanel(final String _wicketId, final IModel<UITable> _uitable, final Page _page)
     {
-        super(_wicketId, _model);
+        super(_wicketId, _uitable);
 
         final UITable uiTable = (UITable) super.getDefaultModelObject();
 
@@ -104,7 +109,54 @@ public class TablePanel extends Panel
             }
         }
         if (uiTable.isCreateMode()) {
-            rowsRepeater.add(new AjaxAddRemoveRowPanel(rowsRepeater.newChildId(), _model, rowsRepeater));
+            rowsRepeater.add(new AjaxAddRemoveRowPanel(rowsRepeater.newChildId(), _uitable, rowsRepeater));
+            if (uiTable instanceof UIFieldTable)  {
+                if (((UIFieldTable) uiTable).isFirstTable()) {
+                    this.add(new RowSelectedInput("selected"));
+                } else {
+                    this.add(new WebComponent("selected").setVisible(false));
+                }
+            } else {
+                this.add(new RowSelectedInput("selected"));
+            }
+        } else {
+            this.add(new WebComponent("selected").setVisible(false));
         }
+    }
+
+    /**
+     * Class renders two hidden inputs used to commit the actual selected
+     * row and column.
+     */
+    public class RowSelectedInput extends WebComponent
+    {
+
+        /**
+         * Needed for serialization.
+         */
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * @param _wicketId wicket id for this component
+         */
+        public RowSelectedInput(final String _wicketId)
+        {
+            super(_wicketId);
+        }
+
+        /**
+         * @see org.apache.wicket.Component#onComponentTagBody(org.apache.wicket.markup.MarkupStream, org.apache.wicket.markup.ComponentTag)
+         * @param _markupStream MarkupStream
+         * @param _tag          ComponentTag
+         */
+        @Override
+        protected void onComponentTagBody(final MarkupStream _markupStream, final ComponentTag _tag)
+        {
+            final StringBuilder html = new StringBuilder();
+            html.append("<input type=\"hidden\" name=\"").append(SetSelectedRowBehavior.INPUT_NAME).append("\"/>")
+                .append("<input type=\"hidden\" name=\"").append(SetSelectedRowBehavior.INPUT_ROW).append("\"/>");
+            replaceComponentTagBody(_markupStream, _tag, html);
+        }
+
     }
 }
