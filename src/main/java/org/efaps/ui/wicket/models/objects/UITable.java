@@ -35,6 +35,7 @@ import java.util.Map.Entry;
 import org.apache.wicket.IClusterable;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.RestartResponseException;
+import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.slf4j.Logger;
@@ -1338,17 +1339,29 @@ public class UITable extends UIAbstractPageObject
          * @param _uitableHeader UITableHeader this filter lies in
          * @throws EFapsException on error
          */
-        public Filter(final UITableHeader _uitableHeader)
-                throws EFapsException
+        public Filter(final UITableHeader _uitableHeader) throws EFapsException
         {
             this.uiTableHeader = _uitableHeader;
             if (_uitableHeader.getFilterDefault() != null) {
-                if (_uitableHeader.getFilterType().equals(FilterType.DATE)
-                                && "today".equalsIgnoreCase(_uitableHeader.getFilterDefault())) {
+                if (_uitableHeader.getFilterType().equals(FilterType.DATE)) {
                     final DateTimeType dateType = new DateTimeType();
-                    dateType.set(new DateTime[] { new DateTime() });
-                    this.dateFrom = dateType.getValue().toDateMidnight().toDateTime();
-                    this.dateTo = this.dateFrom.plusDays(1);
+                    if ("today".equalsIgnoreCase(_uitableHeader.getFilterDefault())) {
+                        dateType.set(new DateTime[] { new DateTime() });
+                        this.dateFrom = dateType.getValue().toDateMidnight().toDateTime();
+                        this.dateTo = this.dateFrom.plusDays(1);
+                    } else if ("week".equalsIgnoreCase(_uitableHeader.getFilterDefault())) {
+                        dateType.set(new DateTime[] { new DateTime() });
+                        DateMidnight tmp = dateType.getValue().toDateMidnight();
+                        tmp = tmp.minusDays(tmp.getDayOfWeek() - 1);
+                        this.dateFrom = tmp.toDateTime();
+                        this.dateTo = tmp.toDateTime().plusWeeks(1);
+                    } else if ("month".equalsIgnoreCase(_uitableHeader.getFilterDefault())) {
+                        dateType.set(new DateTime[] { new DateTime() });
+                        DateMidnight tmp = dateType.getValue().toDateMidnight();
+                        tmp = tmp.minusDays(tmp.getDayOfMonth() - 1);
+                        this.dateFrom = tmp.toDateTime();
+                        this.dateTo = tmp.toDateTime().plusMonths(1);
+                    }
                 }
             }
         }
