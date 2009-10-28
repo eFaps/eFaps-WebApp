@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-  
+
   Copyright 2003 - 2009 The eFaps Team
-  
+
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
-  
+
   http://www.apache.org/licenses/LICENSE-2.0
-  
+
   Unless required by applicable law or agreed to in writing, software
   distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
-  
+
   Author:          jmox
   Revision:        $Rev$
   Last Changed:    $Date$
   Last Changed By: $Author$
-  
+
 -->
 
 <install xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -28,6 +28,18 @@
 >
   <application>eFaps-WebApp</application>
 
-  <version number="1" compile="true" />
+  <version number="1" compile="true" reloadCache="true" >
+    <script>
+      importClass(Packages.org.efaps.importer.DataImport);
+      importClass(Packages.java.io.File);
+      importClass(Packages.org.efaps.db.Context);
 
+      Context.begin(EFAPS_USERNAME);
+      url = new File(EFAPS_DIR, "Data/IMPORT_AddExportCmd2Menus.xml").toURL();
+      imp = DataImport.readFile(url);
+      imp.updateInDB();
+      Context.commit();
+    </script>
+  </version>
 </install>
+

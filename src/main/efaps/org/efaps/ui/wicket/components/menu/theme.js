@@ -1,4 +1,4 @@
-/* 
+/*
  * @eFapsPackage  org.efaps.ui.wicket.components.menu
  * @eFapsUUID     9f323ef3-73aa-4255-85d6-e2b471a6b801
  * @eFapsRevision $Rev$
@@ -43,13 +43,13 @@ var cmThemeOffice =
 	// sub menu display attributes
 
 	// HTML code to the left of the folder item
-	folderLeft: '<img alt="" src="' + cmThemeOfficeBase + 'spacer.gif">',
+	folderLeft: '<img alt="" src="' + cmThemeOfficeBase + 'spacer.gif?">',
 	// HTML code to the right of the folder item
-	folderRight: '<img alt="" src="' + cmThemeOfficeBase + 'arrow.gif">',
+	folderRight: '<img alt="" src="' + cmThemeOfficeBase + 'arrow.gif?">',
 	// HTML code to the left of the regular item
-	itemLeft: '<img alt="" src="' + cmThemeOfficeBase + 'spacer.gif">',
+	itemLeft: '<img alt="" src="' + cmThemeOfficeBase + 'spacer.gif?">',
 	// HTML code to the right of the regular item
-	itemRight: '<img alt="" src="' + cmThemeOfficeBase + 'blank.gif">',
+	itemRight: '<img alt="" src="' + cmThemeOfficeBase + 'blank.gif?">',
 	// cell spacing for main menu
 	mainSpacing: 0,
 	// cell spacing for sub menus
