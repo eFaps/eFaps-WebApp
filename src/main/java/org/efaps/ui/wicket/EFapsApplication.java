@@ -86,9 +86,10 @@ public class EFapsApplication extends WebApplication
         getMarkupSettings().setStripXmlDeclarationFromOutput(true);
         getRequestCycleSettings().setGatherExtendedBrowserInfo(true);
         getDebugSettings().setAjaxDebugModeEnabled(false);
-        super.getSecuritySettings().setAuthorizationStrategy(new EFapsFormBasedAuthorizationStartegy());
+        getSecuritySettings().setAuthorizationStrategy(new EFapsFormBasedAuthorizationStartegy());
         getApplicationSettings().setPageExpiredErrorPage(LoginPage.class);
         getPageSettings().setAutomaticMultiWindowSupport(true);
+        getRequestLoggerSettings().setRequestLoggerEnabled(true);
     }
 
     /**
