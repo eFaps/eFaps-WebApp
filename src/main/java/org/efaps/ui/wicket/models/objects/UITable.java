@@ -351,7 +351,7 @@ public class UITable extends UIAbstractPageObject
     }
 
     /**
-     * TODO to be removed
+     * TODO to be removed.
      * Temporary method to decide which method of selct must be used
      * @return true if the new way
      */
@@ -437,7 +437,13 @@ public class UITable extends UIAbstractPageObject
                 if (field.getName().equals(this.sortKey)) {
                     sortdirection = getSortDirection();
                 }
-
+                if (field.getFilterAttributes() != null) {
+                    if (field.getFilterAttributes().contains(",")) {
+                        attr = type.getAttribute(field.getFilterAttributes().split(",")[0]);
+                    } else {
+                        attr = type.getAttribute(field.getFilterAttributes());
+                    }
+                }
                 final UITableHeader uiTableHeader = new UITableHeader(field, sortdirection, attr);
                 if (this.filterTempCache.containsKey(uiTableHeader.getFieldName())
                                 && this.filterTempCache.get(uiTableHeader.getFieldName()).getUiTableHeader() != null) {
@@ -470,11 +476,13 @@ public class UITable extends UIAbstractPageObject
     }
 
     /**
-     * @param _query
-     * @param _fields
-     * @throws EFapsException
+     * @param _query    Query
+     * @param _fields   Fields
+     * @throws EFapsException on error
      */
-    private void executeRowResult(final MultiPrintQuery _query, final List<Field> _fields) throws EFapsException
+    private void executeRowResult(final MultiPrintQuery _query,
+                                  final List<Field> _fields)
+        throws EFapsException
     {
         while (_query.next()) {
             Instance instance = _query.getCurrentInstance();
@@ -536,7 +544,6 @@ public class UITable extends UIAbstractPageObject
             }
             this.values.add(row);
         }
-
     }
 
     /**
@@ -1274,16 +1281,15 @@ public class UITable extends UIAbstractPageObject
      */
     public class Filter implements IClusterable
     {
-
         /**
          * Key to the value for "from" in the nap for the esjp.
          */
-        public final static String FROM = "from";
+        public static final String FROM = "from";
 
         /**
          * Key to the value for "to" in the nap for the esjp.
          */
-        public final static String TO = "to";
+        public static final String TO = "to";
 
         /**
          * Needed for serialization.
