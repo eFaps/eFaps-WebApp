@@ -222,10 +222,11 @@ public class Table extends StandartReport implements EventExecution
         public boolean next()
             throws JRException
         {
-            if (this.values.hasNext()) {
+            final boolean ret = this.values.hasNext();
+            if (ret) {
                 this.current = this.values.next();
             }
-            return this.values.hasNext();
+            return ret;
         }
     }
 }
