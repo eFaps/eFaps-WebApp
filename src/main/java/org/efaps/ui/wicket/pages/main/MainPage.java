@@ -22,6 +22,7 @@ package org.efaps.ui.wicket.pages.main;
 
 import java.util.UUID;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.PageMap;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxEventBehavior;
@@ -32,8 +33,10 @@ import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.behavior.StringHeaderContributor;
 import org.apache.wicket.markup.html.IHeaderContributor;
 import org.apache.wicket.markup.html.IHeaderResponse;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.InlineFrame;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.util.string.JavascriptUtils;
 import org.apache.wicket.util.time.Duration;
@@ -127,8 +130,10 @@ public class MainPage extends AbstractMergePage
 
         this.resize = new ResizeEventBehavior();
 
+        final WebMarkupContainer logo = new WebMarkupContainer("logo");
+        this.add(logo);
         final Label welcome = new Label("welcome", DBProperties.getProperty("Logo.Welcome.Label"));
-        this.add(welcome);
+        logo.add(welcome);
         welcome.add(this.resize);
         welcome.add(new HeaderContributor(new IHeaderContributor() {
 
@@ -144,9 +149,12 @@ public class MainPage extends AbstractMergePage
 
         try {
             final Context context = Context.getThreadContext();
-            this.add(new Label("firstname", context.getPerson().getFirstName()));
-            this.add(new Label("lastname", context.getPerson().getLastName()));
-            this.add(new Label("company", context.getCompany() == null ? "" : context.getCompany().getName()));
+            logo.add(new Label("firstname", context.getPerson().getFirstName()));
+            logo.add(new Label("lastname", context.getPerson().getLastName()));
+            final String companyName = context.getCompany() == null ? "" : context.getCompany().getName();
+            logo.add(new Label("company", companyName));
+            logo.add(new AttributeModifier("class", true,
+                            new Model<String>("eFapsLogo " + companyName.replace(" " , ""))));
         } catch (final EFapsException e) {
             throw new RestartResponseException(new ErrorPage(e));
         }
