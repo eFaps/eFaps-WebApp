@@ -28,6 +28,7 @@ import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.Session;
 import org.apache.wicket.authorization.Action;
 import org.apache.wicket.authorization.IAuthorizationStrategy;
+import org.apache.wicket.javascript.DefaultJavascriptCompressor;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.WebRequest;
@@ -89,6 +90,8 @@ public class EFapsApplication extends WebApplication
         getSecuritySettings().setAuthorizationStrategy(new EFapsFormBasedAuthorizationStartegy());
         getApplicationSettings().setPageExpiredErrorPage(LoginPage.class);
         getPageSettings().setAutomaticMultiWindowSupport(true);
+        getResourceSettings().setJavascriptCompressor(new DefaultJavascriptCompressor());
+
         getRequestLoggerSettings().setRequestLoggerEnabled(true);
     }
 
