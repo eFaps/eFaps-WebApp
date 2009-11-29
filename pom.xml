@@ -1,189 +1,165 @@
 <?xml version="1.0" encoding="UTF-8"?>
+    <!--
+        Copyright 2003 - 2009 The eFaps Team Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of
+        the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,
+        WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License. Author: The eFaps
+        Team Revision: $Rev$ Last Changed: $Date$ Last Changed By: $Author$
+    -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-<!--
-
-  Copyright 2003 - 2009 The eFaps Team
-
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-  http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
-
-  Author:          The eFaps Team
-  Revision:        $Rev$
-  Last Changed:    $Date$
-  Last Changed By: $Author$
-
--->
-
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
->
-
-  <modelVersion>4.0.0</modelVersion>
-
-  <!-- ************************************************************************
+    <!-- ************************************************************************
     * Module Definition
     ************************************************************************* -->
-  <packaging>jar</packaging>
-  <groupId>org.efaps</groupId>
-  <artifactId>efaps-webapp</artifactId>
-  <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <groupId>org.efaps</groupId>
+    <artifactId>efaps-webapp</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <name>eFaps-WebApp</name>
+    <description>eFaps-WebApp provides a web interface as the User Interface for eFaps which can be easily expanded and altered.</description>
 
-  <name>eFaps-WebApp</name>
-  <description>eFaps-WebApp provides a web interface as the User Interface for eFaps which can be easily expanded and altered.</description>
-
-  <!-- ************************************************************************
+    <!-- ************************************************************************
     * Project itself
     ************************************************************************* -->
-  <build>
+    <build>
 
-    <!-- required that the template files for wicket are copied -->
-    <resources>
-      <resource>
-        <filtering>false</filtering>
-        <directory>src/main/resources</directory>
-      </resource>
-      <resource>
-        <filtering>false</filtering>
-        <directory>src/main/java</directory>
-        <includes>
-          <include>**</include>
-        </includes>
-        <excludes>
-          <exclude>**/*.java</exclude>
-        </excludes>
-      </resource>
-    </resources>
-
-    <plugins>
-      <!--
+        <!-- required that the template files for wicket are copied -->
+        <resources>
+            <resource>
+                <filtering>false</filtering>
+                <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <filtering>false</filtering>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**</include>
+                </includes>
+                <excludes>
+                    <exclude>**/*.java</exclude>
+                </excludes>
+            </resource>
+        </resources>
+        <plugins>
+            <!--
         Compiler Settings:
-        - Java 1.5 is needed!
+        - Java 1.6 is needed!
       -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
-        </configuration>
-      </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
 
-      <!--
+            <!--
         eFaps Jetty plug in
       -->
-      <plugin>
-        <groupId>org.efaps.maven</groupId>
-        <artifactId>maven-efaps-jetty</artifactId>
-        <version>${project.version}</version>
-        <configuration>
-          <jaasConfigFile>${basedir}/src/main/jetty/jaas.config</jaasConfigFile>
-          <configFile>file:${basedir}/src/main/jetty/eFaps-jetty.xml</configFile>
-          <userName>Administrator</userName>
-          <passWord>Administrator</passWord>
-        </configuration>
-        <dependencies>
-          <!-- connection Pooling, used as J2EE resource -->
-          <dependency>
-            <groupId>commons-dbcp</groupId>
-            <artifactId>commons-dbcp</artifactId>
-            <version>1.2.1</version>
-          </dependency>
-          <!-- as depency, wicket itself is referenced (and so started) -->
-          <dependency>
-            <groupId>org.efaps</groupId>
-            <artifactId>eFaps-WebApp</artifactId>
-            <version>${project.version}</version>
-          </dependency>
-          <!-- eFaps Maven PLugin -->
-          <dependency>
-            <groupId>org.efaps</groupId>
-            <artifactId>efaps-kernel</artifactId>
-            <version>${project.version}</version>
-          </dependency>
-        </dependencies>
-      </plugin>
-
-    </plugins>
-  </build>
+            <plugin>
+                <groupId>org.efaps.maven</groupId>
+                <artifactId>maven-efaps-jetty</artifactId>
+                <version>${project.version}</version>
+                <configuration>
+                    <jaasConfigFile>${basedir}/src/main/jetty/jaas.config</jaasConfigFile>
+                    <configFile>file:${basedir}/src/main/jetty/eFaps-jetty.xml</configFile>
+                    <userName>Administrator</userName>
+                    <passWord>Administrator</passWord>
+                </configuration>
+                <dependencies>
+                    <!-- connection Pooling, used as J2EE resource -->
+                    <dependency>
+                        <groupId>commons-dbcp</groupId>
+                        <artifactId>commons-dbcp</artifactId>
+                        <version>1.2.1</version>
+                    </dependency>
+                    <!-- as depency, wicket itself is referenced (and so started) -->
+                    <dependency>
+                        <groupId>org.efaps</groupId>
+                        <artifactId>eFaps-WebApp</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                    <!-- eFaps Maven PLugin -->
+                    <dependency>
+                        <groupId>org.efaps</groupId>
+                        <artifactId>efaps-kernel</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
+    </build>
 
     <!-- correct encoding -->
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-  <!-- ************************************************************************
+    <!-- ************************************************************************
     * Dependencies
     ************************************************************************* -->
-  <dependencies>
+    <dependencies>
 
-    <!-- eFaps kernel -->
-    <dependency>
-      <groupId>org.efaps</groupId>
-      <artifactId>eFaps-Kernel</artifactId>
-      <version>${project.version}</version>
-    </dependency>
+        <!-- eFaps kernel -->
+        <dependency>
+            <groupId>org.efaps</groupId>
+            <artifactId>eFaps-Kernel</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
-    <!-- to define a higher version (needed from another tool) -->
-    <dependency>
-      <groupId>commons-collections</groupId>
-      <artifactId>commons-collections</artifactId>
-      <version>3.1</version>
-    </dependency>
+        <!-- to define a higher version (needed from another tool) -->
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>3.1</version>
+        </dependency>
 
-	<!-- To Create HTML Codes used in the WebDAV integration -->
-    <dependency>
-      <groupId>ecs</groupId>
-      <artifactId>ecs</artifactId>
-      <version>1.4.2</version>
-      <scope>compile</scope>
-    </dependency>
+        <!-- To Create HTML Codes used in the WebDAV integration -->
+        <dependency>
+            <groupId>ecs</groupId>
+            <artifactId>ecs</artifactId>
+            <version>1.4.2</version>
+            <scope>compile</scope>
+        </dependency>
 
-    <!-- wicket -->
-    <dependency>
-      <groupId>org.apache.wicket</groupId>
-      <artifactId>wicket</artifactId>
-      <version>1.4.0</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.wicket</groupId>
-      <artifactId>wicket-extensions</artifactId>
-      <version>1.4.0</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.wicket</groupId>
-      <artifactId>wicket-datetime</artifactId>
-      <version>1.4.0</version>
-      <scope>compile</scope>
-    </dependency>
+        <!-- wicket -->
+        <dependency>
+            <groupId>org.apache.wicket</groupId>
+            <artifactId>wicket</artifactId>
+            <version>1.4.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.wicket</groupId>
+            <artifactId>wicket-extensions</artifactId>
+            <version>1.4.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.wicket</groupId>
+            <artifactId>wicket-datetime</artifactId>
+            <version>1.4.0</version>
+            <scope>compile</scope>
+        </dependency>
 
-    <!-- xerces used for creating xml on the fly-->
-    <dependency>
-      <groupId>xerces</groupId>
-      <artifactId>xercesImpl</artifactId>
-      <version>2.8.1</version>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>2.5</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.xmlgraphics</groupId>
-      <artifactId>fop</artifactId>
-      <version>0.95</version>
-    </dependency>
-
-  </dependencies>
+        <!-- xerces used for creating xml on the fly-->
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>2.8.1</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>fop</artifactId>
+            <version>0.95</version>
+        </dependency>
+    </dependencies>
 </project>
