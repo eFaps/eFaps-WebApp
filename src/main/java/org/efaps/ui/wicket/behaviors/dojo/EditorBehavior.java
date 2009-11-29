@@ -28,9 +28,9 @@ import org.apache.wicket.markup.ComponentTag;
 
 /**
  * Class renders a dojo editor.This widget provides basic WYSIWYG editing
- * features, based on the browser’s underlying rich text editing capability,
+ * features, based on the browser's underlying rich text editing capability,
  * accompanied by a toolbar (dijit.Toolbar). A plugin model is available
- * to extend the editor’s capabilities as well as the the options available
+ * to extend the editor's capabilities as well as the the options available
  * in the toolbar. Content generation may vary across browsers, and clipboard
  * operations may have different results, to name a few limitations.
  * Note: this widget should not be used with the HTML &lt;TEXTAREA&gt; tag.
@@ -55,33 +55,57 @@ public class EditorBehavior extends AbstractDojoBehavior
      */
     public enum MenuCommands
     {
-        /** "undo. */
+        /** undo. */
         UNDO("undo"),
-        /** "redo. */
+        /** redo. */
         REDO("redo"),
+        /** cut. */
         CUT("cut"),
-        COPY("paste"),
+        /** paste. */
+        COPY("copy"),
+        /** paste. */
         PASTE("paste"),
+        /** selectAll. */
         SELECTALL("selectAll"),
+        /** bold. */
         BOLD("bold"),
+        /** italic. */
         ITALIC("italic"),
+        /** underline. */
         UNDERLINE("underline"),
+        /** strikethrough. */
         STRIKETHROUGH("strikethrough"),
+        /** subscript. */
         SUBSRCIPT("subscript"),
+        /** superscript. */
         SUPERSCRIPT("superscript"),
+        /** removeFormat. */
         REMOVEFORMAT("removeFormat"),
+        /** insertOrderedList. */
         ORDEREDLIST("insertOrderedList"),
+        /** insertUnorderedList. */
         UNORDERLIST("insertUnorderedList"),
+        /** insertHorizontalRule. */
         HR("insertHorizontalRule"),
+        /** indent. */
         INDENT("indent"),
+        /** outdent. */
         OUTENT("outdent"),
+        /** justifyLeft. */
         JUSTIFYLEFT("justifyLeft"),
+        /** justifyRight. */
         JUSTIFYRIGHT("justifyRight"),
+        /** justifyCenter. */
         JUSTIFYCENTER("justifyCenter"),
+        /** justifyFull. */
         JUSTIFYFULL("justifyFull"),
+        /** createLink. */
         CREATELINK("createLink"),
+        /** unlink. */
         UNLINK("unlink"),
+        /** delete. */
         DELETE("delete"),
+        /** |. */
         SEPERATOR("|");
 
         /**
@@ -136,7 +160,8 @@ public class EditorBehavior extends AbstractDojoBehavior
      * @param _tag Tag to write to
      */
     @Override
-    public void onComponentTag(final Component _component, final ComponentTag _tag)
+    public void onComponentTag(final Component _component,
+                               final ComponentTag _tag)
     {
         super.onComponentTag(_component, _tag);
         _tag.put("dojoType", "dijit.Editor");
