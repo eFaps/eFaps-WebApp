@@ -91,7 +91,6 @@
             <plugin>
                 <groupId>org.efaps.maven</groupId>
                 <artifactId>maven-efaps-jetty</artifactId>
-                <version>${project.version}</version>
                 <configuration>
                     <jaasConfigFile>${basedir}/src/main/jetty/jaas.config</jaasConfigFile>
                     <configFile>file:${basedir}/src/main/jetty/eFaps-jetty.xml</configFile>
@@ -130,7 +129,7 @@
         <!-- eFaps kernel -->
         <dependency>
             <groupId>org.efaps</groupId>
-            <artifactId>eFaps-Kernel</artifactId>
+            <artifactId>efaps-kernel</artifactId>
             <version>${project.version}</version>
         </dependency>
 
