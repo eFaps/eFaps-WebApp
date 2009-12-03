@@ -187,26 +187,7 @@
         </dependency>
 
                     <!-- temporaer -->
-        <dependency>
-            <groupId>org.efaps</groupId>
-            <artifactId>number2words</artifactId>
-            <version>0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.sanselan</groupId>
-            <artifactId>sanselan</artifactId>
-            <version>0.97-incubator</version>
-        </dependency>
-        <dependency>
-            <groupId>java-image-scaling</groupId>
-            <artifactId>java-image-scaling</artifactId>
-            <version>0.8.2-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>net.sf.opencsv</groupId>
-            <artifactId>opencsv</artifactId>
-            <version>2.0</version>
-        </dependency>
+
 
 
     </dependencies>
