@@ -23,8 +23,11 @@ package org.efaps.ui.wicket.components.menu;
 import java.util.Iterator;
 
 import org.apache.wicket.PageMap;
+import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
+import org.apache.wicket.markup.html.IHeaderContributor;
+import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.link.ILinkListener;
 import org.apache.wicket.markup.html.link.PopupSettings;
 import org.apache.wicket.model.IModel;
@@ -40,6 +43,7 @@ import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.models.objects.UISearchItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
+import org.efaps.util.RequestHandler;
 
 /**
  * Class is responsible to render the Menu for eFaps.
@@ -47,32 +51,39 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
  * @author The eFaps Team
  * @version $Id:MenuContainer.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class MenuContainer extends AbstractParentMarkupContainer
+public class MenuContainer
+    extends AbstractParentMarkupContainer
 {
+    /**
+     * Unique identifier used for serialization.
+     */
+    private static final long serialVersionUID = -6120467631452919272L;
+
     /**
      * Content reference to the theme java script.
      */
-    public static final EFapsContentReference THEME = new EFapsContentReference(MenuContainer.class, "theme.js");
+    private static final EFapsContentReference THEME = new EFapsContentReference(MenuContainer.class, "theme.js");
+
+    /**
+     * URL of the theme images.
+     */
+    private static final String URL_THEME_IMAGES = RequestHandler.URL_IMAGE + "org.efaps.ui.wicket.components.menu.";
 
     /**
      * Content reference to the EFapsExtension java script.
      */
-    public static final EFapsContentReference EFAPSEXTENSION = new EFapsContentReference(MenuContainer.class,
-                    "EFapsExtension.js");
+    private static final EFapsContentReference EFAPSEXTENSION
+        = new EFapsContentReference(MenuContainer.class, "EFapsExtension.js");
 
     /**
-     * Content reference to the EFapsMenu stylesheet.
+     * Content reference to the EFapsMenu cascade style sheet.
      */
-    public static final EFapsContentReference CSS = new EFapsContentReference(MenuContainer.class, "EFapsMenu.css");
+    private static final EFapsContentReference CSS = new EFapsContentReference(MenuContainer.class, "EFapsMenu.css");
+
     /**
      * Content reference to the an image.
      */
-    public static final EFapsContentReference IMG_BLANK = new EFapsContentReference(MenuContainer.class, "blank.gif");
-
-    /**
-     * Needed for serialization.
-     */
-    private static final long serialVersionUID = 1L;
+    private static final EFapsContentReference IMG_BLANK = new EFapsContentReference(MenuContainer.class, "blank.gif");
 
     /**
      * Variable stores the form, so it can be accessed by links.
@@ -82,7 +93,7 @@ public class MenuContainer extends AbstractParentMarkupContainer
     /**
      * Counter for the children of this menu.
      */
-    private Integer childID = 0;
+    private int childID = 0;
 
     /**
      * Constructor.
@@ -96,19 +107,51 @@ public class MenuContainer extends AbstractParentMarkupContainer
     }
 
     /**
-     * Constructor.
+     * <p>Constructor defining the header and the menu itself. The header is
+     * extended to include
+     * <ul>
+     * <li>link to the {@link #CSS menu cascade style sheet}</li>
+     * <li>link to the {@link #EFAPSEXTENSION eFaps menu extension} Javascript
+     *     </li>
+     * <li>link to the {@link #THEME menu theme} Javascript</li>
+     * </ul></p>
+     * <p>For the Javascript of the {@link #THEME menu theme} the link to the
+     * images must be defined before the script itself is called. So the
+     * original link could not be used and the link itself is build manually
+     * (and the URL for the image is defined correctly).</p>
      *
-     * @param _wicketId wicket id
-     * @param _model model of this component
-     * @param _form form
+     * @param _wicketId     wicket id
+     * @param _model        model of this component
+     * @param _form         form
      */
-    public MenuContainer(final String _wicketId, final IModel<?> _model, final FormContainer _form)
+    public MenuContainer(final String _wicketId,
+                         final IModel<?> _model,
+                         final FormContainer _form)
     {
         super(_wicketId, _model);
         this.form = _form;
+
         add(StaticHeaderContributor.forCss(MenuContainer.CSS));
         add(StaticHeaderContributor.forJavaScript(MenuContainer.EFAPSEXTENSION));
-        add(StaticHeaderContributor.forJavaScript(MenuContainer.THEME));
+
+        // appends theme
+        add(new HeaderContributor(new IHeaderContributor() {
+            private static final long serialVersionUID = 1L;
+
+            public void renderHead(final IHeaderResponse _response)
+            {
+                final StringBuilder html = new StringBuilder()
+                    .append(JavascriptUtils.SCRIPT_OPEN_TAG)
+                    .append("var myThemeOfficeBase=\"")
+                    .append(RequestHandler.replaceMacrosInUrl(MenuContainer.URL_THEME_IMAGES).replaceAll("\\?", ""))
+                    .append("\";\n")
+                    .append(JavascriptUtils.SCRIPT_CLOSE_TAG)
+                    .append("<script type=\"text/javascript\" src=\"")
+                    .append(MenuContainer.THEME.getStaticContentUrl())
+                    .append("\"></script>\n");
+                _response.renderString(html.toString());
+            }
+        }));
 
         final UIMenuItem model = (UIMenuItem) super.getDefaultModelObject();
         for (final UIMenuItem menuItem : model.getChilds()) {
@@ -123,11 +166,11 @@ public class MenuContainer extends AbstractParentMarkupContainer
      */
     private String getNewChildId()
     {
-        return "ItemLink" + (this.childID++).toString();
+        return "ItemLink" + String.valueOf(this.childID++);
     }
 
     /**
-     * Recursive method to dd a Link or a child to one Item in the Menu.
+     * Recursive method to add a link or a child to one item in the menu.
      *
      * @param _menuItem menu item to add
      */
@@ -178,9 +221,9 @@ public class MenuContainer extends AbstractParentMarkupContainer
     }
 
     /**
-     * Before rendering the urls of all items must be evaluated.
+     * Before rendering the URL's of all items must be evaluated.
      */
-    @Override
+    @Override()
     protected void onBeforeRender()
     {
         final Iterator<?> childs = this.iterator();
@@ -226,20 +269,21 @@ public class MenuContainer extends AbstractParentMarkupContainer
      * On the tag of the component the script must be rendered.
      *
      * @param _markupStream markup stream
-     * @param _openTag tag
+     * @param _openTag      tag
      */
-    @Override
-    protected void onComponentTagBody(final MarkupStream _markupStream, final ComponentTag _openTag)
+    @Override()
+    protected void onComponentTagBody(final MarkupStream _markupStream,
+                                      final ComponentTag _openTag)
     {
 
         super.replaceComponentTagBody(_markupStream, _openTag, convert2Html(_openTag));
     }
 
     /**
-     * Method to convert all menu items to html code.
+     * Method to convert all menu items to HTML code.
      *
      * @param _openTag tag to be used
-     * @return String with valid html code
+     * @return String with valid HTML code
      */
     private String convert2Html(final ComponentTag _openTag)
     {
@@ -265,13 +309,15 @@ public class MenuContainer extends AbstractParentMarkupContainer
     /**
      * Recursive method to render one item.
      *
-     * @param _menuItem menu item to be rendered
-     * @param _html html to be appended to
-     * @param _isMain is this the first item or a recursive call
-     * @param _prefix prefix for an item
+     * @param _menuItem     menu item to be rendered
+     * @param _html         html to be appended to
+     * @param _isMain       is this the first item or a recursive call
+     * @param _prefix       prefix for an item
      */
-    private void convertItem2Html(final UIMenuItem _menuItem, final StringBuilder _html, final boolean _isMain,
-                    final StringBuilder _prefix)
+    private void convertItem2Html(final UIMenuItem _menuItem,
+                                  final StringBuilder _html,
+                                  final boolean _isMain,
+                                  final StringBuilder _prefix)
     {
 
         _html.append("['");
