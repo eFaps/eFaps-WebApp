@@ -35,15 +35,8 @@ import java.util.Map.Entry;
 import org.apache.wicket.IClusterable;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.RestartResponseException;
-import org.joda.time.DateMidnight;
-import org.joda.time.DateTime;
-import org.joda.time.Interval;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
-import org.efaps.admin.datamodel.attributetype.DateTimeType;
 import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
@@ -63,7 +56,13 @@ import org.efaps.ui.wicket.models.cell.UIHiddenCell;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.models.objects.UITableHeader.FilterType;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.util.DateTimeUtil;
 import org.efaps.util.EFapsException;
+import org.joda.time.DateMidnight;
+import org.joda.time.DateTime;
+import org.joda.time.Interval;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO description!
@@ -1350,20 +1349,16 @@ public class UITable extends UIAbstractPageObject
             this.uiTableHeader = _uitableHeader;
             if (_uitableHeader.getFilterDefault() != null) {
                 if (_uitableHeader.getFilterType().equals(FilterType.DATE)) {
-                    final DateTimeType dateType = new DateTimeType();
                     if ("today".equalsIgnoreCase(_uitableHeader.getFilterDefault())) {
-                        dateType.set(new DateTime[] { new DateTime() });
-                        this.dateFrom = dateType.getValue().toDateMidnight().toDateTime();
+                        this.dateFrom = DateTimeUtil.translateFromUI(new DateTime()).toDateMidnight().toDateTime();
                         this.dateTo = this.dateFrom.plusDays(1);
                     } else if ("week".equalsIgnoreCase(_uitableHeader.getFilterDefault())) {
-                        dateType.set(new DateTime[] { new DateTime() });
-                        DateMidnight tmp = dateType.getValue().toDateMidnight();
+                        DateMidnight tmp = DateTimeUtil.translateFromUI(new DateTime()).toDateMidnight();
                         tmp = tmp.minusDays(tmp.getDayOfWeek() - 1);
                         this.dateFrom = tmp.toDateTime();
                         this.dateTo = tmp.toDateTime().plusWeeks(1);
                     } else if ("month".equalsIgnoreCase(_uitableHeader.getFilterDefault())) {
-                        dateType.set(new DateTime[] { new DateTime() });
-                        DateMidnight tmp = dateType.getValue().toDateMidnight();
+                        DateMidnight tmp = DateTimeUtil.translateFromUI(new DateTime()).toDateMidnight();
                         tmp = tmp.minusDays(tmp.getDayOfMonth() - 1);
                         this.dateFrom = tmp.toDateTime();
                         this.dateTo = tmp.toDateTime().plusMonths(1);
@@ -1374,21 +1369,21 @@ public class UITable extends UIAbstractPageObject
 
         /**
          * Standard Constructor for a Filter containing a range.
-         * @param _uitableHeader UITableHeader this filter lies in
-         * @param _from value for from
-         * @param _to   value for to
+         *
+         * @param _uitableHeader    UITableHeader this filter lies in
+         * @param _from             value for from
+         * @param _to               value for to
          */
-        public Filter(final UITableHeader _uitableHeader, final String _from, final String _to)
+        public Filter(final UITableHeader _uitableHeader,
+                      final String _from,
+                      final String _to)
         {
             this.uiTableHeader = _uitableHeader;
             this.from = _from;
             this.to = _to;
             if (_uitableHeader.getFilterType().equals(FilterType.DATE)) {
-                final DateTimeType dateType = new DateTimeType();
-                dateType.set(new String[] { _from });
-                this.dateFrom = dateType.getValue();
-                dateType.set(new String[] { _to });
-                this.dateTo = dateType.getValue();
+                this.dateFrom = DateTimeUtil.translateFromUI(_from);
+                this.dateTo = DateTimeUtil.translateFromUI(_to);
                 this.dateTo = this.dateTo == null ? null : this.dateTo.plusDays(1);
             }
         }
@@ -1398,7 +1393,8 @@ public class UITable extends UIAbstractPageObject
          * @param _uitableHeader    UITableHeader this filter lies in
          * @param _filterList       set of values for the filter
          */
-        public Filter(final UITableHeader _uitableHeader, final Set<?> _filterList)
+        public Filter(final UITableHeader _uitableHeader,
+                      final Set<?> _filterList)
         {
             this.uiTableHeader = _uitableHeader;
             this.filterList = _filterList;
