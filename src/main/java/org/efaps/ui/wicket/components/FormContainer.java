@@ -37,163 +37,181 @@ import org.efaps.ui.wicket.models.objects.AbstractUIObject;
  * @author Jan Moxter
  * @version $Id$
  */
-public class FormContainer extends Form<Object> {
+public class FormContainer extends Form<Object>
+{
 
-  /**
-   * Needed for serialization.
-   */
-  private static final long serialVersionUID = 1L;
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
-  /**
-   * Component that will be committed by default.
-   */
-  private Component defaultSubmit;
+    /**
+     * Component that will be committed by default.
+     */
+    private Component defaultSubmit;
 
-  /**
-   * Url for the action that must be called.
-   */
-  private String actionUrl;
+    /**
+     * Url for the action that must be called.
+     */
+    private String actionUrl;
 
-  /**
-   * Is this form a used to upload a file.
-   */
-  private boolean fileUpload = false;
+    /**
+     * Is this form a used to upload a file.
+     */
+    private boolean fileUpload = false;
 
-  /**
-   * Constructor setting the wicket id of this component.
-   *
-   * @param _wicketId wicket id of this component
-   */
-  public FormContainer(final String _wicketId) {
-    super(_wicketId);
-  }
-
-  /**
-   * If a default component exists it must be appended.
-   *
-   * @param _markupstream   the markupstream
-   * @param _tag            the tag
-   *
-   * @see org.apache.wicket.markup.html.form
-   * .Form#onComponentTagBody(org.apache.wicket.markup.MarkupStream,
-   * org.apache.wicket.markup.ComponentTag)
-   */
-  @Override
-  protected void onComponentTagBody(final MarkupStream _markupstream,
-                                    final ComponentTag _tag) {
-    super.onComponentTagBody(_markupstream, _tag);
-    if (getDefaultButton() == null && this.defaultSubmit != null) {
-      appendDefaultSubmit(_markupstream, _tag);
+    /**
+     * Constructor setting the wicket id of this component.
+     *
+     * @param _wicketId wicket id of this component
+     */
+    public FormContainer(final String _wicketId)
+    {
+        super(_wicketId);
     }
-  }
 
-  /**
-   * On component tag.
-   *
-   * @param _tag  the tag
-   *
-   * @see org.apache.wicket.markup.html.form.Form
-   * #onComponentTag(org.apache.wicket.markup.ComponentTag)
-   */
-  @Override
-  protected void onComponentTag(final ComponentTag _tag) {
-    super.onComponentTag(_tag);
-    this.actionUrl = urlFor(IFormSubmitListener.INTERFACE).toString();
-    if (getPage().getDefaultModelObject() != null) {
-      if ((((AbstractUIObject) getPage().getDefaultModelObject()).isCreateMode()
-          || ((AbstractUIObject) getPage().getDefaultModelObject())
-            .isEditMode())) {
-        _tag.put("enctype", "multipart/form-data");
-      }
-      // only on SearchMode we want normal submit, in any other case we use
-      // AjaxSubmit
-      if (!((AbstractUIObject) getPage().getDefaultModelObject())
-          .isSearchMode()) {
-        _tag.put("onSubmit", "return false;");
-        _tag.put("action", "");
-      }
+    /**
+     * If a default component exists it must be appended.
+     *
+     * @param _markupstream the markupstream
+     * @param _tag the tag
+     *
+     * @see org.apache.wicket.markup.html.form
+     *      .Form#onComponentTagBody(org.apache.wicket.markup.MarkupStream,
+     *      org.apache.wicket.markup.ComponentTag)
+     */
+    @Override
+    protected void onComponentTagBody(final MarkupStream _markupstream,
+                                      final ComponentTag _tag)
+    {
+        super.onComponentTagBody(_markupstream, _tag);
+        if (getDefaultButton() == null && this.defaultSubmit != null) {
+            appendDefaultSubmit(_markupstream, _tag);
+        }
     }
-  }
 
-  /**
-   * Sets the default submit.
-   *
-   * @param _component the new default submit
-   */
-  public void setDefaultSubmit(final Component _component) {
-    this.defaultSubmit = _component;
-  }
-
-  /**
-   * Append default submit.
-   *
-   * @param _markupStream   the markup stream
-   * @param _openTag        the open tag
-   */
-  protected void appendDefaultSubmit(final MarkupStream _markupStream,
-                                     final ComponentTag _openTag) {
-
-    final AppendingStringBuffer buffer = new AppendingStringBuffer();
-
-    // div that is not visible (but not display:none either)
-    buffer.append("<div style=\"width:0px;height:0px;position:absolute;"
-        + "left:-100px;top:-100px;overflow:hidden\">");
-
-    // add an empty textfield (otherwise IE doesn't work)
-    buffer.append("<input type=\"text\" autocomplete=\"false\"/>");
-
-    buffer.append("<input type=\"submit\" onclick=\" var b=Wicket.$('");
-    buffer.append(this.defaultSubmit.getMarkupId());
-    buffer.append("'); if (typeof(b.onclick) != 'undefined') "
-        + "{ b.onclick();  }"
-        + " \" ");
-    buffer.append(" /></div>");
-    getResponse().write(buffer);
-  }
-
-  /**
-   * This is the getter method for the instance variable {@link #actionUrl}.
-   *
-   * @return value of instance variable {@link #actionUrl}
-   */
-  public String getActionUrl() {
-    return this.actionUrl;
-  }
-
-
-  /**
-   * On submit it is checked if it is a file upload from and in case that it is
-   * the listeners executed.
-   *
-   * @see org.apache.wicket.markup.html.form.Form#onSubmit()
-   */
-  @Override
-  protected void onSubmit() {
-    super.onSubmit();
-    if (this.fileUpload) {
-      final List<FileUploadListener> uploadListeners =
-          this.getBehaviors(FileUploadListener.class);
-      for (final FileUploadListener listener : uploadListeners) {
-        listener.onSubmit();
-      }
+    /**
+     * On component tag.
+     *
+     * @param _tag the tag
+     *
+     * @see org.apache.wicket.markup.html.form.Form
+     *      #onComponentTag(org.apache.wicket.markup.ComponentTag)
+     */
+    @Override
+    protected void onComponentTag(final ComponentTag _tag)
+    {
+        if ((((AbstractUIObject) getPage().getDefaultModelObject()).isCreateMode() || ((AbstractUIObject) getPage()
+                        .getDefaultModelObject()).isEditMode())) {
+            setMultiPart(true);
+            setMaxSize(getApplication().getApplicationSettings().getDefaultMaximumUploadSize());
+        }
+        super.onComponentTag(_tag);
+        this.actionUrl = urlFor(IFormSubmitListener.INTERFACE).toString();
+        if (getPage().getDefaultModelObject() != null) {
+            // only on SearchMode we want normal submit, in any other case we
+            // use
+            // AjaxSubmit
+            if (!((AbstractUIObject) getPage().getDefaultModelObject()).isSearchMode()) {
+                _tag.put("onSubmit", "return false;");
+                _tag.put("action", "");
+            }
+        }
     }
-  }
 
-  /**
-   * This is the getter method for the instance variable {@link #fileUpload}.
-   *
-   * @return value of instance variable {@link #fileUpload}
-   */
-  public boolean isFileUpload() {
-    return this.fileUpload;
-  }
+    /**
+     * Sets the default submit.
+     *
+     * @param _component the new default submit
+     */
+    public void setDefaultSubmit(final Component _component)
+    {
+        this.defaultSubmit = _component;
+    }
 
-  /**
-   * This is the setter method for the instance variable {@link #fileUpload}.
-   *
-   * @param _fileUpload the fileUpload to set
-   */
-  public void setFileUpload(final boolean _fileUpload) {
-    this.fileUpload = _fileUpload;
-  }
+    /**
+     * Append default submit.
+     *
+     * @param _markupStream the markup stream
+     * @param _openTag the open tag
+     */
+    protected void appendDefaultSubmit(final MarkupStream _markupStream,
+                                       final ComponentTag _openTag)
+    {
+
+        final AppendingStringBuffer buffer = new AppendingStringBuffer();
+
+        // div that is not visible (but not display:none either)
+        buffer.append("<div style=\"width:0px;height:0px;position:absolute;"
+                        + "left:-100px;top:-100px;overflow:hidden\">");
+
+        // add an empty textfield (otherwise IE doesn't work)
+        buffer.append("<input type=\"text\" autocomplete=\"false\"/>");
+
+        buffer.append("<input type=\"submit\" onclick=\" var b=Wicket.$('");
+        buffer.append(this.defaultSubmit.getMarkupId());
+        buffer.append("'); if (typeof(b.onclick) != 'undefined') " + "{ b.onclick();  }" + " \" ");
+        buffer.append(" /></div>");
+        getResponse().write(buffer);
+    }
+
+    /**
+     * This is the getter method for the instance variable {@link #actionUrl}.
+     *
+     * @return value of instance variable {@link #actionUrl}
+     */
+    public String getActionUrl()
+    {
+        return this.actionUrl;
+    }
+
+    /**
+     * On submit it is checked if it is a file upload from and in case that it
+     * is the listeners executed.
+     *
+     * @see org.apache.wicket.markup.html.form.Form#onSubmit()
+     */
+    @Override
+    protected void onSubmit()
+    {
+        super.onSubmit();
+        if (this.fileUpload) {
+            final List<FileUploadListener> uploadListeners = this.getBehaviors(FileUploadListener.class);
+            for (final FileUploadListener listener : uploadListeners) {
+                listener.onSubmit();
+            }
+        }
+    }
+
+    /**
+     * This is the getter method for the instance variable {@link #fileUpload}.
+     *
+     * @return value of instance variable {@link #fileUpload}
+     */
+    public boolean isFileUpload()
+    {
+        return this.fileUpload;
+    }
+
+    /**
+     * This is the setter method for the instance variable {@link #fileUpload}.
+     *
+     * @param _fileUpload the fileUpload to set
+     */
+    public void setFileUpload(final boolean _fileUpload)
+    {
+        this.fileUpload = _fileUpload;
+    }
+
+    /**
+     * Overwritten due to the reason that the mulitpart is handelt using
+     * the Context.
+     * @see org.apache.wicket.markup.html.form.Form#handleMultiPart()
+     * @return true
+     */
+    @Override
+    protected boolean handleMultiPart()
+    {
+        return true;
+    }
 }

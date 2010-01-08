@@ -386,6 +386,7 @@ public class EFapsSession extends WebSession
                         for (final Map.Entry<String, FileItem> entry : fileMap.entrySet()) {
                             fileParams.put(entry.getKey(), new FileParameter(entry.getKey(), entry.getValue()));
                         }
+                        RequestCycle.get().setRequest(request);
                     }
 
                     Context.begin(this.userName, super.getLocale(), this.sessionAttributes, parameters, fileParams);

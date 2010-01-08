@@ -118,7 +118,8 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
      * @param _uiobject UUIOBject
      * @param _form form
      */
-    public AjaxSubmitCloseBehavior(final UIAbstractPageObject _uiobject, final FormContainer _form)
+    public AjaxSubmitCloseBehavior(final UIAbstractPageObject _uiobject,
+                                   final FormContainer _form)
     {
         super(_form, "onclick");
         this.uiObject = _uiobject;
@@ -166,94 +167,90 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
         try {
             if (checkForRequired(_target) && validateFieldValues(_target)
                             && (validateForm(_target, others, classifications))) {
-                if (this.uiObject instanceof UIForm && ((UIForm) this.uiObject).isFileUpload()) {
-                    doFileUpload(_target);
-                } else {
-                    if (executeEvents(_target, others, classifications)) {
-                        if (this.uiObject.hasTargetCmd()) {
-                            final AbstractCommand targetCmd = this.uiObject.getTargetCmd();
-                            UIAbstractPageObject newUIObject;
-                            if (targetCmd.getTargetTable() != null) {
-                                newUIObject = new UITable(this.uiObject.getTargetCmdUUID(), this.uiObject
-                                                .getInstanceKey(), this.uiObject.getOpenerId());
-                            } else {
-                                newUIObject = new UIForm(this.uiObject.getTargetCmdUUID(), this.uiObject
-                                                .getInstanceKey(), this.uiObject.getOpenerId());
-                            }
-
-                            final UIWizardObject wizard = new UIWizardObject(newUIObject);
-                            this.uiObject.setWizard(wizard);
-                            try {
-                                wizard.addParameters(this.uiObject, Context.getThreadContext().getParameters());
-                            } catch (final EFapsException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                            }
-                            wizard.insertBefore(this.uiObject);
-                            newUIObject.setWizard(wizard);
-                            newUIObject.setPartOfWizardCall(true);
-                            newUIObject.setRenderRevise(this.uiObject.isTargetCmdRevise());
-                            if (this.uiObject.isSubmit()) {
-                                newUIObject.setSubmit(true);
-                                newUIObject.setCallingCommandUUID(this.uiObject.getCallingCommandUUID());
-                            }
-                            final FooterPanel footer = getComponent().findParent(FooterPanel.class);
-                            final ModalWindowContainer modal = footer.getModalWindow();
-                            final AbstractContentPage page;
-                            if (targetCmd.getTargetTable() != null) {
-                                page = new TablePage(new TableModel((UITable) newUIObject), modal);
-                            } else {
-                                page = new FormPage(new FormModel((UIForm) newUIObject), modal);
-                            }
-                            page.setMenuTreeKey(((AbstractContentPage) getComponent().getPage()).getMenuTreeKey());
-                            getComponent().getPage().getRequestCycle().setResponsePage(page);
+                if (executeEvents(_target, others, classifications)) {
+                    if (this.uiObject.hasTargetCmd()) {
+                        final AbstractCommand targetCmd = this.uiObject.getTargetCmd();
+                        UIAbstractPageObject newUIObject;
+                        if (targetCmd.getTargetTable() != null) {
+                            newUIObject = new UITable(this.uiObject.getTargetCmdUUID(), this.uiObject
+                                            .getInstanceKey(), this.uiObject.getOpenerId());
                         } else {
-                            final FooterPanel footer = getComponent().findParent(FooterPanel.class);
-                            // if inside a modal
-                            if (this.uiObject.getCommand().getTarget() == Target.MODAL
-                                            || (this.uiObject.getCallingCommand() != null
-                                                    && this.uiObject.getCallingCommand().getTarget() == Target.MODAL)) {
-                                if (this.uiObject.isTargetShowFile()) {
-                                    final ShowFileCallBackBehavior callback
-                                                               = ((EFapsSession) footer.getSession()).getFileCallBack();
-                                    _target.prependJavascript(callback.getCallbackScript());
-                                }
-                                footer.getModalWindow().setReloadChild(true);
-                                footer.getModalWindow().close(_target);
+                            newUIObject = new UIForm(this.uiObject.getTargetCmdUUID(), this.uiObject
+                                            .getInstanceKey(), this.uiObject.getOpenerId());
+                        }
 
-                            } else {
-                                final Opener opener
-                                        = ((EFapsSession) Session.get()).getOpener(this.uiObject.getOpenerId());
-                                // mark the opener that it can be removed
-                                opener.setMarked4Remove(true);
-
-                                Class<? extends Page> clazz;
-                                if (opener.getModel() instanceof TableModel) {
-                                    clazz = TablePage.class;
-                                } else {
-                                    clazz = FormPage.class;
-                                }
-
-                                final PageParameters parameters = new PageParameters();
-                                parameters.add(Opener.OPENER_PARAKEY, this.uiObject.getOpenerId());
-
-                                final CharSequence url = this.form.urlFor(PageMap.forName(opener.getPageMapName()),
-                                                clazz, parameters);
-
-                                _target.appendJavascript("opener.location.href = '" + url + "'; self.close();");
+                        final UIWizardObject wizard = new UIWizardObject(newUIObject);
+                        this.uiObject.setWizard(wizard);
+                        try {
+                            wizard.addParameters(this.uiObject, Context.getThreadContext().getParameters());
+                        } catch (final EFapsException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                        wizard.insertBefore(this.uiObject);
+                        newUIObject.setWizard(wizard);
+                        newUIObject.setPartOfWizardCall(true);
+                        newUIObject.setRenderRevise(this.uiObject.isTargetCmdRevise());
+                        if (this.uiObject.isSubmit()) {
+                            newUIObject.setSubmit(true);
+                            newUIObject.setCallingCommandUUID(this.uiObject.getCallingCommandUUID());
+                        }
+                        final FooterPanel footer = getComponent().findParent(FooterPanel.class);
+                        final ModalWindowContainer modal = footer.getModalWindow();
+                        final AbstractContentPage page;
+                        if (targetCmd.getTargetTable() != null) {
+                            page = new TablePage(new TableModel((UITable) newUIObject), modal);
+                        } else {
+                            page = new FormPage(new FormModel((UIForm) newUIObject), modal);
+                        }
+                        page.setMenuTreeKey(((AbstractContentPage) getComponent().getPage()).getMenuTreeKey());
+                        getComponent().getPage().getRequestCycle().setResponsePage(page);
+                    } else {
+                        final FooterPanel footer = getComponent().findParent(FooterPanel.class);
+                        // if inside a modal
+                        if (this.uiObject.getCommand().getTarget() == Target.MODAL
+                                        || (this.uiObject.getCallingCommand() != null
+                                                && this.uiObject.getCallingCommand().getTarget() == Target.MODAL)) {
+                            if (this.uiObject.isTargetShowFile()) {
+                                final ShowFileCallBackBehavior callback
+                                                           = ((EFapsSession) footer.getSession()).getFileCallBack();
+                                _target.prependJavascript(callback.getCallbackScript());
                             }
-                            footer.setSuccess(true);
+                            footer.getModalWindow().setReloadChild(true);
+                            footer.getModalWindow().close(_target);
 
-                            // execute the CallBacks
-                            final List<UpdateInterface> updates = ((EFapsSession) getComponent().getSession())
-                                            .getUpdateBehavior(this.uiObject.getInstanceKey());
-                            if (updates != null) {
-                                for (final UpdateInterface update : updates) {
-                                    if (update.isAjaxCallback()) {
-                                        update.setInstanceKey(this.uiObject.getInstanceKey());
-                                        update.setMode(this.uiObject.getMode());
-                                        _target.prependJavascript(update.getAjaxCallback());
-                                    }
+                        } else {
+                            final Opener opener
+                                    = ((EFapsSession) Session.get()).getOpener(this.uiObject.getOpenerId());
+                            // mark the opener that it can be removed
+                            opener.setMarked4Remove(true);
+
+                            Class<? extends Page> clazz;
+                            if (opener.getModel() instanceof TableModel) {
+                                clazz = TablePage.class;
+                            } else {
+                                clazz = FormPage.class;
+                            }
+
+                            final PageParameters parameters = new PageParameters();
+                            parameters.add(Opener.OPENER_PARAKEY, this.uiObject.getOpenerId());
+
+                            final CharSequence url = this.form.urlFor(PageMap.forName(opener.getPageMapName()),
+                                            clazz, parameters);
+
+                            _target.appendJavascript("opener.location.href = '" + url + "'; self.close();");
+                        }
+                        footer.setSuccess(true);
+
+                        // execute the CallBacks
+                        final List<UpdateInterface> updates = ((EFapsSession) getComponent().getSession())
+                                        .getUpdateBehavior(this.uiObject.getInstanceKey());
+                        if (updates != null) {
+                            for (final UpdateInterface update : updates) {
+                                if (update.isAjaxCallback()) {
+                                    update.setInstanceKey(this.uiObject.getInstanceKey());
+                                    update.setMode(this.uiObject.getMode());
+                                    _target.prependJavascript(update.getAjaxCallback());
                                 }
                             }
                         }
@@ -297,22 +294,6 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
         }
     }
 
-
-    /**
-     * Method to enable file upload.
-     *
-     * @param _target AjaxRequestTarget
-     */
-    private void doFileUpload(final AjaxRequestTarget _target)
-    {
-        final StringBuilder script = new StringBuilder();
-        script.append("var f=document.getElementById('").append(this.form.getMarkupId()).append(
-                        "');f.onsubmit=undefined;f.action=\"").append(this.form.getActionUrl())
-                        .append("\";f.submit();");
-        this.form.setFileUpload(true);
-        _target.appendJavascript(script.toString());
-    }
-
     /**
      * Method is not used, but needed from the api.
      *
@@ -352,7 +333,8 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
      * @return true if the events where executed successfully, otherwise false
      * @throws EFapsException on error
      */
-    private boolean executeEvents(final AjaxRequestTarget _target, final Map<String, String[]> _other,
+    private boolean executeEvents(final AjaxRequestTarget _target,
+                                  final Map<String, String[]> _other,
                                   final List<Classification> _classifications)
         throws EFapsException
     {
@@ -422,7 +404,8 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
      * @return true if validation was valid, else false
      * @throws CacheReloadException on error
      */
-    private boolean evalFormElement(final AjaxRequestTarget _target, final StringBuilder _html,
+    private boolean evalFormElement(final AjaxRequestTarget _target,
+                                    final StringBuilder _html,
                                     final UIForm _uiform)
         throws CacheReloadException
     {
@@ -505,7 +488,8 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
      * @return true if the Validation was valid, otherwise false
      * @throws EFapsException on error
      */
-    private boolean validateForm(final AjaxRequestTarget _target, final Map<String, String[]> _other,
+    private boolean validateForm(final AjaxRequestTarget _target,
+                                 final Map<String, String[]> _other,
                                  final List<Classification> _classifications)
         throws EFapsException
     {
@@ -613,7 +597,9 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
      *                       sniplett
      * @param _goOnButton   should a button to go on be rendered
      */
-    private void showDialog(final AjaxRequestTarget _target, final String _key, final boolean _isSniplett,
+    private void showDialog(final AjaxRequestTarget _target,
+                            final String _key,
+                            final boolean _isSniplett,
                             final boolean _goOnButton)
     {
         final ModalWindowContainer modal = ((AbstractContentPage) getComponent().getPage()).getModal();
@@ -633,7 +619,6 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
         });
         modal.show(_target);
     }
-
 
     /**
      * Must be overwritten to make it public.
