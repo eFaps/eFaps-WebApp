@@ -50,14 +50,14 @@ public class AjaxFieldUpdateBehavior extends AjaxFormSubmitBehavior
                                                                              "FieldUpdate.js");
 
     /**
+     * Key used for the javascript in the map.
+     */
+    public static final String JSKEY = "eFapsFieldUpdateJS";
+
+    /**
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
-
-    /**
-     * Key used for the javascript in the map.
-     */
-    private static String JSKEY = "eFapsFieldUpdateJS";
 
     /**
      * Model that will be used on submit (if not null).
