@@ -22,7 +22,7 @@
 -->
 <server>
 
-  
+
   <filter path="/*"
           name="eFaps"
           classname="org.apache.wicket.protocol.http.WicketFilter">
@@ -41,11 +41,11 @@
     <parameter key="login.name">wicket:eFaps:org.efaps.ui.wicket.LoginAttributeName</parameter>
   </filter>
 
-<!-- 
+<!--
   <filter path="/test/*"
           name="testFilter"
           classname="org.efaps.ui.filter.TestFilter">
-          
+
   </filter>
  -->
 
@@ -59,17 +59,22 @@
           name="eFapsImageServlet"
           displayname="eFapsImageServlet"
           classname="org.efaps.ui.servlet.ImageServlet"/>
-          
+
   <servlet path="/servlet/static/*"
           name="eFapsStaticContentServlet"
           displayname="eFapsStaticContentServlet"
-          classname="org.efaps.ui.servlet.StaticContentServlet"/>        
-  
+          classname="org.efaps.ui.servlet.StaticContentServlet"/>
+
   <servlet path="/servlet/checkout/*"
           name="eFapsCheckOutServlet"
           displayname="eFapsCheckOutServlet"
           classname="org.efaps.ui.servlet.CheckoutServlet"/>
-                  
+
+  <servlet path="/servlet/wiki/*"
+          name="eFapsWikiServlet"
+          displayname="eFapsWikiServlet"
+          classname="org.efaps.ui.servlet.WikiServlet"/>
+
 
 </server>
 
