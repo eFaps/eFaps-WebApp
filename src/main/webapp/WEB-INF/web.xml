@@ -1,39 +1,39 @@
 <?xml version="1.0"?>
 
-<!DOCTYPE web-app PUBLIC 
-    "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" 
+<!DOCTYPE web-app PUBLIC
+    "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
     "http://java.sun.com/dtd/web-app_2_3.dtd">
 
 <!--
-  
+
   Copyright 2003 - 2009 The eFaps Team
-  
+
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
-  
+
   http://www.apache.org/licenses/LICENSE-2.0
-  
+
   Unless required by applicable law or agreed to in writing, software
   distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
-  
+
   Author:          tmo
   Revision:        $Rev$
   Last Changed:    $Date$
   Last Changed By: $Author$
-  
+
 -->
 
 <web-app>
   <display-name>eFaps</display-name>
   <description>no description</description>
 
-  <!--  
+  <!--
     There are three means to configure Wickets configuration mode and they are
-    tested in the order given. 
+    tested in the order given.
     1) A system property: -Dwicket.configuration
     2) servlet specific <init-param>
     3) context specific <context-param>
@@ -173,7 +173,7 @@
     <filter-name>eFapsBasicAuthenticationFilter</filter-name>
     <url-pattern>/webdav/*</url-pattern>
   </filter-mapping>
-<!--  
+<!--
   <filter-mapping>
     <filter-name>eFapsFormBasedAuthenticationFilter</filter-name>
     <url-pattern>/deaktiviert/*</url-pattern>
@@ -222,7 +222,15 @@
     <load-on-startup>1</load-on-startup>
   </servlet>
 
-  
+  <servlet>
+    <servlet-name>eFapsHelpServlet</servlet-name>
+    <display-name>eFapsHelpServlet</display-name>
+    <description>eFaps servlet used for Help access</description>
+    <servlet-class>org.efaps.ui.servlet.HelpServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+
   <!-- -->
   <servlet-mapping>
     <servlet-name>eFapsServlet</servlet-name>
@@ -239,12 +247,17 @@
     <url-pattern>/servlet/image/*</url-pattern>
   </servlet-mapping>
 
+   <servlet-mapping>
+    <servlet-name>eFapsHelpServlet</servlet-name>
+    <url-pattern>/servlet/help/*</url-pattern>
+  </servlet-mapping>
+
   <servlet-mapping>
     <servlet-name>eFapsWebDAVServlet</servlet-name>
     <url-pattern>/webdav/*</url-pattern>
   </servlet-mapping>
 
-  
+
   <session-config>
     <session-timeout>3000</session-timeout>
   </session-config>

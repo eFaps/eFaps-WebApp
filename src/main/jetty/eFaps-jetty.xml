@@ -70,10 +70,10 @@
           displayname="eFapsCheckOutServlet"
           classname="org.efaps.ui.servlet.CheckoutServlet"/>
 
-  <servlet path="/servlet/wiki/*"
-          name="eFapsWikiServlet"
-          displayname="eFapsWikiServlet"
-          classname="org.efaps.ui.servlet.WikiServlet"/>
+  <servlet path="/servlet/help/*"
+          name="eFapsHelpServlet"
+          displayname="eFapsHelpServlet"
+          classname="org.efaps.ui.servlet.HelpServlet"/>
 
 
 </server>

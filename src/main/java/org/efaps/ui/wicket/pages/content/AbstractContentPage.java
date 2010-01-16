@@ -23,6 +23,8 @@ package org.efaps.ui.wicket.pages.content;
 import org.apache.wicket.IPageMap;
 import org.apache.wicket.behavior.StringHeaderContributor;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.link.ExternalLink;
+import org.apache.wicket.markup.html.link.PopupSettings;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.dbproperty.DBProperties;
@@ -34,6 +36,7 @@ import org.efaps.ui.wicket.components.heading.HeadingPanel;
 import org.efaps.ui.wicket.components.menu.MenuPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
+import org.efaps.ui.wicket.models.objects.UIAbstractPageObject;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
@@ -45,7 +48,8 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
  * @author The eFaps Team
  * @version $Id:AbstractContentPage.java 1491 2007-10-15 23:40:43Z jmox $
  */
-public abstract class AbstractContentPage extends AbstractMergePage
+public abstract class AbstractContentPage
+    extends AbstractMergePage
 {
 
     /**
@@ -101,7 +105,8 @@ public abstract class AbstractContentPage extends AbstractMergePage
      * @param _model model for this page
      * @param _modalWindow modal window
      */
-    public AbstractContentPage(final IModel<?> _model, final ModalWindowContainer _modalWindow)
+    public AbstractContentPage(final IModel<?> _model,
+                               final ModalWindowContainer _modalWindow)
     {
         super(_model);
         this.modalWindow = _modalWindow;
@@ -112,7 +117,8 @@ public abstract class AbstractContentPage extends AbstractMergePage
      * @param _model model for this page
      * @param _modalWindow modal window
      */
-    public AbstractContentPage(final IPageMap _pagemap, final IModel<?> _model, final ModalWindowContainer _modalWindow)
+    public AbstractContentPage(final IPageMap _pagemap, final IModel<?> _model,
+                               final ModalWindowContainer _modalWindow)
     {
         super(_pagemap, _model);
         this.modalWindow = _modalWindow;
@@ -148,6 +154,20 @@ public abstract class AbstractContentPage extends AbstractMergePage
         add(new HeadingPanel("titel", uiObject.getTitle()));
 
         add(new MenuPanel("menu", super.getDefaultModel(), _form));
+        WebMarkupContainer exLink;
+        if (((UIAbstractPageObject) super.getDefaultModelObject()).getHelpTarget() != null) {
+            final PopupSettings set = new PopupSettings(PopupSettings.RESIZABLE | PopupSettings.SCROLLBARS
+                            | PopupSettings.MENU_BAR | PopupSettings.LOCATION_BAR | PopupSettings.STATUS_BAR
+                            | PopupSettings.TOOL_BAR);
+            exLink = new ExternalLink("help",
+                            "/servlet/help/" + ((UIAbstractPageObject) super.getDefaultModelObject()).getHelpTarget(),
+                            DBProperties.getProperty("org.efaps.ui.wicket.pages.content.AbstractContentPage.HelpLink"))
+                           .setPopupSettings(set).setContextRelative(true);
+        } else {
+            exLink = new WebMarkupContainer("help");
+            exLink.setVisible(false);
+        }
+        this.body.add(exLink);
         WebMarkupContainer footerpanel;
         if (uiObject.isCreateMode() || uiObject.isEditMode() || uiObject.isSearchMode()) {
             footerpanel = new FooterPanel("footer", getDefaultModel(), this.modalWindow, _form);

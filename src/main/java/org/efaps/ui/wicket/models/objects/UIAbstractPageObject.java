@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,8 @@ import org.efaps.ui.wicket.models.cell.UIHiddenCell;
  * @author The eFaps Team
  * @version $Id$
  */
-public abstract class UIAbstractPageObject extends AbstractUIObject
+public abstract class UIAbstractPageObject
+    extends AbstractUIObject
 {
     /**
      * Needed for serialization.
@@ -82,6 +83,11 @@ public abstract class UIAbstractPageObject extends AbstractUIObject
     private boolean isTargetShowFile;
 
     /**
+     * Name of the wiki file, that is the target of the help link shown in the form, table etc.
+     */
+    private String helpTarget;
+
+    /**
      * Constructor evaluating the UUID for the command and the oid from an
      * Opener instance.
      *
@@ -99,7 +105,9 @@ public abstract class UIAbstractPageObject extends AbstractUIObject
      * @param _instanceKey instance id for this Model
      * @param _openerId id of the opener
      */
-    public UIAbstractPageObject(final UUID _commandUUID, final String _instanceKey, final String _openerId)
+    public UIAbstractPageObject(final UUID _commandUUID,
+                                final String _instanceKey,
+                                final String _openerId)
     {
         super(_commandUUID, _instanceKey, _openerId);
         if (_commandUUID != null) {
@@ -110,6 +118,7 @@ public abstract class UIAbstractPageObject extends AbstractUIObject
                 this.targetCmdRevise = trgCmd.isTargetCmdRevise();
             }
             this.isTargetShowFile = cmd.isTargetShowFile();
+            this.helpTarget = cmd.getTargetHelp();
         }
     }
 
@@ -119,7 +128,8 @@ public abstract class UIAbstractPageObject extends AbstractUIObject
      * @param _commandUUID UUID for this Model
      * @param _instanceKey instance id for this Model
      */
-    public UIAbstractPageObject(final UUID _commandUUID, final String _instanceKey)
+    public UIAbstractPageObject(final UUID _commandUUID,
+                                final String _instanceKey)
     {
         this(_commandUUID, _instanceKey, null);
     }
@@ -295,6 +305,16 @@ public abstract class UIAbstractPageObject extends AbstractUIObject
     public void setRenderRevise(final boolean _renderRevise)
     {
         this.renderRevise = _renderRevise;
+    }
+
+    /**
+     * Getter method for instance variable {@link #helpTarget}.
+     *
+     * @return value of instance variable {@link #helpTarget}
+     */
+    public String getHelpTarget()
+    {
+        return this.helpTarget;
     }
 
 }
