@@ -93,6 +93,11 @@ public class UITableCell extends UIAbstractCell
     private String fieldUpdateEvent;
 
     /**
+     * Is the field multiRow. Meaning that it has more than one row.
+     */
+    private final boolean multiRows;
+
+    /**
      * Constructor.
      * @param _parent       parent ui object
      * @param _fieldValue   FieldValue
@@ -111,6 +116,7 @@ public class UITableCell extends UIAbstractCell
         this.fixedWidth = _fieldValue.getField().isFixedWidth();
         this.cellTitle = _cellTitle == null ? _cellvalue : _cellTitle;
         this.icon = _icon;
+        this.multiRows = _fieldValue.getField().getRows() > 1;
         this.autoComplete = _fieldValue.getField().hasEvents(EventType.UI_FIELD_AUTOCOMPLETE);
         this.fieldUpdate = _fieldValue.getField().hasEvents(EventType.UI_FIELD_UPDATE);
         if (this.fieldUpdate) {
@@ -203,6 +209,14 @@ public class UITableCell extends UIAbstractCell
     public boolean isCheckOut()
     {
         return this.reference.contains("/servlet/checkout");
+    }
+
+    /**
+     * @return the multiRows
+     */
+    public boolean isMultiRows()
+    {
+        return multiRows;
     }
 
     /**
