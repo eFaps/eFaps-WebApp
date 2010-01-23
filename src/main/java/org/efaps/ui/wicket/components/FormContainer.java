@@ -28,8 +28,8 @@ import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.IFormSubmitListener;
 import org.apache.wicket.util.string.AppendingStringBuffer;
-
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
+import org.efaps.ui.wicket.models.objects.UIForm;
 
 /**
  * Class for a form. Needed for file upload.
@@ -101,8 +101,9 @@ public class FormContainer extends Form<Object>
     @Override
     protected void onComponentTag(final ComponentTag _tag)
     {
-        if ((((AbstractUIObject) getPage().getDefaultModelObject()).isCreateMode() || ((AbstractUIObject) getPage()
-                        .getDefaultModelObject()).isEditMode())) {
+        final Object uiObject = getPage().getDefaultModelObject();
+        if (uiObject instanceof UIForm && ((UIForm) uiObject).isFileUpload()
+                        && (((UIForm) uiObject).isCreateMode() || ((UIForm) uiObject).isCreateMode())) {
             setMultiPart(true);
             setMaxSize(getApplication().getApplicationSettings().getDefaultMaximumUploadSize());
         }
@@ -110,8 +111,7 @@ public class FormContainer extends Form<Object>
         this.actionUrl = urlFor(IFormSubmitListener.INTERFACE).toString();
         if (getPage().getDefaultModelObject() != null) {
             // only on SearchMode we want normal submit, in any other case we
-            // use
-            // AjaxSubmit
+            // use AjaxSubmit
             if (!((AbstractUIObject) getPage().getDefaultModelObject()).isSearchMode()) {
                 _tag.put("onSubmit", "return false;");
                 _tag.put("action", "");
