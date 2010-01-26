@@ -72,32 +72,55 @@ public class HelpServlet extends HttpServlet
                          final HttpServletResponse _res)
         throws ServletException
     {
+        try {
         final List<String> wikis = new ArrayList<String>();
         String path = _req.getPathInfo().substring(1);
-        if (!path.contains(".")) {
-            String referer = _req.getHeader("Referer");
-            if (referer.contains(":")) {
-                final String[] paths = referer.split(":");
-                referer = paths[0];
-            }
-            final String[] pack = referer.substring(referer.lastIndexOf("/") + 1).split("\\.");
-            final StringBuilder newPath = new StringBuilder();
-            for (int i = 0; i < pack.length - 2; i++) {
-                newPath.append(pack[i]).append(".");
-            }
-            newPath.append(path).append(".wiki");
-            path = newPath.toString();
-            wikis.add(path);
-        } else if (path.contains(":")) {
-            final String[] paths = path.split(":");
-            for (final String apath : paths) {
-                wikis.add(apath);
+        final String end = path.substring(path.lastIndexOf("."), path.length());
+        if (end.equalsIgnoreCase(".png") || end.equalsIgnoreCase(".jpg") || end.equalsIgnoreCase(".jpeg")
+                        || end.equalsIgnoreCase(".gif")) {
+            final SearchQuery query = new SearchQuery();
+            query.setQueryTypes(EFapsClassNames.ADMIN_PROGRAM_IMAGE.getUuid());
+            query.addWhereExprEqValue("Name", path);
+            query.addSelect("OID");
+            query.addSelect("FileLength");
+            query.execute();
+            if (query.next()) {
+                final String oid = (String) query.get("OID");
+                final Long length = (Long) query.get("FileLength");
+
+                final Checkout checkout = new Checkout(oid);
+                _res.setContentType(getServletContext().getMimeType(end));
+                _res.setContentLength(length.intValue());
+                _res.setDateHeader("Expires", System.currentTimeMillis() + (3600 * 1000));
+                _res.setHeader("Cache-Control", "max-age=3600");
+                checkout.execute(_res.getOutputStream());
+                checkout.close();
             }
         } else {
-            wikis.add(path);
-        }
+            if (!path.contains(".")) {
+                String referer = _req.getHeader("Referer");
+                if (referer.contains(":")) {
+                    final String[] paths = referer.split(":");
+                    referer = paths[0];
+                }
+                final String[] pack = referer.substring(referer.lastIndexOf("/") + 1).split("\\.");
+                final StringBuilder newPath = new StringBuilder();
+                for (int i = 0; i < pack.length - 2; i++) {
+                    newPath.append(pack[i]).append(".");
+                }
+                newPath.append(path).append(".wiki");
+                path = newPath.toString();
+                wikis.add(path);
+            } else if (path.contains(":")) {
+                final String[] paths = path.split(":");
+                for (final String apath : paths) {
+                    wikis.add(apath);
+                }
+            } else {
+                wikis.add(path);
+            }
 
-        try {
+
             final String menuStr;
             if (Context.getThreadContext().containsSessionAttribute(HelpServlet.MENU_SESSION_KEY)) {
                 menuStr = (String) Context.getThreadContext().getSessionAttribute(HelpServlet.MENU_SESSION_KEY);
@@ -158,8 +181,9 @@ public class HelpServlet extends HttpServlet
             _res.setContentType("text/html;charset=UTF-8");
             _res.setContentLength(html.length());
             _res.getOutputStream().write(html.toString().getBytes());
+            }
         } catch (final Throwable e) {
-            throw new ServletException(e);
+                throw new ServletException(e);
         }
     }
 
