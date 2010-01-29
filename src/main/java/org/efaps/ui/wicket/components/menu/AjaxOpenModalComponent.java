@@ -20,18 +20,22 @@
 
 package org.efaps.ui.wicket.components.menu;
 
+import java.util.Map;
+
+import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
-
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowAjaxPageCreator;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
+import org.efaps.ui.wicket.pages.dialog.DialogPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
 
 /**
@@ -216,19 +220,50 @@ public class AjaxOpenModalComponent extends AbstractMenuItemAjaxComponent
         @Override
         protected void onSubmit(final AjaxRequestTarget _target)
         {
-            ModalWindowContainer modal;
+            final UIMenuItem uiMenuItem = (UIMenuItem) super.getComponent().getDefaultModelObject();
+
+            final Map<?, ?> para = this.form.getRequest().getParameterMap();
+
+            boolean check = false;
+            if (uiMenuItem.getSubmitSelectedRows() > -1) {
+                final String[] oids = (String[]) para.get("selectedRow");
+                if (uiMenuItem.getSubmitSelectedRows() > 0) {
+                    check = oids == null ? false : oids.length == uiMenuItem.getSubmitSelectedRows();
+                } else {
+                    check = oids == null ? false : oids.length > 0;
+                }
+            } else {
+                check = true;
+            }
+            final ModalWindowContainer modal;
             if (getPage() instanceof MainPage) {
                 modal = ((MainPage) getPage()).getModal();
             } else {
                 modal = ((AbstractContentPage) getPage()).getModal();
             }
-            modal.reset();
-            final ModalWindowAjaxPageCreator pageCreator = new ModalWindowAjaxPageCreator((UIMenuItem) super
-                            .getComponent().getDefaultModelObject(), modal);
-            modal.setPageCreator(pageCreator);
-            modal.setInitialHeight(((UIMenuItem) getDefaultModelObject()).getWindowHeight());
-            modal.setInitialWidth(((UIMenuItem) getDefaultModelObject()).getWindowWidth());
-            modal.show(_target);
+            if (check) {
+                modal.reset();
+                final ModalWindowAjaxPageCreator pageCreator = new ModalWindowAjaxPageCreator((UIMenuItem) super
+                                .getComponent().getDefaultModelObject(), modal);
+                modal.setPageCreator(pageCreator);
+                modal.setInitialHeight(((UIMenuItem) getDefaultModelObject()).getWindowHeight());
+                modal.setInitialWidth(((UIMenuItem) getDefaultModelObject()).getWindowWidth());
+                modal.show(_target);
+            } else {
+                modal.setPageCreator(new ModalWindow.PageCreator() {
+
+                    private static final long serialVersionUID = 1L;
+
+                    public Page createPage()
+                    {
+                        return new DialogPage(modal, "SubmitSelectedRows.fail" + uiMenuItem.getSubmitSelectedRows(),
+                                        false, null);
+                    }
+                });
+                modal.setInitialHeight(150);
+                modal.setInitialWidth(350);
+                modal.show(_target);
+            }
         }
 
         /**

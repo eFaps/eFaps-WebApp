@@ -30,7 +30,6 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 
 import org.apache.wicket.RestartResponseException;
-
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractMenu;
@@ -48,7 +47,8 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class UIMenuItem extends AbstractUIObject
+public class UIMenuItem
+    extends AbstractUIObject
 {
 
     /**
@@ -122,6 +122,11 @@ public class UIMenuItem extends AbstractUIObject
     private int windowWidth;
 
     /**
+     * Number of rows that must be selected.
+     */
+    private int submitSelectedRows;
+
+    /**
      * Constructor setting the UUID of this MenuItem.
      *
      * @param _uuid UUID
@@ -138,7 +143,8 @@ public class UIMenuItem extends AbstractUIObject
      * @param _uuid UUID
      * @param _instanceKey instance Key
      */
-    public UIMenuItem(final UUID _uuid, final String _instanceKey)
+    public UIMenuItem(final UUID _uuid,
+                      final String _instanceKey)
     {
         super(_uuid, _instanceKey);
         initialize();
@@ -204,6 +210,16 @@ public class UIMenuItem extends AbstractUIObject
     public String getReference()
     {
         return this.reference;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #submitSelectedRows}.
+     *
+     * @return value of instance variable {@link #submitSelectedRows}
+     */
+    public int getSubmitSelectedRows()
+    {
+        return this.submitSelectedRows;
     }
 
     /**
@@ -285,6 +301,7 @@ public class UIMenuItem extends AbstractUIObject
         this.windowWidth = command.getWindowWidth();
         this.defaultSelected = command.isDefaultSelected();
         this.description = "";
+        this.submitSelectedRows = command.getSubmitSelectedRows();
         requeryLabel();
         try {
             if (command instanceof AbstractMenu) {
@@ -387,10 +404,13 @@ public class UIMenuItem extends AbstractUIObject
         this.stepInto = _stepInto;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void resetModel()
     {
-        // not neede here
+        // not needed here
     }
 
     /**
@@ -427,7 +447,8 @@ public class UIMenuItem extends AbstractUIObject
      * @param _parent ParentNode children schould be added
      * @param _childs List<StructurBrowserModel>to be added as childs
      */
-    private void addNode(final DefaultMutableTreeNode _parent, final List<UIMenuItem> _childs)
+    private void addNode(final DefaultMutableTreeNode _parent,
+                         final List<UIMenuItem> _childs)
     {
         for (int i = 0; i < _childs.size(); i++) {
             final DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(_childs.get(i));
@@ -456,24 +477,6 @@ public class UIMenuItem extends AbstractUIObject
     public void setAncestor(final DefaultMutableTreeNode _node)
     {
         this.ancestor = _node;
-    }
-
-    public void setObject(final UIMenuItem arg0)
-    {
-        // TODO Auto-generated method stub
-
-    }
-
-    public UIMenuItem getObject()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public void detach()
-    {
-        // TODO Auto-generated method stub
-
     }
 
     /**
