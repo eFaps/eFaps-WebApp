@@ -27,12 +27,12 @@ import java.util.Map;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.model.IModel;
-
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
+import org.efaps.ui.wicket.util.EFapsKey;
 import org.efaps.util.EFapsException;
 
 /**
@@ -48,11 +48,6 @@ public class AjaxFieldUpdateBehavior extends AjaxFormSubmitBehavior
      */
     public static final EFapsContentReference JS = new EFapsContentReference(AjaxFieldUpdateBehavior.class,
                                                                              "FieldUpdate.js");
-
-    /**
-     * Key used for the javascript in the map.
-     */
-    public static final String JSKEY = "eFapsFieldUpdateJS";
 
     /**
      * Needed for serialization.
@@ -135,15 +130,15 @@ public class AjaxFieldUpdateBehavior extends AjaxFormSubmitBehavior
         if (map.size() > 0) {
             for (final String keyString : map.keySet()) {
                 // if the map contains a key that is not defined in this class it is assumed to be the name of a field
-                if (!(AjaxFieldUpdateBehavior.JSKEY.equals(keyString))) {
+                if (!(EFapsKey.FIELDUPDATE_JAVASCRIPT.getKey().equals(keyString))) {
                     js.append("eFapsSetFieldValue('").append(getComponentMarkupId()).append("','")
                         .append(keyString).append("',").append(map.get(keyString).contains("Array(") ? "" : "'")
                       .append(map.get(keyString)).append(map.get(keyString).contains("Array(") ? "" : "'").append(");");
                 }
             }
         }
-        if (map.containsKey(AjaxFieldUpdateBehavior.JSKEY)) {
-            js.append(map.get(AjaxFieldUpdateBehavior.JSKEY));
+        if (map.containsKey(EFapsKey.FIELDUPDATE_JAVASCRIPT.getKey())) {
+            js.append(map.get(EFapsKey.FIELDUPDATE_JAVASCRIPT.getKey()));
         }
 
         _target.appendJavascript(js.toString());

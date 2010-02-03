@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,27 +21,42 @@
 package org.efaps.ui.wicket.util;
 
 import org.apache.wicket.datetime.StyleDateConverter;
+import org.efaps.db.Context;
+import org.efaps.util.EFapsException;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import org.efaps.db.Context;
-import org.efaps.util.EFapsException;
-
 /**
- * TODO comment!
+ * Singelton class for date functions.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public class DateUtil {
-  public static DateTime getDateFromParameter(final String _value)
-      throws EFapsException {
-    final StyleDateConverter styledate = new StyleDateConverter(false);
-    final DateTimeFormatter fmt = DateTimeFormat.forPattern(styledate
-        .getDatePattern());
-    fmt.withLocale(Context.getThreadContext().getLocale());
-    final DateTime dt = fmt.parseDateTime(_value);
-    return dt;
-  }
+public final class DateUtil
+{
+
+    /**
+     * Singelton.
+     */
+    private DateUtil()
+    {
+    }
+
+    /**
+     * Convert a date from a parameter into a <code>DateTime</code>.
+     * @param _value    value to be converted
+     * @return  DateTime
+     * @throws EFapsException on error
+     */
+    public static DateTime getDateFromParameter(final String _value)
+        throws EFapsException
+    {
+        final StyleDateConverter styledate = new StyleDateConverter(false);
+        final DateTimeFormatter fmt = DateTimeFormat.forPattern(styledate
+                        .getDatePattern());
+        fmt.withLocale(Context.getThreadContext().getLocale());
+        final DateTime dt = fmt.parseDateTime(_value);
+        return dt;
+    }
 }
