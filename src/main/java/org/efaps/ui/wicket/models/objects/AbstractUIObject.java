@@ -28,7 +28,7 @@ import java.util.UUID;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.Session;
-
+import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter;
@@ -41,6 +41,7 @@ import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.Search;
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
+import org.efaps.admin.user.Role;
 import org.efaps.beans.ValueList;
 import org.efaps.beans.valueparser.ParseException;
 import org.efaps.beans.valueparser.ValueParser;
@@ -57,8 +58,10 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public abstract class AbstractUIObject extends AbstractInstanceObject
+public abstract class AbstractUIObject
+    extends AbstractInstanceObject
 {
+
     /**
      * Needed for serialization.
      */
@@ -152,7 +155,8 @@ public abstract class AbstractUIObject extends AbstractInstanceObject
      * @param _commandUUID UUID for this Model
      * @param _instanceKey instance id for this Model
      */
-    public AbstractUIObject(final UUID _commandUUID, final String _instanceKey)
+    public AbstractUIObject(final UUID _commandUUID,
+                            final String _instanceKey)
     {
         this(_commandUUID, _instanceKey, null);
     }
@@ -164,7 +168,9 @@ public abstract class AbstractUIObject extends AbstractInstanceObject
      * @param _instanceKey instance id for this Model
      * @param _openerId id of the opener
      */
-    public AbstractUIObject(final UUID _commandUUID, final String _instanceKey, final String _openerId)
+    public AbstractUIObject(final UUID _commandUUID,
+                            final String _instanceKey,
+                            final String _openerId)
     {
         super(_instanceKey);
         initialize(_commandUUID, _openerId);
@@ -176,7 +182,8 @@ public abstract class AbstractUIObject extends AbstractInstanceObject
      * @param _commandUUID UUID for this Model
      * @param _openerId id of the opener
      */
-    private void initialize(final UUID _commandUUID, final String _openerId)
+    private void initialize(final UUID _commandUUID,
+                            final String _openerId)
     {
         this.openerId = _openerId;
         final AbstractCommand command = getCommand(_commandUUID);
@@ -201,12 +208,13 @@ public abstract class AbstractUIObject extends AbstractInstanceObject
      * @throws EFapsException on error
      */
     @Override
-    public Instance getInstanceFromManager() throws EFapsException
+    public Instance getInstanceFromManager()
+        throws EFapsException
     {
         final AbstractCommand cmd = getCommand();
         final List<Return> rets = cmd.executeEvents(EventType.UI_INSTANCEMANAGER,
-                                                ParameterValues.OTHERS, getInstanceKey(),
-                                                ParameterValues.PARAMETERS, Context.getThreadContext().getParameters());
+                        ParameterValues.OTHERS, getInstanceKey(),
+                        ParameterValues.PARAMETERS, Context.getThreadContext().getParameters());
 
         return (Instance) rets.get(0).get(ReturnValues.VALUES);
     }
@@ -223,7 +231,7 @@ public abstract class AbstractUIObject extends AbstractInstanceObject
     }
 
     /**
-     *  Method is used to execute the UIObject (Fill it with data).
+     * Method is used to execute the UIObject (Fill it with data).
      */
     public abstract void execute();
 
@@ -408,6 +416,15 @@ public abstract class AbstractUIObject extends AbstractInstanceObject
                     }
                     query.close();
                 }
+
+                // WebApp-Configuration
+                final SystemConfiguration config = SystemConfiguration.get(
+                                UUID.fromString("50a65460-2d08-4ea8-b801-37594e93dad5"));
+
+                if (config != null && config.getAttributeValueAsBoolean("ShowOID")
+                                && Context.getThreadContext().getPerson().isAssigned(Role.get("Administration"))) {
+                    title = title + " " +  getInstance().getOid();
+                }
             }
         } catch (final ParseException e) {
             throw new RestartResponseException(new ErrorPage(new EFapsException(this.getClass(), "",
@@ -466,6 +483,7 @@ public abstract class AbstractUIObject extends AbstractInstanceObject
 
     /**
      * Method to check if mode is view.
+     *
      * @see #mode
      * @return true if mode is print
      */
@@ -529,24 +547,27 @@ public abstract class AbstractUIObject extends AbstractInstanceObject
      * This method throws an eFpasError to provide the possibility for different
      * responses in the components.
      *
-     * @param _objectTuples   n tuples of ParamterValue and Object
+     * @param _objectTuples n tuples of ParamterValue and Object
      * @throws EFapsException on error
      * @return List of Returns
      */
     public List<Return> executeEvents(final Object... _objectTuples)
-            throws EFapsException
+        throws EFapsException
     {
         return executeEvents(EventType.UI_COMMAND_EXECUTE, _objectTuples);
     }
 
     /**
      * Execute the events.
-     * @param _eventType    type of events to be executed
+     *
+     * @param _eventType type of events to be executed
      * @param _objectTuples tuples of objects passed to the event
-     * @return  Lsit of returns from the events
+     * @return Lsit of returns from the events
      * @throws EFapsException on error
      */
-    private List<Return> executeEvents(final EventType _eventType, final Object... _objectTuples) throws EFapsException
+    private List<Return> executeEvents(final EventType _eventType,
+                                       final Object... _objectTuples)
+        throws EFapsException
     {
         List<Return> ret = new ArrayList<Return>();
         AbstractCommand command;
@@ -577,6 +598,7 @@ public abstract class AbstractUIObject extends AbstractInstanceObject
         }
         return ret;
     }
+
     /**
      * This method executes the Validate-Events which are related to this Model.
      * It will take the Events of the Command {@link #cmdUUID}.
@@ -585,7 +607,8 @@ public abstract class AbstractUIObject extends AbstractInstanceObject
      * @return List with Return from the esjp
      * @throws EFapsException on error
      */
-    public List<Return> validate(final Object... _objectTuples) throws EFapsException
+    public List<Return> validate(final Object... _objectTuples)
+        throws EFapsException
     {
         return executeEvents(EventType.UI_VALIDATE, _objectTuples);
     }
