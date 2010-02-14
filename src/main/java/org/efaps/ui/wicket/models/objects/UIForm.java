@@ -31,7 +31,6 @@ import java.util.UUID;
 import org.apache.wicket.IClusterable;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.RestartResponseException;
-
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeSet;
 import org.efaps.admin.datamodel.Classification;
@@ -340,8 +339,9 @@ public class UIForm extends UIAbstractPageObject
         }
 
         Instance fieldInstance;
-        if (_field.getSelectAlternateOID() != null) {
-            fieldInstance = Instance.get((String) _query.getSelect(_field.getSelectAlternateOID()));
+        if (_field.getSelectAlternateOID() != null
+                        && _query.<Object>getSelect(_field.getSelectAlternateOID()) instanceof String[]) {
+            fieldInstance = Instance.get(_query.<String>getSelect(_field.getSelectAlternateOID()));
         } else {
             fieldInstance = getInstance();
         }
@@ -352,7 +352,7 @@ public class UIForm extends UIAbstractPageObject
             } else if (_field.getSelect() != null) {
                 value = _query.getSelect(_field.getSelect());
             } else if (_field.getPhrase() != null) {
-                value = _query.getPhrase(_field.getPhrase());
+                value = _query.getPhrase(_field.getName());
             }
             final FieldValue fieldvalue = new FieldValue(_field, attr, value, fieldInstance);
             final String strValue = fieldvalue.getHiddenHtml(getMode(), getInstance(), null);
