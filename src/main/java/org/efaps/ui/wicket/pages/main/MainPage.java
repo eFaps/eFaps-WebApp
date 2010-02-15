@@ -25,6 +25,7 @@ import java.util.UUID;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.PageMap;
 import org.apache.wicket.RestartResponseException;
+import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.IAjaxCallDecorator;
@@ -40,7 +41,6 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.util.string.JavascriptUtils;
 import org.apache.wicket.util.time.Duration;
-
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.EFapsSession;
@@ -110,6 +110,9 @@ public class MainPage extends AbstractMergePage
     public MainPage()
     {
         super();
+        // call the client info to force the relaod script to be executed on the beginning of a session,
+        // if an ajax call would be doen as fisrt an error occurs
+        Session.get().getClientInfo();
         // add the file call back used to open a file in the session and the main page
         final ShowFileCallBackBehavior fileCall = new ShowFileCallBackBehavior();
         this.add(fileCall);
