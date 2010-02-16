@@ -340,7 +340,7 @@ public class UIForm extends UIAbstractPageObject
 
         Instance fieldInstance;
         if (_field.getSelectAlternateOID() != null
-                        && _query.<Object>getSelect(_field.getSelectAlternateOID()) instanceof String[]) {
+                        && !(_query.getSelect(_field.getSelectAlternateOID()) instanceof String[])) {
             fieldInstance = Instance.get(_query.<String>getSelect(_field.getSelectAlternateOID()));
         } else {
             fieldInstance = getInstance();
