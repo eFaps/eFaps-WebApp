@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,6 @@ import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.util.string.CssUtils;
 import org.apache.wicket.util.string.JavascriptUtils;
-
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.behaviors.dojo.DnDBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.DojoReference;
@@ -57,28 +56,49 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 import org.efaps.util.EFapsException;
 
 /**
- * This class renders the Header of a Table
+ * This class renders the Header of a Table.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id:TableHeaderPanel.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class HeaderPanel extends Panel
+public class HeaderPanel
+    extends Panel
 {
+    /**
+     * Reference to the javascript.
+     */
+    public static final EFapsContentReference JAVASCRIPT = new EFapsContentReference(HeaderPanel.class,
+                                                                                     "HeaderPanel.js");
 
+    /**
+     * Needed for serialization.
+     */
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Modal used in this header for filter etc.
+     */
     private final ModalWindowContainer modal = new ModalWindowContainer("eFapsModal");
 
-    public static final EFapsContentReference JAVASCRIPT = new EFapsContentReference(HeaderPanel.class,
-                    "HeaderPanel.js");
 
+    /**
+     * the table panel this header panel belongs to.
+     */
     private final Component tablepanel;
 
+    /**
+     * Properties for this header.
+     */
     private final String headerproperties;
 
-    public HeaderPanel(final String _id, final TablePanel _tablePanel)
+    /**
+     * @param _wicketId     wicketId fo rhtis component
+     * @param _tablePanel   the table panel this header panel belongs to
+     */
+    public HeaderPanel(final String _wicketId,
+                       final TablePanel _tablePanel)
     {
-        super(_id, _tablePanel.getDefaultModel());
+        super(_wicketId, _tablePanel.getDefaultModel());
         this.tablepanel = _tablePanel;
         final UITable uitable = (UITable) super.getDefaultModelObject();
         this.headerproperties = "eFapsTable" + uitable.getTableId();
@@ -99,18 +119,23 @@ public class HeaderPanel extends Panel
 
         final RepeatingView cellRepeater = new RepeatingView("cellRepeater");
         add(cellRepeater);
+        boolean firstcell = false;
         int i = uitable.getTableId();
         if (uitable.isShowCheckBoxes()) {
-            final HeaderCellPanel cell = new HeaderCellPanel(cellRepeater.newChildId(), true);
+            final HeaderCellPanel cell = new HeaderCellPanel(cellRepeater.newChildId(), true,
+                            "eFapsTableCheckBoxCell", i);
             cell.setOutputMarkupId(true);
             cellRepeater.add(cell);
             i++;
+            firstcell = true;
         }
         if (uitable.isCreateMode()) {
-            final HeaderCellPanel cell = new HeaderCellPanel(cellRepeater.newChildId(), false);
+            final HeaderCellPanel cell = new HeaderCellPanel(cellRepeater.newChildId(), false,
+                            "eFapsTableRemoveRowCell", i);
             cell.setOutputMarkupId(true);
             cellRepeater.add(cell);
             i++;
+            firstcell = true;
         }
 
         final List<String> widths = new ArrayList<String>();
@@ -119,12 +144,18 @@ public class HeaderPanel extends Panel
         for (int j = 0; j < uitable.getHeaders().size(); j++) {
             final UITableHeader headermodel = uitable.getHeaders().get(j);
 
-            final HeaderCellPanel cell = new HeaderCellPanel(cellRepeater.newChildId(), new TableHeaderModel(
-                            headermodel), uitable);
+            final HeaderCellPanel cell = new HeaderCellPanel(cellRepeater.newChildId(),
+                            new TableHeaderModel(headermodel), uitable);
 
             if (headermodel.isFixedWidth()) {
-                widths.add(".eFapsCellFixedWidth" + i + "{width: " + headermodel.getWidth() + "px;}\n");
-                cell.add(new SimpleAttributeModifier("class", "eFapsTableHeaderCell eFapsCellFixedWidth" + i));
+                widths.add(".eFapsCellFixedWidth" + i + "{width: " + headermodel.getWidth() + "px; }\n");
+                if (firstcell) {
+                    firstcell = false;
+                    cell.add(new SimpleAttributeModifier("class",  "eFapsTableFirstCell eFapsTableHeaderCell"
+                                    + " eFapsCellFixedWidth" + i));
+                } else {
+                    cell.add(new SimpleAttributeModifier("class",  "eFapsTableHeaderCell eFapsCellFixedWidth" + i));
+                }
                 fixed += headermodel.getWidth();
             } else {
                 Integer width = 0;
@@ -134,8 +165,13 @@ public class HeaderPanel extends Panel
                     width = browserWidth / uitable.getWidthWeight() * headermodel.getWidth();
                 }
                 widths.add(".eFapsCellWidth" + i + "{width: " + width.toString() + "px;}\n");
-                cell.add(new SimpleAttributeModifier("class", "eFapsTableHeaderCell eFapsCellWidth" + i));
-
+                if (firstcell) {
+                    firstcell = false;
+                    cell.add(new SimpleAttributeModifier("class",  "eFapsTableFirstCell eFapsTableHeaderCell"
+                                    + " eFapsCellWidth" + i));
+                } else {
+                    cell.add(new SimpleAttributeModifier("class",  "eFapsTableHeaderCell eFapsCellWidth" + i));
+                }
                 cell.add(DnDBehavior.getItemBehavior(this.headerproperties));
             }
             cell.setOutputMarkupId(true);
@@ -163,35 +199,46 @@ public class HeaderPanel extends Panel
         this.add(new StringHeaderContributor(getWidthStyle(widths)));
 
         this.add(new HeaderContributor(DojoReference.getHeaderContributerforDojo()));
-        this.add(StaticHeaderContributor.forJavaScript(JAVASCRIPT));
+        this.add(StaticHeaderContributor.forJavaScript(HeaderPanel.JAVASCRIPT));
     }
 
+    /**
+     * @return the modal window
+     */
     public final ModalWindowContainer getModal()
     {
         return this.modal;
     }
 
+    /**
+     * @return the javascript
+     */
     private String getScript()
     {
 
-        final String ret = JavascriptUtils.SCRIPT_OPEN_TAG + "  var " + this.headerproperties
-                        + " = new headerProperties();\n  " + this.headerproperties + ".headerID = \""
-                        + this.getMarkupId() + "\";\n  " + this.headerproperties + ".bodyID = \""
-                        + this.tablepanel.getMarkupId() + "\";\n  " + this.headerproperties + ".modelID = "
-                        + ((UITable) super.getDefaultModelObject()).getTableId() + ";\n  " + this.headerproperties
-                        + ".storeColumnWidths = "
-                        + (this.getBehaviors(AjaxStoreColumnWidthBehavior.class).get(0)).getJavaScript() + "  "
-                        + this.headerproperties + ".storeColumnOrder = "
-                        + (this.getBehaviors(AjaxStoreColumnOrderBehavior.class).get(0)).getJavaScript()
-                        + this.headerproperties + ".reloadTable = "
-                        + (this.getBehaviors(AjaxReloadTableBehavior.class).get(0)).getJavaScript()
-                        + "  addOnResizeEvent(function (){positionTableColumns(" + this.headerproperties + ");});\n"
-                        + "  dojo.addOnLoad(function (){positionTableColumns(" + this.headerproperties + ");});\n"
-                        + JavascriptUtils.SCRIPT_CLOSE_TAG;
-
-        return ret;
+        final StringBuilder js = new StringBuilder().append(JavascriptUtils.SCRIPT_OPEN_TAG)
+            .append("  var ").append(this.headerproperties).append(" = new headerProperties();\n  ")
+            .append(this.headerproperties).append(".headerID = \"").append(this.getMarkupId()).append("\";\n  ")
+            .append(this.headerproperties + ".bodyID = \"").append(this.tablepanel.getMarkupId()).append("\";\n  ")
+            .append(this.headerproperties + ".modelID = ")
+                .append(((UITable) super.getDefaultModelObject()).getTableId()).append(";\n  ")
+            .append(this.headerproperties).append(".storeColumnWidths = ")
+                .append((this.getBehaviors(AjaxStoreColumnWidthBehavior.class).get(0)).getJavaScript()).append("  ")
+                .append(this.headerproperties).append(".storeColumnOrder = ")
+                .append((this.getBehaviors(AjaxStoreColumnOrderBehavior.class).get(0)).getJavaScript())
+                .append(this.headerproperties + ".reloadTable = ")
+                .append((this.getBehaviors(AjaxReloadTableBehavior.class).get(0)).getJavaScript())
+                .append("  addOnResizeEvent(function (){positionTableColumns(").append(this.headerproperties)
+                .append(");});\n")
+            .append("  dojo.addOnLoad(function (){positionTableColumns(" + this.headerproperties + ");});\n")
+            .append(JavascriptUtils.SCRIPT_CLOSE_TAG);
+        return js.toString();
     }
 
+    /**
+     * @param _widths withs
+     * @return style sheet
+     */
     private String getWidthStyle(final List<String> _widths)
     {
 
@@ -206,9 +253,8 @@ public class HeaderPanel extends Panel
         return ret.toString();
     }
 
-    /*
-     * (non-Javadoc)
-     *
+    /**
+     * Add the script to the header.
      * @see org.apache.wicket.Component#onBeforeRender()
      */
     @Override
@@ -216,85 +262,130 @@ public class HeaderPanel extends Panel
     {
         this.add(new StringHeaderContributor(getScript()));
         super.onBeforeRender();
-
     }
 
-    public class AjaxStoreColumnWidthBehavior extends AbstractDefaultAjaxBehavior
+    /**
+     * Behavior to storr the width of columns in the server.
+     */
+    public class AjaxStoreColumnWidthBehavior
+        extends AbstractDefaultAjaxBehavior
     {
 
+        /**
+         * String used as Variablename in the Javascript.
+         */
+        public static final String COLUMNW_PARAMETERNAME = "eFapsColumnWidths";
+
+        /**
+         * Needed for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
         /**
-         * String used as Variablename in the Javascript
+         * @return the javascript
          */
-        public final static String COLUMNW_PARAMETERNAME = "eFapsColumnWidths";
-
         public String getJavaScript()
         {
             final StringBuilder ret = new StringBuilder();
-            ret.append("function(_widths){\n    ").append(
-                            generateCallbackScript("wicketAjaxPost('" + getCallbackUrl(false) + "','"
-                                            + COLUMNW_PARAMETERNAME + "=' + _widths")).append("\n" + "  }\n");
+            ret.append("function(_widths){\n    ")
+                .append(generateCallbackScript("wicketAjaxPost('" + getCallbackUrl(false) + "','"
+                            + HeaderPanel.AjaxStoreColumnWidthBehavior.COLUMNW_PARAMETERNAME + "=' + _widths"))
+                .append("\n" + "  }\n");
             return ret.toString();
         }
 
+        /**
+         * Method stores the width string in the context of the current user.
+         * @param _target AjaxRequestTarget
+         */
         @Override
         protected void respond(final AjaxRequestTarget _target)
         {
-            final String widths = getComponent().getRequest().getParameter(COLUMNW_PARAMETERNAME);
+            final String widths = getComponent().getRequest().getParameter(
+                            HeaderPanel.AjaxStoreColumnWidthBehavior.COLUMNW_PARAMETERNAME);
             try {
                 Context.getThreadContext().setUserAttribute(
                                 ((UITable) getComponent().getDefaultModelObject())
-                                                .getUserAttributeKey(UserAttributeKey.COLUMNWIDTH), widths);
+                                .getUserAttributeKey(UserAttributeKey.COLUMNWIDTH), widths);
                 // why did we have that??
-                //((UITable) getComponent().getDefaultModelObject()).resetModel();
+                // ((UITable) / getComponent().getDefaultModelObject()).resetModel();
             } catch (final EFapsException e) {
                 throw new RestartResponseException(new ErrorPage(e));
             }
         }
     }
 
-    public class AjaxStoreColumnOrderBehavior extends AbstractDefaultAjaxBehavior
+    /**
+     * Behavior to store the coolun order.
+     */
+    public class AjaxStoreColumnOrderBehavior
+        extends AbstractDefaultAjaxBehavior
     {
 
-        private static final long serialVersionUID = 1L;
+        /**
+         * String used as Variablename in the Javascript.
+         */
+        public static final String COLUMNORDER_PARAMETERNAME = "eFapsColumnOrder";
 
         /**
-         * String used as Variablename in the Javascript
+         * Needed for serialization.
          */
-        public final static String COLUMNORDER_PARAMETERNAME = "eFapsColumnOrder";
+        private static final long serialVersionUID = 1L;
 
+
+        /**
+         * @return the javascript
+         */
         public String getJavaScript()
         {
             final StringBuilder ret = new StringBuilder();
-            ret.append("function(_columnOrder){\n    ").append(
-                            generateCallbackScript("wicketAjaxPost('" + getCallbackUrl(false) + "','"
-                                            + COLUMNORDER_PARAMETERNAME + "=' + _columnOrder")).append("\n" + "  }\n");
+            ret.append("function(_columnOrder){\n    ")
+                .append(generateCallbackScript("wicketAjaxPost('" + getCallbackUrl(false) + "','"
+                            + HeaderPanel.AjaxStoreColumnOrderBehavior.COLUMNORDER_PARAMETERNAME + "=' + _columnOrder"))
+                .append("\n" + "  }\n");
             return ret.toString();
         }
 
+        /**
+         * Method stores the width string in the context of the current user.
+         * @param _target AjaxRequestTarget
+         */
         @Override
         protected void respond(final AjaxRequestTarget _target)
         {
-            final String order = getComponent().getRequest().getParameter(COLUMNORDER_PARAMETERNAME);
-
+            final String order = getComponent().getRequest().getParameter(
+                            HeaderPanel.AjaxStoreColumnOrderBehavior.COLUMNORDER_PARAMETERNAME);
             ((UITable) getComponent().getDefaultModelObject()).setColumnOrder(order);
-
         }
     }
 
-    public class AjaxReloadTableBehavior extends AbstractDefaultAjaxBehavior
+    /**
+     * Behavior to reload a table.
+     */
+    public class AjaxReloadTableBehavior
+        extends AbstractDefaultAjaxBehavior
     {
 
+        /**
+         * Needed for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
+        /**
+         * @return javascript
+         */
         public String getJavaScript()
         {
             final StringBuilder ret = new StringBuilder();
-            ret.append("  function(){\n    ").append(getCallbackScript()).append("\n  }\n");
+            ret.append("  function(){\n    ")
+                .append(getCallbackScript()).append("\n  }\n");
             return ret.toString();
         }
 
+        /**
+         * Reload the table.
+         * @param _target AjaxRequestTarget
+         */
         @Override
         protected void respond(final AjaxRequestTarget _target)
         {

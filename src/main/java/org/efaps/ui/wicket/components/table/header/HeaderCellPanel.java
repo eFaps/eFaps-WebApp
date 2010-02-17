@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,6 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-
 import org.efaps.admin.ui.AbstractCommand.SortDirection;
 import org.efaps.ui.wicket.behaviors.dojo.DnDBehavior;
 import org.efaps.ui.wicket.models.objects.UITable;
@@ -81,15 +80,21 @@ public class HeaderCellPanel extends Panel
     private static final long serialVersionUID = 1L;
 
     /**
-     * Constructor used to render only a CheckBoxCell.
+     * Constructor used to render only a CheckBoxCell or the placeholder
+     * in case of create.
      *
-     * @param _wicketId wicket id for this component
-     * @param _checkbox render a checkbox
+     * @param _wicketId     wicket id for this component
+     * @param _checkbox     render a checkbox
+     * @param _styleClass   style class
+     * @param _columnNumber number of the column
      */
-    public HeaderCellPanel(final String _wicketId, final boolean _checkbox)
+    public HeaderCellPanel(final String _wicketId,
+                           final boolean _checkbox,
+                           final String _styleClass,
+                           final int _columnNumber)
     {
         super(_wicketId);
-        this.add(new SimpleAttributeModifier("class", "eFapsTableCheckBoxCell eFapsCellFixedWidth0"));
+        this.add(new SimpleAttributeModifier("class", _styleClass + " eFapsCellFixedWidth" + _columnNumber));
         if (_checkbox) {
             this.add(new Checkbox("checkBox"));
         } else {
@@ -108,7 +113,9 @@ public class HeaderCellPanel extends Panel
      * @param _model    model for this component
      * @param _uitable  uitable this component sits in
      */
-    public HeaderCellPanel(final String _wicketId, final IModel<UITableHeader> _model, final UITable _uitable)
+    public HeaderCellPanel(final String _wicketId,
+                           final IModel<UITableHeader> _model,
+                           final UITable _uitable)
     {
         super(_wicketId, _model);
 
@@ -191,7 +198,8 @@ public class HeaderCellPanel extends Panel
     /**
      * Class to render a checkbox that selects all checkboxes in this row.
      */
-    public class Checkbox extends WebComponent
+    public class Checkbox
+        extends WebComponent
     {
         /**
          * Needed for serialization.
@@ -226,9 +234,12 @@ public class HeaderCellPanel extends Panel
          */
         private String getScript()
         {
-            return "var cb=document.getElementsByName('selectedRow');" + "if(!isNaN(cb.length)) {"
-                            + " for(var i=0;i<cb.length;i++){" + "   cb[i].checked=this.checked;}" + " }else{"
-                            + " cb.checked=this.checked;" + "}";
+            return new StringBuilder().append("var cb=document.getElementsByName('selectedRow');")
+                .append(" if(!isNaN(cb.length)) {")
+                .append(" for(var i=0;i<cb.length;i++){")
+                .append("   cb[i].checked=this.checked;}")
+                .append(" }else{")
+                .append(" cb.checked=this.checked;" + "}").toString();
         }
     }
 }
