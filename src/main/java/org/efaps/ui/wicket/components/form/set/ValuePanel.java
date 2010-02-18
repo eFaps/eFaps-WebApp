@@ -31,7 +31,6 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
-
 import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
 import org.efaps.ui.wicket.models.cell.UIFormCellSet;
@@ -79,22 +78,25 @@ public class ValuePanel extends Panel
                             set.getName()).append("_").append(nf.format(xyValue.getY())).append("\"/>");
         }
         for (int x = 0; x < xyValue.getX(); x++) {
-            bld.append("<td>");
-            final String value = set.getXYValue(x, xyValue.getY());
-            final Matcher matcher = tagpattern.matcher(value);
-            int start = 0;
-            while (matcher.find()) {
-                value.substring(start, matcher.start());
-                bld.append(value.substring(start, matcher.start()));
-                final String tag = matcher.group();
-                final StringBuilder name = new StringBuilder().append(" name=\"").append(set.getName())
-                    .append("_").append(nf.format(xyValue.getY())).append(nf.format(x)).append("\" ");
 
-                bld.append(tag.replaceAll(regex.toString(), name.toString()));
-                start = matcher.end();
+            final String value = set.getXYValue(x, xyValue.getY());
+            if (value != null) {
+                bld.append("<td>");
+                final Matcher matcher = tagpattern.matcher(value);
+                int start = 0;
+                while (matcher.find()) {
+                    value.substring(start, matcher.start());
+                    bld.append(value.substring(start, matcher.start()));
+                    final String tag = matcher.group();
+                    final StringBuilder name = new StringBuilder().append(" name=\"").append(set.getName())
+                        .append("_").append(nf.format(xyValue.getY())).append(nf.format(x)).append("\" ");
+
+                    bld.append(tag.replaceAll(regex.toString(), name.toString()));
+                    start = matcher.end();
+                }
+                bld.append(value.substring(start, value.length()));
+                bld.append("</td>");
             }
-            bld.append(value.substring(start, value.length()));
-            bld.append("</td>");
         }
         final WebMarkupContainer table = new WebMarkupContainer("eFpasSetValueTable");
         add(table);
