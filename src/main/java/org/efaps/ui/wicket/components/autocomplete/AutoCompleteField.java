@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,6 @@ import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.field.Field;
@@ -53,8 +52,10 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class AutoCompleteField extends AutoCompleteTextField<Map<String, String>>
+public class AutoCompleteField
+    extends AutoCompleteTextField<Map<String, String>>
 {
+
     /**
      * Reference to the stylesheet.
      */
@@ -93,10 +94,12 @@ public class AutoCompleteField extends AutoCompleteTextField<Map<String, String>
     /**
      * @param _wicketId wicket id for this component
      * @param _model model for this component
-     * @param _fieldName name for the field
+     * @param _selectRow name for the field
      */
     @SuppressWarnings("unchecked")
-    public AutoCompleteField(final String _wicketId, final IModel<?> _model, final boolean _selectRow)
+    public AutoCompleteField(final String _wicketId,
+                             final IModel<?> _model,
+                             final boolean _selectRow)
     {
         super(_wicketId, new Model());
         this.selectRow = _selectRow;
@@ -155,13 +158,15 @@ public class AutoCompleteField extends AutoCompleteTextField<Map<String, String>
      */
     @Override
     protected AutoCompleteBehavior<Map<String, String>> newAutoCompleteBehavior(
-                    final IAutoCompleteRenderer<Map<String, String>> _renderer, final AutoCompleteSettings _settings)
+                    final IAutoCompleteRenderer<Map<String, String>> _renderer,
+                    final AutoCompleteSettings _settings)
     {
         _settings.setAdjustInputWidth(false);
-
+        _settings.setUseSmartPositioning(true);
         final AutoCompleteRenderer renderer = new AutoCompleteRenderer(this);
 
         return new AutoCompleteBehavior<Map<String, String>>(renderer, _settings) {
+
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -179,7 +184,8 @@ public class AutoCompleteField extends AutoCompleteTextField<Map<String, String>
      * @param _tag tag
      */
     @Override
-    protected void onComponentTagBody(final MarkupStream _markupStream, final ComponentTag _tag)
+    protected void onComponentTagBody(final MarkupStream _markupStream,
+                                      final ComponentTag _tag)
     {
         final StringBuilder cmp = new StringBuilder();
         cmp.append("<input type=\"hidden\"").append("name=\"").append(this.fieldName).append("\" id=\"").append(
