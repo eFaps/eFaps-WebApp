@@ -80,7 +80,7 @@ public class RowPanel extends Panel
             i++;
             firstCell = true;
         }
-        if (uiTable.isCreateMode()) {
+        if (uiTable.isCreateMode() || uiTable.isEditMode()) {
             final AjaxAddRemoveRowPanel remove = new AjaxAddRemoveRowPanel(cellRepeater.newChildId(),
                                                                            new TableModel(uiTable), this);
             remove.setOutputMarkupId(true);

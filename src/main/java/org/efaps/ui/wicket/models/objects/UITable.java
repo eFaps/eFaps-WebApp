@@ -197,6 +197,13 @@ public class UITable extends UIAbstractPageObject
      */
     private final List<UIRow> values = new ArrayList<UIRow>();
 
+
+    /**
+     * Thie Row is used in case of edit to create new empty rows.
+     */
+    private UIRow emptyRow;
+
+
     /**
      * This instance variable stores the total weight of the widths of the
      * Cells. (Sum of all widths)
@@ -483,11 +490,15 @@ public class UITable extends UIAbstractPageObject
                                   final List<Field> _fields)
         throws EFapsException
     {
+        boolean first = true;
         while (_query.next()) {
             Instance instance = _query.getCurrentInstance();
             final UIRow row = new UIRow(instance.getKey());
 
             String strValue = "";
+            if (isEditMode() && first) {
+                this.emptyRow = new UIRow();
+            }
             for (final Field field : _fields) {
                 if (field.hasAccess(getMode(), getInstance()) && !field.isNoneDisplay(getMode())) {
                     Object value = null;
@@ -539,9 +550,33 @@ public class UITable extends UIAbstractPageObject
                     } else {
                         row.add(new UITableCell(this, fieldvalue, instance, strValue, htmlTitle, icon));
                     }
+                    // in case of edit mode an empty version of the first row isw stored, and can be used
+                    // to create new rows
+                    if (isEditMode() && first) {
+                        final FieldValue fldVal = new FieldValue(field, attr, null, null);
+                        final String cellvalue;
+                        final String cellTitle;
+                        if (field.isEditableDisplay(getMode())) {
+                            cellvalue =  fldVal.getEditHtml(getMode(), null, null);
+                            cellTitle = fldVal.getStringValue(getMode(), null, null);
+                        } else if (field.isHiddenDisplay(getMode())) {
+                            cellvalue = fldVal.getHiddenHtml(getMode(), null, null);
+                            cellTitle = "";
+                        } else {
+                            cellvalue = fldVal.getReadOnlyHtml(getMode(), null, null);
+                            cellTitle = fldVal.getStringValue(getMode(), null, null);
+                        }
+
+                        if (hidden) {
+                            this.emptyRow.addHidden(new UIHiddenCell(this, fldVal, null, cellvalue));
+                        } else {
+                            this.emptyRow.add(new UITableCell(this, fldVal, null, cellvalue, cellTitle, icon));
+                        }
+                    }
                 }
             }
             this.values.add(row);
+            first = false;
         }
     }
 
@@ -815,6 +850,16 @@ public class UITable extends UIAbstractPageObject
             }
         }
         return Type.get(typeName);
+    }
+
+    /**
+     * Getter method for the instance variable {@link #emptyRow}.
+     *
+     * @return value of instance variable {@link #emptyRow}
+     */
+    public UIRow getEmptyRow()
+    {
+        return this.emptyRow;
     }
 
     /**

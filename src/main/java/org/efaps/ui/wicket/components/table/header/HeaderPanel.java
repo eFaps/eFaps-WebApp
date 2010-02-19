@@ -129,7 +129,7 @@ public class HeaderPanel
             i++;
             firstcell = true;
         }
-        if (uitable.isCreateMode()) {
+        if (uitable.isCreateMode() || uitable.isEditMode()) {
             final HeaderCellPanel cell = new HeaderCellPanel(cellRepeater.newChildId(), false,
                             "eFapsTableRemoveRowCell", i);
             cell.setOutputMarkupId(true);

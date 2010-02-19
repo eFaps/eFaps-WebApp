@@ -195,7 +195,8 @@ public class AjaxAddRemoveRowPanel
 
                     final int count = Integer.parseInt(newRows);
                     final UITable uitable = (UITable) getDefaultModelObject();
-                    final UIRow uirow = uitable.getValues().get(0);
+                    final UIRow uirow = uitable.getEmptyRow() != null
+                                                    ? uitable.getEmptyRow() : uitable.getValues().get(0);
                     final TablePanel tablepanel = getComponent().findParent(TablePanel.class);
 
                     for (int i = 0; i < count; i++) {

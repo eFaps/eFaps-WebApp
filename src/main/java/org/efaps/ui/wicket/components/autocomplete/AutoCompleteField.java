@@ -40,7 +40,6 @@ import org.efaps.admin.ui.field.Field;
 import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
 import org.efaps.ui.wicket.behaviors.SetSelectedRowBehavior;
 import org.efaps.ui.wicket.components.form.command.AjaxCmdBehavior;
-import org.efaps.ui.wicket.models.cell.UIAbstractCell;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
@@ -92,6 +91,11 @@ public class AutoCompleteField
     private int cols;
 
     /**
+     * Cell this complete field belongs to.
+     */
+    private final UITableCell uiAbstractCell;
+
+    /**
      * @param _wicketId wicket id for this component
      * @param _model model for this component
      * @param _selectRow name for the field
@@ -104,10 +108,10 @@ public class AutoCompleteField
         super(_wicketId, new Model());
         this.selectRow = _selectRow;
         this.model = _model;
-        final UIAbstractCell uiAbstractCell = ((UIAbstractCell) _model.getObject());
-        this.fieldName = uiAbstractCell.getName();
+        this.uiAbstractCell = ((UITableCell) _model.getObject());
+        this.fieldName = this.uiAbstractCell.getName();
 
-        final Field field = Field.get(uiAbstractCell.getFieldId());
+        final Field field = Field.get(this.uiAbstractCell.getFieldId());
         if (field != null) {
             this.cols = field.getCols();
         }
@@ -145,6 +149,9 @@ public class AutoCompleteField
         _tag.put("name", this.fieldName + "AutoComplete");
         if (this.cols > 0) {
             _tag.put("size", this.cols);
+        }
+        if (this.uiAbstractCell.getParent().isEditMode()) {
+            _tag.put("value", this.uiAbstractCell.getCellTitle());
         }
     }
 
@@ -188,8 +195,17 @@ public class AutoCompleteField
                                       final ComponentTag _tag)
     {
         final StringBuilder cmp = new StringBuilder();
-        cmp.append("<input type=\"hidden\"").append("name=\"").append(this.fieldName).append("\" id=\"").append(
-                        _tag.getString("id")).append("_hidden\" >");
+        cmp.append("<input type=\"hidden\" ").append("name=\"").append(this.fieldName).append("\" id=\"").append(
+                        _tag.getString("id")).append("_hidden\" ");
+        try {
+            if (this.uiAbstractCell.getParent().isEditMode() && this.uiAbstractCell.getInstance() != null) {
+                cmp.append(" value=\"").append(this.uiAbstractCell.getInstance().getOid()).append("\"");
+            }
+        } catch (final EFapsException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        cmp.append(">");
         replaceComponentTagBody(_markupStream, _tag, cmp);
     }
 
@@ -230,4 +246,5 @@ public class AutoCompleteField
     {
         this.cmdBehavior = _cmdBehavior;
     }
+
 }

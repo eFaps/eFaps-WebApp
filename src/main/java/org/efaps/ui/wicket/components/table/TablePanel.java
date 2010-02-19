@@ -31,7 +31,6 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
-
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.behaviors.SetSelectedRowBehavior;
 import org.efaps.ui.wicket.components.table.row.RowPanel;
@@ -108,7 +107,7 @@ public class TablePanel extends Panel
                 rowsRepeater.add(row);
             }
         }
-        if (uiTable.isCreateMode()) {
+        if (uiTable.isCreateMode() || uiTable.isEditMode()) {
             rowsRepeater.add(new AjaxAddRemoveRowPanel(rowsRepeater.newChildId(), _uitable, rowsRepeater));
             if (uiTable instanceof UIFieldTable)  {
                 if (((UIFieldTable) uiTable).isFirstTable()) {

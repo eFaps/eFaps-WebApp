@@ -86,7 +86,8 @@ public class CellPanel
         final UITableCell uiTableCell = (UITableCell) super.getDefaultModelObject();
         // set the title of the cell
         add(new SimpleAttributeModifier("title", uiTableCell.getCellTitle()));
-        if (uiTableCell.isAutoComplete() && _uitable.isCreateMode()) {
+        if (uiTableCell.isAutoComplete() && (_uitable.isCreateMode() || _uitable.isEditMode())
+                        && uiTableCell.getDisplay().equals(Display.EDITABLE)) {
             add(new AutoCompleteField("checkbox", _model, true));
             add(new WebMarkupContainer("link").setVisible(false));
             add(new WebMarkupContainer("icon").setVisible(false));
@@ -139,7 +140,8 @@ public class CellPanel
                 add(new WebMarkupContainer("label").setVisible(false));
             } else {
                 final LabelComponent label = new LabelComponent("label", uiTableCell.getCellValue());
-                if (_uitable.isCreateMode() && uiTableCell.getDisplay().equals(Display.EDITABLE)) {
+                if ((_uitable.isCreateMode() || _uitable.isEditMode())
+                                && uiTableCell.getDisplay().equals(Display.EDITABLE)) {
                     label.add(new SetSelectedRowBehavior(uiTableCell.getName()));
                     if (uiTableCell.isFieldUpdate()) {
                         label.add(new AjaxFieldUpdateBehavior(uiTableCell.getFieldUpdateEvent(), _model));

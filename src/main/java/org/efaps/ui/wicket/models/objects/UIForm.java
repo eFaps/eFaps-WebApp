@@ -248,12 +248,10 @@ public class UIForm extends UIAbstractPageObject
                         }
                         rowgroupcount = group.getGroupCount();
                     } else if (field instanceof FieldTable) {
-                        if (!isEditMode()) {
-                            final UIFieldTable uiFieldTable = new UIFieldTable(getCommandUUID(), getInstanceKey(),
+                        final UIFieldTable uiFieldTable = new UIFieldTable(getCommandUUID(), getInstanceKey(),
                                                                                ((FieldTable) field));
-                            this.elements.add(new Element(UIForm.ElementType.TABLE, uiFieldTable));
-                            addNew = true;
-                        }
+                        this.elements.add(new Element(UIForm.ElementType.TABLE, uiFieldTable));
+                        addNew = true;
                     } else if (field instanceof FieldHeading) {
                         this.elements.add(new Element(UIForm.ElementType.HEADING,
                                                           new UIHeading((FieldHeading) field)));
