@@ -21,12 +21,13 @@
 package org.efaps.ui.wicket.models.objects;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 
 import org.apache.wicket.PageParameters;
-
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Command;
 import org.efaps.admin.ui.Menu;
@@ -45,6 +46,17 @@ public abstract class UIAbstractPageObject
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * Mapping between the id used for the interface and an oid from eFaps.
+     */
+    private final Map<String, String> uiID2Oid = new HashMap<String, String>();
+
+    /**
+     * Random that can be used for the id in the userinterface and
+     * stored in {@link #uiID2Oid}.
+     */
+    private final Random random = new Random();
 
     /**
      * A list of cells that will be rendered hidden in tht page.
@@ -86,6 +98,8 @@ public abstract class UIAbstractPageObject
      * Name of the wiki file, that is the target of the help link shown in the form, table etc.
      */
     private String helpTarget;
+
+
 
     /**
      * Constructor evaluating the UUID for the command and the oid from an
@@ -317,4 +331,21 @@ public abstract class UIAbstractPageObject
         return this.helpTarget;
     }
 
+    /**
+     * Getter method for the instance variable {@link #uiID2Oid}.
+     *
+     * @return value of instance variable {@link #uiID2Oid}
+     */
+    public Map<String, String> getUiID2Oid()
+    {
+        return this.uiID2Oid;
+    }
+
+    /**
+     * @return a new for this instance unique random key.
+     */
+    public String getNewRandom()
+    {
+        return ((Integer) this.random.nextInt()).toString();
+    }
 }

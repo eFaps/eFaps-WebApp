@@ -25,87 +25,96 @@ import java.util.Map;
 
 import org.apache.wicket.IClusterable;
 import org.apache.wicket.RequestCycle;
-
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.EFapsWebRequestCycle;
+import org.efaps.ui.wicket.util.EFapsKey;
 import org.efaps.util.EFapsException;
 
 /**
  * TODO comment!
  *
- * @author jmox
- * @version $Id$
+ * @author The eFaps Team
+ * @version $Id: AbstractInstanceObject.java 3447 2009-11-29 22:46:39Z
+ *          tim.moxter $
  */
-public abstract class AbstractInstanceObject implements IClusterable {
-
-  public static String INSTANCE_CACHEKEY  = "InstancesInRequest";
+public abstract class AbstractInstanceObject
+    implements IClusterable
+{
 
     /**
-   * Needed for serialization.
-   */
-  private static final long serialVersionUID = 1L;
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
-  private String instanceKey;
+    /**
+     * key to the instance.
+     */
+    private String instanceKey;
 
-  public AbstractInstanceObject() {
-
-  }
-
-  public AbstractInstanceObject(final String _instanceKey) {
-    this.instanceKey = _instanceKey;
-  }
-
-  /**
-   * Getter method for instance variable {@link #instanceKey}.
-   *
-   * @return value of instance variable {@link #instanceKey}
-   */
-  public String getInstanceKey() {
-    return this.instanceKey;
-  }
-
-  /**
-   * @see org.efaps.ui.wicket.models.AbstractInstanceObject#getInstance()
-   * @return Instance of the object
-   * @throws EFapsException
-   */
-  @SuppressWarnings("unchecked")
-  public Instance getInstance() throws EFapsException {
-    Instance ret = null;
-    Map<String, Instance> map;
-
-    final EFapsWebRequestCycle cycle
-                                    = (EFapsWebRequestCycle) RequestCycle.get();
-
-    map = (Map<String, Instance>) cycle.getFromCache(INSTANCE_CACHEKEY);
-    if (map == null) {
-      map =  new HashMap<String, Instance>();
-      cycle.putIntoCache(INSTANCE_CACHEKEY, map);
+    public AbstractInstanceObject()
+    {
     }
-    if (map.containsKey(this.instanceKey)) {
-      ret = map.get(this.instanceKey);
-    } else {
-      if (hasInstanceManager()) {
-        ret = getInstanceFromManager();
-      } else if ((this.instanceKey != null)
-            && (this.instanceKey.length() > 0)) {
-        ret = Instance.get(getInstanceKey());
-      }
-      map.put(this.instanceKey, ret);
+
+    public AbstractInstanceObject(final String _instanceKey)
+    {
+        this.instanceKey = _instanceKey;
     }
-    return ret;
-  }
 
-  /**
-   * Setter method for instance variable {@link #instanceKey}.
-   *
-   * @param _instanceKey value for instance variable {@link #instanceKey}
-   */
-  public void setInstanceKey(final String _instanceKey) {
-    this.instanceKey = _instanceKey;
-  }
+    /**
+     * Getter method for instance variable {@link #instanceKey}.
+     *
+     * @return value of instance variable {@link #instanceKey}
+     */
+    public String getInstanceKey()
+    {
+        return this.instanceKey;
+    }
 
-  public abstract Instance getInstanceFromManager() throws EFapsException;
+    /**
+     * @see org.efaps.ui.wicket.models.AbstractInstanceObject#getInstance()
+     * @return Instance of the object
+     * @throws EFapsException on error
+     */
+    @SuppressWarnings("unchecked")
+    public Instance getInstance()
+        throws EFapsException
+    {
+        Instance ret = null;
+        Map<String, Instance> map;
 
-  public abstract boolean hasInstanceManager();
+        final EFapsWebRequestCycle cycle = (EFapsWebRequestCycle) RequestCycle.get();
+
+        map = (Map<String, Instance>) cycle.getFromCache(EFapsKey.INSTANCE_CACHEKEY.getKey());
+        if (map == null) {
+            map = new HashMap<String, Instance>();
+            cycle.putIntoCache(EFapsKey.INSTANCE_CACHEKEY.getKey(), map);
+        }
+        if (map.containsKey(this.instanceKey)) {
+            ret = map.get(this.instanceKey);
+        } else {
+            if (hasInstanceManager()) {
+                ret = getInstanceFromManager();
+            } else if ((this.instanceKey != null)
+                            && (this.instanceKey.length() > 0)) {
+                ret = Instance.get(getInstanceKey());
+            }
+            map.put(this.instanceKey, ret);
+        }
+        return ret;
+    }
+
+    /**
+     * Setter method for instance variable {@link #instanceKey}.
+     *
+     * @param _instanceKey value for instance variable {@link #instanceKey}
+     */
+    public void setInstanceKey(final String _instanceKey)
+    {
+        this.instanceKey = _instanceKey;
+    }
+
+    public abstract Instance getInstanceFromManager()
+        throws EFapsException;
+
+    public abstract boolean hasInstanceManager();
 }

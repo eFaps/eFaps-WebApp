@@ -39,8 +39,11 @@ public enum EFapsKey {
     AUTOCOMPLETE_JAVASCRIPT("eFapsAutoCompleteJS"),
 
     /** Key used for the javascript in the map. */
-    FIELDUPDATE_JAVASCRIPT("eFapsFieldUpdateJS");
-
+    FIELDUPDATE_JAVASCRIPT("eFapsFieldUpdateJS"),
+    /** Key used as name for the hidden field that makes a row unique. */
+    TABLEROW_NAME("eFapsTableRowID"),
+    /** key used to store instances in a request. */
+    INSTANCE_CACHEKEY("eFapsInstancesInRequest");
     /**
      * The actual string used as the key.
      */

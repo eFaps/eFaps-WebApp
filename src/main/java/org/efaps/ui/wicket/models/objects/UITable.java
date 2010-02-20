@@ -70,28 +70,28 @@ import org.slf4j.LoggerFactory;
  * @author The eFaps Team
  * @version $Id$
  */
-public class UITable extends UIAbstractPageObject
+public class UITable
+    extends UIAbstractPageObject
 {
 
     /**
      * This enum holds the Values used as part of the key for the UserAttributes
      * witch belong to a TableModel.
      */
-    public static enum UserAttributeKey
-    {
+    public static enum UserAttributeKey {
         /**
          * Key used for the order of Columns.
          */
         COLUMNORDER("columnOrder"),
-        /**
+                /**
          * Key used for the widths of Columns.
          */
         COLUMNWIDTH("columnWidths"),
-        /**
+                /**
          * Key used for the sort direction.
          */
         SORTDIRECTION("sortDirection"),
-        /**
+                /**
          * Key used for the Column.
          */
         SORTKEY("sortKey");
@@ -137,9 +137,10 @@ public class UITable extends UIAbstractPageObject
 
     /**
      * Map is used to store the filters in relation to a field name. It is used
-     * temporarily when the table is (due to a database based filter)
-     * requeried, to be able to set the filters to the headers by copying it
-     * from the old header to the new one.
+     * temporarily when the table is (due to a database based filter) requeried,
+     * to be able to set the filters to the headers by copying it from the old
+     * header to the new one.
+     *
      * @see #getInstanceListsOld()
      * @see #execute4InstanceOld()
      */
@@ -197,12 +198,10 @@ public class UITable extends UIAbstractPageObject
      */
     private final List<UIRow> values = new ArrayList<UIRow>();
 
-
     /**
      * Thie Row is used in case of edit to create new empty rows.
      */
     private UIRow emptyRow;
-
 
     /**
      * This instance variable stores the total weight of the widths of the
@@ -216,7 +215,8 @@ public class UITable extends UIAbstractPageObject
      * @param _parameters PageParameters
      * @throws EFapsException on error
      */
-    public UITable(final PageParameters _parameters) throws EFapsException
+    public UITable(final PageParameters _parameters)
+        throws EFapsException
     {
         super(_parameters);
         initialise();
@@ -229,7 +229,9 @@ public class UITable extends UIAbstractPageObject
      * @param _instanceKey Key of the instance
      * @throws EFapsException on error
      */
-    public UITable(final UUID _commandUUID, final String _instanceKey) throws EFapsException
+    public UITable(final UUID _commandUUID,
+                   final String _instanceKey)
+        throws EFapsException
     {
         super(_commandUUID, _instanceKey);
         initialise();
@@ -243,7 +245,10 @@ public class UITable extends UIAbstractPageObject
      * @param _openerId id of the opener
      * @throws EFapsException on error
      */
-    public UITable(final UUID _commandUUID, final String _instanceKey, final String _openerId) throws EFapsException
+    public UITable(final UUID _commandUUID,
+                   final String _instanceKey,
+                   final String _openerId)
+        throws EFapsException
     {
         super(_commandUUID, _instanceKey, _openerId);
         initialise();
@@ -251,9 +256,11 @@ public class UITable extends UIAbstractPageObject
 
     /**
      * Method that initializes the TableModel.
+     *
      * @throws EFapsException on error
      */
-    private void initialise() throws EFapsException
+    private void initialise()
+        throws EFapsException
     {
         final AbstractCommand command = getCommand();
         if (command == null) {
@@ -263,7 +270,7 @@ public class UITable extends UIAbstractPageObject
             if (command.getTargetTable() != null) {
                 this.tableUUID = command.getTargetTable().getUUID();
                 // add the filter here, if it is a required filter that must be
-                //applied against the database
+                // applied against the database
                 for (final Field field : command.getTargetTable().getFields()) {
                     if (field.isFilterRequired() && !field.isFilterMemoryBased()) {
                         this.filters.put(new UITableHeader(field, SortDirection.NONE, null), new Filter());
@@ -303,7 +310,8 @@ public class UITable extends UIAbstractPageObject
      * @throws EFapsException on error
      */
     @SuppressWarnings("unchecked")
-    protected List<List<Instance>> getInstanceListsOld() throws EFapsException
+    protected List<List<Instance>> getInstanceListsOld()
+        throws EFapsException
     {
         // get the filters that must be applied against the database
         final Map<String, Map<String, String>> dataBasefilters = new HashMap<String, Map<String, String>>();
@@ -320,20 +328,21 @@ public class UITable extends UIAbstractPageObject
         }
 
         final List<Return> ret = getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
-                                                            ParameterValues.INSTANCE, getInstance(),
-                                                            ParameterValues.OTHERS, dataBasefilters);
+                        ParameterValues.INSTANCE, getInstance(),
+                        ParameterValues.OTHERS, dataBasefilters);
         final List<List<Instance>> lists = (List<List<Instance>>) ret.get(0).get(ReturnValues.VALUES);
         return lists;
     }
 
-
     /**
      * Method to get the list of instance.
-     * @return  List of instances
+     *
+     * @return List of instances
      * @throws EFapsException on error
      */
     @SuppressWarnings("unchecked")
-    protected List<Instance> getInstanceList() throws EFapsException
+    protected List<Instance> getInstanceList()
+        throws EFapsException
     {
         // get the filters that must be applied against the database
         final Map<String, Map<String, String>> dataBasefilters = new HashMap<String, Map<String, String>>();
@@ -350,15 +359,16 @@ public class UITable extends UIAbstractPageObject
         }
 
         final List<Return> ret = getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
-                                                            ParameterValues.INSTANCE, getInstance(),
-                                                            ParameterValues.OTHERS, dataBasefilters);
+                        ParameterValues.INSTANCE, getInstance(),
+                        ParameterValues.OTHERS, dataBasefilters);
         final List<Instance> lists = (List<Instance>) ret.get(0).get(ReturnValues.VALUES);
         return lists;
     }
 
     /**
-     * TODO to be removed.
-     * Temporary method to decide which method of selct must be used
+     * TODO to be removed. Temporary method to decide which method of selct must
+     * be used
+     *
      * @return true if the new way
      */
     private boolean isNewWay()
@@ -367,14 +377,13 @@ public class UITable extends UIAbstractPageObject
         final Table form = Table.get(this.tableUUID);
         for (final Field field : form.getFields()) {
             if (field.getAttribute() != null || field.getSelect() != null || field.getPhrase() != null
-                          ||  field.getSelectAlternateOID() != null) {
+                            || field.getSelectAlternateOID() != null) {
                 ret = true;
                 break;
             }
         }
         return ret;
     }
-
 
     /**
      * {@inheritDoc}
@@ -401,9 +410,10 @@ public class UITable extends UIAbstractPageObject
     /**
      * @throws EFapsException on error
      */
-    private void execute4Instance() throws EFapsException
+    private void execute4Instance()
+        throws EFapsException
     {
-     // first get list of object ids
+        // first get list of object ids
         final List<Instance> instances = getInstanceList();
 
         // evaluate for all expressions in the table
@@ -482,8 +492,8 @@ public class UITable extends UIAbstractPageObject
     }
 
     /**
-     * @param _query    Query
-     * @param _fields   Fields
+     * @param _query Query
+     * @param _fields Fields
      * @throws EFapsException on error
      */
     private void executeRowResult(final MultiPrintQuery _query,
@@ -493,28 +503,28 @@ public class UITable extends UIAbstractPageObject
         boolean first = true;
         while (_query.next()) {
             Instance instance = _query.getCurrentInstance();
-            final UIRow row = new UIRow(instance.getKey());
+            final UIRow row = new UIRow(this, instance.getKey());
 
             String strValue = "";
             if (isEditMode() && first) {
-                this.emptyRow = new UIRow();
+                this.emptyRow = new UIRow(this);
             }
             for (final Field field : _fields) {
                 if (field.hasAccess(getMode(), getInstance()) && !field.isNoneDisplay(getMode())) {
                     Object value = null;
                     Attribute attr = null;
                     if (field.getAttribute() != null) {
-                        value = _query.<Object>getAttribute(field.getAttribute());
+                        value = _query.<Object> getAttribute(field.getAttribute());
                         attr = _query.getAttribute4Attribute(field.getAttribute());
                     } else if (field.getSelect() != null) {
-                        value = _query.<Object>getSelect(field.getSelect());
+                        value = _query.<Object> getSelect(field.getSelect());
                         attr = _query.getAttribute4Select(field.getSelect());
                     } else if (field.getPhrase() != null) {
                         value = _query.getPhrase(field.getName());
                     }
 
                     if (field.getSelectAlternateOID() != null) {
-                        instance = Instance.get(_query.<String>getSelect(field.getSelectAlternateOID()));
+                        instance = Instance.get(_query.<String> getSelect(field.getSelectAlternateOID()));
                     }
 
                     final FieldValue fieldvalue = new FieldValue(field, attr, value, instance);
@@ -550,14 +560,15 @@ public class UITable extends UIAbstractPageObject
                     } else {
                         row.add(new UITableCell(this, fieldvalue, instance, strValue, htmlTitle, icon));
                     }
-                    // in case of edit mode an empty version of the first row isw stored, and can be used
+                    // in case of edit mode an empty version of the first row
+                    // isw stored, and can be used
                     // to create new rows
                     if (isEditMode() && first) {
                         final FieldValue fldVal = new FieldValue(field, attr, null, null);
                         final String cellvalue;
                         final String cellTitle;
                         if (field.isEditableDisplay(getMode())) {
-                            cellvalue =  fldVal.getEditHtml(getMode(), null, null);
+                            cellvalue = fldVal.getEditHtml(getMode(), null, null);
                             cellTitle = fldVal.getStringValue(getMode(), null, null);
                         } else if (field.isHiddenDisplay(getMode())) {
                             cellvalue = fldVal.getHiddenHtml(getMode(), null, null);
@@ -581,18 +592,20 @@ public class UITable extends UIAbstractPageObject
     }
 
     /**
-     * Executes this model for the case that no instance is given.
-     * Currently only create!
+     * Executes this model for the case that no instance is given. Currently
+     * only create!
+     *
      * @throws EFapsException on error
      */
-    private void execute4NoInstance() throws EFapsException
+    private void execute4NoInstance()
+        throws EFapsException
     {
         final List<Field> fields = getUserSortedColumns();
         final List<Integer> userWidthList = getUserWidths();
         int i = 1;
         for (final Field field : fields) {
             if (field.hasAccess(getMode(), getInstance())
-                                            && !field.isNoneDisplay(getMode()) && !field.isHiddenDisplay(getMode())) {
+                            && !field.isNoneDisplay(getMode()) && !field.isHiddenDisplay(getMode())) {
                 SortDirection sortdirection = SortDirection.NONE;
                 if (field.getName().equals(this.sortKey)) {
                     sortdirection = getSortDirection();
@@ -615,12 +628,12 @@ public class UITable extends UIAbstractPageObject
             }
         }
         final Type type = getTypeFromEvent();
-        final UIRow row = new UIRow();
+        final UIRow row = new UIRow(this);
         Attribute attr = null;
 
         for (final Field field : fields) {
             if (field.hasAccess(getMode(), getInstance()) && !field.isNoneDisplay(getMode())) {
-                //TODO to be removed!!
+                // TODO to be removed!!
                 if (field.getExpression() != null) {
                     attr = type.getAttribute(field.getExpression());
                 }
@@ -658,14 +671,17 @@ public class UITable extends UIAbstractPageObject
             sort();
         }
     }
+
     /**
      * This method executes the TableModel, that means this method has to be
      * called so that this model contains actual data from the eFaps-DataBase.
      * The method works in conjunction with
      * {@link #executeRowResult(Map, ListQuery)}.
+     *
      * @throws EFapsException on error
      */
-    private void execute4InstanceOld() throws EFapsException
+    private void execute4InstanceOld()
+        throws EFapsException
     {
         // first get list of object ids
         final List<List<Instance>> lists = getInstanceListsOld();
@@ -740,16 +756,18 @@ public class UITable extends UIAbstractPageObject
     }
 
     /**
-     * This method works together with {@link #execute4InstanceOld()} to fill this Model
-     * with Data.
+     * This method works together with {@link #execute4InstanceOld()} to fill
+     * this Model with Data.
      *
      * @param _instMapper Map of instances
      * @param _query Query with results
      * @param _fields List of the Fields
      * @throws EFapsException on error
      */
-    private void executeRowResultOld(final Map<Instance, List<Instance>> _instMapper, final ListQuery _query,
-                    final List<Field> _fields) throws EFapsException
+    private void executeRowResultOld(final Map<Instance, List<Instance>> _instMapper,
+                                     final ListQuery _query,
+                                     final List<Field> _fields)
+        throws EFapsException
     {
 
         while (_query.next()) {
@@ -772,8 +790,7 @@ public class UITable extends UIAbstractPageObject
                     instanceKeys.append(oneInstance.getKey());
                 }
             }
-            final UIRow row = new UIRow(instanceKeys.toString());
-
+            final UIRow row = new UIRow(this, instanceKeys.toString());
 
             String strValue = "";
             for (final Field field : _fields) {
@@ -829,7 +846,9 @@ public class UITable extends UIAbstractPageObject
     }
 
     /**
-     * Method used to evaluate the type for this table from the connected events.
+     * Method used to evaluate the type for this table from the connected
+     * events.
+     *
      * @return type if found
      * @throws EFapsException on error
      */
@@ -865,10 +884,11 @@ public class UITable extends UIAbstractPageObject
     /**
      * Add a filterlist to the filters of this UiTable.
      *
-     * @param _uitableHeader    UitableHeader this filter belongs to
-     * @param _list             lsi of value to filter
+     * @param _uitableHeader UitableHeader this filter belongs to
+     * @param _list lsi of value to filter
      */
-    public void addFilterList(final UITableHeader _uitableHeader, final Set<?> _list)
+    public void addFilterList(final UITableHeader _uitableHeader,
+                              final Set<?> _list)
     {
         final Filter filter = new Filter(_uitableHeader, _list);
         this.filters.put(_uitableHeader, filter);
@@ -878,11 +898,13 @@ public class UITable extends UIAbstractPageObject
     /**
      * Add a range to the filters of this UiTable.
      *
-     * @param _uitableHeader    UitableHeader this filter belongs to
-     * @param _from             from value
-     * @param _to               to value
+     * @param _uitableHeader UitableHeader this filter belongs to
+     * @param _from from value
+     * @param _to to value
      */
-    public void addFilterRange(final UITableHeader _uitableHeader, final String _from, final String _to)
+    public void addFilterRange(final UITableHeader _uitableHeader,
+                               final String _from,
+                               final String _to)
     {
         final Filter filter = new Filter(_uitableHeader, _from, _to);
         this.filters.put(_uitableHeader, filter);
@@ -892,7 +914,8 @@ public class UITable extends UIAbstractPageObject
     /**
      * Method to get a Filter from the list of filters belonging to this
      * UITable.
-     * @param _uitableHeader  UitableHeader this filter belongs to
+     *
+     * @param _uitableHeader UitableHeader this filter belongs to
      * @return filter
      */
     public Filter getFilter(final UITableHeader _uitableHeader)
@@ -902,7 +925,8 @@ public class UITable extends UIAbstractPageObject
 
     /**
      * Get the List of values for a PICKERLIST.
-     * @param _uitableHeader  UitableHeader this filter belongs to
+     *
+     * @param _uitableHeader UitableHeader this filter belongs to
      * @return List of Values
      */
     public List<?> getFilterPickList(final UITableHeader _uitableHeader)
@@ -956,7 +980,7 @@ public class UITable extends UIAbstractPageObject
         this.sortDirection = _sortdirection;
         try {
             Context.getThreadContext().setUserAttribute(getUserAttributeKey(UITable.UserAttributeKey.SORTDIRECTION),
-                                                                            _sortdirection.getValue());
+                            _sortdirection.getValue());
         } catch (final EFapsException e) {
             // we don't throw an error because this are only Usersettings
             UITable.LOG.error("error during the retrieve of UserAttributes", e);
@@ -987,7 +1011,7 @@ public class UITable extends UIAbstractPageObject
         this.sortKey = _sortKey;
         try {
             Context.getThreadContext().setUserAttribute(getUserAttributeKey(UITable.UserAttributeKey.SORTKEY),
-                                                                            _sortKey);
+                            _sortKey);
         } catch (final EFapsException e) {
             // we don't throw an error because this are only Usersettings
             UITable.LOG.error("error during the retrieve of UserAttributes", e);
@@ -1214,6 +1238,7 @@ public class UITable extends UIAbstractPageObject
 
     /**
      * Method to remove a filter from the filters.
+     *
      * @param _uiTableHeader UITableHeader the filter is removed for
      */
     public void removeFilter(final UITableHeader _uiTableHeader)
@@ -1272,6 +1297,7 @@ public class UITable extends UIAbstractPageObject
 
     /**
      * Method to get the events that are related to this UITable.
+     *
      * @param _eventType eventype to get
      * @return List of events
      */
@@ -1298,8 +1324,9 @@ public class UITable extends UIAbstractPageObject
             final int index = sortKeyTmp;
             Collections.sort(this.values, new Comparator<UIRow>() {
 
-                public int compare(final UIRow _rowModel1, final UIRow _rowModel2)
-                {
+                public int compare(final UIRow _rowModel1,
+                                   final UIRow _rowModel2)
+                                            {
 
                     final UITableCell cellModel1 = _rowModel1.getValues().get(index);
                     final FieldValue fValue1 = new FieldValue(getTable().getFields().get(index), cellModel1
@@ -1323,8 +1350,10 @@ public class UITable extends UIAbstractPageObject
     /**
      * Class represents one filter applied to this UITable.
      */
-    public class Filter implements IClusterable
+    public class Filter
+        implements IClusterable
     {
+
         /**
          * Key to the value for "from" in the nap for the esjp.
          */
@@ -1346,8 +1375,7 @@ public class UITable extends UIAbstractPageObject
         private final UITableHeader uiTableHeader;
 
         /**
-         * Set of value for the filter. Only used for filter using a
-         * PICKERLIST.
+         * Set of value for the filter. Only used for filter using a PICKERLIST.
          */
         private Set<?> filterList;
 
@@ -1368,14 +1396,14 @@ public class UITable extends UIAbstractPageObject
         private DateTime dateFrom;
 
         /**
-         * DateTime value for {@link #to} in case that the filter is for a
-         * date field.
+         * DateTime value for {@link #to} in case that the filter is for a date
+         * field.
          */
         private DateTime dateTo;
 
         /**
-         * Constructor is used for a database based filter in case that it
-         * is required.
+         * Constructor is used for a database based filter in case that it is
+         * required.
          */
         public Filter()
         {
@@ -1383,13 +1411,14 @@ public class UITable extends UIAbstractPageObject
         }
 
         /**
-         * Constructor is used in case that a filter is required, during
-         * loading the date first time for a memory base filter.
+         * Constructor is used in case that a filter is required, during loading
+         * the date first time for a memory base filter.
          *
          * @param _uitableHeader UITableHeader this filter lies in
          * @throws EFapsException on error
          */
-        public Filter(final UITableHeader _uitableHeader) throws EFapsException
+        public Filter(final UITableHeader _uitableHeader)
+            throws EFapsException
         {
             this.uiTableHeader = _uitableHeader;
             if (_uitableHeader.getFilterDefault() != null) {
@@ -1415,9 +1444,9 @@ public class UITable extends UIAbstractPageObject
         /**
          * Standard Constructor for a Filter containing a range.
          *
-         * @param _uitableHeader    UITableHeader this filter lies in
-         * @param _from             value for from
-         * @param _to               value for to
+         * @param _uitableHeader UITableHeader this filter lies in
+         * @param _from value for from
+         * @param _to value for to
          */
         public Filter(final UITableHeader _uitableHeader,
                       final String _from,
@@ -1435,8 +1464,9 @@ public class UITable extends UIAbstractPageObject
 
         /**
          * Standard Constructor for a Filter using a PICKLIST.
-         * @param _uitableHeader    UITableHeader this filter lies in
-         * @param _filterList       set of values for the filter
+         *
+         * @param _uitableHeader UITableHeader this filter lies in
+         * @param _filterList set of values for the filter
          */
         public Filter(final UITableHeader _uitableHeader,
                       final Set<?> _filterList)
@@ -1458,6 +1488,7 @@ public class UITable extends UIAbstractPageObject
         /**
          * Method to get the map that must be passed for this filter to the
          * esjp.
+         *
          * @return Map
          */
         public Map<String, String> getMap4esjp()
@@ -1472,9 +1503,10 @@ public class UITable extends UIAbstractPageObject
 
         /**
          * Method is used for memory based filters to filter one row.
-         * @param _uiRow    UIRow to filter
-         * @return  false if the row must be shown to the user, true if the row
-         *          must be filtered
+         *
+         * @param _uiRow UIRow to filter
+         * @return false if the row must be shown to the user, true if the row
+         *         must be filtered
          */
         public boolean filterRow(final UIRow _uiRow)
         {
@@ -1494,8 +1526,7 @@ public class UITable extends UIAbstractPageObject
                             } else {
                                 final Interval interval = new Interval(this.dateFrom, this.dateTo);
                                 final DateTime value = (DateTime) cell.getCompareValue();
-                                if (!(interval.contains(value) || value.isEqual(this.dateFrom)
-                                                || value.isEqual(this.dateTo))) {
+                                if (!(interval.contains(value) || value.isEqual(this.dateFrom) || value.isEqual(this.dateTo))) {
                                     ret = true;
                                 }
                             }

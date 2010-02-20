@@ -25,6 +25,8 @@ import java.util.Map;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
+import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
@@ -36,8 +38,11 @@ import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.cell.TableCellModel;
 import org.efaps.ui.wicket.models.cell.UIHiddenCell;
 import org.efaps.ui.wicket.models.cell.UITableCell;
+import org.efaps.ui.wicket.models.objects.UIAbstractPageObject;
 import org.efaps.ui.wicket.models.objects.UIRow;
 import org.efaps.ui.wicket.models.objects.UITable;
+import org.efaps.ui.wicket.util.EFapsKey;
+import org.efaps.util.EFapsException;
 
 /**
  * @author The eFaps Team
@@ -73,7 +78,7 @@ public class RowPanel extends Panel
 
         boolean firstCell = false;
         if (uiTable.isShowCheckBoxes()) {
-            final CellPanel cellpanel = new CellPanel(cellRepeater.newChildId(), uirow.getInstanceKeys());
+            final CellPanel cellpanel = new CellPanel(cellRepeater.newChildId(), uirow.getInstanceKey());
             cellpanel.setOutputMarkupId(true);
             cellpanel.add(new SimpleAttributeModifier("class", "eFapsTableCheckBoxCell"));
             cellRepeater.add(cellpanel);
@@ -122,5 +127,35 @@ public class RowPanel extends Panel
         for (final UIHiddenCell cell : uirow.getHidden()) {
             hiddenRepeater.add(new LabelComponent(hiddenRepeater.newChildId(), cell.getCellValue()));
         }
+
+        final WebComponent rowId = new WebComponent("rowId") {
+
+            /**
+             * Needed for serialization.
+             */
+            private static final long serialVersionUID = 1L;
+
+            /**
+             * @see org.apache.wicket.Component#onComponentTag(org.apache.wicket.markup.ComponentTag)
+             */
+            @Override
+            protected void onComponentTag(final ComponentTag _tag)
+            {
+                super.onComponentTag(_tag);
+                final UIAbstractPageObject uiObject = ((UIAbstractPageObject) getPage().getDefaultModelObject());
+                uirow.setUserinterfaceId(uiObject.getNewRandom());
+
+                try {
+                    uiObject.getUiID2Oid().put(uirow.getUserinterfaceId(), uirow.getInstance() == null
+                                                                            ? null : uirow.getInstance().getOid());
+                } catch (final EFapsException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                _tag.put("name", EFapsKey.TABLEROW_NAME.getKey());
+                _tag.put("value", uirow.getUserinterfaceId());
+            }
+        };
+        this.add(rowId);
     }
 }

@@ -39,7 +39,6 @@ import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.UIInterface;
@@ -344,9 +343,13 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
                                         = ((UIAbstractPageObject) this.form.getParent().getDefaultModelObject());
         if (_classifications.size() > 0) {
             returns = uiPageObject.executeEvents(ParameterValues.OTHERS, _other,
-                                                 ParameterValues.CLASSIFICATIONS, _classifications);
+                            ParameterValues.CLASSIFICATIONS, _classifications,
+                            ParameterValues.OIDMAP4UI,
+                                    ((UIAbstractPageObject) this.form.getPage().getDefaultModelObject()).getUiID2Oid());
         } else {
-            returns = uiPageObject.executeEvents(ParameterValues.OTHERS, _other);
+            returns = uiPageObject.executeEvents(ParameterValues.OTHERS, _other,
+                            ParameterValues.OIDMAP4UI,
+                            ((UIAbstractPageObject) this.form.getPage().getDefaultModelObject()).getUiID2Oid());
         }
 
         for (final Return oneReturn : returns) {
@@ -445,6 +448,7 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
                 final UIFieldTable uiFieldTable = (UIFieldTable) element.getElement();
                 final List<UITableHeader> headers = uiFieldTable.getHeaders();
                 for (final UIRow uiRow : uiFieldTable.getValues()) {
+                    uiRow.getUserinterfaceId();
                     final Iterator<UITableHeader> headerIter = headers.iterator();
                     for (final UITableCell uiTableCell : uiRow.getValues()) {
                         final UITableHeader header = headerIter.next();
@@ -499,10 +503,14 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
             if (_classifications.size() > 0) {
                 returns = ((AbstractUIObject) this.form.getParent().getDefaultModelObject()).validate(
                                 ParameterValues.OTHERS, _other,
-                                ParameterValues.CLASSIFICATIONS, _classifications);
+                                ParameterValues.CLASSIFICATIONS, _classifications,
+                                ParameterValues.OIDMAP4UI,
+                                    ((UIAbstractPageObject) this.form.getPage().getDefaultModelObject()).getUiID2Oid());
             } else {
                 returns = ((AbstractUIObject) this.form.getParent().getDefaultModelObject()).validate(
-                                ParameterValues.OTHERS, _other);
+                                ParameterValues.OTHERS, _other,
+                                ParameterValues.OIDMAP4UI,
+                                ((UIAbstractPageObject) this.form.getPage().getDefaultModelObject()).getUiID2Oid());
             }
 
             for (final Return oneReturn : returns) {
