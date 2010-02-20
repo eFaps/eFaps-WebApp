@@ -154,6 +154,7 @@ public class RowPanel extends Panel
                 }
                 _tag.put("name", EFapsKey.TABLEROW_NAME.getKey());
                 _tag.put("value", uirow.getUserinterfaceId());
+                _tag.put("type" , "hidden");
             }
         };
         this.add(rowId);
