@@ -21,11 +21,13 @@
 package org.efaps.ui.wicket.components.table.cell;
 
 import org.apache.wicket.PageMap;
+import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.link.PopupSettings;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.admin.ui.field.Field.Display;
 import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
@@ -86,6 +88,8 @@ public class CellPanel
         final UITableCell uiTableCell = (UITableCell) super.getDefaultModelObject();
         // set the title of the cell
         add(new SimpleAttributeModifier("title", uiTableCell.getCellTitle()));
+        add(new AttributeAppender("style", true, new Model<String>("text-align:" + uiTableCell.getAlign()), ";"));
+
         if (uiTableCell.isAutoComplete() && (_uitable.isCreateMode() || _uitable.isEditMode())
                         && uiTableCell.getDisplay().equals(Display.EDITABLE)) {
             add(new AutoCompleteField("checkbox", _model, true));

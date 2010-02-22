@@ -98,6 +98,12 @@ public class UITableCell extends UIAbstractCell
     private final boolean multiRows;
 
     /**
+     * The align of this cell.
+     */
+    private final String align;
+
+
+    /**
      * Constructor.
      * @param _parent       parent ui object
      * @param _fieldValue   FieldValue
@@ -114,6 +120,7 @@ public class UITableCell extends UIAbstractCell
 
         this.compareValue = _fieldValue.getObject4Compare();
         this.fixedWidth = _fieldValue.getField().isFixedWidth();
+        this.align =  _fieldValue.getField().getAlign();
         this.cellTitle = _cellTitle == null ? _cellvalue : _cellTitle;
         this.icon = _icon;
         this.multiRows = _fieldValue.getField().getRows() > 1;
@@ -136,6 +143,17 @@ public class UITableCell extends UIAbstractCell
                 }
             }
         }
+    }
+
+
+    /**
+     * Getter method for the instance variable {@link #align}.
+     *
+     * @return value of instance variable {@link #align}
+     */
+    public String getAlign()
+    {
+        return this.align;
     }
 
     /**
@@ -216,7 +234,7 @@ public class UITableCell extends UIAbstractCell
      */
     public boolean isMultiRows()
     {
-        return multiRows;
+        return this.multiRows;
     }
 
     /**

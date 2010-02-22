@@ -23,7 +23,6 @@ package org.efaps.ui.wicket.models.cell;
 import java.util.List;
 
 import org.apache.wicket.markup.html.WebMarkupContainer;
-
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.datamodel.ui.UIInterface;
@@ -95,6 +94,9 @@ public abstract class UIAbstractCell extends AbstractInstanceObject
      */
     private final long attributeId;
 
+    /**
+     * Component this cell belongs to.
+     */
     private WebMarkupContainer component;
 
     /**
@@ -115,7 +117,6 @@ public abstract class UIAbstractCell extends AbstractInstanceObject
         this.display = _fieldValue.getField().getDisplay(_parent.getMode());
         this.cellValue = _cellvalue;
         this.attributeId = _fieldValue.getAttribute() == null ? 0 : _fieldValue.getAttribute().getId();
-
     }
 
     /**
@@ -237,9 +238,7 @@ public abstract class UIAbstractCell extends AbstractInstanceObject
         return ret;
     }
 
-    public void setComponent(final WebMarkupContainer _component) {
-        this.component = _component;
-    }
+
 
     /**
      * Getter method for instance variable {@link #component}.
@@ -249,5 +248,16 @@ public abstract class UIAbstractCell extends AbstractInstanceObject
     public WebMarkupContainer getComponent()
     {
         return this.component;
+    }
+
+    /**
+     * Setter method for instance variable {@link #component}.
+     *
+     * @param component value for instance variable {@link #component}
+     */
+
+    public void setComponent(final WebMarkupContainer component)
+    {
+        this.component = component;
     }
 }
