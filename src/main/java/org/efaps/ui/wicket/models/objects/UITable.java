@@ -790,7 +790,7 @@ public class UITable
                     instanceKeys.append(oneInstance.getKey());
                 }
             }
-            final UIRow row = new UIRow(this, instanceKeys.toString());
+            final UIRow row = new UIRow(this, instance.getKey());
 
             String strValue = "";
             for (final Field field : _fields) {
