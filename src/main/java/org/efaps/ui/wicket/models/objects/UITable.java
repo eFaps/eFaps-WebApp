@@ -510,7 +510,12 @@ public class UITable
                 this.emptyRow = new UIRow(this);
             }
             for (final Field field : _fields) {
-                if (field.hasAccess(getMode(), getInstance()) && !field.isNoneDisplay(getMode())) {
+                if (field.getSelectAlternateOID() != null) {
+                    instance = Instance.get(_query.<String> getSelect(field.getSelectAlternateOID()));
+                } else {
+                    instance = _query.getCurrentInstance();
+                }
+                if (field.hasAccess(getMode(), instance) && !field.isNoneDisplay(getMode())) {
                     Object value = null;
                     Attribute attr = null;
                     if (field.getAttribute() != null) {
@@ -521,10 +526,6 @@ public class UITable
                         attr = _query.getAttribute4Select(field.getSelect());
                     } else if (field.getPhrase() != null) {
                         value = _query.getPhrase(field.getName());
-                    }
-
-                    if (field.getSelectAlternateOID() != null) {
-                        instance = Instance.get(_query.<String> getSelect(field.getSelectAlternateOID()));
                     }
 
                     final FieldValue fieldvalue = new FieldValue(field, attr, value, instance);
