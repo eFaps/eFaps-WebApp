@@ -14,7 +14,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          The eFaps Team
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
@@ -23,59 +23,58 @@
 <server>
 
 
-  <filter path="/*"
-          name="eFaps"
-          classname="org.apache.wicket.protocol.http.WicketFilter">
-    <parameter key="applicationClassName">org.efaps.ui.wicket.EFapsApplication</parameter>
-  </filter>
+    <filter path="/*" name="eFaps" classname="org.apache.wicket.protocol.http.WicketFilter">
+        <parameter key="applicationClassName">org.efaps.ui.wicket.EFapsApplication
+        </parameter>
+    </filter>
 
-  <filter path="/*"
-          name="BasicAuthenticationFilter"
-          classname="org.efaps.ui.filter.BasicAuthenticationFilter">
-    <parameter key="login.name">wicket:eFaps:org.efaps.ui.wicket.LoginAttributeName</parameter>
-  </filter>
+    <filter path="/*" name="BasicAuthenticationFilter" classname="org.efaps.ui.filter.BasicAuthenticationFilter">
+        <parameter key="login.name">wicket:eFaps:org.efaps.ui.wicket.LoginAttributeName
+        </parameter>
+    </filter>
 
-  <filter path="/*"
-          name="eFapsTransactionFilter"
-          classname="org.efaps.ui.filter.TransactionFilter">
-    <parameter key="login.name">wicket:eFaps:org.efaps.ui.wicket.LoginAttributeName</parameter>
-  </filter>
+    <filter path="/*" name="eFapsTransactionFilter" classname="org.efaps.ui.filter.TransactionFilter">
+        <parameter key="login.name">wicket:eFaps:org.efaps.ui.wicket.LoginAttributeName
+        </parameter>
+    </filter>
 
-<!--
-  <filter path="/test/*"
-          name="testFilter"
-          classname="org.efaps.ui.filter.TestFilter">
+    <!--
+        <filter path="/test/*" name="testFilter"
+        classname="org.efaps.ui.filter.TestFilter"> </filter>
+    -->
 
-  </filter>
- -->
+    <servlet path="/*"
+        name="eFapsRequestHandlerInitServlet"
+        displayname="eFapsRequestHandlerInitServlet" initorder="1"
+        classname="org.efaps.ui.servlet.RequestHandlerInitServlet" />
 
-  <servlet path="/*"
-          name="eFapsRequestHandlerInitServlet"
-          displayname="eFapsRequestHandlerInitServlet"
-          initorder="1"
-          classname="org.efaps.ui.servlet.RequestHandlerInitServlet"/>
+    <servlet path="/servlet/image/*"
+        name="eFapsImageServlet"
+        displayname="eFapsImageServlet"
+        classname="org.efaps.ui.servlet.ImageServlet" />
 
-  <servlet path="/servlet/image/*"
-          name="eFapsImageServlet"
-          displayname="eFapsImageServlet"
-          classname="org.efaps.ui.servlet.ImageServlet"/>
+    <servlet path="/servlet/static/*"
+        name="eFapsStaticContentServlet"
+        displayname="eFapsStaticContentServlet"
+        classname="org.efaps.ui.servlet.StaticContentServlet" />
 
-  <servlet path="/servlet/static/*"
-          name="eFapsStaticContentServlet"
-          displayname="eFapsStaticContentServlet"
-          classname="org.efaps.ui.servlet.StaticContentServlet"/>
+    <servlet path="/servlet/checkout/*"
+        name="eFapsCheckOutServlet"
+        displayname="eFapsCheckOutServlet"
+        classname="org.efaps.ui.servlet.CheckoutServlet" />
 
-  <servlet path="/servlet/checkout/*"
-          name="eFapsCheckOutServlet"
-          displayname="eFapsCheckOutServlet"
-          classname="org.efaps.ui.servlet.CheckoutServlet"/>
+    <servlet path="/servlet/help/*"
+        name="eFapsHelpServlet"
+        displayname="eFapsHelpServlet"
+        classname="org.efaps.ui.servlet.HelpServlet" />
 
-  <servlet path="/servlet/help/*"
-          name="eFapsHelpServlet"
-          displayname="eFapsHelpServlet"
-          classname="org.efaps.ui.servlet.HelpServlet"/>
-
-
+    <servlet path="/servlet/rest/*"
+        name="Jersey Servlet"
+        displayname="Jersey Servlet"
+        classname="com.sun.jersey.spi.container.servlet.ServletContainer">
+        <parameter key="com.sun.jersey.config.property.resourceConfigClass">com.sun.jersey.api.core.PackagesResourceConfig</parameter>
+        <parameter key="com.sun.jersey.config.property.packages">org.efaps.rest</parameter>
+    </servlet>
 </server>
 
 
