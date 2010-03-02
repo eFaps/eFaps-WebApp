@@ -361,7 +361,12 @@ public class UITable
         final List<Return> ret = getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
                         ParameterValues.INSTANCE, getInstance(),
                         ParameterValues.OTHERS, dataBasefilters);
-        final List<Instance> lists = (List<Instance>) ret.get(0).get(ReturnValues.VALUES);
+        List<Instance> lists = null;
+        if (ret.size() < 1) {
+            throw new EFapsException(UITable.class, "getInstanceList");
+        } else {
+           lists = (List<Instance>) ret.get(0).get(ReturnValues.VALUES);
+        }
         return lists;
     }
 
