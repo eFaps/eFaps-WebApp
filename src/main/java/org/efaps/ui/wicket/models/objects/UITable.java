@@ -1429,19 +1429,29 @@ public class UITable
             this.uiTableHeader = _uitableHeader;
             if (_uitableHeader.getFilterDefault() != null) {
                 if (_uitableHeader.getFilterType().equals(FilterType.DATE)) {
-                    if ("today".equalsIgnoreCase(_uitableHeader.getFilterDefault())) {
-                        this.dateFrom = DateTimeUtil.translateFromUI(new DateTime()).toDateMidnight().toDateTime();
-                        this.dateTo = this.dateFrom.plusDays(1);
-                    } else if ("week".equalsIgnoreCase(_uitableHeader.getFilterDefault())) {
+                    final String filter = _uitableHeader.getFilterDefault();
+                    final String[] parts = filter.split(":");
+                    final String range = parts[0];
+                    final int sub = parts.length > 1 ? Integer.parseInt(parts[1]) : 0;
+                    if ("today".equalsIgnoreCase(range)) {
+                        final DateMidnight tmp = DateTimeUtil.translateFromUI(new DateTime()).toDateMidnight();
+                        this.dateFrom = tmp.toDateTime().minusDays(sub);
+                        this.dateTo = this.dateFrom.plusDays(1).plusSeconds(1);
+                    } else if ("week".equalsIgnoreCase(range)) {
                         DateMidnight tmp = DateTimeUtil.translateFromUI(new DateTime()).toDateMidnight();
                         tmp = tmp.minusDays(tmp.getDayOfWeek() - 1);
-                        this.dateFrom = tmp.toDateTime();
+                        this.dateFrom = tmp.toDateTime().minusWeeks(sub);
                         this.dateTo = tmp.toDateTime().plusWeeks(1);
-                    } else if ("month".equalsIgnoreCase(_uitableHeader.getFilterDefault())) {
+                    } else if ("month".equalsIgnoreCase(range)) {
                         DateMidnight tmp = DateTimeUtil.translateFromUI(new DateTime()).toDateMidnight();
                         tmp = tmp.minusDays(tmp.getDayOfMonth() - 1);
-                        this.dateFrom = tmp.toDateTime();
+                        this.dateFrom = tmp.toDateTime().minusMonths(sub);
                         this.dateTo = tmp.toDateTime().plusMonths(1);
+                    } else if ("year".equalsIgnoreCase(range)) {
+                        DateMidnight tmp = DateTimeUtil.translateFromUI(new DateTime()).toDateMidnight();
+                        tmp = tmp.minusDays(tmp.getDayOfYear() - 1);
+                        this.dateFrom = tmp.toDateTime().minusYears(sub);
+                        this.dateTo = tmp.toDateTime().plusYears(1);
                     }
                 }
             }
@@ -1503,6 +1513,7 @@ public class UITable
             if (this.filterList == null) {
                 ret.put(UITable.Filter.FROM, this.from);
                 ret.put(UITable.Filter.TO, this.to);
+
             }
             return ret;
         }
@@ -1532,7 +1543,8 @@ public class UITable
                             } else {
                                 final Interval interval = new Interval(this.dateFrom, this.dateTo);
                                 final DateTime value = (DateTime) cell.getCompareValue();
-                                if (!(interval.contains(value) || value.isEqual(this.dateFrom) || value.isEqual(this.dateTo))) {
+                                if (!(interval.contains(value) || value.isEqual(this.dateFrom)
+                                                || value.isEqual(this.dateTo))) {
                                     ret = true;
                                 }
                             }
