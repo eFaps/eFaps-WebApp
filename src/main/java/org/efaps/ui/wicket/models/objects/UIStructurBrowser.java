@@ -34,7 +34,6 @@ import javax.swing.tree.TreeModel;
 
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.RestartResponseException;
-
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.FieldValue;
@@ -82,14 +81,14 @@ import org.efaps.util.RequestHandler;
  * @author The eFaps Team
  * @version $Id$
  */
-public class UIStructurBrowser extends AbstractUIObject
+public class UIStructurBrowser
+    extends UIAbstractPageObject
 {
     /**
      * Enum is used to set for this UIStructurBrowser which status of execution
      * it is in.
      */
-    public enum ExecutionStatus
-    {
+    public enum ExecutionStatus {
         /** Method addChildren is executed. */
         ADDCHILDREN,
         /** Method checkForChildren is executed. */
@@ -198,9 +197,10 @@ public class UIStructurBrowser extends AbstractUIObject
      * Constructor.
      *
      * @param _parameters Page parameters
-     * @throws EFapsException
+     * @throws EFapsException on error
      */
-    public UIStructurBrowser(final PageParameters _parameters) throws EFapsException
+    public UIStructurBrowser(final PageParameters _parameters)
+        throws EFapsException
     {
         super(_parameters);
         this.root = true;
@@ -213,10 +213,12 @@ public class UIStructurBrowser extends AbstractUIObject
      *
      * @param _commandUUID UUID of the calling command
      * @param _instanceKey oid
-     * @throws EFapsException
+     * @throws EFapsException on error
      *
      */
-    public UIStructurBrowser(final UUID _commandUUID, final String _instanceKey) throws EFapsException
+    public UIStructurBrowser(final UUID _commandUUID,
+                             final String _instanceKey)
+        throws EFapsException
     {
         this(_commandUUID, _instanceKey, true, SortDirection.ASCENDING);
     }
@@ -229,10 +231,13 @@ public class UIStructurBrowser extends AbstractUIObject
      * @param _instanceKey OID
      * @param _root is this STrtucturbrowser the root
      * @param _sortdirection sort direction
-     * @throws EFapsException
+     * @throws EFapsException on error
      */
-    private UIStructurBrowser(final UUID _commandUUID, final String _instanceKey, final boolean _root,
-                    final SortDirection _sortdirection) throws EFapsException
+    private UIStructurBrowser(final UUID _commandUUID,
+                              final String _instanceKey,
+                              final boolean _root,
+                              final SortDirection _sortdirection)
+        throws EFapsException
     {
         super(_commandUUID, _instanceKey);
         this.root = _root;
@@ -242,17 +247,19 @@ public class UIStructurBrowser extends AbstractUIObject
 
     /**
      * Method used to initialize this StructurBrowserModel.
-     * @throws EFapsException
+     *
+     * @throws EFapsException on error
      */
-    private void initialise() throws EFapsException
+    private void initialise()
+        throws EFapsException
     {
         final AbstractCommand command = getCommand();
         if ((command != null) && (command.getTargetTable() != null)) {
             this.tableuuid = command.getTargetTable().getUUID();
             this.browserFieldName = command.getTargetStructurBrowserField();
-        } else if (getInstance() != null){
-                final String tmplabel = Menu.getTypeTreeMenu(getInstance().getType()).getLabel();
-                this.valueLabel = DBProperties.getProperty(tmplabel);
+        } else if (getInstance() != null) {
+            final String tmplabel = Menu.getTypeTreeMenu(getInstance().getType()).getLabel();
+            this.valueLabel = DBProperties.getProperty(tmplabel);
 
         }
     }
@@ -275,13 +282,13 @@ public class UIStructurBrowser extends AbstractUIObject
         List<Return> ret;
         try {
             if (this.tableuuid == null) {
-                final Map<Instance, Boolean> map =  new LinkedHashMap<Instance, Boolean>();
+                final Map<Instance, Boolean> map = new LinkedHashMap<Instance, Boolean>();
                 map.put(getInstance(), null);
                 executeTree(map);
             } else {
                 ret = getCommand().executeEvents(EventType.UI_TABLE_EVALUATE, ParameterValues.CLASS, this,
-                                                 ParameterValues.INSTANCE, getInstance());
-                final Map<Instance, Boolean> map =  (Map<Instance, Boolean>) ret.get(0).get(ReturnValues.VALUES);
+                                ParameterValues.INSTANCE, getInstance());
+                final Map<Instance, Boolean> map = (Map<Instance, Boolean>) ret.get(0).get(ReturnValues.VALUES);
                 executeTreeTable(map);
             }
         } catch (final EFapsException e) {
@@ -293,7 +300,7 @@ public class UIStructurBrowser extends AbstractUIObject
      * This method is called in case of a Tree from the {@link #execute()}method
      * to fill this StructurBrowserModel with live.
      *
-     * @param map List of Object
+     * @param _map List of Object
      */
     private void executeTree(final Map<Instance, Boolean> _map)
     {
@@ -343,7 +350,7 @@ public class UIStructurBrowser extends AbstractUIObject
             }
             // evaluate for all expressions in the table
             final MultiPrintQuery print = new MultiPrintQuery(instances);
-            final Type type = instances.get(0).getType();
+            final Type type = instances.isEmpty() ? null : instances.get(0).getType();
             for (final Field field : getTable().getFields()) {
                 Attribute attr = null;
                 if (field.hasAccess(getMode(), getInstance())
@@ -384,7 +391,7 @@ public class UIStructurBrowser extends AbstractUIObject
                 for (final Field field : getTable().getFields()) {
                     Object value = null;
                     if (field.getSelectAlternateOID() != null) {
-                        instance = Instance.get(print.<String>getSelect(field.getSelectAlternateOID()));
+                        instance = Instance.get(print.<String> getSelect(field.getSelectAlternateOID()));
                     }
                     if (field.getSelect() != null) {
                         value = print.getSelect(field.getSelect());
@@ -400,7 +407,7 @@ public class UIStructurBrowser extends AbstractUIObject
 
                     final FieldValue fieldvalue = new FieldValue(field, attr, value, instance);
                     if (value != null) {
-                        if ((isCreateMode() || isEditMode()) &&  field.isEditableDisplay(getMode())) {
+                        if ((isCreateMode() || isEditMode()) && field.isEditableDisplay(getMode())) {
                             strValue = fieldvalue.getEditHtml(getMode(), getInstance(), instance);
                         } else {
                             strValue = fieldvalue.getStringValue(getMode(), getInstance(), instance);
@@ -545,7 +552,8 @@ public class UIStructurBrowser extends AbstractUIObject
      * @param _parent ParentNode children should be added
      * @param _childs to be added as childs
      */
-    private void addNode(final DefaultMutableTreeNode _parent, final List<UIStructurBrowser> _childs)
+    private void addNode(final DefaultMutableTreeNode _parent,
+                         final List<UIStructurBrowser> _childs)
     {
         for (int i = 0; i < _childs.size(); i++) {
             final DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(_childs.get(i));
@@ -576,7 +584,7 @@ public class UIStructurBrowser extends AbstractUIObject
         try {
             ret = getCommand().executeEvents(EventType.UI_TABLE_EVALUATE, ParameterValues.INSTANCE, getInstance(),
                             ParameterValues.CLASS, this);
-            final Map<Instance, Boolean> map =  (Map<Instance, Boolean>) ret.get(0).get(ReturnValues.VALUES);
+            final Map<Instance, Boolean> map = (Map<Instance, Boolean>) ret.get(0).get(ReturnValues.VALUES);
 
             if (this.tableuuid == null) {
                 executeTree(map);
@@ -809,9 +817,9 @@ public class UIStructurBrowser extends AbstractUIObject
      * which still need to be expanded.
      *
      */
-    public class BogusNode extends DefaultMutableTreeNode
+    public class BogusNode
+        extends DefaultMutableTreeNode
     {
-
         /**
          * Needed for serialization.
          */
