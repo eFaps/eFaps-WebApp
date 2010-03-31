@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@
 
 package org.efaps.ui.wicket;
 
+import java.io.Serializable;
 import java.util.Random;
 import java.util.UUID;
 
@@ -36,158 +37,175 @@ import org.apache.wicket.model.IModel;
  * @author jmox
  * @version $Id$
  */
-public class Opener {
+public class Opener implements Serializable
+{
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
+    /**
+     * Key used to pass the id as parameter inside the session of a page.
+     */
+    public static final String OPENER_PARAKEY = "openerId";
+    /**
+     * Id of this opener. It is generated as a random number in the constructor.
+     */
+    private final String id;
 
-  /**
-   * Key used to pass the id as parameter inside the session of a page.
-   */
-  public static final String OPENER_PARAKEY = "openerId";
-  /**
-   * Id of this opener. It is generated as a random number in  the constructor.
-   */
-  private final String id;
+    /**
+     * Stores the model of the opener.
+     */
+    private final IModel<?> model;
 
-  /**
-   * Stores the model of the opener.
-   */
-  private final IModel<?> model;
+    /**
+     * The name of the page map of this opener.
+     */
+    private final String pageMapName;
 
-  /**
-   * The name of the page map of this opener.
-   */
-  private final String pageMapName;
+    /**
+     * The key for the related menuTree of the opener.
+     */
+    private String menuTreeKey;
 
-  /**
-   * The key for the related menuTree of the opener.
-   */
-  private String menuTreeKey;
+    /**
+     * This UUID can be used to store a command in the opener. This is needed if
+     * e.g. the model is not existing because it was opened by the main window.
+     */
+    private UUID commandUUID;
 
-  /**
-   * This UUID can be used to store a command in the opener. This is needed
-   * if e.g. the model is not existing because it was opened by the main window.
-   */
-  private UUID commandUUID;
+    /**
+     * This String can be used to store a oid in the opener. This is needed if
+     * e.g. the model is not existing because it was opened by the main window.
+     */
+    private String instanceKey;
 
-  /**
-   * This String can be used to store a oid in the opener. This is needed
-   * if e.g. the model is not existing because it was opened by the main window.
-   */
-  private String instanceKey;
+    /**
+     * This variable stores if this opener can be removed from the session on
+     * the next possibility.
+     */
+    private boolean marked4Remove = false;
 
-  /**
-   * This variable stores if this opener can be removed from the session on the
-   * next possibility.
-   */
-  private boolean marked4Remove = false;
+    /**
+     * Constructor.
+     *
+     * @param _model model of the openr
+     * @param _pageMapName pagemap of the opener
+     */
+    public Opener(final IModel<?> _model,
+                  final String _pageMapName)
+    {
+        this.id = ((Long) (new Random().nextLong())).toString();
+        this.model = _model;
+        this.pageMapName = _pageMapName;
+    }
 
-  /**
-   * Constructor.
-   *
-   * @param _model        model of the openr
-   * @param _pageMapName  pagemap of the opener
-   */
-  public Opener(final IModel<?> _model, final String _pageMapName) {
-    this.id = ((Long) (new Random().nextLong())).toString();
-    this.model = _model;
-    this.pageMapName = _pageMapName;
-  }
+    /**
+     * Getter method for instance variable {@link #id}.
+     *
+     * @return value of instance variable {@link #id}
+     */
+    public String getId()
+    {
+        return this.id;
+    }
 
-  /**
-   * Getter method for instance variable {@link #id}.
-   *
-   * @return value of instance variable {@link #id}
-   */
-  public String getId() {
-    return this.id;
-  }
+    /**
+     * Getter method for instance variable {@link #model}.
+     *
+     * @return value of instance variable {@link #model}
+     */
+    public IModel<?> getModel()
+    {
+        return this.model;
+    }
 
-  /**
-   * Getter method for instance variable {@link #model}.
-   *
-   * @return value of instance variable {@link #model}
-   */
-  public IModel<?> getModel() {
-    return this.model;
-  }
+    /**
+     * Getter method for instance variable {@link #pageMapName}.
+     *
+     * @return value of instance variable {@link #pageMapName}
+     */
+    public String getPageMapName()
+    {
+        return this.pageMapName;
+    }
 
-  /**
-   * Getter method for instance variable {@link #pageMapName}.
-   *
-   * @return value of instance variable {@link #pageMapName}
-   */
-  public String getPageMapName() {
-    return this.pageMapName;
-  }
+    /**
+     * Getter method for instance variable {@link #menuTreeKey}.
+     *
+     * @return value of instance variable {@link #menuTreeKey}
+     */
+    public String getMenuTreeKey()
+    {
+        return this.menuTreeKey;
+    }
 
-  /**
-   * Getter method for instance variable {@link #menuTreeKey}.
-   *
-   * @return value of instance variable {@link #menuTreeKey}
-   */
-  public String getMenuTreeKey() {
-    return this.menuTreeKey;
-  }
+    /**
+     * Setter method for instance variable {@link #menuTreeKey}.
+     *
+     * @param _menuTreeKey value for instance variable {@link #menuTreeKey}
+     */
+    public void setMenuTreeKey(final String _menuTreeKey)
+    {
+        this.menuTreeKey = _menuTreeKey;
+    }
 
-  /**
-   * Setter method for instance variable {@link #menuTreeKey}.
-   *
-   * @param _menuTreeKey value for instance variable {@link #menuTreeKey}
-   */
-  public void setMenuTreeKey(final String _menuTreeKey) {
-    this.menuTreeKey = _menuTreeKey;
-  }
+    /**
+     * Getter method for instance variable {@link #commandUUID}.
+     *
+     * @return value of instance variable {@link #commandUUID}
+     */
+    public UUID getCommandUUID()
+    {
+        return this.commandUUID;
+    }
 
-  /**
-   * Getter method for instance variable {@link #commandUUID}.
-   *
-   * @return value of instance variable {@link #commandUUID}
-   */
-  public UUID getCommandUUID() {
-    return this.commandUUID;
-  }
+    /**
+     * Setter method for instance variable {@link #commandUUID}.
+     *
+     * @param _commandUUID value for instance variable {@link #commandUUID}
+     */
+    public void setCommandUUID(final UUID _commandUUID)
+    {
+        this.commandUUID = _commandUUID;
+    }
 
-  /**
-   * Setter method for instance variable {@link #commandUUID}.
-   *
-   * @param _commandUUID value for instance variable {@link #commandUUID}
-   */
-  public void setCommandUUID(final UUID _commandUUID) {
-    this.commandUUID = _commandUUID;
-  }
+    /**
+     * Getter method for instance variable {@link #instanceKey}.
+     *
+     * @return value of instance variable {@link #instanceKey}
+     */
+    public String getInstanceKey()
+    {
+        return this.instanceKey;
+    }
 
-  /**
-   * Getter method for instance variable {@link #instanceKey}.
-   *
-   * @return value of instance variable {@link #instanceKey}
-   */
-  public String getInstanceKey() {
-    return this.instanceKey;
-  }
+    /**
+     * Setter method for instance variable {@link #instanceKey}.
+     *
+     * @param _instanceId value for instance variable {@link #instanceKey}
+     */
+    public void setInstanceKey(final String _instanceId)
+    {
+        this.instanceKey = _instanceId;
+    }
 
-  /**
-   * Setter method for instance variable {@link #instanceKey}.
-   *
-   * @param _instanceId value for instance variable {@link #instanceKey}
-   */
-  public void setInstanceKey(final String _instanceId) {
-    this.instanceKey = _instanceId;
-  }
+    /**
+     * Getter method for instance variable {@link #marked4Remove}.
+     *
+     * @return value of instance variable {@link #marked4Remove}
+     */
+    public boolean isMarked4Remove()
+    {
+        return this.marked4Remove;
+    }
 
-  /**
-   * Getter method for instance variable {@link #marked4Remove}.
-   *
-   * @return value of instance variable {@link #marked4Remove}
-   */
-  public boolean isMarked4Remove() {
-    return this.marked4Remove;
-  }
-
-  /**
-   * Setter method for instance variable {@link #marked4Remove}.
-   *
-   * @param _marked4Remove value for instance variable {@link #marked4Remove}
-   */
-  public void setMarked4Remove(final boolean _marked4Remove) {
-    this.marked4Remove = _marked4Remove;
-  }
+    /**
+     * Setter method for instance variable {@link #marked4Remove}.
+     *
+     * @param _marked4Remove value for instance variable {@link #marked4Remove}
+     */
+    public void setMarked4Remove(final boolean _marked4Remove)
+    {
+        this.marked4Remove = _marked4Remove;
+    }
 }
