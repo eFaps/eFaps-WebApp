@@ -31,7 +31,6 @@ import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.tree.BaseTree;
 import org.apache.wicket.markup.html.tree.WicketTreeModel;
 import org.apache.wicket.model.IModel;
-
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.components.tree.StructurBrowserTree;
@@ -92,7 +91,7 @@ public class ClassificationTree extends BaseTree
             label = DBProperties.getProperty("default.Button.ClassTreeUpdate");
         }
         add(new Button("submitClose", new AjaxSubmitCloseLink(Button.LINKID, _model, _panel),
-                       label, Button.ICON_ACCEPT));
+                       label, Button.ICON.ACCEPT.getReference()));
     }
 
 

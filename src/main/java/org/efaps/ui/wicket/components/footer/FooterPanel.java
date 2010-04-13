@@ -27,7 +27,6 @@ import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow.WindowClo
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.button.Button;
@@ -144,37 +143,37 @@ public class FooterPanel extends Panel
         if (uiObject.hasTargetCmd()) {
             final Button button = new Button("createeditsearch",
                                              new AjaxSubmitCloseLink(Button.LINKID, uiObject, _form),
-                                             label, Button.ICON_NEXT);
+                                             label, Button.ICON.NEXT.getReference());
             this.add(button);
         } else if ((uiObject.isSubmit() && uiObject instanceof UITable) || !uiObject.isSearchMode()) {
             final Button button = new Button("createeditsearch",
                                              new AjaxSubmitCloseLink(Button.LINKID, uiObject, _form),
-                                             label, Button.ICON_ACCEPT);
+                                             label, Button.ICON.ACCEPT.getReference());
             this.add(button);
         } else if (uiObject.isSearchMode() && uiObject instanceof UIForm) {
             final Button button = new Button("createeditsearch", new SearchSubmitLink(Button.LINKID, _model, _form),
-                                              label, Button.ICON_NEXT);
+                                              label, Button.ICON.NEXT.getReference());
             this.add(button);
         } else {
             closelabelkey = "Close";
             label = getLabel(uiObject.getCommand().getName(), "Revise");
             final Button button = new Button("createeditsearch", new AjaxReviseLink(Button.LINKID, uiObject),
-                                             label, Button.ICON_PREVIOUS);
+                                             label, Button.ICON.PREVIOUS.getReference());
             add(button);
         }
 
         if (_modalWindow == null) {
             add(new Button("cancel", new ClosePopUpLink(Button.LINKID, uiObject), getLabel(uiObject.getCommand()
-                            .getName(), closelabelkey), Button.ICON_CANCEL));
+                            .getName(), closelabelkey), Button.ICON.CANCEL.getReference()));
         } else {
             add(new Button("cancel", new AjaxCancelLink(Button.LINKID), getLabel(uiObject.getCommand().getName(),
-                            closelabelkey), Button.ICON_CANCEL));
+                            closelabelkey), Button.ICON.CANCEL.getReference()));
         }
 
         if (uiObject.isPartOfWizardCall() && uiObject.isRenderRevise()) {
             label = getLabel(uiObject.getCommand().getName(), "Revise");
             final Button prev = new Button("prev", new AjaxReviseLink(Button.LINKID, uiObject),
-                                           label, Button.ICON_PREVIOUS);
+                                           label, Button.ICON.PREVIOUS.getReference());
             this.add(prev);
         } else  {
             add(new WebMarkupContainer("prev").setVisible(false));

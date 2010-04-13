@@ -34,7 +34,6 @@ import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.button.Button;
@@ -149,7 +148,7 @@ public class FilterPage extends WebPage
         };
 
         form.add(new Button("submitButton", ajaxbutton, DBProperties.getProperty("FilterPage.Button.filter"),
-                            Button.ICON_ACCEPT));
+                            Button.ICON.ACCEPT.getReference()));
 
         if (_uitableHeader.isFilterRequired()) {
             form.add(new WebMarkupContainer("clearButton").setVisible(false));
@@ -168,7 +167,7 @@ public class FilterPage extends WebPage
             };
 
             form.add(new Button("clearButton", ajaxclear, DBProperties.getProperty("FilterPage.Button.clear"),
-                                Button.ICON_DELETE));
+                                Button.ICON.DELETE.getReference()));
         }
         final AjaxLink<Object> ajaxcancel = new AjaxLink<Object>(Button.LINKID) {
 
@@ -182,6 +181,6 @@ public class FilterPage extends WebPage
             }
         };
         form.add(new Button("closeButton", ajaxcancel, DBProperties.getProperty("FilterPage.Button.cancel"),
-                            Button.ICON_CANCEL));
+                            Button.ICON.CANCEL.getReference()));
     }
 }

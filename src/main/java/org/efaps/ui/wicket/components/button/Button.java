@@ -24,7 +24,6 @@ import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
-
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 
@@ -42,28 +41,41 @@ public class Button extends Panel
     /**
      * Reference to an icon in the eFaps Database.
      */
-    public static final EFapsContentReference ICON_CANCEL = new EFapsContentReference(Button.class, "cancel.png");
+    public enum ICON {
+        /** accept.png. */
+        ACCEPT("accept.png"),
+        /** cancel.png. */
+        CANCEL("cancel.png"),
+        /** delete.png. */
+        DELETE("delete.png"),
+        /** next.png. */
+        NEXT("next.png"),
+        /** previous. */
+        PREVIOUS("previous.png");
 
-    /**
-     * Reference to an icon in the eFaps Database.
-     */
-    public static final EFapsContentReference ICON_ACCEPT = new EFapsContentReference(Button.class, "accept.png");
+        /**
+         * reference.
+         */
+        private final EFapsContentReference reference;
 
-    /**
-     * Reference to an icon in the eFaps Database.
-     */
-    public static final EFapsContentReference ICON_NEXT = new EFapsContentReference(Button.class, "next.png");
+        /**
+         * @param _image image
+         */
+        private ICON(final String _image)
+        {
+            this.reference = new EFapsContentReference(Button.class, _image);
+        }
 
-    /**
-     * Reference to an icon in the eFaps Database.
-     */
-    public static final EFapsContentReference ICON_PREVIOUS = new EFapsContentReference(Button.class, "previous.png");
-
-    /**
-     * Reference to an icon in the eFaps Database.
-     */
-    public static final EFapsContentReference ICON_DELETE = new EFapsContentReference(Button.class, "delete.png");
-
+        /**
+         * Getter method for the instance variable {@link #reference}.
+         *
+         * @return value of instance variable {@link #reference}
+         */
+        public EFapsContentReference getReference()
+        {
+            return this.reference;
+        }
+    }
 
     /**
      * Needed foer serialization.
@@ -98,7 +110,7 @@ public class Button extends Panel
 
     public String getLinkWicketId()
     {
-        return LINKID;
+        return Button.LINKID;
     }
 
     public void setIconReference(final EFapsContentReference _icon)

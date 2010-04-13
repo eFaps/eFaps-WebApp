@@ -33,7 +33,6 @@ import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
-
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.ui.wicket.EFapsSession;
@@ -99,11 +98,11 @@ public class DialogPage extends AbstractMergePage
 
         this.add(new Label("textLabel", DBProperties.getProperty(cmdName + ".Question")));
 
-        this.add(new Button("submitButton", new AjaxSubmitLink(Button.LINKID, _model, _parameters), getLabel(cmdName,
-                        "Submit"), Button.ICON_ACCEPT));
+        this.add(new Button("submitButton", new AjaxSubmitLink(Button.LINKID, _model, _parameters),
+                        DialogPage.getLabel(cmdName, "Submit"), Button.ICON.ACCEPT.getReference()));
 
-        this.add(new Button("closeButton", new AjaxCloseLink(Button.LINKID), getLabel(cmdName, "Cancel"),
-                        Button.ICON_CANCEL));
+        this.add(new Button("closeButton", new AjaxCloseLink(Button.LINKID), DialogPage.getLabel(cmdName, "Cancel"),
+                        Button.ICON.CANCEL.getReference()));
     }
 
     /**
@@ -129,13 +128,15 @@ public class DialogPage extends AbstractMergePage
         }
         if (_behavior != null) {
             final AjaxGoOnLink ajaxGoOnLink = new AjaxGoOnLink(Button.LINKID, _behavior);
-            this.add(new Button("submitButton", ajaxGoOnLink, getLabel(_value, "Create"), Button.ICON_ACCEPT));
+            this.add(new Button("submitButton", ajaxGoOnLink, DialogPage.getLabel(_value, "Create"),
+                            Button.ICON.ACCEPT.getReference()));
         } else {
             this.add(new WebMarkupContainer("submitButton").setVisible(false));
         }
 
         final AjaxCloseLink ajaxCloseLink = new AjaxCloseLink(Button.LINKID);
-        this.add(new Button("closeButton", ajaxCloseLink, getLabel(_value, "Close"), Button.ICON_CANCEL));
+        this.add(new Button("closeButton", ajaxCloseLink, DialogPage.getLabel(_value, "Close"),
+                        Button.ICON.CANCEL.getReference()));
 
         this.add(new HeaderContributor(new KeyListenerContributor(ajaxCloseLink)));
     }

@@ -24,53 +24,47 @@ import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.model.IModel;
-
 import org.efaps.ui.wicket.models.cell.UIFormCellCmd;
 import org.efaps.util.EFapsException;
 
 /**
  * TODO comment!
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public class EsjpAjaxComponent extends WebComponent {
+public class EsjpAjaxComponent
+    extends WebComponent
+{
 
-  /**
+    /**
    *
    */
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  /**
-   * @param _wicketId wicket id for this component
-   * @param _model    model for this component
-   */
-  public EsjpAjaxComponent(final String _wicketId, final IModel<?> _model) {
-    super(_wicketId, _model);
-  }
-
-  @Override
-  protected void onComponentTagBody(final MarkupStream _markupstream,
-      final ComponentTag _componenttag) {
-    super.onComponentTagBody(_markupstream, _componenttag);
-    final String script = ((AjaxCmdBehavior) getBehaviors().get(0))
-                                                              .getJavaScript();
-    final UIFormCellCmd uiObject = (UIFormCellCmd) getDefaultModelObject();
-    try {
-      final String content = uiObject.getRenderedContent(script);
-      replaceComponentTagBody(_markupstream, _componenttag, content);
-    } catch (final EFapsException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+    /**
+     * @param _wicketId wicket id for this component
+     * @param _model model for this component
+     */
+    public EsjpAjaxComponent(final String _wicketId,
+                             final IModel<?> _model)
+    {
+        super(_wicketId, _model);
     }
-  }
 
-  /* (non-Javadoc)
-   * @see org.apache.wicket.markup.html.WebComponent#onRender(org.apache.wicket.markup.MarkupStream)
-   */
-  @Override
-  protected void onRender(final MarkupStream markupStream) {
-    // TODO Auto-generated method stub
-    super.onRender(markupStream);
-  }
+    @Override
+    protected void onComponentTagBody(final MarkupStream _markupstream,
+                                      final ComponentTag _componenttag)
+    {
+        super.onComponentTagBody(_markupstream, _componenttag);
+        final String script = ((AjaxCmdBehavior) getBehaviors().get(0)).getJavaScript();
+        final UIFormCellCmd uiObject = (UIFormCellCmd) getDefaultModelObject();
+        try {
+            final String content = uiObject.getRenderedContent(script);
+            replaceComponentTagBody(_markupstream, _componenttag, content);
+        } catch (final EFapsException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 }

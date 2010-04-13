@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,132 +34,190 @@ import org.efaps.util.EFapsException;
 /**
  * TODO comment!
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public class UIFormCellCmd extends UIFormCell {
-
-  /**
-   * Enum is used to set for this UIFormCellCmd which status of execution
-   * it is in.
-   */
-  public enum ExecutionStatus {
-    /** Method evaluateRenderedContent is executed. */
-    RENDER,
-
-    EXECUTE;
-  }
-
-  /**
-   *
-   */
-  private static final long serialVersionUID = 1L;
-
-  private final boolean renderButton;
-  /**
-   * Stores the actual execution status.
-   */
-  private ExecutionStatus executionStatus;
-
-  private final boolean append;
-
-  private final String targetField;
-
-  /**
-   * @param targetMode
-   * @param field
-   * @throws EFapsException
-   */
-  public UIFormCellCmd(final AbstractUIObject _parent,
-                       final FieldCommand _field,
-                       final Instance _instance,
-                       final String _label)
-      throws EFapsException {
-    super(_parent, new FieldValue(_field, null, null, null), _instance, null, null, null, _label, null);
-    this.renderButton = _field.isRenderButton();
-    this.append = _field.isAppend();
-    this.targetField = _field.getTargetField();
-  }
-
-
-
-  public List<Return> executeEvents(final Object _others)
-      throws EFapsException {
-    if (this.executionStatus == null) {
-      this.executionStatus = ExecutionStatus.EXECUTE;
+public class UIFormCellCmd
+    extends UIFormCell
+{
+    /**
+     * Enum is used to set for this UIFormCellCmd which status of execution it
+     * is in.
+     */
+    public enum ExecutionStatus {
+        /** Method evaluateRenderedContent is executed. */
+        RENDER,
+        /** Method execute is executed. */
+        EXECUTE;
     }
-    final List<Return> ret = executeEvents(_others, EventType.UI_FIELD_CMD);
 
-    if (this.executionStatus == ExecutionStatus.EXECUTE) {
-      this.executionStatus = null;
+    /**
+    * Needed foer serialization.
+    */
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * Must a button be rendered.
+     */
+    private final boolean renderButton;
+
+    /**
+     * Stores the actual execution status.
+     */
+    private ExecutionStatus executionStatus;
+
+    /**
+     * Must the field be appended.
+     */
+    private final boolean append;
+
+    /**
+     * Target field for the value.
+     */
+    private final String targetField;
+
+    /**
+     * The icon for the button.
+     */
+    private final String buttonIcon;
+
+    /**
+     * @param _parent   Parent object
+     * @param _field    field this cellbelongs to
+     * @param _instance instance this field belongs to
+     * @param _label    label of the field
+     * @throws EFapsException   on error
+     */
+    public UIFormCellCmd(final AbstractUIObject _parent,
+                         final FieldCommand _field,
+                         final Instance _instance,
+                         final String _label)
+        throws EFapsException
+    {
+        super(_parent, new FieldValue(_field, null, null, null), _instance, null, null, null, _label, null);
+        this.renderButton = _field.isRenderButton();
+        this.append = _field.isAppend();
+        this.targetField = _field.getTargetField();
+        this.buttonIcon =  _field.getButtonIcon();
     }
-    return ret;
-  }
 
+    /**
+     * Execute the underlying events.
+     * @param _others others
+     * @return list of returns
+     * @throws EFapsException on error
+     */
+    public List<Return> executeEvents(final Object _others)
+        throws EFapsException
+    {
+        if (this.executionStatus == null) {
+            this.executionStatus = UIFormCellCmd.ExecutionStatus.EXECUTE;
+        }
+        final List<Return> ret = executeEvents(_others, EventType.UI_FIELD_CMD);
 
-  /**
-   * Getter method for instance variable {@link #renderButton}.
-   *
-   * @return value of instance variable {@link #renderButton}
-   */
-  public boolean isRenderButton() {
-    return this.renderButton;
-  }
-
-  /**
-   * Getter method for instance variable {@link #append}.
-   *
-   * @return value of instance variable {@link #append}
-   */
-  public boolean isAppend() {
-    return this.append;
-  }
-
-
-
-  /**
-   * @param _script
-   * @throws EFapsException
-   *
-   */
-  public String getRenderedContent(final String _script) throws EFapsException {
-    this.executionStatus = ExecutionStatus.RENDER;
-    final StringBuilder snip = new StringBuilder();
-    final List<Return> returns = executeEvents(_script);
-    for (final Return oneReturn : returns) {
-      if (oneReturn.contains(ReturnValues.SNIPLETT)) {
-        snip.append(oneReturn.get(ReturnValues.SNIPLETT));
-      }
+        if (this.executionStatus == UIFormCellCmd.ExecutionStatus.EXECUTE) {
+            this.executionStatus = null;
+        }
+        return ret;
     }
-    this.executionStatus = null;
-    return snip.toString();
-  }
 
+    /**
+     * Getter method for instance variable {@link #renderButton}.
+     *
+     * @return value of instance variable {@link #renderButton}
+     */
+    public boolean isRenderButton()
+    {
+        return this.renderButton;
+    }
 
-  /**
-   * Getter method for instance variable {@link #executionStatus}.
-   *
-   * @return value of instance variable {@link #executionStatus}
-   */
-  public ExecutionStatus getExecutionStatus() {
-    return this.executionStatus;
-  }
+    /**
+     * Getter method for instance variable {@link #append}.
+     *
+     * @return value of instance variable {@link #append}
+     */
+    public boolean isAppend()
+    {
+        return this.append;
+    }
 
-  public FieldCommand getFieldCommand() {
-    return (FieldCommand) getField();
-  }
+    /**
+     * Get the script to render the content for the UserInterface in
+     * case that not a standard button should be rendered.
+     *
+     * @param _script additional script from the UserInterface
+     * @return html snipplet
+     * @throws EFapsException on error
+     *
+     */
+    public String getRenderedContent(final String _script)
+        throws EFapsException
+    {
+        this.executionStatus = UIFormCellCmd.ExecutionStatus.RENDER;
+        final StringBuilder snip = new StringBuilder();
+        final List<Return> returns = executeEvents(_script);
+        for (final Return oneReturn : returns) {
+            if (oneReturn.contains(ReturnValues.SNIPLETT)) {
+                snip.append(oneReturn.get(ReturnValues.SNIPLETT));
+            }
+        }
+        this.executionStatus = null;
+        return snip.toString();
+    }
 
+    /**
+     * Getter method for instance variable {@link #executionStatus}.
+     *
+     * @return value of instance variable {@link #executionStatus}
+     */
+    public ExecutionStatus getExecutionStatus()
+    {
+        return this.executionStatus;
+    }
 
-  public boolean isTargetField() {
-    return this.targetField != null;
-  }
+    /**
+     * Get the field this UIFormCellCmd belongs to.
+     * @return fieldcommand
+     */
+    public FieldCommand getFieldCommand()
+    {
+        return (FieldCommand) getField();
+    }
 
-  /**
-   * Getter method for instance variable {@link #targetField}.
-   *
-   * @return value of instance variable {@link #targetField}
-   */
-  public String getTargetField() {
-    return this.targetField;
-  }
+    /**
+     * Getter method for the instance variable {@link #buttonIcon}.
+     *
+     * @return value of instance variable {@link #buttonIcon}
+     */
+    public String getButtonIcon()
+    {
+        return this.buttonIcon;
+    }
+
+    /**
+     * @return true if not null
+     */
+    public boolean isTargetField()
+    {
+        return this.targetField != null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isHideLabel()
+    {
+        return super.isHideLabel() ? true : this.renderButton;
+    }
+
+    /**
+     * Getter method for instance variable {@link #targetField}.
+     *
+     * @return value of instance variable {@link #targetField}
+     */
+    public String getTargetField()
+    {
+        return this.targetField;
+    }
 }

@@ -39,7 +39,6 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.user.Company;
 import org.efaps.db.Context;
@@ -157,12 +156,14 @@ public class CompanyPage extends AbstractMergePage
         choices.add(options);
 
         final AjaxSubmitLink ajaxGoOnLink = new AjaxSubmitLink(Button.LINKID, form);
-        this.add(new Button("submitButton", ajaxGoOnLink, DBProperties
-                        .getProperty("org.efaps.ui.wicket.pages.company.next.Label"), Button.ICON_ACCEPT));
+        this.add(new Button("submitButton", ajaxGoOnLink,
+                        DBProperties.getProperty("org.efaps.ui.wicket.pages.company.next.Label"),
+                        Button.ICON.ACCEPT.getReference()));
 
         final AjaxCloseLink ajaxCloseLink = new AjaxCloseLink(Button.LINKID);
-        this.add(new Button("closeButton", ajaxCloseLink, DBProperties
-                        .getProperty("org.efaps.ui.wicket.pages.company.cancel.Label"), Button.ICON_CANCEL));
+        this.add(new Button("closeButton", ajaxCloseLink,
+                        DBProperties.getProperty("org.efaps.ui.wicket.pages.company.cancel.Label"),
+                        Button.ICON.CANCEL.getReference()));
     }
 
     /**

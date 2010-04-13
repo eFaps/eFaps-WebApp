@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,58 +22,66 @@ package org.efaps.ui.wicket.components.form.command;
 
 import java.util.List;
 
+import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.Model;
-
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
-import org.efaps.ui.wicket.components.LabelComponent;
+import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.models.cell.UIFormCellCmd;
+import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 
 /**
  * TODO comment!
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public class AjaxExecuteLink extends AjaxLink<UIFormCellCmd> {
+public class AjaxExecuteLink
+    extends AjaxSubmitLink
+{
+    /**
+    * Needed for serialization.
+    */
+    private static final long serialVersionUID = 1L;
 
-  /**
-   *
-   */
-  private static final long serialVersionUID = 1L;
-
-  /**
-   * @param linkid
-   * @param uiObject
-   */
-  public AjaxExecuteLink(final String _wicketId, final UIFormCellCmd _uiObject) {
-    super(_wicketId, new Model<UIFormCellCmd>(_uiObject));
-  }
-
-  @Override
-  public void onClick(final AjaxRequestTarget _target) {
-
-    final UIFormCellCmd uiObject = (UIFormCellCmd) getDefaultModelObject();
-    final StringBuilder snip = new StringBuilder();
-    try {
-      final List<Return> returns = uiObject.executeEvents(null);
-      for (final Return oneReturn : returns) {
-        if (oneReturn.contains(ReturnValues.SNIPLETT)) {
-          snip.append(oneReturn.get(ReturnValues.SNIPLETT));
-        }
-      }
-    } catch (final EFapsException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+    /**
+     * @param _wicketId wicket id for this component
+     * @param _form     form this button lies in
+     * @param _uiObject uiobjetc for this component
+     */
+    public AjaxExecuteLink(final String _wicketId,
+                           final FormContainer _form,
+                           final UIFormCellCmd _uiObject)
+    {
+        super(_wicketId, _form);
+        setDefaultModel(new Model<UIFormCellCmd>(_uiObject));
     }
-    final CommandCellPanel cmdCell = this.findParent(CommandCellPanel.class);
-    cmdCell.addOrReplace(new LabelComponent("targetBottom", snip.toString()));
-    _target.addComponent(cmdCell);
 
-System.out.println("cklick");
-  }
-
+    /**
+     * @see org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink#onSubmit(org.apache.wicket.ajax.AjaxRequestTarget, org.apache.wicket.markup.html.form.Form)
+     * @param _target   AjaxRequestTarget
+     * @param _form     form
+     */
+    @Override
+    protected void onSubmit(final AjaxRequestTarget _target,
+                            final Form<?> _form)
+    {
+        final UIFormCellCmd uiObject = (UIFormCellCmd) getDefaultModelObject();
+        final StringBuilder snip = new StringBuilder();
+        try {
+            final List<Return> returns = uiObject.executeEvents(null);
+            for (final Return oneReturn : returns) {
+                if (oneReturn.contains(ReturnValues.SNIPLETT)) {
+                    snip.append(oneReturn.get(ReturnValues.SNIPLETT));
+                }
+            }
+        } catch (final EFapsException e) {
+            throw new RestartResponseException(new ErrorPage(e));
+        }
+        _target.appendJavascript(snip.toString());
+    }
 }

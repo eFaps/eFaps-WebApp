@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,13 +25,13 @@ import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.autocomplete.AutoCompleteField;
 import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.models.cell.UIFormCellCmd;
 import org.efaps.ui.wicket.models.objects.UIForm;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
 
 /**
  * TODO comment!
@@ -39,7 +39,8 @@ import org.efaps.ui.wicket.models.objects.UIForm;
  * @author The eFaps Team
  * @version $Id$
  */
-public class CommandCellPanel extends Panel
+public class CommandCellPanel
+    extends Panel
 {
 
     /**
@@ -48,13 +49,15 @@ public class CommandCellPanel extends Panel
     private static final long serialVersionUID = 1L;
 
     /**
-     * @param _wicketId wicket id for this component
-     * @param _model model for this component
-     * @param _formmodel model of the form containing this component
-     * @param _form form containing this component
+     * @param _wicketId     wicket id for this component
+     * @param _model        model for this component
+     * @param _formmodel    model of the form containing this component
+     * @param _form         form containing this component
      */
-    public CommandCellPanel(final String _wicketId, final IModel<?> _model, final UIForm _formmodel,
-                    final FormContainer _form)
+    public CommandCellPanel(final String _wicketId,
+                            final IModel<?> _model,
+                            final UIForm _formmodel,
+                            final FormContainer _form)
     {
         super(_wicketId, _model);
         setOutputMarkupId(true);
@@ -70,16 +73,24 @@ public class CommandCellPanel extends Panel
             auto = new WebComponent("autocomplete").setVisible(false);
         }
         add(auto);
-        final Component targetBottom = new LabelComponent("targetBottom", "").setVisible(false).setOutputMarkupId(true);
         final WebMarkupContainer command = new WebMarkupContainer("command");
-        command.setOutputMarkupId(true);
         add(command);
-        command.add(targetBottom);
         if (uiObject.isRenderButton()) {
-            add(new Button("execute", new AjaxExecuteLink(Button.LINKID, uiObject), "nur ein test",
-                                                          Button.ICON_CANCEL));
+            command.setVisible(false);
+            EFapsContentReference reference = null;
+            if (uiObject.getButtonIcon() != null) {
+                reference =  Button.ICON.valueOf(uiObject.getButtonIcon()).getReference();
+            }
+            add(new Button("execute", new AjaxExecuteLink(Button.LINKID, _form, uiObject),
+                                                          uiObject.getCellLabel(),
+                                                          reference));
         } else {
             add(new WebComponent("execute").setVisible(false));
+
+            final Component targetBottom = new LabelComponent("targetBottom", "").setVisible(false)
+                .setOutputMarkupId(true);
+            command.setOutputMarkupId(true);
+            command.add(targetBottom);
 
             final AjaxCmdBehavior cmdBehavior = new AjaxCmdBehavior(_form, targetBottom);
             final EsjpAjaxComponent esjpComp = new EsjpAjaxComponent("renderedExecute", _model);

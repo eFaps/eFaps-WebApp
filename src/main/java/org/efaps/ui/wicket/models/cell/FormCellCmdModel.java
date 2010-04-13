@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,26 +22,49 @@ package org.efaps.ui.wicket.models.cell;
 
 import org.efaps.ui.wicket.models.AbstractModel;
 
+/**
+ * TODO comment!
+ *
+ * @author The eFaps Team
+ * @version $Id$
+ */
+public class FormCellCmdModel
+    extends AbstractModel<UIFormCellCmd>
+{
 
-public class FormCellCmdModel extends AbstractModel<UIFormCellCmd>{
+    /**
+    * Needed foer serialization.
+    */
+    private static final long serialVersionUID = 1L;
 
-  /**
-   *
-   */
-  private static final long serialVersionUID = 1L;
+    /**
+     * UIFormCellCmd.
+     */
+    private UIFormCellCmd uiFormCellCmd;
 
-  private UIFormCellCmd uiFormCellCmd;
+    /**
+     * @param _uiFormCellCmd UIFormCellCmd
+     */
+    public FormCellCmdModel(final UIFormCellCmd _uiFormCellCmd)
+    {
+        this.uiFormCellCmd = _uiFormCellCmd;
+    }
 
-  public FormCellCmdModel (final UIFormCellCmd _uiFormCellCmd) {
-    this.uiFormCellCmd = _uiFormCellCmd;
-  }
+    /**
+     * @see org.apache.wicket.model.IModel#getObject()
+     * @return {@link #uiFormCellCmd}
+     */
+    public UIFormCellCmd getObject()
+    {
+        return this.uiFormCellCmd;
+    }
 
-  public UIFormCellCmd getObject() {
-    return this.uiFormCellCmd;
-  }
-
-  public void setObject(final UIFormCellCmd _uiFormCellCmd) {
-    this.uiFormCellCmd = _uiFormCellCmd;
-  }
-
+    /**
+     * @see org.apache.wicket.model.IModel#setObject(java.lang.Object)
+     * @param _uiFormCellCmd UIFormCellCmd
+     */
+    public void setObject(final UIFormCellCmd _uiFormCellCmd)
+    {
+        this.uiFormCellCmd = _uiFormCellCmd;
+    }
 }
