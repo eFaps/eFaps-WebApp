@@ -185,49 +185,5 @@
             <artifactId>fop</artifactId>
             <version>0.95</version>
         </dependency>
-
-
-        <!-- temporary -->
-        <dependency>
-            <groupId>org.apache.sanselan</groupId>
-            <artifactId>sanselan</artifactId>
-            <version>0.97-incubator</version>
-        </dependency>
-        <dependency>
-            <groupId>org.efaps</groupId>
-            <artifactId>number2words</artifactId>
-            <version>0.1</version>
-        </dependency>
-        
-        
-        <dependency>
-            <groupId>net.moxter.df</groupId>
-            <artifactId>install</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <!-- 
-        <dependency>
-            <groupId>net.moxter.emperador</groupId>
-            <artifactId>install</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        -->
-        <dependency>
-            <groupId>org.efaps.module</groupId>
-            <artifactId>efaps-erp-projects</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-         <!--
-        <dependency>
-            <groupId>net.moxter.sedsa</groupId>
-            <artifactId>install</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        -->
-    <dependency>
-        <groupId>org.efaps.module</groupId>
-        <artifactId>efaps-erp-accounting</artifactId>
-        <version>1.0-SNAPSHOT</version>
-    </dependency>
     </dependencies>
 </project>
