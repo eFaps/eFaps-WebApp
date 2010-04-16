@@ -168,7 +168,7 @@
                 eFaps Jetty plug in
             -->
             <plugin>
-                <groupId>org.efaps.maven</groupId>
+                <groupId>org.efaps</groupId>
                 <artifactId>maven-efaps-jetty</artifactId>
                 <configuration>
                     <jaasConfigFile>${basedir}/src/main/jetty/jaas.config</jaasConfigFile>
