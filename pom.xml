@@ -41,11 +41,80 @@
         eFaps WebApp provides a web interface as the User Interface for eFaps
         which can be easily expanded and altered.
     </description>
+    <url>http://maven-efaps-plugin.efaps.org</url>
+    <licenses>
+        <license>
+            <name>Apache 2.0 License</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <id>tim.moxter</id>
+            <name>Tim Moxter</name>
+            <email>tim.moxter(ad)efaps.org</email>
+            <url>www.efaps.org</url>
+            <organization>moxter.net Ltd. &amp; Co.KG</organization>
+            <organizationUrl>http://www.moxter.net/de/</organizationUrl>
+            <timezone>+1</timezone>
+            <properties />
+        </developer>
+        <developer>
+            <id>jan.moxter</id>
+            <name>Jan Moxter</name>
+            <email>jan.moxter(ad)efaps.org</email>
+            <url>www.efaps.org</url>
+            <organization>moxter.net S.A.C, Peru</organization>
+            <organizationUrl>http://www.moxter.net/pe/</organizationUrl>
+            <timezone>-5</timezone>
+            <properties />
+        </developer>
+    </developers>
+    <inceptionYear>2009</inceptionYear>
+    <organization>
+        <name>The eFaps Team</name>
+        <url>http://www.efaps.org</url>
+    </organization>
 
     <properties>
         <!-- correct encoding -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+    <!-- Environment Settings -->
+    <issueManagement>
+        <url>http://code.google.com/p/efaps/issues/list</url>
+    </issueManagement>
+
+    <!-- SubVersion Repository -->
+    <scm>
+        <connection>scm:svn:http://efaps.googlecode.com/svn/eFaps-WebApp</connection>
+        <developerConnection>scm:svn:https://efaps.googlecode.com/svn/eFaps-WebApp</developerConnection>
+        <url>http://efaps.googlecode.com/svn/eFaps-Kernel</url>
+    </scm>
+
+    <!-- Distribution Repository -->
+    <distributionManagement>
+        <site>
+            <id>efaps</id>
+            <name>eFaps WebApp Site</name>
+            <url>svn:https://eFaps.googlecode.com/svn/site/eFaps-WebApp</url>
+        </site>
+        <repository>
+            <uniqueVersion>false</uniqueVersion>
+            <id>efaps</id>
+            <name>eFaps Repository Released</name>
+            <url>svn:https://efaps.googlecode.com/svn/repo/released</url>
+        </repository>
+        <snapshotRepository>
+            <uniqueVersion>false</uniqueVersion>
+            <id>efaps</id>
+            <name>eFaps Repository Snapshot</name>
+            <url>svn:https://efaps.googlecode.com/svn/repo/snapshot</url>
+        </snapshotRepository>
+    </distributionManagement>
+
 
     <!-- ************************************************************************
     * Profiles
