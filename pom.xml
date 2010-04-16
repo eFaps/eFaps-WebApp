@@ -2,7 +2,7 @@
 
 <!--
 
-  Copyright 2003 - 20010 The eFaps Team
+  Copyright 2003 - 2010 The eFaps Team
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@
     <packaging>jar</packaging>
     <groupId>org.efaps</groupId>
     <artifactId>efaps-webapp</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>eFaps WebApp</name>
     <description>
         eFaps WebApp provides a web interface as the User Interface for eFaps
@@ -47,6 +47,85 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <!-- ************************************************************************
+    * Profiles
+    ************************************************************************* -->
+    <profiles>
+        <!--
+            Release Profile is done without tests, but with source and JavaDoc!
+        -->
+        <profile>
+            <id>release-profile</id>
+            <activation>
+                <property>
+                    <name>performRelease</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <!-- No test.. -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </plugin>
+                   <!-- Attach Sources -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!-- Attach JavaDoc -->
+                    <plugin>
+                        <inherited>true</inherited>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!-- Update Release Info -->
+                    <plugin>
+                        <inherited>true</inherited>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-deploy-plugin</artifactId>
+                        <configuration>
+                            <updateReleaseInfo>true</updateReleaseInfo>
+                        </configuration>
+                    </plugin>
+                     <!-- signing the artefact with gpg -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
     <!-- ************************************************************************
     * Project itself
     ************************************************************************* -->
@@ -110,7 +189,6 @@
                         <artifactId>efaps-webapp</artifactId>
                         <version>${project.version}</version>
                     </dependency>
-                    <!-- eFaps Maven PLugin -->
                     <dependency>
                         <groupId>org.efaps</groupId>
                         <artifactId>efaps-kernel</artifactId>
@@ -119,7 +197,16 @@
                 </dependencies>
             </plugin>
         </plugins>
+         <extensions>
+            <extension>
+                <groupId>org.jvnet.wagon-svn</groupId>
+                <artifactId>wagon-svn</artifactId>
+                <version>1.9</version>
+            </extension>
+        </extensions>
     </build>
+
+
 
     <!-- ************************************************************************
     * Dependencies
