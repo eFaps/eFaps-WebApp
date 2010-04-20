@@ -259,7 +259,7 @@
                     <dependency>
                         <groupId>org.efaps</groupId>
                         <artifactId>efaps-kernel</artifactId>
-                        <version>${project.version}</version>
+                        <version>1.0.0</version>
                     </dependency>
                 </dependencies>
             </plugin>
@@ -277,7 +277,7 @@
         <dependency>
             <groupId>org.efaps</groupId>
             <artifactId>efaps-kernel</artifactId>
-            <version>${project.version}</version>
+            <version>1.0.0</version>
         </dependency>
 
         <!-- to define a higher version (needed from another tool) -->
