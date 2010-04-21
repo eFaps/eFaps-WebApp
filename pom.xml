@@ -264,6 +264,14 @@
                 </dependencies>
             </plugin>
         </plugins>
+        <!-- Needed for the upload of the site -->
+        <extensions>
+            <extension>
+                <groupId>org.jvnet.wagon-svn</groupId>
+                <artifactId>wagon-svn</artifactId>
+                <version>1.9</version>
+            </extension>
+        </extensions>
     </build>
 
 
@@ -332,7 +340,5 @@
             <artifactId>fop</artifactId>
             <version>0.95</version>
         </dependency>
-
-
     </dependencies>
 </project>
