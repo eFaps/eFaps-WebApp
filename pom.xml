@@ -35,7 +35,7 @@
     <packaging>jar</packaging>
     <groupId>org.efaps</groupId>
     <artifactId>efaps-webapp</artifactId>
-    <version>1.0.4-SNAPSHOT</version>
+    <version>1.0.5-SNAPSHOT</version>
     <name>eFaps WebApp</name>
     <description>
         eFaps WebApp provides a web interface as the User Interface for eFaps
