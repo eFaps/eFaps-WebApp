@@ -475,7 +475,7 @@ public class UITable
                 }
                 this.headers.add(uiTableHeader);
                 if (!field.isFixedWidth()) {
-                    if (userWidthList != null) {
+                    if (userWidthList != null && userWidthList.size() > i) {
                         if (isShowCheckBoxes()) {
                             uiTableHeader.setWidth(userWidthList.get(i + 1));
                         } else {
