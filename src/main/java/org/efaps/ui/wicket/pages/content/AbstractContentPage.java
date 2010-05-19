@@ -21,12 +21,12 @@
 package org.efaps.ui.wicket.pages.content;
 
 import org.apache.wicket.IPageMap;
+import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.behavior.StringHeaderContributor;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.link.PopupSettings;
 import org.apache.wicket.model.IModel;
-
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.Opener;
@@ -38,6 +38,7 @@ import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.UIAbstractPageObject;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
+import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 
@@ -163,6 +164,12 @@ public abstract class AbstractContentPage
                             "/servlet/help/" + ((UIAbstractPageObject) super.getDefaultModelObject()).getHelpTarget(),
                             DBProperties.getProperty("org.efaps.ui.wicket.pages.content.AbstractContentPage.HelpLink"))
                            .setPopupSettings(set).setContextRelative(true);
+            final String style = "eFapsHelpLink";
+            if (MainPage.IFRAME_PAGEMAP_NAME.equals(getPageMapName())) {
+                exLink.add(new SimpleAttributeModifier("class", style + " eFapsHelpMainLink"));
+            } else {
+                exLink.add(new SimpleAttributeModifier("class", style));
+            }
         } else {
             exLink = new WebMarkupContainer("help");
             exLink.setVisible(false);
