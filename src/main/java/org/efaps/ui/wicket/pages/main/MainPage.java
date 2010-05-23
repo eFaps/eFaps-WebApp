@@ -32,6 +32,8 @@ import org.apache.wicket.ajax.IAjaxCallDecorator;
 import org.apache.wicket.ajax.calldecorator.AjaxCallThrottlingDecorator;
 import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.behavior.StringHeaderContributor;
+import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.IHeaderContributor;
 import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -41,12 +43,14 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.util.string.JavascriptUtils;
 import org.apache.wicket.util.time.Duration;
+import org.efaps.admin.common.SystemMessage;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.behaviors.ShowFileCallBackBehavior;
 import org.efaps.ui.wicket.components.ChildCallBackHeaderContributer;
 import org.efaps.ui.wicket.components.menu.MenuContainer;
+import org.efaps.ui.wicket.components.menu.StandardLink;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.MenuItemModel;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
@@ -158,6 +162,42 @@ public class MainPage extends AbstractMergePage
             logo.add(new Label("company", companyName));
             logo.add(new AttributeModifier("class", true,
                             new Model<String>("eFapsLogo " + companyName.replace(" " , ""))));
+
+            //Admin_Common_SystemMessageAlert
+            final StandardLink alert = new StandardLink("useralert",
+                           new MenuItemModel(new UIMenuItem(UUID.fromString("5a6f2d4a-df81-4211-b7ed-18ae83608c81")))) {
+
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                protected void onRender(final MarkupStream _markupStream)
+                {
+                    renderComponent(_markupStream);
+                }
+
+                @Override
+                protected void onComponentTag(final ComponentTag _tag)
+                {
+                    super.onComponentTag(_tag);
+                }
+
+                @Override
+                protected void onComponentTagBody(final MarkupStream _markupStream,
+                                                  final ComponentTag _openTag)
+                {
+                    super.onComponentTagBody(_markupStream, _openTag);
+                    replaceComponentTagBody(_markupStream, _openTag, ((UIMenuItem) getDefaultModelObject()).getLabel());
+                }
+
+
+            };
+            this.add(alert);
+            if (SystemMessage.hasUnreadMsg(context.getPerson().getId())) {
+                alert.add(new AttributeModifier("class", true, new Model<String>("unread")));
+            } else if (!SystemMessage.hasReadMsg(context.getPerson().getId())) {
+                alert.add(new AttributeModifier("style", true, new Model<String>("display:none")));
+            }
+
         } catch (final EFapsException e) {
             throw new RestartResponseException(new ErrorPage(e));
         }
@@ -169,6 +209,7 @@ public class MainPage extends AbstractMergePage
         this.add(menu);
 
         this.add(new Label("version", DBProperties.getProperty("Logo.Version.Label")));
+
 
         this.add(new InlineFrame(MainPage.IFRAME_WICKETID,
                                  PageMap.forName(MainPage.IFRAME_PAGEMAP_NAME), EmptyPage.class));

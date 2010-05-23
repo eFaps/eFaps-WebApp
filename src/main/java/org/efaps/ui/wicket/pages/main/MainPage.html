@@ -37,11 +37,13 @@
         <span wicket:id="company">eFaps 1.0</span>
       </div>
     </div>
-
-    <div wicket:id="menu" id="eFapsMainMenu" class="eFapsMenu"></div>
-
-    <span wicket:id="version" id="eFapsVersion"></span>
-
+    <div id="eFapsMainMenuTableWrapper">
+        <div id="eFapsMainMenuRowWrapper">
+            <div wicket:id="menu" id="eFapsMainMenu" class="eFapsMenu"></div>
+            <div id="eFapsUserMsg"><a wicket:id="useralert"></a></div>
+            <span wicket:id="version" id="eFapsVersion"></span>
+        </div>
+    </div>
     <iframe wicket:id="content"
             id="eFapsFrameContent"
             src="EmptyPage.html"
