@@ -25,7 +25,6 @@ import java.util.UUID;
 import org.apache.wicket.IPageMap;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.model.IModel;
-
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.table.TablePanel;
@@ -56,18 +55,20 @@ public class TablePage extends AbstractContentPage
      * opener.
      *
      * @param _parameters PageParameters
-     * @throws EFapsException
+     * @throws EFapsException  on error
      */
     public TablePage(final PageParameters _parameters)
-            throws EFapsException
+        throws EFapsException
     {
         this(new TableModel(new UITable(_parameters)));
     }
 
     /**
      * @param _model modle for the table
+     * @throws EFapsException  on error
      */
     public TablePage(final IModel<UITable> _model)
+        throws EFapsException
     {
         this(_model, null);
     }
@@ -75,8 +76,11 @@ public class TablePage extends AbstractContentPage
     /**
      *  @param _model model for the page
      * @param _modalWindow modal window
+     * @throws EFapsException  on error
      */
-    public TablePage(final IModel<?> _model, final ModalWindowContainer _modalWindow)
+    public TablePage(final IModel<?> _model,
+                     final ModalWindowContainer _modalWindow)
+        throws EFapsException
     {
         super(_model, _modalWindow);
         this.addComponents();
@@ -87,9 +91,10 @@ public class TablePage extends AbstractContentPage
      * @param _pagemap      pagemap
      * @param _uuid         uuid of a command
      * @param _instanceKey  key to an instance
-     * @throws EFapsException
+     * @throws EFapsException on error
      */
-    public TablePage(final IPageMap _pagemap, final UUID _uuid, final String _instanceKey) throws EFapsException
+    public TablePage(final IPageMap _pagemap, final UUID _uuid, final String _instanceKey)
+        throws EFapsException
     {
         this(_pagemap, _uuid, _instanceKey, null);
     }
@@ -99,9 +104,13 @@ public class TablePage extends AbstractContentPage
      * @param _uuid         uuid of a command
      * @param _instanceKey  key to an instance
      * @param _openerId     id of an opener
-     * @throws EFapsException
+     * @throws EFapsException  on error
      */
-    public TablePage(final IPageMap _pagemap, final UUID _uuid, final String _instanceKey, final String _openerId) throws EFapsException
+    public TablePage(final IPageMap _pagemap,
+                     final UUID _uuid,
+                     final String _instanceKey,
+                     final String _openerId)
+        throws EFapsException
     {
         this(_pagemap, new TableModel(new UITable(_uuid, _instanceKey, _openerId)));
     }
@@ -109,8 +118,10 @@ public class TablePage extends AbstractContentPage
     /**
      * @param _pagemap  pagemap
      * @param _model    modle for the table
+     * @throws EFapsException  on error
      */
     public TablePage(final IPageMap _pagemap, final TableModel _model)
+        throws EFapsException
     {
         super(_pagemap, _model, null);
         this.addComponents();
@@ -119,17 +130,20 @@ public class TablePage extends AbstractContentPage
     /**
      * @param _uuid         uuid of a commmand
      * @param _instanceKey  key to an instance
-     * @throws EFapsException
+     * @throws EFapsException  on error
      */
-    public TablePage(final UUID _uuid, final String _instanceKey) throws EFapsException
+    public TablePage(final UUID _uuid, final String _instanceKey)
+        throws EFapsException
     {
         this(new TableModel(new UITable(_uuid, _instanceKey)));
     }
 
     /**
+     * @throws EFapsException  on error
      *
      */
     protected void addComponents()
+        throws EFapsException
     {
         this.add(StaticHeaderContributor.forCss(TablePage.CSS));
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ package org.efaps.ui.wicket.components.table.header;
 
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.IModel;
-
 import org.efaps.admin.ui.AbstractCommand.SortDirection;
 import org.efaps.ui.wicket.models.FormModel;
 import org.efaps.ui.wicket.models.TableModel;
@@ -32,27 +31,40 @@ import org.efaps.ui.wicket.models.objects.UITableHeader;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
+import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.util.EFapsException;
 
 /**
- * This class renders the SortLink for the Header
+ * This class renders the SortLink for the Header.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id:SortLinkContainer.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class SortLink extends Link<UITableHeader>
+public class SortLink
+    extends Link<UITableHeader>
 {
 
+    /**
+     * Needed foer serialization.
+     */
     private static final long serialVersionUID = 1L;
 
-    public SortLink(final String _id, final IModel<UITableHeader> _model)
+    /**
+     * @param _wicketId       wicket id
+     * @param _model    model
+     */
+    public SortLink(final String _wicketId,
+                    final IModel<UITableHeader> _model)
     {
-        super(_id, _model);
+        super(_wicketId, _model);
     }
 
+    /**
+     * @see org.apache.wicket.markup.html.link.Link#onClick()
+     */
     @Override
     public void onClick()
     {
-
         final UITable uiTable = (UITable) (this.findParent(HeaderPanel.class)).getDefaultModelObject();
         final UITableHeader uiTableHeader = super.getModelObject();
         uiTable.setSortKey(uiTableHeader.getFieldName());
@@ -74,13 +86,17 @@ public class SortLink extends Link<UITableHeader>
         uiTable.sort();
 
         final String menuTreeKey = ((AbstractContentPage) getPage()).getMenuTreeKey();
-        AbstractContentPage page;
-        if (getPage() instanceof TablePage) {
-            page = new TablePage(new TableModel(uiTable));
-        } else {
-            page = new FormPage(new FormModel((UIForm) getPage().getDefaultModelObject()));
+        try {
+            AbstractContentPage page;
+            if (getPage() instanceof TablePage) {
+                page = new TablePage(new TableModel(uiTable));
+            } else {
+                page = new FormPage(new FormModel((UIForm) getPage().getDefaultModelObject()));
+            }
+            page.setMenuTreeKey(menuTreeKey);
+            getRequestCycle().setResponsePage(page);
+        } catch (final EFapsException e) {
+            getRequestCycle().setResponsePage(new ErrorPage(e));
         }
-        page.setMenuTreeKey(menuTreeKey);
-        getRequestCycle().setResponsePage(page);
     }
 }

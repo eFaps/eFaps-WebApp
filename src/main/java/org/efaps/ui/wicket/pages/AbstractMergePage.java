@@ -35,7 +35,6 @@ import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.behavior.IBehavior;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.model.IModel;
-
 import org.efaps.admin.program.bundle.BundleMaker;
 import org.efaps.admin.program.bundle.TempFileBundle;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
@@ -54,7 +53,8 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public abstract class AbstractMergePage extends WebPage
+public abstract class AbstractMergePage
+    extends WebPage
 {
     /**
      * Needed for serialization.
@@ -88,7 +88,8 @@ public abstract class AbstractMergePage extends WebPage
      * @param _pagemap  pagemap for this page
      * @param _model    model for this page
      */
-    public AbstractMergePage(final IPageMap _pagemap, final IModel<?> _model)
+    public AbstractMergePage(final IPageMap _pagemap,
+                             final IModel<?> _model)
     {
         super(_pagemap, _model);
     }
@@ -107,7 +108,8 @@ public abstract class AbstractMergePage extends WebPage
      * @param _pagemap      pagemap for this page
      * @param _parameters   parameters for this page
      */
-    public AbstractMergePage(final IPageMap _pagemap, final PageParameters _parameters)
+    public AbstractMergePage(final IPageMap _pagemap,
+                             final PageParameters _parameters)
     {
         super(_pagemap, _parameters);
     }
@@ -134,7 +136,7 @@ public abstract class AbstractMergePage extends WebPage
     {
         if (mergeStatics()) {
             final Map<StaticHeaderContributor.HeaderType, List<StaticHeaderContributor>> resources
-                                    = new HashMap<StaticHeaderContributor.HeaderType, List<StaticHeaderContributor>>();
+                = new HashMap<StaticHeaderContributor.HeaderType, List<StaticHeaderContributor>>();
 
             // get all StaticHeaderContributor from all childs
             addStaticBehaviors(resources, this.getBehaviors());

@@ -25,7 +25,6 @@ import java.util.UUID;
 import org.apache.wicket.IPageMap;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.model.IModel;
-
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.tree.StructurBrowserTreeTablePanel;
 import org.efaps.ui.wicket.models.StructurBrowserModel;
@@ -42,9 +41,9 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id:StructurBrowserPage.java 1491 2007-10-15 23:40:43Z jmox $
  */
-public class StructurBrowserPage extends AbstractContentPage
+public class StructurBrowserPage
+    extends AbstractContentPage
 {
-
     /**
      * Reference to the style sheet.
      */
@@ -64,15 +63,18 @@ public class StructurBrowserPage extends AbstractContentPage
      * @param _parameters PageParameters
      * @throws EFapsException on error
      */
-    public StructurBrowserPage(final PageParameters _parameters) throws EFapsException
+    public StructurBrowserPage(final PageParameters _parameters)
+        throws EFapsException
     {
         this(new StructurBrowserModel(new UIStructurBrowser(_parameters)));
     }
 
     /**
      * @param _model model for this pager
+     * @throws EFapsException  on error
      */
     public StructurBrowserPage(final IModel<UIStructurBrowser> _model)
+        throws EFapsException
     {
         super(_model);
         this.addComponents();
@@ -83,7 +85,9 @@ public class StructurBrowserPage extends AbstractContentPage
      * @param _oid oid
      * @throws EFapsException on error
      */
-    public StructurBrowserPage(final UUID _commandUUID, final String _oid) throws EFapsException
+    public StructurBrowserPage(final UUID _commandUUID,
+                               final String _oid)
+        throws EFapsException
     {
         super(new StructurBrowserModel(new UIStructurBrowser(_commandUUID, _oid)));
         this.addComponents();
@@ -95,7 +99,9 @@ public class StructurBrowserPage extends AbstractContentPage
      * @param _oid oid
      * @throws EFapsException on error
      */
-    public StructurBrowserPage(final IPageMap _pageMap, final UUID _commandUUID, final String _oid)
+    public StructurBrowserPage(final IPageMap _pageMap,
+                               final UUID _commandUUID,
+                               final String _oid)
         throws EFapsException
     {
         super(_pageMap, new StructurBrowserModel(new UIStructurBrowser(_commandUUID, _oid)), null);
@@ -104,8 +110,10 @@ public class StructurBrowserPage extends AbstractContentPage
 
     /**
      * Method to add the components to this page.
+     * @throws EFapsException  on error
      */
     protected void addComponents()
+        throws EFapsException
     {
         add(StaticHeaderContributor.forCss(StructurBrowserPage.CSS));
 

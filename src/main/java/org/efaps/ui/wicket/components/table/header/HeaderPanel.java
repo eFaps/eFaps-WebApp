@@ -391,11 +391,15 @@ public class HeaderPanel
         {
             final TableModel model = (TableModel) getComponent().getDefaultModel();
             model.getObject().resetModel();
-            if (getComponent().getPage() instanceof TablePage) {
-                getComponent().setResponsePage(new TablePage(model));
-            } else {
-                final UIForm uiform = (UIForm) getComponent().getPage().getDefaultModelObject();
-                getComponent().setResponsePage(new FormPage(new FormModel(uiform)));
+            try {
+                if (getComponent().getPage() instanceof TablePage) {
+                    getComponent().setResponsePage(new TablePage(model));
+                } else {
+                    final UIForm uiform = (UIForm) getComponent().getPage().getDefaultModelObject();
+                    getComponent().setResponsePage(new FormPage(new FormModel(uiform)));
+                }
+            } catch (final EFapsException e) {
+                getComponent().setResponsePage(new ErrorPage(e));
             }
         }
     }

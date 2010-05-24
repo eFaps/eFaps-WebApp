@@ -29,7 +29,6 @@ import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
-
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.classification.ClassificationPathPanel;
 import org.efaps.ui.wicket.components.editor.EditorPanel;
@@ -53,12 +52,14 @@ import org.efaps.ui.wicket.models.objects.UIForm.FormElement;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
+import org.efaps.util.EFapsException;
 
 /**
  * @author The eFaps Team
  * @version $Id:FormPage.java 1491 2007-10-15 23:40:43Z jmox $
  */
-public class FormPage extends AbstractContentPage
+public class FormPage
+    extends AbstractContentPage
 {
     /**
      * Reference to the css stylesheet.
@@ -71,16 +72,20 @@ public class FormPage extends AbstractContentPage
      * opener.
      *
      * @param _parameters PageParameters
+     * @throws EFapsException on error
      */
     public FormPage(final PageParameters _parameters)
+        throws EFapsException
     {
         this(new FormModel(new UIForm(_parameters)));
     }
 
     /**
      * @param _model model for the page
+     * @throws EFapsException on error
      */
     public FormPage(final IModel<?> _model)
+        throws EFapsException
     {
         this(_model, null);
     }
@@ -88,8 +93,11 @@ public class FormPage extends AbstractContentPage
     /**
      * @param _commandUUID UUID of the command
      * @param _oid oid of the instance
+     * @throws EFapsException on error
      */
-    public FormPage(final UUID _commandUUID, final String _oid)
+    public FormPage(final UUID _commandUUID,
+                    final String _oid)
+        throws EFapsException
     {
         this(_commandUUID, _oid, (ModalWindowContainer) null);
     }
@@ -98,30 +106,40 @@ public class FormPage extends AbstractContentPage
      * @param _commandUUID UUID of the command
      * @param _oid oid of the instance
      * @param _modalWindow modal window of this page
+     * @throws EFapsException  on error
      */
-    public FormPage(final UUID _commandUUID, final String _oid, final ModalWindowContainer _modalWindow)
+    public FormPage(final UUID _commandUUID,
+                    final String _oid,
+                    final ModalWindowContainer _modalWindow)
+        throws EFapsException
     {
         super(new FormModel(new UIForm(_commandUUID, _oid)), _modalWindow);
         this.addComponents();
     }
 
     /**
-     *  @param _model model for the page
+     * @param _model model for the page
      * @param _modalWindow modal window
+     * @throws EFapsException on error
      */
-    public FormPage(final IModel<?> _model, final ModalWindowContainer _modalWindow)
+    public FormPage(final IModel<?> _model,
+                    final ModalWindowContainer _modalWindow)
+        throws EFapsException
     {
         super(_model, _modalWindow);
         this.addComponents();
     }
 
-
     /**
      * @param _pageMap pagemap to be used
      * @param _commandUUID UUID of the command
      * @param _oid oid of the instance
+     * @throws EFapsException on error
      */
-    public FormPage(final IPageMap _pageMap, final UUID _commandUUID, final String _oid)
+    public FormPage(final IPageMap _pageMap,
+                    final UUID _commandUUID,
+                    final String _oid)
+        throws EFapsException
     {
         super(_pageMap, new FormModel(new UIForm(_commandUUID, _oid)), null);
         this.addComponents();
@@ -132,8 +150,13 @@ public class FormPage extends AbstractContentPage
      * @param _commandUUID UUID of the command
      * @param _oid oid of the instance
      * @param _openerId id of the opener
+     * @throws EFapsException on error
      */
-    public FormPage(final IPageMap _pageMap, final UUID _commandUUID, final String _oid, final String _openerId)
+    public FormPage(final IPageMap _pageMap,
+                    final UUID _commandUUID,
+                    final String _oid,
+                    final String _openerId)
+        throws EFapsException
     {
         super(_pageMap, new FormModel(new UIForm(_commandUUID, _oid, _openerId)), null);
         this.addComponents();
@@ -141,8 +164,11 @@ public class FormPage extends AbstractContentPage
 
     /**
      * Method to add the components to this page.
+     *
+     * @throws EFapsException on error
      */
     protected void addComponents()
+        throws EFapsException
     {
         final UIForm model = (UIForm) super.getDefaultModelObject();
 
@@ -159,7 +185,7 @@ public class FormPage extends AbstractContentPage
         final WebMarkupContainer script = new WebMarkupContainer("selectscript");
         this.add(script);
         script.setVisible(model.isCreateMode() || model.isEditMode() || model.isSearchMode());
-        updateFormContainer(this, form, model);
+        FormPage.updateFormContainer(this, form, model);
     }
 
     /**
@@ -169,15 +195,20 @@ public class FormPage extends AbstractContentPage
      * @param _form formcontainer
      * @param _uiForm model
      */
-    public static void updateFormContainer(final Page _page, final FormContainer _form, final UIForm _uiForm)
+    public static void updateFormContainer(final Page _page,
+                                           final FormContainer _form,
+                                           final UIForm _uiForm)
     {
 
         if (!_uiForm.isInitialized()) {
             _uiForm.execute();
         }
-        // in case of classification the different parts of the form a loaded via ajax, that leads
-        // to problems on parsing the dojo elements (EditorPanel) to prevent this the dojo
-        // scripts are loaded by default. Thats not the optimum, but normally the scripts are
+        // in case of classification the different parts of the form a loaded
+        // via ajax, that leads
+        // to problems on parsing the dojo elements (EditorPanel) to prevent
+        // this the dojo
+        // scripts are loaded by default. Thats not the optimum, but normally
+        // the scripts are
         // already in the cache of the browser
         // TODO Is there a better way?
         if (_uiForm.isClassified() && (_uiForm.isEditMode() || _uiForm.isCreateMode())) {

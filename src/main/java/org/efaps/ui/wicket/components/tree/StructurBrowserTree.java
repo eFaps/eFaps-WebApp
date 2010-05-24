@@ -46,7 +46,6 @@ import org.apache.wicket.markup.html.link.IPageLink;
 import org.apache.wicket.markup.html.link.InlineFrame;
 import org.apache.wicket.markup.html.tree.ITreeState;
 import org.apache.wicket.model.AbstractReadOnlyModel;
-
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
@@ -55,6 +54,7 @@ import org.efaps.ui.wicket.behaviors.update.AbstractAjaxUpdateBehavior;
 import org.efaps.ui.wicket.components.menutree.MenuTree;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser.BogusNode;
+import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
@@ -69,10 +69,11 @@ import org.efaps.util.EFapsException;
  * additional arrow showing the direction of the child can be rendered depending
  * on a Tristate.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public class StructurBrowserTree extends DefaultAbstractTree
+public class StructurBrowserTree
+    extends DefaultAbstractTree
 {
 
     /**
@@ -105,11 +106,13 @@ public class StructurBrowserTree extends DefaultAbstractTree
      * @param _model model for this component
      * @param _listMenuKey key to the list menu
      */
-    public StructurBrowserTree(final String _wicketId, final TreeModel _model, final String _listMenuKey)
+    public StructurBrowserTree(final String _wicketId,
+                               final TreeModel _model,
+                               final String _listMenuKey)
     {
         super(_wicketId, _model);
         this.listMenuKey = _listMenuKey;
-        this.add(StaticHeaderContributor.forCss(CSS));
+        this.add(StaticHeaderContributor.forCss(StructurBrowserTree.CSS));
 
         setRootLess(true);
         // we want a tree that is collapsed and updated asynchron
@@ -143,7 +146,9 @@ public class StructurBrowserTree extends DefaultAbstractTree
      * @return Component
      */
     @Override
-    protected Component newNodeIcon(final MarkupContainer _parent, final String _wicketId, final TreeNode _node)
+    protected Component newNodeIcon(final MarkupContainer _parent,
+                                    final String _wicketId,
+                                    final TreeNode _node)
     {
         final UIStructurBrowser model = (UIStructurBrowser) ((DefaultMutableTreeNode) _node).getUserObject();
         // if we have the model contains a icon render it, else just pass it on
@@ -177,7 +182,9 @@ public class StructurBrowserTree extends DefaultAbstractTree
      * @return MarkupContainer
      */
     @Override
-    protected MarkupContainer newNodeLink(final MarkupContainer _parent, final String _wicketId, final TreeNode _node)
+    protected MarkupContainer newNodeLink(final MarkupContainer _parent,
+                                          final String _wicketId,
+                                          final TreeNode _node)
     {
         final UIStructurBrowser model = (UIStructurBrowser) ((DefaultMutableTreeNode) _node).getUserObject();
         // add UpdateBehavior for thi oid to the Session
@@ -239,8 +246,13 @@ public class StructurBrowserTree extends DefaultAbstractTree
 
                         public Page getPage()
                         {
-                            final FormPage page = new FormPage(commandUUID, model.getInstanceKey());
-                            page.setMenuTreeKey(StructurBrowserTree.this.listMenuKey);
+                            Page page;
+                            try {
+                                page = new FormPage(commandUUID, model.getInstanceKey());
+                                ((AbstractContentPage) page).setMenuTreeKey(StructurBrowserTree.this.listMenuKey);
+                            } catch (final EFapsException e) {
+                                page = new ErrorPage(e);
+                            }
                             return page;
                         }
 
@@ -278,7 +290,8 @@ public class StructurBrowserTree extends DefaultAbstractTree
      * @param _level level of the item
      */
     @Override
-    protected void populateTreeItem(final WebMarkupContainer _item, final int _level)
+    protected void populateTreeItem(final WebMarkupContainer _item,
+                                    final int _level)
     {
         final DefaultMutableTreeNode node = (DefaultMutableTreeNode) _item.getDefaultModelObject();
 
@@ -322,7 +335,8 @@ public class StructurBrowserTree extends DefaultAbstractTree
             private static final long serialVersionUID = 1L;
 
             @Override
-            public void onComponentTag(final Component _component, final ComponentTag _tag)
+            public void onComponentTag(final Component _component,
+                                       final ComponentTag _tag)
             {
                 super.onComponentTag(_component, _tag);
                 if (getTreeState().isNodeSelected(node)) {
@@ -349,9 +363,11 @@ public class StructurBrowserTree extends DefaultAbstractTree
      * This class is used to add an UpdateBehavior to this tree.
      *
      * @author jmox
-     * @version $Id$
+     * @version $Id: StructurBrowserTree.java 2760 2009-07-09 19:50:01Z
+     *          jan.moxter $
      */
-    public class AjaxUpdateBehavior extends AbstractAjaxUpdateBehavior
+    public class AjaxUpdateBehavior
+        extends AbstractAjaxUpdateBehavior
     {
 
         /**

@@ -30,6 +30,7 @@ import org.apache.wicket.model.IModel;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.Opener;
+import org.efaps.ui.wicket.behaviors.SetMessageStatusContributor;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.footer.FooterPanel;
 import org.efaps.ui.wicket.components.heading.HeadingPanel;
@@ -41,6 +42,7 @@ import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
+import org.efaps.util.EFapsException;
 
 /**
  * Abstract Class that renders the Content<br/>
@@ -52,7 +54,6 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 public abstract class AbstractContentPage
     extends AbstractMergePage
 {
-
     /**
      * Static Variable used as the name for the page map for PopUps.
      */
@@ -129,12 +130,15 @@ public abstract class AbstractContentPage
      * Method that adds the Components to the Page.
      *
      * @param _form FormContainer
+     * @throws EFapsException on error
      */
     protected void addComponents(final FormContainer _form)
+        throws EFapsException
     {
         // set the title for the Page
         add(new StringHeaderContributor("<title>" + DBProperties.getProperty("Logo.Version.Label") + "</title>"));
         add(StaticHeaderContributor.forCss(AbstractContentPage.CSS));
+        add(new SetMessageStatusContributor());
 
         this.body = (new WebMarkupContainer("body") {
 

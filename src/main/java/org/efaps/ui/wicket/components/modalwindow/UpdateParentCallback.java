@@ -23,7 +23,6 @@ package org.efaps.ui.wicket.components.modalwindow;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
-
 import org.efaps.ui.wicket.models.FormModel;
 import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
@@ -32,6 +31,8 @@ import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
+import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.util.EFapsException;
 
 /**
  * Class implements the WindowClosedCallback to be able to update the parent
@@ -109,14 +110,18 @@ public class UpdateParentCallback implements ModalWindow.WindowClosedCallback
             }
 
             AbstractContentPage page = null;
-            if (uiObject instanceof UITable) {
-                page = new TablePage(new TableModel((UITable) uiObject));
-            } else if (uiObject instanceof UIForm) {
-                page = new FormPage(new FormModel((UIForm) uiObject));
+            try {
+                if (uiObject instanceof UITable) {
+                    page = new TablePage(new TableModel((UITable) uiObject));
+                } else if (uiObject instanceof UIForm) {
+                    page = new FormPage(new FormModel((UIForm) uiObject));
+                }
+             // copy the MenuKey to the new page
+                page.setMenuTreeKey(((AbstractContentPage) this.panel.getPage()).getMenuTreeKey());
+                this.panel.setResponsePage(page);
+            } catch (final EFapsException e) {
+                this.panel.setResponsePage(new ErrorPage(e));
             }
-            // copy the MenuKey to the new page
-            page.setMenuTreeKey(((AbstractContentPage) this.panel.getPage()).getMenuTreeKey());
-            this.panel.setResponsePage(page);
         }
     }
 }

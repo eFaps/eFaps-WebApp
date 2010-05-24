@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,6 @@ import org.apache.wicket.markup.html.link.InlineFrame;
 import org.apache.wicket.markup.html.tree.AbstractTree;
 import org.apache.wicket.markup.html.tree.ITreeState;
 import org.apache.wicket.model.Model;
-
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.behaviors.update.AbstractAjaxUpdateBehavior;
@@ -63,7 +62,7 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 import org.efaps.util.EFapsException;
 
 /**
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
 public class MenuTree extends AbstractTree
@@ -136,7 +135,7 @@ public class MenuTree extends AbstractTree
 
         setDefaultModel(new Model<Serializable>((Serializable) model.getTreeModel()));
 
-        add(StaticHeaderContributor.forCss(CSS));
+        add(StaticHeaderContributor.forCss(MenuTree.CSS));
         ((EFapsSession) getSession()).putIntoCache(this.menuKey, this);
 
         final DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode) ((DefaultTreeModel) getDefaultModelObject())
@@ -177,7 +176,7 @@ public class MenuTree extends AbstractTree
         final ITreeState treestate = getTreeState();
         treestate.expandAll();
 
-        add(StaticHeaderContributor.forCss(CSS));
+        add(StaticHeaderContributor.forCss(MenuTree.CSS));
         ((EFapsSession) getSession()).putIntoCache(this.menuKey, this);
 
         final AjaxUpdateBehavior update = new AjaxUpdateBehavior();
@@ -200,7 +199,9 @@ public class MenuTree extends AbstractTree
      * @param _parameters Page parameters
      * @param _target ajax target
      */
-    public void addChildMenu(final UUID _commandUUID, final String _instanceKey, final AjaxRequestTarget _target)
+    public void addChildMenu(final UUID _commandUUID,
+                             final String _instanceKey,
+                             final AjaxRequestTarget _target)
     {
 
         final DefaultMutableTreeNode node = (DefaultMutableTreeNode) getTreeState().getSelectedNodes().iterator()
@@ -293,9 +294,9 @@ public class MenuTree extends AbstractTree
             _item.add(expandLink);
 
             if (getTreeState().isNodeExpanded(node)) {
-                expandLink.add(new StaticImageComponent("expandIcon", ICON_CHILDOPENED));
+                expandLink.add(new StaticImageComponent("expandIcon", MenuTree.ICON_CHILDOPENED));
             } else {
-                expandLink.add(new StaticImageComponent("expandIcon", ICON_CHILDCLOSED));
+                expandLink.add(new StaticImageComponent("expandIcon", MenuTree.ICON_CHILDCLOSED));
             }
         } else {
             _item.add(new WebMarkupContainer("expandLink").setVisible(false));
@@ -323,15 +324,15 @@ public class MenuTree extends AbstractTree
                 _item.add(new WebMarkupContainer("removelink").setVisible(false));
                 final AjaxGoUpLink goUplink = new AjaxGoUpLink("goUplink", node);
                 _item.add(goUplink);
-                goUplink.add(new StaticImageComponent("goUpIcon", ICON_GOUP));
+                goUplink.add(new StaticImageComponent("goUpIcon", MenuTree.ICON_GOUP));
             } else {
                 final AjaxGoIntoLink goIntolink = new AjaxGoIntoLink("goIntolink", node);
                 _item.add(goIntolink);
-                goIntolink.add(new StaticImageComponent("goIntoIcon", ICON_GOINTO));
+                goIntolink.add(new StaticImageComponent("goIntoIcon", MenuTree.ICON_GOINTO));
 
                 final AjaxRemoveLink removelink = new AjaxRemoveLink("removelink", node);
                 _item.add(removelink);
-                removelink.add(new StaticImageComponent("removeIcon", ICON_REMOVE));
+                removelink.add(new StaticImageComponent("removeIcon", MenuTree.ICON_REMOVE));
                 _item.add(new WebMarkupContainer("goUplink").setVisible(false));
             }
         } else {
@@ -350,7 +351,8 @@ public class MenuTree extends AbstractTree
      * @param _model Model of the item
      * @param _target Target
      */
-    public void changeContent(final UIMenuItem _model, final AjaxRequestTarget _target)
+    public void changeContent(final UIMenuItem _model,
+                              final AjaxRequestTarget _target)
     {
         InlineFrame page = null;
         if (_model.getCommand().getTargetTable() != null) {
@@ -389,8 +391,13 @@ public class MenuTree extends AbstractTree
 
                 public Page getPage()
                 {
-                    final FormPage page = new FormPage(_model.getCommandUUID(), _model.getInstanceKey());
-                    page.setMenuTreeKey(getMenuKey());
+                    Page page;
+                    try {
+                        page = new FormPage(_model.getCommandUUID(), _model.getInstanceKey());
+                        ((FormPage) page).setMenuTreeKey(getMenuKey());
+                    } catch (final EFapsException e) {
+                        page = new ErrorPage(e);
+                    }
                     return page;
                 }
 

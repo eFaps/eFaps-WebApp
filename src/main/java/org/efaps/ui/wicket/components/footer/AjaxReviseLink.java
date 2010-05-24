@@ -23,7 +23,6 @@ package org.efaps.ui.wicket.components.footer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.model.Model;
-
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.FormModel;
 import org.efaps.ui.wicket.models.TableModel;
@@ -35,26 +34,30 @@ import org.efaps.ui.wicket.models.objects.UIWizardObject;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
+import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.util.EFapsException;
 
 /**
  * Class renders a Link used on a search result to return to the previous page
  * and revise the search.
  *
- * @author The eFasp Team
+ * @author The eFaps Team
  * @version $Id$
  */
-public class AjaxReviseLink extends AjaxLink<AbstractUIObject>
+public class AjaxReviseLink
+    extends AjaxLink<AbstractUIObject>
 {
     /**
-   *
-   */
+     *
+     */
     private static final long serialVersionUID = 1L;
 
     /**
      * @param _wicketId wicket id of this component
      * @param _uiObject uiobject for this component
      */
-    public AjaxReviseLink(final String _wicketId, final AbstractUIObject _uiObject)
+    public AjaxReviseLink(final String _wicketId,
+                          final AbstractUIObject _uiObject)
     {
         super(_wicketId, new Model<AbstractUIObject>(_uiObject));
     }
@@ -76,11 +79,15 @@ public class AjaxReviseLink extends AjaxLink<AbstractUIObject>
         final FooterPanel footer = findParent(FooterPanel.class);
         final ModalWindowContainer modal = footer.getModalWindow();
         final AbstractContentPage page;
-        if (prevObject instanceof UITable) {
-            page = new TablePage(new TableModel((UITable) prevObject), modal);
-        } else {
-            page = new FormPage(new FormModel((UIForm) prevObject), modal);
+        try {
+            if (prevObject instanceof UITable) {
+                page = new TablePage(new TableModel((UITable) prevObject), modal);
+            } else {
+                page = new FormPage(new FormModel((UIForm) prevObject), modal);
+            }
+            getRequestCycle().setResponsePage(page);
+        } catch (final EFapsException e) {
+            getRequestCycle().setResponsePage(new ErrorPage(e));
         }
-        getRequestCycle().setResponsePage(page);
     }
 }

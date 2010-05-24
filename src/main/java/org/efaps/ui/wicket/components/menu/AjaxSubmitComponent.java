@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -124,6 +124,10 @@ public class AjaxSubmitComponent
             return "javascript:" + script.replace("'", "\"");
         }
 
+        /**
+         * (non-Javadoc).
+         * @see org.apache.wicket.ajax.form.AjaxFormSubmitBehavior#getPreconditionScript()
+         */
         @Override
         protected CharSequence getPreconditionScript()
         {
@@ -195,10 +199,14 @@ public class AjaxSubmitComponent
                     uiObject.resetModel();
 
                     Page page = null;
-                    if (uiObject instanceof UITable) {
-                        page = new TablePage(new TableModel((UITable) uiObject));
-                    } else if (uiObject instanceof UIForm) {
-                        page = new FormPage(new FormModel((UIForm) uiObject));
+                    try {
+                        if (uiObject instanceof UITable) {
+                            page = new TablePage(new TableModel((UITable) uiObject));
+                        } else if (uiObject instanceof UIForm) {
+                            page = new FormPage(new FormModel((UIForm) uiObject));
+                        }
+                    } catch (final EFapsException e) {
+                        page = new ErrorPage(e);
                     }
                     this.form.setResponsePage(page);
                 }

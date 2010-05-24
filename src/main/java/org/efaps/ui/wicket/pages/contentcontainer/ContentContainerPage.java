@@ -30,7 +30,6 @@ import org.apache.wicket.markup.html.link.IPageLink;
 import org.apache.wicket.markup.html.link.InlineFrame;
 import org.apache.wicket.protocol.http.ClientProperties;
 import org.apache.wicket.protocol.http.request.WebClientInfo;
-
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Command;
 import org.efaps.admin.ui.Menu;
@@ -63,7 +62,8 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id:ContentContainerPage.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class ContentContainerPage extends AbstractMergePage
+public class ContentContainerPage
+    extends AbstractMergePage
 {
 
     /**
@@ -134,7 +134,8 @@ public class ContentContainerPage extends AbstractMergePage
      * @param _parameters PageParameters
      * @throws EFapsException on error
      */
-    public ContentContainerPage(final PageParameters _parameters) throws EFapsException
+    public ContentContainerPage(final PageParameters _parameters)
+        throws EFapsException
     {
         super();
         final Opener opener = ((EFapsSession) getSession()).getOpener(_parameters.getString(Opener.OPENER_PARAKEY));
@@ -157,7 +158,9 @@ public class ContentContainerPage extends AbstractMergePage
      * @param _instanceKey oid
      * @throws EFapsException on error on error
      */
-    public ContentContainerPage(final UUID _uuid, final String _instanceKey) throws EFapsException
+    public ContentContainerPage(final UUID _uuid,
+                                final String _instanceKey)
+        throws EFapsException
     {
         super();
         initialise(_uuid, _instanceKey);
@@ -169,7 +172,9 @@ public class ContentContainerPage extends AbstractMergePage
      * @param _instanceKey oid
      * @throws EFapsException on error
      */
-    public ContentContainerPage(final IPageMap _pageMap, final UUID _uuid, final String _instanceKey)
+    public ContentContainerPage(final IPageMap _pageMap,
+                                final UUID _uuid,
+                                final String _instanceKey)
         throws EFapsException
     {
         this(_pageMap, _uuid, _instanceKey, false);
@@ -182,8 +187,11 @@ public class ContentContainerPage extends AbstractMergePage
      * @param _addStructurBrowser add a structor browser
      * @throws EFapsException on error
      */
-    public ContentContainerPage(final IPageMap _pageMap, final UUID _uuid, final String _instanceKey,
-                    final boolean _addStructurBrowser) throws EFapsException
+    public ContentContainerPage(final IPageMap _pageMap,
+                                final UUID _uuid,
+                                final String _instanceKey,
+                                final boolean _addStructurBrowser)
+        throws EFapsException
     {
         super(_pageMap);
         this.structurbrowser = _addStructurBrowser;
@@ -197,7 +205,9 @@ public class ContentContainerPage extends AbstractMergePage
      * @param _instanceKey key to the instance
      * @throws EFapsException on error
      */
-    private void initialise(final UUID _uuid, final String _instanceKey) throws EFapsException
+    private void initialise(final UUID _uuid,
+                            final String _instanceKey)
+        throws EFapsException
     {
         ((EFapsSession) getSession()).getUpdateBehaviors().clear();
 
@@ -254,14 +264,14 @@ public class ContentContainerPage extends AbstractMergePage
             {
                 Page error = null;
                 AbstractContentPage page = null;
-                if (ContentContainerPage.this.webForm) {
-                    page = new FormPage(uuid4NewPage, _instanceKey);
-                } else {
-                    try {
+                try {
+                    if (ContentContainerPage.this.webForm) {
+                        page = new FormPage(uuid4NewPage, _instanceKey);
+                    } else {
                         page = new TablePage(uuid4NewPage, _instanceKey);
-                    } catch (final EFapsException e) {
-                        error = new ErrorPage(e);
                     }
+                } catch (final EFapsException e) {
+                    error = new ErrorPage(e);
                 }
                 page.setMenuTreeKey(ContentContainerPage.this.menuTreeKey);
 
