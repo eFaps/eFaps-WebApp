@@ -43,9 +43,9 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.util.string.JavascriptUtils;
 import org.apache.wicket.util.time.Duration;
-import org.efaps.admin.common.SystemMessage;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.db.Context;
+import org.efaps.message.MessageStatusHolder;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.behaviors.ShowFileCallBackBehavior;
 import org.efaps.ui.wicket.components.ChildCallBackHeaderContributer;
@@ -192,9 +192,9 @@ public class MainPage extends AbstractMergePage
 
             };
             this.add(alert);
-            if (SystemMessage.hasUnreadMsg(context.getPerson().getId())) {
+            if (MessageStatusHolder.hasUnreadMsg(context.getPerson().getId())) {
                 alert.add(new AttributeModifier("class", true, new Model<String>("unread")));
-            } else if (!SystemMessage.hasReadMsg(context.getPerson().getId())) {
+            } else if (!MessageStatusHolder.hasReadMsg(context.getPerson().getId())) {
                 alert.add(new AttributeModifier("style", true, new Model<String>("display:none")));
             }
 

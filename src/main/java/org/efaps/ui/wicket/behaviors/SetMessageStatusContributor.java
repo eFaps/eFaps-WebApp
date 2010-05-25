@@ -23,8 +23,8 @@ package org.efaps.ui.wicket.behaviors;
 
 import org.apache.wicket.behavior.StringHeaderContributor;
 import org.apache.wicket.util.string.JavascriptUtils;
-import org.efaps.admin.common.SystemMessage;
 import org.efaps.db.Context;
+import org.efaps.message.MessageStatusHolder;
 import org.efaps.util.EFapsException;
 
 
@@ -42,10 +42,8 @@ public class SetMessageStatusContributor
      */
     private static final long serialVersionUID = 1L;
 
-
     /**
-     * @param contribution
-     * @throws EFapsException
+     * @throws EFapsException on errro
      */
     public SetMessageStatusContributor()
         throws EFapsException
@@ -53,15 +51,20 @@ public class SetMessageStatusContributor
         super(SetMessageStatusContributor.getScript());
     }
 
+    /**
+     *
+     * @return script
+     * @throws EFapsException on error
+     */
     private static String getScript()
         throws EFapsException
     {
         final StringBuilder js = new StringBuilder();
         js.append(JavascriptUtils.SCRIPT_OPEN_TAG);
-        if (SystemMessage.hasUnreadMsg(Context.getThreadContext().getPersonId())) {
+        if (MessageStatusHolder.hasUnreadMsg(Context.getThreadContext().getPersonId())) {
             js.append("top.document.getElementById('eFapsUserMsg').className = 'unread';")
                 .append("top.document.getElementById('eFapsUserMsg').style.display = 'table-cell';");
-        } else if (SystemMessage.hasReadMsg(Context.getThreadContext().getPersonId())) {
+        } else if (MessageStatusHolder.hasReadMsg(Context.getThreadContext().getPersonId())) {
             js.append("top.document.getElementById('eFapsUserMsg').className = '';")
                 .append("top.document.getElementById('eFapsUserMsg').style.display = 'table-cell';");
         } else {
