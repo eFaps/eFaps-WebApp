@@ -47,6 +47,7 @@ import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.db.Context;
 import org.efaps.message.MessageStatusHolder;
 import org.efaps.ui.wicket.EFapsSession;
+import org.efaps.ui.wicket.behaviors.SetMessageStatusContributor;
 import org.efaps.ui.wicket.behaviors.ShowFileCallBackBehavior;
 import org.efaps.ui.wicket.components.ChildCallBackHeaderContributer;
 import org.efaps.ui.wicket.components.menu.MenuContainer;
@@ -162,10 +163,10 @@ public class MainPage extends AbstractMergePage
             logo.add(new Label("company", companyName));
             logo.add(new AttributeModifier("class", true,
                             new Model<String>("eFapsLogo " + companyName.replace(" " , ""))));
-
+            final long usrId = context.getPersonId();
             //Admin_Common_SystemMessageAlert
             final StandardLink alert = new StandardLink("useralert",
-                           new MenuItemModel(new UIMenuItem(UUID.fromString("5a6f2d4a-df81-4211-b7ed-18ae83608c81")))) {
+                           new MenuItemModel(new UIMenuItem(SetMessageStatusContributor.getCmdUUD()))) {
 
                 private static final long serialVersionUID = 1L;
 
@@ -186,17 +187,18 @@ public class MainPage extends AbstractMergePage
                                                   final ComponentTag _openTag)
                 {
                     super.onComponentTagBody(_markupStream, _openTag);
-                    replaceComponentTagBody(_markupStream, _openTag, ((UIMenuItem) getDefaultModelObject()).getLabel());
+                    replaceComponentTagBody(_markupStream, _openTag,
+                                    SetMessageStatusContributor.getLabel(MessageStatusHolder.getUnReadCount(usrId),
+                                    MessageStatusHolder.getReadCount(usrId)));
                 }
-
-
             };
             this.add(alert);
-            if (MessageStatusHolder.hasUnreadMsg(context.getPerson().getId())) {
+            if (MessageStatusHolder.hasUnreadMsg(usrId)) {
                 alert.add(new AttributeModifier("class", true, new Model<String>("unread")));
-            } else if (!MessageStatusHolder.hasReadMsg(context.getPerson().getId())) {
+            } else if (!MessageStatusHolder.hasReadMsg(usrId)) {
                 alert.add(new AttributeModifier("style", true, new Model<String>("display:none")));
             }
+
 
         } catch (final EFapsException e) {
             throw new RestartResponseException(new ErrorPage(e));

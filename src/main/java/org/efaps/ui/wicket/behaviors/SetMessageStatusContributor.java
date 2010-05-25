@@ -21,8 +21,12 @@
 
 package org.efaps.ui.wicket.behaviors;
 
+import java.util.UUID;
+
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.wicket.behavior.StringHeaderContributor;
 import org.apache.wicket.util.string.JavascriptUtils;
+import org.efaps.admin.ui.Command;
 import org.efaps.db.Context;
 import org.efaps.message.MessageStatusHolder;
 import org.efaps.util.EFapsException;
@@ -60,18 +64,46 @@ public class SetMessageStatusContributor
         throws EFapsException
     {
         final StringBuilder js = new StringBuilder();
+        final long usrId = Context.getThreadContext().getPersonId();
         js.append(JavascriptUtils.SCRIPT_OPEN_TAG);
-        if (MessageStatusHolder.hasUnreadMsg(Context.getThreadContext().getPersonId())) {
-            js.append("top.document.getElementById('eFapsUserMsg').className = 'unread';")
-                .append("top.document.getElementById('eFapsUserMsg').style.display = 'table-cell';");
-        } else if (MessageStatusHolder.hasReadMsg(Context.getThreadContext().getPersonId())) {
-            js.append("top.document.getElementById('eFapsUserMsg').className = '';")
-                .append("top.document.getElementById('eFapsUserMsg').style.display = 'table-cell';");
+        if (MessageStatusHolder.hasUnreadMsg(usrId) || MessageStatusHolder.hasReadMsg(usrId)) {
+            js.append("var ma = top.document.getElementById('eFapsUserMsg');")
+                .append("ma.style.display = 'table-cell';")
+                .append("ma.getElementsByTagName('A')[0].firstChild.nodeValue= '")
+                .append(StringEscapeUtils.escapeJavaScript(
+                                SetMessageStatusContributor.getLabel(MessageStatusHolder.getUnReadCount(usrId),
+                                MessageStatusHolder.getReadCount(usrId))))
+                .append("';");
+            if (MessageStatusHolder.hasUnreadMsg(usrId)) {
+                js.append("ma.className = 'unread';");
+            } else {
+                js.append("ma.className = '';");
+            }
         } else {
             js.append("top.document.getElementById('eFapsUserMsg').style.display = 'none';");
         }
         js.append(JavascriptUtils.SCRIPT_CLOSE_TAG);
         return js.toString();
+    }
+
+    /**
+     * @return UUID of the command used for the alert button
+     */
+    public static UUID getCmdUUD()
+    {
+      //Admin_Common_SystemMessageAlert
+        return UUID.fromString("5a6f2d4a-df81-4211-b7ed-18ae83608c81");
+    }
+
+    /**
+     * @param _unread   unread messages
+     * @param _read     read messages
+     * @return string
+     */
+    public static String getLabel(final int _unread,
+                                  final int _read)
+    {
+        return String.format(Command.get(SetMessageStatusContributor.getCmdUUD()).getLabelProperty(), _unread, _read);
     }
 
 }
