@@ -36,9 +36,6 @@ import org.apache.wicket.protocol.http.IMultipartWebRequest;
 import org.apache.wicket.protocol.http.WebRequest;
 import org.apache.wicket.protocol.http.WebSession;
 import org.apache.wicket.util.upload.FileItem;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.user.UserAttributesSet;
 import org.efaps.db.Context;
 import org.efaps.jaas.LoginHandler;
@@ -46,6 +43,8 @@ import org.efaps.ui.wicket.behaviors.ShowFileCallBackBehavior;
 import org.efaps.ui.wicket.behaviors.update.UpdateInterface;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A WebSession subclass that is used e.g. as a store for behaviors that last a
@@ -389,7 +388,8 @@ public class EFapsSession extends WebSession
                         RequestCycle.get().setRequest(request);
                     }
 
-                    Context.begin(this.userName, super.getLocale(), this.sessionAttributes, parameters, fileParams);
+                    Context.begin(this.userName, super.getLocale(), this.sessionAttributes, parameters, fileParams,
+                                    true);
                     // set the locale in the context and in the session
                     setLocale(Context.getThreadContext().getLocale());
                     request.getHttpServletRequest().getSession().setAttribute(UserAttributesSet.CONTEXTMAPKEY,

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,44 +29,42 @@ import org.efaps.db.Context;
 import org.efaps.util.RequestHandler;
 
 /**
- * @todo description
- * @author tmo
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public class RequestHandlerInitServlet extends HttpServlet {
+public class RequestHandlerInitServlet
+    extends HttpServlet
+{
+    /**
+     * Needed foer serialization.
+     */
+    private static final long serialVersionUID = 7212518317632161066L;
 
-  /**
-   *
-   */
-  private static final long serialVersionUID = 7212518317632161066L;
 
-  // ///////////////////////////////////////////////////////////////////////////
+    /**
+     * @param _config ServletConfig
+     */
+    @Override
+    public void init(final ServletConfig _config)
+        throws ServletException
+    {
+        super.init(_config);
 
-  /**
-   * @param _config
-   */
-  @Override
-  public void init(ServletConfig _config) throws ServletException {
-    super.init(_config);
+        RequestHandler.initReplacableMacros("/"
+                        + _config.getServletContext().getServletContextName()
+                        + "/");
 
-    RequestHandler.initReplacableMacros("/"
-        + _config.getServletContext().getServletContextName()
-        + "/");
-
-    try {
-      Context.begin();
-      try {
-        RunLevel.init("webapp");
-        RunLevel.execute();
-      } catch (final Throwable e) {
-        e.printStackTrace();
-      }
-      Context.rollback();
-    } catch (final Exception e) {
-      e.printStackTrace();
+        try {
+            Context.begin();
+            try {
+                RunLevel.init("webapp");
+                RunLevel.execute();
+            } catch (final Throwable e) {
+                e.printStackTrace();
+            }
+            Context.rollback();
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
     }
-
-  }
-
 }

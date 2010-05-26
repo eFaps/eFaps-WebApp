@@ -134,7 +134,7 @@ public class TransactionFilter extends AbstractFilter
             final Map<String, String[]> params = new HashMap<String, String[]>(_request.getParameterMap());
 
             context = Context.begin(getLoggedInUser(_request), locale, getContextSessionAttributes(_request), params,
-                            null);
+                            null, true);
 
         } catch (final EFapsException e) {
             TransactionFilter.LOG.error("could not initialise the context", e);
