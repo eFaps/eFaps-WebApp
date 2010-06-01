@@ -23,9 +23,7 @@
 
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
@@ -89,9 +87,9 @@
 
     <!-- SubVersion Repository -->
     <scm>
-        <connection>scm:svn:http://efaps.googlecode.com/svn/eFaps-WebApp</connection>
-        <developerConnection>scm:svn:https://efaps.googlecode.com/svn/eFaps-WebApp</developerConnection>
-        <url>http://efaps.googlecode.com/svn/eFaps-Kernel</url>
+        <connection>scm:svn:http://efaps.googlecode.com/svn/eFaps-WebApp/</connection>
+        <developerConnection>scm:svn:https://efaps.googlecode.com/svn/eFaps-WebApp/</developerConnection>
+        <url>http://efaps.googlecode.com/svn/eFaps-Kernel/</url>
     </scm>
 
     <!-- Distribution Repository -->
@@ -263,6 +261,12 @@
                     </dependency>
                 </dependencies>
             </plugin>
+             <plugin>
+                <artifactId>maven-release-plugin</artifactId>
+                <configuration>
+                    <mavenExecutorId>forked-path</mavenExecutorId>
+                </configuration>
+            </plugin>
         </plugins>
         <!-- Needed for the upload of the site -->
         <extensions>
@@ -285,7 +289,7 @@
         <dependency>
             <groupId>org.efaps</groupId>
             <artifactId>efaps-kernel</artifactId>
-            <version>${project.version}</version>
+            <version>1.1.1-SNAPSHOT</version>
         </dependency>
 
         <!-- to define a higher version (needed from another tool) -->
