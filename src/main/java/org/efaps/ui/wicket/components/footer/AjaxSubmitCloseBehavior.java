@@ -212,15 +212,14 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
                                                 && this.uiObject.getCallingCommand().getTarget() == Target.MODAL)) {
                             if (this.uiObject.isTargetShowFile()) {
                                 final ShowFileCallBackBehavior callback
-                                                           = ((EFapsSession) footer.getSession()).getFileCallBack();
+                                    = ((EFapsSession) footer.getSession()).getFileCallBack();
                                 _target.prependJavascript(callback.getCallbackScript());
                             }
-                            footer.getModalWindow().setReloadChild(true);
+                            footer.getModalWindow().setReloadChild(!this.uiObject.getCommand().isNoUpdateAfterCmd());
                             footer.getModalWindow().close(_target);
 
                         } else {
-                            final Opener opener
-                                    = ((EFapsSession) Session.get()).getOpener(this.uiObject.getOpenerId());
+                            final Opener opener = ((EFapsSession) Session.get()).getOpener(this.uiObject.getOpenerId());
                             // mark the opener that it can be removed
                             opener.setMarked4Remove(true);
 
