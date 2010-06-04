@@ -23,7 +23,6 @@ package org.efaps.ui.wicket.models.objects;
 import java.util.UUID;
 
 import org.apache.wicket.IClusterable;
-
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.AbstractCommand.SortDirection;
@@ -129,7 +128,7 @@ public class UITableHeader implements IClusterable
     /**
      * Id of the attribute this UITableHeader is based on.
      */
-    private long attrId;
+    private final long attrId;
 
     /**
      * Id of the field this UITableHeader belongs to.
@@ -156,9 +155,9 @@ public class UITableHeader implements IClusterable
         this.width = _field.getWidth();
         this.fixedWidth = _field.isFixedWidth();
         this.fieldId = _field.getId();
+        this.attrId = _attr != null ? _attr.getId() : 0;
 
         if (!this.filterPickList && _attr != null) {
-            this.attrId = _attr.getId();
             final UUID attrTypeUUId = _attr.getAttributeType().getUUID();
             //String
             if (UUID.fromString("72221a59-df5d-4c56-9bec-c9167de80f2b").equals(attrTypeUUId)) {
