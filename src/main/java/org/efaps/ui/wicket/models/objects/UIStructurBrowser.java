@@ -405,12 +405,12 @@ public class UIStructurBrowser
                         value = print.getExpression(field.getName());
                     }
 
-                    final FieldValue fieldvalue = new FieldValue(field, attr, value, instance);
+                    final FieldValue fieldvalue = new FieldValue(field, attr, value, instance, getInstance());
                     if (value != null) {
                         if ((isCreateMode() || isEditMode()) && field.isEditableDisplay(getMode())) {
-                            strValue = fieldvalue.getEditHtml(getMode(), getInstance(), instance);
+                            strValue = fieldvalue.getEditHtml(getMode());
                         } else {
-                            strValue = fieldvalue.getStringValue(getMode(), getInstance(), instance);
+                            strValue = fieldvalue.getStringValue(getMode());
                         }
                     } else {
                         strValue = "";

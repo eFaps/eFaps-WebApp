@@ -94,7 +94,7 @@ public class UIFormCellCmd
                          final String _label)
         throws EFapsException
     {
-        super(_parent, new FieldValue(_field, null, null, null), _instance, null, null, null, _label, null);
+        super(_parent, new FieldValue(_field, null, null, null, null), _instance, null, null, null, _label, null);
         this.renderButton = _field.isRenderButton();
         this.append = _field.isAppend();
         this.targetField = _field.getTargetField();

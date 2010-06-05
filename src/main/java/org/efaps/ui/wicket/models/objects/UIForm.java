@@ -66,7 +66,8 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class UIForm extends UIAbstractPageObject
+public class UIForm
+    extends UIAbstractPageObject
 {
 
     /**
@@ -143,7 +144,8 @@ public class UIForm extends UIAbstractPageObject
      * @param _commandUUID UUID of the command
      * @param _instanceKey oid for this model
      */
-    public UIForm(final UUID _commandUUID, final String _instanceKey)
+    public UIForm(final UUID _commandUUID,
+                  final String _instanceKey)
     {
         this(_commandUUID, _instanceKey, null);
     }
@@ -155,7 +157,9 @@ public class UIForm extends UIAbstractPageObject
      * @param _instanceKey oid for this model
      * @param _openerId id of the opener
      */
-    public UIForm(final UUID _commandUUID, final String _instanceKey, final String _openerId)
+    public UIForm(final UUID _commandUUID,
+                  final String _instanceKey,
+                  final String _openerId)
     {
         super(_commandUUID, _instanceKey, _openerId);
         final AbstractCommand command = super.getCommand();
@@ -204,7 +208,8 @@ public class UIForm extends UIAbstractPageObject
      *
      * @throws EFapsException on error
      */
-    private void execute4Instance() throws EFapsException
+    private void execute4Instance()
+        throws EFapsException
     {
         int rowgroupcount = 1;
         int rowspan = 1;
@@ -315,8 +320,10 @@ public class UIForm extends UIAbstractPageObject
      * @throws EFapsException on error
      * @return true if the cell was actually added, else false
      */
-    private boolean addCell2FormRow(final FormRow _row, final PrintQuery _query, final Field _field)
-            throws EFapsException
+    private boolean addCell2FormRow(final FormRow _row,
+                                    final PrintQuery _query,
+                                    final Field _field)
+        throws EFapsException
     {
         boolean ret = true;
         Attribute attr = null;
@@ -352,8 +359,8 @@ public class UIForm extends UIAbstractPageObject
             } else if (_field.getPhrase() != null) {
                 value = _query.getPhrase(_field.getName());
             }
-            final FieldValue fieldvalue = new FieldValue(_field, attr, value, fieldInstance);
-            final String strValue = fieldvalue.getHiddenHtml(getMode(), getInstance(), null);
+            final FieldValue fieldvalue = new FieldValue(_field, attr, value, fieldInstance, getInstance());
+            final String strValue = fieldvalue.getHiddenHtml(getMode());
             addHidden(new UIHiddenCell(this, fieldvalue, null, strValue));
             ret = false;
         } else {
@@ -382,9 +389,13 @@ public class UIForm extends UIAbstractPageObject
      * @param _attr             attribute for the Field
      * @throws EFapsException on error
      */
-    private void evaluateField(final FormRow _row, final PrintQuery _query, final Field _field,
-                               final Instance _fieldInstance, final String _label, final Attribute _attr)
-            throws EFapsException
+    private void evaluateField(final FormRow _row,
+                               final PrintQuery _query,
+                               final Field _field,
+                               final Instance _fieldInstance,
+                               final String _label,
+                               final Attribute _attr)
+        throws EFapsException
     {
         Object value = null;
         if (_field.getAttribute() != null) {
@@ -395,16 +406,16 @@ public class UIForm extends UIAbstractPageObject
             value = _query.getPhrase(_field.getName());
         }
 
-        final FieldValue fieldvalue = new FieldValue(_field, _attr, value, _fieldInstance);
+        final FieldValue fieldvalue = new FieldValue(_field, _attr, value, _fieldInstance, getInstance());
 
         String strValue = null;
         if (isPrintMode()) {
-            strValue = fieldvalue.getStringValue(getMode(), getInstance(), null);
+            strValue = fieldvalue.getStringValue(getMode());
         } else {
             if (isEditMode() && _field.isEditableDisplay(getMode())) {
-                strValue = fieldvalue.getEditHtml(getMode(), getInstance(), null);
+                strValue = fieldvalue.getEditHtml(getMode());
             } else if (_field.isReadonlyDisplay(getMode())) {
-                strValue = fieldvalue.getReadOnlyHtml(getMode(), getInstance(), null);
+                strValue = fieldvalue.getReadOnlyHtml(getMode());
             }
         }
         if (strValue != null && !this.fileUpload) {
@@ -436,9 +447,12 @@ public class UIForm extends UIAbstractPageObject
      * @param _label            label for the FieldSet
      * @throws EFapsException on error
      */
-    private void evaluateFieldSet(final FormRow _row, final PrintQuery _query, final Field _field,
-                                  final Instance _fieldInstance, final String _label)
-            throws EFapsException
+    private void evaluateFieldSet(final FormRow _row,
+                                  final PrintQuery _query,
+                                  final Field _field,
+                                  final Instance _fieldInstance,
+                                  final String _label)
+        throws EFapsException
     {
         final AttributeSet set = AttributeSet.find(getInstance().getType().getName(), _field.getAttribute());
 
@@ -451,8 +465,8 @@ public class UIForm extends UIAbstractPageObject
         }
         int idy = 0;
         boolean add = true;
-        final UIFormCellSet cellset = new UIFormCellSet(this, new FieldValue(_field, null, "", getInstance()),
-                                                        _fieldInstance, "", "", _label, isEditMode());
+        final FieldValue fieldValue = new FieldValue(_field, null, "", _fieldInstance, getInstance());
+        final UIFormCellSet cellset = new UIFormCellSet(this, fieldValue, _fieldInstance, "", "", _label, isEditMode());
 
         final Iterator<Instance> iter = fieldins.iterator();
 
@@ -464,8 +478,8 @@ public class UIForm extends UIAbstractPageObject
             for (final String attrName : ((FieldSet) _field).getOrder()) {
                 final Attribute child = set.getAttribute(attrName);
                 if (isEditMode()) {
-                    final FieldValue fValue = new FieldValue(_field, child, "", getInstance());
-                    cellset.addDefiniton(idx, fValue.getEditHtml(getMode(), getInstance(), null));
+                    final FieldValue fValue = new FieldValue(_field, child, "", getInstance(), null);
+                    cellset.addDefiniton(idx, fValue.getEditHtml(getMode()));
                 }
                 if (tmp == null) {
                     add = false;
@@ -474,13 +488,13 @@ public class UIForm extends UIAbstractPageObject
                     if (idy < tmplist.size()) {
                         final Object value = tmplist.get(idy);
 
-                        final FieldValue fieldvalue = new FieldValue(_field, child, value, getInstance());
+                        final FieldValue fieldvalue = new FieldValue(_field, child, value, getInstance(), null);
 
                         String tmpStr = null;
                         if (_field.isEditableDisplay(getMode())) {
-                            tmpStr = fieldvalue.getEditHtml(getMode(), getInstance(), null);
+                            tmpStr = fieldvalue.getEditHtml(getMode());
                         } else if (_field.isReadonlyDisplay(getMode())) {
-                            tmpStr = fieldvalue.getReadOnlyHtml(getMode(), getInstance(), null);
+                            tmpStr = fieldvalue.getReadOnlyHtml(getMode());
                         }
                         cellset.add(idx, idy, tmpStr);
                     } else {
@@ -523,7 +537,8 @@ public class UIForm extends UIAbstractPageObject
      *
      * @throws EFapsException on error
      */
-    private void execute4InstanceOld() throws EFapsException
+    private void execute4InstanceOld()
+        throws EFapsException
     {
         int rowgroupcount = 1;
         int rowspan = 1;
@@ -615,8 +630,9 @@ public class UIForm extends UIAbstractPageObject
      * @param _instanceKeys mapo of instancekeys
      * @throws EFapsException o nerro
      */
-    private void addChildrenClassificationForms(final UIClassification _uiclass, final Map<UUID, String> _instanceKeys)
-            throws EFapsException
+    private void addChildrenClassificationForms(final UIClassification _uiclass,
+                                                final Map<UUID, String> _instanceKeys)
+        throws EFapsException
     {
         for (final UIClassification childClass : _uiclass.getChildren()) {
             if (_instanceKeys.containsKey(childClass.getClassificationUUID())) {
@@ -669,8 +685,10 @@ public class UIForm extends UIAbstractPageObject
      * @throws EFapsException on error
      * @return true if the cell was actually added, else false
      */
-    private boolean addCell2FormRowOld(final FormRow _row, final ListQuery _query, final Field _field)
-            throws EFapsException
+    private boolean addCell2FormRowOld(final FormRow _row,
+                                       final ListQuery _query,
+                                       final Field _field)
+        throws EFapsException
     {
         boolean ret = true;
         Attribute attr = null;
@@ -699,8 +717,8 @@ public class UIForm extends UIAbstractPageObject
             if (_field.getExpression() != null) {
                 value = _query.get(_field.getExpression());
             }
-            final FieldValue fieldvalue = new FieldValue(_field, attr, value, fieldInstance);
-            final String strValue = fieldvalue.getHiddenHtml(getMode(), getInstance(), null);
+            final FieldValue fieldvalue = new FieldValue(_field, attr, value, fieldInstance, getInstance());
+            final String strValue = fieldvalue.getHiddenHtml(getMode());
             addHidden(new UIHiddenCell(this, fieldvalue, null, strValue));
             ret = false;
         } else {
@@ -727,9 +745,12 @@ public class UIForm extends UIAbstractPageObject
      * @param _label        label for the FieldSet
      * @throws EFapsException on error
      */
-    private void evaluateFieldSetOld(final FormRow _row, final ListQuery _query, final Field _field,
-                                  final Instance _instance, final String _label)
-            throws EFapsException
+    private void evaluateFieldSetOld(final FormRow _row,
+                                     final ListQuery _query,
+                                     final Field _field,
+                                     final Instance _instance,
+                                     final String _label)
+        throws EFapsException
     {
 
         final AttributeSet set = AttributeSet.find(getInstance().getType().getName(), _field.getExpression());
@@ -743,7 +764,7 @@ public class UIForm extends UIAbstractPageObject
         }
         int idy = 0;
         boolean add = true;
-        final UIFormCellSet cellset = new UIFormCellSet(this, new FieldValue(_field, null, "", getInstance()),
+        final UIFormCellSet cellset = new UIFormCellSet(this, new FieldValue(_field, null, "", getInstance(), null),
                         _instance, "", "", _label, isEditMode());
 
         final Iterator<Instance> iter = fieldins.iterator();
@@ -756,8 +777,8 @@ public class UIForm extends UIAbstractPageObject
             for (final String attrName : ((FieldSet) _field).getOrder()) {
                 final Attribute child = set.getAttribute(attrName);
                 if (isEditMode()) {
-                    final FieldValue fValue = new FieldValue(_field, child, "", getInstance());
-                    cellset.addDefiniton(idx, fValue.getEditHtml(getMode(), getInstance(), null));
+                    final FieldValue fValue = new FieldValue(_field, child, "", getInstance(), null);
+                    cellset.addDefiniton(idx, fValue.getEditHtml(getMode()));
                 }
                 if (tmp == null) {
                     add = false;
@@ -766,13 +787,13 @@ public class UIForm extends UIAbstractPageObject
                     if (idy < tmplist.size()) {
                         final Object value = tmplist.get(idy);
 
-                        final FieldValue fieldvalue = new FieldValue(_field, child, value, getInstance());
+                        final FieldValue fieldvalue = new FieldValue(_field, child, value, getInstance(), null);
 
                         String tmpStr = null;
                         if (_field.isEditableDisplay(getMode())) {
-                            tmpStr = fieldvalue.getEditHtml(getMode(), getInstance(), null);
+                            tmpStr = fieldvalue.getEditHtml(getMode());
                         } else if (_field.isReadonlyDisplay(getMode())) {
-                            tmpStr = fieldvalue.getReadOnlyHtml(getMode(), getInstance(), null);
+                            tmpStr = fieldvalue.getReadOnlyHtml(getMode());
                         }
                         cellset.add(idx, idy, tmpStr);
                     } else {
@@ -801,24 +822,29 @@ public class UIForm extends UIAbstractPageObject
      * @param _attr attribute for the Field
      * @throws EFapsException on error
      */
-    private void evaluateFieldOld(final FormRow _row, final ListQuery _query, final Field _field,
-                    final Instance _fieldInstance, final String _label, final Attribute _attr) throws EFapsException
+    private void evaluateFieldOld(final FormRow _row,
+                                  final ListQuery _query,
+                                  final Field _field,
+                                  final Instance _fieldInstance,
+                                  final String _label,
+                                  final Attribute _attr)
+        throws EFapsException
     {
         Object value = null;
         if (_field.getExpression() != null) {
             value = _query.get(_field.getExpression());
         }
 
-        final FieldValue fieldvalue = new FieldValue(_field, _attr, value, _fieldInstance);
+        final FieldValue fieldvalue = new FieldValue(_field, _attr, value, _fieldInstance, getInstance());
 
         String strValue = null;
         if (isPrintMode()) {
-            strValue = fieldvalue.getStringValue(getMode(), getInstance(), null);
+            strValue = fieldvalue.getStringValue(getMode());
         } else {
             if (isEditMode() && _field.isEditableDisplay(getMode())) {
-                strValue = fieldvalue.getEditHtml(getMode(), getInstance(), null);
+                strValue = fieldvalue.getEditHtml(getMode());
             } else if (_field.isReadonlyDisplay(getMode())) {
-                strValue = fieldvalue.getReadOnlyHtml(getMode(), getInstance(), null);
+                strValue = fieldvalue.getReadOnlyHtml(getMode());
             }
         }
         if (strValue != null && !this.fileUpload) {
@@ -846,7 +872,8 @@ public class UIForm extends UIAbstractPageObject
      *
      * @throws EFapsException on error
      */
-    private void execute4NoInstance() throws EFapsException
+    private void execute4NoInstance()
+        throws EFapsException
     {
         int rowgroupcount = 1;
         FormRow row = new FormRow();
@@ -927,20 +954,20 @@ public class UIForm extends UIAbstractPageObject
                     final Instance fieldInstance = getInstance();
                     final FieldValue fieldvalue = new FieldValue(field, attr,
                                     super.isPartOfWizardCall() ? getValue4Wizard(field.getName()) : null,
-                                                    fieldInstance);
+                                                    fieldInstance, getInstance());
 
                     String strValue = null;
                     boolean hidden = false;
                     if (isPrintMode()) {
-                        strValue = fieldvalue.getStringValue(getMode(), getInstance(), null);
+                        strValue = fieldvalue.getStringValue(getMode());
                     } else {
                         if ((isCreateMode() || isSearchMode()) && field.isEditableDisplay(getMode())) {
-                            strValue = fieldvalue.getEditHtml(getMode(), getInstance(), null);
+                            strValue = fieldvalue.getEditHtml(getMode());
                         } else if (field.isHiddenDisplay(getMode())) {
-                            strValue = fieldvalue.getHiddenHtml(getMode(), getInstance(), null);
+                            strValue = fieldvalue.getHiddenHtml(getMode());
                             hidden = true;
                         } else {
-                            strValue = fieldvalue.getReadOnlyHtml(getMode(), getInstance(), null);
+                            strValue = fieldvalue.getReadOnlyHtml(getMode());
                         }
                     }
 
@@ -956,9 +983,8 @@ public class UIForm extends UIAbstractPageObject
                             for (final String attrName : ((FieldSet) field).getOrder()) {
                                 final Attribute child = set.getAttribute(attrName);
                                 if (isCreateMode()) {
-                                    final FieldValue fValue = new FieldValue(field, child, "", getInstance());
-                                    ((UIFormCellSet) cell).addDefiniton(idx, fValue.getEditHtml(getMode(),
-                                                    getInstance(), null));
+                                    final FieldValue fValue = new FieldValue(field, child, "", getInstance(), null);
+                                    ((UIFormCellSet) cell).addDefiniton(idx, fValue.getEditHtml(getMode()));
                                 }
                                 idx++;
                             }
@@ -1012,7 +1038,8 @@ public class UIForm extends UIAbstractPageObject
      * @param _parentClass the classification to be added
      * @throws EFapsException on error
      */
-    private void add2Elements4Create(final UIClassification _parentClass) throws EFapsException
+    private void add2Elements4Create(final UIClassification _parentClass)
+        throws EFapsException
     {
         if (_parentClass.isSelected()) {
             final UIFieldForm fieldform = new UIFieldForm(getCommandUUID(), _parentClass);
@@ -1201,7 +1228,8 @@ public class UIForm extends UIAbstractPageObject
     /**
      * Class represents a Element of Type Form used in a Form.
      */
-    public class FormElement implements IFormElement, IClusterable
+    public class FormElement
+        implements IFormElement, IClusterable
     {
         /**
          * Used for serialization.
@@ -1272,7 +1300,8 @@ public class UIForm extends UIAbstractPageObject
     /**
      * Class represent one Element in a UIForm.
      */
-    public class Element implements IClusterable
+    public class Element
+        implements IClusterable
     {
 
         /**
@@ -1296,7 +1325,8 @@ public class UIForm extends UIAbstractPageObject
          * @param _type ElementType of this Element
          * @param _formElement Model of this Element
          */
-        public Element(final ElementType _type, final IFormElement _formElement)
+        public Element(final ElementType _type,
+                       final IFormElement _formElement)
         {
             this.type = _type;
             this.element = _formElement;

@@ -365,7 +365,7 @@ public class UITable
         if (ret.size() < 1) {
             throw new EFapsException(UITable.class, "getInstanceList");
         } else {
-           lists = (List<Instance>) ret.get(0).get(ReturnValues.VALUES);
+            lists = (List<Instance>) ret.get(0).get(ReturnValues.VALUES);
         }
         return lists;
     }
@@ -533,21 +533,21 @@ public class UITable
                         value = _query.getPhrase(field.getName());
                     }
 
-                    final FieldValue fieldvalue = new FieldValue(field, attr, value, instance);
+                    final FieldValue fieldvalue = new FieldValue(field, attr, value, instance, getInstance());
                     String htmlTitle = null;
                     boolean hidden = false;
                     if (isPrintMode()) {
-                        strValue = fieldvalue.getStringValue(getMode(), getInstance(), instance);
+                        strValue = fieldvalue.getStringValue(getMode());
                     } else {
                         if ((isCreateMode() || isEditMode()) && field.isEditableDisplay(getMode())) {
-                            strValue = fieldvalue.getEditHtml(getMode(), getInstance(), instance);
-                            htmlTitle = fieldvalue.getStringValue(getMode(), getInstance(), instance);
+                            strValue = fieldvalue.getEditHtml(getMode());
+                            htmlTitle = fieldvalue.getStringValue(getMode());
                         } else if (field.isHiddenDisplay(getMode())) {
-                            strValue = fieldvalue.getHiddenHtml(getMode(), getInstance(), instance);
+                            strValue = fieldvalue.getHiddenHtml(getMode());
                             hidden = true;
                         } else {
-                            strValue = fieldvalue.getReadOnlyHtml(getMode(), getInstance(), instance);
-                            htmlTitle = fieldvalue.getStringValue(getMode(), getInstance(), instance);
+                            strValue = fieldvalue.getReadOnlyHtml(getMode());
+                            htmlTitle = fieldvalue.getStringValue(getMode());
                         }
                     }
 
@@ -570,18 +570,18 @@ public class UITable
                     // isw stored, and can be used
                     // to create new rows
                     if (isEditMode() && first) {
-                        final FieldValue fldVal = new FieldValue(field, attr, null, null);
+                        final FieldValue fldVal = new FieldValue(field, attr, null, null, null);
                         final String cellvalue;
                         final String cellTitle;
                         if (field.isEditableDisplay(getMode())) {
-                            cellvalue = fldVal.getEditHtml(getMode(), null, null);
-                            cellTitle = fldVal.getStringValue(getMode(), null, null);
+                            cellvalue = fldVal.getEditHtml(getMode());
+                            cellTitle = fldVal.getStringValue(getMode());
                         } else if (field.isHiddenDisplay(getMode())) {
-                            cellvalue = fldVal.getHiddenHtml(getMode(), null, null);
+                            cellvalue = fldVal.getHiddenHtml(getMode());
                             cellTitle = "";
                         } else {
-                            cellvalue = fldVal.getReadOnlyHtml(getMode(), null, null);
-                            cellTitle = fldVal.getStringValue(getMode(), null, null);
+                            cellvalue = fldVal.getReadOnlyHtml(getMode());
+                            cellTitle = fldVal.getStringValue(getMode());
                         }
 
                         if (hidden) {
@@ -646,19 +646,19 @@ public class UITable
                 if (field.getAttribute() != null) {
                     attr = type.getAttribute(field.getAttribute());
                 }
-                final FieldValue fieldvalue = new FieldValue(field, attr, null, null);
+                final FieldValue fieldvalue = new FieldValue(field, attr, null, null, getInstance());
                 String htmlValue;
                 String htmlTitle = null;
                 boolean hidden = false;
                 if (isCreateMode() && field.isEditableDisplay(getMode())) {
-                    htmlValue = fieldvalue.getEditHtml(getMode(), getInstance(), null);
-                    htmlTitle = fieldvalue.getStringValue(getMode(), getInstance(), null);
+                    htmlValue = fieldvalue.getEditHtml(getMode());
+                    htmlTitle = fieldvalue.getStringValue(getMode());
                 } else if (field.isHiddenDisplay(getMode())) {
-                    htmlValue = fieldvalue.getHiddenHtml(getMode(), getInstance(), null);
+                    htmlValue = fieldvalue.getHiddenHtml(getMode());
                     hidden = true;
                 } else {
-                    htmlValue = fieldvalue.getReadOnlyHtml(getMode(), getInstance(), null);
-                    htmlTitle = fieldvalue.getStringValue(getMode(), getInstance(), null);
+                    htmlValue = fieldvalue.getReadOnlyHtml(getMode());
+                    htmlTitle = fieldvalue.getStringValue(getMode());
                 }
                 if (htmlValue == null) {
                     htmlValue = "";
@@ -812,21 +812,21 @@ public class UITable
                         instance = Instance.get((String) _query.get(field.getAlternateOID()));
                     }
 
-                    final FieldValue fieldvalue = new FieldValue(field, attr, value, instance);
+                    final FieldValue fieldvalue = new FieldValue(field, attr, value, instance, getInstance());
                     String htmlTitle = null;
                     boolean hidden = false;
                     if (isPrintMode()) {
-                        strValue = fieldvalue.getStringValue(getMode(), getInstance(), instance);
+                        strValue = fieldvalue.getStringValue(getMode());
                     } else {
                         if ((isCreateMode() || isEditMode()) && field.isEditableDisplay(getMode())) {
-                            strValue = fieldvalue.getEditHtml(getMode(), getInstance(), instance);
-                            htmlTitle = fieldvalue.getStringValue(getMode(), getInstance(), instance);
+                            strValue = fieldvalue.getEditHtml(getMode());
+                            htmlTitle = fieldvalue.getStringValue(getMode());
                         } else if (field.isHiddenDisplay(getMode())) {
-                            strValue = fieldvalue.getHiddenHtml(getMode(), getInstance(), instance);
+                            strValue = fieldvalue.getHiddenHtml(getMode());
                             hidden = true;
                         } else {
-                            strValue = fieldvalue.getReadOnlyHtml(getMode(), getInstance(), instance);
-                            htmlTitle = fieldvalue.getStringValue(getMode(), getInstance(), instance);
+                            strValue = fieldvalue.getReadOnlyHtml(getMode());
+                            htmlTitle = fieldvalue.getStringValue(getMode());
                         }
                     }
 
