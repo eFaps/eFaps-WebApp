@@ -523,13 +523,13 @@ public class UITable
                 if (field.hasAccess(getMode(), instance) && !field.isNoneDisplay(getMode())) {
                     Object value = null;
                     Attribute attr = null;
-                    if (field.getAttribute() != null) {
-                        value = _query.<Object> getAttribute(field.getAttribute());
-                        attr = _query.getAttribute4Attribute(field.getAttribute());
-                    } else if (field.getSelect() != null) {
+                    if (field.getSelect() != null) {
                         value = _query.<Object> getSelect(field.getSelect());
                         attr = _query.getAttribute4Select(field.getSelect());
-                    } else if (field.getPhrase() != null) {
+                    } else if (field.getAttribute() != null) {
+                        value = _query.<Object> getAttribute(field.getAttribute());
+                        attr = _query.getAttribute4Attribute(field.getAttribute());
+                    }  else if (field.getPhrase() != null) {
                         value = _query.getPhrase(field.getName());
                     }
 

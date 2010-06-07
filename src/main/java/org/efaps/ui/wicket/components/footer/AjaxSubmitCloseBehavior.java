@@ -79,7 +79,6 @@ import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.dialog.DialogPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.CacheReloadException;
 
 /**
  * Class renders the footer in a form. It is responsible for performing the
@@ -404,12 +403,12 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
      * @param _html     StringBuilder for the warning message
      * @param _uiform   UIForm to start the validation
      * @return true if validation was valid, else false
-     * @throws CacheReloadException on error
+     * @throws EFapsException on error
      */
     private boolean evalFormElement(final AjaxRequestTarget _target,
                                     final StringBuilder _html,
                                     final UIForm _uiform)
-        throws CacheReloadException
+        throws EFapsException
     {
         boolean ret = true;
         for (final Element element : _uiform.getElements()) {
