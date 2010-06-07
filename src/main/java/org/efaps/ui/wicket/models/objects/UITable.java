@@ -639,6 +639,7 @@ public class UITable
 
         for (final Field field : fields) {
             if (field.hasAccess(getMode(), getInstance()) && !field.isNoneDisplay(getMode())) {
+                attr = null;
                 // TODO to be removed!!
                 if (field.getExpression() != null) {
                     attr = type.getAttribute(field.getExpression());
