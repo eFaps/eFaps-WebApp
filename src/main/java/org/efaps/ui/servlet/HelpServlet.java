@@ -167,7 +167,7 @@ public class HelpServlet
                     final InstanceQuery query = queryBldr.getQuery();
                     query.execute();
                     if (query.next()) {
-                        final Checkout checkout = new Checkout(query.getCurrentInstance());
+                        final Checkout checkout = new Checkout(query.getCurrentValue());
                         checkout.preprocess();
                         if (checkout.getFileName() != null) {
                             final BufferedReader reader = new BufferedReader(new InputStreamReader(checkout.execute()));
