@@ -22,70 +22,80 @@ package org.efaps.ui.wicket.resources;
 
 import org.apache.wicket.Application;
 import org.apache.wicket.SharedResources;
-
-import org.efaps.admin.EFapsClassNames;
-import org.efaps.admin.datamodel.Type;
+import org.efaps.ci.CIAdminProgram;
 
 /**
  * The Resource for a XSL.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public class XSLResource extends AbstractEFapsResource {
-
-  private static final long serialVersionUID = 1L;
-
-  /**
-   * Constructor settingt the Name of the Type in the SuperClass
-   *
-   * @param _name
-   *                Name of the Resource
-   */
-  public XSLResource(final String _name) {
-    super(_name, Type.get(EFapsClassNames.ADMIN_PROGRAM_XSL).getName());
-  }
-
-  /**
-   * method to retrieve a XSLResource. It will check if it allready exist and
-   * return the existung one. If no Resource exists a new one will be created.
-   *
-   * @param _name
-   *                Name of the Resource
-   * @return the XSLResource related to the Name
-   */
-  public static XSLResource get(final String _name) {
-    final SharedResources sharedResources =
-        Application.get().getSharedResources();
-
-    XSLResource resource = (XSLResource) sharedResources.get(_name);
-
-    if (resource == null) {
-      resource = new XSLResource(_name);
-      sharedResources.add(_name, null, resource);
-    }
-    return resource;
-  }
-
-  @Override
-  protected AbstractEFapsResourceStream setNewResourceStream() {
-    return new XSLResourceStream();
-  }
-
-  /**
-   * Class for a ResourceStream for XSL
-   */
-  protected class XSLResourceStream extends AbstractEFapsResourceStream {
-
+public class XSLResource
+    extends AbstractEFapsResource
+{
+    /**
+     * Needed for serialization.
+     */
     private static final long serialVersionUID = 1L;
 
-    public XSLResourceStream() {
-      super();
+    /**
+     * Constructor settingt the Name of the Type in the SuperClass.
+     *
+     * @param _name Name of the Resource
+     */
+    public XSLResource(final String _name)
+    {
+        super(_name, CIAdminProgram.XSL.getType().getName());
     }
 
-    public String getContentType() {
-      return null;
+    /**
+     * method to retrieve a XSLResource. It will check if it allready exist and
+     * return the existung one. If no Resource exists a new one will be created.
+     *
+     * @param _name Name of the Resource
+     * @return the XSLResource related to the Name
+     */
+    public static XSLResource get(final String _name)
+    {
+        final SharedResources sharedResources =
+                        Application.get().getSharedResources();
+
+        XSLResource resource = (XSLResource) sharedResources.get(_name);
+
+        if (resource == null) {
+            resource = new XSLResource(_name);
+            sharedResources.add(_name, null, resource);
+        }
+        return resource;
     }
 
-  }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected AbstractEFapsResourceStream setNewResourceStream()
+    {
+        return new XSLResourceStream();
+    }
+
+    /**
+     * Class for a ResourceStream for XSL.
+     */
+    protected class XSLResourceStream
+        extends AbstractEFapsResourceStream
+    {
+        /**
+         * Needed for serialization.
+         */
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * {@inheritDoc}
+         */
+        public String getContentType()
+        {
+            return null;
+        }
+
+    }
 }

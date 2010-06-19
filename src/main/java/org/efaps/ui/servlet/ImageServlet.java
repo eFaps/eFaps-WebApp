@@ -20,7 +20,7 @@
 
 package org.efaps.ui.servlet;
 
-import static org.efaps.admin.EFapsClassNames.IMAGE;
+
 
 import java.io.IOException;
 import java.util.Map;
@@ -31,9 +31,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.efaps.admin.datamodel.Type;
+import org.efaps.ci.CIAdminUserInterface;
 import org.efaps.db.Checkout;
-import org.efaps.db.SearchQuery;
+import org.efaps.db.Instance;
+import org.efaps.db.MultiPrintQuery;
+import org.efaps.db.QueryBuilder;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.AutomaticCache;
 import org.efaps.util.cache.CacheObjectInterface;
@@ -99,7 +101,7 @@ public class ImageServlet
             final ImageMapper imageMapper = ImageServlet.CACHE.get(imgName);
 
             if (imageMapper != null) {
-                final Checkout checkout = new Checkout(imageMapper.oid);
+                final Checkout checkout = new Checkout(imageMapper.instance);
 
                 _res.setContentType(getServletContext().getMimeType(imageMapper.file));
                 _res.setContentLength((int) imageMapper.filelength);
@@ -159,11 +161,6 @@ public class ImageServlet
         private final String file;
 
         /**
-         * The instance variable stores the object id of the image.
-         */
-        private final String oid;
-
-        /**
          * Lenght of the image in long.
          */
         private final long filelength;
@@ -174,20 +171,25 @@ public class ImageServlet
         private final Long time;
 
         /**
-         * @param _name administrational name of the image
-         * @param _file file name of the image
-         * @param _oid object id of the image
-         * @param _filelength lenght of the file
+         * Instance of this image.
+         */
+        private final Instance instance;
+
+        /**
+         * @param _instance     Instance
+         * @param _name         administrational name of the image
+         * @param _file         file name of the image
+         * @param _filelength   lenght of the file
          * @param _time time
          */
-        private ImageMapper(final String _name,
+        private ImageMapper(final Instance _instance,
+                            final String _name,
                             final String _file,
-                            final String _oid,
                             final Long _filelength,
                             final Long _time)
         {
             this.name = _name;
-            this.oid = _oid;
+            this.instance = _instance;
             this.file = _file;
             this.filelength = _filelength;
             this.time = _time;
@@ -227,14 +229,15 @@ public class ImageServlet
         }
     }
 
+    /**
+     * Cache to store the images.
+     */
     private static class ImageCache
         extends AutomaticCache<ImageServlet.ImageMapper>
     {
 
-        /*
-         * (non-Javadoc)
-         * @see org.efaps.util.cache.Cache#readCache(java.util.Map,
-         * java.util.Map, java.util.Map)
+        /**
+         * {@inheritDoc}
          */
         @Override
         protected void readCache(final Map<Long, ImageServlet.ImageMapper> _cache4Id,
@@ -244,27 +247,23 @@ public class ImageServlet
         {
             try {
                 synchronized (ImageServlet.CACHE) {
-                    final SearchQuery query = new SearchQuery();
-                    query.setQueryTypes(Type.get(IMAGE.getUuid()).getName());
-                    query.addSelect("Name");
-                    query.addSelect("FileName");
-                    query.addSelect("OID");
-                    query.addSelect("FileLength");
-                    query.addSelect("Modified");
-                    query.executeWithoutAccessCheck();
-
-                    while (query.next()) {
-                        final String name = (String) query.get("Name");
-                        final String file = (String) query.get("FileName");
-                        final String oid = (String) query.get("OID");
-                        final Long filelength = (Long) query.get("FileLength");
-                        final DateTime time = (DateTime) query.get("Modified");
-                        final ImageMapper mapper = new ImageMapper(name, file, oid, filelength,
-                                        time.getMillis());
+                    final QueryBuilder queryBldr = new QueryBuilder(CIAdminUserInterface.Image);
+                    final MultiPrintQuery multi = queryBldr.getPrint();
+                    multi.addAttribute(CIAdminUserInterface.Image.Name,
+                                       CIAdminUserInterface.Image.FileName,
+                                       CIAdminUserInterface.Image.FileLength,
+                                       CIAdminUserInterface.Image.Modified);
+                    multi.executeWithoutAccessCheck();
+                    while (multi.next()) {
+                        final String name = multi.<String>getAttribute(CIAdminUserInterface.Image.Name);
+                        final String file =  multi.<String>getAttribute(CIAdminUserInterface.Image.FileName);
+                        final Long filelength = multi.<Long>getAttribute(CIAdminUserInterface.Image.FileLength);
+                        final DateTime time = multi.<DateTime>getAttribute(CIAdminUserInterface.Image.Modified);
+                        final ImageMapper mapper = new ImageMapper(multi.getCurrentInstance(),
+                                        name, file, filelength, time.getMillis());
 
                         _cache4Name.put(mapper.getName(), mapper);
                     }
-                    query.close();
                 }
             } catch (final EFapsException e) {
                 throw new CacheReloadException("could not initialise image servlet cache");

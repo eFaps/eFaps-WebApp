@@ -32,8 +32,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.efaps.admin.EFapsClassNames;
+import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.dbproperty.DBProperties;
+import org.efaps.ci.CIAdminProgram;
 import org.efaps.db.Checkout;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
@@ -84,7 +85,7 @@ public class HelpServlet
             final String end = path.substring(path.lastIndexOf("."), path.length());
             if (end.equalsIgnoreCase(".png") || end.equalsIgnoreCase(".jpg") || end.equalsIgnoreCase(".jpeg")
                             || end.equalsIgnoreCase(".gif")) {
-                final QueryBuilder queryBldr = new QueryBuilder(EFapsClassNames.ADMIN_PROGRAM_IMAGE.getUuid());
+                final QueryBuilder queryBldr = new QueryBuilder(CIAdminProgram.WikiImage);
                 queryBldr.addWhereAttrEqValue("Name", path);
                 final MultiPrintQuery multi = queryBldr.getPrint();
                 multi.addAttribute("FileLength");
@@ -161,8 +162,7 @@ public class HelpServlet
                     .append("splitter=\"false\"><div class=\"eFapsWikiPage\">");
 
                 for (final String wiki : wikis) {
-                    final QueryBuilder queryBldr =
-                        new QueryBuilder(EFapsClassNames.ADMIN_PROGRAM_WIKICOMPILED.getUuid());
+                    final QueryBuilder queryBldr = new QueryBuilder(CIAdminProgram.WikiCompiled);
                     queryBldr.addWhereAttrEqValue("Name", wiki);
                     final InstanceQuery query = queryBldr.getQuery();
                     query.execute();
@@ -199,7 +199,7 @@ public class HelpServlet
     {
         final StringBuilder ret = new StringBuilder();
         ret.append("<ul>");
-        final QueryBuilder queryBldr = new QueryBuilder(EFapsClassNames.ADMIN_HELP_MENU.getUuid());
+        final QueryBuilder queryBldr = new QueryBuilder(Type.get("Admin_Help_Menu"));
         // Admin_Help_MainMenu
         queryBldr.addWhereAttrEqValue("UUID", "dead549e-5cc6-49f9-9a79-8e33aa139f6d");
         final MultiPrintQuery multi = queryBldr.getPrint();
@@ -238,7 +238,7 @@ public class HelpServlet
     {
         final StringBuilder ret = new StringBuilder();
 
-        final QueryBuilder queryBldr = new QueryBuilder(EFapsClassNames.ADMIN_HELP_MENU2MENU.getUuid());
+        final QueryBuilder queryBldr = new QueryBuilder(Type.get("Admin_Help_Menu2Menu"));
         queryBldr.addWhereAttrEqValue("FromLink", _instance.getId());
         final MultiPrintQuery multi = queryBldr.getPrint();
         multi.addSelect("linkto[ToLink].attribute[Name]", "linkto[ToLink].oid");
