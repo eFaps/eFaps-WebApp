@@ -462,7 +462,11 @@ public class UITable
                     if (field.getFilterAttributes().contains(",")) {
                         attr = type.getAttribute(field.getFilterAttributes().split(",")[0]);
                     } else {
-                        attr = type.getAttribute(field.getFilterAttributes());
+                        if (field.getFilterAttributes().contains("/")) {
+                            attr = Attribute.get(field.getFilterAttributes());
+                        } else {
+                            attr = type.getAttribute(field.getFilterAttributes());
+                        }
                     }
                 }
                 final UITableHeader uiTableHeader = new UITableHeader(field, sortdirection, attr);
