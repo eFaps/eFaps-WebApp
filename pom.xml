@@ -33,7 +33,7 @@
     <packaging>jar</packaging>
     <groupId>org.efaps</groupId>
     <artifactId>efaps-webapp</artifactId>
-    <version>1.2.3-SNAPSHOT</version>
+    <version>1.2.3</version>
     <name>eFaps WebApp</name>
     <description>
         eFaps WebApp provides a web interface as the User Interface for eFaps
@@ -87,9 +87,9 @@
 
     <!-- SubVersion Repository -->
     <scm>
-        <connection>scm:svn:http://efaps.googlecode.com/svn/eFaps-WebApp/</connection>
-        <developerConnection>scm:svn:https://efaps.googlecode.com/svn/eFaps-WebApp/</developerConnection>
-        <url>http://efaps.googlecode.com/svn/eFaps-Kernel/</url>
+        <connection>scm:svn:http://efaps.googlecode.com/svn/eFaps-WebApp/tags/V1.2.3</connection>
+        <developerConnection>scm:svn:https://efaps.googlecode.com/svn/eFaps-WebApp/tags/V1.2.3</developerConnection>
+        <url>http://efaps.googlecode.com/svn/eFaps-Kernel/tags/V1.2.3</url>
     </scm>
 
     <!-- Distribution Repository -->
@@ -229,7 +229,7 @@
                     <minmemory>128m</minmemory>
                     <maxmemory>1g</maxmemory>
                     <level>private</level>
-                    <detectLinks/>
+                    <detectLinks />
                 </configuration>
             </plugin>
             <!-- source code -->
@@ -264,7 +264,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>findbugs-maven-plugin</artifactId>
-                <configuration/>
+                <configuration />
             </plugin>
         </plugins>
     </reporting>
@@ -368,7 +368,7 @@
         <dependency>
             <groupId>org.efaps</groupId>
             <artifactId>efaps-kernel</artifactId>
-            <version>1.2.3-SNAPSHOT</version>
+            <version>1.2.3</version>
         </dependency>
 
         <!-- to define a higher version (needed from another tool) -->
@@ -406,12 +406,6 @@
             <scope>compile</scope>
         </dependency>
 
-        <!-- xerces used for creating xml on the fly -->
-        <dependency>
-            <groupId>xerces</groupId>
-            <artifactId>xercesImpl</artifactId>
-            <version>2.9.1</version>
-        </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
