@@ -484,15 +484,16 @@ public class MenuTree extends AbstractTree
         protected void respond(final AjaxRequestTarget _target)
         {
             final DefaultMutableTreeNode node = MenuTree.this.instanceKey2Node.get(getInstanceKey());
-            final DefaultTreeModel treemodel = (DefaultTreeModel) getComponent().getDefaultModel().getObject();
-            final UIMenuItem model = (UIMenuItem) node.getUserObject();
-            final MenuTree tree = (MenuTree) getComponent();
-            if (getMode() == TargetMode.EDIT) {
-                model.requeryLabel();
-                treemodel.nodeChanged(node);
-                tree.updateTree(_target);
+            if (node != null) {
+                final DefaultTreeModel treemodel = (DefaultTreeModel) getComponent().getDefaultModel().getObject();
+                final UIMenuItem model = (UIMenuItem) node.getUserObject();
+                final MenuTree tree = (MenuTree) getComponent();
+                if (getMode() == TargetMode.EDIT) {
+                    model.requeryLabel();
+                    treemodel.nodeChanged(node);
+                    tree.updateTree(_target);
+                }
             }
-
         }
 
         /**
