@@ -42,12 +42,13 @@ import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 
 /**
- * TODO comment!
+ * Abstract class for all cell types in the UserInterface.
  *
  * @author The eFaps Team
  * @version $Id$
  */
-public abstract class UIAbstractCell extends AbstractInstanceObject
+public abstract class UIAbstractCell
+    extends AbstractInstanceObject
 {
     /**
      * Needed for serialization.
@@ -87,7 +88,8 @@ public abstract class UIAbstractCell extends AbstractInstanceObject
     /**
      * Variable storing the string representation of the value. of the field.
      */
-    private final String cellValue;
+    private String cellValue;
+
 
     /**
      * Variable storing the id of the attribute for the field.
@@ -105,7 +107,9 @@ public abstract class UIAbstractCell extends AbstractInstanceObject
      * @param _instanceKey  instance key
      * @param _cellvalue    value of the cell
      */
-    public UIAbstractCell(final AbstractUIObject _parent, final FieldValue _fieldValue, final String _instanceKey,
+    public UIAbstractCell(final AbstractUIObject _parent,
+                          final FieldValue _fieldValue,
+                          final String _instanceKey,
                           final String _cellvalue)
     {
         super(_instanceKey);
@@ -200,12 +204,24 @@ public abstract class UIAbstractCell extends AbstractInstanceObject
     }
 
     /**
+     * Setter method for instance variable {@link #cellValue}.
+     *
+     * @param _cellValue value for instance variable {@link #cellValue}
+     */
+
+    public void setCellValue(final String _cellValue)
+    {
+        this.cellValue = _cellValue;
+    }
+
+    /**
      * Method to get the Attribute used for this cell.
      *
      * @return Attribute if exists, else null
      * @throws CacheReloadException on error
      */
-    public Attribute getAttribute() throws CacheReloadException
+    public Attribute getAttribute()
+        throws CacheReloadException
     {
         return Attribute.get(this.attributeId);
     }
@@ -226,7 +242,8 @@ public abstract class UIAbstractCell extends AbstractInstanceObject
      * @throws EFapsException on error
      */
     @Override
-    public Instance getInstanceFromManager() throws EFapsException
+    public Instance getInstanceFromManager()
+        throws EFapsException
     {
         Instance ret = null;
         if (getParent() != null) {
@@ -253,11 +270,11 @@ public abstract class UIAbstractCell extends AbstractInstanceObject
     /**
      * Setter method for instance variable {@link #component}.
      *
-     * @param component value for instance variable {@link #component}
+     * @param _component value for instance variable {@link #component}
      */
 
-    public void setComponent(final WebMarkupContainer component)
+    public void setComponent(final WebMarkupContainer _component)
     {
-        this.component = component;
+        this.component = _component;
     }
 }

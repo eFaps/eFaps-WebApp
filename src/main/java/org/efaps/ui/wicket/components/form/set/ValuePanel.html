@@ -22,12 +22,13 @@
 -->
 <html xmlns:wicket>
   <wicket:panel>
-    <table class="eFapsFieldSet" wicket:id="eFpasSetValueTable">
+    <table class="eFapsFieldSet" wicket:id="setTable">
       <tr>
         <td wicket:id="removeTD">
           <a href="#" wicket:id="remove"><img wicket:id="removeIcon"/></a>
+          <input type="hidden" wicket:id="oid"></input>
         </td>
-        <span wicket:id="label"></span>
+        <td wicket:id="repeater"></td>
       </tr>
     </table>
   </wicket:panel>

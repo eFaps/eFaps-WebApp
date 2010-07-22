@@ -31,7 +31,7 @@ import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 
 /**
- * TODO comment.
+ * Responsable to hold the data for an AttributeSet.
  *
  * @author The eFaswp Team
  * @version $Id$
@@ -56,9 +56,10 @@ public class UIFormCellSet
     private int newCount = 0;
 
     /**
-     * Mapping of x-coordinate to y-coordinate 2 value.
+     * Mapping of y-coordinate to x-coordinate 2 value.
      */
-    private final Map<Integer, Map<Integer, String>> xy2value = new TreeMap<Integer, Map<Integer, String>>();
+    private final Map<Integer, Map<Integer, UIFormCell>> yx2value = new TreeMap<Integer, Map<Integer, UIFormCell>>();
+
 
     /**
      * Mapping of x-coordinate to a FormCell Object used as a definition.
@@ -117,16 +118,16 @@ public class UIFormCellSet
      * @param _yCoord   y-coordinate
      * @param _value    Value
      */
-    public void add(final int _xCoord,
-                    final int _yCoord,
-                    final String _value)
+    public void add(final int _yCoord,
+                    final int _xCoord,
+                    final UIFormCell _value)
     {
-        Map<Integer, String> xmap = this.xy2value.get(_xCoord);
+        Map<Integer, UIFormCell> xmap = this.yx2value.get(_yCoord);
         if (xmap == null) {
-            xmap = new TreeMap<Integer, String>();
-            this.xy2value.put(_xCoord, xmap);
+            xmap = new TreeMap<Integer, UIFormCell>();
+            this.yx2value.put(_yCoord, xmap);
         }
-        xmap.put(_yCoord, _value);
+        xmap.put(_xCoord, _value);
     }
 
     /**
@@ -134,7 +135,7 @@ public class UIFormCellSet
      */
     public int getYsize()
     {
-        final Map<Integer, String> xmap = this.xy2value.get(0);
+        final Map<Integer, UIFormCell> xmap = this.yx2value.get(0);
         int ret = 0;
         if (xmap != null) {
             ret = xmap.size();
@@ -147,7 +148,7 @@ public class UIFormCellSet
      */
     public int getXsize()
     {
-        return this.xy2value.size();
+        return this.yx2value.size();
     }
 
     /**
@@ -155,15 +156,25 @@ public class UIFormCellSet
      * @param _yCoord   y-coordinate
      * @return value
      */
-    public String getXYValue(final int _xCoord,
-                             final int _yCoord)
+    public UIFormCell getYXValue(final int _yCoord,
+                                 final int _xCoord)
     {
-        String ret = null;
-        final Map<Integer, String> xmap = this.xy2value.get(_xCoord);
-        if (xmap != null) {
-            ret = xmap.get(_yCoord);
+        UIFormCell ret = null;
+        final Map<Integer, UIFormCell> map = this.yx2value.get(_yCoord);
+        if (map != null) {
+            ret = map.get(_xCoord);
         }
         return ret;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #yx2value}.
+     *
+     * @return value of instance variable {@link #yx2value}
+     */
+    public Map<Integer, Map<Integer, UIFormCell>> getYX2value()
+    {
+        return this.yx2value;
     }
 
     /**

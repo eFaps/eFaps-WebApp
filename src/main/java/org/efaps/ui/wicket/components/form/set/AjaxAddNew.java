@@ -34,12 +34,12 @@ import org.apache.wicket.RequestCycle;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.behavior.IBehavior;
+import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.protocol.http.WebResponse;
 import org.efaps.ui.wicket.components.autocomplete.AutoCompleteField;
 import org.efaps.ui.wicket.components.autocomplete.AutoCompleteFieldBehavior;
 import org.efaps.ui.wicket.components.form.cell.ValueCellPanel;
-import org.efaps.ui.wicket.components.form.set.YPanel.YRepeater;
 import org.efaps.ui.wicket.models.cell.FormCellModel;
 import org.efaps.ui.wicket.models.cell.UIFormCell;
 import org.efaps.ui.wicket.models.cell.UIFormCellSet;
@@ -64,7 +64,7 @@ public class AjaxAddNew
     /**
      * Refreshing view this ajax link belongs to.
      */
-    private final YRepeater repeater;
+    private final RepeatingView repeater;
 
     /**
      * FormModel to be passed to the Component.
@@ -79,7 +79,7 @@ public class AjaxAddNew
      */
     public AjaxAddNew(final String _wicketId,
                       final IModel<UIFormCellSet> _model,
-                      final YRepeater _repeater,
+                      final RepeatingView _repeater,
                       final UIForm _formmodel)
     {
         super(_wicketId, _model);

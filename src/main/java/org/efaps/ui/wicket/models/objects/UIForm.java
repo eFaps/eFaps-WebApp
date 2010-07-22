@@ -463,13 +463,13 @@ public class UIForm
         if (tmp != null) {
             fieldins.addAll(_query.getInstances4Attribute(_field.getAttribute()));
         }
-        int idy = 0;
+
         boolean add = true;
         final FieldValue fieldValue = new FieldValue(_field, null, "", _fieldInstance, getInstance());
         final UIFormCellSet cellset = new UIFormCellSet(this, fieldValue, _fieldInstance, "", "", _label, isEditMode());
 
         final Iterator<Instance> iter = fieldins.iterator();
-
+        int idy = 0;
         while (add) {
             int idx = 0;
             if (iter.hasNext()) {
@@ -482,8 +482,7 @@ public class UIForm
                     final String fattrTypeName = child != null ? child.getAttributeType().getName() : null;
                     final UIFormCell fcell = new UIFormCell(this, fValue, fValue.getEditHtml(getMode()),
                                                                 null, null, fattrTypeName);
-
-                    cellset.addDefiniton(idx,fcell);
+                    cellset.addDefiniton(idx, fcell);
                 }
                 if (tmp == null) {
                     add = false;
@@ -491,16 +490,16 @@ public class UIForm
                     final List<?> tmplist = (List<?>) tmp.get(child.getName());
                     if (idy < tmplist.size()) {
                         final Object value = tmplist.get(idy);
-
                         final FieldValue fieldvalue = new FieldValue(_field, child, value, getInstance(), null);
-
                         String tmpStr = null;
                         if (_field.isEditableDisplay(getMode())) {
                             tmpStr = fieldvalue.getEditHtml(getMode());
                         } else if (_field.isReadonlyDisplay(getMode())) {
                             tmpStr = fieldvalue.getReadOnlyHtml(getMode());
                         }
-                        cellset.add(idx, idy, tmpStr);
+                        final String fattrTypeName = child != null ? child.getAttributeType().getName() : null;
+                        final UIFormCell fcell = new UIFormCell(this, fieldvalue, tmpStr, null, null, fattrTypeName);
+                        cellset.add(idy, idx, fcell);
                     } else {
                         add = false;
                     }
@@ -790,13 +789,12 @@ public class UIForm
 
                         final FieldValue fieldvalue = new FieldValue(_field, child, value, getInstance(), null);
 
-                        String tmpStr = null;
                         if (_field.isEditableDisplay(getMode())) {
-                            tmpStr = fieldvalue.getEditHtml(getMode());
+                            fieldvalue.getEditHtml(getMode());
                         } else if (_field.isReadonlyDisplay(getMode())) {
-                            tmpStr = fieldvalue.getReadOnlyHtml(getMode());
+                            fieldvalue.getReadOnlyHtml(getMode());
                         }
-                        cellset.add(idx, idy, tmpStr);
+                        //cellset.add(idx, idy, tmpStr);
                     } else {
                         add = false;
                     }

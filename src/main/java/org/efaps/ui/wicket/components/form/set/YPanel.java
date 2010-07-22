@@ -20,18 +20,22 @@
 
 package org.efaps.ui.wicket.components.form.set;
 
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
+import org.efaps.ui.wicket.models.cell.UIFormCell;
 import org.efaps.ui.wicket.models.cell.UIFormCellSet;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 
 /**
- * TODO comment.
+ * Class is responsible for rendering the y-coordinates for an AttributeSet.
  *
  * @author The eFasp Team
  * @version $Id$
@@ -73,11 +77,11 @@ public class YPanel
         final UIFormCellSet set = (UIFormCellSet) super.getDefaultModelObject();
         setOutputMarkupId(true);
 
-        final YRepeater view = new YRepeater("yRepeater", _model);
-        add(view);
+        final RepeatingView repeater = new RepeatingView("yRepeater", _model);
+        add(repeater);
         // only in edit mode we need visible components
         if (set.isEditMode()) {
-            final AjaxAddNew addNew = new AjaxAddNew("addNew", _model, view, _formmodel);
+            final AjaxAddNew addNew = new AjaxAddNew("addNew", _model, repeater, _formmodel);
             add(addNew);
             final StaticImageComponent image = new StaticImageComponent("add");
             image.setReference(YPanel.ICON_ADD);
@@ -86,28 +90,9 @@ public class YPanel
             final Component invisible = new WebMarkupContainer("addNew").setVisible(false);
             add(invisible);
         }
-    }
 
-    /**
-     * RepeatingView view containg the new lines.
-     */
-    public class YRepeater
-        extends RepeatingView
-    {
-
-        /**
-         * Needed for serialization.
-         */
-        private static final long serialVersionUID = 1L;
-
-        /**
-         * @param _wicketId wicket id for the component
-         * @param _model Model for the component
-         */
-        public YRepeater(final String _wicketId,
-                               final IModel<UIFormCellSet> _model)
-        {
-            super(_wicketId, _model);
+        for (final Entry<Integer, Map<Integer, UIFormCell>> entry : set.getYX2value().entrySet()) {
+            repeater.add(new ValuePanel(repeater.newChildId(), set, entry.getKey(), entry.getValue(), _formmodel));
         }
     }
 }
