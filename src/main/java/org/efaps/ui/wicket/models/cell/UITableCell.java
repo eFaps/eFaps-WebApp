@@ -80,7 +80,7 @@ public class UITableCell extends UIAbstractCell
     /**
      * Stores if the field has an esjp used for auto completion.
      */
-    private final boolean autoComplete;
+    private boolean autoComplete;
 
     /**
      * Stores if the field has an esjp used for the update of other fields.
@@ -267,6 +267,18 @@ public class UITableCell extends UIAbstractCell
     {
         return this.autoComplete;
     }
+
+    /**
+     * Setter method for instance variable {@link #autoComplete}.
+     *
+     * @param _autoComplete value for instance variable {@link #autoComplete}
+     */
+
+    public void setAutoComplete(final boolean _autoComplete)
+    {
+        this.autoComplete = _autoComplete;
+    }
+
 
     /**
      * Method to get the auto completion event.

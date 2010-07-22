@@ -479,7 +479,11 @@ public class UIForm
                 final Attribute child = set.getAttribute(attrName);
                 if (isEditMode()) {
                     final FieldValue fValue = new FieldValue(_field, child, "", getInstance(), null);
-                    cellset.addDefiniton(idx, fValue.getEditHtml(getMode()));
+                    final String fattrTypeName = child != null ? child.getAttributeType().getName() : null;
+                    final UIFormCell fcell = new UIFormCell(this, fValue, fValue.getEditHtml(getMode()),
+                                                                null, null, fattrTypeName);
+
+                    cellset.addDefiniton(idx,fcell);
                 }
                 if (tmp == null) {
                     add = false;
@@ -776,10 +780,7 @@ public class UIForm
             }
             for (final String attrName : ((FieldSet) _field).getOrder()) {
                 final Attribute child = set.getAttribute(attrName);
-                if (isEditMode()) {
-                    final FieldValue fValue = new FieldValue(_field, child, "", getInstance(), null);
-                    cellset.addDefiniton(idx, fValue.getEditHtml(getMode()));
-                }
+
                 if (tmp == null) {
                     add = false;
                 } else {
@@ -984,7 +985,11 @@ public class UIForm
                                 final Attribute child = set.getAttribute(attrName);
                                 if (isCreateMode()) {
                                     final FieldValue fValue = new FieldValue(field, child, "", getInstance(), null);
-                                    ((UIFormCellSet) cell).addDefiniton(idx, fValue.getEditHtml(getMode()));
+                                    final String fattrTypeName = child != null
+                                                                ? child.getAttributeType().getName() : null;
+                                    final UIFormCell fcell = new UIFormCell(this, fValue, fValue.getEditHtml(getMode()),
+                                                    null, null, fattrTypeName);
+                                    ((UIFormCellSet) cell).addDefiniton(idx, fcell);
                                 }
                                 idx++;
                             }

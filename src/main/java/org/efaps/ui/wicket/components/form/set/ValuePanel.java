@@ -55,7 +55,9 @@ public class ValuePanel extends Panel
      * @param _model     model for this component
      * @param _item     item
      */
-    public ValuePanel(final String _wicketId, final IModel<?> _model, final Item<XYValue> _item)
+    public ValuePanel(final String _wicketId,
+                      final IModel<?> _model,
+                      final Item<XYValue> _item)
     {
         super(_wicketId, _model);
         final XYValue xyValue = (XYValue) _item.getDefaultModelObject();

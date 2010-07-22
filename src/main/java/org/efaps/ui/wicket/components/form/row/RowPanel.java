@@ -26,7 +26,6 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
-
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.form.FormPanel;
 import org.efaps.ui.wicket.components.form.cell.ValueCellPanel;
@@ -95,7 +94,7 @@ public class RowPanel extends Panel
             }
             Panel valueCell;
             if (cell instanceof UIFormCellSet) {
-                valueCell = new YPanel(cellRepeater.newChildId(), new FormCellSetModel((UIFormCellSet) cell));
+                valueCell = new YPanel(cellRepeater.newChildId(), new FormCellSetModel((UIFormCellSet) cell), _formmodel);
             } else if (cell instanceof UIFormCellCmd) {
                 valueCell = new CommandCellPanel(cellRepeater.newChildId(), new FormCellCmdModel((UIFormCellCmd) cell),
                                 _formmodel, _form);

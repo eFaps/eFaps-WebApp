@@ -40,7 +40,8 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class UIFormCell extends UITableCell
+public class UIFormCell
+    extends UITableCell
 {
 
     /**
@@ -82,16 +83,20 @@ public class UIFormCell extends UITableCell
     /**
      * Constructor used on search and create.
      *
-     * @param _parent       parent ui object
-     * @param _fieldvalue   FieldValue of the Cell
-     * @param _cellValue    Value of the Cell
-     * @param _cellTitle    title for the cell, if null will be set to _cellvalue
-     * @param _label        Label for the Cell
+     * @param _parent parent ui object
+     * @param _fieldvalue FieldValue of the Cell
+     * @param _cellValue Value of the Cell
+     * @param _cellTitle title for the cell, if null will be set to _cellvalue
+     * @param _label Label for the Cell
      * @param _attrTypeName Name of the Type of Attribute
      * @throws EFapsException on error
      */
-    public UIFormCell(final AbstractUIObject _parent, final FieldValue _fieldvalue, final String _cellValue,
-                      final String _cellTitle, final String _label, final String _attrTypeName)
+    public UIFormCell(final AbstractUIObject _parent,
+                      final FieldValue _fieldvalue,
+                      final String _cellValue,
+                      final String _cellTitle,
+                      final String _label,
+                      final String _attrTypeName)
         throws EFapsException
     {
         this(_parent, _fieldvalue, _fieldvalue.getInstance(), _cellValue, _cellTitle, null, _label, _attrTypeName);
@@ -110,8 +115,13 @@ public class UIFormCell extends UITableCell
      * @param _attrTypeName Name of the Type of Attribute
      * @throws EFapsException on error
      */
-    public UIFormCell(final AbstractUIObject _parent, final FieldValue _fieldValue, final Instance _instance,
-                      final String _cellValue, final String _cellTitle, final String _icon, final String _label,
+    public UIFormCell(final AbstractUIObject _parent,
+                      final FieldValue _fieldValue,
+                      final Instance _instance,
+                      final String _cellValue,
+                      final String _cellTitle,
+                      final String _icon,
+                      final String _label,
                       final String _attrTypeName)
         throws EFapsException
     {

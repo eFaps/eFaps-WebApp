@@ -75,10 +75,6 @@ public class AutoCompleteField
      */
     private AjaxCmdBehavior cmdBehavior;
 
-    /**
-     * Must this row be selected. Used if this completefield is inside a table.
-     */
-    private final boolean selectRow;
 
     /**
      * Name of the field this AutoCompleteField belongs to.
@@ -106,7 +102,6 @@ public class AutoCompleteField
                              final boolean _selectRow)
     {
         super(_wicketId, new Model());
-        this.selectRow = _selectRow;
         this.model = _model;
         this.uiAbstractCell = ((UITableCell) _model.getObject());
         this.fieldName = this.uiAbstractCell.getName();
@@ -170,18 +165,7 @@ public class AutoCompleteField
     {
         _settings.setAdjustInputWidth(false);
         _settings.setUseSmartPositioning(true);
-        final AutoCompleteRenderer renderer = new AutoCompleteRenderer(this);
-
-        return new AutoCompleteBehavior<Map<String, String>>(renderer, _settings) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            protected Iterator<Map<String, String>> getChoices(final String _input)
-            {
-                return AutoCompleteField.this.getChoices(_input);
-            }
-        };
+        return new AutoCompleteFieldBehavior(this, new AutoCompleteRenderer(this), _settings);
     }
 
     /**
@@ -245,6 +229,16 @@ public class AutoCompleteField
     public void addCmdBehavior(final AjaxCmdBehavior _cmdBehavior)
     {
         this.cmdBehavior = _cmdBehavior;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #cmdBehavior}.
+     *
+     * @return value of instance variable {@link #cmdBehavior}
+     */
+    public AjaxCmdBehavior getCmdBehavior()
+    {
+        return this.cmdBehavior;
     }
 
 }

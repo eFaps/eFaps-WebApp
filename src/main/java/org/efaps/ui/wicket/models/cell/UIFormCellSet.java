@@ -22,77 +22,115 @@ package org.efaps.ui.wicket.models.cell;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
- * TODO comment
+ * TODO comment.
  *
- * @author jmox
+ * @author The eFaswp Team
  * @version $Id$
  */
-public class UIFormCellSet extends UIFormCell
+public class UIFormCellSet
+    extends UIFormCell
 {
 
+    /**
+     * Needed for serialization.
+     */
     private static final long serialVersionUID = 1L;
 
+    /**
+     * IS this UIFormCellSet inedit mode.
+     */
     private final boolean editMode;
 
+    /**
+     * index number for a new row.
+     */
     private int newCount = 0;
 
-    private final Map<Integer, Map<Integer, String>> xy2value = new HashMap<Integer, Map<Integer, String>>();
-
-    private final Map<Integer, String> x2definition = new HashMap<Integer, String>();
-
-    private final Map<Integer, Instance> y2Instance = new HashMap<Integer, Instance>();
+    /**
+     * Mapping of x-coordinate to y-coordinate 2 value.
+     */
+    private final Map<Integer, Map<Integer, String>> xy2value = new TreeMap<Integer, Map<Integer, String>>();
 
     /**
-     * @param _fieldValue
-     * @param _oid
-     * @param _value
-     * @param _icon
-     * @param _required
-     * @param _label
-     * @param _edit
-     * @throws EFapsException
+     * Mapping of x-coordinate to a FormCell Object used as a definition.
      */
-    public UIFormCellSet(final AbstractUIObject _parent, final FieldValue _fieldValue, final Instance _instance,
-                    final String _value, final String _icon, final String _label, final boolean _edit)
-                    throws EFapsException
+    private final Map<Integer, UIFormCell> x2definition = new TreeMap<Integer, UIFormCell>();
+
+
+    /**
+     * Mapping y-coordinate to an instance.
+     */
+    private final Map<Integer, Instance> y2Instance = new HashMap<Integer, Instance>();
+
+
+    /**
+     * @param _parent       parent object
+     * @param _fieldValue   FieldValue
+     * @param _instance     instance
+     * @param _value        value
+     * @param _icon         icon
+     * @param _label        Label
+     * @param _edit         edit mode or not
+     * @throws EFapsException   on error
+     */
+    public UIFormCellSet(final AbstractUIObject _parent,
+                         final FieldValue _fieldValue,
+                         final Instance _instance,
+                         final String _value,
+                         final String _icon,
+                         final String _label,
+                         final boolean _edit)
+        throws EFapsException
     {
         super(_parent, _fieldValue, _instance, _value, null, _icon, _label, "");
         this.editMode = _edit;
     }
 
+    /**
+     * @return new index number for the y-coordinate
+     */
     public int getNewCount()
     {
         return this.newCount++;
     }
 
+    /**
+     * @return is this edit mode
+     */
     public boolean isEditMode()
     {
         return this.editMode;
     }
 
+
     /**
-     * @param child
-     * @param _value
+     * @param _xCoord   x-coordinate
+     * @param _yCoord   y-coordinate
+     * @param _value    Value
      */
-    public void add(final int _x, final int _y, final String _value)
+    public void add(final int _xCoord,
+                    final int _yCoord,
+                    final String _value)
     {
-        Map<Integer, String> xmap = this.xy2value.get(_x);
+        Map<Integer, String> xmap = this.xy2value.get(_xCoord);
         if (xmap == null) {
-            xmap = new HashMap<Integer, String>();
-            this.xy2value.put(_x, xmap);
+            xmap = new TreeMap<Integer, String>();
+            this.xy2value.put(_xCoord, xmap);
         }
-        xmap.put(_y, _value);
+        xmap.put(_yCoord, _value);
     }
 
     /**
-     * @return
+     * @return size of y
      */
     public int getYsize()
     {
@@ -104,52 +142,84 @@ public class UIFormCellSet extends UIFormCell
         return ret;
     }
 
+    /**
+     * @return size of x
+     */
     public int getXsize()
     {
         return this.xy2value.size();
     }
 
     /**
-     * @param x
-     * @param _y
-     * @return
+     * @param _xCoord   x-coordinate
+     * @param _yCoord   y-coordinate
+     * @return value
      */
-    public String getXYValue(final int _x, final int _y)
+    public String getXYValue(final int _xCoord,
+                             final int _yCoord)
     {
         String ret = null;
-        final Map<Integer, String> xmap = this.xy2value.get(_x);
+        final Map<Integer, String> xmap = this.xy2value.get(_xCoord);
         if (xmap != null) {
-            ret = xmap.get(_y);
+            ret = xmap.get(_yCoord);
         }
         return ret;
     }
 
-    public void addDefiniton(final int _x, final String _definition)
+    /**
+     * Getter method for the instance variable {@link #x2definition}.
+     *
+     * @return value of instance variable {@link #x2definition}
+     */
+    public Map<Integer, UIFormCell> getX2definition()
     {
-        this.x2definition.put(_x, _definition);
-    }
-
-    public int getDefinitionsize()
-    {
-        return this.x2definition.size();
-    }
-
-    public String getDefinitionValue(final int _x)
-    {
-        return this.x2definition.get(_x);
+        return this.x2definition;
     }
 
     /**
-     * @param y
-     * @param next
+     * @param _xCoord       x-coordinate
+     * @param _uiFormCell   UIFormCell used as definition
+     * @throws CacheReloadException on error
      */
-    public void addInstance(final int _y, final Instance _instance)
+    public void addDefiniton(final int _xCoord,
+                             final UIFormCell _uiFormCell)
+        throws CacheReloadException
     {
-        this.y2Instance.put(_y, _instance);
+        if ("LinkWithRanges".equals(_uiFormCell.getTypeName())) {
+            _uiFormCell.setAutoComplete(false);
+        }
+        this.x2definition.put(_xCoord, _uiFormCell);
     }
 
-    public Instance getInstance(final int _y)
+    /**
+     *
+     * @param _xCoord  x-coordinate the definition is wanted fot
+     * @return  UIFormCell used as defintion
+     */
+    public UIFormCell getDefinition(final int _xCoord)
     {
-        return this.y2Instance.get(_y);
+        return this.x2definition.get(_xCoord);
+    }
+
+
+
+    /**
+     * Ad an instance to an y-coordinate.
+     * @param _yCoord       y-coordinate
+     * @param _instance     Instance
+     */
+    public void addInstance(final int _yCoord,
+                            final Instance _instance)
+    {
+        this.y2Instance.put(_yCoord, _instance);
+    }
+
+    /**
+     * @param _yCoord       y-coordinate
+     * @return Instance
+     */
+    public Instance getInstance(final int _yCoord)
+    {
+        return this.y2Instance.get(_yCoord);
     }
 }
