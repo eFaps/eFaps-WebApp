@@ -460,7 +460,11 @@ public class UITable
                 }
                 if (field.getFilterAttributes() != null) {
                     if (field.getFilterAttributes().contains(",")) {
-                        attr = type.getAttribute(field.getFilterAttributes().split(",")[0]);
+                        if (field.getFilterAttributes().contains("/")) {
+                            attr = Attribute.get(field.getFilterAttributes().split(",")[0]);
+                        } else {
+                            attr = type.getAttribute(field.getFilterAttributes().split(",")[0]);
+                        }
                     } else {
                         if (field.getFilterAttributes().contains("/")) {
                             attr = Attribute.get(field.getFilterAttributes());
