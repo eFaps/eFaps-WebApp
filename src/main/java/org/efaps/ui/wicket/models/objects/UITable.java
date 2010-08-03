@@ -403,6 +403,7 @@ public class UITable
                 if (isNewWay()) {
                     execute4Instance();
                 } else {
+                    UITable.LOG.error("invalid execute of instances for a table: " + getCallingCommand().toString());
                     execute4InstanceOld();
                 }
             }
@@ -876,11 +877,12 @@ public class UITable
             throw new EFapsException(this.getClass(), "execute4NoInstance.moreThanOneEvaluate");
         } else {
             final EventDefinition event = events.get(0);
+            //TODO remove expand
             if (event.getProperty("Expand") != null) {
                 final String tmp = event.getProperty("Expand");
                 typeName = tmp.substring(0, tmp.indexOf("\\"));
             } else if (event.getProperty("Types") != null) {
-                typeName = event.getProperty("Types");
+                typeName = event.getProperty("Types").split(";")[0];
             }
         }
         return Type.get(typeName);
