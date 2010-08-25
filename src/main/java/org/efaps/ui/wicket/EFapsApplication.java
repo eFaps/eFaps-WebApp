@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,8 @@ import org.efaps.ui.wicket.pages.main.MainPage;
  * @author Jan Moxter
  * @version $Id$
  */
-public class EFapsApplication extends WebApplication
+public class EFapsApplication
+    extends WebApplication
 {
 
     /**
@@ -58,7 +59,8 @@ public class EFapsApplication extends WebApplication
      *      org.apache.wicket.Response)
      */
     @Override
-    public RequestCycle newRequestCycle(final Request _request, final Response _response)
+    public RequestCycle newRequestCycle(final Request _request,
+                                        final Response _response)
     {
         return new EFapsWebRequestCycle(this, (WebRequest) _request, _response);
     }
@@ -101,7 +103,8 @@ public class EFapsApplication extends WebApplication
      * @return a new Session for the request
      */
     @Override
-    public Session newSession(final Request _request, final Response _response)
+    public Session newSession(final Request _request,
+                              final Response _response)
     {
         return new EFapsSession(_request);
 
@@ -111,7 +114,8 @@ public class EFapsApplication extends WebApplication
      * The Class presents the Strategy to authorize pages in this
      * WebApplication.
      */
-    private class EFapsFormBasedAuthorizationStartegy implements IAuthorizationStrategy
+    private class EFapsFormBasedAuthorizationStartegy
+        implements IAuthorizationStrategy
     {
 
         /**
@@ -125,7 +129,8 @@ public class EFapsApplication extends WebApplication
          * @param _action action to be checked
          * @return true
          */
-        public boolean isActionAuthorized(final Component _component, final Action _action)
+        public boolean isActionAuthorized(final Component _component,
+                                          final Action _action)
         {
             return true;
         }

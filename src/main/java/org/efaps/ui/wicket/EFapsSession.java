@@ -54,7 +54,8 @@ import org.slf4j.LoggerFactory;
  * @author The eFaps Team
  * @version $Id$
  */
-public class EFapsSession extends WebSession
+public class EFapsSession
+    extends WebSession
 {
     /**
      * This variable is used as the Key to the UserName stored in the
@@ -117,8 +118,14 @@ public class EFapsSession extends WebSession
      */
     private final Map<String, List<UpdateInterface>> updateBehaviors = new HashMap<String, List<UpdateInterface>>();
 
+    /**
+     * Behvaior used to show a file.
+     */
     private ShowFileCallBackBehavior fileCallBack;
 
+    /**
+     * File to be shown by the ShowFileCallBackBehavior.
+     */
     private File file;
 
     /**
@@ -139,7 +146,8 @@ public class EFapsSession extends WebSession
      * @param _oid Oid (used as key in the map)
      * @param _behavior (behavoir to be added)
      */
-    public void addUpdateBehaviors(final String _oid, final UpdateInterface _behavior)
+    public void addUpdateBehaviors(final String _oid,
+                                   final UpdateInterface _behavior)
     {
         List<UpdateInterface> behaviors;
 
@@ -188,7 +196,8 @@ public class EFapsSession extends WebSession
      * @param _component Component to be stored
      * @see #componentcache
      */
-    public void putIntoCache(final String _key, final Component _component)
+    public void putIntoCache(final String _key,
+                             final Component _component)
     {
         this.componentcache.remove(_key);
         this.componentcache.put(_key, _component);
@@ -311,7 +320,8 @@ public class EFapsSession extends WebSession
      * @param _passwd Password of the User to be checked in
      * @return true if LoginInformation was valid, else false
      */
-    private boolean checkLogin(final String _name, final String _passwd)
+    private boolean checkLogin(final String _name,
+                               final String _passwd)
     {
 
         boolean loginOk = false;
@@ -451,10 +461,13 @@ public class EFapsSession extends WebSession
         this.fileCallBack = _fileCallBack;
     }
 
-    public void setFile(final File _file) {
+    /**
+     * @param _file FIle to be used for the ShowFileCallBackBehavior
+     */
+    public void setFile(final File _file)
+    {
         this.file = _file;
     }
-
 
     /**
      * Getter method for instance variable {@link #file}.
@@ -465,7 +478,6 @@ public class EFapsSession extends WebSession
     {
         return this.file;
     }
-
 
     /**
      * This Class is used to pass the FileItems along with its Parameters to the

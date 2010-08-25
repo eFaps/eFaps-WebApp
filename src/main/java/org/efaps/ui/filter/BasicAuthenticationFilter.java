@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,98 +33,96 @@ import org.apache.commons.codec.binary.Base64;
 /**
  * The filter is used to make basic access authentication defined in RFC 2617.
  *
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
- * @todo description
+ *
  */
-public class BasicAuthenticationFilter extends AbstractAuthenticationFilter {
+public class BasicAuthenticationFilter
+    extends AbstractAuthenticationFilter
+{
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // static variables
+    /**
+     * The string is name of the parameter used to define the title.
+     *
+     * @see #init
+     */
+    private static final String INIT_PARAM_TITLE = "title";
 
-  /**
-   * The string is name of the parameter used to define the title.
-   *
-   * @see #init
-   */
-  final private static String INIT_PARAM_TITLE = "title";
+    /**
+     * Store the title which is shown in the realm dialog on the client side.
+     *
+     * @see #init
+     * @see #doFilter
+     */
+    private String title = "eFaps";
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // instance variables
-
-  /**
-   * Store the title which is shown in the realm dialog on the client side.
-   *
-   * @see #init
-   * @see #doFilter
-   */
-  private String              title            = "eFaps";
-
-  // ///////////////////////////////////////////////////////////////////////////
-  // instance methods
-
-  /**
-   *
-   * Called by the web container to indicate to a filter that it is being placed
-   * into service. The servlet container calls the init method exactly once
-   * after instantiating the filter. The init method must complete successfully
-   * before the filter is asked to do any filtering work.
-   *
-   * The web container cannot place the filter into service if the init method
-   * either 1.Throws a ServletException 2.Does not return within a time period
-   * defined by the web container
-   *
-   * @param _filterConfig
-   *          filter configuration instance
-   * @see #INIT_PARAM_TITLE
-   * @see #title
-   * @see #INIT_PARAM_APPLICATION
-   * @see #loginhandler
-   * @todo description
-   */
-  @Override
-  public void init(final FilterConfig _filterConfig) throws ServletException {
-    super.init(_filterConfig);
-    // sets the title
-    final String title = _filterConfig.getInitParameter(INIT_PARAM_TITLE);
-    if (title != null) {
-      this.title = title;
+    /**
+     *
+     * Called by the web container to indicate to a filter that it is being
+     * placed into service. The servlet container calls the init method exactly
+     * once after instantiating the filter. The init method must complete
+     * successfully before the filter is asked to do any filtering work.
+     *
+     * The web container cannot place the filter into service if the init method
+     * either 1.Throws a ServletException 2.Does not return within a time period
+     * defined by the web container
+     *
+     * @param _filterConfig filter configuration instance
+     * @see #INIT_PARAM_TITLE
+     * @see #title
+     * @see #INIT_PARAM_APPLICATION
+     * @see #loginhandler
+     * @throws ServletException on error
+     *
+     */
+    @Override
+    public void init(final FilterConfig _filterConfig)
+        throws ServletException
+    {
+        super.init(_filterConfig);
+        // sets the title
+        final String titleTmp = _filterConfig.getInitParameter(BasicAuthenticationFilter.INIT_PARAM_TITLE);
+        if (titleTmp != null) {
+            this.title = titleTmp;
+        }
     }
-  }
 
-  /**
-   * If the user does not make authentication, the header for basic
-   * authentication is sent to the client. After the client makes the
-   * authentication, the name and password is checked with method
-   * {@link AbstractAuthenticationFilter#checkLogin}.<br/> If the
-   * authentication fails, the header for basic authentication is sent again to
-   * the used, otherwise the nothing is filtered anymore.
-   *
-   */
-  @Override
-  protected void doAuthenticate(final HttpServletRequest _request,
-                                final HttpServletResponse _response,
-                                final FilterChain _chain) throws IOException,
-                                                         ServletException {
-    final String header = _request.getHeader("Authorization");
+    /**
+     * If the user does not make authentication, the header for basic
+     * authentication is sent to the client. After the client makes the
+     * authentication, the name and password is checked with method
+     * {@link AbstractAuthenticationFilter#checkLogin}.<br/>
+     * If the authentication fails, the header for basic authentication is sent
+     * again to the used, otherwise the nothing is filtered anymore.
+     * @param _request      HttpServletRequest
+     * @param _response     HttpServletResponse
+     * @param _chain        FilterChain
+     * @throws IOException on error
+     * @throws ServletException on error
+     */
+    @Override
+    protected void doAuthenticate(final HttpServletRequest _request,
+                                  final HttpServletResponse _response,
+                                  final FilterChain _chain)
+        throws IOException, ServletException
+    {
+        final String header = _request.getHeader("Authorization");
 
-    if (header == null) {
-      _response.setHeader("WWW-Authenticate", "Basic realm=\"" + this.title
-          + "\"");
-      _response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-    } else {
-      final String encoded = header.substring(header.indexOf(" ") + 1);
-      final String decoded = new String(Base64.decodeBase64(encoded.getBytes()));
-      final String name = decoded.substring(0, decoded.indexOf(":"));
-      final String passwd = decoded.substring(decoded.indexOf(":") + 1);
-      if (checkLogin(name, passwd)) {
-        setLoggedInUser(_request, name);
-        _chain.doFilter(_request, _response);
-      } else {
-        _response.setHeader("WWW-Authenticate", "Basic realm=\"" + this.title
-            + "\"");
-        _response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-      }
+        if (header == null) {
+            _response.setHeader("WWW-Authenticate", "Basic realm=\"" + this.title + "\"");
+            _response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        } else {
+            final String encoded = header.substring(header.indexOf(" ") + 1);
+            final String decoded = new String(Base64.decodeBase64(encoded.getBytes()));
+            final String name = decoded.substring(0, decoded.indexOf(":"));
+            final String passwd = decoded.substring(decoded.indexOf(":") + 1);
+            if (checkLogin(name, passwd)) {
+                setLoggedInUser(_request, name);
+                _chain.doFilter(_request, _response);
+            } else {
+                _response.setHeader("WWW-Authenticate", "Basic realm=\"" + this.title + "\"");
+                _response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            }
+        }
     }
-  }
 }

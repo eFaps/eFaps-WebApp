@@ -18,19 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.ui.wicket;
-
 /**
- * This interface is used to trigger the isInstantiationAuthorized Method in
- * {@link org.efaps.ui.wicket.EFapsApplication
- * .EFapsFormBasedAuthorizationStartegy}.
- * This has the effect that only a Page which implements this Interface, will
- * <b>not</b> be checked if a User is checked in and so can be accessed.
- *
- * @author Jan Moxter
- * @version $Id$
+ * Filters for the Webapp.
  */
-public interface EFapsNoAuthorizationNeededInterface
-{
-
-}
+package org.efaps.ui.filter;

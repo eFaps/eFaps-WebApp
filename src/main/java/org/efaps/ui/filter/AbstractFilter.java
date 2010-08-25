@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,9 @@
 package org.efaps.ui.filter;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -32,136 +35,176 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  */
-public abstract class AbstractFilter implements Filter {
+public abstract class AbstractFilter
+    implements Filter
+{
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // static variables
-  /**
-   * Name of the InitParameter variable for the login name.
-   */
-  private final static String SESSIONPARAM_LOGIN_NAME = "login.name";
+    /**
+     * Name of the InitParameter variable for the login name.
+     */
+    private static final String SESSIONPARAM_LOGIN_NAME = "login.name";
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // instance variables
-  /**
-   * Name of the session variable for the login name.
-   */
-  private String sessionParameterLoginName = "org.efaps.login.name";
+    /**
+     * Name of the InitParameter variable for the login roles.
+     */
+    private static final String INITPARAM_LOGIN_ROLES = "login.roles";
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // instance methods
+    /**
+     * Name of the session variable for the login name.
+     */
+    private String sessionParameterLoginName = "org.efaps.login.name";
 
-  /**
-   * Called by the web container to indicate to a filter that it is being placed
-   * into service. The servlet container calls the init method exactly once
-   * after instantiating the filter. The init method must complete successfully
-   * before the filter is asked to do any filtering work. The web container
-   * cannot place the filter into service if the init method either 1.Throws a
-   * ServletException 2.Does not return within a time period defined by the web
-   * container // sets the login handler
-   *
-   * @param _filterConfig
-   *                filter configuration instance
-   * @see #INIT_PARAM_TITLE
-   * @see #title
-   * @see #INIT_PARAM_APPLICATION
-   * @see #loginhandler
-   * @todo description
-   */
-  public void init(final FilterConfig _filterConfig) throws ServletException {
-    final String loginName = _filterConfig.getInitParameter(SESSIONPARAM_LOGIN_NAME);
-    if (loginName != null) {
-      this.sessionParameterLoginName = loginName;
+    /**
+     * Set of login roles that is allowed for the application instance
+     * related to this filter.
+     */
+    private Set<String> loginRoles;
+
+    /**
+     * Called by the web container to indicate to a filter that it is being
+     * placed into service. The servlet container calls the init method exactly
+     * once after instantiating the filter. The init method must complete
+     * successfully before the filter is asked to do any filtering work. The web
+     * container cannot place the filter into service if the init method either
+     * 1.Throws a ServletException 2.Does not return within a time period
+     * defined by the web container // sets the login handler
+     *
+     * @param _filterConfig filter configuration instance
+     * @see #INIT_PARAM_TITLE
+     * @see #title
+     * @see #INIT_PARAM_APPLICATION
+     * @see #loginhandler
+     * @throws ServletException on error
+     */
+    public void init(final FilterConfig _filterConfig)
+        throws ServletException
+    {
+        final String loginName = _filterConfig.getInitParameter(AbstractFilter.SESSIONPARAM_LOGIN_NAME);
+        final String loginRolesTmp = _filterConfig.getInitParameter(AbstractFilter.INITPARAM_LOGIN_ROLES);
+        if (loginName != null) {
+            this.sessionParameterLoginName = loginName;
+        }
+        final Set<String> temp = new HashSet<String>();
+        if (loginRolesTmp != null) {
+            final String[] loginRolesAr = loginRolesTmp.split(",");
+            for (final String loginRole : loginRolesAr) {
+                temp.add(loginRole);
+            }
+        }
+        this.loginRoles = Collections.unmodifiableSet(temp);
     }
-  }
 
-  /**
-   * Destroys the filter. Is an empty method in this implementation which could
-   * be overwritten by derived classes.<br/> The method is called by the web
-   * container to indicate to a filter that it is being taken out of service.
-   * This method is only called once all threads within the filter's doFilter
-   * method have exited or after a timeout period has passed. After the web
-   * container calls this method, it will not call the doFilter method again on
-   * this instance of the filter.<br/> This method gives the filter an
-   * opportunity to clean up any resources that are being held (for example,
-   * memory, file handles, threads) and make sure that any persistent state is
-   * synchronized with the filter's current state in memory.
-   */
-  public void destroy() {
-  }
-
-  /**
-   * First the filtes tests, if the http(s) protokoll is used. If the request is
-   * not implementing the {@link HttpServletRequest} and the response is not
-   * implementing the {@link HttpServletResponse} interface, a
-   * {@link ServletException} is thrown.<br/>
-   *
-   * @throws ServletException
-   *                 if the request and response does not use the http(s)
-   *                 protokoll
-   * @see HttpServletRequest
-   * @see HttpServletResponse
-   * @see #checkLogin
-   */
-  public void doFilter(final ServletRequest _request,
-                       final ServletResponse _response, final FilterChain _chain)
-                                                                                 throws IOException,
-                                                                                 ServletException {
-
-    if ((_request instanceof HttpServletRequest)
-        && (_response instanceof HttpServletResponse)) {
-
-      doFilter((HttpServletRequest) _request, (HttpServletResponse) _response,
-          _chain);
-    } else {
-      throw new ServletException("request not allowed");
+    /**
+     * Destroys the filter. Is an empty method in this implementation which
+     * could be overwritten by derived classes.<br/>
+     * The method is called by the web container to indicate to a filter that it
+     * is being taken out of service. This method is only called once all
+     * threads within the filter's doFilter method have exited or after a
+     * timeout period has passed. After the web container calls this method, it
+     * will not call the doFilter method again on this instance of the filter.<br/>
+     * This method gives the filter an opportunity to clean up any resources
+     * that are being held (for example, memory, file handles, threads) and make
+     * sure that any persistent state is synchronized with the filter's current
+     * state in memory.
+     */
+    public void destroy()
+    {
     }
-  }
 
-  abstract protected void doFilter(final HttpServletRequest _request,
-                                   final HttpServletResponse _response,
-                                   final FilterChain _chain)
-                                                            throws IOException,
-                                                            ServletException;
+    /**
+     * First the filtes tests, if the http(s) protokoll is used. If the request
+     * is not implementing the {@link HttpServletRequest} and the response is
+     * not implementing the {@link HttpServletResponse} interface, a
+     * {@link ServletException} is thrown.<br/>
+     *
+     * @param _request  ServletRequest
+     * @param _response ServletResponse
+     * @param _chain    FilterChain
+     * @throws ServletException if the request and response does not use the
+     *             http(s) protokoll
+     * @see HttpServletRequest
+     * @see HttpServletResponse
+     * @see #checkLogin
+     * @throws IOException on error
+     */
+    public void doFilter(final ServletRequest _request,
+                         final ServletResponse _response,
+                         final FilterChain _chain)
+        throws IOException, ServletException
+    {
 
-  /**
-   * Check, if the session variable {@link #sessionParameterLoginName} is set.
-   * If not, user is not logged in. Normally then a redirect to login page is
-   * made with method {@link #doRedirect2Login}.
-   *
-   * @param _request
-   *                http servlet request variable
-   * @return <i>true</i> if user logged in, otherwise <i>false</i>
-   */
-  protected boolean isLoggedIn(final HttpServletRequest _request) {
-    return getLoggedInUser(_request) != null ? true : false;
-  }
+        if ((_request instanceof HttpServletRequest)
+                        && (_response instanceof HttpServletResponse)) {
 
-  /**
-   * Stores the logged in user name in a session attribute of the http servlet
-   * request. If the new user name is <code>null</code>, the session
-   * attribute is removed.
-   *
-   * @param _request
-   *                http servlet request
-   * @param _userName
-   *                name of logged in user to set (or null if not defined)
-   */
-  protected void setLoggedInUser(final HttpServletRequest _request,
-                                 final String _userName) {
-    if (_userName == null) {
-      _request.getSession(true).removeAttribute(this.sessionParameterLoginName);
-    } else {
-      _request.getSession(true).setAttribute(this.sessionParameterLoginName,
-          _userName);
+            doFilter((HttpServletRequest) _request, (HttpServletResponse) _response, _chain);
+        } else {
+            throw new ServletException("request not allowed");
+        }
     }
-  }
 
-  protected String getLoggedInUser(final HttpServletRequest _request) {
-    return (String) _request.getSession(true).getAttribute(
-        this.sessionParameterLoginName);
-  }
+    /**
+     * Getter method for the instance variable {@link #loginRoles}.
+     *
+     * @return value of instance variable {@link #loginRoles}
+     */
+    public final Set<String> getLoginRoles()
+    {
+        return this.loginRoles;
+    }
+
+    /**
+     * @param _request  ServletRequest
+     * @param _response ServletResponse
+     * @param _chain    FilterChain
+     * @throws IOException  on error
+     * @throws ServletException on error
+     */
+    protected abstract void doFilter(final HttpServletRequest _request,
+                                     final HttpServletResponse _response,
+                                     final FilterChain _chain)
+        throws IOException, ServletException;
+
+    /**
+     * Check, if the session variable {@link #sessionParameterLoginName} is set.
+     * If not, user is not logged in. Normally then a redirect to login page is
+     * made with method {@link #doRedirect2Login}.
+     *
+     * @param _request http servlet request variable
+     * @return <i>true</i> if user logged in, otherwise <i>false</i>
+     */
+    protected boolean isLoggedIn(final HttpServletRequest _request)
+    {
+        return getLoggedInUser(_request) != null ? true : false;
+    }
+
+    /**
+     * Stores the logged in user name in a session attribute of the http servlet
+     * request. If the new user name is <code>null</code>, the session attribute
+     * is removed.
+     *
+     * @param _request http servlet request
+     * @param _userName name of logged in user to set (or null if not defined)
+     */
+    protected void setLoggedInUser(final HttpServletRequest _request,
+                                   final String _userName)
+    {
+        if (_userName == null) {
+            _request.getSession(true).removeAttribute(this.sessionParameterLoginName);
+        } else {
+            _request.getSession(true).setAttribute(this.sessionParameterLoginName,
+                            _userName);
+        }
+    }
+
+    /**
+     * @param _request HttpServletRequest
+     * @return nmae of the logged in user
+     */
+    protected String getLoggedInUser(final HttpServletRequest _request)
+    {
+        return (String) _request.getSession(true).getAttribute(this.sessionParameterLoginName);
+    }
 }

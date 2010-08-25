@@ -43,7 +43,8 @@ import org.slf4j.LoggerFactory;
  * @author The eFaps Team
  * @version $Id$
  */
-public class TransactionFilter extends AbstractFilter
+public class TransactionFilter
+    extends AbstractFilter
 {
     /**
      * Name of the session variable for the login forward (after the login is
@@ -94,7 +95,8 @@ public class TransactionFilter extends AbstractFilter
      * @throws ServletException on error
      */
     @Override
-    public void init(final FilterConfig _filterConfig) throws ServletException
+    public void init(final FilterConfig _filterConfig)
+        throws ServletException
     {
         super.init(_filterConfig);
         final String root = "/" + _filterConfig.getServletContext().getServletContextName() + "/";
@@ -120,7 +122,8 @@ public class TransactionFilter extends AbstractFilter
      */
     @SuppressWarnings("unchecked")
     @Override
-    protected void doFilter(final HttpServletRequest _request, final HttpServletResponse _response,
+    protected void doFilter(final HttpServletRequest _request,
+                            final HttpServletResponse _response,
                             final FilterChain _chain)
         throws IOException, ServletException
     {

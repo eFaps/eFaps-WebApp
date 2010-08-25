@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,11 +33,10 @@ import org.apache.wicket.protocol.http.WebRequest;
 import org.apache.wicket.protocol.http.WebRequestCycle;
 import org.apache.wicket.protocol.http.request.InvalidUrlException;
 import org.apache.wicket.session.ISessionStore;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.pages.login.LoginPage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class extends the
@@ -47,7 +46,8 @@ import org.efaps.ui.wicket.pages.login.LoginPage;
  * @author The eFaps Team
  * @version $Id$
  */
-public class EFapsWebRequestCycle extends WebRequestCycle
+public class EFapsWebRequestCycle
+    extends WebRequestCycle
 {
 
     /**
@@ -67,7 +67,9 @@ public class EFapsWebRequestCycle extends WebRequestCycle
      * @param _request the WebRequest to be used for this RequestCycle
      * @param _response the Response to be used for this RequestCycle
      */
-    public EFapsWebRequestCycle(final WebApplication _application, final WebRequest _request, final Response _response)
+    public EFapsWebRequestCycle(final WebApplication _application,
+                                final WebRequest _request,
+                                final Response _response)
     {
         super(_application, _request, _response);
     }
@@ -124,7 +126,8 @@ public class EFapsWebRequestCycle extends WebRequestCycle
      * @return Page
      */
     @Override
-    public Page onRuntimeException(final Page _page, final RuntimeException _exception)
+    public Page onRuntimeException(final Page _page,
+                                   final RuntimeException _exception)
     {
         final Page ret;
         if (_exception instanceof AuthorizationException) {
@@ -165,7 +168,8 @@ public class EFapsWebRequestCycle extends WebRequestCycle
      * @param _object Object to be stored
      * @see #componentcache
      */
-    public void putIntoCache(final String _key, final Object _object)
+    public void putIntoCache(final String _key,
+                             final Object _object)
     {
         this.cache.put(_key, _object);
     }

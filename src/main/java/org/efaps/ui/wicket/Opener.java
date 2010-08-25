@@ -34,19 +34,21 @@ import org.apache.wicket.model.IModel;
  * an UUID must be passed as parameters from the Browser and therefore could
  * be altered.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
 public class Opener implements Serializable
 {
     /**
-     * Needed for serialization.
-     */
-    private static final long serialVersionUID = 1L;
-    /**
      * Key used to pass the id as parameter inside the session of a page.
      */
     public static final String OPENER_PARAKEY = "openerId";
+
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
+
     /**
      * Id of this opener. It is generated as a random number in the constructor.
      */
