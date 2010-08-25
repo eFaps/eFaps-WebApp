@@ -21,7 +21,6 @@
 package org.efaps.ui.filter;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -34,6 +33,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.efaps.jaas.AppAccessHandler;
+
 /**
  * @author The eFaps Team
  * @version $Id$
@@ -41,6 +42,10 @@ import javax.servlet.http.HttpServletResponse;
 public abstract class AbstractFilter
     implements Filter
 {
+    /**
+     * Name of the InitParameter variable for the login roles.
+     */
+    public static final String INITPARAM_LOGIN_ROLES = "login.roles";
 
     /**
      * Name of the InitParameter variable for the login name.
@@ -48,20 +53,10 @@ public abstract class AbstractFilter
     private static final String SESSIONPARAM_LOGIN_NAME = "login.name";
 
     /**
-     * Name of the InitParameter variable for the login roles.
-     */
-    private static final String INITPARAM_LOGIN_ROLES = "login.roles";
-
-    /**
      * Name of the session variable for the login name.
      */
     private String sessionParameterLoginName = "org.efaps.login.name";
 
-    /**
-     * Set of login roles that is allowed for the application instance
-     * related to this filter.
-     */
-    private Set<String> loginRoles;
 
     /**
      * Called by the web container to indicate to a filter that it is being
@@ -94,7 +89,7 @@ public abstract class AbstractFilter
                 temp.add(loginRole);
             }
         }
-        this.loginRoles = Collections.unmodifiableSet(temp);
+        AppAccessHandler.init(temp);
     }
 
     /**
@@ -143,16 +138,6 @@ public abstract class AbstractFilter
         } else {
             throw new ServletException("request not allowed");
         }
-    }
-
-    /**
-     * Getter method for the instance variable {@link #loginRoles}.
-     *
-     * @return value of instance variable {@link #loginRoles}
-     */
-    public final Set<String> getLoginRoles()
-    {
-        return this.loginRoles;
     }
 
     /**

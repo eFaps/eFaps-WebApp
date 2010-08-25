@@ -20,6 +20,9 @@
 
 package org.efaps.ui.wicket;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.Request;
 import org.apache.wicket.RequestCycle;
@@ -32,6 +35,8 @@ import org.apache.wicket.javascript.DefaultJavascriptCompressor;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.WebRequest;
+import org.efaps.jaas.AppAccessHandler;
+import org.efaps.ui.filter.AbstractFilter;
 import org.efaps.ui.wicket.pages.login.LoginPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
 
@@ -46,7 +51,6 @@ import org.efaps.ui.wicket.pages.main.MainPage;
 public class EFapsApplication
     extends WebApplication
 {
-
     /**
      * New request cycle.
      *
@@ -81,6 +85,16 @@ public class EFapsApplication
     @Override
     protected void init()
     {
+        final String loginRolesTmp =  getInitParameter(AbstractFilter.INITPARAM_LOGIN_ROLES);
+        final Set<String> temp = new HashSet<String>();
+        if (loginRolesTmp != null) {
+            final String[] loginRolesAr = loginRolesTmp.split(",");
+            for (final String loginRole : loginRolesAr) {
+                temp.add(loginRole);
+            }
+        }
+        AppAccessHandler.init(temp);
+
         super.init();
         getMarkupSettings().setStripWicketTags(true);
         getMarkupSettings().setStripComments(true);

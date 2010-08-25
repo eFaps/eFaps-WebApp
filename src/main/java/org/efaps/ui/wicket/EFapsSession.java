@@ -336,7 +336,8 @@ public class EFapsSession
             boolean ok = false;
 
             try {
-                final LoginHandler loginHandler = new LoginHandler(super.getApplication().getApplicationKey());
+                final EFapsApplication app = (EFapsApplication) getApplication();
+                final LoginHandler loginHandler = new LoginHandler(app.getApplicationKey());
                 if (loginHandler.checkLogin(_name, _passwd) != null) {
                     loginOk = true;
 

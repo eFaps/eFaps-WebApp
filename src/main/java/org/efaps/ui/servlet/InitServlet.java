@@ -26,13 +26,17 @@ import javax.servlet.http.HttpServlet;
 
 import org.efaps.admin.runlevel.RunLevel;
 import org.efaps.db.Context;
+import org.efaps.util.EFapsException;
 import org.efaps.util.RequestHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
+ * Init the webapp.
  * @author The eFaps Team
  * @version $Id$
  */
-public class RequestHandlerInitServlet
+public class InitServlet
     extends HttpServlet
 {
     /**
@@ -40,9 +44,15 @@ public class RequestHandlerInitServlet
      */
     private static final long serialVersionUID = 7212518317632161066L;
 
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(InitServlet.class);
+
 
     /**
      * @param _config ServletConfig
+     * @throws ServletException on error
      */
     @Override
     public void init(final ServletConfig _config)
@@ -54,17 +64,23 @@ public class RequestHandlerInitServlet
                         + _config.getServletContext().getServletContextName()
                         + "/");
 
-        try {
-            Context.begin();
+     // the runlevel should only be loaded once from a filter during the init phase, as long as is is the same one
+        if (!"webapp".equals(RunLevel.getName4Current())) {
             try {
+                Context.begin();
                 RunLevel.init("webapp");
                 RunLevel.execute();
-            } catch (final Throwable e) {
-                e.printStackTrace();
+            } catch (final EFapsException e) {
+                InitServlet.LOG.error("Error during execution of runlevel", e);
+                throw new ServletException(e);
+            } finally {
+                try {
+                    Context.rollback();
+                } catch (final EFapsException e) {
+                    InitServlet.LOG.error("Error during rollback of context after load of runlevel", e);
+                    throw new ServletException(e);
+                }
             }
-            Context.rollback();
-        } catch (final Exception e) {
-            e.printStackTrace();
         }
     }
 }
