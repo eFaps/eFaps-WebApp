@@ -36,7 +36,7 @@ import org.efaps.admin.ui.AbstractMenu;
 import org.efaps.admin.ui.Image;
 import org.efaps.beans.ValueList;
 import org.efaps.beans.valueparser.ValueParser;
-import org.efaps.db.SearchQuery;
+import org.efaps.db.PrintQuery;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 
@@ -324,15 +324,10 @@ public class UIMenuItem
                 final ValueParser parser = new ValueParser(new StringReader(this.label));
                 final ValueList list = parser.ExpressionString();
                 if (list.getExpressions().size() > 0) {
-                    final SearchQuery query = new SearchQuery();
-                    query.setObject(getInstance());
-                    list.makeSelect(query);
-                    if (query.selectSize() > 0) {
-                        query.execute();
-                        if (query.next()) {
-                            this.label = list.makeString(getInstance(), query, getMode());
-                        }
-                        query.close();
+                    final PrintQuery print = new PrintQuery(getInstance());
+                    list.makeSelect(print);
+                    if (print.execute()) {
+                        this.label = list.makeString(getInstance(), print, getMode());
                     }
                 }
             }

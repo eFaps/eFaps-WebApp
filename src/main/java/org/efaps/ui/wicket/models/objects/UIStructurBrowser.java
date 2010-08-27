@@ -51,9 +51,8 @@ import org.efaps.admin.ui.field.Field;
 import org.efaps.beans.ValueList;
 import org.efaps.beans.valueparser.ValueParser;
 import org.efaps.db.Instance;
-import org.efaps.db.ListQuery;
 import org.efaps.db.MultiPrintQuery;
-import org.efaps.db.SearchQuery;
+import org.efaps.db.PrintQuery;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 import org.efaps.util.RequestHandler;
@@ -311,13 +310,13 @@ public class UIStructurBrowser
             }
             final ValueParser parser = new ValueParser(new StringReader(this.valueLabel));
             final ValueList valuelist = parser.ExpressionString();
-            final ListQuery query = new ListQuery(instances);
-            valuelist.makeSelect(query);
-            query.execute();
-            while (query.next()) {
+            final MultiPrintQuery print = new MultiPrintQuery(instances);
+            valuelist.makeSelect(print);
+            print.execute();
+            while (print.next()) {
                 Object value = null;
-                final Instance instance = query.getInstance();
-                value = valuelist.makeString(getInstance(), query, getMode());
+                final Instance instance = print.getCurrentInstance();
+                value = valuelist.makeString(getInstance(), print, getMode());
                 final UIStructurBrowser child = new UIStructurBrowser(Menu.getTypeTreeMenu(instance.getType())
                                 .getUUID(), instance.getKey(), false, this.sortDirection);
                 this.childs.add(child);
@@ -711,13 +710,10 @@ public class UIStructurBrowser
         try {
             final ValueParser parser = new ValueParser(new StringReader(this.valueLabel));
             final ValueList valList = parser.ExpressionString();
-
-            final SearchQuery query = new SearchQuery();
-            query.setObject(getInstance());
-            valList.makeSelect(query);
-            query.execute();
-            if (query.next()) {
-                setLabel(valList.makeString(getInstance(), query, getMode()).toString());
+            final PrintQuery print = new PrintQuery(getInstance());
+            valList.makeSelect(print);
+            if (print.execute()) {
+                setLabel(valList.makeString(getInstance(), print, getMode()).toString());
             }
         } catch (final Exception e) {
             throw new RestartResponseException(new ErrorPage(e));

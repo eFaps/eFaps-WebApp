@@ -47,7 +47,7 @@ import org.efaps.beans.valueparser.ParseException;
 import org.efaps.beans.valueparser.ValueParser;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
-import org.efaps.db.SearchQuery;
+import org.efaps.db.PrintQuery;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.Opener;
 import org.efaps.ui.wicket.models.AbstractInstanceObject;
@@ -403,24 +403,16 @@ public abstract class AbstractUIObject
         try {
 
             if ((title != null) && (getInstance() != null)) {
-                final SearchQuery query = new SearchQuery();
-                query.setObject(getInstance());
+                final PrintQuery print = new PrintQuery(getInstance());
                 final ValueParser parser = new ValueParser(new StringReader(title));
-                ValueList list;
-                list = parser.ExpressionString();
-                list.makeSelect(query);
-                if (query.selectSize() > 0) {
-                    query.execute();
-                    if (query.next()) {
-                        title = list.makeString(getInstance(), query, getMode());
-                    }
-                    query.close();
+                final ValueList list = parser.ExpressionString();
+                list.makeSelect(print);
+                if (print.execute()) {
+                    title = list.makeString(getInstance(), print, getMode());
                 }
-
                 // WebApp-Configuration
                 final SystemConfiguration config = SystemConfiguration.get(
                                 UUID.fromString("50a65460-2d08-4ea8-b801-37594e93dad5"));
-
                 if (config != null && config.getAttributeValueAsBoolean("ShowOID")
                                 && Context.getThreadContext().getPerson().isAssigned(Role.get("Administration"))) {
                     title = title + " " +  getInstance().getOid();
@@ -429,10 +421,11 @@ public abstract class AbstractUIObject
         } catch (final ParseException e) {
             throw new RestartResponseException(new ErrorPage(new EFapsException(this.getClass(), "",
                             "Error reading the Title")));
+            //CHECKSTYLE:OFF
         } catch (final Exception e) {
             throw new RestartResponseException(new ErrorPage(new EFapsException(this.getClass(), "",
                             "Error reading the Title")));
-        }
+        } //CHECKSTYLE:ON
 
         return title;
     }
