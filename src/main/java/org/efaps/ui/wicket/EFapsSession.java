@@ -36,6 +36,7 @@ import org.apache.wicket.protocol.http.IMultipartWebRequest;
 import org.apache.wicket.protocol.http.WebRequest;
 import org.apache.wicket.protocol.http.WebSession;
 import org.apache.wicket.util.upload.FileItem;
+import org.efaps.admin.user.Person;
 import org.efaps.admin.user.UserAttributesSet;
 import org.efaps.db.Context;
 import org.efaps.jaas.LoginHandler;
@@ -314,7 +315,8 @@ public class EFapsSession
      * method to check the LoginInformation (Name and Password) against the
      * eFapsDatabase. To check the Information a Context is opened an afterwards
      * closed. It also puts a new Instance of UserAttributes into the instance
-     * map {@link #sessionAttributes}
+     * map {@link #sessionAttributes}. The person returned must have at least one
+     * role asigned to be confirmed as value.
      *
      * @param _name Name of the User to be checked in
      * @param _passwd Password of the User to be checked in
@@ -338,9 +340,9 @@ public class EFapsSession
             try {
                 final EFapsApplication app = (EFapsApplication) getApplication();
                 final LoginHandler loginHandler = new LoginHandler(app.getApplicationKey());
-                if (loginHandler.checkLogin(_name, _passwd) != null) {
+                final Person person = loginHandler.checkLogin(_name, _passwd);
+                if (person != null && !person.getRoles().isEmpty()) {
                     loginOk = true;
-
                     this.sessionAttributes.put(UserAttributesSet.CONTEXTMAPKEY, new UserAttributesSet(_name));
                 }
                 ok = true;
