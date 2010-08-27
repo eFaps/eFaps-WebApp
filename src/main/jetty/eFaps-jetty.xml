@@ -18,14 +18,14 @@
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
-
+ <parameter key="login.roles">Sales_Admin</parameter>
 -->
 <server>
 
 
     <filter path="/*" name="eFaps" classname="org.apache.wicket.protocol.http.WicketFilter">
         <parameter key="applicationClassName">org.efaps.ui.wicket.EFapsApplication</parameter>
-        <parameter key="login.roles">eFapsTest,eFapsNochEine</parameter>
+
     </filter>
 
     <filter path="/*" name="BasicAuthenticationFilter" classname="org.efaps.ui.filter.BasicAuthenticationFilter">
@@ -38,7 +38,7 @@
 
     <servlet path="/*"
         name="eFapsInitServlet"
-        displayname="eFapsRequestHandlerInitServlet" initorder="1"
+        displayname="eFapsInitServlet" initorder="1"
         classname="org.efaps.ui.servlet.InitServlet" />
 
     <servlet path="/servlet/image/*"
