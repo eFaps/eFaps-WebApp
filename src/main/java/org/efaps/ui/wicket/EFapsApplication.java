@@ -85,6 +85,7 @@ public class EFapsApplication
     @Override
     protected void init()
     {
+        final String appKey =  getInitParameter(AbstractFilter.INITPARAM_APP_KEY);
         final String loginRolesTmp =  getInitParameter(AbstractFilter.INITPARAM_LOGIN_ROLES);
         final Set<String> temp = new HashSet<String>();
         if (loginRolesTmp != null) {
@@ -93,7 +94,7 @@ public class EFapsApplication
                 temp.add(loginRole);
             }
         }
-        AppAccessHandler.init(temp);
+        AppAccessHandler.init(appKey, temp);
 
         super.init();
         getMarkupSettings().setStripWicketTags(true);
@@ -158,7 +159,6 @@ public class EFapsApplication
          *
          * @return true, if checks if is instantiation authorized
          */
-        @SuppressWarnings("unchecked")
         public boolean isInstantiationAuthorized(final Class _componentClass)
         {
             boolean ret = true;

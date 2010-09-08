@@ -45,7 +45,13 @@ public abstract class AbstractFilter
     /**
      * Name of the InitParameter variable for the login roles.
      */
-    public static final String INITPARAM_LOGIN_ROLES = "login.roles";
+    public static final String INITPARAM_LOGIN_ROLES = "org.efaps.login.roles";
+
+    /**
+     * Name of the InitParameter variable for the application key.
+     */
+    public static final String INITPARAM_APP_KEY = "org.efaps.application.key";
+
 
     /**
      * Name of the InitParameter variable for the login name.
@@ -77,6 +83,7 @@ public abstract class AbstractFilter
     public void init(final FilterConfig _filterConfig)
         throws ServletException
     {
+        final String appkey = _filterConfig.getInitParameter(AbstractFilter.INITPARAM_APP_KEY);
         final String loginName = _filterConfig.getInitParameter(AbstractFilter.SESSIONPARAM_LOGIN_NAME);
         final String loginRolesTmp = _filterConfig.getInitParameter(AbstractFilter.INITPARAM_LOGIN_ROLES);
         if (loginName != null) {
@@ -89,7 +96,7 @@ public abstract class AbstractFilter
                 temp.add(loginRole);
             }
         }
-        AppAccessHandler.init(temp);
+        AppAccessHandler.init(appkey, temp);
     }
 
     /**
