@@ -32,7 +32,8 @@ import org.apache.wicket.markup.html.link.PopupSettings;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-
+import org.efaps.admin.datamodel.ui.DateTimeUI;
+import org.efaps.admin.datamodel.ui.DateUI;
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.admin.ui.field.Field.Display;
 import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
@@ -91,12 +92,16 @@ public class ValueCellPanel extends Panel
             }
             // in case of create or edit for a Date or DateTime that is editable
             if ((_formmodel.isCreateMode() || _formmodel.isEditMode())
-                          && ("Date".equals(uiFormCell.getTypeName()) || "DateTime".equals(uiFormCell.getTypeName()))
+                          && ("Date".equals(uiFormCell.getTypeName())
+                                          || uiFormCell.getUiClass() instanceof DateUI
+                                          || "DateTime".equals(uiFormCell.getTypeName())
+                                          || uiFormCell.getUiClass() instanceof DateTimeUI)
                           && uiFormCell.getDisplay().equals(Display.EDITABLE)) {
 
                 this.dateTextField = new DateTimePanel("label", uiFormCell.getCompareValue(),
                                                        new StyleDateConverter(false), uiFormCell.getName(),
-                                                       "DateTime".equals(uiFormCell.getTypeName()));
+                                                       "DateTime".equals(uiFormCell.getTypeName())
+                                                       || uiFormCell.getUiClass() instanceof DateTimeUI);
                 if (uiFormCell.isFieldUpdate()) {
                     //the update behavior must be added to the inner text field
                     final Iterator<? extends Component> iter = this.dateTextField.iterator();
