@@ -42,8 +42,8 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.UIInterface;
-import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractCommand.Target;
@@ -65,14 +65,14 @@ import org.efaps.ui.wicket.models.objects.UIAbstractPageObject;
 import org.efaps.ui.wicket.models.objects.UIFieldForm;
 import org.efaps.ui.wicket.models.objects.UIFieldTable;
 import org.efaps.ui.wicket.models.objects.UIForm;
-import org.efaps.ui.wicket.models.objects.UIRow;
-import org.efaps.ui.wicket.models.objects.UITable;
-import org.efaps.ui.wicket.models.objects.UITableHeader;
-import org.efaps.ui.wicket.models.objects.UIWizardObject;
 import org.efaps.ui.wicket.models.objects.UIForm.Element;
 import org.efaps.ui.wicket.models.objects.UIForm.ElementType;
 import org.efaps.ui.wicket.models.objects.UIForm.FormElement;
 import org.efaps.ui.wicket.models.objects.UIForm.FormRow;
+import org.efaps.ui.wicket.models.objects.UIRow;
+import org.efaps.ui.wicket.models.objects.UITable;
+import org.efaps.ui.wicket.models.objects.UITableHeader;
+import org.efaps.ui.wicket.models.objects.UIWizardObject;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
@@ -87,7 +87,8 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
+public class AjaxSubmitCloseBehavior
+    extends AjaxFormSubmitBehavior
 {
     /**
      * Needed for serialization.
@@ -179,12 +180,7 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
 
                         final UIWizardObject wizard = new UIWizardObject(newUIObject);
                         this.uiObject.setWizard(wizard);
-                        try {
-                            wizard.addParameters(this.uiObject, Context.getThreadContext().getParameters());
-                        } catch (final EFapsException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
+                        wizard.addParameters(this.uiObject, Context.getThreadContext().getParameters());
                         wizard.insertBefore(this.uiObject);
                         newUIObject.setWizard(wizard);
                         newUIObject.setPartOfWizardCall(true);
@@ -337,8 +333,7 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
     {
         boolean ret = true;
         final List<Return> returns;
-        final UIAbstractPageObject uiPageObject
-                                        = ((UIAbstractPageObject) this.form.getParent().getDefaultModelObject());
+        final UIAbstractPageObject uiPageObject = (UIAbstractPageObject) this.form.getParent().getDefaultModelObject();
         if (_classifications.size() > 0) {
             returns = uiPageObject.executeEvents(ParameterValues.OTHERS, _other,
                             ParameterValues.CLASSIFICATIONS, _classifications,
@@ -383,7 +378,7 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior
         throws EFapsException
     {
         boolean ret = true;
-        final AbstractUIObject uiobject = ((AbstractUIObject) this.form.getParent().getDefaultModelObject());
+        final AbstractUIObject uiobject = (AbstractUIObject) this.form.getParent().getDefaultModelObject();
         final StringBuilder html = new StringBuilder();
         html.append("<table class=\"eFapsValidateFieldValuesTable\">");
         if (uiobject instanceof UIForm) {

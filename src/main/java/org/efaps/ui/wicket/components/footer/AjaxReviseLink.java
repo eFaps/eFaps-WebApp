@@ -48,7 +48,7 @@ public class AjaxReviseLink
     extends AjaxLink<AbstractUIObject>
 {
     /**
-     *
+     * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
 

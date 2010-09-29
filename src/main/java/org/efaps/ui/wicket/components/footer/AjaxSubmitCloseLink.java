@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@
 package org.efaps.ui.wicket.components.footer;
 
 import org.apache.wicket.markup.html.form.SubmitLink;
-
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.models.objects.UIAbstractPageObject;
 
@@ -32,7 +31,8 @@ import org.efaps.ui.wicket.models.objects.UIAbstractPageObject;
  * @author The eFaps Team
  * @version $Id$
  */
-public class AjaxSubmitCloseLink extends SubmitLink
+public class AjaxSubmitCloseLink
+    extends SubmitLink
 {
     /**
      * Needed for serialization.
@@ -44,7 +44,8 @@ public class AjaxSubmitCloseLink extends SubmitLink
      * @param _modelObject  model object for this component
      * @param _form         formthis button is in
      */
-    public AjaxSubmitCloseLink(final String _wicketid, final UIAbstractPageObject _modelObject,
+    public AjaxSubmitCloseLink(final String _wicketid,
+                               final UIAbstractPageObject _modelObject,
                                final FormContainer _form)
     {
         super(_wicketid, _form);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ package org.efaps.ui.wicket.components.footer;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.model.IModel;
-
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.TableModel;
@@ -41,9 +40,9 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class SearchSubmitLink extends SubmitLink
+public class SearchSubmitLink
+    extends SubmitLink
 {
-
     /**
      * Needed for serialization.
      */
@@ -56,7 +55,9 @@ public class SearchSubmitLink extends SubmitLink
      * @param _model model for this component
      * @param _form form of this submit link
      */
-    public SearchSubmitLink(final String _wicketId, final IModel<?> _model, final Form<?> _form)
+    public SearchSubmitLink(final String _wicketId,
+                            final IModel<?> _model,
+                            final Form<?> _form)
     {
         super(_wicketId, _form);
         super.setDefaultModel(_model);

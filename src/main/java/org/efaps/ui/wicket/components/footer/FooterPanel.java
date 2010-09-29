@@ -46,8 +46,10 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
  * @author The eFaps Team
  * @version $Id:FooterPanel.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class FooterPanel extends Panel
+public class FooterPanel
+    extends Panel
 {
+
     /**
      * Reference to the stylesheet.
      */
@@ -78,8 +80,10 @@ public class FooterPanel extends Panel
      * @param _modalWindow ModalWindowContainer containing this FooterPanel
      * @param _form FormContainer of the Page (needed to submit the Form)
      */
-    public FooterPanel(final String _wicketId, final IModel<?> _model, final ModalWindowContainer _modalWindow,
-                    final FormContainer _form)
+    public FooterPanel(final String _wicketId,
+                       final IModel<?> _model,
+                       final ModalWindowContainer _modalWindow,
+                       final FormContainer _form)
     {
         super(_wicketId, _model);
         this.modalWindow = _modalWindow;
@@ -175,7 +179,7 @@ public class FooterPanel extends Panel
             final Button prev = new Button("prev", new AjaxReviseLink(Button.LINKID, uiObject),
                                            label, Button.ICON.PREVIOUS.getReference());
             this.add(prev);
-        } else  {
+        } else {
             add(new WebMarkupContainer("prev").setVisible(false));
         }
     }
@@ -188,7 +192,8 @@ public class FooterPanel extends Panel
      * @param _keytype what Label should be searched
      * @return if found DBProperty of the CommandAbstract, else a Default
      */
-    private String getLabel(final String _cmdName, final String _keytype)
+    private String getLabel(final String _cmdName,
+                            final String _keytype)
     {
         String ret;
         if (DBProperties.hasProperty(_cmdName + ".Button." + _keytype)) {
@@ -228,5 +233,4 @@ public class FooterPanel extends Panel
     {
         this.success = _success;
     }
-
 }

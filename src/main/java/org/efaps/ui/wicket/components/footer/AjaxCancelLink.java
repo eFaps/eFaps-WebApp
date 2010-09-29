@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,24 +25,31 @@ import org.apache.wicket.ajax.markup.html.AjaxLink;
 
 /**
  * Link using Ajax to close the ModalWindow the FooterPanel was opened in.
- * TODO description
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public class AjaxCancelLink extends AjaxLink<Object> {
+public class AjaxCancelLink
+    extends AjaxLink<Object>
+{
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
-  public AjaxCancelLink(final String _wicketid) {
-    super(_wicketid);
-  }
+    /**
+     * @param _wicketid ic of the component
+     */
+    public AjaxCancelLink(final String _wicketid)
+    {
+        super(_wicketid);
+    }
 
-  private static final long serialVersionUID = 1L;
-
-  @Override
-  public void onClick(final AjaxRequestTarget _target) {
-
-    final FooterPanel footer = this.findParent(FooterPanel.class);
-    footer.getModalWindow().setReloadChild(false);
-    footer.getModalWindow().close(_target);
-  }
+    @Override
+    public void onClick(final AjaxRequestTarget _target)
+    {
+        final FooterPanel footer = this.findParent(FooterPanel.class);
+        footer.getModalWindow().setReloadChild(false);
+        footer.getModalWindow().close(_target);
+    }
 }
