@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.util.string.AppendingStringBuffer;
-
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.Opener;
@@ -44,10 +43,11 @@ import org.efaps.ui.wicket.pages.main.MainPage;
 /**
  * This is a wrapper class for a modal window.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id:ModalWindowContainer.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class ModalWindowContainer extends ModalWindow
+public class ModalWindowContainer
+    extends ModalWindow
 {
 
     /**
@@ -199,27 +199,10 @@ public class ModalWindowContainer extends ModalWindow
      *
      * @return JavaScript
      */
-    public static String getCloseJavacript()
+    @Override
+    public String getCloseJavacript()
     {
-        final StringBuilder ret = new StringBuilder();
-        ret.append("var win;\n")
-            .append("try {\n")
-            .append("     win = window.parent.Wicket.Window;\n")
-            .append("} catch (ignore) {\n")
-            .append("}\n")
-            .append("if (typeof(win) == \"undefined\" ")
-            .append("|| typeof(win.current) == \"undefined\") {\n")
-            .append("  try {\n")
-            .append("     win = window.Wicket.Window;\n")
-            .append("  } catch (ignore) {\n")
-            .append("  }\n")
-            .append("}\n")
-            .append("if (typeof(win) != \"undefined\" && typeof(win.current) != \"undefined\") {\n")
-            .append("  window.parent.setTimeout(function() {\n")
-            .append("    win.current.close();\n")
-            .append("  }, 0);\n")
-            .append("}");
-        return ret.toString();
+       return super.getCloseJavacript();
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,9 +35,8 @@ import org.apache.wicket.behavior.AbstractBehavior;
 import org.apache.wicket.behavior.StringHeaderContributor;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.util.string.JavascriptUtils;
-
-import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.db.Context;
@@ -64,7 +63,9 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class UploadBehavior extends AbstractBehavior implements FileUploadListener
+public class UploadBehavior
+    extends AbstractBehavior
+    implements FileUploadListener
 {
 
     /**
@@ -110,8 +111,8 @@ public class UploadBehavior extends AbstractBehavior implements FileUploadListen
     public void onSubmit()
     {
         final UIForm uiForm = (UIForm) this.component.getPage().getDefaultModelObject();
-        convertDateFieldValues();
         try {
+            convertDateFieldValues();
             executeEvents(uiForm.getNewValues());
         } catch (final EFapsException e) {
             throw new RestartResponseException(new ErrorPage(e));
@@ -122,7 +123,7 @@ public class UploadBehavior extends AbstractBehavior implements FileUploadListen
             script.append(JavascriptUtils.SCRIPT_OPEN_TAG)
                 .append("  window.onload = function() {")
                 .append(this.modalWindow.getReloadJavaScript())
-                .append(ModalWindowContainer.getCloseJavacript())
+                .append(this.modalWindow.getCloseJavacript())
                 .append("}")
                 .append(JavascriptUtils.SCRIPT_CLOSE_TAG);
         } else {
@@ -153,20 +154,15 @@ public class UploadBehavior extends AbstractBehavior implements FileUploadListen
     /**
      * Method used to convert the date value from the ui in date values for
      * eFaps.
-     * @throws EFapsException
+     * @throws EFapsException on error
      */
     private void convertDateFieldValues()
+        throws EFapsException
     {
         final List<FormPanel> formpl = getFormPanels();
         for (final FormPanel panel : formpl) {
             for (final DateTimePanel datepicker : panel.getDateComponents()) {
-                Map<String, String[]> map = null;
-                try {
-                    map = Context.getThreadContext().getParameters();
-                } catch (final EFapsException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
+                final Map<String, String[]> map = Context.getThreadContext().getParameters();
                 if (map.containsKey(datepicker.getDateFieldName())) {
                     final String[] date = map.get(datepicker.getDateFieldName());
                     final String[] hour = map.get(datepicker.getHourFieldName());
@@ -224,5 +220,4 @@ public class UploadBehavior extends AbstractBehavior implements FileUploadListen
         }
         return ret;
     }
-
 }
