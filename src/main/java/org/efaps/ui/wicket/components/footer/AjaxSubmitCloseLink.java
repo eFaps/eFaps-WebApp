@@ -50,6 +50,6 @@ public class AjaxSubmitCloseLink
     {
         super(_wicketid, _form);
         this.add(new AjaxSubmitCloseBehavior(_modelObject, _form));
-        _form.setDefaultSubmit(this);
+        _form.setDefaultButton(this);
     }
 }

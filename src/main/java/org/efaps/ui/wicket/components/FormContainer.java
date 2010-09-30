@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,28 +27,24 @@ import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.IFormSubmitListener;
-import org.apache.wicket.util.string.AppendingStringBuffer;
+import org.apache.wicket.util.string.JavascriptUtils;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.UIForm;
 
 /**
  * Class for a form. Needed for file upload.
  *
- * @author Jan Moxter
+ * @author The eFaps Team
  * @version $Id$
  */
-public class FormContainer extends Form<Object>
+public class FormContainer
+    extends Form<Object>
 {
 
     /**
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
-
-    /**
-     * Component that will be committed by default.
-     */
-    private Component defaultSubmit;
 
     /**
      * Url for the action that must be called.
@@ -68,26 +64,6 @@ public class FormContainer extends Form<Object>
     public FormContainer(final String _wicketId)
     {
         super(_wicketId);
-    }
-
-    /**
-     * If a default component exists it must be appended.
-     *
-     * @param _markupstream the markupstream
-     * @param _tag the tag
-     *
-     * @see org.apache.wicket.markup.html.form
-     *      .Form#onComponentTagBody(org.apache.wicket.markup.MarkupStream,
-     *      org.apache.wicket.markup.ComponentTag)
-     */
-    @Override
-    protected void onComponentTagBody(final MarkupStream _markupstream,
-                                      final ComponentTag _tag)
-    {
-        super.onComponentTagBody(_markupstream, _tag);
-        if (getDefaultButton() == null && this.defaultSubmit != null) {
-            appendDefaultSubmit(_markupstream, _tag);
-        }
     }
 
     /**
@@ -113,46 +89,10 @@ public class FormContainer extends Form<Object>
             // only on SearchMode we want normal submit, in any other case we
             // use AjaxSubmit
             if (!((AbstractUIObject) getPage().getDefaultModelObject()).isSearchMode()) {
-                _tag.put("onSubmit", "return false;");
+                //_tag.put("onSubmit", "return false;");
                 _tag.put("action", "");
             }
         }
-    }
-
-    /**
-     * Sets the default submit.
-     *
-     * @param _component the new default submit
-     */
-    public void setDefaultSubmit(final Component _component)
-    {
-        this.defaultSubmit = _component;
-    }
-
-    /**
-     * Append default submit.
-     *
-     * @param _markupStream the markup stream
-     * @param _openTag the open tag
-     */
-    protected void appendDefaultSubmit(final MarkupStream _markupStream,
-                                       final ComponentTag _openTag)
-    {
-
-        final AppendingStringBuffer buffer = new AppendingStringBuffer();
-
-        // div that is not visible (but not display:none either)
-        buffer.append("<div style=\"width:0px;height:0px;position:absolute;"
-                        + "left:-100px;top:-100px;overflow:hidden\">");
-
-        // add an empty textfield (otherwise IE doesn't work)
-        buffer.append("<input type=\"text\" autocomplete=\"false\"/>");
-
-        buffer.append("<input type=\"submit\" onclick=\" var b=Wicket.$('");
-        buffer.append(this.defaultSubmit.getMarkupId());
-        buffer.append("'); if (typeof(b.onclick) != 'undefined') " + "{ b.onclick();  }" + " \" ");
-        buffer.append(" /></div>");
-        getResponse().write(buffer);
     }
 
     /**
@@ -213,5 +153,40 @@ public class FormContainer extends Form<Object>
     protected boolean handleMultiPart()
     {
         return true;
+    }
+
+    /**
+     * If a default IFormSubmittingComponent was set on this form, this method
+     * will be called to render an extra field with an invisible style so that
+     * pressing enter in one of the textfields will do a form submit using
+     * this component.
+     * The method is overwritten to correct some script problems with the
+     * default behavior from Firefox, that actually sends and reloads the form.
+     *
+     * @param _markupStream The markup stream
+     * @param _openTag The open tag for the body
+     */
+    @Override
+    protected void appendDefaultButtonField(final MarkupStream _markupStream,
+                                            final ComponentTag _openTag)
+    {
+        final StringBuilder divBldr = new StringBuilder();
+        // div that is not visible (but not display:none either)
+        divBldr.append("<div style=\"width:0px;height:0px;position:absolute;left:-100px;top:-100px;overflow:hidden\">");
+
+        // add an empty textfield (otherwise IE doesn't work)
+        divBldr.append("<input type=\"text\" autocomplete=\"false\"/>");
+
+        final Component submittingComponent = (Component) getDefaultButton();
+        divBldr.append("<input type=\"submit\" onclick=\" var b=Wicket.$('");
+        divBldr.append(submittingComponent.getMarkupId());
+        divBldr.append("'); if (typeof(b.onclick) != 'undefined') " + "{ b.onclick();  }" + " \" ");
+        divBldr.append(" /></div>");
+        getResponse().write(divBldr);
+        // this trick prevents that the default behavior is executed
+        final StringBuilder bldr = new StringBuilder();
+        bldr.append("Wicket.Event.add(Wicket.$('").append(this.getMarkupId())
+            .append("'), 'submit', function (evt){ evt.preventDefault();});");
+        JavascriptUtils.writeJavascript(getResponse(), bldr.toString());
     }
 }

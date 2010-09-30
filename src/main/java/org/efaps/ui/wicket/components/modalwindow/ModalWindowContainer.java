@@ -202,7 +202,7 @@ public class ModalWindowContainer
     @Override
     public String getCloseJavacript()
     {
-       return super.getCloseJavacript();
+        return super.getCloseJavacript();
     }
 
     /**
