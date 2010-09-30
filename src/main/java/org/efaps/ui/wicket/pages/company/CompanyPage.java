@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,11 +22,13 @@ package org.efaps.ui.wicket.pages.company;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.IClusterable;
+import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -47,6 +49,7 @@ import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.components.menu.AjaxSetCompanyLink;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
+import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 import org.efaps.util.EFapsException;
@@ -59,7 +62,8 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class CompanyPage extends AbstractMergePage
+public class CompanyPage
+    extends AbstractMergePage
 {
     /**
      * Reference to the StyleSheet for this Page.
@@ -82,8 +86,8 @@ public class CompanyPage extends AbstractMergePage
      * @param _modal modal window
      * @param _link AjaxSetCompanyLink
      */
-    @SuppressWarnings("unchecked")
-    public CompanyPage(final ModalWindowContainer _modal, final AjaxSetCompanyLink _link)
+    public CompanyPage(final ModalWindowContainer _modal,
+                       final AjaxSetCompanyLink _link)
     {
         super();
         this.modal = _modal;
@@ -120,7 +124,6 @@ public class CompanyPage extends AbstractMergePage
             protected void onComponentTag(final ComponentTag _tag)
             {
                 super.onComponentTag(_tag);
-                _tag.put("onSubmit", "return false;");
                 _tag.put("action", "");
             }
         };
@@ -148,10 +151,11 @@ public class CompanyPage extends AbstractMergePage
                 companies.add(new CompanyObject(comp));
             }
         } catch (final EFapsException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new RestartResponseException(new ErrorPage(e));
         }
-        final Model model = new Model((Serializable) companies);
+
+        @SuppressWarnings({ "rawtypes", "unchecked" })
+        final IModel<Collection<? extends CompanyObject>> model = new Model((Serializable) companies);
         final SelectOptions<CompanyObject> options = new SelectOptions<CompanyObject>("manychoices", model, renderer);
         choices.add(options);
 
@@ -169,7 +173,8 @@ public class CompanyPage extends AbstractMergePage
     /**
      * Class to pass the companies as a serializable Object.
      */
-    private final class CompanyObject implements IClusterable
+    private final class CompanyObject
+        implements IClusterable
     {
         /**
          *
@@ -199,7 +204,8 @@ public class CompanyPage extends AbstractMergePage
     /**
      * Class used to submit this page.
      */
-    public class AjaxSubmitLink extends WebMarkupContainer
+    public class AjaxSubmitLink
+        extends WebMarkupContainer
     {
         /** Needed for serialization. */
         private static final long serialVersionUID = 1L;
@@ -209,7 +215,8 @@ public class CompanyPage extends AbstractMergePage
          * @param _form form this link submits
          *
          */
-        public AjaxSubmitLink(final String _wicketId, final Form<Object> _form)
+        public AjaxSubmitLink(final String _wicketId,
+                              final Form<Object> _form)
         {
             super(_wicketId);
             final AjaxFormSubmitBehavior behavior = new AjaxFormSubmitBehavior(_form, "onClick") {
@@ -218,7 +225,6 @@ public class CompanyPage extends AbstractMergePage
 
                 /**
                  * Implemented only for API reason.
-                 * @see org.apache.wicket.ajax.form.AjaxFormSubmitBehavior#onError(org.apache.wicket.ajax.AjaxRequestTarget)
                  * @param _target
                  */
                 @Override
@@ -229,7 +235,6 @@ public class CompanyPage extends AbstractMergePage
 
                 /**
                  * Close the form and set the current company.
-                 * @see org.apache.wicket.ajax.form.AjaxFormSubmitBehavior#onSubmit(org.apache.wicket.ajax.AjaxRequestTarget)
                  * @param _target
                  */
                 @Override
@@ -242,8 +247,7 @@ public class CompanyPage extends AbstractMergePage
                     try {
                         Context.getThreadContext().setUserAttribute(Context.CURRENTCOMPANY, obj.id);
                     } catch (final EFapsException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
+                        throw new RestartResponseException(new ErrorPage(e));
                     }
                     CompanyPage.this.modal.close(_target);
                     _target.getPage().getApplication().getHomePage();
@@ -256,7 +260,8 @@ public class CompanyPage extends AbstractMergePage
     /**
      * AjaxLink that closes the ModalWindow this Page was opened in.
      */
-    public class AjaxCloseLink extends AjaxLink<Object>
+    public class AjaxCloseLink
+        extends AjaxLink<Object>
     {
         /** Needed for serialization. */
         private static final long serialVersionUID = 1L;
