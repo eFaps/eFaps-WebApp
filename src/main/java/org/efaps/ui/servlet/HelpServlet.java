@@ -21,6 +21,7 @@
 package org.efaps.ui.servlet;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -183,7 +184,9 @@ public class HelpServlet
                 _res.setContentLength(html.length());
                 _res.getOutputStream().write(html.toString().getBytes());
             }
-        } catch (final Throwable e) {
+        } catch (final EFapsException e) {
+            throw new ServletException(e);
+        } catch (final IOException e) {
             throw new ServletException(e);
         }
     }

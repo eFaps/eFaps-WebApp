@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,8 +35,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.admin.program.bundle.BundleInterface;
 import org.efaps.admin.program.bundle.BundleMaker;
+import org.efaps.ci.CIAdminProgram;
 import org.efaps.db.Checkout;
-import org.efaps.db.SearchQuery;
+import org.efaps.db.MultiPrintQuery;
+import org.efaps.db.QueryBuilder;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.AutomaticCache;
 import org.efaps.util.cache.CacheObjectInterface;
@@ -46,30 +48,35 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO description
+ * Servlet that serves the static content for the WebApp.
  *
- * @author jmox
- * @version $Id: StaticContentServlet.java 3447 2009-11-29 22:46:39Z tim.moxter
- *          $
+ * @author The eFaps Team
+ * @version $Id$
  */
 public class StaticContentServlet
     extends HttpServlet
 {
 
+    /**
+     * Needed for serialization.
+     */
     private static final long serialVersionUID = 1L;
 
     /**
      * Logging instance used in this class.
      */
-    private final static Logger LOG =
-                    LoggerFactory.getLogger(StaticContentServlet.class);
+    private static final Logger LOG = LoggerFactory.getLogger(StaticContentServlet.class);
 
-    private final static StaticContentCache CACHE = new StaticContentCache();
+    /**
+     * Cache for the content.
+     */
+    private static final StaticContentCache CACHE = new StaticContentCache();
 
+    /**
+     * Cache duration time default value.
+     */
     private int cacheDuration = 3600;
 
-    // ///////////////////////////////////////////////////////////////////////////
-    // instance methods
 
     /**
      * The method checks the image from the user interface image object out and
@@ -78,13 +85,13 @@ public class StaticContentServlet
      *
      * @param _req request variable
      * @param _res response variable
-     * @see #PARAM_ATTRNAME
-     * @see #PARAM_OID
+     * @throws ServletException on error
+     *
      */
     @Override
     protected void doGet(final HttpServletRequest _req,
                          final HttpServletResponse _res)
-        throws ServletException, IOException
+        throws ServletException
     {
         String contentName = _req.getRequestURI();
 
@@ -92,9 +99,11 @@ public class StaticContentServlet
 
         try {
             if (!StaticContentServlet.CACHE.hasEntries()) {
-                this.cacheDuration = SystemConfiguration.get(
-                                UUID.fromString("50a65460-2d08-4ea8-b801-37594e93dad5"))
-                                .getAttributeValueAsInteger("CacheDuration");
+                final SystemConfiguration config = SystemConfiguration.get(
+                                UUID.fromString("50a65460-2d08-4ea8-b801-37594e93dad5"));
+                if (config != null) {
+                    this.cacheDuration = config.getAttributeValueAsInteger("CacheDuration");
+                }
             }
 
             final ContentMapper imageMapper = StaticContentServlet.CACHE.get(contentName);
@@ -147,16 +156,20 @@ public class StaticContentServlet
             }
         } catch (final IOException e) {
             StaticContentServlet.LOG.error("while reading Static Content", e);
-            throw e;
+            throw new ServletException(e);
         } catch (final CacheReloadException e) {
             StaticContentServlet.LOG.error("while reading Static Content", e);
             throw new ServletException(e);
-        } catch (final Exception e) {
+        } catch (final EFapsException e) {
             StaticContentServlet.LOG.error("while reading Static Content", e);
             throw new ServletException(e);
         }
     }
 
+    /**
+     * @param _req request to be analysed
+     * @return true  if compression is supported else false
+     */
     private boolean supportsCompression(final HttpServletRequest _req)
     {
         boolean ret = false;
@@ -168,10 +181,10 @@ public class StaticContentServlet
     }
 
     /**
-     * The class is used to map from the administrational image name to the
-     * image file name and image object id.
+     * The class is used to map from the administrational image name
+     * to the image file name and image object id.
      */
-    private static class ContentMapper
+    private static final class ContentMapper
         implements CacheObjectInterface
     {
 
@@ -190,14 +203,22 @@ public class StaticContentServlet
          */
         private final String oid;
 
+        /**
+         * Length of the file.
+         */
         private final long filelength;
 
+        /**
+         * Current time.
+         */
         private final Long time;
 
         /**
          * @param _name administrational name of the image
          * @param _file file name of the image
          * @param _oid object id of the image
+         * @param _filelength length of the file
+         * @param _time current time
          */
         private ContentMapper(final String _name,
                               final String _file,
@@ -224,8 +245,9 @@ public class StaticContentServlet
         }
 
         /**
-         * The method is not needed in this cache implementation, but to
-         * implemente interface {@link CacheInterface} the method is required.
+         * The method is not needed in this cache implementation,
+         * but to implemente interface {@link CacheInterface} the
+         * method is required.
          *
          * @return always <code>null</code>
          */
@@ -235,8 +257,9 @@ public class StaticContentServlet
         }
 
         /**
-         * The method is not needed in this cache implementation, but to
-         * implemente interface {@link CacheInterface} the method is required.
+         * The method is not needed in this cache implementation,
+         * but to implemente interface {@link CacheInterface} the
+         * method is required.
          *
          * @return always <code>0</code>
          */
@@ -246,54 +269,48 @@ public class StaticContentServlet
         }
     }
 
+    /**
+     * Cache class.
+     */
     private static class StaticContentCache
-        extends AutomaticCache<ContentMapper>
+        extends AutomaticCache<StaticContentServlet.ContentMapper>
     {
 
-        /*
-         * (non-Javadoc)
-         * @see org.efaps.util.cache.Cache#readCache(java.util.Map,
-         * java.util.Map, java.util.Map)
+        /**
+         * {@inheritDoc}
          */
         @Override
-        protected void readCache(final Map<Long, ContentMapper> cache4Id,
-                                 final Map<String, ContentMapper> cache4Name,
-                                 final Map<UUID, ContentMapper> cache4UUID)
+        protected void readCache(final Map<Long, StaticContentServlet.ContentMapper> _cache4Id,
+                                 final Map<String, StaticContentServlet.ContentMapper> _cache4Name,
+                                 final Map<UUID, StaticContentServlet.ContentMapper> _cache4UUID)
             throws CacheReloadException
         {
             try {
+                final QueryBuilder queryBldr = new QueryBuilder(CIAdminProgram.StaticCompiled);
+                final MultiPrintQuery multi = queryBldr.getPrint();
+                multi.addAttribute(CIAdminProgram.StaticCompiled.Name,
+                                CIAdminProgram.StaticCompiled.FileName,
+                                CIAdminProgram.StaticCompiled.OID,
+                                CIAdminProgram.StaticCompiled.FileLength,
+                                CIAdminProgram.StaticCompiled.Modified);
+                multi.executeWithoutAccessCheck();
 
-                final SearchQuery query = new SearchQuery();
-                query.setQueryTypes("Admin_Program_StaticCompiled");
-                query.setExpandChildTypes(true);
-                query.addSelect("Name");
-                query.addSelect("FileName");
-                query.addSelect("OID");
-                query.addSelect("FileLength");
-                query.addSelect("Modified");
-
-                query.executeWithoutAccessCheck();
-
-                while (query.next()) {
-                    final String name = (String) query.get("Name");
-                    final String file = (String) query.get("FileName");
-                    final String oid = (String) query.get("OID");
-                    final Long filelength = (Long) query.get("FileLength");
-                    final DateTime datetime = (DateTime) query.get("Modified");
+                while (multi.next()) {
+                    final String name = multi.<String>getAttribute(CIAdminProgram.StaticCompiled.Name);
+                    final String file = multi.<String>getAttribute(CIAdminProgram.StaticCompiled.FileName);
+                    final String oid = multi.<String>getAttribute(CIAdminProgram.StaticCompiled.OID);
+                    final Long filelength = multi.<Long>getAttribute(CIAdminProgram.StaticCompiled.FileLength);
+                    final DateTime datetime = multi.<DateTime>getAttribute(CIAdminProgram.StaticCompiled.Modified);
 
                     final ContentMapper mapper = new ContentMapper(name, file, oid, filelength,
                                     datetime.getMillis());
 
-                    cache4Name.put(mapper.getName(), mapper);
+                    _cache4Name.put(mapper.getName(), mapper);
                 }
-                query.close();
-
             } catch (final EFapsException e) {
                 throw new CacheReloadException("could not initialise "
                                 + "image servlet cache");
             }
-
         }
-
     }
 }

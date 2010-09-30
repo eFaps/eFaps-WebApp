@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,6 @@
  */
 
 package org.efaps.ui.servlet;
-
-
 
 import java.io.IOException;
 import java.util.Map;
@@ -79,15 +77,12 @@ public class ImageServlet
      *
      * @param _req request variable
      * @param _res response variable
-     * @see #PARAM_ATTRNAME
-     * @see #PARAM_OID
      * @throws ServletException on error
-     * @throws IOException on error
      */
     @Override
     protected void doGet(final HttpServletRequest _req,
                          final HttpServletResponse _res)
-        throws ServletException, IOException
+        throws ServletException
     {
         String imgName = _req.getRequestURI();
 
@@ -117,11 +112,11 @@ public class ImageServlet
             }
         } catch (final IOException e) {
             ImageServlet.LOG.error("while reading history data", e);
-            throw e;
+            throw new ServletException(e);
         } catch (final CacheReloadException e) {
             ImageServlet.LOG.error("while reading history data", e);
             throw new ServletException(e);
-        } catch (final Exception e) {
+        } catch (final EFapsException e) {
             ImageServlet.LOG.error("while reading history data", e);
             throw new ServletException(e);
         }
@@ -246,24 +241,22 @@ public class ImageServlet
             throws CacheReloadException
         {
             try {
-                synchronized (ImageServlet.CACHE) {
-                    final QueryBuilder queryBldr = new QueryBuilder(CIAdminUserInterface.Image);
-                    final MultiPrintQuery multi = queryBldr.getPrint();
-                    multi.addAttribute(CIAdminUserInterface.Image.Name,
-                                       CIAdminUserInterface.Image.FileName,
-                                       CIAdminUserInterface.Image.FileLength,
-                                       CIAdminUserInterface.Image.Modified);
-                    multi.executeWithoutAccessCheck();
-                    while (multi.next()) {
-                        final String name = multi.<String>getAttribute(CIAdminUserInterface.Image.Name);
-                        final String file =  multi.<String>getAttribute(CIAdminUserInterface.Image.FileName);
-                        final Long filelength = multi.<Long>getAttribute(CIAdminUserInterface.Image.FileLength);
-                        final DateTime time = multi.<DateTime>getAttribute(CIAdminUserInterface.Image.Modified);
-                        final ImageMapper mapper = new ImageMapper(multi.getCurrentInstance(),
-                                        name, file, filelength, time.getMillis());
+                final QueryBuilder queryBldr = new QueryBuilder(CIAdminUserInterface.Image);
+                final MultiPrintQuery multi = queryBldr.getPrint();
+                multi.addAttribute(CIAdminUserInterface.Image.Name,
+                                   CIAdminUserInterface.Image.FileName,
+                                   CIAdminUserInterface.Image.FileLength,
+                                   CIAdminUserInterface.Image.Modified);
+                multi.executeWithoutAccessCheck();
+                while (multi.next()) {
+                    final String name = multi.<String>getAttribute(CIAdminUserInterface.Image.Name);
+                    final String file =  multi.<String>getAttribute(CIAdminUserInterface.Image.FileName);
+                    final Long filelength = multi.<Long>getAttribute(CIAdminUserInterface.Image.FileLength);
+                    final DateTime time = multi.<DateTime>getAttribute(CIAdminUserInterface.Image.Modified);
+                    final ImageMapper mapper = new ImageMapper(multi.getCurrentInstance(),
+                                    name, file, filelength, time.getMillis());
 
-                        _cache4Name.put(mapper.getName(), mapper);
-                    }
+                    _cache4Name.put(mapper.getName(), mapper);
                 }
             } catch (final EFapsException e) {
                 throw new CacheReloadException("could not initialise image servlet cache");
