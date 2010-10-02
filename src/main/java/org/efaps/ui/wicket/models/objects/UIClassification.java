@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,14 +35,15 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 
 import org.apache.wicket.IClusterable;
-
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.field.FieldClassification;
 import org.efaps.db.Instance;
-import org.efaps.db.SearchQuery;
+import org.efaps.db.InstanceQuery;
+import org.efaps.db.MultiPrintQuery;
+import org.efaps.db.QueryBuilder;
 import org.efaps.util.EFapsException;
 
 /**
@@ -51,8 +52,10 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class UIClassification implements IFormElement, IClusterable
+public class UIClassification
+    implements IFormElement, IClusterable
 {
+
     /**
      * Needed for serialization.
      */
@@ -89,9 +92,8 @@ public class UIClassification implements IFormElement, IClusterable
     private final UUID classificationUUID;
 
     /**
-     * List of classification UUIDs that are connected to the given base
-     * instance. This variable is used only for the root. In any instances
-     * it will be empty.
+     * List of classification UUIDs that are connected to the given base instance. This variable is used only for the
+     * root. In any instances it will be empty.
      */
     private final Set<UUID> selectedUUID = new HashSet<UUID>();
 
@@ -111,16 +113,16 @@ public class UIClassification implements IFormElement, IClusterable
     private final TargetMode mode;
 
     /**
-     * Stores the name of the command that called this object. Needed for
-     * getting DBProperties.
+     * Stores the name of the command that called this object. Needed for getting DBProperties.
      */
     private String commandName;
 
     /**
-     * @param _field        FielClassification
-     * @param _uiObject     ui object
+     * @param _field FielClassification
+     * @param _uiObject ui object
      */
-    public UIClassification(final FieldClassification _field, final AbstractUIObject _uiObject)
+    public UIClassification(final FieldClassification _field,
+                            final AbstractUIObject _uiObject)
     {
         this.fieldId = _field.getId();
         this.classificationUUID = Type.get(_field.getClassificationName()).getUUID();
@@ -132,10 +134,11 @@ public class UIClassification implements IFormElement, IClusterable
     /**
      * Private constructor used for instantiating child UIClassification.
      *
-     * @param _uuid     UUID of the classification type
-     * @param _mode     target mode
+     * @param _uuid UUID of the classification type
+     * @param _mode target mode
      */
-    private UIClassification(final UUID _uuid, final TargetMode _mode)
+    private UIClassification(final UUID _uuid,
+                             final TargetMode _mode)
     {
         this.fieldId = 0;
         this.classificationUUID = _uuid;
@@ -156,6 +159,7 @@ public class UIClassification implements IFormElement, IClusterable
 
     /**
      * Method to get the tree for the classification.
+     *
      * @return a TreeModel containing the classification hirachy
      */
     public TreeModel getTreeModel()
@@ -206,7 +210,8 @@ public class UIClassification implements IFormElement, IClusterable
      * @param _parent ParentNode children should be added
      * @param _children to be added as childs
      */
-    private void addNodes(final DefaultMutableTreeNode _parent, final List<UIClassification> _children)
+    private void addNodes(final DefaultMutableTreeNode _parent,
+                          final List<UIClassification> _children)
     {
         for (final UIClassification child : _children) {
             final DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(child);
@@ -231,12 +236,14 @@ public class UIClassification implements IFormElement, IClusterable
 
     /**
      * Recursive method used to add the children to this UIClassification.
-     * @param _parent        parent
-     * @param _children     children
+     *
+     * @param _parent parent
+     * @param _children children
      * @param _selectedUUID set of selected classification uuids
      */
-    private void addChildren(final UIClassification _parent, final Set<Classification> _children,
-                    final Set<UUID> _selectedUUID)
+    private void addChildren(final UIClassification _parent,
+                             final Set<Classification> _children,
+                             final Set<UUID> _selectedUUID)
     {
         for (final Classification child : _children) {
             final UIClassification childUI = new UIClassification(child.getUUID(), _parent.mode);
@@ -247,8 +254,10 @@ public class UIClassification implements IFormElement, IClusterable
             _parent.children.add(childUI);
             childUI.setParent(_parent);
         }
-        Collections.sort(_parent.children, new Comparator<UIClassification>() {
-            public int compare(final UIClassification _class0, final UIClassification _class2)
+        Collections.sort(_parent.children, new Comparator<UIClassification>()
+        {
+            public int compare(final UIClassification _class0,
+                               final UIClassification _class2)
             {
                 return _class0.getLabel().compareTo(_class2.getLabel());
             }
@@ -258,37 +267,34 @@ public class UIClassification implements IFormElement, IClusterable
     /**
      * Method to get the key to the instances related to this classification.
      *
-     * @param _instance          Instance the related instance key are searched for
+     * @param _instance Instance the related instance key are searched for
      * @return Map of instance keys
      * @throws EFapsException on error
      */
     public Map<UUID, String> getClassInstanceKeys(final Instance _instance)
-            throws EFapsException
+        throws EFapsException
     {
         final Map<UUID, String> ret = new HashMap<UUID, String>();
         final Classification classType = (Classification) Type.get(this.classificationUUID);
-        final SearchQuery query = new SearchQuery();
-        query.setExpand(_instance,
-                        classType.getClassifyRelationType().getName() + "\\" + classType.getRelLinkAttributeName());
-        query.addSelect(classType.getRelTypeAttributeName());
-        query.execute();
-        while (query.next()) {
-            final Long typeid = (Long) query.get(classType.getRelTypeAttributeName());
+        final QueryBuilder queryBldr = new QueryBuilder(classType.getClassifyRelationType());
+        queryBldr.addWhereAttrEqValue(classType.getRelLinkAttributeName(), _instance.getId());
+        final MultiPrintQuery multi = queryBldr.getPrint();
+        multi.addAttribute(classType.getRelTypeAttributeName());
+        multi.execute();
+        while (multi.next()) {
+            final Long typeid = multi.<Long>getAttribute(classType.getRelTypeAttributeName());
             final Classification subClassType = (Classification) Type.get(typeid);
-            final SearchQuery subquery = new SearchQuery();
-            subquery.setExpand(_instance,
-                               subClassType.getName() + "\\" + subClassType.getLinkAttributeName());
-            subquery.addSelect("OID");
-            subquery.execute();
-            if (subquery.next()) {
-                //TODO must return an instanceKey!!! not necessary the oid
-                final String instanceKey = (String) subquery.get("OID");
-                ret.put(subquery.getType().getUUID(), instanceKey);
-                this.selectedUUID.add(subquery.getType().getUUID());
+            final QueryBuilder subQueryBldr = new QueryBuilder(subClassType);
+            subQueryBldr.addWhereAttrEqValue(subClassType.getLinkAttributeName(), _instance.getId());
+            final InstanceQuery query = subQueryBldr.getQuery();
+            query.execute();
+            if (query.next()) {
+                // TODO must return an instanceKey!!! not necessary the oid
+                final String instanceKey = query.getCurrentValue().getOid();
+                ret.put(query.getCurrentValue().getType().getUUID(), instanceKey);
+                this.selectedUUID.add(query.getCurrentValue().getType().getUUID());
             }
-            subquery.close();
         }
-        query.close();
         return ret;
     }
 
@@ -334,6 +340,7 @@ public class UIClassification implements IFormElement, IClusterable
 
     /**
      * Setter method for instance variable {@link #parent}.
+     *
      * @param _parent value for instance variable {@link #parent}
      */
     private void setParent(final UIClassification _parent)
@@ -372,9 +379,8 @@ public class UIClassification implements IFormElement, IClusterable
     }
 
     /**
-     * Method to add a uuid to the set of selected classifications. This method
-     * should only be called on a root classification. e.;g. on cretae mode
-     * to set the default selected classifications.
+     * Method to add a uuid to the set of selected classifications. This method should only be called on a root
+     * classification. e.;g. on cretae mode to set the default selected classifications.
      *
      * @param _uuid uuid to set as selected
      */
