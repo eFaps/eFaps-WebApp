@@ -118,12 +118,19 @@ public class UIClassification
     private String commandName;
 
     /**
+     * Is this classification multipleselect.
+     */
+    private final boolean multipleSelect;
+
+
+    /**
      * @param _field FielClassification
      * @param _uiObject ui object
      */
     public UIClassification(final FieldClassification _field,
                             final AbstractUIObject _uiObject)
     {
+        this.multipleSelect = ((Classification) Type.get(_field.getClassificationName())).isMultipleSelect();
         this.fieldId = _field.getId();
         this.classificationUUID = Type.get(_field.getClassificationName()).getUUID();
         this.root = true;
@@ -140,6 +147,7 @@ public class UIClassification
     private UIClassification(final UUID _uuid,
                              final TargetMode _mode)
     {
+        this.multipleSelect = ((Classification) Type.get(_uuid)).isMultipleSelect();
         this.fieldId = 0;
         this.classificationUUID = _uuid;
         this.label = DBProperties.getProperty(Type.get(this.classificationUUID).getName() + ".Label");
@@ -171,6 +179,16 @@ public class UIClassification
         addNodes(rootNode, this.children);
         final TreeModel model = new DefaultTreeModel(rootNode);
         return model;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #multipleSelect}.
+     *
+     * @return value of instance variable {@link #multipleSelect}
+     */
+    public boolean isMultipleSelect()
+    {
+        return this.multipleSelect;
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.model.IModel;
-
 import org.efaps.ui.wicket.models.objects.UIClassification;
 
 /**
@@ -36,7 +35,8 @@ import org.efaps.ui.wicket.models.objects.UIClassification;
  * @author The eFaps Team
  * @version $Id$
  */
-public class ClassificationPath extends WebComponent
+public class ClassificationPath
+    extends WebComponent
 {
 
     /**
@@ -46,24 +46,27 @@ public class ClassificationPath extends WebComponent
 
     /**
      * @param _wicketId wicket id of this component
-     * @param _model    model for this component
+     * @param _model model for this component
      */
-    public ClassificationPath(final String _wicketId, final IModel<UIClassification> _model)
+    public ClassificationPath(final String _wicketId,
+                              final IModel<UIClassification> _model)
     {
         super(_wicketId, _model);
     }
 
     /**
-     * @see org.apache.wicket.Component#onComponentTagBody(org.apache.wicket.markup.MarkupStream, org.apache.wicket.markup.ComponentTag)
-     * @param markupStream
-     * @param openTag
+     * @see org.apache.wicket.Component#onComponentTagBody(org.apache.wicket.markup.MarkupStream,
+     *      org.apache.wicket.markup.ComponentTag)
+     * @param _markupStream MarkupStream
+     * @param _openTag      open tag
      */
     @Override
-    protected void onComponentTagBody(final MarkupStream _markupStream, final ComponentTag _openTag)
+    protected void onComponentTagBody(final MarkupStream _markupStream,
+                                      final ComponentTag _openTag)
     {
         super.onComponentTagBody(_markupStream, _openTag);
         final StringBuilder html = new StringBuilder();
-        final UIClassification uiclass  = (UIClassification) getDefaultModelObject();
+        final UIClassification uiclass = (UIClassification) getDefaultModelObject();
         if (!uiclass.isInitialized()) {
             uiclass.execute();
         }
@@ -81,7 +84,12 @@ public class ClassificationPath extends WebComponent
         replaceComponentTagBody(_markupStream, _openTag, html);
     }
 
-    private void findSelectedLeafs(final List<UIClassification> _leafs, final UIClassification _uiclass)
+    /**
+     * @param _leafs        classification leaf
+     * @param _uiclass      current classification
+     */
+    private void findSelectedLeafs(final List<UIClassification> _leafs,
+                                   final UIClassification _uiclass)
     {
         boolean add = true;
         for (final UIClassification child : _uiclass.getChildren()) {
@@ -95,9 +103,14 @@ public class ClassificationPath extends WebComponent
         }
     }
 
-    private void buildHtml(final StringBuilder _bldr, final UIClassification _uiclass)
+    /**
+     * @param _bldr     StringBUilder for the snipplet
+     * @param _uiclass  classifcation
+     */
+    private void buildHtml(final StringBuilder _bldr,
+                           final UIClassification _uiclass)
     {
-        UIClassification tmp  = _uiclass;
+        UIClassification tmp = _uiclass;
         String path = "<span class=\"classPathEntry\">" + tmp.getLabel() + "</span>";
         while (!tmp.isRoot()) {
             tmp = tmp.getParent();

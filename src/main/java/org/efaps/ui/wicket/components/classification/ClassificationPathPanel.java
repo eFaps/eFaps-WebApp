@@ -36,7 +36,6 @@ import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.form.valuepicker.ValuePicker;
@@ -49,6 +48,7 @@ import org.efaps.ui.wicket.models.objects.UIForm.Element;
 import org.efaps.ui.wicket.models.objects.UIForm.ElementType;
 import org.efaps.ui.wicket.pages.classification.ClassificationPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
+import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 import org.efaps.util.EFapsException;
@@ -59,14 +59,15 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class ClassificationPathPanel extends Panel
+public class ClassificationPathPanel
+    extends Panel
 {
+
     /**
      * Reference to the style sheet.
      */
     public static final EFapsContentReference CSS = new EFapsContentReference(ClassificationPathPanel.class,
                                                                               "ClassificationPathPanel.css");
-
 
     /**
      * Reference to the Icon.
@@ -77,14 +78,12 @@ public class ClassificationPathPanel extends Panel
     private static final long serialVersionUID = 1L;
 
     /**
-     * Modal window used to display the page containing the classification
-     * tree.
+     * Modal window used to display the page containing the classification tree.
      */
     private final ModalWindowContainer modal;
 
     /**
-     * Must the form be updated after closing the modal window containing
-     * the classification tree.
+     * Must the form be updated after closing the modal window containing the classification tree.
      */
     private boolean updateForm = false;
 
@@ -92,7 +91,8 @@ public class ClassificationPathPanel extends Panel
      * @param _wicketId wicket id of this component
      * @param _model model for this component
      */
-    public ClassificationPathPanel(final String _wicketId, final IModel<UIClassification> _model)
+    public ClassificationPathPanel(final String _wicketId,
+                                   final IModel<UIClassification> _model)
     {
         super(_wicketId, _model);
         add(StaticHeaderContributor.forCss(ClassificationPathPanel.CSS));
@@ -113,6 +113,7 @@ public class ClassificationPathPanel extends Panel
         // page creator can be moved over the whole srceen
         this.modal.setPageCreator(new ModalWindowContainer.PageCreator()
         {
+
             /** Needed for serialization */
             private static final long serialVersionUID = 1L;
 
@@ -154,21 +155,23 @@ public class ClassificationPathPanel extends Panel
     }
 
     /**
-     * Class renders a button to open the form containing the classifcation
-     * tree.
+     * Class renders a button to open the form containing the classifcation tree.
      */
-    public class ClassTreeOpener extends WebComponent
+    public class ClassTreeOpener
+        extends WebComponent
     {
+
         /**
-         *  Needed for serialization.
+         * Needed for serialization.
          */
         private static final long serialVersionUID = 1L;
 
         /**
          * @param _wicketId wicket id for this component
-         * @param _model    model for this component
+         * @param _model model for this component
          */
-        public ClassTreeOpener(final String _wicketId, final IModel<UIClassification> _model)
+        public ClassTreeOpener(final String _wicketId,
+                               final IModel<UIClassification> _model)
         {
             super(_wicketId, _model);
             this.add(new AjaxOpenClassTreeBehavior());
@@ -178,10 +181,11 @@ public class ClassificationPathPanel extends Panel
          * @see org.apache.wicket.Component#onComponentTagBody(org.apache.wicket.markup.MarkupStream,
          *      org.apache.wicket.markup.ComponentTag)
          * @param _markupStream markup stream
-         * @param _openTag      tag
+         * @param _openTag tag
          */
         @Override
-        protected void onComponentTagBody(final MarkupStream _markupStream, final ComponentTag _openTag)
+        protected void onComponentTagBody(final MarkupStream _markupStream,
+                                          final ComponentTag _openTag)
         {
             super.onComponentTagBody(_markupStream, _openTag);
             final StringBuilder html = new StringBuilder();
@@ -193,8 +197,10 @@ public class ClassificationPathPanel extends Panel
     /**
      * Behavior used to open the form with the classification tree.
      */
-    public class AjaxOpenClassTreeBehavior extends AjaxEventBehavior
+    public class AjaxOpenClassTreeBehavior
+        extends AjaxEventBehavior
     {
+
         /**
          * Needed for serialization.
          */
@@ -209,8 +215,7 @@ public class ClassificationPathPanel extends Panel
         }
 
         /**
-         * This Method returns the JavaScript which is executed by the
-         * JSCooKMenu.
+         * This Method returns the JavaScript which is executed by the JSCooKMenu.
          *
          * @return String with the JavaScript
          */
@@ -233,8 +238,7 @@ public class ClassificationPathPanel extends Panel
         }
 
         /**
-         * Method must be overwritten, otherwise the default would break the
-         * execution of the JavaScript.
+         * Method must be overwritten, otherwise the default would break the execution of the JavaScript.
          *
          * @return null
          */
@@ -248,15 +252,18 @@ public class ClassificationPathPanel extends Panel
     /**
      * Ajax callback that is called on closing the modal window.
      */
-    public class UpdateCallback implements ModalWindow.WindowClosedCallback
+    public class UpdateCallback
+        implements ModalWindow.WindowClosedCallback
     {
+
         /**
          * Needed for serialization.
          */
         private static final long serialVersionUID = 1L;
 
         /**
-         * @see org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow.WindowClosedCallback#onClose(org.apache.wicket.ajax.AjaxRequestTarget)
+         * @see org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow.WindowClosedCallback#onClose(
+         *  org.apache.wicket.ajax.AjaxRequestTarget)
          * @param _target ajax target
          */
         public void onClose(final AjaxRequestTarget _target)
@@ -289,28 +296,27 @@ public class ClassificationPathPanel extends Panel
                 try {
                     add2Elements(uiform, (UIClassification) getDefaultModelObject(), uuid2InstanceKey);
                 } catch (final EFapsException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    getRequestCycle().setResponsePage(new ErrorPage(e));
                 }
                 FormPage.updateFormContainer(page, form, uiform);
                 _target.addComponent(form);
-                //TODO this should not be done always, needed for the editor so that it is loaded correctly
+                // TODO this should not be done always, needed for the editor so that it is loaded correctly
                 _target.appendJavascript("dojo.parser.parse(document.body)");
             }
         }
 
         /**
-         * Recursive method that adds the classification forms as elements to the
-         * form by walking down the tree.
+         * Recursive method that adds the classification forms as elements to the form by walking down the tree.
          *
-         * @param _uiForm       uiForm the elements must be added to
-         * @param _parentClass  the classification to be added
+         * @param _uiForm uiForm the elements must be added to
+         * @param _parentClass the classification to be added
          * @param _uuid2InstanceKey map from uuid to instance keys
          * @throws EFapsException on error
          */
-        private void add2Elements(final UIForm _uiForm, final UIClassification _parentClass,
+        private void add2Elements(final UIForm _uiForm,
+                                  final UIClassification _parentClass,
                                   final Map<UUID, String> _uuid2InstanceKey)
-                throws EFapsException
+            throws EFapsException
         {
             if (_parentClass.isSelected()) {
                 final UIFieldForm fieldform;
