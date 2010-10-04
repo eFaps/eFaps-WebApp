@@ -288,8 +288,10 @@ public class ClassificationPathPanel
                     final IFormElement element = iter2.next().getElement();
                     if (element instanceof UIFieldForm) {
                         final String instanceKey = ((UIFieldForm) element).getInstanceKey();
-                        final UUID classUUID = ((UIFieldForm) element).getClassificationUUID();
-                        uuid2InstanceKey.put(classUUID, instanceKey);
+                        if (instanceKey != null) {
+                            final UUID classUUID = ((UIFieldForm) element).getClassificationUUID();
+                            uuid2InstanceKey.put(classUUID, instanceKey);
+                        }
                         iter2.remove();
                     }
                 }
