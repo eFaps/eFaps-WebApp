@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ package org.efaps.ui.wicket.pages.classification;
 
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.model.IModel;
-
 import org.efaps.ui.wicket.components.classification.ClassificationPathPanel;
 import org.efaps.ui.wicket.components.classification.ClassificationTree;
 import org.efaps.ui.wicket.models.objects.UIClassification;
@@ -33,13 +32,16 @@ import org.efaps.ui.wicket.models.objects.UIClassification;
  * @author The eFaps Team
  * @version $Id$
  */
-public class ClassificationPage extends WebPage
+public class ClassificationPage
+    extends WebPage
 {
+
     /**
-     * @param _model
-     * @param _panel
+     * @param _model model for this page
+     * @param _panel    classification panel used for the tree
      */
-    public ClassificationPage(final IModel<UIClassification> _model, final ClassificationPathPanel _panel)
+    public ClassificationPage(final IModel<UIClassification> _model,
+                              final ClassificationPathPanel _panel)
     {
         super(_model);
         final ClassificationTree tree = new ClassificationTree("tree", _model, _panel);
