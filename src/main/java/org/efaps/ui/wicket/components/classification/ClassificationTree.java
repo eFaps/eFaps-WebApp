@@ -22,8 +22,11 @@ package org.efaps.ui.wicket.components.classification;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
+import java.util.UUID;
 
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeModel;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -31,12 +34,15 @@ import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.tree.BaseTree;
 import org.apache.wicket.markup.html.tree.WicketTreeModel;
 import org.apache.wicket.model.IModel;
+import org.efaps.admin.common.SystemConfiguration;
+import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.components.tree.StructurBrowserTree;
 import org.efaps.ui.wicket.models.objects.UIClassification;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
+import org.efaps.util.EFapsException;
 
 /**
  * Renders the tree for selecting a clqssification.
@@ -47,6 +53,10 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 public class ClassificationTree
     extends BaseTree
 {
+    /**
+     * Key use as Attribute in the WebApp SystemConfiguration.
+     */
+    public static final String CONFIG_EXPAND = "ClassificationTreeExpandState";
 
     /**
      * ResourceReference to the StyleSheet used for this Tree.
@@ -75,18 +85,33 @@ public class ClassificationTree
      * @param _wicketId wicketId of this component
      * @param _model model for this component
      * @param _panel panel this tree is called from
+     * @throws EFapsException on error
      */
     public ClassificationTree(final String _wicketId,
                               final IModel<UIClassification> _model,
                               final ClassificationPathPanel _panel)
+        throws EFapsException
     {
         super(_wicketId, new WicketTreeModel());
         this.add(StaticHeaderContributor.forCss(ClassificationTree.CSS));
         this.add(StaticHeaderContributor.forCss(ClassificationTree.TCSS));
         final UIClassification classification = _model.getObject();
-        setModelObject(classification.getTreeModel());
+        final TreeModel model = classification.getTreeModel();
+        setModelObject(model);
 
-        getTreeState().expandAll();
+        //WebApp-Configuration
+        final SystemConfiguration config = SystemConfiguration.get(
+                            UUID.fromString("50a65460-2d08-4ea8-b801-37594e93dad5"));
+        String expand = "true";
+        if (config != null) {
+            final Properties props = config.getAttributeValueAsProperties(ClassificationTree.CONFIG_EXPAND);
+            expand = props.getProperty(Type.get(classification.getClassificationUUID()).getName(), "true");
+        }
+        if ("false".equalsIgnoreCase(expand)) {
+            getTreeState().expandNode(model.getRoot());
+        } else {
+            getTreeState().expandAll();
+        }
         final String label;
         if (DBProperties.hasProperty(classification.getCommandName() + ".Button.ClassTreeUpdate")) {
             label = DBProperties.getProperty(classification.getCommandName() + ".Button.ClassTreeUpdate");

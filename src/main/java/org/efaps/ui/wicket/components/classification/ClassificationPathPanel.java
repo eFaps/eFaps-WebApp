@@ -119,7 +119,13 @@ public class ClassificationPathPanel
 
             public Page createPage()
             {
-                return new ClassificationPage(_model, ClassificationPathPanel.this);
+                Page ret;
+                try {
+                    ret = new ClassificationPage(_model, ClassificationPathPanel.this);
+                } catch (final EFapsException e) {
+                    ret = new ErrorPage(e);
+                }
+                return ret;
             }
         });
     }

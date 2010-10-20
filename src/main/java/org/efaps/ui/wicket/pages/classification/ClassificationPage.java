@@ -25,6 +25,7 @@ import org.apache.wicket.model.IModel;
 import org.efaps.ui.wicket.components.classification.ClassificationPathPanel;
 import org.efaps.ui.wicket.components.classification.ClassificationTree;
 import org.efaps.ui.wicket.models.objects.UIClassification;
+import org.efaps.util.EFapsException;
 
 /**
  * TODO comment!
@@ -39,9 +40,11 @@ public class ClassificationPage
     /**
      * @param _model model for this page
      * @param _panel    classification panel used for the tree
+     * @throws EFapsException on error
      */
     public ClassificationPage(final IModel<UIClassification> _model,
                               final ClassificationPathPanel _panel)
+        throws EFapsException
     {
         super(_model);
         final ClassificationTree tree = new ClassificationTree("tree", _model, _panel);
