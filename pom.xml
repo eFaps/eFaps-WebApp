@@ -33,7 +33,7 @@
     <packaging>jar</packaging>
     <groupId>org.efaps</groupId>
     <artifactId>efaps-webapp</artifactId>
-    <version>1.5.0</version>
+    <version>1.5.1-SNAPSHOT</version>
     <name>eFaps WebApp</name>
     <description>
         eFaps WebApp provides a web interface as the User Interface for eFaps
@@ -411,6 +411,12 @@
             <version>1.4.12</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.wicket</groupId>
+            <artifactId>wicket-devutils</artifactId>
+            <version>1.4.12</version>
+            <scope>compile</scope>
+        </dependency>
 
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -429,5 +435,5 @@
                 </exclusion>
             </exclusions>
         </dependency>
-   </dependencies>
+    </dependencies>
 </project>
