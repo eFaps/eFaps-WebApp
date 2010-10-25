@@ -103,6 +103,7 @@ public class EFapsApplication
         getMarkupSettings().setStripXmlDeclarationFromOutput(true);
         getRequestCycleSettings().setGatherExtendedBrowserInfo(true);
         getDebugSettings().setAjaxDebugModeEnabled(false);
+        getDebugSettings().setDevelopmentUtilitiesEnabled(false);
         getSecuritySettings().setAuthorizationStrategy(new EFapsFormBasedAuthorizationStartegy());
         getApplicationSettings().setPageExpiredErrorPage(LoginPage.class);
         getPageSettings().setAutomaticMultiWindowSupport(true);
