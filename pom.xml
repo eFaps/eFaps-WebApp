@@ -374,7 +374,7 @@
         <dependency>
             <groupId>org.efaps</groupId>
             <artifactId>efaps-kernel</artifactId>
-            <version>1.5.0</version>
+            <version>1.5.2-SNAPSHOT</version>
         </dependency>
 
         <!-- to define a higher version (needed from another tool) -->
