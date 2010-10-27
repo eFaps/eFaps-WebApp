@@ -29,35 +29,38 @@ import org.efaps.util.EFapsException;
 
 /**
  * Class serves as the model for a field form. Meaning a from that is
- * displayed inside another form. This system of displaying a from inside
- * another form is used for classification.
+ * displayed inside another form. This system of
+ * displaying a from inside another form is used for classification.
  *
  * @author The eFaps Team
  * @version $Id$
  */
-public class UIFieldForm extends UIForm implements IFormElement
+public class UIFieldForm
+    extends UIForm
+    implements IFormElement
 {
+
     /**
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
 
     /**
-     * Stores the uuid of the classification in case that the constructor for
-     * create is used.
+     * Stores the uuid of the classification in case that the constructor
+     * for create is used.
      */
     private UUID classificationUUID;
 
     /**
      * Constructor for the case that a instance is given e.g. view, edit.
      *
-     * @param _commandUuid      the uuid of the command that opened the parent
-     *                          form
-     * @param _instanceKey      instance key for this UIFieldForm
+     * @param _commandUuid the uuid of the command that opened the parent form
+     * @param _instanceKey instance key for this UIFieldForm
      * @throws EFapsException on error
      */
-    public UIFieldForm(final UUID _commandUuid, final String _instanceKey)
-            throws EFapsException
+    public UIFieldForm(final UUID _commandUuid,
+                       final String _instanceKey)
+        throws EFapsException
     {
         super(_commandUuid, _instanceKey);
         if (getInstance().getType() instanceof Classification) {
@@ -69,11 +72,12 @@ public class UIFieldForm extends UIForm implements IFormElement
 
     /**
      * Constructor used during create.
-     * @param _commandUuid      the uuid of the command that opened the parent
-     *                          form
-     * @param _classification   the classificationto be created
+     *
+     * @param _commandUuid the uuid of the command that opened the parent form
+     * @param _classification the classificationto be created
      */
-    public UIFieldForm(final UUID _commandUuid, final UIClassification _classification)
+    public UIFieldForm(final UUID _commandUuid,
+                       final UIClassification _classification)
     {
         super(_commandUuid, null);
         final Type type = Type.get(_classification.getClassificationUUID());
@@ -83,8 +87,7 @@ public class UIFieldForm extends UIForm implements IFormElement
     }
 
     /**
-     * Must be overwritten to set the create type to the underlying
-     * classification.
+     * Must be overwritten to set the create type to the underlying classification.
      *
      * @see org.efaps.ui.wicket.models.objects.UIForm#getCreateTargetType()
      * @return the classification type

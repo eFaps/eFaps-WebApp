@@ -37,7 +37,7 @@ import org.efaps.ui.wicket.components.heading.HeadingPanel;
 import org.efaps.ui.wicket.components.menu.MenuPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
-import org.efaps.ui.wicket.models.objects.UIAbstractPageObject;
+import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
@@ -160,12 +160,12 @@ public abstract class AbstractContentPage
 
         add(new MenuPanel("menu", super.getDefaultModel(), _form));
         WebMarkupContainer exLink;
-        if (((UIAbstractPageObject) super.getDefaultModelObject()).getHelpTarget() != null) {
+        if (((AbstractUIPageObject) super.getDefaultModelObject()).getHelpTarget() != null) {
             final PopupSettings set = new PopupSettings(PopupSettings.RESIZABLE | PopupSettings.SCROLLBARS
                             | PopupSettings.MENU_BAR | PopupSettings.LOCATION_BAR | PopupSettings.STATUS_BAR
                             | PopupSettings.TOOL_BAR);
             exLink = new ExternalLink("help",
-                            "/servlet/help/" + ((UIAbstractPageObject) super.getDefaultModelObject()).getHelpTarget(),
+                            "/servlet/help/" + ((AbstractUIPageObject) super.getDefaultModelObject()).getHelpTarget(),
                             DBProperties.getProperty("org.efaps.ui.wicket.pages.content.AbstractContentPage.HelpLink"))
                            .setPopupSettings(set).setContextRelative(true);
             final String style = "eFapsHelpLink";

@@ -31,7 +31,7 @@ import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
-import org.efaps.ui.wicket.models.objects.UIAbstractPageObject;
+import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.pages.dialog.DialogPage;
@@ -90,7 +90,7 @@ public class FooterPanel
 
         add(StaticHeaderContributor.forCss(FooterPanel.CSS));
 
-        final UIAbstractPageObject uiObject = (UIAbstractPageObject) super.getDefaultModelObject();
+        final AbstractUIPageObject uiObject = (AbstractUIPageObject) super.getDefaultModelObject();
 
         // if we want a SucessDialog we add it here, it will be opened after
         // closing the window

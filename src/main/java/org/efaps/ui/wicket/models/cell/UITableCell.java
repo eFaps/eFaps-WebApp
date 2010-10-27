@@ -26,25 +26,28 @@ import java.util.List;
 import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
-import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.event.Return;
 import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
+import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.util.EFapsException;
 
 /**
- * This class represents the model wich is used for rendering the components of
- * one cell inside a Table.It uses a {@link org.efaps.admin.ui.field.Field} as
- * the base for the data.
+ * This class represents the model wich is used for rendering the components
+ * of one cell inside a Table.It uses a
+ * {@link org.efaps.admin.ui.field.Field} as the base for the data.
  *
  * @author The eFaps Team
  * @version $Id:CellModel.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class UITableCell extends UIAbstractCell
+public class UITableCell
+    extends UIAbstractCell
 {
+
     /**
      * Needed for serialization.
      */
@@ -56,9 +59,9 @@ public class UITableCell extends UIAbstractCell
     private String reference;
 
     /**
-     * Variable storing the value as it was retrieved from the eFaps-Database by
-     * a query. The value is used for comparisons and to be able to access the
-     * original value.
+     * Variable storing the value as it was retrieved from the eFaps-Database
+     * by a query. The value is used for
+     * comparisons and to be able to access the original value.
      */
     private final Object compareValue;
 
@@ -102,25 +105,30 @@ public class UITableCell extends UIAbstractCell
      */
     private final String align;
 
-
     /**
      * Constructor.
-     * @param _parent       parent ui object
-     * @param _fieldValue   FieldValue
-     * @param _cellvalue    Value for the cell
-     * @param _cellTitle    title for the cell, if null will be set to _cellvalue
-     * @param _icon         icon of the cell
-     * @param _instance     Instance
+     *
+     * @param _parent parent ui object
+     * @param _fieldValue FieldValue
+     * @param _cellvalue Value for the cell
+     * @param _cellTitle title for the cell, if null will be set to _cellvalue
+     * @param _icon icon of the cell
+     * @param _instance Instance
      * @throws EFapsException on error
      */
-    public UITableCell(final AbstractUIObject _parent, final FieldValue _fieldValue, final Instance _instance,
-                       final String _cellvalue, final String _cellTitle, final String _icon) throws EFapsException
+    public UITableCell(final AbstractUIObject _parent,
+                       final FieldValue _fieldValue,
+                       final Instance _instance,
+                       final String _cellvalue,
+                       final String _cellTitle,
+                       final String _icon)
+        throws EFapsException
     {
         super(_parent, _fieldValue, _instance == null ? null : _instance.getKey(), _cellvalue);
 
         this.compareValue = _fieldValue.getObject4Compare();
         this.fixedWidth = _fieldValue.getField().isFixedWidth();
-        this.align =  _fieldValue.getField().getAlign();
+        this.align = _fieldValue.getField().getAlign();
         this.cellTitle = _cellTitle == null ? _cellvalue : _cellTitle;
         this.icon = _icon;
         this.multiRows = _fieldValue.getField().getRows() > 1;
@@ -136,7 +144,10 @@ public class UITableCell extends UIAbstractCell
         if (_fieldValue.getField().getReference() != null) {
             if (getInstanceKey() != null) {
                 final Menu menu = Menu.getTypeTreeMenu(_instance.getType());
-                if (menu != null && menu.hasAccess(getParent().getMode(), getInstance())) {
+                if (menu != null && menu.hasAccess(getParent().getMode(), getInstance())
+                            && (!((AbstractUIPageObject) _parent).getAccessMap().containsKey(getInstance())
+                                || (((AbstractUIPageObject) _parent).getAccessMap().containsKey(getInstance())
+                                && ((AbstractUIPageObject) _parent).getAccessMap().get(getInstance())))) {
                     this.reference = _fieldValue.getField().getReference();
                 } else if (_fieldValue.getField().getReference().contains("/servlet/checkout")) {
                     this.reference = _fieldValue.getField().getReference();
@@ -144,7 +155,6 @@ public class UITableCell extends UIAbstractCell
             }
         }
     }
-
 
     /**
      * Getter method for the instance variable {@link #align}.
@@ -178,8 +188,7 @@ public class UITableCell extends UIAbstractCell
     }
 
     /**
-     * This is the getter method for the instance variable {@link #compareValue}
-     * .
+     * This is the getter method for the instance variable {@link #compareValue} .
      *
      * @return value of instance variable {@link #compareValue}
      */
@@ -239,12 +248,15 @@ public class UITableCell extends UIAbstractCell
 
     /**
      * Method to execute the events.
-     * @param _others       object to be passed to the executed event.
-     * @param _eventType    type of the event to be executed
-     * @return  List of Returns
+     *
+     * @param _others object to be passed to the executed event.
+     * @param _eventType type of the event to be executed
+     * @return List of Returns
      * @throws EFapsException on error
      */
-    public List<Return> executeEvents(final Object _others, final EventType _eventType) throws EFapsException
+    public List<Return> executeEvents(final Object _others,
+                                      final EventType _eventType)
+        throws EFapsException
     {
         List<Return> ret = new ArrayList<Return>();
         final Field field = getField();
@@ -279,10 +291,10 @@ public class UITableCell extends UIAbstractCell
         this.autoComplete = _autoComplete;
     }
 
-
     /**
      * Method to get the auto completion event.
-     * @param _others   object to be passed to the executed event
+     *
+     * @param _others object to be passed to the executed event
      * @return List of Returns
      * @throws EFapsException on error
      */
@@ -314,11 +326,13 @@ public class UITableCell extends UIAbstractCell
 
     /**
      * Method to get the field update event.
-     * @param _others   object to be passed to the executed event
+     *
+     * @param _others object to be passed to the executed event
      * @return List of Returns
      * @throws EFapsException on error
      */
-    public List<Return> getFieldUpdate(final Object _others) throws EFapsException
+    public List<Return> getFieldUpdate(final Object _others)
+        throws EFapsException
     {
         return executeEvents(_others, EventType.UI_FIELD_UPDATE);
     }

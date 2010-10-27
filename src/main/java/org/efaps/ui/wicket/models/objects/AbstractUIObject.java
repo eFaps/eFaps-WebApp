@@ -32,15 +32,15 @@ import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter;
-import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractCommand;
+import org.efaps.admin.ui.AbstractCommand.Target;
+import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.Command;
 import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.Search;
-import org.efaps.admin.ui.AbstractCommand.Target;
-import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.user.Role;
 import org.efaps.beans.ValueList;
 import org.efaps.beans.valueparser.ParseException;
@@ -143,7 +143,7 @@ public abstract class AbstractUIObject
             this.openerId = (String) _parameters.get(Opener.OPENER_PARAKEY);
         }
         final Opener opener = ((EFapsSession) Session.get()).getOpener(this.openerId);
-        final AbstractUIObject uiObject = ((AbstractUIObject) opener.getModel().getObject());
+        final AbstractUIObject uiObject = (AbstractUIObject) opener.getModel().getObject();
         initialize(uiObject.getCommandUUID(), this.openerId);
         this.menuTreeKey = opener.getMenuTreeKey();
         setInstanceKey(uiObject.getInstanceKey());

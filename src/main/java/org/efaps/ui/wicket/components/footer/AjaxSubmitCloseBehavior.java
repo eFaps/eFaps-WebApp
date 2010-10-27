@@ -61,7 +61,7 @@ import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.cell.UIFormCell;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
-import org.efaps.ui.wicket.models.objects.UIAbstractPageObject;
+import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.models.objects.UIFieldForm;
 import org.efaps.ui.wicket.models.objects.UIFieldTable;
 import org.efaps.ui.wicket.models.objects.UIForm;
@@ -99,7 +99,7 @@ public class AjaxSubmitCloseBehavior
      * Instance variable storing the model, because the super classes of a
      * behavior, doesn't store the model.
      */
-    private final UIAbstractPageObject uiObject;
+    private final AbstractUIPageObject uiObject;
 
     /**
      * Instance variable storing the form to be submited.
@@ -117,7 +117,7 @@ public class AjaxSubmitCloseBehavior
      * @param _uiobject UUIOBject
      * @param _form form
      */
-    public AjaxSubmitCloseBehavior(final UIAbstractPageObject _uiobject,
+    public AjaxSubmitCloseBehavior(final AbstractUIPageObject _uiobject,
                                    final FormContainer _form)
     {
         super(_form, "onclick");
@@ -169,7 +169,7 @@ public class AjaxSubmitCloseBehavior
                 if (executeEvents(_target, others, classifications)) {
                     if (this.uiObject.hasTargetCmd()) {
                         final AbstractCommand targetCmd = this.uiObject.getTargetCmd();
-                        UIAbstractPageObject newUIObject;
+                        AbstractUIPageObject newUIObject;
                         if (targetCmd.getTargetTable() != null) {
                             newUIObject = new UITable(this.uiObject.getTargetCmdUUID(), this.uiObject
                                             .getInstanceKey(), this.uiObject.getOpenerId());
@@ -333,16 +333,16 @@ public class AjaxSubmitCloseBehavior
     {
         boolean ret = true;
         final List<Return> returns;
-        final UIAbstractPageObject uiPageObject = (UIAbstractPageObject) this.form.getParent().getDefaultModelObject();
+        final AbstractUIPageObject uiPageObject = (AbstractUIPageObject) this.form.getParent().getDefaultModelObject();
         if (_classifications.size() > 0) {
             returns = uiPageObject.executeEvents(ParameterValues.OTHERS, _other,
                             ParameterValues.CLASSIFICATIONS, _classifications,
                             ParameterValues.OIDMAP4UI,
-                                    ((UIAbstractPageObject) this.form.getPage().getDefaultModelObject()).getUiID2Oid());
+                                    ((AbstractUIPageObject) this.form.getPage().getDefaultModelObject()).getUiID2Oid());
         } else {
             returns = uiPageObject.executeEvents(ParameterValues.OTHERS, _other,
                             ParameterValues.OIDMAP4UI,
-                            ((UIAbstractPageObject) this.form.getPage().getDefaultModelObject()).getUiID2Oid());
+                            ((AbstractUIPageObject) this.form.getPage().getDefaultModelObject()).getUiID2Oid());
         }
 
         for (final Return oneReturn : returns) {
@@ -498,12 +498,12 @@ public class AjaxSubmitCloseBehavior
                                 ParameterValues.OTHERS, _other,
                                 ParameterValues.CLASSIFICATIONS, _classifications,
                                 ParameterValues.OIDMAP4UI,
-                                    ((UIAbstractPageObject) this.form.getPage().getDefaultModelObject()).getUiID2Oid());
+                                    ((AbstractUIPageObject) this.form.getPage().getDefaultModelObject()).getUiID2Oid());
             } else {
                 returns = ((AbstractUIObject) this.form.getParent().getDefaultModelObject()).validate(
                                 ParameterValues.OTHERS, _other,
                                 ParameterValues.OIDMAP4UI,
-                                ((UIAbstractPageObject) this.form.getPage().getDefaultModelObject()).getUiID2Oid());
+                                ((AbstractUIPageObject) this.form.getPage().getDefaultModelObject()).getUiID2Oid());
             }
 
             for (final Return oneReturn : returns) {

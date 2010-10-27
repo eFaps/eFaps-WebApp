@@ -38,7 +38,7 @@ import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.cell.TableCellModel;
 import org.efaps.ui.wicket.models.cell.UIHiddenCell;
 import org.efaps.ui.wicket.models.cell.UITableCell;
-import org.efaps.ui.wicket.models.objects.UIAbstractPageObject;
+import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.models.objects.UIRow;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.util.EFapsKey;
@@ -142,7 +142,7 @@ public class RowPanel extends Panel
             protected void onComponentTag(final ComponentTag _tag)
             {
                 super.onComponentTag(_tag);
-                final UIAbstractPageObject uiObject = ((UIAbstractPageObject) getPage().getDefaultModelObject());
+                final AbstractUIPageObject uiObject = ((AbstractUIPageObject) getPage().getDefaultModelObject());
                 uirow.setUserinterfaceId(uiObject.getNewRandom());
 
                 try {

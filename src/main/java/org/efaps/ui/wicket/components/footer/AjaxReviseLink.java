@@ -27,7 +27,7 @@ import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.FormModel;
 import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
-import org.efaps.ui.wicket.models.objects.UIAbstractPageObject;
+import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.models.objects.UIWizardObject;
@@ -71,9 +71,9 @@ public class AjaxReviseLink
     @Override
     public void onClick(final AjaxRequestTarget _target)
     {
-        final UIAbstractPageObject uiobject = (UIAbstractPageObject) getDefaultModelObject();
+        final AbstractUIPageObject uiobject = (AbstractUIPageObject) getDefaultModelObject();
         final UIWizardObject wizard = uiobject.getWizard();
-        final UIAbstractPageObject prevObject = wizard.getPrevious();
+        final AbstractUIPageObject prevObject = wizard.getPrevious();
         prevObject.setPartOfWizardCall(true);
         prevObject.resetModel();
         final FooterPanel footer = findParent(FooterPanel.class);

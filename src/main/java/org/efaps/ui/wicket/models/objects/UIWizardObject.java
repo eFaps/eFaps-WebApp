@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,12 +49,12 @@ public class UIWizardObject implements IClusterable
      * Mapping between UIObject and parameters.
      */
     private final Map<AbstractUIObject, Map<String, String[]>> parameters
-                                                              = new HashMap<AbstractUIObject, Map<String, String[]>>();
+            = new HashMap<AbstractUIObject, Map<String, String[]>>();
 
     /**
      * List of UIObjects in this wizard.
      */
-    private final List<UIAbstractPageObject> uiObjects = new ArrayList<UIAbstractPageObject>();
+    private final List<AbstractUIPageObject> uiObjects = new ArrayList<AbstractUIPageObject>();
 
     /**
      * Current UIObject.
@@ -66,7 +66,7 @@ public class UIWizardObject implements IClusterable
      *
      * @param _uiObject current UIOBject
      */
-    public UIWizardObject(final UIAbstractPageObject _uiObject)
+    public UIWizardObject(final AbstractUIPageObject _uiObject)
     {
         this.uiObjects.add(_uiObject);
         this.current = _uiObject;
@@ -77,7 +77,7 @@ public class UIWizardObject implements IClusterable
      *
      * @param _uiObject Object to add
      */
-    public void add(final UIAbstractPageObject _uiObject)
+    public void add(final AbstractUIPageObject _uiObject)
     {
         this.uiObjects.add(_uiObject);
     }
@@ -87,7 +87,7 @@ public class UIWizardObject implements IClusterable
      *
      * @param _uiObject Object to insert
      */
-    public void insertBefore(final UIAbstractPageObject _uiObject)
+    public void insertBefore(final AbstractUIPageObject _uiObject)
     {
         int i = 0;
         for (final AbstractUIObject uiObject : this.uiObjects) {
@@ -104,10 +104,10 @@ public class UIWizardObject implements IClusterable
      *
      * @return previous object
      */
-    public UIAbstractPageObject getPrevious()
+    public AbstractUIPageObject getPrevious()
     {
-        UIAbstractPageObject ret = null;
-        for (final UIAbstractPageObject uiObject : this.uiObjects) {
+        AbstractUIPageObject ret = null;
+        for (final AbstractUIPageObject uiObject : this.uiObjects) {
             if (uiObject == this.current) {
                 break;
             } else {

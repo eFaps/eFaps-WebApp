@@ -39,16 +39,17 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.EventType;
-import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractCommand;
+import org.efaps.admin.ui.AbstractCommand.SortDirection;
 import org.efaps.admin.ui.Image;
 import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.Table;
-import org.efaps.admin.ui.AbstractCommand.SortDirection;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.beans.ValueList;
+import org.efaps.beans.valueparser.ParseException;
 import org.efaps.beans.valueparser.ValueParser;
 import org.efaps.db.Instance;
 import org.efaps.db.MultiPrintQuery;
@@ -81,7 +82,7 @@ import org.efaps.util.RequestHandler;
  * @version $Id$
  */
 public class UIStructurBrowser
-    extends UIAbstractPageObject
+    extends AbstractUIPageObject
 {
     /**
      * Enum is used to set for this UIStructurBrowser which status of execution
@@ -326,7 +327,9 @@ public class UIStructurBrowser
                 child.setImage(Image.getTypeIcon(instance.getType()) != null ? Image.getTypeIcon(instance.getType())
                                 .getUrl() : null);
             }
-        } catch (final Exception e) {
+        } catch (final EFapsException e) {
+            throw new RestartResponseException(new ErrorPage(e));
+        } catch (final ParseException e) {
             throw new RestartResponseException(new ErrorPage(e));
         }
         sortModel();
@@ -361,8 +364,6 @@ public class UIStructurBrowser
                             print.addAttribute(field.getAttribute());
                         } else if (field.getPhrase() != null) {
                             print.addPhrase(field.getName(), field.getPhrase());
-                        } else if (field.getExpression() != null) {
-                            print.addExpression(field.getName(), field.getExpression());
                         }
                         if (field.getSelectAlternateOID() != null) {
                             print.addSelect(field.getSelectAlternateOID());
@@ -400,8 +401,6 @@ public class UIStructurBrowser
                         attr = print.getAttribute4Attribute(field.getAttribute());
                     } else if (field.getPhrase() != null) {
                         value = print.getPhrase(field.getName());
-                    } else if (field.getExpression() != null) {
-                        value = print.getExpression(field.getName());
                     }
 
                     final FieldValue fieldvalue = new FieldValue(field, attr, value, instance, getInstance());
@@ -424,7 +423,7 @@ public class UIStructurBrowser
                     child.getColumns().add(strValue);
                 }
             }
-        } catch (final Exception e) {
+        } catch (final EFapsException e) {
             throw new RestartResponseException(new ErrorPage(e));
         }
         sortModel();
@@ -491,7 +490,7 @@ public class UIStructurBrowser
         try {
             final List<Return> ret = getCommand().executeEvents(EventType.UI_TABLE_EVALUATE, ParameterValues.INSTANCE,
                             _instance, ParameterValues.CLASS, this);
-            return (ret.isEmpty() ? false : ret.get(0).get(ReturnValues.TRUE) != null);
+            return ret.isEmpty() ? false : ret.get(0).get(ReturnValues.TRUE) != null;
         } catch (final EFapsException e) {
             throw new RestartResponseException(new ErrorPage(e));
         }
@@ -715,7 +714,9 @@ public class UIStructurBrowser
             if (print.execute()) {
                 setLabel(valList.makeString(getInstance(), print, getMode()).toString());
             }
-        } catch (final Exception e) {
+        } catch (final EFapsException e) {
+            throw new RestartResponseException(new ErrorPage(e));
+        } catch (final ParseException e) {
             throw new RestartResponseException(new ErrorPage(e));
         }
     }

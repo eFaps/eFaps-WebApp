@@ -18,16 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.ui.wicket.models.objects;
-
-
 /**
- * Elements for a Form.
- *
- * @author The eFaps Team
- * @version $Id$
+ * The objects holding and handling the data presented to the User.
  */
-public interface IFormElement
-{
-
-}
+package org.efaps.ui.wicket.models.objects;

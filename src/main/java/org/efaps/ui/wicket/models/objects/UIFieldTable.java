@@ -23,13 +23,10 @@ package org.efaps.ui.wicket.models.objects;
 import java.util.List;
 import java.util.UUID;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
-import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractCommand.SortDirection;
 import org.efaps.admin.ui.field.Field;
@@ -37,12 +34,16 @@ import org.efaps.admin.ui.field.FieldTable;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author The eFasp Team
  * @version $Id$
  */
-public class UIFieldTable extends UITable implements IFormElement
+public class UIFieldTable
+    extends UITable
+    implements IFormElement
 {
 
     /**
@@ -66,18 +67,20 @@ public class UIFieldTable extends UITable implements IFormElement
     private final String name;
 
     /**
-     * Stores if the table is the first table inside a form. because the
-     * first table adds some things to the page that works for all tables
-     * inside the same page.
+     * Stores if the table is the first table inside a form. because the first table adds some things to the page that
+     * works for all tables inside the same page.
      */
     private boolean firstTable = true;
+
     /**
-     * @param _commanduuid  uuid of the command
-     * @param _instanceKey  key to the instance
-     * @param _fieldTable   fieltable
+     * @param _commanduuid uuid of the command
+     * @param _instanceKey key to the instance
+     * @param _fieldTable fieltable
      * @throws EFapsException on error
      */
-    public UIFieldTable(final UUID _commanduuid, final String _instanceKey, final FieldTable _fieldTable)
+    public UIFieldTable(final UUID _commanduuid,
+                        final String _instanceKey,
+                        final FieldTable _fieldTable)
         throws EFapsException
     {
         super(_commanduuid, _instanceKey);
@@ -89,8 +92,8 @@ public class UIFieldTable extends UITable implements IFormElement
                 setSortKey(Context.getThreadContext().getUserAttribute(getUserAttributeKey(UserAttributeKey.SORTKEY)));
             }
             if (Context.getThreadContext().containsUserAttribute(getUserAttributeKey(UserAttributeKey.SORTDIRECTION))) {
-                setSortDirection(SortDirection.getEnum((Context.getThreadContext()
-                                .getUserAttribute(getUserAttributeKey(UserAttributeKey.SORTDIRECTION)))));
+                setSortDirection(SortDirection.getEnum(Context.getThreadContext()
+                                .getUserAttribute(getUserAttributeKey(UserAttributeKey.SORTDIRECTION))));
             }
         } catch (final EFapsException e) {
             // we don't throw an error because this are only Usersettings
@@ -131,22 +134,10 @@ public class UIFieldTable extends UITable implements IFormElement
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
-    @Override
-    protected List<List<Instance>> getInstanceListsOld() throws EFapsException
-    {
-        final List<Return> ret = FieldTable.get(this.id).executeEvents(EventType.UI_TABLE_EVALUATE,
-                        ParameterValues.INSTANCE, getInstance());
-        final List<List<Instance>> lists = (List<List<Instance>>) ret.get(0).get(ReturnValues.VALUES);
-        return lists;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @SuppressWarnings("unchecked")
-    protected List<Instance> getInstanceList() throws EFapsException
+    protected List<Instance> getInstanceList()
+        throws EFapsException
     {
         final List<Return> ret = FieldTable.get(this.id).executeEvents(EventType.UI_TABLE_EVALUATE,
                         ParameterValues.INSTANCE, getInstance());
@@ -165,6 +156,7 @@ public class UIFieldTable extends UITable implements IFormElement
 
     /**
      * Method to get the events that are related to this UITable.
+     *
      * @param _eventType eventype to get
      * @return List of events
      */

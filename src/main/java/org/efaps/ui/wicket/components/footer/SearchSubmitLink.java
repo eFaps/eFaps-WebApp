@@ -26,7 +26,7 @@ import org.apache.wicket.model.IModel;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.TableModel;
-import org.efaps.ui.wicket.models.objects.UIAbstractPageObject;
+import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.models.objects.UIWizardObject;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
@@ -70,7 +70,7 @@ public class SearchSubmitLink
     public void onSubmit()
     {
         super.onSubmit();
-        final UIAbstractPageObject uiObject = (UIAbstractPageObject) getDefaultModelObject();
+        final AbstractUIPageObject uiObject = (AbstractUIPageObject) getDefaultModelObject();
         try {
             final UITable newTable = new UITable(uiObject.getCommandUUID(), uiObject.getInstanceKey(), uiObject
                             .getOpenerId());

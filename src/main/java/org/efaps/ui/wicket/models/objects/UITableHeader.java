@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,12 +33,15 @@ import org.efaps.util.cache.CacheReloadException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class UITableHeader implements IClusterable
+public class UITableHeader
+    implements IClusterable
 {
+
     /**
      * Enum for the different types of filter.
      */
-    public static enum FilterType {
+    public static enum FilterType
+    {
         /** Date. */
         DATE,
         /** Decimal. */
@@ -50,6 +53,7 @@ public class UITableHeader implements IClusterable
         /** Text. */
         TEXT;
     }
+
     /**
      * Needed for serialization.
      */
@@ -136,11 +140,13 @@ public class UITableHeader implements IClusterable
     private final long fieldId;
 
     /**
-     * @param _field            field
-     * @param _sortdirection    sort direction
-     * @param _attr             attribute this field is used for
+     * @param _field field
+     * @param _sortdirection sort direction
+     * @param _attr attribute this field is used for
      */
-    public UITableHeader(final Field _field, final SortDirection _sortdirection, final Attribute _attr)
+    public UITableHeader(final Field _field,
+                         final SortDirection _sortdirection,
+                         final Attribute _attr)
     {
         this.label = _field.getLabel();
         this.sortable = _field.isSortAble();
@@ -159,18 +165,18 @@ public class UITableHeader implements IClusterable
 
         if (!this.filterPickList && _attr != null) {
             final UUID attrTypeUUId = _attr.getAttributeType().getUUID();
-            //String
+            // String
             if (UUID.fromString("72221a59-df5d-4c56-9bec-c9167de80f2b").equals(attrTypeUUId)) {
                 this.filterType = UITableHeader.FilterType.TEXT;
-            // Integer
+                // Integer
             } else if (UUID.fromString("41451b64-cb24-4e77-8d9e-5b6eb58df56f").equals(attrTypeUUId)) {
                 this.filterType = UITableHeader.FilterType.INTEGER;
-            // Decimal
-            } else if  (UUID.fromString("358d1f0e-43ae-425d-a4a0-8d5bad6f40d7").equals(attrTypeUUId)) {
+                // Decimal
+            } else if (UUID.fromString("358d1f0e-43ae-425d-a4a0-8d5bad6f40d7").equals(attrTypeUUId)) {
                 this.filterType = UITableHeader.FilterType.DECIMAL;
-            // Date or DateTime
+                // Date or DateTime
             } else if (UUID.fromString("68ce3aa6-e3e8-40bb-b48f-2a67948c2e7e").equals(attrTypeUUId)
-                        || UUID.fromString("e764db0f-70f2-4cd4-b2fe-d23d3da72f78").equals(attrTypeUUId)) {
+                            || UUID.fromString("e764db0f-70f2-4cd4-b2fe-d23d3da72f78").equals(attrTypeUUId)) {
                 this.filterType = UITableHeader.FilterType.DATE;
             }
         }
@@ -178,10 +184,12 @@ public class UITableHeader implements IClusterable
 
     /**
      * Get the Attribute belonging to this UITableHeader.
-     * @return  Attribute
+     *
+     * @return Attribute
      * @throws CacheReloadException on error
      */
-    public Attribute getAttribute() throws CacheReloadException
+    public Attribute getAttribute()
+        throws CacheReloadException
     {
         return Attribute.get(this.attrId);
     }
@@ -272,8 +280,7 @@ public class UITableHeader implements IClusterable
     }
 
     /**
-     * This is the getter method for the instance variable
-     * {@link #sortDirection}.
+     * This is the getter method for the instance variable {@link #sortDirection}.
      *
      * @return value of instance variable {@link #sortDirection}
      */
@@ -284,8 +291,7 @@ public class UITableHeader implements IClusterable
     }
 
     /**
-     * This is the setter method for the instance variable
-     * {@link #sortDirection}.
+     * This is the setter method for the instance variable {@link #sortDirection}.
      *
      * @param _sortDirection the sortDirection to set
      */

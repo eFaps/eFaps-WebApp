@@ -24,14 +24,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.UUID;
 
 import org.apache.wicket.PageParameters;
+import org.efaps.admin.access.AccessTypeEnums;
+import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Command;
 import org.efaps.admin.ui.Menu;
+import org.efaps.db.Instance;
 import org.efaps.ui.wicket.models.cell.UIHiddenCell;
+import org.efaps.util.EFapsException;
 
 /**
  * TODO comment!
@@ -39,7 +44,7 @@ import org.efaps.ui.wicket.models.cell.UIHiddenCell;
  * @author The eFaps Team
  * @version $Id$
  */
-public abstract class UIAbstractPageObject
+public abstract class AbstractUIPageObject
     extends AbstractUIObject
 {
     /**
@@ -62,6 +67,12 @@ public abstract class UIAbstractPageObject
      * A list of cells that will be rendered hidden in tht page.
      */
     private final List<UIHiddenCell> hiddenCells = new ArrayList<UIHiddenCell>();
+
+    /**
+     * Map of instance with access definition.
+     */
+    private final Map<Instance, Boolean> accessMap = new HashMap<Instance, Boolean>();
+
 
     /**
      * This instance variable stores the UUID of the CommandAbstract that is
@@ -99,15 +110,13 @@ public abstract class UIAbstractPageObject
      */
     private String helpTarget;
 
-
-
     /**
      * Constructor evaluating the UUID for the command and the oid from an
      * Opener instance.
      *
      * @param _parameters PageParameters for this Model
      */
-    public UIAbstractPageObject(final PageParameters _parameters)
+    public AbstractUIPageObject(final PageParameters _parameters)
     {
         super(_parameters);
     }
@@ -119,7 +128,7 @@ public abstract class UIAbstractPageObject
      * @param _instanceKey instance id for this Model
      * @param _openerId id of the opener
      */
-    public UIAbstractPageObject(final UUID _commandUUID,
+    public AbstractUIPageObject(final UUID _commandUUID,
                                 final String _instanceKey,
                                 final String _openerId)
     {
@@ -142,7 +151,7 @@ public abstract class UIAbstractPageObject
      * @param _commandUUID UUID for this Model
      * @param _instanceKey instance id for this Model
      */
-    public UIAbstractPageObject(final UUID _commandUUID,
+    public AbstractUIPageObject(final UUID _commandUUID,
                                 final String _instanceKey)
     {
         this(_commandUUID, _instanceKey, null);
@@ -347,5 +356,42 @@ public abstract class UIAbstractPageObject
     public String getNewRandom()
     {
         return ((Integer) this.random.nextInt()).toString();
+    }
+
+    /**
+     * Used to check the access to e.g. TreeMenus.
+     * @param _instances Instances that must be checked for access
+     * @return  Map with Instance to Boolean
+     * @throws EFapsException on error
+     */
+    protected Map<Instance, Boolean> checkAccessToInstances(final List<Instance> _instances)
+        throws EFapsException
+    {
+        final Map<Type, List<Instance>> types = new HashMap<Type, List<Instance>>();
+        for (final Instance instance : _instances) {
+            List<Instance> list;
+            if (!types.containsKey(instance.getType())) {
+                list = new ArrayList<Instance>();
+                types.put(instance.getType(), list);
+            } else {
+                list = types.get(instance.getType());
+            }
+            list.add(instance);
+        }
+        // check the access for the given instances
+        for (final Entry<Type, List<Instance>> entry : types.entrySet()) {
+            this.accessMap.putAll(entry.getKey().checkAccess(entry.getValue(), AccessTypeEnums.SHOW.getAccessType()));
+        }
+        return this.accessMap;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #accessMap}.
+     *
+     * @return value of instance variable {@link #accessMap}
+     */
+    public Map<Instance, Boolean> getAccessMap()
+    {
+        return this.accessMap;
     }
 }

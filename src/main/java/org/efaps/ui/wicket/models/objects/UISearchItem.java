@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,22 +25,38 @@ import java.util.UUID;
 import org.efaps.admin.ui.Search;
 
 /**
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public class UISearchItem extends UIMenuItem {
+public class UISearchItem
+    extends UIMenuItem
+{
 
-  private static final long serialVersionUID = 1L;
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
-  private final UUID searchuuid;
+    /**
+     * UUID of the Search.
+     */
+    private final UUID searchuuid;
 
-  public UISearchItem(final UUID _uuid) {
-    super(_uuid, null);
-    this.searchuuid = _uuid;
-  }
+    /**
+     * @param _uuid UUID
+     */
+    public UISearchItem(final UUID _uuid)
+    {
+        super(_uuid, null);
+        this.searchuuid = _uuid;
+    }
 
-  public Search getSearch() {
-    return Search.get(this.searchuuid);
-  }
+    /**
+     * @return the Search
+     */
+    public Search getSearch()
+    {
+        return Search.get(this.searchuuid);
+    }
 
 }

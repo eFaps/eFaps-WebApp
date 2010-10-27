@@ -35,14 +35,16 @@ import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractMenu;
 import org.efaps.admin.ui.Image;
 import org.efaps.beans.ValueList;
+import org.efaps.beans.valueparser.ParseException;
 import org.efaps.beans.valueparser.ValueParser;
 import org.efaps.db.PrintQuery;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 
 /**
- * This class provides the Model for rendering MenuComponents in {@link #org.efaps.ui.wicket.components.menu.MenuPanel}
- * and in {@link #org.efaps.ui.wicket.components.menutree.MenuTree}.
+ * This class provides the Model for rendering MenuComponents in
+ * {@link #org.efaps.ui.wicket.components.menu.MenuPanel} and
+ * in {@link #org.efaps.ui.wicket.components.menutree.MenuTree}.
  *
  * @author The eFaps Team
  * @version $Id$
@@ -57,17 +59,19 @@ public class UIMenuItem
     private static final long serialVersionUID = 505704924081527139L;
 
     /**
-     * this instance variable stores in the case that this MenuItem is part of a
-     * {@link #org.efaps.ui.wicket.components.menutree.MenuTree} if it
-     * was steped into the ancestor of this menuitem.
+     * this instance variable stores in the case that this MenuItem
+     * is part of a {@link #org.efaps.ui.wicket.components.menutree.MenuTree}
+     * if it was steped into the
+     * ancestor of this menuitem.
      *
      * @see #ancestor
      */
     private DefaultMutableTreeNode ancestor;
 
     /**
-     * in the case that the MenuItem is used for a submit, setting this to true
-     * opens a Dialog to ask the user "do you really want to..?".
+     * in the case that the MenuItem is used for a submit, setting this
+     *  to true opens a Dialog to ask the user
+     * "do you really want to..?".
      */
     private boolean askUser = false;
 
@@ -77,10 +81,10 @@ public class UIMenuItem
     private final List<UIMenuItem> childs = new ArrayList<UIMenuItem>();
 
     /**
-     * this instance variable stores in the case that this MenuItem is part of a
-     * {@link #org.efaps.ui.wicket.components.menutree.MenuTree}
-     * if it is selected by default and therefore the Form or Tabel
-     * connected to this MenuItem must be opened.
+     * this instance variable stores in the case that this MenuItem is
+     * part of a {@link #org.efaps.ui.wicket.components.menutree.MenuTree}
+     *  if it is selected by default and therefore the Form or Tabel
+     *  connected to this MenuItem must be opened.
      */
     private boolean defaultSelected = false;
 
@@ -88,10 +92,10 @@ public class UIMenuItem
     private String description;
 
     /**
-     * this instance variable stores in the case that this MenuItem is part of a
-     * {@link #org.efaps.ui.wicket.components.menutree.MenuTree}
-     * if it is a header. This is needed beacuse the headers are
-     * displayed in a differen style.
+     * this instance variable stores in the case that this MenuItem is
+     * part of a {@link #org.efaps.ui.wicket.components.menutree.MenuTree}
+     * if it is a header. This is
+     * needed beacuse the headers are displayed in a differen style.
      */
     private boolean header = false;
 
@@ -105,8 +109,9 @@ public class UIMenuItem
     private String reference;
 
     /**
-     * this instance variable stores in the case that this MenuItem is part of a
-     * {@link #org.efaps.ui.wicket.components.menutree.MenuTree} if it was steped into this MenuItem.
+     * this instance variable stores in the case that this MenuItem is part
+     * of a {@link #org.efaps.ui.wicket.components.menutree.MenuTree} if
+     * it was steped into this MenuItem.
      *
      * @see #ancestor
      */
@@ -137,8 +142,7 @@ public class UIMenuItem
     }
 
     /**
-     * Constructor setting the UUID and the key for the instance of this
-     * MenuItem.
+     * Constructor setting the UUID and the key for the instance of this MenuItem.
      *
      * @param _uuid UUID
      * @param _instanceKey instance Key
@@ -226,20 +230,17 @@ public class UIMenuItem
      * This method returns the URL to the Image of this MenuItem.
      *
      * @return URL of the Image
-     * @throws EFapsException
+     * @throws EFapsException on error
      */
     public String getTypeImage()
+        throws EFapsException
     {
         String ret = null;
-        try {
-            if (getInstance() != null) {
-                final Image imageTmp = Image.getTypeIcon(getInstance().getType());
-                if (imageTmp != null) {
-                    ret = imageTmp.getUrl();
-                }
+        if (getInstance() != null) {
+            final Image imageTmp = Image.getTypeIcon(getInstance().getType());
+            if (imageTmp != null) {
+                ret = imageTmp.getUrl();
             }
-        } catch (final Exception e) {
-            // TODO
         }
         return ret;
     }
@@ -266,8 +267,7 @@ public class UIMenuItem
     }
 
     /**
-     * This is the getter method for the instance variable {@link #windowHeight}
-     * .
+     * This is the getter method for the instance variable {@link #windowHeight} .
      *
      * @return value of instance variable {@link #windowHeight}
      */
@@ -316,6 +316,9 @@ public class UIMenuItem
         }
     }
 
+    /**
+     * Requery the Label.
+     */
     public void requeryLabel()
     {
         try {
@@ -331,7 +334,9 @@ public class UIMenuItem
                     }
                 }
             }
-        } catch (final Exception e) {
+        } catch (final EFapsException e) {
+            throw new RestartResponseException(new ErrorPage(e));
+        } catch (final ParseException e) {
             throw new RestartResponseException(new ErrorPage(e));
         }
     }
@@ -348,8 +353,7 @@ public class UIMenuItem
     }
 
     /**
-     * This is the getter method for the instance variable
-     * {@link #defaultSelected}.
+     * This is the getter method for the instance variable {@link #defaultSelected}.
      *
      * @return value of instance variable {@link #defaultSelected}
      */
@@ -409,8 +413,7 @@ public class UIMenuItem
     }
 
     /**
-     * get a TreeModel which used in the Components to construct the actuall
-     * tree.
+     * get a TreeModel which used in the Components to construct the actuall tree.
      *
      * @see #getNode()
      * @return TreeModel of this MenuItemModel including the ChildNodes
@@ -424,8 +427,7 @@ public class UIMenuItem
      * get a Node of this MenuItemModel including the Childs.
      *
      * @see #addNode(DefaultMutableTreeNode, List)
-     * @return DefaultMutableTreeNode of this MenuItemModel including the
-     *         ChildNodes
+     * @return DefaultMutableTreeNode of this MenuItemModel including the ChildNodes
      */
     public DefaultMutableTreeNode getNode()
     {
@@ -481,7 +483,6 @@ public class UIMenuItem
     public void execute()
     {
         // TODO Auto-generated method stub
-
     }
 
 }

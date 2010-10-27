@@ -61,7 +61,7 @@ import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.ui.wicket.EFapsApplication;
 import org.efaps.ui.wicket.models.cell.UIFormCell;
 import org.efaps.ui.wicket.models.cell.UITableCell;
-import org.efaps.ui.wicket.models.objects.UIAbstractPageObject;
+import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.models.objects.UIFieldTable;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIHeading;
@@ -123,7 +123,7 @@ public class XMLExport
     /**
      * this variable contains the model used in this XMLExport
      */
-    private UIAbstractPageObject modelObject;
+    private AbstractUIPageObject modelObject;
 
     /**
      * the document
@@ -139,7 +139,7 @@ public class XMLExport
     }
 
     // Constructor
-    public XMLExport(final UIAbstractPageObject _model) throws EFapsException
+    public XMLExport(final AbstractUIPageObject _model) throws EFapsException
     {
         initialise(_model);
     }
@@ -147,7 +147,7 @@ public class XMLExport
     public XMLExport(final Object object) throws EFapsException
     {
         if (object instanceof Component) {
-            initialise((UIAbstractPageObject) ((Component) object).getPage().getDefaultModelObject());
+            initialise((AbstractUIPageObject) ((Component) object).getPage().getDefaultModelObject());
         }
     }
 
@@ -222,7 +222,7 @@ public class XMLExport
      * @param _model
      * @throws EFapsException
      */
-    private void initialise(final UIAbstractPageObject _model) throws EFapsException
+    private void initialise(final AbstractUIPageObject _model) throws EFapsException
     {
         this.msgTimeStamp = new Date();
         this.modelObject = _model;

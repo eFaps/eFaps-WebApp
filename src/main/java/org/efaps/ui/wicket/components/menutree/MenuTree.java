@@ -60,14 +60,16 @@ import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author The eFaps Team
  * @version $Id$
  */
-public class MenuTree extends AbstractTree
+public class MenuTree
+    extends AbstractTree
 {
-
     /**
      * Reference to icon for remove button.
      */
@@ -100,13 +102,18 @@ public class MenuTree extends AbstractTree
     public static final EFapsContentReference CSS = new EFapsContentReference(MenuTree.class, "MenuTree.css");
 
     /**
+     * Logger.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(MenuTree.class);
+
+    /**
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
 
     /**
-     * This Instance variable holds the key which is used to retrieve a item of
-     * this ListMenuPanel from the Map in the Session {@link #org.efaps.ui.wicket.EFapsSession}.
+     * This Instance variable holds the key which is used to retrieve a item of this ListMenuPanel from the Map in the
+     * Session {@link #org.efaps.ui.wicket.EFapsSession}.
      */
     private final String menuKey;
 
@@ -123,7 +130,10 @@ public class MenuTree extends AbstractTree
      * @param _oid oid
      * @param _menukey key to the menu
      */
-    public MenuTree(final String _wicketId, final UUID _commandUUID, final String _oid, final String _menukey)
+    public MenuTree(final String _wicketId,
+                    final UUID _commandUUID,
+                    final String _oid,
+                    final String _menukey)
     {
         super(_wicketId);
 
@@ -167,7 +177,9 @@ public class MenuTree extends AbstractTree
      * @param _model model for the tree
      * @param _menukey key to the menu
      */
-    protected MenuTree(final String _wicketId, final TreeModel _model, final String _menukey)
+    protected MenuTree(final String _wicketId,
+                       final TreeModel _model,
+                       final String _menukey)
     {
         super(_wicketId);
         this.menuKey = _menukey;
@@ -195,9 +207,9 @@ public class MenuTree extends AbstractTree
 
     /**
      * Method to add a child menu.
-     *
-     * @param _parameters Page parameters
-     * @param _target ajax target
+     * @param _commandUUID  UUID of the command
+     * @param _instanceKey  instance key
+     * @param _target       target
      */
     public void addChildMenu(final UUID _commandUUID,
                              final String _instanceKey,
@@ -241,14 +253,14 @@ public class MenuTree extends AbstractTree
     }
 
     /**
-     * Populates the tree item. It creates all necessary components for the tree
-     * to work properly.
+     * Populates the tree item. It creates all necessary components for the tree to work properly.
      *
      * @param _item item to populate
      * @param _level level of the item
      */
     @Override
-    protected void populateTreeItem(final WebMarkupContainer _item, final int _level)
+    protected void populateTreeItem(final WebMarkupContainer _item,
+                                    final int _level)
     {
 
         final DefaultMutableTreeNode node = (DefaultMutableTreeNode) _item.getDefaultModelObject();
@@ -256,12 +268,14 @@ public class MenuTree extends AbstractTree
         final UIMenuItem model = (UIMenuItem) node.getUserObject();
 
         // mark the item as selected/not selected
-        _item.add(new AbstractBehavior() {
+        _item.add(new AbstractBehavior()
+        {
 
             private static final long serialVersionUID = 1L;
 
             @Override
-            public void onComponentTag(final Component _component, final ComponentTag _tag)
+            public void onComponentTag(final Component _component,
+                                       final ComponentTag _tag)
             {
                 super.onComponentTag(_component, _tag);
                 _tag.put("title", model.getLabel());
@@ -307,7 +321,11 @@ public class MenuTree extends AbstractTree
 
             String imageUrl = model.getImage();
             if (imageUrl == null) {
-                imageUrl = model.getTypeImage();
+                try {
+                    imageUrl = model.getTypeImage();
+                } catch (final EFapsException e) {
+                    MenuTree.LOG.error("Error on retrieving the image for a image: {}", model.getImage());
+                }
             }
             if (imageUrl == null) {
                 link.add(new WebMarkupContainer("icon").setVisible(false));
@@ -342,7 +360,6 @@ public class MenuTree extends AbstractTree
             _item.add(new WebMarkupContainer("removelink").setVisible(false));
             _item.add(new WebMarkupContainer("goUplink").setVisible(false));
         }
-
     }
 
     /**
@@ -358,7 +375,8 @@ public class MenuTree extends AbstractTree
         if (_model.getCommand().getTargetTable() != null) {
 
             page = new InlineFrame(ContentContainerPage.IFRAME_WICKETID, PageMap
-                            .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME), new IPageLink() {
+                            .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME), new IPageLink()
+            {
 
                 private static final long serialVersionUID = 1L;
 
@@ -366,11 +384,11 @@ public class MenuTree extends AbstractTree
                 {
                     Page ret;
                     try {
-                        if (_model.getCommand().getTargetStructurBrowserField()  != null) {
+                        if (_model.getCommand().getTargetStructurBrowserField() != null) {
                             ret = new StructurBrowserPage(_model.getCommandUUID(), _model.getInstanceKey());
                         } else {
                             ret = new TablePage(_model.getCommandUUID(), _model.getInstanceKey())
-                                        .setMenuTreeKey(getMenuKey());
+                                            .setMenuTreeKey(getMenuKey());
                         }
                     } catch (final EFapsException e) {
                         ret = new ErrorPage(e);
@@ -385,7 +403,8 @@ public class MenuTree extends AbstractTree
             });
         } else {
             page = new InlineFrame(ContentContainerPage.IFRAME_WICKETID, PageMap
-                            .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME), new IPageLink() {
+                            .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME), new IPageLink()
+            {
 
                 private static final long serialVersionUID = 1L;
 
@@ -420,7 +439,8 @@ public class MenuTree extends AbstractTree
      * Class is used to produce indentations.
      *
      */
-    public class Indentation extends WebMarkupContainer
+    public class Indentation
+        extends WebMarkupContainer
     {
 
         /**
@@ -439,7 +459,8 @@ public class MenuTree extends AbstractTree
          * @param _wicketId wicket id of the component
          * @param _level level of indentation
          */
-        public Indentation(final String _wicketId, final int _level)
+        public Indentation(final String _wicketId,
+                           final int _level)
         {
             super(_wicketId);
             this.level = _level;
@@ -454,7 +475,8 @@ public class MenuTree extends AbstractTree
          *
          */
         @Override
-        protected void onComponentTagBody(final MarkupStream _markupStream, final ComponentTag _openTag)
+        protected void onComponentTagBody(final MarkupStream _markupStream,
+                                          final ComponentTag _openTag)
         {
             final Response response = RequestCycle.get().getResponse();
             for (int i = this.level - 1; i >= 0; --i) {
@@ -467,7 +489,8 @@ public class MenuTree extends AbstractTree
      * Behavior to update the menu tree via ajax.
      *
      */
-    public class AjaxUpdateBehavior extends AbstractAjaxUpdateBehavior
+    public class AjaxUpdateBehavior
+        extends AbstractAjaxUpdateBehavior
     {
 
         /**

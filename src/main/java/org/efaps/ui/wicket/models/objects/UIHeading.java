@@ -21,44 +21,60 @@
 package org.efaps.ui.wicket.models.objects;
 
 import org.apache.wicket.IClusterable;
-
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.field.FieldHeading;
 
-public class UIHeading implements IFormElement, IClusterable{
+/**
+ *
+ * @author The eFaps Team
+ * @version $Id$
+ */
+public class UIHeading
+    implements IFormElement, IClusterable
+{
 
-  private static final long serialVersionUID = 1L;
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
-  /**
-   * instance variable to store the level of the Heading
-   */
-  private int level = 1;
+    /**
+     * instance variable to store the level of the Heading.
+     */
+    private int level = 1;
 
-  private final String label;
+    /**
+     * Label.
+     */
+    private final String label;
 
-  public UIHeading(final FieldHeading _heading) {
-    this.label = DBProperties.getProperty(_heading.getLabel());
-    this.level = _heading.getLevel();
-  }
+    /**
+     * @param _heading Heading
+     */
+    public UIHeading(final FieldHeading _heading)
+    {
+        this.label = DBProperties.getProperty(_heading.getLabel());
+        this.level = _heading.getLevel();
+    }
 
-  /**
-   * This is the getter method for the instance variable {@link #level}.
-   *
-   * @return value of instance variable {@link #level}
-   */
-  public int getLevel() {
-    return this.level;
-  }
+    /**
+     * This is the getter method for the instance variable {@link #level}.
+     *
+     * @return value of instance variable {@link #level}
+     */
+    public int getLevel()
+    {
+        return this.level;
+    }
 
-  /**
-   * This is the getter method for the instance variable {@link #label}.
-   *
-   * @return value of instance variable {@link #label}
-   */
-  public String getLabel() {
-    return this.label;
-  }
-
-
+    /**
+     * This is the getter method for the instance variable {@link #label}.
+     *
+     * @return value of instance variable {@link #label}
+     */
+    public String getLabel()
+    {
+        return this.label;
+    }
 
 }
