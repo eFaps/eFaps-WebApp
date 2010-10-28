@@ -180,8 +180,10 @@ public class ClassificationTreeLabelPanel
                 final DefaultMutableTreeNode node = (DefaultMutableTreeNode) enumer.nextElement();
                 unselect(node, _tree, _target);
                 final UIClassification classification = (UIClassification) node.getUserObject();
-                classification.setSelected(false);
-                _target.addComponent(_tree.getComponent(node));
+                if (classification.isSelected()) {
+                    classification.setSelected(false);
+                    _target.addComponent(_tree.getComponent(node));
+                }
             }
         }
     }
