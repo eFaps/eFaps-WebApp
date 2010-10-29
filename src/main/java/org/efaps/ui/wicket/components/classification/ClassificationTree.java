@@ -20,6 +20,7 @@
 
 package org.efaps.ui.wicket.components.classification;
 
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -109,6 +110,16 @@ public class ClassificationTree
         }
         if ("false".equalsIgnoreCase(expand)) {
             getTreeState().expandNode(model.getRoot());
+            if (classification.isSelected()) {
+                final Enumeration<?> nodes = ((DefaultMutableTreeNode) model.getRoot()).breadthFirstEnumeration();
+                while (nodes.hasMoreElements()) {
+                    final DefaultMutableTreeNode node = (DefaultMutableTreeNode) nodes.nextElement();
+                    final UIClassification nodeClass = (UIClassification) node.getUserObject();
+                    if (nodeClass.isSelected()) {
+                        getTreeState().expandNode(node);
+                    }
+                }
+            }
         } else {
             getTreeState().expandAll();
         }
