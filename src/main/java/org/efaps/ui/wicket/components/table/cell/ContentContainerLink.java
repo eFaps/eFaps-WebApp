@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,9 +24,8 @@ import org.apache.wicket.Page;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.IModel;
-
-import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.AbstractCommand.Target;
+import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
@@ -36,11 +35,12 @@ import org.efaps.util.EFapsException;
 /**
  * Class extends a Link to work in the content container.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id:LinkContainer.java 1510 2007-10-18 14:35:40Z jmox $
  * @param <T>
  */
-public class ContentContainerLink<T> extends Link<T>
+public class ContentContainerLink<T>
+    extends Link<T>
 {
 
     /**
@@ -72,7 +72,7 @@ public class ContentContainerLink<T> extends Link<T>
             try {
                 instance = cellmodel.getInstance();
                 menu = Menu.getTypeTreeMenu(instance.getType());
-            } catch (final Exception e) {
+            } catch (final EFapsException e) {
                 throw new RestartResponseException(new ErrorPage(e));
             }
             if (menu == null) {
