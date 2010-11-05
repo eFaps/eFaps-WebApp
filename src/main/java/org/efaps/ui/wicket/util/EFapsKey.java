@@ -29,13 +29,15 @@ package org.efaps.ui.wicket.util;
  */
 public enum EFapsKey {
 
+    /** Key used to deactivate the escape funcionalities in autocomplete. */
+    AUTOCOMPLETE_DEACTIVATEESCAPE("eFapsAutoCompleteDeactivateEscape4HTMLandJS"),
     /** Key used for the value in the map. */
     AUTOCOMPLETE_VALUE("eFapsAutoCompleteVALUE"),
-        /** Key used for the value in the map. */
+    /** Key used for the value in the map. */
     AUTOCOMPLETE_CHOICE("eFapsAutoCompleteCHOICE"),
-        /** Key used for the key in the map. */
+    /** Key used for the key in the map. */
     AUTOCOMPLETE_KEY("eFapsAutoCompleteKEY"),
-        /** Key used for the javascript in the map. */
+    /** Key used for the javascript in the map. */
     AUTOCOMPLETE_JAVASCRIPT("eFapsAutoCompleteJS"),
 
     /** Key used for the javascript in the map. */

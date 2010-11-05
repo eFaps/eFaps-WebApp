@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ package org.efaps.ui.wicket.components.autocomplete;
 
 import java.util.Map;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.wicket.Response;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AbstractAutoCompleteTextRenderer;
 import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
@@ -29,11 +30,10 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 import org.efaps.ui.wicket.util.EFapsKey;
 
 /**
- * TODO comment!
+ * Renders the Choice and the JavaScript on selection of an item in the dropdown.
  *
  * @author The eFaps Team
- * @version $Id: AutoCompleteRenderer.java 3447 2009-11-29 22:46:39Z tim.moxter
- *          $
+ * @version $Id$
  */
 public class AutoCompleteRenderer
     extends AbstractAutoCompleteTextRenderer<Map<String, String>>
@@ -59,18 +59,24 @@ public class AutoCompleteRenderer
     }
 
     /**
-     * @see org.apache.wicket.extensions.ajax.markup.html.autocomplete.AbstractAutoCompleteRenderer#getTextValue(java.lang.Object)
+     * Retrieves the text value that will be set on the textbox if this assist is selected.
+     *
+     * @see org.apache.wicket.extensions.ajax.markup.html.autocomplete.
+     * AbstractAutoCompleteRenderer#getTextValue(java.lang.Object)
      * @param _map map from the esjp
      * @return value for the field
      */
     @Override
     protected String getTextValue(final Map<String, String> _map)
     {
-        return _map.get(EFapsKey.AUTOCOMPLETE_VALUE.getKey());
+        return _map.get(escape(_map) ? StringEscapeUtils.escapeHtml(EFapsKey.AUTOCOMPLETE_VALUE.getKey())
+                        : StringEscapeUtils.escapeHtml(EFapsKey.AUTOCOMPLETE_VALUE.getKey()));
     }
 
     /**
-     * @see org.apache.wicket.extensions.ajax.markup.html.autocomplete.AbstractAutoCompleteTextRenderer#renderChoice(java.lang.Object,
+     * Render the in the UI visible choices.
+     * @see org.apache.wicket.extensions.ajax.markup.html.autocomplete
+     * .AbstractAutoCompleteTextRenderer#renderChoice(java.lang.Object,
      *      org.apache.wicket.Response, java.lang.String)
      * @param _map map from the esjp
      * @param _response Response
@@ -84,7 +90,8 @@ public class AutoCompleteRenderer
         final String choice = _map.get(EFapsKey.AUTOCOMPLETE_CHOICE.getKey()) != null
                         ? _map.get(EFapsKey.AUTOCOMPLETE_CHOICE.getKey())
                         : _map.get(EFapsKey.AUTOCOMPLETE_VALUE.getKey());
-        _response.write(choice);
+
+        _response.write(escape(_map) ? StringEscapeUtils.escapeHtml(choice) : choice);
     }
 
     /**
@@ -99,9 +106,11 @@ public class AutoCompleteRenderer
         final String key = _map.get(EFapsKey.AUTOCOMPLETE_KEY.getKey()) != null
                         ? _map.get(EFapsKey.AUTOCOMPLETE_KEY.getKey())
                         : _map.get(EFapsKey.AUTOCOMPLETE_VALUE.getKey());
+        final boolean escape = escape(_map);
         final StringBuilder js = new StringBuilder();
         js.append("wicketGet('").append(this.autoCompleteField.getMarkupId()).append("_hidden').value ='")
-                        .append(key).append("';");
+                        .append(escape ? StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(key))
+                                        : key).append("';");
         for (final String keyString : _map.keySet()) {
             // if the map contains a key that is not defined in this class it is
             // assumed to be the name of a field
@@ -109,9 +118,17 @@ public class AutoCompleteRenderer
                             || EFapsKey.AUTOCOMPLETE_VALUE.getKey().equals(keyString)
                             || EFapsKey.AUTOCOMPLETE_CHOICE.getKey().equals(keyString)
                             || EFapsKey.AUTOCOMPLETE_JAVASCRIPT.getKey().equals(keyString))) {
-                js.append("eFapsSetFieldValue('").append(this.autoCompleteField.getMarkupId()).append("','")
-                    .append(keyString).append("',").append(_map.get(keyString).contains("Array(") ? "" : "'")
-                    .append(_map.get(keyString)).append(_map.get(keyString).contains("Array(") ? "" : "'").append(");");
+                if (_map.get(keyString).contains("Array(")) {
+                    js.append("eFapsSetFieldValue('").append(this.autoCompleteField.getMarkupId()).append("','")
+                        .append(keyString).append("',").append(_map.get(keyString)).append(");");
+                } else {
+                    js.append("eFapsSetFieldValue('").append(this.autoCompleteField.getMarkupId()).append("','")
+                    .append(keyString).append("','")
+                    .append(escape
+                            ? StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(_map.get(keyString)))
+                            : _map.get(keyString)).append("');");
+                }
+
             }
         }
         if (_map.containsKey(EFapsKey.AUTOCOMPLETE_JAVASCRIPT.getKey())) {
@@ -119,5 +136,26 @@ public class AutoCompleteRenderer
         }
         js.append("input");
         return js.toString();
+    }
+
+    /**
+     * Check if for the current values the escape is activated.<br>
+     * Default: true,<br>
+     * key exits: null = false else evaluation of given String
+     * @param _map map to be checked
+     * @return boolean
+     */
+    private boolean escape(final Map<String, String> _map)
+    {
+        boolean ret = true;
+        if (_map.containsKey(EFapsKey.AUTOCOMPLETE_DEACTIVATEESCAPE.getKey())) {
+            final String value = _map.get(EFapsKey.AUTOCOMPLETE_DEACTIVATEESCAPE.getKey());
+            if (value == null) {
+                ret = false;
+            } else {
+                ret = !"true".equalsIgnoreCase(EFapsKey.AUTOCOMPLETE_DEACTIVATEESCAPE.getKey());
+            }
+        }
+        return ret;
     }
 }

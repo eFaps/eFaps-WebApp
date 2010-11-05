@@ -44,6 +44,8 @@ import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO comment!
@@ -60,6 +62,12 @@ public class AutoCompleteField
      */
     public static final EFapsContentReference CSS = new EFapsContentReference(AutoCompleteField.class,
                     "AutoCompleteField.css");
+
+    /**
+     * Logger.
+     */
+    private static final Logger LOG =  LoggerFactory.getLogger(AutoCompleteField.class);
+
 
     /** Needed for serialization. */
     private static final long serialVersionUID = 1L;
@@ -96,14 +104,14 @@ public class AutoCompleteField
      * @param _model model for this component
      * @param _selectRow name for the field
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public AutoCompleteField(final String _wicketId,
                              final IModel<?> _model,
                              final boolean _selectRow)
     {
         super(_wicketId, new Model());
         this.model = _model;
-        this.uiAbstractCell = ((UITableCell) _model.getObject());
+        this.uiAbstractCell = (UITableCell) _model.getObject();
         this.fieldName = this.uiAbstractCell.getName();
 
         final Field field = Field.get(this.uiAbstractCell.getFieldId());
@@ -196,7 +204,8 @@ public class AutoCompleteField
     /**
      * Method to get the values from the esjp.
      *
-     * @see org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField#getChoices(java.lang.String)
+     * @see org.apache.wicket.extensions.ajax.markup.html.autocomplete
+     *  .AutoCompleteTextField#getChoices(java.lang.String)
      * @param _input input from the webform
      * @return iterator
      */
@@ -215,8 +224,7 @@ public class AutoCompleteField
                 }
             }
         } catch (final EFapsException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            AutoCompleteField.LOG.error("Error in getChoice()", e);
         }
         return retList.iterator();
     }
@@ -240,5 +248,4 @@ public class AutoCompleteField
     {
         return this.cmdBehavior;
     }
-
 }
