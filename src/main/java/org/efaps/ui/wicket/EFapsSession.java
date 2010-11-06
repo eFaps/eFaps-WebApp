@@ -24,9 +24,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
+import java.util.UUID;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.Request;
@@ -36,12 +39,14 @@ import org.apache.wicket.protocol.http.IMultipartWebRequest;
 import org.apache.wicket.protocol.http.WebRequest;
 import org.apache.wicket.protocol.http.WebSession;
 import org.apache.wicket.util.upload.FileItem;
+import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.admin.user.Person;
 import org.efaps.admin.user.UserAttributesSet;
 import org.efaps.db.Context;
 import org.efaps.jaas.LoginHandler;
 import org.efaps.ui.wicket.behaviors.ShowFileCallBackBehavior;
 import org.efaps.ui.wicket.behaviors.update.UpdateInterface;
+import org.efaps.ui.wicket.components.IRecent;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
@@ -130,6 +135,16 @@ public class EFapsSession
     private File file;
 
     /**
+     * Stack that contains the recent visited components.
+     */
+    private final Stack<IRecent> recentStack = new Stack<IRecent>();
+
+    /**
+     * Size of the Stack for the recent objects.
+     */
+    private int stackSize;
+
+    /**
      * Standard Constructor from Wicket.
      *
      * @param _request Request
@@ -137,6 +152,46 @@ public class EFapsSession
     public EFapsSession(final Request _request)
     {
         super(_request);
+        //WebApp-Configuration
+        final SystemConfiguration config = SystemConfiguration.get(
+                        UUID.fromString("50a65460-2d08-4ea8-b801-37594e93dad5"));
+        this.stackSize = 5;
+        if (config != null) {
+            this.stackSize = config.getAttributeValueAsInteger("RecentCacheSize");
+        }
+    }
+
+    /**
+     * @param _recent Recent Object to be pushed on the stack.
+     */
+    public void addRecent(final IRecent _recent)
+    {
+        if (this.stackSize > 0) {
+            this.recentStack.push(_recent);
+            if (this.recentStack.size() > this.stackSize) {
+                this.recentStack.remove(0);
+            }
+        }
+    }
+
+    /**
+     * @return the most recent object from the stack, null if stack is empty
+     */
+    public IRecent getRecent()
+    {
+        return this.recentStack.empty() ? null : this.recentStack.peek();
+    }
+
+    /**
+     * @return a list with IRecent in the order that a sequential
+     * pop on the stack would return
+     */
+    public List<IRecent> getAllRecents()
+    {
+        @SuppressWarnings("unchecked")
+        final Stack<IRecent> clone = (Stack<IRecent>) this.recentStack.clone();
+        Collections.reverse(clone);
+        return clone;
     }
 
     /**

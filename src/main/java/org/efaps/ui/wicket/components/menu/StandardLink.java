@@ -23,6 +23,8 @@ package org.efaps.ui.wicket.components.menu;
 import java.io.File;
 import java.util.List;
 
+import org.apache.wicket.Component;
+import org.apache.wicket.Page;
 import org.apache.wicket.PageMap;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.markup.html.link.InlineFrame;
@@ -154,14 +156,46 @@ public class StandardLink
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.efaps.ui.wicket.components.IRecent#open()
+    /**
+     * {@inheritDoc}
      */
     @Override
-    public void open()
+    public void open(final Component _openComponent)
         throws EFapsException
     {
-        // TODO Auto-generated method stub
+        final UIMenuItem model = super.getModelObject();
 
+        final AbstractCommand command = model.getCommand();
+        final Page callerPage = _openComponent.getPage();
+        if (command.getTargetTable() != null) {
+            if (command.getProperty("TargetStructurBrowserField") != null) {
+                final StructurBrowserPage page = new StructurBrowserPage(PageMap
+                                .forName(MainPage.IFRAME_PAGEMAP_NAME), model.getCommandUUID(), model
+                                .getInstanceKey());
+
+                final InlineFrame iframe = new InlineFrame(MainPage.IFRAME_WICKETID, page);
+                getPage().addOrReplace(iframe);
+            } else {
+                final TablePage page = new TablePage(callerPage.getPageMap(), model
+                                    .getCommandUUID(), model.getInstanceKey());
+                setResponsePage(page);
+            }
+        }
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getLabel(final int _maxLength)
+        throws EFapsException
+    {
+        final UIMenuItem model = super.getModelObject();
+        String label = model.getLabel();
+        if (label.length() > _maxLength) {
+            label = label.substring(0, _maxLength - 3) + "...";
+        }
+        return  label;
     }
 }
