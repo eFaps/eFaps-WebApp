@@ -42,7 +42,8 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
  * @author The eFaps Team
  * @version $Id$
  */
-public class HeaderCellPanel extends Panel
+public class HeaderCellPanel
+    extends Panel
 {
     /**
      * Reference to an icon from the eFaps DataBase.
@@ -80,12 +81,11 @@ public class HeaderCellPanel extends Panel
     private static final long serialVersionUID = 1L;
 
     /**
-     * Constructor used to render only a CheckBoxCell or the placeholder
-     * in case of create.
+     * Constructor used to render only a CheckBoxCell or the placeholder in case of create.
      *
-     * @param _wicketId     wicket id for this component
-     * @param _checkbox     render a checkbox
-     * @param _styleClass   style class
+     * @param _wicketId wicket id for this component
+     * @param _checkbox render a checkbox
+     * @param _styleClass style class
      * @param _columnNumber number of the column
      */
     public HeaderCellPanel(final String _wicketId,
@@ -106,12 +106,11 @@ public class HeaderCellPanel extends Panel
     }
 
     /**
-     * Constructor used to render a Cell for the Header with (depending on the
-     * model) SortLink, Filterlink etc.
+     * Constructor used to render a Cell for the Header with (depending on the model) SortLink, Filterlink etc.
      *
      * @param _wicketId wicket id for this component
-     * @param _model    model for this component
-     * @param _uitable  uitable this component sits in
+     * @param _model model for this component
+     * @param _uitable uitable this component sits in
      */
     public HeaderCellPanel(final String _wicketId,
                            final IModel<UITableHeader> _model,
@@ -180,9 +179,9 @@ public class HeaderCellPanel extends Panel
         }
     }
 
-
     /**
      * Set the markupid into the model.
+     *
      * @see org.apache.wicket.Component#onAfterRender()
      */
     @Override
@@ -201,6 +200,7 @@ public class HeaderCellPanel extends Panel
     public class Checkbox
         extends WebComponent
     {
+
         /**
          * Needed for serialization.
          */
@@ -214,9 +214,9 @@ public class HeaderCellPanel extends Panel
             super(_wicketId);
         }
 
-
         /**
          * Make a checkbox.
+         *
          * @see org.apache.wicket.Component#onComponentTag(org.apache.wicket.markup.ComponentTag)
          * @param _tag tag
          */
@@ -230,16 +230,17 @@ public class HeaderCellPanel extends Panel
 
         /**
          * Get the script that will be added to the checkbox.
+         *
          * @return String containing the script
          */
         private String getScript()
         {
             return new StringBuilder().append("var cb=document.getElementsByName('selectedRow');")
-                .append(" if(!isNaN(cb.length)) {")
-                .append(" for(var i=0;i<cb.length;i++){")
-                .append("   cb[i].checked=this.checked;}")
-                .append(" }else{")
-                .append(" cb.checked=this.checked;" + "}").toString();
+                            .append(" if(!isNaN(cb.length)) {")
+                            .append(" for(var i=0;i<cb.length;i++){")
+                            .append("   cb[i].checked=this.checked;}")
+                            .append(" }else{")
+                            .append(" cb.checked=this.checked;" + "}").toString();
         }
     }
 }

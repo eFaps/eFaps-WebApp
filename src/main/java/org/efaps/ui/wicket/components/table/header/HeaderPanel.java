@@ -47,7 +47,6 @@ import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.models.objects.UITableHeader;
-import org.efaps.ui.wicket.models.objects.UITable.UserAttributeKey;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
@@ -306,9 +305,7 @@ public class HeaderPanel
             try {
                 Context.getThreadContext().setUserAttribute(
                                 ((UITable) getComponent().getDefaultModelObject())
-                                .getUserAttributeKey(UserAttributeKey.COLUMNWIDTH), widths);
-                // why did we have that??
-                // ((UITable) / getComponent().getDefaultModelObject()).resetModel();
+                                .getCacheKey(UITable.UserCacheKey.COLUMNWIDTH), widths);
             } catch (final EFapsException e) {
                 throw new RestartResponseException(new ErrorPage(e));
             }
