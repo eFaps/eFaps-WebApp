@@ -42,7 +42,7 @@ import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.Opener;
-import org.efaps.ui.wicket.components.FileUploadListener;
+import org.efaps.ui.wicket.components.IFileUploadListener;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.form.FormPanel;
@@ -65,7 +65,7 @@ import org.efaps.util.EFapsException;
  */
 public class UploadBehavior
     extends AbstractBehavior
-    implements FileUploadListener
+    implements IFileUploadListener
 {
 
     /**
@@ -106,7 +106,7 @@ public class UploadBehavior
     }
 
     /**
-     * @see org.efaps.ui.wicket.components.FileUploadListener#onSubmit()
+     * @see org.efaps.ui.wicket.components.IFileUploadListener#onSubmit()
      */
     public void onSubmit()
     {

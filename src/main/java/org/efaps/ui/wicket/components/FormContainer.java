@@ -116,8 +116,8 @@ public class FormContainer
     {
         super.onSubmit();
         if (this.fileUpload) {
-            final List<FileUploadListener> uploadListeners = this.getBehaviors(FileUploadListener.class);
-            for (final FileUploadListener listener : uploadListeners) {
+            final List<IFileUploadListener> uploadListeners = this.getBehaviors(IFileUploadListener.class);
+            for (final IFileUploadListener listener : uploadListeners) {
                 listener.onSubmit();
             }
         }

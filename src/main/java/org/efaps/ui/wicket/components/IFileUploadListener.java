@@ -22,7 +22,6 @@ package org.efaps.ui.wicket.components;
 
 import org.apache.wicket.behavior.IBehavior;
 
-
 /**
  * Listener that will be executed on a file upload.
  *
@@ -30,10 +29,12 @@ import org.apache.wicket.behavior.IBehavior;
  * @version $Id$
  *
  */
-public interface FileUploadListener extends IBehavior {
+public interface IFileUploadListener
+    extends IBehavior
+{
 
-  /**
-   * Method will be executed on submition .
-   */
-  void onSubmit();
+    /**
+     * Method will be executed on submition .
+     */
+    void onSubmit();
 }
