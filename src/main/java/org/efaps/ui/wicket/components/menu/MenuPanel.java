@@ -23,7 +23,6 @@ package org.efaps.ui.wicket.components.menu;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.models.MenuItemModel;
@@ -32,52 +31,58 @@ import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.models.objects.UISearchItem;
 
 /**
- * @author jmox
+ * @author The eFaps Team
  * @version $Id:MenuPanel.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class MenuPanel extends Panel {
+public class MenuPanel
+    extends Panel
+{
 
-  /**
-   * Needed for serialization.
-   */
-  private static final long serialVersionUID = 1L;
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
-  /**
-   * Constructor.
-   *
-   * @param _wicketId     wicket id for the component
-   * @param _model        model for this component
-   */
-  public MenuPanel(final String _wicketId, final IModel<?> _model) {
-    this(_wicketId, _model, null);
-  }
-
-  /**
-   * Constructor.
-   *
-   * @param _wicketId       wicket id for this component
-   * @param _model    model for this component
-   * @param _form     form
-   */
-  public MenuPanel(final String _wicketId, final IModel<?> _model,
-                   final FormContainer _form) {
-    super(_wicketId,  _model);
-
-    final AbstractUIObject model = (AbstractUIObject) _model.getObject();
-
-    if (model.getMode() == TargetMode.SEARCH
-        && model.getCallingCommandUUID() != null) {
-      final MenuContainer menu = new MenuContainer("eFapsMenu",
-          new MenuItemModel(new UISearchItem(model.getCallingCommand()
-              .getTargetSearch().getUUID())), _form);
-      add(menu);
-    } else if (model.getCommand().getTargetMenu() != null) {
-      final MenuContainer menu = new MenuContainer("eFapsMenu",
-          new MenuItemModel(new UIMenuItem(model.getCommand().getTargetMenu()
-              .getUUID(), model.getInstanceKey())), _form);
-      add(menu);
-    } else {
-      add(new WebMarkupContainer("eFapsMenu"));
+    /**
+     * Constructor.
+     *
+     * @param _wicketId wicket id for the component
+     * @param _model model for this component
+     */
+    public MenuPanel(final String _wicketId,
+                     final IModel<?> _model)
+    {
+        this(_wicketId, _model, null);
     }
-  }
+
+    /**
+     * Constructor.
+     *
+     * @param _wicketId wicket id for this component
+     * @param _model model for this component
+     * @param _form form
+     */
+    public MenuPanel(final String _wicketId,
+                     final IModel<?> _model,
+                     final FormContainer _form)
+    {
+        super(_wicketId, _model);
+
+        final AbstractUIObject model = (AbstractUIObject) _model.getObject();
+
+        if (model.getMode() == TargetMode.SEARCH
+                        && model.getCallingCommandUUID() != null) {
+            final MenuContainer menu = new MenuContainer("eFapsMenu",
+                            new MenuItemModel(new UISearchItem(model.getCallingCommand()
+                                            .getTargetSearch().getUUID())), _form);
+            add(menu);
+        } else if (model.getCommand().getTargetMenu() != null) {
+            final MenuContainer menu = new MenuContainer("eFapsMenu",
+                            new MenuItemModel(new UIMenuItem(model.getCommand().getTargetMenu()
+                                            .getUUID(), model.getInstanceKey())), _form);
+            add(menu);
+        } else {
+            add(new WebMarkupContainer("eFapsMenu"));
+        }
+    }
 }

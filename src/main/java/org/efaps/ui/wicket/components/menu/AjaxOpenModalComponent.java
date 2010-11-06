@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,10 +41,11 @@ import org.efaps.ui.wicket.pages.main.MainPage;
 /**
  * Class is used as a link inside the JSCookMenu that opens a modal window.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id:AjaxOpenModalComponent.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class AjaxOpenModalComponent extends AbstractMenuItemAjaxComponent
+public class AjaxOpenModalComponent
+    extends AbstractMenuItemAjaxComponent
 {
 
     /**
@@ -56,10 +57,12 @@ public class AjaxOpenModalComponent extends AbstractMenuItemAjaxComponent
      * Constructor.
      *
      * @param _wicketId wicket id of this component
-     * @param _model    model for this component
-     * @param _form     form in case of a submit
+     * @param _model model for this component
+     * @param _form form in case of a submit
      */
-    public AjaxOpenModalComponent(final String _wicketId, final IModel<UIMenuItem> _model, final FormContainer _form)
+    public AjaxOpenModalComponent(final String _wicketId,
+                                  final IModel<UIMenuItem> _model,
+                                  final FormContainer _form)
     {
         super(_wicketId, _model);
         if (_form == null) {
@@ -91,7 +94,8 @@ public class AjaxOpenModalComponent extends AbstractMenuItemAjaxComponent
      *
      *
      */
-    public class AjaxOpenModalBehavior extends AjaxEventBehavior
+    public class AjaxOpenModalBehavior
+        extends AjaxEventBehavior
     {
 
         /**
@@ -108,8 +112,7 @@ public class AjaxOpenModalComponent extends AbstractMenuItemAjaxComponent
         }
 
         /**
-         * This Method returns the JavaScript which is executed by the
-         * JSCooKMenu.
+         * This Method returns the JavaScript which is executed by the JSCooKMenu.
          *
          * @return String with the JavaScript
          */
@@ -143,8 +146,7 @@ public class AjaxOpenModalComponent extends AbstractMenuItemAjaxComponent
         }
 
         /**
-         * Method must be overwritten, otherwise the default would break the
-         * execution of the JavaScript.
+         * Method must be overwritten, otherwise the default would break the execution of the JavaScript.
          *
          * @return null
          */
@@ -158,8 +160,10 @@ public class AjaxOpenModalComponent extends AbstractMenuItemAjaxComponent
     /**
      * Open a modal window and submit the values.
      */
-    public class SubmitAndOpenModalBehavior extends AjaxFormSubmitBehavior
+    public class SubmitAndOpenModalBehavior
+        extends AjaxFormSubmitBehavior
     {
+
         /**
          * Needed for serialization.
          */
@@ -180,8 +184,7 @@ public class AjaxOpenModalComponent extends AbstractMenuItemAjaxComponent
         }
 
         /**
-         * This Method returns the JavaScript which is executed by the
-         * JSCooKMenu.
+         * This Method returns the JavaScript which is executed by the JSCooKMenu.
          *
          * @return String with the JavaScript
          */
@@ -214,6 +217,7 @@ public class AjaxOpenModalComponent extends AbstractMenuItemAjaxComponent
 
         /**
          * Open the modal window.
+         *
          * @see org.apache.wicket.ajax.form.AjaxFormSubmitBehavior#onSubmit(org.apache.wicket.ajax.AjaxRequestTarget)
          * @param _target AjaxRequestTarget
          */
@@ -250,7 +254,8 @@ public class AjaxOpenModalComponent extends AbstractMenuItemAjaxComponent
                 modal.setInitialWidth(((UIMenuItem) getDefaultModelObject()).getWindowWidth());
                 modal.show(_target);
             } else {
-                modal.setPageCreator(new ModalWindow.PageCreator() {
+                modal.setPageCreator(new ModalWindow.PageCreator()
+                {
 
                     private static final long serialVersionUID = 1L;
 

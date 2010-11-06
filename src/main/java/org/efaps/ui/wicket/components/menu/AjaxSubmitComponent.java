@@ -127,6 +127,7 @@ public class AjaxSubmitComponent
         /**
          * (non-Javadoc).
          * @see org.apache.wicket.ajax.form.AjaxFormSubmitBehavior#getPreconditionScript()
+         * @return null
          */
         @Override
         protected CharSequence getPreconditionScript()
@@ -195,7 +196,7 @@ public class AjaxSubmitComponent
                             throw new RestartResponseException(new ErrorPage(e));
                         }
                     }
-                    final AbstractUIObject uiObject = ((AbstractUIObject) this.form.getPage().getDefaultModelObject());
+                    final AbstractUIObject uiObject = (AbstractUIObject) this.form.getPage().getDefaultModelObject();
                     uiObject.resetModel();
 
                     Page page = null;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,6 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow.PageCreator;
 import org.apache.wicket.model.IModel;
-
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.company.CompanyPage;
@@ -39,8 +38,10 @@ import org.efaps.ui.wicket.pages.main.MainPage;
  * @author The eFasp Team
  * @version $Id:AjaxOpenModalComponent.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class AjaxSetCompanyLink  extends AbstractMenuItemAjaxComponent
+public class AjaxSetCompanyLink
+    extends AbstractMenuItemAjaxComponent
 {
+
     /**
      * Needed for serialization.
      */
@@ -57,7 +58,8 @@ public class AjaxSetCompanyLink  extends AbstractMenuItemAjaxComponent
      * @param _wicketId wicket id of this component
      * @param _model model for this component
      */
-    public AjaxSetCompanyLink(final String _wicketId, final IModel<UIMenuItem> _model)
+    public AjaxSetCompanyLink(final String _wicketId,
+                              final IModel<UIMenuItem> _model)
     {
         super(_wicketId, _model);
         add(new OpenSetCompanyPageBehavior());
@@ -89,7 +91,8 @@ public class AjaxSetCompanyLink  extends AbstractMenuItemAjaxComponent
      *
      *
      */
-    public class OpenSetCompanyPageBehavior extends AjaxEventBehavior
+    public class OpenSetCompanyPageBehavior
+        extends AjaxEventBehavior
     {
 
         /**
@@ -106,8 +109,7 @@ public class AjaxSetCompanyLink  extends AbstractMenuItemAjaxComponent
         }
 
         /**
-         * This Method returns the JavaScript which is executed by the
-         * JSCooKMenu.
+         * This Method returns the JavaScript which is executed by the JSCooKMenu.
          *
          * @return String with the JavaScript
          */
@@ -135,7 +137,8 @@ public class AjaxSetCompanyLink  extends AbstractMenuItemAjaxComponent
             modal.setInitialHeight(((UIMenuItem) getDefaultModelObject()).getWindowHeight());
             modal.setInitialWidth(((UIMenuItem) getDefaultModelObject()).getWindowWidth());
 
-            modal.setWindowClosedCallback(new ModalWindow.WindowClosedCallback() {
+            modal.setWindowClosedCallback(new ModalWindow.WindowClosedCallback()
+            {
 
                 private static final long serialVersionUID = 1L;
 
@@ -148,7 +151,8 @@ public class AjaxSetCompanyLink  extends AbstractMenuItemAjaxComponent
 
             });
 
-            final PageCreator pageCreator = new ModalWindow.PageCreator() {
+            final PageCreator pageCreator = new ModalWindow.PageCreator()
+            {
 
                 private static final long serialVersionUID = 1L;
 
@@ -164,8 +168,7 @@ public class AjaxSetCompanyLink  extends AbstractMenuItemAjaxComponent
         }
 
         /**
-         * Method must be overwritten, otherwise the default would break the
-         * execution of the JavaScript.
+         * Method must be overwritten, otherwise the default would break the execution of the JavaScript.
          *
          * @return null
          */
@@ -175,5 +178,4 @@ public class AjaxSetCompanyLink  extends AbstractMenuItemAjaxComponent
             return null;
         }
     }
-
 }

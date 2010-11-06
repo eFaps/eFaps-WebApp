@@ -29,14 +29,14 @@ import org.apache.wicket.IRequestTarget;
 import org.apache.wicket.RequestCycle;
 import org.apache.wicket.protocol.http.WebResponse;
 import org.apache.wicket.util.io.Streams;
-
 import org.efaps.ui.wicket.util.MimeTypes;
 
 /**
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public class FileRequestTarget implements IRequestTarget
+public class FileRequestTarget
+    implements IRequestTarget
 {
 
     /**
@@ -70,7 +70,7 @@ public class FileRequestTarget implements IRequestTarget
         final String name = this.file.getName();
         final String end = name.substring(name.lastIndexOf(".") + 1);
         final MimeTypes mtype = MimeTypes.getMimeTypeByEnding(end);
-        return mtype == null  ? MimeTypes.TXT : mtype;
+        return mtype == null ? MimeTypes.TXT : mtype;
     }
 
     /**

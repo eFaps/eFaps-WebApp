@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,6 @@ import org.apache.wicket.markup.html.link.ILinkListener;
 import org.apache.wicket.markup.html.link.PopupSettings;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.string.JavascriptUtils;
-
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractCommand.Target;
@@ -223,7 +222,7 @@ public class MenuContainer
     /**
      * Before rendering the URL's of all items must be evaluated.
      */
-    @Override()
+    @Override
     protected void onBeforeRender()
     {
         final Iterator<?> childs = this.iterator();
@@ -271,7 +270,7 @@ public class MenuContainer
      * @param _markupStream markup stream
      * @param _openTag      tag
      */
-    @Override()
+    @Override
     protected void onComponentTagBody(final MarkupStream _markupStream,
                                       final ComponentTag _openTag)
     {

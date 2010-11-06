@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,14 +27,14 @@ import org.apache.wicket.PageMap;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.markup.html.link.InlineFrame;
 import org.apache.wicket.model.IModel;
-
-import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.Opener;
+import org.efaps.ui.wicket.components.IRecent;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
@@ -50,7 +50,9 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class StandardLink extends AbstractMenuItemLink
+public class StandardLink
+    extends AbstractMenuItemLink
+    implements IRecent
 {
 
     /**
@@ -58,13 +60,15 @@ public class StandardLink extends AbstractMenuItemLink
      */
     private static final long serialVersionUID = 1L;
 
+
     /**
      * Constructor.
      *
      * @param _wicketId wicket id of this component
      * @param _model model for this component
      */
-    public StandardLink(final String _wicketId, final IModel<UIMenuItem> _model)
+    public StandardLink(final String _wicketId,
+                        final IModel<UIMenuItem> _model)
     {
         super(_wicketId, _model);
     }
@@ -75,6 +79,7 @@ public class StandardLink extends AbstractMenuItemLink
     @Override
     public void onClick()
     {
+        ((EFapsSession) getSession()).addRecent(this);
         final UIMenuItem model = super.getModelObject();
 
         final AbstractCommand command = model.getCommand();
@@ -91,7 +96,6 @@ public class StandardLink extends AbstractMenuItemLink
         }
         try {
             if (command.getTargetTable() != null) {
-
                 if (command.getProperty("TargetStructurBrowserField") != null) {
                     final StructurBrowserPage page = new StructurBrowserPage(PageMap
                                     .forName(MainPage.IFRAME_PAGEMAP_NAME), model.getCommandUUID(), model
@@ -148,5 +152,16 @@ public class StandardLink extends AbstractMenuItemLink
         } catch (final EFapsException e) {
             setResponsePage(new ErrorPage(e));
         }
+    }
+
+    /* (non-Javadoc)
+     * @see org.efaps.ui.wicket.components.IRecent#open()
+     */
+    @Override
+    public void open()
+        throws EFapsException
+    {
+        // TODO Auto-generated method stub
+
     }
 }

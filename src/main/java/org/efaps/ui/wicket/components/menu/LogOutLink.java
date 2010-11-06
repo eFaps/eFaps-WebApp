@@ -21,26 +21,40 @@
 package org.efaps.ui.wicket.components.menu;
 
 import org.apache.wicket.model.IModel;
-
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.login.LoginPage;
 
 /**
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public class LogOutLink extends StandardLink {
+public class LogOutLink
+    extends StandardLink
+{
 
-  private static final long serialVersionUID = 1L;
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
-  public LogOutLink(final String _id, final IModel<UIMenuItem> _model) {
-    super(_id, _model);
-  }
+    /**
+     * @param _wicketId Wicket ID
+     * @param _model    model
+     */
+    public LogOutLink(final String _wicketId,
+                      final IModel<UIMenuItem> _model)
+    {
+        super(_wicketId, _model);
+    }
 
-  @Override
-  public void onClick() {
-    this.setResponsePage(new LoginPage());
-    ((EFapsSession) this.getSession()).logout();
-  }
+    /* (non-Javadoc)
+     * @see org.efaps.ui.wicket.components.menu.StandardLink#onClick()
+     */
+    @Override
+    public void onClick()
+    {
+        this.setResponsePage(new LoginPage());
+        ((EFapsSession) getSession()).logout();
+    }
 }
