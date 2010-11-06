@@ -51,8 +51,10 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
  * @author The eFaps Team
  * @version $Id:FilterPage.java 1491 2007-10-15 23:40:43Z jmox $
  */
-public class FilterPage extends WebPage
+public class FilterPage
+    extends WebPage
 {
+
     /**
      * Needed for serialization.
      */
@@ -64,11 +66,12 @@ public class FilterPage extends WebPage
     private static final EFapsContentReference CSS = new EFapsContentReference(FilterPage.class, "FilterPage.css");
 
     /**
-     * @param _model            tablemodel
-     * @param _modalwindow      modalwindow this page is in
-     * @param _uitableHeader    uitablehaeder this FilterPage belongs to
+     * @param _model tablemodel
+     * @param _modalwindow modalwindow this page is in
+     * @param _uitableHeader uitablehaeder this FilterPage belongs to
      */
-    public FilterPage(final IModel<UITable> _model, final ModalWindowContainer _modalwindow,
+    public FilterPage(final IModel<UITable> _model,
+                      final ModalWindowContainer _modalwindow,
                       final UITableHeader _uitableHeader)
     {
         super(_model);
@@ -84,13 +87,16 @@ public class FilterPage extends WebPage
             panel = new FreeTextPanel("filterPanel", _model, _uitableHeader);
         }
         form.add(panel);
-        final AjaxButton ajaxbutton = new AjaxButton(Button.LINKID, form) {
+        final AjaxButton ajaxbutton = new AjaxButton(Button.LINKID, form)
+        {
 
             private static final long serialVersionUID = 1L;
 
             @Override
-            protected void onSubmit(final AjaxRequestTarget _target, final Form<?> _form)
+            protected void onSubmit(final AjaxRequestTarget _target,
+                                    final Form<?> _form)
             {
+
                 if (_uitableHeader.isFilterPickList()) {
                     final String[] selection = getRequestCycle().getRequest().getParameters(PickerPanel.CHECKBOXNAME);
 
@@ -114,7 +120,7 @@ public class FilterPage extends WebPage
                     }
                     _modalwindow.close(_target);
                 } else if (_uitableHeader.getFilterType().equals(FilterType.DATE)) {
-                    final FreeTextPanel freeTextPanel = ((FreeTextPanel) panel);
+                    final FreeTextPanel freeTextPanel = (FreeTextPanel) panel;
                     final Iterator<? extends Component> iter = freeTextPanel.iterator();
                     String from = null;
                     String to = null;
@@ -153,7 +159,8 @@ public class FilterPage extends WebPage
         if (_uitableHeader.isFilterRequired()) {
             form.add(new WebMarkupContainer("clearButton").setVisible(false));
         } else {
-            final AjaxLink<Object> ajaxclear = new AjaxLink<Object>(Button.LINKID) {
+            final AjaxLink<Object> ajaxclear = new AjaxLink<Object>(Button.LINKID)
+            {
 
                 private static final long serialVersionUID = 1L;
 
@@ -169,7 +176,8 @@ public class FilterPage extends WebPage
             form.add(new Button("clearButton", ajaxclear, DBProperties.getProperty("FilterPage.Button.clear"),
                                 Button.ICON.DELETE.getReference()));
         }
-        final AjaxLink<Object> ajaxcancel = new AjaxLink<Object>(Button.LINKID) {
+        final AjaxLink<Object> ajaxcancel = new AjaxLink<Object>(Button.LINKID)
+        {
 
             private static final long serialVersionUID = 1L;
 

@@ -88,12 +88,12 @@ public class UIFieldTable
         this.id = _fieldTable.getId();
         this.name = _fieldTable.getName();
         try {
-            if (Context.getThreadContext().containsUserAttribute(getUserAttributeKey(UserAttributeKey.SORTKEY))) {
-                setSortKey(Context.getThreadContext().getUserAttribute(getUserAttributeKey(UserAttributeKey.SORTKEY)));
+            if (Context.getThreadContext().containsUserAttribute(getCacheKey(UserCacheKey.SORTKEY))) {
+                setSortKey(Context.getThreadContext().getUserAttribute(getCacheKey(UserCacheKey.SORTKEY)));
             }
-            if (Context.getThreadContext().containsUserAttribute(getUserAttributeKey(UserAttributeKey.SORTDIRECTION))) {
+            if (Context.getThreadContext().containsUserAttribute(getCacheKey(UserCacheKey.SORTDIRECTION))) {
                 setSortDirection(SortDirection.getEnum(Context.getThreadContext()
-                                .getUserAttribute(getUserAttributeKey(UserAttributeKey.SORTDIRECTION))));
+                                .getUserAttribute(getCacheKey(UserCacheKey.SORTDIRECTION))));
             }
         } catch (final EFapsException e) {
             // we don't throw an error because this are only Usersettings
@@ -149,7 +149,7 @@ public class UIFieldTable
      * {@inheritDoc}
      */
     @Override
-    public String getUserAttributeKey(final UserAttributeKey _key)
+    public String getCacheKey(final UserCacheKey _key)
     {
         return super.getCommandUUID() + "-" + this.name + "-" + _key.getValue();
     }

@@ -107,7 +107,7 @@ public class EFapsSession
     private String userName;
 
     /**
-     * This instance map stores the Attributes wich are valid for the whole
+     * This instance map stores the Attributes which are valid for the whole
      * session. It is passed on to the Context while opening it.
      *
      * @see #openContext()
@@ -361,6 +361,7 @@ public class EFapsSession
             }
             this.sessionAttributes.clear();
             removeAttribute(EFapsSession.LOGIN_ATTRIBUTE_NAME);
+            invalidate();
         }
         closeContext();
         this.userName = null;

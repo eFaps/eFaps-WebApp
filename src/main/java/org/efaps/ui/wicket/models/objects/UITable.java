@@ -76,25 +76,29 @@ public class UITable
 
     /**
      * This enum holds the Values used as part of the key for the UserAttributes
-     * witch belong to a TableModel.
+     * or SessionAttribute witch belong to a TableModel.
      */
-    public static enum UserAttributeKey {
+    public static enum UserCacheKey {
         /**
-         * Key used for the order of Columns.
+         * Key for UserAttributes used for the order of Columns.
          */
         COLUMNORDER("columnOrder"),
-                /**
-         * Key used for the widths of Columns.
+        /**
+         * Key  for UserAttributes used for the widths of Columns.
          */
         COLUMNWIDTH("columnWidths"),
-                /**
-         * Key used for the sort direction.
+        /**
+         * Key for UserAttributes used for the sort direction.
          */
         SORTDIRECTION("sortDirection"),
-                /**
-         * Key used for the Column.
+        /**
+         * Key for UserAttributes used for the Column.
          */
-        SORTKEY("sortKey");
+        SORTKEY("sortKey"),
+        /**
+         * Key for SessionAttribute used for the filter of a table.
+         */
+        FILTER("filter");
 
         /**
          * Value of the user attribute.
@@ -106,7 +110,7 @@ public class UITable
          *
          * @param _value Value
          */
-        private UserAttributeKey(final String _value)
+        private UserCacheKey(final String _value)
         {
             this.value = _value;
         }
@@ -262,6 +266,7 @@ public class UITable
     private void initialise()
         throws EFapsException
     {
+
         final AbstractCommand command = getCommand();
         if (command == null) {
             this.showCheckBoxes = false;
@@ -269,11 +274,24 @@ public class UITable
             // set target table
             if (command.getTargetTable() != null) {
                 this.tableUUID = command.getTargetTable().getUUID();
-                // add the filter here, if it is a required filter that must be
-                // applied against the database
-                for (final Field field : command.getTargetTable().getFields()) {
-                    if (field.isFilterRequired() && !field.isFilterMemoryBased()) {
-                        this.filters.put(new UITableHeader(field, SortDirection.NONE, null), new Filter());
+
+                if (Context.getThreadContext().containsSessionAttribute(getCacheKey(UITable.UserCacheKey.FILTER))) {
+                    @SuppressWarnings("unchecked")
+                    final Map<String, Filter> sessfilter = (Map<String, Filter>) Context.getThreadContext()
+                        .getSessionAttribute(getCacheKey(UITable.UserCacheKey.FILTER));
+                    for (final Field field : command.getTargetTable().getFields()) {
+                        if (sessfilter.containsKey(field.getName())) {
+                            this.filters.put(new UITableHeader(field, SortDirection.NONE, null),
+                                            sessfilter.get(field.getName()));
+                        }
+                    }
+                } else {
+                    // add the filter here, if it is a required filter that must be
+                    // applied against the database
+                    for (final Field field : command.getTargetTable().getFields()) {
+                        if (field.isFilterRequired() && !field.isFilterMemoryBased()) {
+                            this.filters.put(new UITableHeader(field, SortDirection.NONE, null), new Filter());
+                        }
                     }
                 }
             }
@@ -287,14 +305,14 @@ public class UITable
             // get the User specific Attributes if exist overwrite the defaults
             try {
                 if (Context.getThreadContext().containsUserAttribute(
-                                getUserAttributeKey(UITable.UserAttributeKey.SORTKEY))) {
+                                getCacheKey(UITable.UserCacheKey.SORTKEY))) {
                     this.sortKey = Context.getThreadContext().getUserAttribute(
-                                    getUserAttributeKey(UITable.UserAttributeKey.SORTKEY));
+                                    getCacheKey(UITable.UserCacheKey.SORTKEY));
                 }
                 if (Context.getThreadContext().containsUserAttribute(
-                                getUserAttributeKey(UITable.UserAttributeKey.SORTDIRECTION))) {
+                                getCacheKey(UITable.UserCacheKey.SORTDIRECTION))) {
                     this.sortDirection = SortDirection.getEnum(Context.getThreadContext()
-                                    .getUserAttribute(getUserAttributeKey(UITable.UserAttributeKey.SORTDIRECTION)));
+                                    .getUserAttribute(getCacheKey(UITable.UserCacheKey.SORTDIRECTION)));
                 }
             } catch (final EFapsException e) {
                 // we don't throw an error because this are only Usersettings
@@ -681,6 +699,7 @@ public class UITable
      *
      * @param _uitableHeader UitableHeader this filter belongs to
      * @param _list lsi of value to filter
+     *
      */
     public void addFilterList(final UITableHeader _uitableHeader,
                               final Set<?> _list)
@@ -688,6 +707,7 @@ public class UITable
         final Filter filter = new Filter(_uitableHeader, _list);
         this.filters.put(_uitableHeader, filter);
         _uitableHeader.setFilterApplied(true);
+        storeFilters();
     }
 
     /**
@@ -696,6 +716,7 @@ public class UITable
      * @param _uitableHeader UitableHeader this filter belongs to
      * @param _from from value
      * @param _to to value
+     *
      */
     public void addFilterRange(final UITableHeader _uitableHeader,
                                final String _from,
@@ -704,6 +725,7 @@ public class UITable
         final Filter filter = new Filter(_uitableHeader, _from, _to);
         this.filters.put(_uitableHeader, filter);
         _uitableHeader.setFilterApplied(true);
+        storeFilters();
     }
 
     /**
@@ -743,6 +765,23 @@ public class UITable
     }
 
     /**
+     * Store the Filter in the Session.
+     */
+    private void storeFilters()
+    {
+        final Map<String, Filter> sessFilter = new HashMap<String, Filter>();
+        for (final Entry<UITableHeader, Filter> entry : this.filters.entrySet()) {
+            sessFilter.put(entry.getKey().getFieldName(), entry.getValue());
+        }
+        try {
+            Context.getThreadContext().setSessionAttribute(getCacheKey(UITable.UserCacheKey.FILTER), sessFilter);
+        } catch (final EFapsException e) {
+            UITable.LOG.error("Error storing Filtermap for Table called by Command with UUID: {}", getCommandUUID(), e);
+        }
+    }
+
+
+    /**
      * This is the getter method for the instance variable {@link #headers}.
      *
      * @return value of instance variable {@link #headers}
@@ -774,7 +813,7 @@ public class UITable
     {
         this.sortDirection = _sortdirection;
         try {
-            Context.getThreadContext().setUserAttribute(getUserAttributeKey(UITable.UserAttributeKey.SORTDIRECTION),
+            Context.getThreadContext().setUserAttribute(getCacheKey(UITable.UserCacheKey.SORTDIRECTION),
                             _sortdirection.getValue());
         } catch (final EFapsException e) {
             // we don't throw an error because this are only Usersettings
@@ -805,7 +844,7 @@ public class UITable
     {
         this.sortKey = _sortKey;
         try {
-            Context.getThreadContext().setUserAttribute(getUserAttributeKey(UITable.UserAttributeKey.SORTKEY),
+            Context.getThreadContext().setUserAttribute(getCacheKey(UITable.UserCacheKey.SORTKEY),
                             _sortKey);
         } catch (final EFapsException e) {
             // we don't throw an error because this are only Usersettings
@@ -853,7 +892,7 @@ public class UITable
      * @param _key UserAttributeKey the Key is wanted
      * @return String with the key
      */
-    public String getUserAttributeKey(final UserAttributeKey _key)
+    public String getCacheKey(final UserCacheKey _key)
     {
         return super.getCommandUUID() + "-" + _key.getValue();
     }
@@ -874,10 +913,10 @@ public class UITable
         List<Field> ret = new ArrayList<Field>();
         try {
             if (Context.getThreadContext().containsUserAttribute(
-                            getUserAttributeKey(UITable.UserAttributeKey.COLUMNORDER))) {
+                            getCacheKey(UITable.UserCacheKey.COLUMNORDER))) {
 
                 final String columnOrder = Context.getThreadContext().getUserAttribute(
-                                getUserAttributeKey(UITable.UserAttributeKey.COLUMNORDER));
+                                getCacheKey(UITable.UserCacheKey.COLUMNORDER));
 
                 final StringTokenizer tokens = new StringTokenizer(columnOrder, ";");
                 while (tokens.hasMoreTokens()) {
@@ -914,10 +953,10 @@ public class UITable
         List<Integer> ret = null;
         try {
             if (Context.getThreadContext().containsUserAttribute(
-                            getUserAttributeKey(UITable.UserAttributeKey.COLUMNWIDTH))) {
+                            getCacheKey(UITable.UserCacheKey.COLUMNWIDTH))) {
                 this.userWidths = true;
                 final String widths = Context.getThreadContext().getUserAttribute(
-                                getUserAttributeKey(UITable.UserAttributeKey.COLUMNWIDTH));
+                                getCacheKey(UITable.UserCacheKey.COLUMNWIDTH));
 
                 final StringTokenizer tokens = new StringTokenizer(widths, ";");
 
@@ -1072,7 +1111,7 @@ public class UITable
             }
         }
         try {
-            Context.getThreadContext().setUserAttribute(getUserAttributeKey(UITable.UserAttributeKey.COLUMNORDER),
+            Context.getThreadContext().setUserAttribute(getCacheKey(UITable.UserCacheKey.COLUMNORDER),
                             columnOrder.toString());
         } catch (final EFapsException e) {
             // we don't throw an error because this are only Usersettings
