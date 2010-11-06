@@ -1079,6 +1079,7 @@ public class UITable
     {
         this.filters.remove(_uiTableHeader);
         _uiTableHeader.setFilterApplied(false);
+        storeFilters();
     }
 
     /**
