@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@
 package org.efaps.ui.wicket.pages.content;
 
 import org.apache.wicket.IPageMap;
+import org.apache.wicket.ajax.IAjaxIndicatorAware;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.behavior.StringHeaderContributor;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -53,6 +54,7 @@ import org.efaps.util.EFapsException;
  */
 public abstract class AbstractContentPage
     extends AbstractMergePage
+    implements IAjaxIndicatorAware
 {
     /**
      * Static Variable used as the name for the page map for PopUps.
@@ -140,7 +142,7 @@ public abstract class AbstractContentPage
         add(StaticHeaderContributor.forCss(AbstractContentPage.CSS));
         add(new SetMessageStatusContributor());
 
-        this.body = (new WebMarkupContainer("body") {
+        this.body = new WebMarkupContainer("body") {
 
             private static final long serialVersionUID = 1L;
 
@@ -149,7 +151,7 @@ public abstract class AbstractContentPage
             {
                 return true;
             }
-        });
+        };
         add(this.body);
 
         add(this.modal);
@@ -251,5 +253,13 @@ public abstract class AbstractContentPage
                 ((EFapsSession) getSession()).removeOpener(openerId);
             }
         }
+    }
+
+    /**
+     * @return the value of the markup id attribute of the indicating element
+     */
+    public String getAjaxIndicatorMarkupId()
+    {
+        return "eFapsVeil";
     }
 }
