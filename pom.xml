@@ -33,7 +33,7 @@
     <packaging>jar</packaging>
     <groupId>org.efaps</groupId>
     <artifactId>efaps-webapp</artifactId>
-    <version>1.7.1-SNAPSHOT</version>
+    <version>1.8.0</version>
     <name>eFaps WebApp</name>
     <description>
         eFaps WebApp provides a web interface as the User Interface for eFaps
@@ -374,7 +374,7 @@
         <dependency>
             <groupId>org.efaps</groupId>
             <artifactId>efaps-kernel</artifactId>
-            <version>1.7.1-SNAPSHOT</version>
+            <version>1.8.0</version>
         </dependency>
 
         <!-- to define a higher version (needed from another tool) -->
