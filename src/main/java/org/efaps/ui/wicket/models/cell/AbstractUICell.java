@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,8 @@ import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.admin.event.EventType;
-import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractCommand.Target;
@@ -47,7 +47,7 @@ import org.efaps.util.cache.CacheReloadException;
  * @author The eFaps Team
  * @version $Id$
  */
-public abstract class UIAbstractCell
+public abstract class AbstractUICell
     extends AbstractInstanceObject
 {
     /**
@@ -107,7 +107,7 @@ public abstract class UIAbstractCell
      * @param _instanceKey  instance key
      * @param _cellvalue    value of the cell
      */
-    public UIAbstractCell(final AbstractUIObject _parent,
+    public AbstractUICell(final AbstractUIObject _parent,
                           final FieldValue _fieldValue,
                           final String _instanceKey,
                           final String _cellvalue)

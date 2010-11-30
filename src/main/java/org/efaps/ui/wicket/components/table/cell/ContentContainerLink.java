@@ -27,13 +27,14 @@ import org.apache.wicket.model.IModel;
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
-import org.efaps.ui.wicket.models.cell.UITableCell;
+import org.efaps.ui.wicket.models.cell.AbstractUICell;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 
 /**
- * Class extends a Link to work in the content container.
+ * Class extends a Link to work in the content container. Used also by the
+ * StructurBrowserTable.
  *
  * @author The eFaps Team
  * @version $Id:LinkContainer.java 1510 2007-10-18 14:35:40Z jmox $
@@ -54,7 +55,8 @@ public class ContentContainerLink<T>
      * @param _wicketId wicket id of this component
      * @param _model model fore this component
      */
-    public ContentContainerLink(final String _wicketId, final IModel<T> _model)
+    public ContentContainerLink(final String _wicketId,
+                                final IModel<T> _model)
     {
         super(_wicketId, _model);
     }
@@ -66,7 +68,7 @@ public class ContentContainerLink<T>
     public void onClick()
     {
         Instance instance = null;
-        final UITableCell cellmodel = (UITableCell) super.getModelObject();
+        final AbstractUICell cellmodel = (AbstractUICell) super.getModelObject();
         if (cellmodel.getInstanceKey() != null) {
             Menu menu = null;
             try {

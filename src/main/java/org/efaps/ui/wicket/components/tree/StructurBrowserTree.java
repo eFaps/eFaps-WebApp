@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,8 +47,8 @@ import org.apache.wicket.markup.html.link.InlineFrame;
 import org.apache.wicket.markup.html.tree.ITreeState;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.efaps.admin.ui.AbstractCommand;
-import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
+import org.efaps.admin.ui.Menu;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.behaviors.update.AbstractAjaxUpdateBehavior;
 import org.efaps.ui.wicket.components.menutree.MenuTree;

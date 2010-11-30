@@ -54,6 +54,7 @@ import org.efaps.beans.valueparser.ValueParser;
 import org.efaps.db.Instance;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.PrintQuery;
+import org.efaps.ui.wicket.models.cell.UIStructurBrowserTableCell;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 import org.efaps.util.RequestHandler;
@@ -119,7 +120,7 @@ public class UIStructurBrowser
     /**
      * Holds the columns in case of a TableTree.
      */
-    private final List<String> columns = new ArrayList<String>();
+    private final List<UIStructurBrowserTableCell> columns = new ArrayList<UIStructurBrowserTableCell>();
 
     /**
      * Holds the label of the Node which will be presented in the GUI.
@@ -391,7 +392,7 @@ public class UIStructurBrowser
                 for (final Field field : getTable().getFields()) {
                     Object value = null;
                     if (field.getSelectAlternateOID() != null) {
-                        instance = Instance.get(print.<String> getSelect(field.getSelectAlternateOID()));
+                        instance = Instance.get(print.<String>getSelect(field.getSelectAlternateOID()));
                     }
                     if (field.getSelect() != null) {
                         value = print.getSelect(field.getSelect());
@@ -414,13 +415,17 @@ public class UIStructurBrowser
                         strValue = "";
                     }
 
+                    final UIStructurBrowserTableCell cell = new UIStructurBrowserTableCell(child, fieldvalue,
+                                    instance, strValue);
+
                     if (field.getName().equals(this.browserFieldName)) {
+                        cell.setBrowserField(true);
                         child.setLabel(strValue);
                         child.setParent(checkForChildren(instance));
                         child.setImage(Image.getTypeIcon(instance.getType()) != null ? Image.getTypeIcon(
                                         instance.getType()).getUrl() : null);
                     }
-                    child.getColumns().add(strValue);
+                    child.getColumns().add(cell);
                 }
             }
         } catch (final EFapsException e) {
@@ -601,7 +606,7 @@ public class UIStructurBrowser
      * @param _index index of the Column
      * @return String with the Value of the Column
      */
-    public String getColumnValue(final int _index)
+    public UIStructurBrowserTableCell getColumnValue(final int _index)
     {
         return this.columns.get(_index);
     }
@@ -621,7 +626,7 @@ public class UIStructurBrowser
      *
      * @return value of instance variable {@link #columns}
      */
-    private List<String> getColumns()
+    public List<UIStructurBrowserTableCell> getColumns()
     {
         return this.columns;
     }

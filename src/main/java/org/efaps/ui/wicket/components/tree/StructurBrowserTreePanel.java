@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import java.util.UUID;
 
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-
 import org.efaps.ui.wicket.models.StructurBrowserModel;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.util.EFapsException;
@@ -35,8 +34,10 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class StructurBrowserTreePanel extends Panel
+public class StructurBrowserTreePanel
+    extends Panel
 {
+
     /**
      * Needed for serialization.
      */
@@ -45,14 +46,17 @@ public class StructurBrowserTreePanel extends Panel
     /**
      * Constructor.
      *
-     * @param _wicketId     wicket id of this component
-     * @param _commandUUID  UUID of the related command
-     * @param _oid          oid
-     * @param _listmenukey  key to the list menu
-     * @throws EFapsException
+     * @param _wicketId wicket id of this component
+     * @param _commandUUID UUID of the related command
+     * @param _oid oid
+     * @param _listmenukey key to the list menu
+     * @throws EFapsException on error
      */
-    public StructurBrowserTreePanel(final String _wicketId, final UUID _commandUUID, final String _oid,
-                    final String _listmenukey) throws EFapsException
+    public StructurBrowserTreePanel(final String _wicketId,
+                                    final UUID _commandUUID,
+                                    final String _oid,
+                                    final String _listmenukey)
+        throws EFapsException
     {
         this(_wicketId, new StructurBrowserModel(new UIStructurBrowser(_commandUUID, _oid)), _listmenukey);
     }
@@ -60,11 +64,12 @@ public class StructurBrowserTreePanel extends Panel
     /**
      * Constructor.
      *
-     * @param _wicketId     wicket id of this component
-     * @param _model        model for this component
-     * @param _listmenukey  key to the list menu
+     * @param _wicketId wicket id of this component
+     * @param _model model for this component
+     * @param _listmenukey key to the list menu
      */
-    public StructurBrowserTreePanel(final String _wicketId, final IModel<UIStructurBrowser> _model,
+    public StructurBrowserTreePanel(final String _wicketId,
+                                    final IModel<UIStructurBrowser> _model,
                                     final String _listmenukey)
     {
         super(_wicketId, _model);

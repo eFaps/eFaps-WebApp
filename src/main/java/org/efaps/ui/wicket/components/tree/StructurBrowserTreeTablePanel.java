@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,22 +29,28 @@ import org.apache.wicket.Response;
 import org.apache.wicket.extensions.markup.html.tree.table.AbstractRenderableColumn;
 import org.apache.wicket.extensions.markup.html.tree.table.AbstractTreeColumn;
 import org.apache.wicket.extensions.markup.html.tree.table.ColumnLocation;
-import org.apache.wicket.extensions.markup.html.tree.table.IColumn;
-import org.apache.wicket.extensions.markup.html.tree.table.IRenderable;
 import org.apache.wicket.extensions.markup.html.tree.table.ColumnLocation.Alignment;
 import org.apache.wicket.extensions.markup.html.tree.table.ColumnLocation.Unit;
+import org.apache.wicket.extensions.markup.html.tree.table.IColumn;
+import org.apache.wicket.extensions.markup.html.tree.table.IRenderable;
+import org.apache.wicket.markup.html.link.ILinkListener;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-
+import org.apache.wicket.util.string.Strings;
+import org.efaps.ui.wicket.components.table.cell.ContentContainerLink;
+import org.efaps.ui.wicket.models.cell.StructurBrowserTableCellModel;
+import org.efaps.ui.wicket.models.cell.UIStructurBrowserTableCell;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
+import org.efaps.ui.wicket.models.objects.UITableHeader;
 
 /**
  * @author The eFaps Team
- * @version $Id: StructurBrowserTreeTablePanel.java 2757 2009-07-08 21:29:40Z
- *          jan.moxter $
+ * @version $Id$
  */
-public class StructurBrowserTreeTablePanel extends Panel
+public class StructurBrowserTreeTablePanel
+    extends Panel
 {
+
     /**
      * Needed for serialization.
      */
@@ -55,7 +61,8 @@ public class StructurBrowserTreeTablePanel extends Panel
      * @param _model model for this component
      * @param _parentLink must the link be done using the parent
      */
-    public StructurBrowserTreeTablePanel(final String _wicketId, final IModel<UIStructurBrowser> _model,
+    public StructurBrowserTreeTablePanel(final String _wicketId,
+                                         final IModel<UIStructurBrowser> _model,
                                          final boolean _parentLink)
     {
         super(_wicketId, _model);
@@ -68,15 +75,16 @@ public class StructurBrowserTreeTablePanel extends Panel
         final IColumn[] columns = new IColumn[model.getHeaders().size() + 1];
 
         columns[0] = new SelectColumn(new ColumnLocation(Alignment.LEFT, 16, Unit.PX), "");
-
-        for (int i = 0; i < model.getHeaders().size(); i++) {
-            if (model.getHeaders().get(i).getFieldName().equals(model.getBrowserFieldName())) {
-                columns[i + 1] = new TreeColumn(new ColumnLocation(Alignment.MIDDLE, 2, Unit.PROPORTIONAL), model
-                                .getHeaders().get(i).getLabel(), _model);
+        int i = 0;
+        for (final UITableHeader header : model.getHeaders()) {
+            if (header.getFieldName().equals(model.getBrowserFieldName())) {
+                columns[i + 1] = new TreeColumn(new ColumnLocation(Alignment.MIDDLE, 2, Unit.PROPORTIONAL),
+                                header.getLabel(), _model);
             } else {
-                columns[i + 1] = new SimpleColumn(new ColumnLocation(Alignment.MIDDLE, 1, Unit.PROPORTIONAL), model
-                                .getHeaders().get(i).getLabel(), i);
+                columns[i + 1] = new SimpleColumn(new ColumnLocation(Alignment.MIDDLE, 1, Unit.PROPORTIONAL),
+                                header.getLabel(), i);
             }
+            i++;
         }
 
         final StructurBrowserTreeTable tree = new StructurBrowserTreeTable("treeTable", model.getTreeModel(), columns,
@@ -87,8 +95,10 @@ public class StructurBrowserTreeTablePanel extends Panel
     /**
      * Class for the column that contains the tree.
      */
-    public class TreeColumn extends AbstractTreeColumn
+    public class TreeColumn
+        extends AbstractTreeColumn
     {
+
         /**
          * Needed for serialization.
          */
@@ -109,7 +119,9 @@ public class StructurBrowserTreeTablePanel extends Panel
          * @param _header header
          * @param _model model
          */
-        public TreeColumn(final ColumnLocation _location, final String _header, final IModel<UIStructurBrowser> _model)
+        public TreeColumn(final ColumnLocation _location,
+                          final String _header,
+                          final IModel<UIStructurBrowser> _model)
         {
             super(_location, _header);
             this.header = _header;
@@ -137,7 +149,8 @@ public class StructurBrowserTreeTablePanel extends Panel
          *
          */
         @Override
-        public Component newHeader(final MarkupContainer _parent, final String _wicketId)
+        public Component newHeader(final MarkupContainer _parent,
+                                   final String _wicketId)
         {
             return new SortHeaderColumnLink(_wicketId, this.header, this.model);
         }
@@ -146,8 +159,10 @@ public class StructurBrowserTreeTablePanel extends Panel
     /**
      * Class for the standard column.
      */
-    public class SimpleColumn extends AbstractRenderableColumn
+    public class SimpleColumn
+        extends AbstractRenderableColumn
     {
+
         /**
          * Needed for serialization.
          */
@@ -159,15 +174,79 @@ public class StructurBrowserTreeTablePanel extends Panel
         private final int index;
 
         /**
+         * Counter index for the Link element.
+         */
+        private int idx = 0;
+
+        /**
          * @param _location Location
          * @param _header header
          * @param _index index
          */
-        public SimpleColumn(final ColumnLocation _location, final String _header, final int _index)
+        public SimpleColumn(final ColumnLocation _location,
+                            final String _header,
+                            final int _index)
         {
             super(_location, _header);
             this.index = _index;
             setContentAsTooltip(true);
+        }
+
+
+        /**
+         * In case of a link a ContanetContainerlink is rendered else a
+         * standard cell.
+         *
+         * @param _node Node the cell is rendered for
+         * @param _level level of the node
+         * @return new Cell
+         */
+        @Override
+        public IRenderable newCell(final TreeNode _node,
+                                   final int _level)
+        {
+            final UIStructurBrowserTableCell uiObject = ((UIStructurBrowser) ((DefaultMutableTreeNode) _node)
+                            .getUserObject()).getColumnValue(getIndex());
+            IRenderable ret;
+            if (uiObject.getReference() == null) {
+                ret = super.newCell(_node, _level);
+            } else {
+                this.idx++;
+                final StructurBrowserTableCellModel model = new StructurBrowserTableCellModel(uiObject);
+                final ContentContainerLink<UIStructurBrowserTableCell> celllink
+                    = new ContentContainerLink<UIStructurBrowserTableCell>(
+                                "link" + this.idx, model);
+                getPage().add(celllink);
+                celllink.rendered();
+                ret = new IRenderable()
+                {
+
+                    private static final long serialVersionUID = 1L;
+
+                    public void render(final TreeNode _node,
+                                       final Response _response)
+                    {
+                        final CharSequence url = celllink.urlFor(ILinkListener.INTERFACE);
+                        String content = getNodeValue(_node);
+
+                        // escape if necessary
+                        if (isEscapeContent()) {
+                            content = Strings.escapeMarkup(content).toString();
+                        }
+
+                        _response.write("<a");
+                        if (isContentAsTooltip()) {
+                            _response.write(" title=\"" + content + "\"");
+                        }
+                        _response.write(" href=\"");
+                        _response.write(url);
+                        _response.write("\">");
+                        _response.write(content);
+                        _response.write("</a>");
+                    }
+                };
+            }
+            return ret;
         }
 
         /**
@@ -179,17 +258,29 @@ public class StructurBrowserTreeTablePanel extends Panel
         @Override
         public String getNodeValue(final TreeNode _node)
         {
-            String ret = "";
-            ret = ((UIStructurBrowser) ((DefaultMutableTreeNode) _node).getUserObject()).getColumnValue(this.index);
-            return ret;
+            final UIStructurBrowserTableCell ret = ((UIStructurBrowser) ((DefaultMutableTreeNode) _node)
+                            .getUserObject()).getColumnValue(getIndex());
+            return ret.getCellValue();
+        }
+
+        /**
+         * Getter method for the instance variable {@link #index}.
+         *
+         * @return value of instance variable {@link #index}
+         */
+        public int getIndex()
+        {
+            return this.index;
         }
     }
 
     /**
      * Class for the column containing a select box.
      */
-    public class SelectColumn extends AbstractRenderableColumn
+    public class SelectColumn
+        extends AbstractRenderableColumn
     {
+
         /**
          * Needed for serialization.
          */
@@ -199,7 +290,8 @@ public class StructurBrowserTreeTablePanel extends Panel
          * @param _location Location
          * @param _header header
          */
-        public SelectColumn(final ColumnLocation _location, final String _header)
+        public SelectColumn(final ColumnLocation _location,
+                            final String _header)
         {
             super(_location, _header);
         }
@@ -212,19 +304,21 @@ public class StructurBrowserTreeTablePanel extends Panel
          * @return new Cell
          */
         @Override
-        public IRenderable newCell(final TreeNode _node, final int _level)
+        public IRenderable newCell(final TreeNode _node,
+                                   final int _level)
         {
-            return new IRenderable() {
+            return new IRenderable()
+            {
 
                 private static final long serialVersionUID = 1L;
 
-                public void render(final TreeNode _node, final Response _response)
+                public void render(final TreeNode _node,
+                                   final Response _response)
                 {
                     final String instanceKey = ((UIStructurBrowser) ((DefaultMutableTreeNode) _node).getUserObject())
                                     .getInstanceKey();
-                    final String checkbox = "<input " + "type=\"checkbox\"" + "name=\"selectedRow\""
-                                    + "class=\"eFapsCheckboxCell\"" + "value=\"" + instanceKey + "\"/>";
-
+                    final String checkbox = "<input type=\"checkbox\" name=\"selectedRow\" class=\"eFapsCheckboxCell\""
+                        + "value=\"" + instanceKey + "\"/>";
                     _response.write(checkbox);
                 }
             };

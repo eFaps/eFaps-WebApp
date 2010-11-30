@@ -29,7 +29,7 @@ import org.efaps.ui.wicket.models.objects.AbstractUIObject;
  * @author The eFaps Team
  * @version $Id$
  */
-public class UIHiddenCell extends UIAbstractCell
+public class UIHiddenCell extends AbstractUICell
 {
     /**
      * Needed for serialization.

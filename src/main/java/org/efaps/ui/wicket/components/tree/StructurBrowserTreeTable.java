@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,9 +41,8 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.html.tree.ITreeState;
 import org.apache.wicket.model.AbstractReadOnlyModel;
-
-import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.AbstractCommand.Target;
+import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.behaviors.AbstractAjaxCallBackBehavior;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
@@ -57,13 +56,14 @@ import org.efaps.util.EFapsException;
 /**
  * This class renders a TreeTable, which loads the children asynchron.<br>
  * The items of the tree consists of junction link, icon and label. An
- * additional arrow showing the direction of the child can be rendered depending
- * on a Tristate. The table shows the columns as defined in the model.
+ * additional arrow showing the direction of the child can be rendered
+ * depending on a Tristate. The table shows the columns as defined in the model.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public class StructurBrowserTreeTable extends TreeTable
+public class StructurBrowserTreeTable
+    extends TreeTable
 {
 
     /**
@@ -90,8 +90,10 @@ public class StructurBrowserTreeTable extends TreeTable
      * @param _columns columns
      * @param _parentLink must the link be done over the parent
      */
-    public StructurBrowserTreeTable(final String _wicketId, final TreeModel _treeModel, final IColumn[] _columns,
-                    final boolean _parentLink)
+    public StructurBrowserTreeTable(final String _wicketId,
+                                    final TreeModel _treeModel,
+                                    final IColumn[] _columns,
+                                    final boolean _parentLink)
     {
         super(_wicketId, _treeModel, _columns);
         this.add(StaticHeaderContributor.forCss(StructurBrowserTreeTable.CSS));
@@ -143,14 +145,17 @@ public class StructurBrowserTreeTable extends TreeTable
      * @return Component
      */
     @Override
-    protected Component newNodeIcon(final MarkupContainer _parent, final String _wicketId, final TreeNode _node)
+    protected Component newNodeIcon(final MarkupContainer _parent,
+                                    final String _wicketId,
+                                    final TreeNode _node)
     {
         final UIStructurBrowser model = (UIStructurBrowser) ((DefaultMutableTreeNode) _node).getUserObject();
         Component ret;
         if (model.getImage() == null) {
             ret = super.newNodeIcon(_parent, _wicketId, _node);
         } else {
-            ret = new WebMarkupContainer(_wicketId) {
+            ret = new WebMarkupContainer(_wicketId)
+            {
 
                 private static final long serialVersionUID = 1L;
 
@@ -176,12 +181,13 @@ public class StructurBrowserTreeTable extends TreeTable
      * @return Component
      */
     @Override
-    protected Component newTreePanel(final MarkupContainer _parent, final String _wicketId, final TreeNode _node,
-                    final int _level, final IRenderNodeCallback _nodeCallback)
+    protected Component newTreePanel(final MarkupContainer _parent,
+                                     final String _wicketId,
+                                     final TreeNode _node,
+                                     final int _level,
+                                     final IRenderNodeCallback _nodeCallback)
     {
-
         return new StructurBrowserTreeFragment(_wicketId, _node, _level, _nodeCallback);
-
     }
 
     /**
@@ -193,11 +199,15 @@ public class StructurBrowserTreeTable extends TreeTable
      * @return MarkupContainer
      */
     @Override
-    protected MarkupContainer newNodeLink(final MarkupContainer _parent, final String _wicketId, final TreeNode _node)
+    protected MarkupContainer newNodeLink(final MarkupContainer _parent,
+                                          final String _wicketId,
+                                          final TreeNode _node)
     {
         MarkupContainer ret;
         if (this.parentLink) {
-            ret = new WebMarkupContainer(_wicketId) {
+            ret = new WebMarkupContainer(_wicketId)
+            {
+
                 private static final long serialVersionUID = 1L;
 
                 @Override
@@ -218,7 +228,8 @@ public class StructurBrowserTreeTable extends TreeTable
             };
         } else {
 
-            ret = newLink(_parent, _wicketId, new ILinkCallback() {
+            ret = newLink(_parent, _wicketId, new ILinkCallback()
+            {
 
                 private static final long serialVersionUID = 1L;
 
@@ -233,7 +244,7 @@ public class StructurBrowserTreeTable extends TreeTable
                         try {
                             instance = model.getInstance();
                             menu = Menu.getTypeTreeMenu(instance.getType());
-                        } catch (final Exception e) {
+                        } catch (final EFapsException e) {
                             throw new RestartResponseException(new ErrorPage(e));
                         }
                         if (menu == null) {
@@ -261,11 +272,12 @@ public class StructurBrowserTreeTable extends TreeTable
     }
 
     /**
-     * This class renders a Fragment of the TreeTable, representing a Node
-     * including the junctionlink, the icon etc.
+     * This class renders a Fragment of the TreeTable, representing
+     * a Node including the junctionlink, the icon etc.
      *
      */
-    private class StructurBrowserTreeFragment extends Panel
+    private class StructurBrowserTreeFragment
+        extends Panel
     {
 
         /**
@@ -279,8 +291,10 @@ public class StructurBrowserTreeTable extends TreeTable
          * @param _level level
          * @param _nodeCallback callback
          */
-        public StructurBrowserTreeFragment(final String _wicketId, final TreeNode _node, final int _level,
-                        final IRenderNodeCallback _nodeCallback)
+        public StructurBrowserTreeFragment(final String _wicketId,
+                                           final TreeNode _node,
+                                           final int _level,
+                                           final IRenderNodeCallback _nodeCallback)
         {
             super(_wicketId);
 
@@ -303,7 +317,8 @@ public class StructurBrowserTreeTable extends TreeTable
 
             nodeLink.add(newNodeIcon(nodeLink, "icon", _node));
 
-            nodeLink.add(new Label("label", new AbstractReadOnlyModel<String>() {
+            nodeLink.add(new Label("label", new AbstractReadOnlyModel<String>()
+            {
 
                 private static final long serialVersionUID = 1L;
 
@@ -318,21 +333,28 @@ public class StructurBrowserTreeTable extends TreeTable
             }));
         }
     }
+
     /**
      * Class is used to call an event from inside the parent.
      *
      */
-    public class AjaxParentCallBackBehavior extends AbstractAjaxCallBackBehavior
+    public class AjaxParentCallBackBehavior
+        extends AbstractAjaxCallBackBehavior
     {
 
         /**
          * Needed for serialization.
          */
         private static final long serialVersionUID = 1L;
+
+        /**
+         * Node belonging to this call back behavior.
+         */
         private final TreeNode node;
 
         /**
          * Constructor.
+         * @param _node current node
          */
         public AjaxParentCallBackBehavior(final TreeNode _node)
         {
@@ -356,7 +378,7 @@ public class StructurBrowserTreeTable extends TreeTable
                 try {
                     instance = model.getInstance();
                     menu = Menu.getTypeTreeMenu(instance.getType());
-                } catch (final Exception e) {
+                } catch (final EFapsException e) {
                     throw new RestartResponseException(new ErrorPage(e));
                 }
                 if (menu == null) {

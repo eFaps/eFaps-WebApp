@@ -45,7 +45,7 @@ import org.efaps.util.EFapsException;
  * @version $Id:CellModel.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class UITableCell
-    extends UIAbstractCell
+    extends AbstractUICell
 {
 
     /**

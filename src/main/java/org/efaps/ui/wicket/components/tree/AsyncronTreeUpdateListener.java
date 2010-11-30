@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,26 +25,25 @@ import javax.swing.tree.TreeNode;
 
 import org.apache.wicket.IClusterable;
 import org.apache.wicket.markup.html.tree.ITreeStateListener;
-
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser.BogusNode;
 
 /**
  *
- * @author The eFasp Team
- * @version $Id: AsyncronTreeUpdateListener.java 2163 2009-01-31 23:49:24Z jmox
- *          $
+ * @author The eFaps Team
+ * @version $Id$
  */
-public class AsyncronTreeUpdateListener implements ITreeStateListener, IClusterable
+public class AsyncronTreeUpdateListener
+    implements ITreeStateListener, IClusterable
 {
+
     /**
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
 
     /**
-     * Method is called on expand of a node. The expand of the node is stored in
-     * the model.
+     * Method is called on expand of a node. The expand of the node is stored in the model.
      *
      * @param _treenode TreeNode to expand
      */
@@ -76,8 +75,7 @@ public class AsyncronTreeUpdateListener implements ITreeStateListener, IClustera
     }
 
     /**
-     * Method is called on collapse of a node. The collapse of the node is
-     * stored in the model.
+     * Method is called on collapse of a node. The collapse of the node is stored in the model.
      *
      * @param _treenode TreeNode to expand
      */

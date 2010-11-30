@@ -103,7 +103,6 @@ public class SortHeaderColumnLink
     @Override
     public void onClick()
     {
-
         final UIStructurBrowser structurBrowser = (UIStructurBrowser) getDefaultModelObject();
         // toggle sort direction
         if (structurBrowser.getSortDirection() == SortDirection.NONE
