@@ -50,11 +50,6 @@ public class UIStructurBrowserTableCell
     private String reference;
 
     /**
-     * Is this the cell of the broserField. (Field containing the tree).
-     */
-    private boolean browserField = false;
-
-    /**
      * @param _parent           parent uiObject
      * @param _fieldValue       FieldValue
      * @param _instance         instance
@@ -93,26 +88,5 @@ public class UIStructurBrowserTableCell
     public String getReference()
     {
         return this.reference;
-    }
-
-    /**
-     * Setter method for instance variable {@link #browserField}.
-     *
-     * @param _browserField value for instance variable {@link #browserField}
-     */
-
-    public void setBrowserField(final boolean _browserField)
-    {
-        this.browserField = _browserField;
-    }
-
-    /**
-     * Getter method for the instance variable {@link #browserField}.
-     *
-     * @return value of instance variable {@link #browserField}
-     */
-    public boolean isBrowserField()
-    {
-        return this.browserField;
     }
 }

@@ -23,6 +23,7 @@ package org.efaps.ui.wicket.models.objects;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +52,7 @@ import org.efaps.admin.ui.field.Field;
 import org.efaps.beans.ValueList;
 import org.efaps.beans.valueparser.ParseException;
 import org.efaps.beans.valueparser.ValueParser;
+import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.PrintQuery;
@@ -58,6 +60,8 @@ import org.efaps.ui.wicket.models.cell.UIStructurBrowserTableCell;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 import org.efaps.util.RequestHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is used to provide the Model for the StructurBrowser for eFpas. <br>
@@ -99,6 +103,18 @@ public class UIStructurBrowser
         /** Method sort is executed. */
         SORT;
     }
+
+    /**
+     * Static part of the key to get the Information stored in the session
+     * in relation to this StruturBrowser.
+     */
+    public static final String USERSESSIONKEY = "eFapsUIStructurBrowser";
+
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(UIStructurBrowser.class);
+
 
     /**
      * Needed for serialization.
@@ -285,12 +301,12 @@ public class UIStructurBrowser
             if (this.tableuuid == null) {
                 final Map<Instance, Boolean> map = new LinkedHashMap<Instance, Boolean>();
                 map.put(getInstance(), null);
-                executeTree(map);
+                executeTree(map, false);
             } else {
                 ret = getCommand().executeEvents(EventType.UI_TABLE_EVALUATE, ParameterValues.CLASS, this,
                                 ParameterValues.INSTANCE, getInstance());
                 final Map<Instance, Boolean> map = (Map<Instance, Boolean>) ret.get(0).get(ReturnValues.VALUES);
-                executeTreeTable(map);
+                executeTreeTable(map, false);
             }
         } catch (final EFapsException e) {
             throw new RestartResponseException(new ErrorPage(e));
@@ -301,9 +317,11 @@ public class UIStructurBrowser
      * This method is called in case of a Tree from the {@link #execute()}method
      * to fill this StructurBrowserModel with live.
      *
-     * @param _map List of Object
+     * @param _map      List of Object
+     * @param _expand   inside an expand
      */
-    private void executeTree(final Map<Instance, Boolean> _map)
+    private void executeTree(final Map<Instance, Boolean> _map,
+                             final boolean _expand)
     {
         try {
             final List<Instance> instances = new ArrayList<Instance>();
@@ -334,17 +352,19 @@ public class UIStructurBrowser
             throw new RestartResponseException(new ErrorPage(e));
         }
         sortModel();
+        expand(_expand);
         super.setInitialized(true);
-
     }
 
     /**
      * This method is called in case of a TreeTable from the {@link #execute()}
      * method to fill this StructurBrowserModel with live.
      *
-     * @param _map List of Objects
+     * @param _map      List of Objects
+     * @param _expand   inside an expand
      */
-    private void executeTreeTable(final Map<Instance, Boolean> _map)
+    private void executeTreeTable(final Map<Instance, Boolean> _map,
+                                  final boolean _expand)
     {
         try {
             final List<Instance> instances = new ArrayList<Instance>();
@@ -419,7 +439,6 @@ public class UIStructurBrowser
                                     instance, strValue);
 
                     if (field.getName().equals(this.browserFieldName)) {
-                        cell.setBrowserField(true);
                         child.setLabel(strValue);
                         child.setParent(checkForChildren(instance));
                         child.setImage(Image.getTypeIcon(instance.getType()) != null ? Image.getTypeIcon(
@@ -432,7 +451,47 @@ public class UIStructurBrowser
             throw new RestartResponseException(new ErrorPage(e));
         }
         sortModel();
+        expand(_expand);
         super.setInitialized(true);
+    }
+
+    /**
+     * Expand the tree with the information from the Session.
+     * @param _expand is this inside an expand
+     */
+    @SuppressWarnings("unchecked")
+    private void expand(final boolean _expand)
+    {
+        try {
+            // only if the element was opened the first time e.g. reload etc.
+            if ((this.root || _expand) && Context.getThreadContext().containsSessionAttribute(getCacheKey())) {
+                final Map<String, Boolean> sessMap = (Map<String, Boolean>) Context
+                                .getThreadContext().getSessionAttribute(getCacheKey());
+                for (final UIStructurBrowser uiChild : this.childs) {
+
+                    if (sessMap.containsKey(uiChild.getInstanceKey())) {
+                        final Boolean expandedTmp = sessMap.get(uiChild.getInstanceKey());
+                        if (expandedTmp != null && expandedTmp && uiChild.isParent()) {
+                            uiChild.executionStatus = UIStructurBrowser.ExecutionStatus.ADDCHILDREN;
+                            final List<Return> ret = getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
+                                                ParameterValues.INSTANCE, uiChild.getInstance(),
+                                                ParameterValues.CLASS, uiChild);
+                            final Map<Instance, Boolean> map = (Map<Instance, Boolean>) ret.get(0).get(
+                                            ReturnValues.VALUES);
+                            uiChild.setExpanded(true);
+                            if (uiChild.tableuuid == null) {
+                                uiChild.executeTree(map, true);
+                            } else {
+                                uiChild.executeTreeTable(map, true);
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (final EFapsException e) {
+            UIStructurBrowser.LOG.error("Error retreiving Session info for StruturBrowser from Command with UUID: {}",
+                            getCommandUUID(), e);
+        }
     }
 
     /**
@@ -558,12 +617,12 @@ public class UIStructurBrowser
     private void addNode(final DefaultMutableTreeNode _parent,
                          final List<UIStructurBrowser> _childs)
     {
-        for (int i = 0; i < _childs.size(); i++) {
-            final DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(_childs.get(i));
+        for (final UIStructurBrowser child : _childs) {
+            final DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(child);
             _parent.add(childNode);
-            if (_childs.get(i).hasChilds()) {
-                addNode(childNode, _childs.get(i).childs);
-            } else if (_childs.get(i).isParent()) {
+            if (child.hasChilds()) {
+                addNode(childNode, child.getChilds());
+            } else if (child.isParent()) {
                 childNode.add(new BogusNode());
             }
         }
@@ -590,9 +649,9 @@ public class UIStructurBrowser
             final Map<Instance, Boolean> map = (Map<Instance, Boolean>) ret.get(0).get(ReturnValues.VALUES);
 
             if (this.tableuuid == null) {
-                executeTree(map);
+                executeTree(map, false);
             } else {
-                executeTreeTable(map);
+                executeTreeTable(map, false);
             }
             addNode(_parent, this.childs);
         } catch (final EFapsException e) {
@@ -798,6 +857,42 @@ public class UIStructurBrowser
     public void setExpanded(final boolean _expanded)
     {
         this.expanded = _expanded;
+        storeInSession();
+    }
+
+
+    /**
+     * This method generates the Key for a UserAttribute by using the UUID of
+     * the Command and the given static part, so that for every StruturBrowser a
+     * unique key for expand etc, is created.
+     *
+     * @return String with the key
+     */
+    public String getCacheKey()
+    {
+        return super.getCommandUUID() + "-" + UIStructurBrowser.USERSESSIONKEY;
+    }
+
+
+    /**
+     * Store the Information in the Session.
+     */
+    @SuppressWarnings("unchecked")
+    private void storeInSession()
+    {
+        try {
+            final Map<String, Boolean> sessMap;
+            if (Context.getThreadContext().containsSessionAttribute(getCacheKey())) {
+                sessMap = (Map<String, Boolean>) Context.getThreadContext().getSessionAttribute(getCacheKey());
+            } else {
+                sessMap = new HashMap<String, Boolean>();
+            }
+            sessMap.put(getInstanceKey(), isExpanded());
+            Context.getThreadContext().setSessionAttribute(getCacheKey(), sessMap);
+        } catch (final EFapsException e) {
+            UIStructurBrowser.LOG.error("Error storing Session info for StruturBrowser called by Command with UUID: {}",
+                            getCommandUUID(), e);
+        }
     }
 
     /**
