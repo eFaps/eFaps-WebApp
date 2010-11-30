@@ -98,7 +98,7 @@ public class StandardLink
         }
         try {
             if (command.getTargetTable() != null) {
-                if (command.getProperty("TargetStructurBrowserField") != null) {
+                if (command.getTargetStructurBrowserField() != null) {
                     final StructurBrowserPage page = new StructurBrowserPage(PageMap
                                     .forName(MainPage.IFRAME_PAGEMAP_NAME), model.getCommandUUID(), model
                                     .getInstanceKey());
