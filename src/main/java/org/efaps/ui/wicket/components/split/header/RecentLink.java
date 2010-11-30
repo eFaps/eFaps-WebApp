@@ -68,8 +68,8 @@ public class RecentLink
         this.maxLength = _maxLength > 0 ? _maxLength : 25;
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * On click the event is executed in the {@link #recent}.
      * @see org.apache.wicket.markup.html.link.Link#onClick()
      */
     @Override

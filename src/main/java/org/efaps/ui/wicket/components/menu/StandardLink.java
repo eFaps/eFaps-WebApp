@@ -168,13 +168,11 @@ public class StandardLink
         final AbstractCommand command = model.getCommand();
         final Page callerPage = _openComponent.getPage();
         if (command.getTargetTable() != null) {
-            if (command.getProperty("TargetStructurBrowserField") != null) {
+            if (command.getTargetStructurBrowserField() != null) {
                 final StructurBrowserPage page = new StructurBrowserPage(PageMap
                                 .forName(MainPage.IFRAME_PAGEMAP_NAME), model.getCommandUUID(), model
                                 .getInstanceKey());
-
-                final InlineFrame iframe = new InlineFrame(MainPage.IFRAME_WICKETID, page);
-                getPage().addOrReplace(iframe);
+                setResponsePage(page);
             } else {
                 final TablePage page = new TablePage(callerPage.getPageMap(), model
                                     .getCommandUUID(), model.getInstanceKey());
