@@ -22,6 +22,8 @@ package org.efaps.ui.wicket.components.modalwindow;
 
 import org.apache.wicket.Page;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
+import org.efaps.ui.wicket.models.objects.IEventUIObject;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
@@ -79,6 +81,10 @@ public class ModalWindowAjaxPageCreator
             } else {
                 ret = new FormPage(this.uiObject.getCommand().getUUID(), this.uiObject.getInstanceKey(),
                                 this.modalWindow);
+            }
+            if (this.uiObject instanceof IEventUIObject) {
+                final AbstractUIPageObject uiPageObject = (AbstractUIPageObject) ret.getDefaultModelObject();
+                uiPageObject.addEventObject((IEventUIObject) this.uiObject);
             }
         } catch (final EFapsException e) {
             ret = new ErrorPage(e);

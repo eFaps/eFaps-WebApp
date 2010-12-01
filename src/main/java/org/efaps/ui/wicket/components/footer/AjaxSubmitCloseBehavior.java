@@ -346,7 +346,8 @@ public class AjaxSubmitCloseBehavior
         }
 
         for (final Return oneReturn : returns) {
-            if (oneReturn.get(ReturnValues.TRUE) == null && !oneReturn.isEmpty()) {
+            if (oneReturn.get(ReturnValues.TRUE) == null && !oneReturn.isEmpty()
+                            && oneReturn.get(ReturnValues.VALUES) instanceof String) {
                 boolean sniplett = false;
                 String key = (String) oneReturn.get(ReturnValues.VALUES);
                 if (key == null) {

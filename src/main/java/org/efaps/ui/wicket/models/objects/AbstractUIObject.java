@@ -130,6 +130,11 @@ public abstract class AbstractUIObject
     private String menuTreeKey;
 
     /**
+     * UIObjects which events will be executed also.
+     */
+    private final List<IEventUIObject> eventObjects = new ArrayList<IEventUIObject>();
+
+    /**
      * Constructor evaluating the UUID for the command and the oid from an
      * Opener instance.
      *
@@ -589,6 +594,9 @@ public abstract class AbstractUIObject
             }
             ret = command.executeEvents(_eventType, param);
         }
+        for (final IEventUIObject eventObject : this.eventObjects) {
+            ret.addAll(eventObject.executeEvents(_eventType, _objectTuples));
+        }
         return ret;
     }
 
@@ -614,5 +622,13 @@ public abstract class AbstractUIObject
     public String getMenuTreeKey()
     {
         return this.menuTreeKey;
+    }
+
+    /**
+     * @param _uiObject UIObject
+     */
+    public void addEventObject(final IEventUIObject _uiObject)
+    {
+        this.eventObjects.add(_uiObject);
     }
 }

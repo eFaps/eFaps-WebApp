@@ -29,6 +29,7 @@ import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.model.IModel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowAjaxPageCreator;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
+import org.efaps.ui.wicket.models.cell.UIPicker;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
@@ -135,6 +136,7 @@ public class AjaxPickerLink
         @Override
         protected void onEvent(final AjaxRequestTarget _target)
         {
+
             ModalWindowContainer modal;
             if (getPage() instanceof MainPage) {
                 modal = ((MainPage) getPage()).getModal();
@@ -142,11 +144,14 @@ public class AjaxPickerLink
                 modal = ((AbstractContentPage) getPage()).getModal();
             }
             modal.reset();
+            final UIPicker picker = ((UITableCell) getDefaultModelObject()).getPicker();
+
+            modal.setWindowClosedCallback(new PickerCallBack(picker));
             final PageCreator pageCreator = new ModalWindowAjaxPageCreator(
                             ((UITableCell) getDefaultModelObject()).getPicker(), modal);
             modal.setPageCreator(pageCreator);
-            modal.setInitialHeight(((UITableCell) getDefaultModelObject()).getPicker().getWindowHeight());
-            modal.setInitialWidth(((UITableCell) getDefaultModelObject()).getPicker().getWindowWidth());
+            modal.setInitialHeight(picker.getWindowHeight());
+            modal.setInitialWidth(picker.getWindowWidth());
             modal.show(_target);
         }
 

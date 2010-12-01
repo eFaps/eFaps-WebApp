@@ -20,12 +20,23 @@
 
 package org.efaps.ui.wicket.models.cell;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.apache.wicket.IClusterable;
+import org.efaps.admin.event.EventType;
+import org.efaps.admin.event.Parameter;
+import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.event.Return;
+import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.Command;
 import org.efaps.admin.ui.field.FieldPicker;
 import org.efaps.ui.wicket.components.modalwindow.ICmdUIObject;
+import org.efaps.ui.wicket.models.objects.IEventUIObject;
+import org.efaps.util.EFapsException;
 
 /**
  * TODO comment!
@@ -34,10 +45,9 @@ import org.efaps.ui.wicket.components.modalwindow.ICmdUIObject;
  * @version $Id$
  */
 public class UIPicker
-    implements IClusterable, ICmdUIObject
+    implements IClusterable, ICmdUIObject, IEventUIObject
 
 {
-
     /**
      * Needed for serialization.
      */
@@ -54,9 +64,20 @@ public class UIPicker
     private final String label;
 
     /**
-     * The parent UIOBject
+     * The parent UIObject.
      */
     private final UITableCell parent;
+
+    /**
+     * Was the event already executed.
+     */
+    private boolean executed = false;
+
+
+    /**
+     * Map returned by the esjp.
+     */
+    private Map<String, String> returnMap = new HashMap<String, String>();
 
     /**
      * @param _field    fieldPicker this UIObject belongs to
@@ -121,5 +142,63 @@ public class UIPicker
     public String getInstanceKey()
     {
         return this.parent.getInstanceKey();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<Return> executeEvents(final EventType _eventType,
+                                      final Object... _objectTuples)
+        throws EFapsException
+    {
+        List<Return> ret = new ArrayList<Return>();
+        if (_eventType.equals(EventType.UI_COMMAND_EXECUTE) && getCommand().hasEvents(EventType.UI_PICKER)) {
+            this.executed  = true;
+            final Parameter param = new Parameter();
+            if (_objectTuples != null) {
+                // add all parameters
+                for (int i = 0; i < _objectTuples.length; i += 2) {
+                    if (((i + 1) < _objectTuples.length) && (_objectTuples[i] instanceof ParameterValues)) {
+                        param.put((ParameterValues) _objectTuples[i], _objectTuples[i + 1]);
+                    }
+                }
+            }
+            ret = getCommand().executeEvents(EventType.UI_PICKER, param);
+            this.returnMap = (Map<String, String>) ret.get(0).get(ReturnValues.VALUES);
+        }
+        return ret;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #executed}.
+     *
+     * @return value of instance variable {@link #executed}
+     */
+    public boolean isExecuted()
+    {
+        return this.executed;
+    }
+
+    /**
+     * Setter method for instance variable {@link #executed}.
+     *
+     * @param _executed value for instance variable {@link #executed}
+     */
+
+    public void setExecuted(final boolean _executed)
+    {
+        this.executed = _executed;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #returnMap}.
+     *
+     * @return value of instance variable {@link #returnMap}
+     */
+    public Map<String, String> getReturnMap()
+    {
+        return this.returnMap;
     }
 }
