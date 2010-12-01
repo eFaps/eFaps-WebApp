@@ -30,6 +30,7 @@ import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.field.Field;
+import org.efaps.admin.ui.field.FieldPicker;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
@@ -106,6 +107,11 @@ public class UITableCell
     private final String align;
 
     /**
+     * Picker related to this field.
+     */
+    private final UIPicker picker;
+
+    /**
      * Constructor.
      *
      * @param _parent parent ui object
@@ -154,6 +160,21 @@ public class UITableCell
                 }
             }
         }
+        this.picker = evaluatePicker(_fieldValue);
+    }
+
+    /**
+     * Method to evaluate the picker.
+     * @param _fieldValue FieldValue
+     * @return UIPIcker
+     */
+    private UIPicker evaluatePicker(final FieldValue _fieldValue)
+    {
+        UIPicker ret = null;
+        if (_fieldValue.getField() instanceof FieldPicker) {
+            ret = new UIPicker((FieldPicker) _fieldValue.getField(), this);
+        }
+        return ret;
     }
 
     /**
@@ -335,5 +356,25 @@ public class UITableCell
         throws EFapsException
     {
         return executeEvents(_others, EventType.UI_FIELD_UPDATE);
+    }
+
+    /**
+     * Getter method for instance variable {@link #valuePicker}.
+     *
+     * @return value of instance variable {@link #valuePicker}
+     */
+    public boolean isValuePicker()
+    {
+        return this.picker != null;
+    }
+
+    /**
+     * Getter method for instance variable {@link #picker}.
+     *
+     * @return value of instance variable {@link #picker}
+     */
+    public UIPicker getPicker()
+    {
+        return this.picker;
     }
 }

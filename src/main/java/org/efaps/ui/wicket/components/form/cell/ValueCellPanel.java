@@ -43,8 +43,7 @@ import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.editor.EditorPanel;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
 import org.efaps.ui.wicket.components.form.FormPanel;
-import org.efaps.ui.wicket.components.form.valuepicker.Value4Picker;
-import org.efaps.ui.wicket.components.form.valuepicker.ValuePicker;
+import org.efaps.ui.wicket.components.picker.AjaxPickerLink;
 import org.efaps.ui.wicket.components.table.cell.AjaxLinkContainer;
 import org.efaps.ui.wicket.components.table.cell.ContentContainerLink;
 import org.efaps.ui.wicket.models.cell.UIFormCell;
@@ -125,18 +124,15 @@ public class ValueCellPanel extends Panel
                     this.add(new AutoCompleteField("label", _model, false));
                     this.add(new WebComponent("valuePicker").setVisible(false));
                 } else {
+                    final Component label = new LabelComponent("label",
+                                    new Model<String>(uiFormCell.getCellValue())).setOutputMarkupId(true);
+                    this.add(label);
+                    if (uiFormCell.isFieldUpdate()) {
+                        label.add(new AjaxFieldUpdateBehavior(uiFormCell.getFieldUpdateEvent(), _model));
+                    }
                     if (uiFormCell.isValuePicker() && uiFormCell.getDisplay().equals(Display.EDITABLE)) {
-                        final Value4Picker value = new Value4Picker("label", _model);
-                        value.setValue(_formmodel.isSearchMode() ? "*" : "0", _formmodel.isSearchMode() ? "*" : "0");
-                        this.add(value);
-                        this.add(new ValuePicker("valuePicker", _model, value));
+                        this.add(new AjaxPickerLink("valuePicker", _model));
                     } else {
-                        final Component label = new LabelComponent("label",
-                                        new Model<String>(uiFormCell.getCellValue())).setOutputMarkupId(true);
-                        this.add(label);
-                        if (uiFormCell.isFieldUpdate()) {
-                            label.add(new AjaxFieldUpdateBehavior(uiFormCell.getFieldUpdateEvent(), _model));
-                        }
                         this.add(new WebComponent("valuePicker").setVisible(false));
                     }
                 }

@@ -20,12 +20,8 @@
 
 package org.efaps.ui.wicket.models.cell;
 
-import java.util.UUID;
-
-import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.dbproperty.DBProperties;
-import org.efaps.admin.ui.Picker;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
@@ -76,11 +72,6 @@ public class UIFormCell
     private final String attrTypeName;
 
     /**
-     * Picker for this UIFormCell.
-     */
-    private final UIPicker picker;
-
-    /**
      * Constructor used on search and create.
      *
      * @param _parent parent ui object
@@ -115,6 +106,7 @@ public class UIFormCell
      * @param _attrTypeName Name of the Type of Attribute
      * @throws EFapsException on error
      */
+    // CHECKSTYLE:OFF
     public UIFormCell(final AbstractUIObject _parent,
                       final FieldValue _fieldValue,
                       final Instance _instance,
@@ -125,6 +117,7 @@ public class UIFormCell
                       final String _attrTypeName)
         throws EFapsException
     {
+     // CHECKSTYLE:ON
         super(_parent, _fieldValue, _instance, _cellValue, _cellTitle, _icon);
         this.required = _fieldValue.getField().isRequired()
                         && _fieldValue.getField().isEditableDisplay(_parent.getMode())
@@ -133,29 +126,9 @@ public class UIFormCell
         this.hideLabel = _fieldValue.getField().isHideLabel();
         this.rowSpan = _fieldValue.getField().getRowSpan();
         this.attrTypeName = _attrTypeName;
-
-        this.picker = evaluatePicker();
-
     }
 
-    /**
-     * Method to evaluate the picker.
-     *
-     * @return UIPIcker
-     */
-    private UIPicker evaluatePicker()
-    {
-        UIPicker ret = null;
-        final String prop = getField().getProperty("Picker");
-        if (prop == null && ("CreatorLink".equals(this.attrTypeName) || "ModifierLink".equals(this.attrTypeName))) {
-            final String pickerName = SystemConfiguration.get(UUID.fromString("50a65460-2d08-4ea8-b801-37594e93dad5"))
-                            .getAttributeValue("Picker4Person");
-            ret = new UIPicker(this, pickerName);
-        } else if (prop != null && Picker.get(prop) != null) {
-            ret = new UIPicker(this, prop);
-        }
-        return ret;
-    }
+
 
     /**
      * This is the getter method for the instance variable {@link #attrTypeName}
@@ -206,25 +179,5 @@ public class UIFormCell
     public int getRowSpan()
     {
         return this.rowSpan;
-    }
-
-    /**
-     * Getter method for instance variable {@link #valuePicker}.
-     *
-     * @return value of instance variable {@link #valuePicker}
-     */
-    public boolean isValuePicker()
-    {
-        return this.picker != null;
-    }
-
-    /**
-     * Getter method for instance variable {@link #picker}.
-     *
-     * @return value of instance variable {@link #picker}
-     */
-    public UIPicker getPicker()
-    {
-        return this.picker;
     }
 }

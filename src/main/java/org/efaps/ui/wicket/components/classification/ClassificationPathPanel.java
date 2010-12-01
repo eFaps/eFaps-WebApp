@@ -38,8 +38,8 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.ui.wicket.components.FormContainer;
-import org.efaps.ui.wicket.components.form.valuepicker.ValuePicker;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
+import org.efaps.ui.wicket.components.picker.AjaxPickerLink;
 import org.efaps.ui.wicket.models.objects.IFormElement;
 import org.efaps.ui.wicket.models.objects.UIClassification;
 import org.efaps.ui.wicket.models.objects.UIFieldForm;
@@ -72,7 +72,7 @@ public class ClassificationPathPanel
     /**
      * Reference to the Icon.
      */
-    public static final EFapsContentReference ICON = new EFapsContentReference(ValuePicker.class, "valuepicker.png");
+    public static final EFapsContentReference ICON = new EFapsContentReference(AjaxPickerLink.class, "valuepicker.png");
 
     /** Needed for serialization. */
     private static final long serialVersionUID = 1L;

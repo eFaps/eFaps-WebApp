@@ -38,6 +38,7 @@ import org.efaps.beans.ValueList;
 import org.efaps.beans.valueparser.ParseException;
 import org.efaps.beans.valueparser.ValueParser;
 import org.efaps.db.PrintQuery;
+import org.efaps.ui.wicket.components.modalwindow.ICmdUIObject;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 
@@ -51,6 +52,7 @@ import org.efaps.util.EFapsException;
  */
 public class UIMenuItem
     extends AbstractUIObject
+    implements ICmdUIObject
 {
 
     /**

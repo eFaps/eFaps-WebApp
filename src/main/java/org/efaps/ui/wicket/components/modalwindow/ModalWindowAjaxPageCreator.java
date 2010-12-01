@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,6 @@ package org.efaps.ui.wicket.components.modalwindow;
 
 import org.apache.wicket.Page;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
-
-import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
@@ -32,10 +30,11 @@ import org.efaps.util.EFapsException;
 /**
  * Thic Class is used to create a page inside a modal window lazily.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id:ModalWindowAjaxPageCreator.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class ModalWindowAjaxPageCreator implements ModalWindow.PageCreator
+public class ModalWindowAjaxPageCreator
+    implements ModalWindow.PageCreator
 {
 
     /**
@@ -46,7 +45,7 @@ public class ModalWindowAjaxPageCreator implements ModalWindow.PageCreator
     /**
      * Model for the page to be created.
      */
-    private final UIMenuItem imodel;
+    private final ICmdUIObject uiObject;
 
     /**
      * The modal window the page will be created in.
@@ -56,12 +55,13 @@ public class ModalWindowAjaxPageCreator implements ModalWindow.PageCreator
     /**
      * Constructor.
      *
-     * @param _model model for the page to create
+     * @param _uiObject object for the page to create
      * @param _modalWindow modal window the page will be created in
      */
-    public ModalWindowAjaxPageCreator(final UIMenuItem _model, final ModalWindowContainer _modalWindow)
+    public ModalWindowAjaxPageCreator(final ICmdUIObject _uiObject,
+                                      final ModalWindowContainer _modalWindow)
     {
-        this.imodel = _model;
+        this.uiObject = _uiObject;
         this.modalWindow = _modalWindow;
     }
 
@@ -73,12 +73,12 @@ public class ModalWindowAjaxPageCreator implements ModalWindow.PageCreator
     public Page createPage()
     {
         Page ret = null;
-        final UIMenuItem model = this.imodel;
         try {
-            if (model.getCommand().getTargetTable() != null) {
-                ret = new TablePage(model.getCommandUUID(), model.getInstanceKey());
+            if (this.uiObject.getCommand().getTargetTable() != null) {
+                ret = new TablePage(this.uiObject.getCommand().getUUID(), this.uiObject.getInstanceKey());
             } else {
-                ret = new FormPage(model.getCommandUUID(), model.getInstanceKey(), this.modalWindow);
+                ret = new FormPage(this.uiObject.getCommand().getUUID(), this.uiObject.getInstanceKey(),
+                                this.modalWindow);
             }
         } catch (final EFapsException e) {
             ret = new ErrorPage(e);
