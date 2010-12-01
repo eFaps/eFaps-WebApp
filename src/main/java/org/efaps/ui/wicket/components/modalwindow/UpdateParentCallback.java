@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,14 +35,16 @@ import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 
 /**
- * Class implements the WindowClosedCallback to be able to update the parent
- * page on closing a modal window.
+ * Class implements the WindowClosedCallback to be able to update (refresch)
+ * the parent page on closing a modal window.
  *
- * @author The eFaps TEam
+ * @author The eFaps Team
  * @version $Id$
  */
-public class UpdateParentCallback implements ModalWindow.WindowClosedCallback
+public class UpdateParentCallback
+    implements ModalWindow.WindowClosedCallback
 {
+
     /**
      * Needed for serialization.
      */
@@ -72,7 +74,8 @@ public class UpdateParentCallback implements ModalWindow.WindowClosedCallback
      * @param _modalwindow modal window belonging to this call back
      *
      */
-    public UpdateParentCallback(final Component _panel, final ModalWindowContainer _modalwindow)
+    public UpdateParentCallback(final Component _panel,
+                                final ModalWindowContainer _modalwindow)
     {
         this(_panel, _modalwindow, true);
     }
@@ -86,7 +89,8 @@ public class UpdateParentCallback implements ModalWindow.WindowClosedCallback
      * @param _modalwindow modal window belonging to this call back
      * @param _clearmodel must the model of the page be updated
      */
-    public UpdateParentCallback(final Component _panel, final ModalWindowContainer _modalwindow,
+    public UpdateParentCallback(final Component _panel,
+                                final ModalWindowContainer _modalwindow,
                                 final boolean _clearmodel)
     {
         this.panel = _panel;
@@ -116,7 +120,7 @@ public class UpdateParentCallback implements ModalWindow.WindowClosedCallback
                 } else if (uiObject instanceof UIForm) {
                     page = new FormPage(new FormModel((UIForm) uiObject));
                 }
-             // copy the MenuKey to the new page
+                // copy the MenuKey to the new page
                 page.setMenuTreeKey(((AbstractContentPage) this.panel.getPage()).getMenuTreeKey());
                 this.panel.setResponsePage(page);
             } catch (final EFapsException e) {
