@@ -22,9 +22,16 @@ package org.efaps.ui.wicket.components.modalwindow;
 
 import org.apache.wicket.Page;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.efaps.ui.wicket.models.FormModel;
+import org.efaps.ui.wicket.models.StructurBrowserModel;
+import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.models.objects.IEventUIObject;
+import org.efaps.ui.wicket.models.objects.UIForm;
+import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
+import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
+import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
@@ -76,19 +83,36 @@ public class ModalWindowAjaxPageCreator
     {
         Page ret = null;
         try {
-            if (this.uiObject.getCommand().getTargetTable() != null) {
-                ret = new TablePage(this.uiObject.getCommand().getUUID(), this.uiObject.getInstanceKey());
+            if (this.uiObject.getCommand().getTargetTable() == null) {
+                final UIForm uiform = new UIForm(this.uiObject.getCommand().getUUID(), this.uiObject.getInstanceKey());
+                addEventObject(uiform);
+                ret = new FormPage(new FormModel(uiform), this.modalWindow);
             } else {
-                ret = new FormPage(this.uiObject.getCommand().getUUID(), this.uiObject.getInstanceKey(),
-                                this.modalWindow);
-            }
-            if (this.uiObject instanceof IEventUIObject) {
-                final AbstractUIPageObject uiPageObject = (AbstractUIPageObject) ret.getDefaultModelObject();
-                uiPageObject.addEventObject((IEventUIObject) this.uiObject);
+                if (this.uiObject.getCommand().getTargetStructurBrowserField() == null) {
+                    final UITable uitable = new UITable(this.uiObject.getCommand().getUUID(),
+                                    this.uiObject.getInstanceKey());
+                    addEventObject(uitable);
+                    ret = new TablePage(new TableModel(uitable), this.modalWindow);
+                } else {
+                    final UIStructurBrowser uiPageObject = new UIStructurBrowser(this.uiObject.getCommand().getUUID(),
+                                    this.uiObject.getInstanceKey());
+                    addEventObject(uiPageObject);
+                    ret = new StructurBrowserPage(new StructurBrowserModel(uiPageObject), this.modalWindow);
+                }
             }
         } catch (final EFapsException e) {
             ret = new ErrorPage(e);
         }
         return ret;
+    }
+
+    /**
+     * @param _uiPageObject PageObject
+     */
+    private void addEventObject(final AbstractUIPageObject _uiPageObject)
+    {
+        if (this.uiObject instanceof IEventUIObject) {
+            _uiPageObject.addEventObject((IEventUIObject) this.uiObject);
+        }
     }
 }

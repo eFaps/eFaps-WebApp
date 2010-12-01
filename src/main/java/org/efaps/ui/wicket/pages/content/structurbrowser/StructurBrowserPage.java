@@ -26,6 +26,7 @@ import org.apache.wicket.IPageMap;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.model.IModel;
 import org.efaps.ui.wicket.components.FormContainer;
+import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.tree.StructurBrowserTreeTablePanel;
 import org.efaps.ui.wicket.models.StructurBrowserModel;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
@@ -70,17 +71,6 @@ public class StructurBrowserPage
     }
 
     /**
-     * @param _model model for this pager
-     * @throws EFapsException  on error
-     */
-    public StructurBrowserPage(final IModel<UIStructurBrowser> _model)
-        throws EFapsException
-    {
-        super(_model);
-        this.addComponents();
-    }
-
-    /**
      * @param _commandUUID UUID of the calling command
      * @param _oid oid
      * @throws EFapsException on error
@@ -89,9 +79,31 @@ public class StructurBrowserPage
                                final String _oid)
         throws EFapsException
     {
-        super(new StructurBrowserModel(new UIStructurBrowser(_commandUUID, _oid)));
+        this(new StructurBrowserModel(new UIStructurBrowser(_commandUUID, _oid)));
+    }
+
+    /**
+     * @param _model model for this pager
+     * @throws EFapsException  on error
+     */
+    public StructurBrowserPage(final IModel<UIStructurBrowser> _model)
+        throws EFapsException
+    {
+        this(_model, null);
+    }
+
+    /**
+     * @param _model model for this pager
+     * @throws EFapsException  on error
+     */
+    public StructurBrowserPage(final IModel<UIStructurBrowser> _model,
+                               final ModalWindowContainer _modalWindow)
+        throws EFapsException
+    {
+        super(_model, _modalWindow);
         this.addComponents();
     }
+
 
     /**
      * @param _pageMap pagemap

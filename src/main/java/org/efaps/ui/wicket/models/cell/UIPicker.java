@@ -34,7 +34,10 @@ import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.Command;
 import org.efaps.admin.ui.field.FieldPicker;
+import org.efaps.db.Context;
+import org.efaps.db.Instance;
 import org.efaps.ui.wicket.components.modalwindow.ICmdUIObject;
+import org.efaps.ui.wicket.models.AbstractInstanceObject;
 import org.efaps.ui.wicket.models.objects.IEventUIObject;
 import org.efaps.util.EFapsException;
 
@@ -45,6 +48,7 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  */
 public class UIPicker
+    extends AbstractInstanceObject
     implements IClusterable, ICmdUIObject, IEventUIObject
 
 {
@@ -165,6 +169,13 @@ public class UIPicker
                     }
                 }
             }
+            param.put(ParameterValues.PARAMETERS, Context.getThreadContext().getParameters());
+            if (getInstance() != null) {
+                final String[] contextoid = { getInstanceKey() };
+                Context.getThreadContext().getParameters().put("oid", contextoid);
+                param.put(ParameterValues.CALL_INSTANCE, getInstance());
+                param.put(ParameterValues.INSTANCE, getInstance());
+            }
             ret = getCommand().executeEvents(EventType.UI_PICKER, param);
             this.returnMap = (Map<String, String>) ret.get(0).get(ReturnValues.VALUES);
         }
@@ -200,5 +211,24 @@ public class UIPicker
     public Map<String, String> getReturnMap()
     {
         return this.returnMap;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Instance getInstanceFromManager()
+        throws EFapsException
+    {
+        return this.parent.getInstanceFromManager();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasInstanceManager()
+    {
+        return this.parent.hasInstanceManager();
     }
 }

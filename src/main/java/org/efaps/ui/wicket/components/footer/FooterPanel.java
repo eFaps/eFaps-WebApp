@@ -138,6 +138,8 @@ public class FooterPanel
             label = getLabel(uiObject.getCommand().getName(), "Connect");
         } else if (uiObject.isSearchMode()) {
             label = getLabel(uiObject.getCommand().getName(), "Search");
+        } else if (uiObject.isPicker()) {
+            label = getLabel(uiObject.getCommand().getName(), "Picker");
         }
 
         if (uiObject instanceof UIForm && ((UIForm) uiObject).isFileUpload()) {
