@@ -20,6 +20,7 @@
 
 package org.efaps.ui.wicket.components.picker;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow.PageCreator;
@@ -57,14 +58,18 @@ public class AjaxPickerLink
     private static final long serialVersionUID = 1L;
 
     /**
-     * @param _wicketId     wicket id of this component
-     * @param _model        model for this component
+     * @param _wicketId         wicket id of this component
+     * @param _model            model for this component
+     * @param _targetComponent  component used as the target for this Picker
      */
     public AjaxPickerLink(final String _wicketId,
-                          final IModel<?> _model)
+                          final IModel<?> _model,
+                          final Component _targetComponent)
     {
         super(_wicketId, _model);
-        add(new AjaxOpenPickerBehavior());
+        _targetComponent.setOutputMarkupId(true);
+        add(new AjaxOpenPickerBehavior(_targetComponent.getMarkupId(true)));
+
     }
 
     /**
@@ -110,11 +115,18 @@ public class AjaxPickerLink
         private static final long serialVersionUID = 1L;
 
         /**
-         * Constructor.
+         * MarkupId of the Target Component.
          */
-        public AjaxOpenPickerBehavior()
+        private final String targetMarkupId;
+
+        /**
+         * Constructor.
+         * @param _targetMarkupId markupId of the target
+         */
+        public AjaxOpenPickerBehavior(final String _targetMarkupId)
         {
             super("onclick");
+            this.targetMarkupId = _targetMarkupId;
         }
 
         /**
@@ -146,7 +158,7 @@ public class AjaxPickerLink
             modal.reset();
             final UIPicker picker = ((UITableCell) getDefaultModelObject()).getPicker();
 
-            modal.setWindowClosedCallback(new PickerCallBack(picker));
+            modal.setWindowClosedCallback(new PickerCallBack(picker, this.targetMarkupId));
             final PageCreator pageCreator = new ModalWindowAjaxPageCreator(
                             ((UITableCell) getDefaultModelObject()).getPicker(), modal);
             modal.setPageCreator(pageCreator);

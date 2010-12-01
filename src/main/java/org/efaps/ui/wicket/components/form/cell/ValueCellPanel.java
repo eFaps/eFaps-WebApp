@@ -120,21 +120,23 @@ public class ValueCellPanel extends Panel
                 this.add(new EditorPanel("label", _model));
                 this.add(new WebComponent("valuePicker").setVisible(false));
             } else {
+                final Component label;
+                //check for AutoComplete field
                 if (uiFormCell.isAutoComplete() && (_formmodel.isCreateMode() || _formmodel.isSearchMode())) {
-                    this.add(new AutoCompleteField("label", _model, false));
-                    this.add(new WebComponent("valuePicker").setVisible(false));
+                    label = new AutoCompleteField("label", _model, false);
                 } else {
-                    final Component label = new LabelComponent("label",
+                    label = new LabelComponent("label",
                                     new Model<String>(uiFormCell.getCellValue())).setOutputMarkupId(true);
-                    this.add(label);
                     if (uiFormCell.isFieldUpdate()) {
                         label.add(new AjaxFieldUpdateBehavior(uiFormCell.getFieldUpdateEvent(), _model));
                     }
-                    if (uiFormCell.isValuePicker() && uiFormCell.getDisplay().equals(Display.EDITABLE)) {
-                        this.add(new AjaxPickerLink("valuePicker", _model));
-                    } else {
-                        this.add(new WebComponent("valuePicker").setVisible(false));
-                    }
+                }
+                this.add(label);
+                // check if valuePicker must be addes
+                if (uiFormCell.isValuePicker() && uiFormCell.getDisplay().equals(Display.EDITABLE)) {
+                    this.add(new AjaxPickerLink("valuePicker", _model, label));
+                } else {
+                    this.add(new WebComponent("valuePicker").setVisible(false));
                 }
             }
             this.add(new WebMarkupContainer("link").setVisible(false));

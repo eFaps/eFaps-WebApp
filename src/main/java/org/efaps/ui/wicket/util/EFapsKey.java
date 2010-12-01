@@ -29,7 +29,7 @@ package org.efaps.ui.wicket.util;
  */
 public enum EFapsKey {
 
-    /** Key used to deactivate the escape funcionalities in autocomplete. */
+    /** Key used to deactivate the escape functionalities in AutoComplete. */
     AUTOCOMPLETE_DEACTIVATEESCAPE("eFapsAutoCompleteDeactivateEscape4HTMLandJS"),
     /** Key used for the value in the map. */
     AUTOCOMPLETE_VALUE("eFapsAutoCompleteVALUE"),
@@ -40,12 +40,22 @@ public enum EFapsKey {
     /** Key used for the javascript in the map. */
     AUTOCOMPLETE_JAVASCRIPT("eFapsAutoCompleteJS"),
 
+    /** Key used to deactivate the escape functionalities in Picker. */
+    PICKER_DEACTIVATEESCAPE("eFapsPickerDeactivateEscape4HTMLandJS"),
+    /** Key used for the value in the map. */
+    PICKER_VALUE("eFapsPickerValue4Field"),
+    /** Key used for the javascript in the map. */
+    PICKER_JAVASCRIPT("eFapsPickerJavaScript"),
+
     /** Key used for the javascript in the map. */
     FIELDUPDATE_JAVASCRIPT("eFapsFieldUpdateJS"),
+
+
     /** Key used as name for the hidden field that makes a row unique. */
     TABLEROW_NAME("eFapsTableRowID"),
     /** key used to store instances in a request. */
     INSTANCE_CACHEKEY("eFapsInstancesInRequest");
+
     /**
      * The actual string used as the key.
      */

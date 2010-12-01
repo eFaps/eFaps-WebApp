@@ -21,9 +21,13 @@
 
 package org.efaps.ui.wicket.components.picker;
 
+import java.util.Map;
+
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.efaps.ui.wicket.models.cell.UIPicker;
+import org.efaps.ui.wicket.util.EFapsKey;
 
 
 /**
@@ -46,24 +50,85 @@ public class PickerCallBack
     private final UIPicker picker;
 
     /**
-     * @param _picker picker this callback belongs to
+     * MarkupId of the Target Component.
      */
-    public PickerCallBack(final UIPicker _picker)
+    private final String targetMarkupId;
+
+    /**
+     * @param _picker           picker this callback belongs to
+     * @param _targetMarkupId   MarkupId of the target
+     */
+    public PickerCallBack(final UIPicker _picker,
+                          final String _targetMarkupId)
     {
         this.picker = _picker;
+        this.targetMarkupId = _targetMarkupId;
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.wicket.extensions.ajax.markup.html.modal.
-     * ModalWindow.WindowClosedCallback#onClose(org.apache.wicket.ajax.AjaxRequestTarget)
+    /**
+     * The actual Javascript that will be executed on close of the modal window.
+     * @param _target Target
      */
     @Override
     public void onClose(final AjaxRequestTarget _target)
     {
         if (this.picker.isExecuted()) {
-            this.picker.getReturnMap();
-            _target.prependJavascript("alert(document.getElementsByName('description')[0].value);");
+            final Map<String, String> map = this.picker.getReturnMap();
+            final boolean escape = escape(map);
+            final StringBuilder js = new StringBuilder();
+
+            final String value = map.get(EFapsKey.PICKER_VALUE.getKey());
+            if (value != null) {
+                js.append("wicketGet('").append(this.targetMarkupId).append("').value ='")
+                    .append(escape ? StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(value))
+                            : value).append("';");
+            }
+            for (final String keyString : map.keySet()) {
+                // if the map contains a key that is not defined in this class it is
+                // assumed to be the name of a field
+                if (!(EFapsKey.PICKER_JAVASCRIPT.getKey().equals(keyString)
+                                || EFapsKey.PICKER_DEACTIVATEESCAPE.getKey().equals(keyString)
+                                || EFapsKey.PICKER_VALUE.getKey().equals(keyString))) {
+                    if (map.get(keyString).contains("Array(")) {
+                        js.append("eFapsSetFieldValue('").append(this.targetMarkupId).append("','")
+                            .append(keyString).append("',").append(map.get(keyString)).append(");");
+                    } else {
+                        js.append("eFapsSetFieldValue('").append(this.targetMarkupId).append("','")
+                        .append(keyString).append("','")
+                        .append(escape
+                                ? StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(map.get(keyString)))
+                                : map.get(keyString)).append("');");
+                    }
+                }
+            }
+
+            if (map.containsKey(EFapsKey.PICKER_JAVASCRIPT.getKey())) {
+                js.append(map.get(EFapsKey.PICKER_JAVASCRIPT.getKey()));
+            }
+
+            _target.prependJavascript(js.toString());
             this.picker.setExecuted(false);
         }
+    }
+
+    /**
+     * Check if for the current values the escape is activated.<br>
+     * Default: true,<br>
+     * key exits: null = false else evaluation of given String
+     * @param _map map to be checked
+     * @return boolean
+     */
+    private boolean escape(final Map<String, String> _map)
+    {
+        boolean ret = true;
+        if (_map.containsKey(EFapsKey.PICKER_DEACTIVATEESCAPE.getKey())) {
+            final String value = _map.get(EFapsKey.PICKER_DEACTIVATEESCAPE.getKey());
+            if (value == null) {
+                ret = false;
+            } else {
+                ret = !"true".equalsIgnoreCase(EFapsKey.PICKER_DEACTIVATEESCAPE.getKey());
+            }
+        }
+        return ret;
     }
 }

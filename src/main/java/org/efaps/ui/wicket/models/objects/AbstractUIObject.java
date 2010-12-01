@@ -51,6 +51,7 @@ import org.efaps.db.PrintQuery;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.Opener;
 import org.efaps.ui.wicket.models.AbstractInstanceObject;
+import org.efaps.ui.wicket.models.cell.UIPicker;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 
@@ -133,6 +134,11 @@ public abstract class AbstractUIObject
      * UIObjects which events will be executed also.
      */
     private final List<IEventUIObject> eventObjects = new ArrayList<IEventUIObject>();
+
+    /**
+     * Is this Model used inside a Page called from a picker.
+     */
+    private boolean picker;
 
     /**
      * Constructor evaluating the UUID for the command and the oid from an
@@ -629,6 +635,19 @@ public abstract class AbstractUIObject
      */
     public void addEventObject(final IEventUIObject _uiObject)
     {
+        if (_uiObject instanceof UIPicker) {
+            this.picker = true;
+        }
         this.eventObjects.add(_uiObject);
+    }
+
+    /**
+     * Getter method for the instance variable {@link #picker}.
+     *
+     * @return value of instance variable {@link #picker}
+     */
+    public boolean isPicker()
+    {
+        return this.picker;
     }
 }
