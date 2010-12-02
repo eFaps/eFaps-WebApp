@@ -215,7 +215,7 @@ public class StructurBrowserTreeTablePanel
                 final StructurBrowserTableCellModel model = new StructurBrowserTableCellModel(uiObject);
                 final ContentContainerLink<UIStructurBrowserTableCell> celllink
                     = new ContentContainerLink<UIStructurBrowserTableCell>(
-                                "link" + this.idx, model);
+                                "link" + uiObject.getName() + this.idx, model);
                 getPage().add(celllink);
                 celllink.rendered();
                 ret = new IRenderable()
