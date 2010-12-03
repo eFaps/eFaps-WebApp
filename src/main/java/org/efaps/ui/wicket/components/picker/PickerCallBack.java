@@ -96,16 +96,14 @@ public class PickerCallBack
                         js.append("eFapsSetFieldValue('").append(this.targetMarkupId).append("','")
                         .append(keyString).append("','")
                         .append(escape
-                                ? StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(map.get(keyString)))
+                                ? StringEscapeUtils.escapeJavaScript(map.get(keyString))
                                 : map.get(keyString)).append("');");
                     }
                 }
             }
-
             if (map.containsKey(EFapsKey.PICKER_JAVASCRIPT.getKey())) {
                 js.append(map.get(EFapsKey.PICKER_JAVASCRIPT.getKey()));
             }
-
             _target.prependJavascript(js.toString());
             this.picker.setExecuted(false);
         }
