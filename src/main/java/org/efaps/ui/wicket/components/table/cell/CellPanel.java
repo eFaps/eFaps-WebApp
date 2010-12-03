@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ import org.efaps.ui.wicket.behaviors.SetSelectedRowBehavior;
 import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.autocomplete.AutoCompleteField;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
+import org.efaps.ui.wicket.components.picker.AjaxPickerLink;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.models.objects.UITable;
 
@@ -68,6 +69,7 @@ public class CellPanel
         add(new WebMarkupContainer("link").setVisible(false));
         add(new WebMarkupContainer("icon").setVisible(false));
         add(new WebMarkupContainer("label").setVisible(false));
+        add(new WebMarkupContainer("valuePicker").setVisible(false));
     }
 
     /**
@@ -92,10 +94,16 @@ public class CellPanel
 
         if (uiTableCell.isAutoComplete() && (_uitable.isCreateMode() || _uitable.isEditMode())
                         && uiTableCell.getDisplay().equals(Display.EDITABLE)) {
-            add(new AutoCompleteField("checkbox", _model, true));
+            add(new WebMarkupContainer("checkbox").setVisible(false));
             add(new WebMarkupContainer("link").setVisible(false));
             add(new WebMarkupContainer("icon").setVisible(false));
-            add(new WebMarkupContainer("label").setVisible(false));
+            final AutoCompleteField label = new AutoCompleteField("label", _model, true);
+            add(label);
+            if (uiTableCell.isValuePicker()) {
+                this.add(new AjaxPickerLink("valuePicker", _model, label));
+            } else {
+                add(new WebMarkupContainer("valuePicker").setVisible(false));
+            }
         } else {
             // make the checkbox invisible
             add(new WebMarkupContainer("checkbox").setVisible(false));
@@ -142,6 +150,7 @@ public class CellPanel
                 }
                 add(new WebMarkupContainer("icon").setVisible(false));
                 add(new WebMarkupContainer("label").setVisible(false));
+                add(new WebMarkupContainer("valuePicker").setVisible(false));
             } else {
                 final LabelComponent label = new LabelComponent("label", uiTableCell.getCellValue());
                 if ((_uitable.isCreateMode() || _uitable.isEditMode())
@@ -155,6 +164,11 @@ public class CellPanel
                     }
                 }
                 add(label);
+                if (uiTableCell.isValuePicker()) {
+                    this.add(new AjaxPickerLink("valuePicker", _model, label));
+                } else {
+                    add(new WebMarkupContainer("valuePicker").setVisible(false));
+                }
                 if (uiTableCell.getIcon() == null) {
                     add(new WebMarkupContainer("icon").setVisible(false));
                 } else {
