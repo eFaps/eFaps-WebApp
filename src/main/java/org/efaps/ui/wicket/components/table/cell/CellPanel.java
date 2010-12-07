@@ -164,7 +164,8 @@ public class CellPanel
                     }
                 }
                 add(label);
-                if (uiTableCell.isValuePicker()) {
+                if (uiTableCell.isValuePicker() && (_uitable.isCreateMode() || _uitable.isEditMode())
+                                && uiTableCell.getDisplay().equals(Display.EDITABLE)) {
                     this.add(new AjaxPickerLink("valuePicker", _model, label));
                 } else {
                     add(new WebMarkupContainer("valuePicker").setVisible(false));
