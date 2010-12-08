@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebComponent;
@@ -41,6 +42,7 @@ import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.models.objects.UIRow;
 import org.efaps.ui.wicket.models.objects.UITable;
+import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.util.EFapsKey;
 import org.efaps.util.EFapsException;
 
@@ -49,7 +51,8 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  *
  */
-public class RowPanel extends Panel
+public class RowPanel
+    extends Panel
 {
 
     /**
@@ -64,7 +67,9 @@ public class RowPanel extends Panel
      * @param _updateListMenu   must the listmenu be updated
      *
      */
-    public RowPanel(final String _wicketId, final IModel<UIRow> _model, final TablePanel _tablePanel,
+    public RowPanel(final String _wicketId,
+                    final IModel<UIRow> _model,
+                    final TablePanel _tablePanel,
                     final boolean _updateListMenu)
     {
         super(_wicketId, _model);
@@ -142,15 +147,14 @@ public class RowPanel extends Panel
             protected void onComponentTag(final ComponentTag _tag)
             {
                 super.onComponentTag(_tag);
-                final AbstractUIPageObject uiObject = ((AbstractUIPageObject) getPage().getDefaultModelObject());
+                final AbstractUIPageObject uiObject = (AbstractUIPageObject) getPage().getDefaultModelObject();
                 uirow.setUserinterfaceId(uiObject.getNewRandom());
 
                 try {
                     uiObject.getUiID2Oid().put(uirow.getUserinterfaceId(), uirow.getInstance() == null
                                                                             ? null : uirow.getInstance().getOid());
                 } catch (final EFapsException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    throw new RestartResponseException(new ErrorPage(e));
                 }
                 _tag.put("name", EFapsKey.TABLEROW_NAME.getKey());
                 _tag.put("value", uirow.getUserinterfaceId());
