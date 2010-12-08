@@ -87,8 +87,8 @@
 
     <!-- SubVersion Repository -->
     <scm>
-        <connection>scm:svn:http://efaps.googlecode.com/svn/eFaps-WebApp/</connection>
-        <developerConnection>scm:svn:https://efaps.googlecode.com/svn/eFaps-WebApp/</developerConnection>
+        <connection>scm:svn:http://efaps.googlecode.com/svn/eFaps-WebApp/trunk</connection>
+        <developerConnection>scm:svn:https://efaps.googlecode.com/svn/eFaps-WebApp/trunk</developerConnection>
         <url>http://efaps.googlecode.com/svn/eFaps-Kernel/</url>
     </scm>
 
