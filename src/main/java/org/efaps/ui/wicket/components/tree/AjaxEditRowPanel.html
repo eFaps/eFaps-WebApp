@@ -15,21 +15,24 @@
   limitations under the License.
 
   Author:          The eFaps Team
-  Revision:        $Rev$
-  Last Changed:    $Date$
-  Last Changed By: $Author$
+  Revision:        $Rev: 3742 $
+  Last Changed:    $Date: 2010-02-17 08:33:20 -0500 (Wed, 17 Feb 2010) $
+  Last Changed By: $Author: jan.moxter $
 
 -->
 <html xmlns:wicket>
     <wicket:panel>
-        <span wicket:id="indent"></span>
-        <a wicket:id="link">
-            <span wicket:id="image"></span>
-        </a>
-        <span wicket:id="direction"></span>
-        <a wicket:id="nodeLink" class="node-link">
-            <span class="icon" wicket:id="icon"></span>
-            <span wicket:id="label" class="text"></span>
-        </a>
+        <span class="eFapsStructBrowserTableEdit">
+            <a href="#" wicket:id="addLink">
+                <img wicket:id="addIcon"/>
+            </a>
+            <a href="#" wicket:id="addFolderLink">
+                <img wicket:id="addFolderIcon"/>
+            </a>
+            <a href="#" wicket:id="delLink">
+                <img wicket:id="delIcon"/>
+            </a>
+            <span wicket:id="script"></span>
+        </span>
     </wicket:panel>
 </html>

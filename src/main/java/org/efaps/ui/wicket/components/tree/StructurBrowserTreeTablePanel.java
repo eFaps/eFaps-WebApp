@@ -26,6 +26,7 @@ import javax.swing.tree.TreeNode;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.Response;
+import org.apache.wicket.extensions.markup.html.tree.table.AbstractColumn;
 import org.apache.wicket.extensions.markup.html.tree.table.AbstractRenderableColumn;
 import org.apache.wicket.extensions.markup.html.tree.table.AbstractTreeColumn;
 import org.apache.wicket.extensions.markup.html.tree.table.ColumnLocation;
@@ -74,8 +75,11 @@ public class StructurBrowserTreeTablePanel
         }
 
         final IColumn[] columns = new IColumn[model.getHeaders().size() + 1];
-
-        columns[0] = new SelectColumn(new ColumnLocation(Alignment.LEFT, 16, Unit.PX), "");
+        if (model.isCreateMode() || model.isEditMode()) {
+            columns[0] = new EditColumn(new ColumnLocation(Alignment.LEFT, 16, Unit.PX), "", _model);
+        } else {
+            columns[0] = new SelectColumn(new ColumnLocation(Alignment.LEFT, 16, Unit.PX), "");
+        }
         int i = 0;
         for (final UITableHeader header : model.getHeaders()) {
             if (header.getFieldName().equals(model.getBrowserFieldName())) {
@@ -365,6 +369,67 @@ public class StructurBrowserTreeTablePanel
         public String getNodeValue(final TreeNode _node)
         {
             return "";
+        }
+    }
+
+    /**
+     * Class for the column containing a select box.
+     */
+    public class EditColumn
+        extends AbstractColumn
+    {
+
+        /**
+         * Needed for serialization.
+         */
+        private static final long serialVersionUID = 1L;
+        private final IModel<UIStructurBrowser> model;
+
+        /**
+         * @param _location Location
+         * @param _header header
+         */
+        public EditColumn(final ColumnLocation _location,
+                          final String _header,
+                          final IModel<UIStructurBrowser> _model)
+        {
+            super(_location, _header);
+            this.model = _model;
+        }
+
+
+        /**
+         * This method is used to populate the cell for given node in case when
+         * {@link IColumn#newCell(TreeNode, int)} returned null.
+         *
+         * @param _parent    The parent to which the cell must be added.
+         * @param _wicketId  The component id
+         * @param _node      TreeNode for the cell
+         * @param _level     Convenience parameter that indicates how deep the node is in hierarchy
+         * @return The populated cell component
+         */
+        @Override
+        public Component newCell(final MarkupContainer _parent,
+                                 final String _wicketId,
+                                 final TreeNode _node,
+                                 final int _level)
+        {
+            return new AjaxEditRowPanel(_wicketId, this.model, null);
+        }
+
+        /**
+         * If this method returns null, {@link IColumn#newCell(MarkupContainer, String, TreeNode, int)}
+         * is used to popuplate the cell.
+         *
+         * @param _node  TreeNode for the cell
+         * @param _level Convenience parameter that indicates how deep the node is in hierarchy
+         * @return The cell renderer
+         */
+        @Override
+        public IRenderable newCell(final TreeNode _node,
+                                   final int _level)
+        {
+            return null;
         }
     }
 }
