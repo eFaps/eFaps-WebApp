@@ -37,6 +37,7 @@ import org.apache.wicket.markup.html.link.ILinkListener;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.string.Strings;
+import org.efaps.admin.ui.field.Field.Display;
 import org.efaps.ui.wicket.components.table.cell.ContentContainerLink;
 import org.efaps.ui.wicket.models.cell.StructurBrowserTableCellModel;
 import org.efaps.ui.wicket.models.cell.UIStructurBrowserTableCell;
@@ -116,8 +117,8 @@ public class StructurBrowserTreeTablePanel
 
         /**
          * @param _location column location
-         * @param _header header
-         * @param _model model
+         * @param _header   header
+         * @param _model    model
          */
         public TreeColumn(final ColumnLocation _location,
                           final String _header,
@@ -154,6 +155,7 @@ public class StructurBrowserTreeTablePanel
         {
             return new SortHeaderColumnLink(_wicketId, this.header, this.model);
         }
+
     }
 
     /**
@@ -194,8 +196,31 @@ public class StructurBrowserTreeTablePanel
 
 
         /**
-         * In case of a link a ContanetContainerlink is rendered else a
-         * standard cell.
+         * This method is used to populate the cell for given node in case when
+         * {@link IColumn#newCell(TreeNode, int)} returned null.
+         *
+         * @param _parent   The parent to which the cell must be added.
+         * @param _wicketId The component id
+         * @param _node     TreeNode for the cell
+         * @param _level    Convenience parameter that indicates how deep the node is in hierarchy
+         * @return The populated cell component
+         */
+        @Override
+        public Component newCell(final MarkupContainer _parent,
+                                 final String _wicketId,
+                                 final TreeNode _node,
+                                 final int _level)
+        {
+            return new TreeCellPanel(_wicketId, _node, this.index);
+        }
+
+
+        /**
+         * For edit or create Mode null is returned and therefore
+         * method {@link #newCell(MarkupContainer, String, TreeNode, int)} will
+         * be called. (as specified from the Wicket API). For other Modes in
+         * case of a link a ContentContainerlink is rendered else a standard
+         * cell.
          *
          * @param _node Node the cell is rendered for
          * @param _level level of the node
@@ -205,46 +230,52 @@ public class StructurBrowserTreeTablePanel
         public IRenderable newCell(final TreeNode _node,
                                    final int _level)
         {
-            final UIStructurBrowserTableCell uiObject = ((UIStructurBrowser) ((DefaultMutableTreeNode) _node)
-                            .getUserObject()).getColumnValue(getIndex());
             IRenderable ret;
-            if (uiObject.getReference() == null) {
-                ret = super.newCell(_node, _level);
+            final UIStructurBrowser uiStru = (UIStructurBrowser) ((DefaultMutableTreeNode) _node)
+                            .getUserObject();
+            final UIStructurBrowserTableCell uiObject = uiStru.getColumnValue(getIndex());
+            if ((uiStru.isEditMode() || uiStru.isCreateMode()) &&  uiObject.getDisplay().equals(Display.EDITABLE)) {
+                ret = null;
             } else {
-                this.idx++;
-                final StructurBrowserTableCellModel model = new StructurBrowserTableCellModel(uiObject);
-                final ContentContainerLink<UIStructurBrowserTableCell> celllink
-                    = new ContentContainerLink<UIStructurBrowserTableCell>(
-                                "link" + uiObject.getName() + this.idx, model);
-                getPage().add(celllink);
-                celllink.rendered();
-                ret = new IRenderable()
-                {
 
-                    private static final long serialVersionUID = 1L;
-
-                    public void render(final TreeNode _node,
-                                       final Response _response)
+                if (uiObject.getReference() == null) {
+                    ret = super.newCell(_node, _level);
+                } else {
+                    this.idx++;
+                    final StructurBrowserTableCellModel model = new StructurBrowserTableCellModel(uiObject);
+                    final ContentContainerLink<UIStructurBrowserTableCell> celllink
+                        = new ContentContainerLink<UIStructurBrowserTableCell>(
+                                    "link" + uiObject.getName() + this.idx, model);
+                    getPage().add(celllink);
+                    celllink.rendered();
+                    ret = new IRenderable()
                     {
-                        final CharSequence url = celllink.urlFor(ILinkListener.INTERFACE);
-                        String content = getNodeValue(_node);
 
-                        // escape if necessary
-                        if (isEscapeContent()) {
-                            content = Strings.escapeMarkup(content).toString();
-                        }
+                        private static final long serialVersionUID = 1L;
 
-                        _response.write("<a");
-                        if (isContentAsTooltip()) {
-                            _response.write(" title=\"" + content + "\"");
+                        public void render(final TreeNode _node,
+                                           final Response _response)
+                        {
+                            final CharSequence url = celllink.urlFor(ILinkListener.INTERFACE);
+                            String content = getNodeValue(_node);
+
+                            // escape if necessary
+                            if (isEscapeContent()) {
+                                content = Strings.escapeMarkup(content).toString();
+                            }
+
+                            _response.write("<a");
+                            if (isContentAsTooltip()) {
+                                _response.write(" title=\"" + content + "\"");
+                            }
+                            _response.write(" href=\"");
+                            _response.write(url);
+                            _response.write("\">");
+                            _response.write(content);
+                            _response.write("</a>");
                         }
-                        _response.write(" href=\"");
-                        _response.write(url);
-                        _response.write("\">");
-                        _response.write(content);
-                        _response.write("</a>");
-                    }
-                };
+                    };
+                }
             }
             return ret;
         }

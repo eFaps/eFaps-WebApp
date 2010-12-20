@@ -22,10 +22,8 @@
 package org.efaps.ui.wicket.models.cell;
 
 import org.efaps.admin.datamodel.ui.FieldValue;
-import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
-import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.util.EFapsException;
 
 
@@ -36,7 +34,7 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  */
 public class UIStructurBrowserTableCell
-    extends AbstractUICell
+    extends UITableCell
 {
 
     /**
@@ -45,48 +43,50 @@ public class UIStructurBrowserTableCell
     private static final long serialVersionUID = 1L;
 
     /**
-     * Reference of this field.
+     * Is this cell the browserField.
      */
-    private String reference;
+    private boolean browserField = false;
+
 
     /**
      * @param _parent           parent uiObject
      * @param _fieldValue       FieldValue
      * @param _instance         instance
      * @param _cellvalue        value fo the cell
+     * @param _cellTitle        title for the cell, if null will be set to _cellvalue
+     * @param _icon             icon of the cell
+     *
      * @throws EFapsException on error
      */
     public UIStructurBrowserTableCell(final AbstractUIObject _parent,
                                       final FieldValue _fieldValue,
                                       final Instance _instance,
-                                      final String _cellvalue)
+                                      final String _cellvalue,
+                                      final String _cellTitle,
+                                      final String _icon)
         throws EFapsException
     {
-        super(_parent, _fieldValue, _instance == null ? null : _instance.getKey(), _cellvalue);
-     // check if the user has access to the typemenu, if not set the reference to null
-        if (_fieldValue.getField().getReference() != null) {
-            if (getInstanceKey() != null) {
-                final Menu menu = Menu.getTypeTreeMenu(_instance.getType());
-                if (menu != null && menu.hasAccess(getParent().getMode(), getInstance())
-                            && (!((AbstractUIPageObject) _parent).getAccessMap().containsKey(getInstance())
-                                || (((AbstractUIPageObject) _parent).getAccessMap().containsKey(getInstance())
-                                && ((AbstractUIPageObject) _parent).getAccessMap().get(getInstance())))) {
-                    this.reference = _fieldValue.getField().getReference();
-                } else if (_fieldValue.getField().getReference().contains("/servlet/checkout")) {
-                    this.reference = _fieldValue.getField().getReference();
-                }
-            }
-        }
+        super(_parent, _fieldValue, _instance, _cellvalue, _cellTitle, _icon);
     }
 
     /**
-     * This is the getter method for the instance variable {@link #reference}.
+     * Getter method for the instance variable {@link #browserField}.
      *
-     * @return value of instance variable {@link #reference}
+     * @return value of instance variable {@link #browserField}
+     */
+    public boolean isBrowserField()
+    {
+        return this.browserField;
+    }
+
+    /**
+     * Setter method for instance variable {@link #browserField}.
+     *
+     * @param _browserField value for instance variable {@link #browserField}
      */
 
-    public String getReference()
+    public void setBrowserField(final boolean _browserField)
     {
-        return this.reference;
+        this.browserField = _browserField;
     }
 }

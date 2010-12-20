@@ -211,6 +211,12 @@ public class UIStructurBrowser
     private boolean expanded;
 
     /**
+     * The index of the column containing the browser.
+     */
+    private int browserFieldIndex;
+
+
+    /**
      * Constructor.
      *
      * @param _parameters Page parameters
@@ -403,8 +409,6 @@ public class UIStructurBrowser
             while (print.next()) {
                 Instance instance = print.getCurrentInstance();
 
-                String strValue = "";
-
                 final UIStructurBrowser child = new UIStructurBrowser(getCommandUUID(), instance.getKey(), false,
                                 this.sortDirection);
                 this.childs.add(child);
@@ -425,24 +429,36 @@ public class UIStructurBrowser
                     }
 
                     final FieldValue fieldvalue = new FieldValue(field, attr, value, instance, getInstance());
+                    final String strValue;
+                    final String htmlTitle;
                     if (value != null) {
                         if ((isCreateMode() || isEditMode()) && field.isEditableDisplay(getMode())) {
                             strValue = fieldvalue.getEditHtml(getMode());
                         } else {
                             strValue = fieldvalue.getStringValue(getMode());
                         }
+                        htmlTitle = fieldvalue.getStringValue(getMode());
                     } else {
                         strValue = "";
+                        htmlTitle = "";
                     }
-
+                    String icon = field.getIcon();
+                    if (field.isShowTypeIcon()) {
+                        final Image cellIcon = Image.getTypeIcon(instance.getType());
+                        if (cellIcon != null) {
+                            icon = cellIcon.getUrl();
+                        }
+                    }
                     final UIStructurBrowserTableCell cell = new UIStructurBrowserTableCell(child, fieldvalue,
-                                    instance, strValue);
+                                    instance, strValue, htmlTitle, icon);
 
                     if (field.getName().equals(this.browserFieldName)) {
                         child.setLabel(strValue);
                         child.setParent(checkForChildren(instance));
                         child.setImage(Image.getTypeIcon(instance.getType()) != null ? Image.getTypeIcon(
                                         instance.getType()).getUrl() : null);
+                        cell.setBrowserField(true);
+                        child.browserFieldIndex = child.getColumns().size();
                     }
                     child.getColumns().add(cell);
                 }
@@ -688,6 +704,16 @@ public class UIStructurBrowser
     public List<UIStructurBrowserTableCell> getColumns()
     {
         return this.columns;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #browserFieldIndex}.
+     *
+     * @return value of instance variable {@link #browserFieldIndex}
+     */
+    public int getBrowserFieldIndex()
+    {
+        return this.browserFieldIndex;
     }
 
     /**
