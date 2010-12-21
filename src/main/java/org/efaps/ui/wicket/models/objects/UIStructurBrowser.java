@@ -283,7 +283,6 @@ public class UIStructurBrowser
         } else if (getInstance() != null) {
             final String tmplabel = Menu.getTypeTreeMenu(getInstance().getType()).getLabel();
             this.valueLabel = DBProperties.getProperty(tmplabel);
-
         }
     }
 
@@ -399,9 +398,9 @@ public class UIStructurBrowser
                     if (field.getAttribute() != null && type != null) {
                         attr = type.getAttribute(field.getAttribute());
                     }
-                }
-                if (this.root) {
-                    this.headers.add(new UITableHeader(field, this.sortDirection, attr));
+                    if (this.root) {
+                        this.headers.add(new UITableHeader(field, this.sortDirection, attr));
+                    }
                 }
             }
             print.execute();
@@ -414,53 +413,56 @@ public class UIStructurBrowser
                 this.childs.add(child);
                 child.setDirection(_map.get(instance));
                 for (final Field field : getTable().getFields()) {
-                    Object value = null;
-                    if (field.getSelectAlternateOID() != null) {
-                        instance = Instance.get(print.<String>getSelect(field.getSelectAlternateOID()));
-                    }
-                    if (field.getSelect() != null) {
-                        value = print.getSelect(field.getSelect());
-                        attr = print.getAttribute4Select(field.getSelect());
-                    } else if (field.getAttribute() != null) {
-                        value = print.getAttribute(field.getAttribute());
-                        attr = print.getAttribute4Attribute(field.getAttribute());
-                    } else if (field.getPhrase() != null) {
-                        value = print.getPhrase(field.getName());
-                    }
+                    if (field.hasAccess(getMode(), getInstance())
+                                    && !field.isNoneDisplay(getMode()) && !field.isHiddenDisplay(getMode())) {
+                        Object value = null;
+                        if (field.getSelectAlternateOID() != null) {
+                            instance = Instance.get(print.<String>getSelect(field.getSelectAlternateOID()));
+                        }
+                        if (field.getSelect() != null) {
+                            value = print.getSelect(field.getSelect());
+                            attr = print.getAttribute4Select(field.getSelect());
+                        } else if (field.getAttribute() != null) {
+                            value = print.getAttribute(field.getAttribute());
+                            attr = print.getAttribute4Attribute(field.getAttribute());
+                        } else if (field.getPhrase() != null) {
+                            value = print.getPhrase(field.getName());
+                        }
 
-                    final FieldValue fieldvalue = new FieldValue(field, attr, value, instance, getInstance());
-                    final String strValue;
-                    final String htmlTitle;
-                    if (value != null) {
-                        if ((isCreateMode() || isEditMode()) && field.isEditableDisplay(getMode())) {
-                            strValue = fieldvalue.getEditHtml(getMode());
+                        final FieldValue fieldvalue = new FieldValue(field, attr, value, instance, getInstance());
+                        final String strValue;
+                        final String htmlTitle;
+                        if (value != null) {
+                            if ((isCreateMode() || isEditMode()) && field.isEditableDisplay(getMode())) {
+                                strValue = fieldvalue.getEditHtml(getMode());
+                            } else {
+                                strValue = fieldvalue.getStringValue(getMode());
+                            }
+                            htmlTitle = fieldvalue.getStringValue(getMode());
                         } else {
-                            strValue = fieldvalue.getStringValue(getMode());
+                            strValue = "";
+                            htmlTitle = "";
                         }
-                        htmlTitle = fieldvalue.getStringValue(getMode());
-                    } else {
-                        strValue = "";
-                        htmlTitle = "";
-                    }
-                    String icon = field.getIcon();
-                    if (field.isShowTypeIcon()) {
-                        final Image cellIcon = Image.getTypeIcon(instance.getType());
-                        if (cellIcon != null) {
-                            icon = cellIcon.getUrl();
+                        String icon = field.getIcon();
+                        if (field.isShowTypeIcon()) {
+                            final Image cellIcon = Image.getTypeIcon(instance.getType());
+                            if (cellIcon != null) {
+                                icon = cellIcon.getUrl();
+                            }
                         }
-                    }
-                    final UIStructurBrowserTableCell cell = new UIStructurBrowserTableCell(child, fieldvalue,
-                                    instance, strValue, htmlTitle, icon);
+                        final UIStructurBrowserTableCell cell = new UIStructurBrowserTableCell(child, fieldvalue,
+                                        instance, strValue, htmlTitle, icon);
 
-                    if (field.getName().equals(this.browserFieldName)) {
-                        child.setLabel(strValue);
-                        child.setParent(checkForChildren(instance));
-                        child.setImage(Image.getTypeIcon(instance.getType()) != null ? Image.getTypeIcon(
-                                        instance.getType()).getUrl() : null);
-                        cell.setBrowserField(true);
-                        child.browserFieldIndex = child.getColumns().size();
+                        if (field.getName().equals(this.browserFieldName)) {
+                            child.setLabel(strValue);
+                            child.setParent(checkForChildren(instance));
+                            child.setImage(Image.getTypeIcon(instance.getType()) != null ? Image.getTypeIcon(
+                                            instance.getType()).getUrl() : null);
+                            cell.setBrowserField(true);
+                            child.browserFieldIndex = child.getColumns().size();
+                        }
+                        child.getColumns().add(cell);
                     }
-                    child.getColumns().add(cell);
                 }
             }
         } catch (final EFapsException e) {
@@ -536,6 +538,27 @@ public class UIStructurBrowser
         for (final UIStructurBrowser child : this.childs) {
             child.sort();
         }
+    }
+
+    /**
+     * @return UIStructurBrowser
+     * @throws EFapsException on error
+     */
+    public UIStructurBrowser getClone4New()
+        throws EFapsException
+    {
+        final UIStructurBrowser ret = new UIStructurBrowser(getCommandUUID(), null, this.root, this.sortDirection);
+        ret.initialise();
+        for (final UIStructurBrowserTableCell col : this.columns) {
+            final FieldValue fieldValue = new FieldValue(col.getField(), col.getAttribute(), null, null, null);
+            final String htmlValue = fieldValue.getEditHtml(getMode());
+            final String htmlTitle = fieldValue.getStringValue(getMode());
+            final UIStructurBrowserTableCell newCol = new UIStructurBrowserTableCell(ret, fieldValue, null,
+                            htmlValue, htmlTitle, "");
+            newCol.setBrowserField(col.isBrowserField());
+            ret.getColumns().add(newCol);
+        }
+        return ret;
     }
 
     /**

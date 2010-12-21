@@ -414,7 +414,7 @@ public class StructurBrowserTreeTablePanel
                                  final TreeNode _node,
                                  final int _level)
         {
-            return new AjaxEditRowPanel(_wicketId, this.model, null);
+            return new AjaxEditRowPanel(_wicketId, this.model, _node);
         }
 
         /**
