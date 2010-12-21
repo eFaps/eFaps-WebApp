@@ -119,10 +119,12 @@ public class StructurBrowserTreeTable
     {
         for (int i = 0; i < _parent.getChildCount(); i++) {
             final DefaultMutableTreeNode child = (DefaultMutableTreeNode) _parent.getChildAt(i);
-            final UIStructurBrowser struturBrowser = (UIStructurBrowser) child.getUserObject();
-            if (struturBrowser.isExpanded()) {
-                getTreeState().expandNode(child);
-                expandChildren(child);
+            if (!(child instanceof UIStructurBrowser.BogusNode)) {
+                final UIStructurBrowser struturBrowser = (UIStructurBrowser) child.getUserObject();
+                if (struturBrowser.isExpanded()) {
+                    getTreeState().expandNode(child);
+                    expandChildren(child);
+                }
             }
         }
     }
@@ -273,6 +275,22 @@ public class StructurBrowserTreeTable
         return ret;
     }
 
+    @Override
+    protected ResourceReference getNodeIcon(final TreeNode _node)
+    {
+        final ResourceReference ret;
+        if (!_node.getAllowsChildren()) {
+            ret = getItem();
+        } else {
+            if (isNodeExpanded(_node)) {
+                ret = getFolderOpen();
+            } else {
+                ret =  getFolderClosed();
+            }
+        }
+        return ret;
+    }
+
     /**
      * This class renders a Fragment of the TreeTable, representing
      * a Node including the junctionlink, the icon etc.
@@ -306,17 +324,16 @@ public class StructurBrowserTreeTable
 
             final WebComponent direction = new WebComponent("direction");
             add(direction);
-            final UIStructurBrowser model = (UIStructurBrowser) ((DefaultMutableTreeNode) _node).getUserObject();
-            if (model.getDirection() == null) {
+            final UIStructurBrowser uiStru = (UIStructurBrowser) ((DefaultMutableTreeNode) _node).getUserObject();
+            if (uiStru == null || uiStru.getDirection() == null) {
                 direction.setVisible(false);
-            } else if (model.getDirection()) {
+            } else if (uiStru.getDirection()) {
                 direction.add(new SimpleAttributeModifier("class", "directionDown"));
             } else {
                 direction.add(new SimpleAttributeModifier("class", "directionUp"));
             }
             final MarkupContainer nodeLink;
 
-            final UIStructurBrowser uiStru = (UIStructurBrowser) ((DefaultMutableTreeNode) _node).getUserObject();
             final UIStructurBrowserTableCell uiObject = uiStru.getColumnValue(uiStru.getBrowserFieldIndex());
             if ((uiStru.isEditMode() || uiStru.isCreateMode()) &&  uiObject.getDisplay().equals(Display.EDITABLE)) {
                 nodeLink = new WebMarkupContainer("nodeLink");

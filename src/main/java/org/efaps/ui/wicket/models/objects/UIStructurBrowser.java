@@ -79,7 +79,7 @@ import org.slf4j.LoggerFactory;
  * to be able to render expand-links for every node it will only be checked if
  * it is a potential parent (if it has children). In the case of expanding this
  * Node the children will be retrieved and rendered.<br>
- * To access the eFaps-Database a esjp is used, which will be used in three
+ * To access the eFaps-Database a esjp is used, which will be used in five
  * different cases. To distinguish the use of the esjp some extra Parameters
  * will be passed to the esjp when calling it.
  *
@@ -96,6 +96,8 @@ public class UIStructurBrowser
     public enum ExecutionStatus {
         /** Method addChildren is executed. */
         ADDCHILDREN,
+        /** Method addChildren is executed. */
+        ALLOWSCHILDREN,
         /** Method checkForChildren is executed. */
         CHECKFORCHILDREN,
         /** Method execute is executed. */
@@ -127,6 +129,23 @@ public class UIStructurBrowser
      * @see #getTable
      */
     private UUID tableuuid;
+
+    /**
+     *  This instance variable holds if this StructurBrowserModel can have
+     *  children at all.
+     */
+    private boolean allowChilds;
+
+
+    /**
+     * This instance variable holds if this StructurBrowserModel is a
+     * parent, this is needed because, first it will be only determined if a
+     * node is a potential parent, and later on the childs will be retrieved
+     * from the eFpas-DataBase.
+     *
+     * @see #isParent()
+     */
+    private boolean parent;
 
     /**
      * This instance variable holds the childs of this StructurBrowserModel.
@@ -169,16 +188,6 @@ public class UIStructurBrowser
      * a tree.
      */
     private final boolean root;
-
-    /**
-     * this instance variable holds if this StructurBrowserModel is a potential
-     * parent, this is needed because, first it will be only determined if a
-     * node is a potential parent, and later on the childs will be retrieved
-     * from the eFpas-DataBase.
-     *
-     * @see #isParent()
-     */
-    private boolean parent;
 
     /**
      * Holds the Value for the Label as it is difined in the DBProperties.
@@ -264,6 +273,9 @@ public class UIStructurBrowser
     {
         super(_commandUUID, _instanceKey);
         this.root = _root;
+        if (this.root) {
+            this.allowChilds = true;
+        }
         this.sortDirection = _sortdirection;
         initialise();
     }
@@ -347,6 +359,7 @@ public class UIStructurBrowser
                 this.childs.add(child);
                 child.setDirection(_map.get(instance));
                 child.setLabel(value.toString());
+
                 child.setParent(checkForChildren(instance));
                 child.setImage(Image.getTypeIcon(instance.getType()) != null ? Image.getTypeIcon(instance.getType())
                                 .getUrl() : null);
@@ -455,7 +468,10 @@ public class UIStructurBrowser
 
                         if (field.getName().equals(this.browserFieldName)) {
                             child.setLabel(strValue);
-                            child.setParent(checkForChildren(instance));
+                            child.setAllowChilds(checkForAllowChilds(instance));
+                            if (child.isAllowChilds()) {
+                                child.setParent(checkForChildren(instance));
+                            }
                             child.setImage(Image.getTypeIcon(instance.getType()) != null ? Image.getTypeIcon(
                                             instance.getType()).getUrl() : null);
                             cell.setBrowserField(true);
@@ -562,6 +578,47 @@ public class UIStructurBrowser
     }
 
     /**
+     * Getter method for the instance variable {@link #allowChilds}.
+     *
+     * @return value of instance variable {@link #allowChilds}
+     */
+    public boolean isAllowChilds()
+    {
+        return this.allowChilds;
+    }
+
+
+    /**
+     * Setter method for instance variable {@link #allowChilds}.
+     *
+     * @param _allowChilds value for instance variable {@link #allowChilds}
+     */
+
+    public void setAllowChilds(final boolean _allowChilds)
+    {
+        this.allowChilds = _allowChilds;
+    }
+
+
+    /**
+     * This method is used to check if a node has potential children.
+     *
+     * @param _instance Instance of a Node to be checked
+     * @return true if this Node has children, else false
+     */
+    private boolean checkForAllowChilds(final Instance _instance)
+    {
+        this.executionStatus = UIStructurBrowser.ExecutionStatus.ALLOWSCHILDREN;
+        try {
+            final List<Return> ret = getCommand().executeEvents(EventType.UI_TABLE_EVALUATE, ParameterValues.INSTANCE,
+                            _instance, ParameterValues.CLASS, this);
+            return ret.isEmpty() ? false : ret.get(0).get(ReturnValues.TRUE) != null;
+        } catch (final EFapsException e) {
+            throw new RestartResponseException(new ErrorPage(e));
+        }
+    }
+
+    /**
      * This is the getter method for the instance variable {@link #parent}.
      *
      * @return value of instance variable {@link #parent}
@@ -639,10 +696,14 @@ public class UIStructurBrowser
      */
     public TreeModel getTreeModel()
     {
-        TreeModel model = null;
+        DefaultTreeModel model = null;
         final DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(this);
-        addNode(rootNode, this.childs);
+        rootNode.setAllowsChildren(true);
+        if (this.childs.size() > 0) {
+            addNode(rootNode, this.childs);
+        }
         model = new DefaultTreeModel(rootNode);
+        model.setAsksAllowsChildren(true);
         return model;
     }
 
@@ -662,8 +723,10 @@ public class UIStructurBrowser
             if (child.hasChilds()) {
                 addNode(childNode, child.getChilds());
             } else if (child.isParent()) {
+                childNode.setAllowsChildren(true);
                 childNode.add(new BogusNode());
             }
+            childNode.setAllowsChildren(child.isAllowChilds());
         }
     }
 

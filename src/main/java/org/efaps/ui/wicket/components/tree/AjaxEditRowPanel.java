@@ -27,7 +27,6 @@ import javax.swing.tree.TreeNode;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.WebComponent;
-import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
@@ -91,6 +90,7 @@ public class AjaxEditRowPanel
                             final TreeNode _node)
     {
         super(_wicketId, _model);
+        final UIStructurBrowser uiStru = (UIStructurBrowser) ((DefaultMutableTreeNode) _node).getUserObject();
 
         final InsertRow insertlink = new InsertRow("addLink", _model, _node);
         this.add(insertlink);
@@ -98,18 +98,21 @@ public class AjaxEditRowPanel
         insertImage.setReference(AjaxEditRowPanel.ICON_ADD);
         insertlink.add(insertImage);
 
-        final RemoveRow delLink = new RemoveRow("delLink");
+        final RemoveRow delLink = new RemoveRow("delLink", _model, _node);
         this.add(delLink);
         final StaticImageComponent delImage = new StaticImageComponent("delIcon");
         delImage.setReference(AjaxEditRowPanel.ICON_DELETE);
         delLink.add(delImage);
 
-        final InsertRow insertFolderlink = new InsertRow("addFolderLink", _model, _node);
-        this.add(insertFolderlink);
-        final StaticImageComponent insertFolderImage = new StaticImageComponent("addFolderIcon");
-        insertFolderImage.setReference(AjaxEditRowPanel.ICON_FOLDER_ADD);
-        insertFolderlink.add(insertFolderImage);
-
+        if (uiStru.isAllowChilds()) {
+            final InsertChildFolder insertFolderlink = new InsertChildFolder("addFolderLink", _model, _node);
+            this.add(insertFolderlink);
+            final StaticImageComponent insertFolderImage = new StaticImageComponent("addFolderIcon");
+            insertFolderImage.setReference(AjaxEditRowPanel.ICON_FOLDER_ADD);
+            insertFolderlink.add(insertFolderImage);
+        } else {
+            add(new WebComponent("addFolderLink").setVisible(false));
+        }
         add(new WebComponent("script").setVisible(false));
     }
 
@@ -119,28 +122,6 @@ public class AjaxEditRowPanel
      * table.
      */
     public class RemoveRow
-        extends WebMarkupContainer
-    {
-        /**
-         * Needed for serialization.
-         */
-        private static final long serialVersionUID = 1L;
-
-        /**
-         * @param _wicketId wicket id for this component
-         * @param _rowPanel Rowpanel that must be removed
-         */
-        public RemoveRow(final String _wicketId)
-        {
-            super(_wicketId);
-        }
-    }
-
-
-    /**
-     * Render an insert button.
-     */
-    public class InsertRow
         extends AjaxLink<UIStructurBrowser>
     {
         /**
@@ -148,16 +129,29 @@ public class AjaxEditRowPanel
          */
         private static final long serialVersionUID = 1L;
         private final DefaultMutableTreeNode node;
-
+        /**
+         * @param _wicketId wicket id for this component
+         * @param _rowPanel Rowpanel that must be removed
+         */
         /**
          * @param _wicketId wicket ID of this component
          */
-        public InsertRow(final String _wicketId,
+        public RemoveRow(final String _wicketId,
                          final IModel<UIStructurBrowser> _model,
                          final TreeNode _node)
         {
             super(_wicketId, _model);
             this.node = (DefaultMutableTreeNode) _node;
+        }
+
+        /**
+         * Getter method for the instance variable {@link #node}.
+         *
+         * @return value of instance variable {@link #node}
+         */
+        public DefaultMutableTreeNode getNode()
+        {
+            return this.node;
         }
 
         /* (non-Javadoc)
@@ -166,7 +160,47 @@ public class AjaxEditRowPanel
         @Override
         public void onClick(final AjaxRequestTarget _target)
         {
-            final UIStructurBrowser strucBr = (UIStructurBrowser) this.node.getUserObject();
+            final StructurBrowserTreeTable treeTable = findParent(StructurBrowserTreeTable.class);
+            final DefaultTreeModel treeModel = (DefaultTreeModel) treeTable.getModelObject();
+            treeModel.removeNodeFromParent(this.node);
+            treeTable.updateTree(_target);
+        }
+    }
+
+
+    /**
+     * Render an insert button.
+     */
+    public class InsertRow
+        extends RemoveRow
+    {
+        /**
+         * Needed for serialization.
+         */
+        private static final long serialVersionUID = 1L;
+
+
+        /**
+         * @param _wicketId wicket ID of this component
+         */
+        public InsertRow(final String _wicketId,
+                         final IModel<UIStructurBrowser> _model,
+                         final TreeNode _node)
+        {
+            super(_wicketId, _model, _node);
+
+        }
+
+
+
+
+        /* (non-Javadoc)
+         * @see org.apache.wicket.ajax.markup.html.AjaxLink#onClick(org.apache.wicket.ajax.AjaxRequestTarget)
+         */
+        @Override
+        public void onClick(final AjaxRequestTarget _target)
+        {
+            final UIStructurBrowser strucBr = (UIStructurBrowser) getNode().getUserObject();
 
             UIStructurBrowser newStruBrws = null;
             try {
@@ -176,10 +210,105 @@ public class AjaxEditRowPanel
                 e.printStackTrace();
             }
             final DefaultMutableTreeNode newTreeNode = new DefaultMutableTreeNode(newStruBrws);
+            newTreeNode.setAllowsChildren(false);
             final StructurBrowserTreeTable treeTable = findParent(StructurBrowserTreeTable.class);
             final DefaultTreeModel treeModel = (DefaultTreeModel) treeTable.getModelObject();
-            treeModel.insertNodeInto(newTreeNode, (DefaultMutableTreeNode) this.node.getParent(),
-                            this.node.getParent().getIndex(this.node));
+            treeModel.insertNodeInto(newTreeNode, (DefaultMutableTreeNode) getNode().getParent(),
+                            getNode().getParent().getIndex(getNode()));
+            treeTable.updateTree(_target);
+        }
+    }
+
+
+    public class InsertChildFolder
+        extends InsertRow
+    {
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * @param _wicketId
+         * @param _model
+         * @param _node
+         */
+        public InsertChildFolder(final String _wicketId,
+                            final IModel<UIStructurBrowser> _model,
+                            final TreeNode _node)
+        {
+            super(_wicketId, _model, _node);
+        }
+
+        /* (non-Javadoc)
+         * @see org.apache.wicket.ajax.markup.html.AjaxLink#onClick(org.apache.wicket.ajax.AjaxRequestTarget)
+         */
+        @Override
+        public void onClick(final AjaxRequestTarget _target)
+        {
+            final UIStructurBrowser strucBr = (UIStructurBrowser) getNode().getUserObject();
+
+            UIStructurBrowser newStruBrws = null;
+            try {
+                newStruBrws = strucBr.getClone4New();
+            } catch (final EFapsException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            newStruBrws.setAllowChilds(true);
+            final DefaultMutableTreeNode newTreeNode = new DefaultMutableTreeNode(newStruBrws);
+            newTreeNode.setAllowsChildren(true);
+            final StructurBrowserTreeTable treeTable = findParent(StructurBrowserTreeTable.class);
+            final DefaultTreeModel treeModel = (DefaultTreeModel) treeTable.getModelObject();
+            treeModel.insertNodeInto(newTreeNode, getNode(), getNode().getChildCount());
+            treeTable.updateTree(_target);
+        }
+    }
+
+
+    public class InsertChildRow
+        extends InsertRow
+    {
+
+        /**
+     *
+     */
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * @param _wicketId
+         * @param _model
+         * @param _node
+         */
+        public InsertChildRow(final String _wicketId,
+                              final IModel<UIStructurBrowser> _model,
+                              final TreeNode _node)
+        {
+            super(_wicketId, _model, _node);
+        }
+
+        /*
+         * (non-Javadoc)
+         * @see org.apache.wicket.ajax.markup.html.AjaxLink#onClick(org.apache.wicket.ajax.AjaxRequestTarget)
+         */
+        @Override
+        public void onClick(final AjaxRequestTarget _target)
+        {
+            final UIStructurBrowser strucBr = (UIStructurBrowser) getNode().getUserObject();
+
+            UIStructurBrowser newStruBrws = null;
+            try {
+                newStruBrws = strucBr.getClone4New();
+            } catch (final EFapsException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            newStruBrws.setAllowChilds(true);
+            final DefaultMutableTreeNode newTreeNode = new DefaultMutableTreeNode(newStruBrws);
+            newTreeNode.setAllowsChildren(true);
+            final StructurBrowserTreeTable treeTable = findParent(StructurBrowserTreeTable.class);
+            final DefaultTreeModel treeModel = (DefaultTreeModel) treeTable.getModelObject();
+            treeModel.insertNodeInto(newTreeNode, getNode(), getNode().getChildCount());
             treeTable.updateTree(_target);
         }
     }
