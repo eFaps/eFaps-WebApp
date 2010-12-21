@@ -92,11 +92,7 @@ public class AjaxEditRowPanel
         super(_wicketId, _model);
         final UIStructurBrowser uiStru = (UIStructurBrowser) ((DefaultMutableTreeNode) _node).getUserObject();
 
-        final InsertRow insertlink = new InsertRow("addLink", _model, _node);
-        this.add(insertlink);
-        final StaticImageComponent insertImage = new StaticImageComponent("addIcon");
-        insertImage.setReference(AjaxEditRowPanel.ICON_ADD);
-        insertlink.add(insertImage);
+
 
         final RemoveRow delLink = new RemoveRow("delLink", _model, _node);
         this.add(delLink);
@@ -110,8 +106,19 @@ public class AjaxEditRowPanel
             final StaticImageComponent insertFolderImage = new StaticImageComponent("addFolderIcon");
             insertFolderImage.setReference(AjaxEditRowPanel.ICON_FOLDER_ADD);
             insertFolderlink.add(insertFolderImage);
+
+            final InsertChildRow insertlink = new InsertChildRow("addLink", _model, _node);
+            this.add(insertlink);
+            final StaticImageComponent insertImage = new StaticImageComponent("addIcon");
+            insertImage.setReference(AjaxEditRowPanel.ICON_ADD);
+            insertlink.add(insertImage);
         } else {
             add(new WebComponent("addFolderLink").setVisible(false));
+            final InsertRow insertlink = new InsertRow("addLink", _model, _node);
+            this.add(insertlink);
+            final StaticImageComponent insertImage = new StaticImageComponent("addIcon");
+            insertImage.setReference(AjaxEditRowPanel.ICON_ADD);
+            insertlink.add(insertImage);
         }
         add(new WebComponent("script").setVisible(false));
     }
@@ -303,9 +310,9 @@ public class AjaxEditRowPanel
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            newStruBrws.setAllowChilds(true);
+            newStruBrws.setAllowChilds(false);
             final DefaultMutableTreeNode newTreeNode = new DefaultMutableTreeNode(newStruBrws);
-            newTreeNode.setAllowsChildren(true);
+            newTreeNode.setAllowsChildren(false);
             final StructurBrowserTreeTable treeTable = findParent(StructurBrowserTreeTable.class);
             final DefaultTreeModel treeModel = (DefaultTreeModel) treeTable.getModelObject();
             treeModel.insertNodeInto(newTreeNode, getNode(), getNode().getChildCount());
