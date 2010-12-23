@@ -80,6 +80,8 @@ public class UIForm
         FORM,
         /** Element is a Heading. */
         HEADING,
+        /** Element is a StructurBrowser.*/
+        STRUCBRWS,
         /** Element is SubForm. e.g. for classification*/
         SUBFORM,
         /** Element is a table.*/
@@ -254,9 +256,11 @@ public class UIForm
                         }
                         rowgroupcount = group.getGroupCount();
                     } else if (field instanceof FieldTable) {
-                        final UIFieldTable uiFieldTable = new UIFieldTable(getCommandUUID(), getInstanceKey(),
-                                                                               (FieldTable) field);
-                        this.elements.add(new Element(UIForm.ElementType.TABLE, uiFieldTable));
+                        if (((FieldTable) field).getTargetStructurBrowserField() == null) {
+                            final UIFieldTable uiFieldTable = new UIFieldTable(getCommandUUID(), getInstanceKey(),
+                                                                                   (FieldTable) field);
+                            this.elements.add(new Element(UIForm.ElementType.TABLE, uiFieldTable));
+                        }
                         addNew = true;
                     } else if (field instanceof FieldHeading) {
                         this.elements.add(new Element(UIForm.ElementType.HEADING,
@@ -586,22 +590,27 @@ public class UIForm
                     this.classified = true;
                     addNew = true;
                 } else if (field instanceof FieldTable) {
-                    final UIFieldTable uiFieldTable = new UIFieldTable(getCommandUUID(), getInstanceKey(),
-                                                                       (FieldTable) field);
-                    this.elements.add(new Element(UIForm.ElementType.TABLE, uiFieldTable));
-                    addNew = true;
-                    if (firstTable) {
-                        firstTable = false;
+                    if (((FieldTable) field).getTargetStructurBrowserField() == null) {
+                        final UIFieldTable uiFieldTable = new UIFieldTable(getCommandUUID(), getInstanceKey(),
+                                                                           (FieldTable) field);
+                        this.elements.add(new Element(UIForm.ElementType.TABLE, uiFieldTable));
+                        if (firstTable) {
+                            firstTable = false;
+                        } else {
+                            uiFieldTable.setFirstTable(false);
+                        }
                     } else {
-                        uiFieldTable.setFirstTable(false);
+                        final UIFieldStructurBrowser uiFieldStrucBrws = new UIFieldStructurBrowser(getCommandUUID(),
+                                        getInstanceKey(), (FieldTable) field);
+                        this.elements.add(new Element(UIForm.ElementType.STRUCBRWS, uiFieldStrucBrws));
                     }
+                    addNew = true;
                 } else {
                     if (addNew) {
                         formelement = new FormElement();
                         this.elements.add(new Element(UIForm.ElementType.FORM, formelement));
                         addNew = false;
                     }
-                    // TODO getExpression must be removed
                     final String fieldAttrName = field.getAttribute();
                     final Attribute attr = type != null ? type.getAttribute(fieldAttrName) : null;
 

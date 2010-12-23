@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import javax.swing.tree.TreeModel;
 
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.RestartResponseException;
+import org.efaps.admin.AbstractAdminObject;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.FieldValue;
@@ -45,6 +46,7 @@ import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractCommand.SortDirection;
+import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.Image;
 import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.Table;
@@ -130,6 +132,7 @@ public class UIStructurBrowser
      */
     private UUID tableuuid;
 
+
     /**
      *  This instance variable holds if this StructurBrowserModel can have
      *  children at all.
@@ -172,6 +175,7 @@ public class UIStructurBrowser
      * a TableTree.
      */
     private String browserFieldName;
+
 
     /**
      * Holds the headers for the Table, in case of a TableTree.
@@ -265,10 +269,10 @@ public class UIStructurBrowser
      * @param _sortdirection sort direction
      * @throws EFapsException on error
      */
-    private UIStructurBrowser(final UUID _commandUUID,
-                              final String _instanceKey,
-                              final boolean _root,
-                              final SortDirection _sortdirection)
+    protected UIStructurBrowser(final UUID _commandUUID,
+                                final String _instanceKey,
+                                final boolean _root,
+                                final SortDirection _sortdirection)
         throws EFapsException
     {
         super(_commandUUID, _instanceKey);
@@ -281,11 +285,34 @@ public class UIStructurBrowser
     }
 
     /**
+     * Internal method to call a constructor, it is used to set that this
+     * StructurBrowserModel is not a root.
+     *
+     * @param _instance     Instance
+     * @param _strucBrwsr   StructurBrowser the values will be copied from
+     * @return UIStructurBrowser
+     * @throws EFapsException on error
+     */
+    protected UIStructurBrowser getNewStructurBrowser(final Instance _instance,
+                                                      final UIStructurBrowser _strucBrwsr)
+        throws EFapsException
+    {
+        final UUID uuid;
+        if (_strucBrwsr.getTable() == null) {
+            uuid = Menu.getTypeTreeMenu(_instance.getType()).getUUID();
+        } else {
+            uuid = _strucBrwsr.getCommandUUID();
+        }
+        return new UIStructurBrowser(uuid, _instance == null ? null : _instance.getKey(), false,
+                        _strucBrwsr.getSortDirection());
+    }
+
+    /**
      * Method used to initialize this StructurBrowserModel.
      *
      * @throws EFapsException on error
      */
-    private void initialise()
+    protected void initialise()
         throws EFapsException
     {
         final AbstractCommand command = getCommand();
@@ -312,7 +339,7 @@ public class UIStructurBrowser
     @SuppressWarnings("unchecked")
     public void execute()
     {
-        this.executionStatus = UIStructurBrowser.ExecutionStatus.EXECUTE;
+        setExecutionStatus(UIStructurBrowser.ExecutionStatus.EXECUTE);
         List<Return> ret;
         try {
             if (this.tableuuid == null) {
@@ -320,7 +347,7 @@ public class UIStructurBrowser
                 map.put(getInstance(), null);
                 executeTree(map, false);
             } else {
-                ret = getCommand().executeEvents(EventType.UI_TABLE_EVALUATE, ParameterValues.CLASS, this,
+                ret = getObject4Event().executeEvents(EventType.UI_TABLE_EVALUATE, ParameterValues.CLASS, this,
                                 ParameterValues.INSTANCE, getInstance());
                 final Map<Instance, Boolean> map = (Map<Instance, Boolean>) ret.get(0).get(ReturnValues.VALUES);
                 executeTreeTable(map, false);
@@ -337,7 +364,7 @@ public class UIStructurBrowser
      * @param _map      List of Object
      * @param _expand   inside an expand
      */
-    private void executeTree(final Map<Instance, Boolean> _map,
+    protected void executeTree(final Map<Instance, Boolean> _map,
                              final boolean _expand)
     {
         try {
@@ -354,8 +381,7 @@ public class UIStructurBrowser
                 Object value = null;
                 final Instance instance = print.getCurrentInstance();
                 value = valuelist.makeString(getInstance(), print, getMode());
-                final UIStructurBrowser child = new UIStructurBrowser(Menu.getTypeTreeMenu(instance.getType())
-                                .getUUID(), instance.getKey(), false, this.sortDirection);
+                final UIStructurBrowser child = getNewStructurBrowser(instance, this);
                 this.childs.add(child);
                 child.setDirection(_map.get(instance));
                 child.setLabel(value.toString());
@@ -381,7 +407,7 @@ public class UIStructurBrowser
      * @param _map      List of Objects
      * @param _expand   inside an expand
      */
-    private void executeTreeTable(final Map<Instance, Boolean> _map,
+    protected void executeTreeTable(final Map<Instance, Boolean> _map,
                                   final boolean _expand)
     {
         try {
@@ -420,9 +446,7 @@ public class UIStructurBrowser
             Attribute attr = null;
             while (print.next()) {
                 Instance instance = print.getCurrentInstance();
-
-                final UIStructurBrowser child = new UIStructurBrowser(getCommandUUID(), instance.getKey(), false,
-                                this.sortDirection);
+                final UIStructurBrowser child = getNewStructurBrowser(instance, this);
                 this.childs.add(child);
                 child.setDirection(_map.get(instance));
                 for (final Field field : getTable().getFields()) {
@@ -494,7 +518,7 @@ public class UIStructurBrowser
      * @param _expand is this inside an expand
      */
     @SuppressWarnings("unchecked")
-    private void expand(final boolean _expand)
+    protected void expand(final boolean _expand)
     {
         try {
             // only if the element was opened the first time e.g. reload etc.
@@ -506,8 +530,8 @@ public class UIStructurBrowser
                     if (sessMap.containsKey(uiChild.getInstanceKey())) {
                         final Boolean expandedTmp = sessMap.get(uiChild.getInstanceKey());
                         if (expandedTmp != null && expandedTmp && uiChild.isParent()) {
-                            uiChild.executionStatus = UIStructurBrowser.ExecutionStatus.ADDCHILDREN;
-                            final List<Return> ret = getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
+                            uiChild.setExecutionStatus(UIStructurBrowser.ExecutionStatus.ADDCHILDREN);
+                            final List<Return> ret = getObject4Event().executeEvents(EventType.UI_TABLE_EVALUATE,
                                                 ParameterValues.INSTANCE, uiChild.getInstance(),
                                                 ParameterValues.CLASS, uiChild);
                             final Map<Instance, Boolean> map = (Map<Instance, Boolean>) ret.get(0).get(
@@ -531,9 +555,9 @@ public class UIStructurBrowser
     /**
      * Method to sort the data of this model. It calls an esjp for sorting.
      */
-    private void sortModel()
+    protected void sortModel()
     {
-        this.executionStatus = UIStructurBrowser.ExecutionStatus.SORT;
+        setExecutionStatus(UIStructurBrowser.ExecutionStatus.SORT);
         try {
             getCommand().executeEvents(EventType.UI_TABLE_EVALUATE, ParameterValues.CLASS, this);
 
@@ -563,7 +587,7 @@ public class UIStructurBrowser
     public UIStructurBrowser getClone4New()
         throws EFapsException
     {
-        final UIStructurBrowser ret = new UIStructurBrowser(getCommandUUID(), null, this.root, this.sortDirection);
+        final UIStructurBrowser ret = getNewStructurBrowser(null, this);
         ret.initialise();
         for (final UIStructurBrowserTableCell col : this.columns) {
             final FieldValue fieldValue = new FieldValue(col.getField(), col.getAttribute(), null, null, null);
@@ -608,10 +632,11 @@ public class UIStructurBrowser
      */
     private boolean checkForAllowChilds(final Instance _instance)
     {
-        this.executionStatus = UIStructurBrowser.ExecutionStatus.ALLOWSCHILDREN;
+        setExecutionStatus(UIStructurBrowser.ExecutionStatus.ALLOWSCHILDREN);
         try {
-            final List<Return> ret = getCommand().executeEvents(EventType.UI_TABLE_EVALUATE, ParameterValues.INSTANCE,
-                            _instance, ParameterValues.CLASS, this);
+            final List<Return> ret = getObject4Event().executeEvents(EventType.UI_TABLE_EVALUATE,
+                            ParameterValues.INSTANCE, _instance,
+                            ParameterValues.CLASS, this);
             return ret.isEmpty() ? false : ret.get(0).get(ReturnValues.TRUE) != null;
         } catch (final EFapsException e) {
             throw new RestartResponseException(new ErrorPage(e));
@@ -646,10 +671,11 @@ public class UIStructurBrowser
      */
     private boolean checkForChildren(final Instance _instance)
     {
-        this.executionStatus = UIStructurBrowser.ExecutionStatus.CHECKFORCHILDREN;
+        setExecutionStatus(UIStructurBrowser.ExecutionStatus.CHECKFORCHILDREN);
         try {
-            final List<Return> ret = getCommand().executeEvents(EventType.UI_TABLE_EVALUATE, ParameterValues.INSTANCE,
-                            _instance, ParameterValues.CLASS, this);
+            final List<Return> ret = getObject4Event().executeEvents(EventType.UI_TABLE_EVALUATE,
+                            ParameterValues.INSTANCE, _instance,
+                            ParameterValues.CLASS, this);
             return ret.isEmpty() ? false : ret.get(0).get(ReturnValues.TRUE) != null;
         } catch (final EFapsException e) {
             throw new RestartResponseException(new ErrorPage(e));
@@ -742,11 +768,11 @@ public class UIStructurBrowser
     @SuppressWarnings("unchecked")
     public void addChildren(final DefaultMutableTreeNode _parent)
     {
-        this.executionStatus = UIStructurBrowser.ExecutionStatus.ADDCHILDREN;
+        setExecutionStatus(UIStructurBrowser.ExecutionStatus.ADDCHILDREN);
         _parent.removeAllChildren();
         List<Return> ret;
         try {
-            ret = getCommand().executeEvents(EventType.UI_TABLE_EVALUATE, ParameterValues.INSTANCE, getInstance(),
+            ret = getObject4Event().executeEvents(EventType.UI_TABLE_EVALUATE, ParameterValues.INSTANCE, getInstance(),
                             ParameterValues.CLASS, this);
             final Map<Instance, Boolean> map = (Map<Instance, Boolean>) ret.get(0).get(ReturnValues.VALUES);
 
@@ -790,6 +816,28 @@ public class UIStructurBrowser
     public List<UIStructurBrowserTableCell> getColumns()
     {
         return this.columns;
+    }
+
+    /**
+     * Setter method for instance variable {@link #browserFieldName}.
+     *
+     * @param _browserFieldName value for instance variable {@link #browserFieldName}
+     */
+
+    protected void setBrowserFieldName(final String _browserFieldName)
+    {
+        this.browserFieldName = _browserFieldName;
+    }
+
+    /**
+     * Setter method for instance variable {@link #tableuuid}.
+     *
+     * @param _tableuuid value for instance variable {@link #tableuuid}
+     */
+
+    protected void setTableuuid(final UUID _tableuuid)
+    {
+        this.tableuuid = _tableuuid;
     }
 
     /**
@@ -993,18 +1041,41 @@ public class UIStructurBrowser
     private void storeInSession()
     {
         try {
-            final Map<String, Boolean> sessMap;
-            if (Context.getThreadContext().containsSessionAttribute(getCacheKey())) {
-                sessMap = (Map<String, Boolean>) Context.getThreadContext().getSessionAttribute(getCacheKey());
-            } else {
-                sessMap = new HashMap<String, Boolean>();
+            if (!getMode().equals(TargetMode.CREATE) && !getMode().equals(TargetMode.EDIT)) {
+                final Map<String, Boolean> sessMap;
+                if (Context.getThreadContext().containsSessionAttribute(getCacheKey())) {
+                    sessMap = (Map<String, Boolean>) Context.getThreadContext().getSessionAttribute(getCacheKey());
+                } else {
+                    sessMap = new HashMap<String, Boolean>();
+                }
+                sessMap.put(getInstanceKey(), isExpanded());
+                Context.getThreadContext().setSessionAttribute(getCacheKey(), sessMap);
             }
-            sessMap.put(getInstanceKey(), isExpanded());
-            Context.getThreadContext().setSessionAttribute(getCacheKey(), sessMap);
         } catch (final EFapsException e) {
             UIStructurBrowser.LOG.error("Error storing Session info for StruturBrowser called by Command with UUID: {}",
                             getCommandUUID(), e);
         }
+    }
+
+    /**
+     * Setter method for instance variable {@link #executionStatus}.
+     *
+     * @param _executionStatus value for instance variable {@link #executionStatus}
+     */
+    protected void setExecutionStatus(final ExecutionStatus _executionStatus)
+    {
+        this.executionStatus = _executionStatus;
+    }
+
+
+    /**
+     * Get the Admin Object that contains the events that must be executed.
+     *
+     * @return the Admin Object that contains the events to be executed
+     */
+    protected AbstractAdminObject getObject4Event()
+    {
+        return this.getCommand();
     }
 
     /**
