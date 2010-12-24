@@ -92,8 +92,7 @@ public class StructurBrowserTreeTablePanel
             i++;
         }
 
-        final StructurBrowserTreeTable tree = new StructurBrowserTreeTable("treeTable", model.getTreeModel(), columns,
-                        _parentLink);
+        final StructurBrowserTreeTable tree = new StructurBrowserTreeTable("treeTable", _model, columns, _parentLink);
         add(tree);
     }
 
@@ -237,48 +236,60 @@ public class StructurBrowserTreeTablePanel
             IRenderable ret;
             final UIStructurBrowser uiStru = (UIStructurBrowser) ((DefaultMutableTreeNode) _node)
                             .getUserObject();
-            final UIStructurBrowserTableCell uiObject = uiStru.getColumnValue(getIndex());
-            if ((uiStru.isEditMode() || uiStru.isCreateMode()) &&  uiObject.getDisplay().equals(Display.EDITABLE)) {
-                ret = null;
-            } else {
+            if (uiStru.isRoot()) {
+                ret = new IRenderable()
+                {
+                    private static final long serialVersionUID = 1L;
 
-                if (uiObject.getReference() == null) {
-                    ret = super.newCell(_node, _level);
-                } else {
-                    this.idx++;
-                    final StructurBrowserTableCellModel model = new StructurBrowserTableCellModel(uiObject);
-                    final ContentContainerLink<UIStructurBrowserTableCell> celllink
-                        = new ContentContainerLink<UIStructurBrowserTableCell>(
-                                    "link" + uiObject.getName() + this.idx, model);
-                    getPage().add(celllink);
-                    celllink.rendered();
-                    ret = new IRenderable()
+                    public void render(final TreeNode _node,
+                                       final Response _response)
                     {
+                    }
+                };
+            } else {
+                final UIStructurBrowserTableCell uiObject = uiStru.getColumnValue(getIndex());
+                if ((uiStru.isEditMode() || uiStru.isCreateMode()) &&  uiObject.getDisplay().equals(Display.EDITABLE)) {
+                    ret = null;
+                } else {
 
-                        private static final long serialVersionUID = 1L;
-
-                        public void render(final TreeNode _node,
-                                           final Response _response)
+                    if (uiObject.getReference() == null) {
+                        ret = super.newCell(_node, _level);
+                    } else {
+                        this.idx++;
+                        final StructurBrowserTableCellModel model = new StructurBrowserTableCellModel(uiObject);
+                        final ContentContainerLink<UIStructurBrowserTableCell> celllink
+                            = new ContentContainerLink<UIStructurBrowserTableCell>(
+                                        "link" + uiObject.getName() + this.idx, model);
+                        getPage().add(celllink);
+                        celllink.rendered();
+                        ret = new IRenderable()
                         {
-                            final CharSequence url = celllink.urlFor(ILinkListener.INTERFACE);
-                            String content = getNodeValue(_node);
 
-                            // escape if necessary
-                            if (isEscapeContent()) {
-                                content = Strings.escapeMarkup(content).toString();
-                            }
+                            private static final long serialVersionUID = 1L;
 
-                            _response.write("<a");
-                            if (isContentAsTooltip()) {
-                                _response.write(" title=\"" + content + "\"");
+                            public void render(final TreeNode _node,
+                                               final Response _response)
+                            {
+                                final CharSequence url = celllink.urlFor(ILinkListener.INTERFACE);
+                                String content = getNodeValue(_node);
+
+                                // escape if necessary
+                                if (isEscapeContent()) {
+                                    content = Strings.escapeMarkup(content).toString();
+                                }
+
+                                _response.write("<a");
+                                if (isContentAsTooltip()) {
+                                    _response.write(" title=\"" + content + "\"");
+                                }
+                                _response.write(" href=\"");
+                                _response.write(url);
+                                _response.write("\">");
+                                _response.write(content);
+                                _response.write("</a>");
                             }
-                            _response.write(" href=\"");
-                            _response.write(url);
-                            _response.write("\">");
-                            _response.write(content);
-                            _response.write("</a>");
-                        }
-                    };
+                        };
+                    }
                 }
             }
             return ret;
@@ -383,11 +394,15 @@ public class StructurBrowserTreeTablePanel
          * Needed for serialization.
          */
         private static final long serialVersionUID = 1L;
+        /**
+         * Model underlying this Columnn.
+         */
         private final IModel<UIStructurBrowser> model;
 
         /**
          * @param _location Location
-         * @param _header header
+         * @param _header   header
+         * @param _model    Model for the Column
          */
         public EditColumn(final ColumnLocation _location,
                           final String _header,
@@ -396,7 +411,6 @@ public class StructurBrowserTreeTablePanel
             super(_location, _header);
             this.model = _model;
         }
-
 
         /**
          * This method is used to populate the cell for given node in case when

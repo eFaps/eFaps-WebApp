@@ -53,7 +53,7 @@ public class AsyncronTreeUpdateListener
         final UIStructurBrowser model = (UIStructurBrowser) ((DefaultMutableTreeNode) node).getUserObject();
         model.setExpanded(true);
 
-        if (!node.isLeaf() && node.getChildAt(0) instanceof BogusNode) {
+        if (!node.isLeaf() && (node.getChildAt(0) instanceof BogusNode)) {
             model.addChildren((DefaultMutableTreeNode) node);
         }
     }

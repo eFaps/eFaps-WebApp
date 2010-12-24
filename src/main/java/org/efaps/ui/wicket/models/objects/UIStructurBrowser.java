@@ -229,6 +229,10 @@ public class UIStructurBrowser
      */
     private int browserFieldIndex;
 
+    /**
+     * This Row is used in case of edit to create new empty rows for the root.
+     */
+    private UIStructurBrowser emptyRow;
 
     /**
      * Constructor.
@@ -278,7 +282,7 @@ public class UIStructurBrowser
     {
         super(_commandUUID, _instanceKey);
         this.root = _root;
-        if (this.root) {
+        if (isRoot()) {
             this.allowChilds = true;
         }
         this.sortDirection = _sortdirection;
@@ -419,11 +423,6 @@ public class UIStructurBrowser
             // evaluate for all expressions in the table
             final MultiPrintQuery print = new MultiPrintQuery(instances);
             Type type = instances.isEmpty() ? null : instances.get(0).getType();
-            boolean row4Create = false;
-            if (!print.execute()) {
-                row4Create = isCreateMode();
-                type = getTypeFromEvent();
-            }
             for (final Field field : getTable().getFields()) {
                 Attribute attr = null;
                 if (field.hasAccess(getMode(), getInstance())
@@ -443,16 +442,20 @@ public class UIStructurBrowser
                     if (field.getAttribute() != null && type != null) {
                         attr = type.getAttribute(field.getAttribute());
                     }
-                    if (this.root) {
+                    if (isRoot()) {
                         this.headers.add(new UITableHeader(field, this.sortDirection, attr));
                     }
                 }
+            }
+            boolean row4Create = false;
+            if (!print.execute()) {
+                row4Create = isCreateMode();
+                type = getTypeFromEvent();
             }
             Attribute attr = null;
             while (print.next() || row4Create) {
                 Instance instance = print.getCurrentInstance();
                 final UIStructurBrowser child = getNewStructurBrowser(instance, this);
-                this.childs.add(child);
                 child.setDirection(_map.get(instance));
                 for (final Field field : getTable().getFields()) {
                     if (field.hasAccess(getMode(), getInstance())
@@ -519,6 +522,11 @@ public class UIStructurBrowser
                         child.getColumns().add(cell);
                     }
                 }
+                if (this.root && row4Create) {
+                    this.emptyRow = child;
+                } else {
+                    this.childs.add(child);
+                }
                 row4Create = false;
             }
         } catch (final EFapsException e) {
@@ -538,7 +546,7 @@ public class UIStructurBrowser
     {
         try {
             // only if the element was opened the first time e.g. reload etc.
-            if ((this.root || _expand) && Context.getThreadContext().containsSessionAttribute(getCacheKey())) {
+            if ((isRoot() || _expand) && Context.getThreadContext().containsSessionAttribute(getCacheKey())) {
                 final Map<String, Boolean> sessMap = (Map<String, Boolean>) Context
                                 .getThreadContext().getSessionAttribute(getCacheKey());
                 for (final UIStructurBrowser uiChild : this.childs) {
@@ -618,6 +626,16 @@ public class UIStructurBrowser
     }
 
     /**
+     * Getter method for the instance variable {@link #emptyRow}.
+     *
+     * @return value of instance variable {@link #emptyRow}
+     */
+    public UIStructurBrowser getEmptyRow()
+    {
+        return this.emptyRow;
+    }
+
+    /**
      * Getter method for the instance variable {@link #allowChilds}.
      *
      * @return value of instance variable {@link #allowChilds}
@@ -656,7 +674,7 @@ public class UIStructurBrowser
             throw new EFapsException(this.getClass(), "execute4NoInstance.moreThanOneEvaluate");
         } else {
             final EventDefinition event = events.get(0);
-             if (event.getProperty("Types") != null) {
+            if (event.getProperty("Types") != null) {
                 typeName = event.getProperty("Types").split(";")[0];
             }
         }
@@ -834,7 +852,7 @@ public class UIStructurBrowser
      */
     public UIStructurBrowserTableCell getColumnValue(final int _index)
     {
-        return this.columns.get(_index);
+        return this.columns.isEmpty() ? null : this.columns.get(_index);
     }
 
     /**
@@ -1127,6 +1145,16 @@ public class UIStructurBrowser
     public String toString()
     {
         return this.label;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #root}.
+     *
+     * @return value of instance variable {@link #root}
+     */
+    public boolean isRoot()
+    {
+        return this.root;
     }
 
     /**

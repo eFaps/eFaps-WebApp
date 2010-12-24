@@ -21,7 +21,6 @@
 package org.efaps.ui.wicket.components.tree;
 
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 
 import org.apache.wicket.Component;
@@ -41,6 +40,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.html.tree.ITreeState;
 import org.apache.wicket.model.AbstractReadOnlyModel;
+import org.apache.wicket.model.IModel;
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.field.Field.Display;
@@ -87,26 +87,27 @@ public class StructurBrowserTreeTable
     /**
      * Constructor.
      *
-     * @param _wicketId wicket id for this component
-     * @param _treeModel model
-     * @param _columns columns
-     * @param _parentLink must the link be done over the parent
+     * @param _wicketId     wicket id for this component
+     * @param _model        model
+     * @param _columns      columns
+     * @param _parentLink   must the link be done over the parent
      */
     public StructurBrowserTreeTable(final String _wicketId,
-                                    final TreeModel _treeModel,
+                                    final IModel<UIStructurBrowser> _model,
                                     final IColumn[] _columns,
                                     final boolean _parentLink)
     {
-        super(_wicketId, _treeModel, _columns);
+        super(_wicketId, _model.getObject().getTreeModel(), _columns);
         this.add(StaticHeaderContributor.forCss(StructurBrowserTreeTable.CSS));
         this.parentLink = _parentLink;
-        setRootLess(true);
+
+        setRootLess(!_model.getObject().isCreateMode());
 
         final ITreeState treeState = getTreeState();
 
         treeState.addTreeStateListener(new AsyncronTreeUpdateListener());
 
-        final DefaultMutableTreeNode root = (DefaultMutableTreeNode) _treeModel.getRoot();
+        final DefaultMutableTreeNode root = (DefaultMutableTreeNode) getModelObject().getRoot();
         expandChildren(root);
     }
 
@@ -333,13 +334,8 @@ public class StructurBrowserTreeTable
                 direction.add(new SimpleAttributeModifier("class", "directionUp"));
             }
             final MarkupContainer nodeLink;
-
-            final UIStructurBrowserTableCell uiObject = uiStru.getColumnValue(uiStru.getBrowserFieldIndex());
-            if ((uiStru.isEditMode() || uiStru.isCreateMode()) &&  uiObject.getDisplay().equals(Display.EDITABLE)) {
+            if (uiStru.isRoot()) {
                 nodeLink = new WebMarkupContainer("nodeLink");
-                nodeLink.add(new TreeCellPanel("label", _node, uiStru.getBrowserFieldIndex()));
-            } else {
-                nodeLink = newNodeLink(this, "nodeLink", _node);
                 nodeLink.add(new Label("label", new AbstractReadOnlyModel<String>()
                 {
 
@@ -351,9 +347,32 @@ public class StructurBrowserTreeTable
                     @Override
                     public String getObject()
                     {
-                        return _nodeCallback.renderNode(_node);
+                        return "root";
                     }
                 }));
+            } else {
+                final UIStructurBrowserTableCell uiObject = uiStru.getColumnValue(uiStru.getBrowserFieldIndex());
+
+                if ((uiStru.isEditMode() || uiStru.isCreateMode()) &&  uiObject.getDisplay().equals(Display.EDITABLE)) {
+                    nodeLink = new WebMarkupContainer("nodeLink");
+                    nodeLink.add(new TreeCellPanel("label", _node, uiStru.getBrowserFieldIndex()));
+                } else {
+                    nodeLink = newNodeLink(this, "nodeLink", _node);
+                    nodeLink.add(new Label("label", new AbstractReadOnlyModel<String>()
+                    {
+
+                        private static final long serialVersionUID = 1L;
+
+                        /**
+                         * @see org.apache.wicket.model.AbstractReadOnlyModel#getObject()
+                         */
+                        @Override
+                        public String getObject()
+                        {
+                            return _nodeCallback.renderNode(_node);
+                        }
+                    }));
+                }
             }
             add(nodeLink);
             nodeLink.add(newNodeIcon(nodeLink, "icon", _node));

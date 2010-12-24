@@ -68,22 +68,11 @@ public class AjaxEditRowPanel
     private static final long serialVersionUID = 1L;
 
     /**
-     * Script needed for the ajax call.
-     */
-    private CharSequence script;
-
-    /**
-     * Do be able to have more than one table in a form that can add new rows,
-     * it is necessary to have unique function names.
-     */
-    private String functionName;
-
-    /**
      * Constructor called from the rowpanel for each row.
      *
      * @param _wicketId wicket id for this component
-     * @param _model model for this component
-     * @param _rowPanel rowpanel that must be removed
+     * @param _model    model for this component
+     * @param _node     Node this Panel belongs to
      */
     public AjaxEditRowPanel(final String _wicketId,
                             final IModel<UIStructurBrowser> _model,
@@ -92,14 +81,15 @@ public class AjaxEditRowPanel
         super(_wicketId, _model);
         final UIStructurBrowser uiStru = (UIStructurBrowser) ((DefaultMutableTreeNode) _node).getUserObject();
 
-
-
-        final RemoveRow delLink = new RemoveRow("delLink", _model, _node);
-        this.add(delLink);
-        final StaticImageComponent delImage = new StaticImageComponent("delIcon");
-        delImage.setReference(AjaxEditRowPanel.ICON_DELETE);
-        delLink.add(delImage);
-
+        if (uiStru.isRoot()) {
+            add(new WebComponent("delLink").setVisible(false));
+        } else {
+            final RemoveRow delLink = new RemoveRow("delLink", _model, _node);
+            this.add(delLink);
+            final StaticImageComponent delImage = new StaticImageComponent("delIcon");
+            delImage.setReference(AjaxEditRowPanel.ICON_DELETE);
+            delLink.add(delImage);
+        }
         if (uiStru.isAllowChilds()) {
             final InsertChildFolder insertFolderlink = new InsertChildFolder("addFolderLink", _model, _node);
             this.add(insertFolderlink);
@@ -120,7 +110,6 @@ public class AjaxEditRowPanel
             insertImage.setReference(AjaxEditRowPanel.ICON_ADD);
             insertlink.add(insertImage);
         }
-        add(new WebComponent("script").setVisible(false));
     }
 
 
@@ -135,13 +124,16 @@ public class AjaxEditRowPanel
          * Needed for serialization.
          */
         private static final long serialVersionUID = 1L;
-        private final DefaultMutableTreeNode node;
+
         /**
-         * @param _wicketId wicket id for this component
-         * @param _rowPanel Rowpanel that must be removed
+         * Node this link belongs to.
          */
+        private final DefaultMutableTreeNode node;
+
         /**
          * @param _wicketId wicket ID of this component
+         * @param _model    model for this component
+         * @param _node     node this link belongs to
          */
         public RemoveRow(final String _wicketId,
                          final IModel<UIStructurBrowser> _model,
@@ -174,12 +166,11 @@ public class AjaxEditRowPanel
         }
     }
 
-
     /**
      * Render an insert button.
      */
     public class InsertRow
-        extends RemoveRow
+        extends AjaxEditRowPanel.RemoveRow
     {
         /**
          * Needed for serialization.
@@ -189,6 +180,8 @@ public class AjaxEditRowPanel
 
         /**
          * @param _wicketId wicket ID of this component
+         * @param _model    model for this component
+         * @param _node     node this link belongs to
          */
         public InsertRow(final String _wicketId,
                          final IModel<UIStructurBrowser> _model,
@@ -197,9 +190,6 @@ public class AjaxEditRowPanel
             super(_wicketId, _model, _node);
 
         }
-
-
-
 
         /* (non-Javadoc)
          * @see org.apache.wicket.ajax.markup.html.AjaxLink#onClick(org.apache.wicket.ajax.AjaxRequestTarget)
@@ -227,18 +217,21 @@ public class AjaxEditRowPanel
     }
 
 
+    /**
+     * Link that inserts a folder as child.
+     */
     public class InsertChildFolder
-        extends InsertRow
+        extends AjaxEditRowPanel.InsertRow
     {
         /**
-         *
+         * Needed for serialization.
          */
         private static final long serialVersionUID = 1L;
 
         /**
-         * @param _wicketId
-         * @param _model
-         * @param _node
+         * @param _wicketId wicket ID of this component
+         * @param _model    model for this component
+         * @param _node     node this link belongs to
          */
         public InsertChildFolder(final String _wicketId,
                             final IModel<UIStructurBrowser> _model,
@@ -257,7 +250,11 @@ public class AjaxEditRowPanel
 
             UIStructurBrowser newStruBrws = null;
             try {
-                newStruBrws = strucBr.getClone4New();
+                if (strucBr.isRoot()) {
+                    newStruBrws = strucBr.getEmptyRow();
+                } else {
+                    newStruBrws = strucBr.getClone4New();
+                }
             } catch (final EFapsException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -272,20 +269,22 @@ public class AjaxEditRowPanel
         }
     }
 
-
+    /**
+     * Link that inserts a row as a child to the given node.
+     */
     public class InsertChildRow
-        extends InsertRow
+        extends AjaxEditRowPanel.InsertRow
     {
 
         /**
-     *
-     */
+         * Needed for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
         /**
-         * @param _wicketId
-         * @param _model
-         * @param _node
+         * @param _wicketId wicket ID of this component
+         * @param _model    model for this component
+         * @param _node     node this link belongs to
          */
         public InsertChildRow(final String _wicketId,
                               final IModel<UIStructurBrowser> _model,
@@ -305,7 +304,11 @@ public class AjaxEditRowPanel
 
             UIStructurBrowser newStruBrws = null;
             try {
-                newStruBrws = strucBr.getClone4New();
+                if (strucBr.isRoot()) {
+                    newStruBrws = strucBr.getEmptyRow();
+                } else {
+                    newStruBrws = strucBr.getClone4New();
+                }
             } catch (final EFapsException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -316,6 +319,9 @@ public class AjaxEditRowPanel
             final StructurBrowserTreeTable treeTable = findParent(StructurBrowserTreeTable.class);
             final DefaultTreeModel treeModel = (DefaultTreeModel) treeTable.getModelObject();
             treeModel.insertNodeInto(newTreeNode, getNode(), getNode().getChildCount());
+            //if (strucBr.isCreateMode() && treeModel.getRoot())
+
+           //     treeTable.invalidateAll();
             treeTable.updateTree(_target);
         }
     }
