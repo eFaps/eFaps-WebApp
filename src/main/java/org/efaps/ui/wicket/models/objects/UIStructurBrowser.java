@@ -40,6 +40,7 @@ import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.dbproperty.DBProperties;
+import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
@@ -417,7 +418,12 @@ public class UIStructurBrowser
             }
             // evaluate for all expressions in the table
             final MultiPrintQuery print = new MultiPrintQuery(instances);
-            final Type type = instances.isEmpty() ? null : instances.get(0).getType();
+            Type type = instances.isEmpty() ? null : instances.get(0).getType();
+            boolean row4Create = false;
+            if (!print.execute()) {
+                row4Create = isCreateMode();
+                type = getTypeFromEvent();
+            }
             for (final Field field : getTable().getFields()) {
                 Attribute attr = null;
                 if (field.hasAccess(getMode(), getInstance())
@@ -442,9 +448,8 @@ public class UIStructurBrowser
                     }
                 }
             }
-            print.execute();
             Attribute attr = null;
-            while (print.next()) {
+            while (print.next() || row4Create) {
                 Instance instance = print.getCurrentInstance();
                 final UIStructurBrowser child = getNewStructurBrowser(instance, this);
                 this.childs.add(child);
@@ -453,23 +458,28 @@ public class UIStructurBrowser
                     if (field.hasAccess(getMode(), getInstance())
                                     && !field.isNoneDisplay(getMode()) && !field.isHiddenDisplay(getMode())) {
                         Object value = null;
-                        if (field.getSelectAlternateOID() != null) {
-                            instance = Instance.get(print.<String>getSelect(field.getSelectAlternateOID()));
+                        if (row4Create) {
+                            if (field.getAttribute() != null && type != null) {
+                                attr = type.getAttribute(field.getAttribute());
+                            }
+                        } else {
+                            if (field.getSelectAlternateOID() != null) {
+                                instance = Instance.get(print.<String>getSelect(field.getSelectAlternateOID()));
+                            }
+                            if (field.getSelect() != null) {
+                                value = print.getSelect(field.getSelect());
+                                attr = print.getAttribute4Select(field.getSelect());
+                            } else if (field.getAttribute() != null) {
+                                value = print.getAttribute(field.getAttribute());
+                                attr = print.getAttribute4Attribute(field.getAttribute());
+                            } else if (field.getPhrase() != null) {
+                                value = print.getPhrase(field.getName());
+                            }
                         }
-                        if (field.getSelect() != null) {
-                            value = print.getSelect(field.getSelect());
-                            attr = print.getAttribute4Select(field.getSelect());
-                        } else if (field.getAttribute() != null) {
-                            value = print.getAttribute(field.getAttribute());
-                            attr = print.getAttribute4Attribute(field.getAttribute());
-                        } else if (field.getPhrase() != null) {
-                            value = print.getPhrase(field.getName());
-                        }
-
                         final FieldValue fieldvalue = new FieldValue(field, attr, value, instance, getInstance());
                         final String strValue;
                         final String htmlTitle;
-                        if (value != null) {
+                        if (value != null || row4Create) {
                             if ((isCreateMode() || isEditMode()) && field.isEditableDisplay(getMode())) {
                                 strValue = fieldvalue.getEditHtml(getMode());
                             } else {
@@ -496,14 +506,20 @@ public class UIStructurBrowser
                             if (child.isAllowChilds()) {
                                 child.setParent(checkForChildren(instance));
                             }
-                            child.setImage(Image.getTypeIcon(instance.getType()) != null ? Image.getTypeIcon(
+                            if (row4Create) {
+                                child.setImage(Image.getTypeIcon(type) != null
+                                                ? Image.getTypeIcon(type).getUrl() : null);
+                            } else {
+                                child.setImage(Image.getTypeIcon(instance.getType()) != null ? Image.getTypeIcon(
                                             instance.getType()).getUrl() : null);
+                            }
                             cell.setBrowserField(true);
                             child.browserFieldIndex = child.getColumns().size();
                         }
                         child.getColumns().add(cell);
                     }
                 }
+                row4Create = false;
             }
         } catch (final EFapsException e) {
             throw new RestartResponseException(new ErrorPage(e));
@@ -623,6 +639,29 @@ public class UIStructurBrowser
         this.allowChilds = _allowChilds;
     }
 
+
+    /**
+     * Method used to evaluate the type for this table from the connected
+     * events.
+     *
+     * @return type if found
+     * @throws EFapsException on error
+     */
+    protected Type getTypeFromEvent()
+        throws EFapsException
+    {
+        final List<EventDefinition> events =  getObject4Event().getEvents(EventType.UI_TABLE_EVALUATE);
+        String typeName = null;
+        if (events.size() > 1) {
+            throw new EFapsException(this.getClass(), "execute4NoInstance.moreThanOneEvaluate");
+        } else {
+            final EventDefinition event = events.get(0);
+             if (event.getProperty("Types") != null) {
+                typeName = event.getProperty("Types").split(";")[0];
+            }
+        }
+        return Type.get(typeName);
+    }
 
     /**
      * This method is used to check if a node has potential children.
