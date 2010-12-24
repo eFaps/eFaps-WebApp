@@ -52,6 +52,7 @@ import org.efaps.admin.ui.Image;
 import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.Table;
 import org.efaps.admin.ui.field.Field;
+import org.efaps.admin.ui.field.Field.Display;
 import org.efaps.beans.ValueList;
 import org.efaps.beans.valueparser.ParseException;
 import org.efaps.beans.valueparser.ValueParser;
@@ -228,6 +229,7 @@ public class UIStructurBrowser
      * The index of the column containing the browser.
      */
     private int browserFieldIndex;
+
 
     /**
      * This Row is used in case of edit to create new empty rows for the root.
@@ -615,11 +617,17 @@ public class UIStructurBrowser
         ret.initialise();
         for (final UIStructurBrowserTableCell col : this.columns) {
             final FieldValue fieldValue = new FieldValue(col.getField(), col.getAttribute(), null, null, null);
-            final String htmlValue = fieldValue.getEditHtml(getMode());
+            final String htmlValue;
+            if (col.getDisplay().equals(Display.EDITABLE)) {
+                htmlValue = fieldValue.getEditHtml(getMode());
+            } else {
+                htmlValue = fieldValue.getReadOnlyHtml(getMode());
+            }
             final String htmlTitle = fieldValue.getStringValue(getMode());
             final UIStructurBrowserTableCell newCol = new UIStructurBrowserTableCell(ret, fieldValue, null,
                             htmlValue, htmlTitle, "");
             newCol.setBrowserField(col.isBrowserField());
+            ret.setBrowserFieldIndex(getBrowserFieldIndex());
             ret.getColumns().add(newCol);
         }
         return ret;
@@ -895,6 +903,17 @@ public class UIStructurBrowser
     protected void setTableuuid(final UUID _tableuuid)
     {
         this.tableuuid = _tableuuid;
+    }
+
+    /**
+     * Setter method for instance variable {@link #browserFieldIndex}.
+     *
+     * @param _browserFieldIndex value for instance variable {@link #browserFieldIndex}
+     */
+
+    protected void setBrowserFieldIndex(final int _browserFieldIndex)
+    {
+        this.browserFieldIndex = _browserFieldIndex;
     }
 
     /**

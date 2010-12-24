@@ -38,7 +38,6 @@ import org.apache.wicket.markup.html.link.ILinkListener;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.string.Strings;
-import org.efaps.admin.ui.field.Field.Display;
 import org.efaps.ui.wicket.components.table.cell.ContentContainerLink;
 import org.efaps.ui.wicket.models.cell.StructurBrowserTableCellModel;
 import org.efaps.ui.wicket.models.cell.UIStructurBrowserTableCell;
@@ -73,7 +72,6 @@ public class StructurBrowserTreeTablePanel
         if (!model.isInitialized()) {
             model.execute();
         }
-
         final IColumn[] columns = new IColumn[model.getHeaders().size() + 1];
         if (model.isCreateMode() || model.isEditMode()) {
             columns[0] = new EditColumn(new ColumnLocation(Alignment.LEFT, 16, Unit.PX), "", _model);
@@ -82,16 +80,17 @@ public class StructurBrowserTreeTablePanel
         }
         int i = 0;
         for (final UITableHeader header : model.getHeaders()) {
+            final int width = header.getWidth();
+            final Unit unit = header.isFixedWidth() ? Unit.PX : Unit.PROPORTIONAL;
             if (header.getFieldName().equals(model.getBrowserFieldName())) {
-                columns[i + 1] = new TreeColumn(new ColumnLocation(Alignment.MIDDLE, 2, Unit.PROPORTIONAL),
+                columns[i + 1] = new TreeColumn(new ColumnLocation(Alignment.MIDDLE, width, unit),
                                 header.getLabel(), _model);
             } else {
-                columns[i + 1] = new SimpleColumn(new ColumnLocation(Alignment.MIDDLE, 1, Unit.PROPORTIONAL),
+                columns[i + 1] = new SimpleColumn(new ColumnLocation(Alignment.MIDDLE, width, unit),
                                 header.getLabel(), i);
             }
             i++;
         }
-
         final StructurBrowserTreeTable tree = new StructurBrowserTreeTable("treeTable", _model, columns, _parentLink);
         add(tree);
     }
@@ -248,7 +247,7 @@ public class StructurBrowserTreeTablePanel
                 };
             } else {
                 final UIStructurBrowserTableCell uiObject = uiStru.getColumnValue(getIndex());
-                if ((uiStru.isEditMode() || uiStru.isCreateMode()) &&  uiObject.getDisplay().equals(Display.EDITABLE)) {
+                if (uiStru.isEditMode() || uiStru.isCreateMode()) {
                     ret = null;
                 } else {
 
