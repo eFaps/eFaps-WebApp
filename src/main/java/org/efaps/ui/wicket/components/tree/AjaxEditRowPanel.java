@@ -24,6 +24,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 
+import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.WebComponent;
@@ -31,6 +32,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
+import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
 
@@ -203,9 +205,10 @@ public class AjaxEditRowPanel
             try {
                 newStruBrws = strucBr.getClone4New();
             } catch (final EFapsException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                throw new RestartResponseException(new ErrorPage(e));
             }
+            newStruBrws.setAllowChilds(false);
+            newStruBrws.checkHideColumn4Row();
             final DefaultMutableTreeNode newTreeNode = new DefaultMutableTreeNode(newStruBrws);
             newTreeNode.setAllowsChildren(false);
             final StructurBrowserTreeTable treeTable = findParent(StructurBrowserTreeTable.class);
@@ -252,10 +255,10 @@ public class AjaxEditRowPanel
             try {
                 newStruBrws = strucBr.getClone4New();
             } catch (final EFapsException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                throw new RestartResponseException(new ErrorPage(e));
             }
             newStruBrws.setAllowChilds(true);
+            newStruBrws.checkHideColumn4Row();
             final DefaultMutableTreeNode newTreeNode = new DefaultMutableTreeNode(newStruBrws);
             newTreeNode.setAllowsChildren(true);
             final StructurBrowserTreeTable treeTable = findParent(StructurBrowserTreeTable.class);
@@ -302,18 +305,15 @@ public class AjaxEditRowPanel
             try {
                 newStruBrws = strucBr.getClone4New();
             } catch (final EFapsException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                throw new RestartResponseException(new ErrorPage(e));
             }
             newStruBrws.setAllowChilds(false);
+            newStruBrws.checkHideColumn4Row();
             final DefaultMutableTreeNode newTreeNode = new DefaultMutableTreeNode(newStruBrws);
             newTreeNode.setAllowsChildren(false);
             final StructurBrowserTreeTable treeTable = findParent(StructurBrowserTreeTable.class);
             final DefaultTreeModel treeModel = (DefaultTreeModel) treeTable.getModelObject();
             treeModel.insertNodeInto(newTreeNode, getNode(), getNode().getChildCount());
-            //if (strucBr.isCreateMode() && treeModel.getRoot())
-
-           //     treeTable.invalidateAll();
             treeTable.updateTree(_target);
         }
     }

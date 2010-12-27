@@ -47,6 +47,17 @@ public class UIStructurBrowserTableCell
      */
     private boolean browserField = false;
 
+    /**
+     * Must this field be hidden in the UserInterface.
+     */
+    private boolean hide = false;
+
+    /**
+     * The id this row got for presentation in the userinterface.
+     */
+    private String userinterfaceId;
+
+
 
     /**
      * @param _parent           parent uiObject
@@ -88,5 +99,50 @@ public class UIStructurBrowserTableCell
     public void setBrowserField(final boolean _browserField)
     {
         this.browserField = _browserField;
+    }
+
+
+    /**
+     * Getter method for the instance variable {@link #hide}.
+     *
+     * @return value of instance variable {@link #hide}
+     */
+    public boolean isHide()
+    {
+        return this.hide;
+    }
+
+
+    /**
+     * Setter method for instance variable {@link #hide}.
+     *
+     * @param _hide value for instance variable {@link #hide}
+     */
+
+    public void setHide(final boolean _hide)
+    {
+        this.hide = _hide;
+    }
+
+
+    /**
+     * Getter method for the instance variable {@link #userinterfaceId}.
+     *
+     * @return value of instance variable {@link #userinterfaceId}
+     */
+    public String getUserinterfaceId()
+    {
+        return this.userinterfaceId;
+    }
+
+    /**
+     * Setter method for instance variable {@link #userinterfaceId}.
+     *
+     * @param _userinterfaceId value for instance variable {@link #userinterfaceId}
+     */
+
+    public void setUserinterfaceId(final String _userinterfaceId)
+    {
+        this.userinterfaceId = _userinterfaceId;
     }
 }

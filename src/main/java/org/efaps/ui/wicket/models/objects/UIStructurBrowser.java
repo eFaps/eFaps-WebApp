@@ -104,6 +104,8 @@ public class UIStructurBrowser
         ALLOWSCHILDREN,
         /** Method checkForChildren is executed. */
         CHECKFORCHILDREN,
+        /** Method is creating a new folder. */
+        CHECKHIDECOLUMN4ROW,
         /** Method execute is executed. */
         EXECUTE,
         /** Method sort is executed. */
@@ -632,12 +634,31 @@ public class UIStructurBrowser
             final String htmlTitle = fieldValue.getStringValue(getMode());
             final UIStructurBrowserTableCell newCol = new UIStructurBrowserTableCell(ret, fieldValue, null,
                             htmlValue, htmlTitle, "");
+
             newCol.setBrowserField(col.isBrowserField());
             ret.setBrowserFieldIndex(parentTmp.getBrowserFieldIndex());
             ret.getColumns().add(newCol);
         }
         return ret;
     }
+
+    /**
+     * Method is called from the StructurBrowser in edit mode before rendering
+     * the columns for row to be able to hide the columns for different rows by
+     * setting the cell model to hide.
+     */
+    public void checkHideColumn4Row()
+    {
+        setExecutionStatus(UIStructurBrowser.ExecutionStatus.CHECKHIDECOLUMN4ROW);
+        try {
+            getObject4Event().executeEvents(EventType.UI_TABLE_EVALUATE,
+                            ParameterValues.INSTANCE, getInstance(),
+                            ParameterValues.CLASS, this);
+        } catch (final EFapsException e) {
+            throw new RestartResponseException(new ErrorPage(e));
+        }
+    }
+
 
     /**
      * Getter method for the instance variable {@link #allowChilds}.

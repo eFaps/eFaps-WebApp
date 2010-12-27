@@ -47,12 +47,14 @@ import org.efaps.admin.ui.field.Field.Display;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.behaviors.AbstractAjaxCallBackBehavior;
 import org.efaps.ui.wicket.models.cell.UIStructurBrowserTableCell;
+import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
+import org.efaps.ui.wicket.util.EFapsKey;
 import org.efaps.util.EFapsException;
 
 /**
@@ -350,6 +352,9 @@ public class StructurBrowserTreeTable
                         return "root";
                     }
                 }));
+                add(new WebComponent("rowId").setVisible(false));
+                add(new WebComponent("level").setVisible(false));
+                add(new WebComponent("allowChilds").setVisible(false));
             } else {
                 final UIStructurBrowserTableCell uiObject = uiStru.getColumnValue(uiStru.getBrowserFieldIndex());
 
@@ -373,6 +378,78 @@ public class StructurBrowserTreeTable
                         }
                     }));
                 }
+
+                final WebComponent rowId = new WebComponent("rowId") {
+
+                    /**
+                     * Needed for serialization.
+                     */
+                    private static final long serialVersionUID = 1L;
+
+                    /**
+                     * @see org.apache.wicket.Component#onComponentTag(org.apache.wicket.markup.ComponentTag)
+                     */
+                    @Override
+                    protected void onComponentTag(final ComponentTag _tag)
+                    {
+                        super.onComponentTag(_tag);
+                        final AbstractUIPageObject uiPageObject = (AbstractUIPageObject) getPage()
+                                    .getDefaultModelObject();
+                        uiObject.setUserinterfaceId(uiPageObject.getNewRandom());
+
+                        try {
+                            uiPageObject.getUiID2Oid().put(uiObject.getUserinterfaceId(), uiObject.getInstance() == null
+                                                                              ? null : uiObject.getInstance().getOid());
+                        } catch (final EFapsException e) {
+                            throw new RestartResponseException(new ErrorPage(e));
+                        }
+                        _tag.put("name", EFapsKey.TABLEROW_NAME.getKey());
+                        _tag.put("value", uiObject.getUserinterfaceId());
+                        _tag.put("type" , "hidden");
+                    }
+                };
+                this.add(rowId);
+
+                final WebComponent type = new WebComponent("allowChilds") {
+
+                    /**
+                     * Needed for serialization.
+                     */
+                    private static final long serialVersionUID = 1L;
+
+                    /**
+                     * @see org.apache.wicket.Component#onComponentTag(org.apache.wicket.markup.ComponentTag)
+                     */
+                    @Override
+                    protected void onComponentTag(final ComponentTag _tag)
+                    {
+                        super.onComponentTag(_tag);
+
+                        _tag.put("name", EFapsKey.STRUCBRWSR_ALLOWSCHILDS.getKey());
+                        _tag.put("value", _node.getAllowsChildren());
+                        _tag.put("type" , "hidden");
+                    }
+                };
+                this.add(type);
+
+                final WebComponent level = new WebComponent("level") {
+
+                    /**
+                     * Needed for serialization.
+                     */
+                    private static final long serialVersionUID = 1L;
+
+                    @Override
+                    protected void onComponentTag(final ComponentTag _tag)
+                    {
+                        super.onComponentTag(_tag);
+
+                        _tag.put("name", EFapsKey.STRUCBRWSR_LEVEL.getKey());
+                        _tag.put("value", _level);
+                        _tag.put("type" , "hidden");
+                    }
+                };
+                this.add(level);
             }
             add(nodeLink);
             nodeLink.add(newNodeIcon(nodeLink, "icon", _node));

@@ -70,6 +70,9 @@ public class TreeCellPanel
         // set the title of the cell
         add(new SimpleAttributeModifier("title", uiCell.getCellTitle()));
         add(new AttributeAppender("style", true, new Model<String>("text-align:" + uiCell.getAlign()), ";"));
+        if (uiCell.isHide()) {
+            add(new AttributeAppender("style", true, new Model<String>("display:none"), ";"));
+        }
         final Component label;
         if (uiCell.isAutoComplete()) {
             label = new AutoCompleteField("label", cellModel, false);

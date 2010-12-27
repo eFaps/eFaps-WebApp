@@ -50,6 +50,10 @@ public enum EFapsKey {
     /** Key used for the javascript in the map. */
     FIELDUPDATE_JAVASCRIPT("eFapsFieldUpdateJS"),
 
+    /** Key used as name for the hidden field that contains the Level of a node. */
+    STRUCBRWSR_LEVEL("eFapsStructurBrowserNodeLevel"),
+    /** Key used as name for the hidden field that contains if the node can contain children. */
+    STRUCBRWSR_ALLOWSCHILDS("eFapsStructurBrowserNodeAllowsChilds"),
 
     /** Key used as name for the hidden field that makes a row unique. */
     TABLEROW_NAME("eFapsTableRowID"),
