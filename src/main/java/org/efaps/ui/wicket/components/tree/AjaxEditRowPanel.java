@@ -99,11 +99,15 @@ public class AjaxEditRowPanel
             insertFolderImage.setReference(AjaxEditRowPanel.ICON_FOLDER_ADD);
             insertFolderlink.add(insertFolderImage);
 
-            final InsertChildRow insertlink = new InsertChildRow("addLink", _model, _node);
-            this.add(insertlink);
-            final StaticImageComponent insertImage = new StaticImageComponent("addIcon");
-            insertImage.setReference(AjaxEditRowPanel.ICON_ADD);
-            insertlink.add(insertImage);
+            if (uiStru.isRoot()) {
+                add(new WebComponent("addLink").setVisible(false));
+            } else {
+                final InsertChildRow insertlink = new InsertChildRow("addLink", _model, _node);
+                this.add(insertlink);
+                final StaticImageComponent insertImage = new StaticImageComponent("addIcon");
+                insertImage.setReference(AjaxEditRowPanel.ICON_ADD);
+                insertlink.add(insertImage);
+            }
         } else {
             add(new WebComponent("addFolderLink").setVisible(false));
             final InsertRow insertlink = new InsertRow("addLink", _model, _node);

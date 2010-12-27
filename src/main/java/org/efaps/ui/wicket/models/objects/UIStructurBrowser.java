@@ -356,9 +356,12 @@ public class UIStructurBrowser
                 map.put(getInstance(), null);
                 executeTree(map, false);
             } else {
-                ret = getObject4Event().executeEvents(EventType.UI_TABLE_EVALUATE, ParameterValues.CLASS, this,
+                final Map<Instance, Boolean> map = new LinkedHashMap<Instance, Boolean>();
+                if (!isCreateMode()) {
+                    ret = getObject4Event().executeEvents(EventType.UI_TABLE_EVALUATE, ParameterValues.CLASS, this,
                                 ParameterValues.INSTANCE, getInstance());
-                final Map<Instance, Boolean> map = (Map<Instance, Boolean>) ret.get(0).get(ReturnValues.VALUES);
+                    map.putAll((Map<Instance, Boolean>) ret.get(0).get(ReturnValues.VALUES));
+                }
                 executeTreeTable(map, false);
             }
         } catch (final EFapsException e) {
@@ -417,7 +420,7 @@ public class UIStructurBrowser
      * @param _expand   inside an expand
      */
     protected void executeTreeTable(final Map<Instance, Boolean> _map,
-                                  final boolean _expand)
+                                    final boolean _expand)
     {
         try {
             final List<Instance> instances = new ArrayList<Instance>();

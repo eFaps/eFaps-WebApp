@@ -260,6 +260,10 @@ public class UIForm
                             final UIFieldTable uiFieldTable = new UIFieldTable(getCommandUUID(), getInstanceKey(),
                                                                                    (FieldTable) field);
                             this.elements.add(new Element(UIForm.ElementType.TABLE, uiFieldTable));
+                        } else {
+                            final UIFieldStructurBrowser uiFieldStrucBrws = new UIFieldStructurBrowser(getCommandUUID(),
+                                            getInstanceKey(), (FieldTable) field);
+                            this.elements.add(new Element(UIForm.ElementType.STRUCBRWS, uiFieldStrucBrws));
                         }
                         addNew = true;
                     } else if (field instanceof FieldHeading) {
