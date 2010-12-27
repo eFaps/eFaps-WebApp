@@ -613,9 +613,15 @@ public class UIStructurBrowser
     public UIStructurBrowser getClone4New()
         throws EFapsException
     {
-        final UIStructurBrowser ret = getNewStructurBrowser(null, this);
+        final UIStructurBrowser parentTmp;
+        if (this.root) {
+            parentTmp = this.emptyRow;
+        } else {
+            parentTmp = this;
+        }
+        final UIStructurBrowser ret = getNewStructurBrowser(null, parentTmp);
         ret.initialise();
-        for (final UIStructurBrowserTableCell col : this.columns) {
+        for (final UIStructurBrowserTableCell col : parentTmp.columns) {
             final FieldValue fieldValue = new FieldValue(col.getField(), col.getAttribute(), null, null, null);
             final String htmlValue;
             if (col.getDisplay().equals(Display.EDITABLE)) {
@@ -627,20 +633,10 @@ public class UIStructurBrowser
             final UIStructurBrowserTableCell newCol = new UIStructurBrowserTableCell(ret, fieldValue, null,
                             htmlValue, htmlTitle, "");
             newCol.setBrowserField(col.isBrowserField());
-            ret.setBrowserFieldIndex(getBrowserFieldIndex());
+            ret.setBrowserFieldIndex(parentTmp.getBrowserFieldIndex());
             ret.getColumns().add(newCol);
         }
         return ret;
-    }
-
-    /**
-     * Getter method for the instance variable {@link #emptyRow}.
-     *
-     * @return value of instance variable {@link #emptyRow}
-     */
-    public UIStructurBrowser getEmptyRow()
-    {
-        return this.emptyRow;
     }
 
     /**

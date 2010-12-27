@@ -38,6 +38,7 @@ import org.apache.wicket.markup.html.link.ILinkListener;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.string.Strings;
+import org.efaps.ui.wicket.behaviors.RowSelectedInput;
 import org.efaps.ui.wicket.components.table.cell.ContentContainerLink;
 import org.efaps.ui.wicket.models.cell.StructurBrowserTableCellModel;
 import org.efaps.ui.wicket.models.cell.UIStructurBrowserTableCell;
@@ -91,6 +92,7 @@ public class StructurBrowserTreeTablePanel
             }
             i++;
         }
+        add(new RowSelectedInput("selected"));
         final StructurBrowserTreeTable tree = new StructurBrowserTreeTable("treeTable", _model, columns, _parentLink);
         add(tree);
     }

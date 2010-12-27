@@ -250,11 +250,7 @@ public class AjaxEditRowPanel
 
             UIStructurBrowser newStruBrws = null;
             try {
-                if (strucBr.isRoot()) {
-                    newStruBrws = strucBr.getEmptyRow();
-                } else {
-                    newStruBrws = strucBr.getClone4New();
-                }
+                newStruBrws = strucBr.getClone4New();
             } catch (final EFapsException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -304,11 +300,7 @@ public class AjaxEditRowPanel
 
             UIStructurBrowser newStruBrws = null;
             try {
-                if (strucBr.isRoot()) {
-                    newStruBrws = strucBr.getEmptyRow();
-                } else {
-                    newStruBrws = strucBr.getClone4New();
-                }
+                newStruBrws = strucBr.getClone4New();
             } catch (final EFapsException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();

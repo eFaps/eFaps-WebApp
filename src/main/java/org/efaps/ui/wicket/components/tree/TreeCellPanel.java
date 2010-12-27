@@ -72,7 +72,7 @@ public class TreeCellPanel
         add(new AttributeAppender("style", true, new Model<String>("text-align:" + uiCell.getAlign()), ";"));
         final Component label;
         if (uiCell.isAutoComplete()) {
-            label = new AutoCompleteField("label", cellModel, true);
+            label = new AutoCompleteField("label", cellModel, false);
         } else {
             label = new LabelComponent("label", uiCell.getCellValue());
         }
