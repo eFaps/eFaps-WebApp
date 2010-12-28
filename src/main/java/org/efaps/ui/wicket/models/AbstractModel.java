@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,16 +22,61 @@ package org.efaps.ui.wicket.models;
 
 import org.apache.wicket.model.IModel;
 
+/**
+ * Basic Model for all Objects for the UserInterface.
+ *
+ * @param <T> Object Type
+ * @author The eFaps Team
+ * @version $Id$
+ */
+public abstract class AbstractModel<T>
+    implements IModel<T>
+{
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
-public abstract class AbstractModel<T> implements IModel<T>{
+    /**
+     * The model Object.
+     */
+    private T uiObject;
 
-  /**
-   * 
-   */
-  private static final long serialVersionUID = 1L;
+    /**
+     * @param _uiObject The model object
+     */
+    public AbstractModel(final T _uiObject)
+    {
+        this.uiObject = _uiObject;
+    }
 
-  public void detach() {
-    // TODO Auto-generated method stub
-  }
+    /**
+     * Gets the model object.
+     *
+     * @return The model object
+     */
+    public T getObject()
+    {
+        return this.uiObject;
+    }
+
+    /**
+     * Sets the model object.
+     *
+     * @param _uiObject The model object
+     */
+    public void setObject(final T _uiObject)
+    {
+        this.uiObject = _uiObject;
+    }
+
+    /**
+     * Detaches model after use. This is generally used to null out transient
+     * references that can be re-attached later.
+     */
+    public void detach()
+    {
+        // Not implemented.
+    }
 
 }

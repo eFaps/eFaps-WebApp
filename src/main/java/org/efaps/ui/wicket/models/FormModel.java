@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,29 +22,25 @@ package org.efaps.ui.wicket.models;
 
 import org.efaps.ui.wicket.models.objects.UIForm;
 
+/**
+ * Model for Forms.
+ *
+ * @author The eFaps Team
+ * @version $Id$
+ */
+public class FormModel
+    extends AbstractModel<UIForm>
+{
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
-public class FormModel extends AbstractModel<UIForm> {
-
-  /**
-   *
-   */
-  private static final long serialVersionUID = 1L;
-
-  private UIForm uiform;
-
-  public FormModel(final UIForm _uiform) {
-    this.uiform = _uiform;
-  }
-  public UIForm getObject() {
-
-    return this.uiform;
-  }
-
-  public void setObject(final UIForm _uiform) {
-    this.uiform = _uiform;
-  }
-
-
-
-
+    /**
+     * @param _uiform UIForm
+     */
+    public FormModel(final UIForm _uiform)
+    {
+        super(_uiform);
+    }
 }

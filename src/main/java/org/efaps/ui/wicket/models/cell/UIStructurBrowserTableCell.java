@@ -145,4 +145,12 @@ public class UIStructurBrowserTableCell
     {
         this.userinterfaceId = _userinterfaceId;
     }
+
+
+    public void setValueFromUI(final String _value)
+        throws EFapsException
+    {
+        final FieldValue fieldValue = new FieldValue(getField(), getUiClass(), _value);
+        setCellValue(fieldValue.getEditHtml(getParent().getMode()));
+    }
 }

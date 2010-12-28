@@ -23,6 +23,7 @@ package org.efaps.ui.wicket.models.objects;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -143,12 +144,11 @@ public class UIStructurBrowser
      */
     private boolean allowChilds;
 
-
     /**
      * This instance variable holds if this StructurBrowserModel is a
      * parent, this is needed because, first it will be only determined if a
      * node is a potential parent, and later on the childs will be retrieved
-     * from the eFpas-DataBase.
+     * from the eFaps-DataBase.
      *
      * @see #isParent()
      */
@@ -231,7 +231,6 @@ public class UIStructurBrowser
      * The index of the column containing the browser.
      */
     private int browserFieldIndex;
-
 
     /**
      * This Row is used in case of edit to create new empty rows for the root.
@@ -1210,5 +1209,32 @@ public class UIStructurBrowser
          * Needed for serialization.
          */
         private static final long serialVersionUID = 1L;
+    }
+
+    /**
+     * @param _parameters
+     * @param _node
+     * @throws EFapsException
+     */
+    public void setValuesFromUI(final Map<String, String[]> _parameters,
+                                final DefaultMutableTreeNode _node)
+        throws EFapsException
+    {
+        final Enumeration<?> preOrdEnum = ((DefaultMutableTreeNode) _node.getRoot()).preorderEnumeration();
+        int i = 0;
+        while (preOrdEnum.hasMoreElements()) {
+            final DefaultMutableTreeNode node = (DefaultMutableTreeNode) preOrdEnum.nextElement();
+            if (!node.isRoot()) {
+                final UIStructurBrowser uiObject = (UIStructurBrowser) node.getUserObject();
+                for (final UIStructurBrowserTableCell cell : uiObject.getColumns()) {
+                    final String[] values = _parameters.get(cell.getName());
+                    if (values != null) {
+                        System.out.println(values[i]);
+                        cell.setValueFromUI(values[i]);
+                    }
+                }
+                i++;
+            }
+        }
     }
 }

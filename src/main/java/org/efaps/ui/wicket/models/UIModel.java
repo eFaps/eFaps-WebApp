@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,30 +18,30 @@
  * Last Changed By: $Author$
  */
 
+
 package org.efaps.ui.wicket.models;
 
-import org.efaps.ui.wicket.models.objects.UITableHeader;
 
+/**
+ * Standard Simple implementation of the model.
+ *
+ * @param <T> Object Type
+ * @author The eFaps Team
+ * @version $Id$
+ */
+public class UIModel<T>
+    extends AbstractModel<T>
+{
+    /**
+     *  Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
-public class TableHeaderModel extends AbstractModel<UITableHeader>{
-
-  /**
-   *
-   */
-  private static final long serialVersionUID = 1L;
-
-  private UITableHeader uitable;
-
-  public TableHeaderModel (final UITableHeader _uitable) {
-    this.uitable = _uitable;
-  }
-
-  public UITableHeader getObject() {
-    return this.uitable;
-  }
-
-  public void setObject(final UITableHeader _uitable) {
-    this.uitable = _uitable;
-  }
-
+    /**
+     * @param _uiObject The model object
+     */
+    public UIModel(final T _uiObject)
+    {
+        super(_uiObject);
+    }
 }

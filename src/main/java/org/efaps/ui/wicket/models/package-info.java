@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,30 +18,7 @@
  * Last Changed By: $Author$
  */
 
+/**
+ * The models holding the objects for the UserInterface.
+ */
 package org.efaps.ui.wicket.models;
-
-import org.efaps.ui.wicket.models.objects.UIMenuItem;
-
-
-public class MenuItemModel extends AbstractModel<UIMenuItem>{
-
-  /**
-   *
-   */
-  private static final long serialVersionUID = 1L;
-
-  private UIMenuItem uiMenuItem;
-
-  public MenuItemModel (final UIMenuItem _uimenuitem) {
-    this.uiMenuItem = _uimenuitem;
-  }
-
-  public UIMenuItem getObject() {
-    return this.uiMenuItem;
-  }
-
-  public void setObject(final UIMenuItem _uimenuitem) {
-    this.uiMenuItem = _uimenuitem;
-  }
-
-}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,26 +22,25 @@ package org.efaps.ui.wicket.models;
 
 import org.efaps.ui.wicket.models.objects.UITable;
 
+/**
+ * Model for Table.
+ *
+ * @author The eFaps Team
+ * @version $Id$
+ */
+public class TableModel
+    extends AbstractModel<UITable>
+{
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
-public class TableModel extends AbstractModel<UITable>{
-
-  /**
-   *
-   */
-  private static final long serialVersionUID = 1L;
-
-  private UITable uitable;
-
-  public TableModel (final UITable _uitable) {
-    this.uitable = _uitable;
-  }
-
-  public UITable getObject() {
-    return this.uitable;
-  }
-
-  public void setObject(final UITable _uitable) {
-    this.uitable = _uitable;
-  }
-
+    /**
+     * @param _uitable UITable
+     */
+    public TableModel(final UITable _uitable)
+    {
+        super(_uitable);
+    }
 }

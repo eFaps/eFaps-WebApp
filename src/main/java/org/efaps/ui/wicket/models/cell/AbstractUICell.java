@@ -255,8 +255,6 @@ public abstract class AbstractUICell
         return ret;
     }
 
-
-
     /**
      * Getter method for instance variable {@link #component}.
      *
@@ -272,9 +270,14 @@ public abstract class AbstractUICell
      *
      * @param _component value for instance variable {@link #component}
      */
-
     public void setComponent(final WebMarkupContainer _component)
     {
         this.component = _component;
+    }
+
+    @Override
+    public String toString()
+    {
+        return getCellValue();
     }
 }
