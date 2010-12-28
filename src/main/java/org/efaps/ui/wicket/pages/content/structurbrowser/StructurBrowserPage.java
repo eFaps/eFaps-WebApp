@@ -28,7 +28,7 @@ import org.apache.wicket.model.IModel;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.tree.StructurBrowserTreeTablePanel;
-import org.efaps.ui.wicket.models.StructurBrowserModel;
+import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
@@ -67,7 +67,7 @@ public class StructurBrowserPage
     public StructurBrowserPage(final PageParameters _parameters)
         throws EFapsException
     {
-        this(new StructurBrowserModel(new UIStructurBrowser(_parameters)));
+        this(new UIModel<UIStructurBrowser>(new UIStructurBrowser(_parameters)));
     }
 
     /**
@@ -79,7 +79,7 @@ public class StructurBrowserPage
                                final String _oid)
         throws EFapsException
     {
-        this(new StructurBrowserModel(new UIStructurBrowser(_commandUUID, _oid)));
+        this(new UIModel<UIStructurBrowser>(new UIStructurBrowser(_commandUUID, _oid)));
     }
 
     /**
@@ -94,6 +94,7 @@ public class StructurBrowserPage
 
     /**
      * @param _model model for this pager
+     * @param _modalWindow modal Winthis page is opened in
      * @throws EFapsException  on error
      */
     public StructurBrowserPage(final IModel<UIStructurBrowser> _model,
@@ -116,7 +117,7 @@ public class StructurBrowserPage
                                final String _oid)
         throws EFapsException
     {
-        super(_pageMap, new StructurBrowserModel(new UIStructurBrowser(_commandUUID, _oid)), null);
+        super(_pageMap, new UIModel<UIStructurBrowser>(new UIStructurBrowser(_commandUUID, _oid)), null);
         this.addComponents();
     }
 
@@ -129,15 +130,15 @@ public class StructurBrowserPage
     {
         add(StaticHeaderContributor.forCss(StructurBrowserPage.CSS));
 
-        final UIStructurBrowser model = (UIStructurBrowser) super.getDefaultModelObject();
-        if (!model.isInitialized()) {
-            model.execute();
+        final UIStructurBrowser uiObject = (UIStructurBrowser) super.getDefaultModelObject();
+        if (!uiObject.isInitialized()) {
+            uiObject.execute();
         }
 
         final FormContainer form = new FormContainer("form");
         this.add(form);
         super.addComponents(form);
-        form.add(new StructurBrowserTreeTablePanel("structurBrowserTable", new StructurBrowserModel(model),
+        form.add(new StructurBrowserTreeTablePanel("structurBrowserTable", new UIModel<UIStructurBrowser>(uiObject),
                           ContentContainerPage.IFRAME_PAGEMAP_NAME.equals(getPageMapName())));
     }
 }

@@ -26,10 +26,14 @@ import javax.swing.tree.TreeNode;
 
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.markup.html.WebComponent;
+import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.util.string.AppendingStringBuffer;
+import org.efaps.db.Context;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
@@ -124,7 +128,7 @@ public class AjaxEditRowPanel
      * table.
      */
     public class RemoveRow
-        extends AjaxLink<UIStructurBrowser>
+        extends WebMarkupContainer
     {
         /**
          * Needed for serialization.
@@ -147,6 +151,37 @@ public class AjaxEditRowPanel
         {
             super(_wicketId, _model);
             this.node = (DefaultMutableTreeNode) _node;
+
+
+            add(new AjaxFormSubmitBehavior(null, "onclick")
+            {
+
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                protected void onSubmit(final AjaxRequestTarget _target)
+                {
+                    try {
+                        AjaxEditRowPanel.RemoveRow.this.onSubmit(_target, getForm());
+                    } catch (final EFapsException e) {
+                        onError(_target);
+                    }
+                }
+
+                @Override
+                protected void onError(final AjaxRequestTarget _target)
+                {
+
+                }
+
+                @Override
+                protected CharSequence getEventHandler()
+                {
+                    return new AppendingStringBuffer(super.getEventHandler()).append("; return false;");
+                }
+
+            });
+
         }
 
         /**
@@ -159,11 +194,11 @@ public class AjaxEditRowPanel
             return this.node;
         }
 
-        /* (non-Javadoc)
-         * @see org.apache.wicket.ajax.markup.html.AjaxLink#onClick(org.apache.wicket.ajax.AjaxRequestTarget)
+        /**
          */
-        @Override
-        public void onClick(final AjaxRequestTarget _target)
+        public void onSubmit(final AjaxRequestTarget _target,
+                             final Form<?> _form)
+        throws EFapsException
         {
             final StructurBrowserTreeTable treeTable = findParent(StructurBrowserTreeTable.class);
             final DefaultTreeModel treeModel = (DefaultTreeModel) treeTable.getModelObject();
@@ -201,7 +236,9 @@ public class AjaxEditRowPanel
          * @see org.apache.wicket.ajax.markup.html.AjaxLink#onClick(org.apache.wicket.ajax.AjaxRequestTarget)
          */
         @Override
-        public void onClick(final AjaxRequestTarget _target)
+        public void onSubmit(final AjaxRequestTarget _target,
+                             final Form<?> _form)
+            throws EFapsException
         {
             final UIStructurBrowser strucBr = (UIStructurBrowser) getNode().getUserObject();
 
@@ -251,7 +288,9 @@ public class AjaxEditRowPanel
          * @see org.apache.wicket.ajax.markup.html.AjaxLink#onClick(org.apache.wicket.ajax.AjaxRequestTarget)
          */
         @Override
-        public void onClick(final AjaxRequestTarget _target)
+        public void onSubmit(final AjaxRequestTarget _target,
+                            final Form<?> _form)
+            throws EFapsException
         {
             final UIStructurBrowser strucBr = (UIStructurBrowser) getNode().getUserObject();
 
@@ -261,6 +300,7 @@ public class AjaxEditRowPanel
             } catch (final EFapsException e) {
                 throw new RestartResponseException(new ErrorPage(e));
             }
+            strucBr.getChilds().add(newStruBrws);
             newStruBrws.setAllowChilds(true);
             newStruBrws.checkHideColumn4Row();
             final DefaultMutableTreeNode newTreeNode = new DefaultMutableTreeNode(newStruBrws);
@@ -301,10 +341,13 @@ public class AjaxEditRowPanel
          * @see org.apache.wicket.ajax.markup.html.AjaxLink#onClick(org.apache.wicket.ajax.AjaxRequestTarget)
          */
         @Override
-        public void onClick(final AjaxRequestTarget _target)
+        public void onSubmit(final AjaxRequestTarget _target,
+                            final Form<?> _form)
+            throws EFapsException
         {
-            final UIStructurBrowser strucBr = (UIStructurBrowser) getNode().getUserObject();
 
+            final UIStructurBrowser strucBr = (UIStructurBrowser) getNode().getUserObject();
+            strucBr.setValuesFromUI(Context.getThreadContext().getParameters(), getNode());
             UIStructurBrowser newStruBrws = null;
             try {
                 newStruBrws = strucBr.getClone4New();
@@ -313,9 +356,11 @@ public class AjaxEditRowPanel
             }
             newStruBrws.setAllowChilds(false);
             newStruBrws.checkHideColumn4Row();
+            strucBr.getChilds().add(newStruBrws);
             final DefaultMutableTreeNode newTreeNode = new DefaultMutableTreeNode(newStruBrws);
             newTreeNode.setAllowsChildren(false);
             final StructurBrowserTreeTable treeTable = findParent(StructurBrowserTreeTable.class);
+
             final DefaultTreeModel treeModel = (DefaultTreeModel) treeTable.getModelObject();
             treeModel.insertNodeInto(newTreeNode, getNode(), getNode().getChildCount());
             treeTable.updateTree(_target);

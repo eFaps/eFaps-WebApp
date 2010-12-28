@@ -38,10 +38,9 @@ import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.table.TablePanel;
 import org.efaps.ui.wicket.components.table.header.HeaderPanel;
 import org.efaps.ui.wicket.components.tree.StructurBrowserTreeTablePanel;
-import org.efaps.ui.wicket.models.ClassificationModel;
 import org.efaps.ui.wicket.models.FormModel;
-import org.efaps.ui.wicket.models.StructurBrowserModel;
 import org.efaps.ui.wicket.models.TableModel;
+import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.cell.UIHiddenCell;
 import org.efaps.ui.wicket.models.objects.UIClassification;
 import org.efaps.ui.wicket.models.objects.UIFieldForm;
@@ -52,6 +51,7 @@ import org.efaps.ui.wicket.models.objects.UIForm.Element;
 import org.efaps.ui.wicket.models.objects.UIForm.ElementType;
 import org.efaps.ui.wicket.models.objects.UIForm.FormElement;
 import org.efaps.ui.wicket.models.objects.UIHeading;
+import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
@@ -242,11 +242,11 @@ public class FormPage
                 elementRepeater.add(header);
                 elementRepeater.add(table);
             } else if (element.getType().equals(ElementType.CLASSIFICATION)) {
-                elementRepeater.add(new ClassificationPathPanel(elementRepeater.newChildId(), new ClassificationModel(
-                                (UIClassification) element.getElement())));
+                elementRepeater.add(new ClassificationPathPanel(elementRepeater.newChildId(),
+                                new UIModel<UIClassification>((UIClassification) element.getElement())));
             } else if (element.getType().equals(ElementType.STRUCBRWS)) {
                 final StructurBrowserTreeTablePanel strucBrws = new StructurBrowserTreeTablePanel(
-                                elementRepeater.newChildId(), new StructurBrowserModel(
+                                elementRepeater.newChildId(), new UIModel<UIStructurBrowser>(
                                                 (UIFieldStructurBrowser) element.getElement()), false);
                 elementRepeater.add(strucBrws);
             } else if (element.getType().equals(ElementType.SUBFORM)) {

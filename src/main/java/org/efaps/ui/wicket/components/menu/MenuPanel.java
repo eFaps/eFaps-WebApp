@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.ui.wicket.components.FormContainer;
-import org.efaps.ui.wicket.models.MenuItemModel;
+import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.models.objects.UISearchItem;
@@ -73,12 +73,12 @@ public class MenuPanel
         if (model.getMode() == TargetMode.SEARCH
                         && model.getCallingCommandUUID() != null) {
             final MenuContainer menu = new MenuContainer("eFapsMenu",
-                            new MenuItemModel(new UISearchItem(model.getCallingCommand()
+                            new UIModel<UIMenuItem>(new UISearchItem(model.getCallingCommand()
                                             .getTargetSearch().getUUID())), _form);
             add(menu);
         } else if (model.getCommand().getTargetMenu() != null) {
             final MenuContainer menu = new MenuContainer("eFapsMenu",
-                            new MenuItemModel(new UIMenuItem(model.getCommand().getTargetMenu()
+                            new UIModel<UIMenuItem>(new UIMenuItem(model.getCommand().getTargetMenu()
                                             .getUUID(), model.getInstanceKey())), _form);
             add(menu);
         } else {

@@ -393,15 +393,17 @@ public class StructurBrowserTreeTable
                     protected void onComponentTag(final ComponentTag _tag)
                     {
                         super.onComponentTag(_tag);
-                        final AbstractUIPageObject uiPageObject = (AbstractUIPageObject) getPage()
-                                    .getDefaultModelObject();
-                        uiObject.setUserinterfaceId(uiPageObject.getNewRandom());
+                        if (uiObject.getUserinterfaceId() == null) {
+                            final AbstractUIPageObject uiPageObject = (AbstractUIPageObject) getPage()
+                                .getDefaultModelObject();
+                            uiObject.setUserinterfaceId(uiPageObject.getNewRandom());
 
-                        try {
-                            uiPageObject.getUiID2Oid().put(uiObject.getUserinterfaceId(), uiObject.getInstance() == null
-                                                                              ? null : uiObject.getInstance().getOid());
-                        } catch (final EFapsException e) {
-                            throw new RestartResponseException(new ErrorPage(e));
+                            try {
+                                uiPageObject.getUiID2Oid().put(uiObject.getUserinterfaceId(),
+                                               uiObject.getInstance() == null ? null : uiObject.getInstance().getOid());
+                            } catch (final EFapsException e) {
+                                throw new RestartResponseException(new ErrorPage(e));
+                            }
                         }
                         _tag.put("name", EFapsKey.TABLEROW_NAME.getKey());
                         _tag.put("value", uiObject.getUserinterfaceId());

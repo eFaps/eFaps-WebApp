@@ -40,7 +40,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.string.Strings;
 import org.efaps.ui.wicket.behaviors.RowSelectedInput;
 import org.efaps.ui.wicket.components.table.cell.ContentContainerLink;
-import org.efaps.ui.wicket.models.cell.StructurBrowserTableCellModel;
+import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.cell.UIStructurBrowserTableCell;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.models.objects.UITableHeader;
@@ -257,10 +257,11 @@ public class StructurBrowserTreeTablePanel
                         ret = super.newCell(_node, _level);
                     } else {
                         this.idx++;
-                        final StructurBrowserTableCellModel model = new StructurBrowserTableCellModel(uiObject);
+                        final IModel<UIStructurBrowserTableCell> model = new UIModel<UIStructurBrowserTableCell>(
+                                        uiObject);
                         final ContentContainerLink<UIStructurBrowserTableCell> celllink
-                            = new ContentContainerLink<UIStructurBrowserTableCell>(
-                                        "link" + uiObject.getName() + this.idx, model);
+                            = new ContentContainerLink<UIStructurBrowserTableCell>("link" + uiObject.getName()
+                                            + this.idx, model);
                         getPage().add(celllink);
                         celllink.rendered();
                         ret = new IRenderable()

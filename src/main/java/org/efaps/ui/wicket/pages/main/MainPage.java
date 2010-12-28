@@ -53,7 +53,7 @@ import org.efaps.ui.wicket.components.ChildCallBackHeaderContributer;
 import org.efaps.ui.wicket.components.menu.MenuContainer;
 import org.efaps.ui.wicket.components.menu.StandardLink;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
-import org.efaps.ui.wicket.models.MenuItemModel;
+import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.empty.EmptyPage;
@@ -166,7 +166,7 @@ public class MainPage extends AbstractMergePage
             final long usrId = context.getPersonId();
             //Admin_Common_SystemMessageAlert
             final StandardLink alert = new StandardLink("useralert",
-                           new MenuItemModel(new UIMenuItem(SetMessageStatusContributor.getCmdUUD()))) {
+                           new UIModel<UIMenuItem>(new UIMenuItem(SetMessageStatusContributor.getCmdUUD()))) {
 
                 private static final long serialVersionUID = 1L;
 
@@ -206,7 +206,7 @@ public class MainPage extends AbstractMergePage
 
 
         // add the MainToolBar to the Page
-        final MenuContainer menu = new MenuContainer("menu", new MenuItemModel(new UIMenuItem(UUID
+        final MenuContainer menu = new MenuContainer("menu", new UIModel<UIMenuItem>(new UIMenuItem(UUID
                         .fromString("87001cc3-c45c-44de-b8f1-776df507f268"))));
         this.add(menu);
 

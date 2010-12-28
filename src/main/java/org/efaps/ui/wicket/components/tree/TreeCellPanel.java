@@ -28,6 +28,7 @@ import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
 import org.efaps.ui.wicket.behaviors.ExpandTextareaBehavior;
@@ -35,7 +36,7 @@ import org.efaps.ui.wicket.behaviors.SetSelectedRowBehavior;
 import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.autocomplete.AutoCompleteField;
 import org.efaps.ui.wicket.components.picker.AjaxPickerLink;
-import org.efaps.ui.wicket.models.cell.TableCellModel;
+import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.cell.UIStructurBrowserTableCell;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 
@@ -66,7 +67,7 @@ public class TreeCellPanel
         super(_wicketId);
         final UIStructurBrowser uiStru = (UIStructurBrowser) ((DefaultMutableTreeNode) _node).getUserObject();
         final UIStructurBrowserTableCell uiCell = uiStru.getColumnValue(_index);
-        final TableCellModel cellModel = new TableCellModel(uiCell);
+        final IModel<UIStructurBrowserTableCell> cellModel = new UIModel<UIStructurBrowserTableCell>(uiCell);
         // set the title of the cell
         add(new SimpleAttributeModifier("title", uiCell.getCellTitle()));
         add(new AttributeAppender("style", true, new Model<String>("text-align:" + uiCell.getAlign()), ";"));
@@ -77,7 +78,7 @@ public class TreeCellPanel
         if (uiCell.isAutoComplete()) {
             label = new AutoCompleteField("label", cellModel, false);
         } else {
-            label = new LabelComponent("label", uiCell.getCellValue());
+            label = new LabelComponent("label", cellModel);
         }
         label.add(new SetSelectedRowBehavior(uiCell.getName()));
         if (uiCell.isFieldUpdate()) {

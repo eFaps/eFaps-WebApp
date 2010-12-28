@@ -37,7 +37,7 @@ import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.ui.wicket.components.AbstractParentMarkupContainer;
 import org.efaps.ui.wicket.components.FormContainer;
-import org.efaps.ui.wicket.models.MenuItemModel;
+import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.models.objects.UISearchItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
@@ -175,7 +175,7 @@ public class MenuContainer
      */
     private void addLink(final UIMenuItem _menuItem)
     {
-        final MenuItemModel model = new MenuItemModel(_menuItem);
+        final IModel<UIMenuItem> model = new UIModel<UIMenuItem>(_menuItem);
         // if we have no more childs we add a lnk
         if (!_menuItem.hasChilds()) {
             if (_menuItem.getTarget() != Target.UNKNOWN) {
@@ -189,15 +189,11 @@ public class MenuContainer
                 }
             } else {
                 if (_menuItem.getCommand().isSubmit()) {
-                    final AjaxSubmitComponent item = new AjaxSubmitComponent(getNewChildId(), new MenuItemModel(
-                                    _menuItem), this.form);
+                    final AjaxSubmitComponent item = new AjaxSubmitComponent(getNewChildId(), model, this.form);
                     this.add(item);
                 } else if (super.getDefaultModelObject() instanceof UISearchItem) {
-
-                    final AjaxSearchComponent item = new AjaxSearchComponent(getNewChildId(), new MenuItemModel(
-                                    _menuItem));
+                    final AjaxSearchComponent item = new AjaxSearchComponent(getNewChildId(), model);
                     this.add(item);
-
                 }
             }
         } else if (_menuItem.getCommand().hasEvents(EventType.UI_COMMAND_EXECUTE)) {

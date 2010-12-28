@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
 import org.efaps.ui.wicket.components.form.cell.ValueCellPanel;
-import org.efaps.ui.wicket.models.cell.FormCellModel;
+import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.cell.UIFormCell;
 import org.efaps.ui.wicket.models.cell.UIFormCellSet;
 import org.efaps.ui.wicket.models.objects.UIForm;
@@ -53,7 +53,6 @@ public class ValuePanel extends Panel
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
-
 
     /**
      * @param _wicketId     wicketID for this component
@@ -132,7 +131,7 @@ public class ValuePanel extends Panel
             }
             entry.getValue().setCellValue(bldr.toString());
             final ValueCellPanel cell = new ValueCellPanel(repeater.newChildId(),
-                            new FormCellModel(entry.getValue()), _formmodel, false);
+                            new UIModel<UIFormCell>(entry.getValue()), _formmodel, false);
             repeater.add(cell);
         }
     }

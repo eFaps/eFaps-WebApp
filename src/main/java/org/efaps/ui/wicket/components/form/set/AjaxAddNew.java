@@ -40,7 +40,7 @@ import org.apache.wicket.protocol.http.WebResponse;
 import org.efaps.ui.wicket.components.autocomplete.AutoCompleteField;
 import org.efaps.ui.wicket.components.autocomplete.AutoCompleteFieldBehavior;
 import org.efaps.ui.wicket.components.form.cell.ValueCellPanel;
-import org.efaps.ui.wicket.models.cell.FormCellModel;
+import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.cell.UIFormCell;
 import org.efaps.ui.wicket.models.cell.UIFormCellSet;
 import org.efaps.ui.wicket.models.objects.UIForm;
@@ -140,7 +140,7 @@ public class AjaxAddNew
                             .append("_").append("eFapsNew_").append(nf.format(count))
                             .append(nf.format(entry.getKey())).append("\" ");
             final ValueCellPanel cell = new ValueCellPanel(this.repeater.newChildId(),
-                            new FormCellModel(entry.getValue()), this.formModel, false);
+                            new UIModel<UIFormCell>(entry.getValue()), this.formModel, false);
             this.repeater.add(cell);
             cell.setRenderBodyOnly(true);
             cell.renderComponent();

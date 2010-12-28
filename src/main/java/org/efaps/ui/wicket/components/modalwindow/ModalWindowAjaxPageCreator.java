@@ -23,8 +23,8 @@ package org.efaps.ui.wicket.components.modalwindow;
 import org.apache.wicket.Page;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.efaps.ui.wicket.models.FormModel;
-import org.efaps.ui.wicket.models.StructurBrowserModel;
 import org.efaps.ui.wicket.models.TableModel;
+import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.models.objects.IEventUIObject;
 import org.efaps.ui.wicket.models.objects.UIForm;
@@ -97,7 +97,7 @@ public class ModalWindowAjaxPageCreator
                     final UIStructurBrowser uiPageObject = new UIStructurBrowser(this.uiObject.getCommand().getUUID(),
                                     this.uiObject.getInstanceKey());
                     addEventObject(uiPageObject);
-                    ret = new StructurBrowserPage(new StructurBrowserModel(uiPageObject), this.modalWindow);
+                    ret = new StructurBrowserPage(new UIModel<UIStructurBrowser>(uiPageObject), this.modalWindow);
                 }
             }
         } catch (final EFapsException e) {

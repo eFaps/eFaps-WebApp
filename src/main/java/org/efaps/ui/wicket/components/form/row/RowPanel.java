@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,9 +31,7 @@ import org.efaps.ui.wicket.components.form.FormPanel;
 import org.efaps.ui.wicket.components.form.cell.ValueCellPanel;
 import org.efaps.ui.wicket.components.form.command.CommandCellPanel;
 import org.efaps.ui.wicket.components.form.set.YPanel;
-import org.efaps.ui.wicket.models.cell.FormCellCmdModel;
-import org.efaps.ui.wicket.models.cell.FormCellModel;
-import org.efaps.ui.wicket.models.cell.FormCellSetModel;
+import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.cell.UIFormCell;
 import org.efaps.ui.wicket.models.cell.UIFormCellCmd;
 import org.efaps.ui.wicket.models.cell.UIFormCellSet;
@@ -48,7 +46,8 @@ import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
  * @author The eFaps Team
  * @version $Id$
  */
-public class RowPanel extends Panel
+public class RowPanel
+    extends Panel
 {
 
     /**
@@ -57,17 +56,22 @@ public class RowPanel extends Panel
     private static final long serialVersionUID = 1L;
 
     /**
-     * @param _wicketId         wicket id for this component
-     * @param _model            model for this component
-     * @param _formmodel        parent model of this row
-     * @param _page page        the RowPanel is in
-     * @param _formPanel        form panel this RowPanel is in
-     * @param _form             form this RowPanel is in
+     * @param _wicketId     wicket id for this component
+     * @param _model        model for this component
+     * @param _formmodel    parent model of this row
+     * @param _page page    the RowPanel is in
+     * @param _formPanel    form panel this RowPanel is in
+     * @param _form         form this RowPanel is in
      * @param _formelementmodel element this rowpanel belongs to
      *
      */
-    public RowPanel(final String _wicketId, final IModel<FormRow> _model, final UIForm _formmodel, final Page _page,
-                    final FormPanel _formPanel, final FormContainer _form,  final FormElement _formelementmodel)
+    public RowPanel(final String _wicketId,
+                    final IModel<FormRow> _model,
+                    final UIForm _formmodel,
+                    final Page _page,
+                    final FormPanel _formPanel,
+                    final FormContainer _form,
+                    final FormElement _formelementmodel)
     {
         super(_wicketId, _model);
 
@@ -94,12 +98,14 @@ public class RowPanel extends Panel
             }
             Panel valueCell;
             if (cell instanceof UIFormCellSet) {
-                valueCell = new YPanel(cellRepeater.newChildId(), new FormCellSetModel((UIFormCellSet) cell), _formmodel);
+                valueCell = new YPanel(cellRepeater.newChildId(), new UIModel<UIFormCellSet>((UIFormCellSet) cell),
+                                _formmodel);
             } else if (cell instanceof UIFormCellCmd) {
-                valueCell = new CommandCellPanel(cellRepeater.newChildId(), new FormCellCmdModel((UIFormCellCmd) cell),
+                valueCell = new CommandCellPanel(cellRepeater.newChildId(), new UIModel<UIFormCellCmd>(
+                                (UIFormCellCmd) cell),
                                 _formmodel, _form);
             } else {
-                valueCell = new ValueCellPanel(cellRepeater.newChildId(), new FormCellModel(cell), _formmodel,
+                valueCell = new ValueCellPanel(cellRepeater.newChildId(), new UIModel<UIFormCell>(cell), _formmodel,
                                 ContentContainerPage.IFRAME_PAGEMAP_NAME.equals(_page.getPageMapName()));
             }
             if (cell.getRowSpan() > 0) {

@@ -25,7 +25,7 @@ import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.IModel;
 import org.efaps.admin.ui.AbstractCommand.SortDirection;
-import org.efaps.ui.wicket.models.StructurBrowserModel;
+import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
@@ -113,7 +113,7 @@ public class SortHeaderColumnLink
         }
         structurBrowser.sort();
         try {
-            getRequestCycle().setResponsePage(new StructurBrowserPage(new StructurBrowserModel(structurBrowser)));
+            getRequestCycle().setResponsePage(new StructurBrowserPage(new UIModel<UIStructurBrowser>(structurBrowser)));
         } catch (final EFapsException e) {
             getRequestCycle().setResponsePage(new ErrorPage(e));
         }

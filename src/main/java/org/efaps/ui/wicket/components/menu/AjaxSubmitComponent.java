@@ -34,8 +34,8 @@ import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.FormModel;
-import org.efaps.ui.wicket.models.MenuItemModel;
 import org.efaps.ui.wicket.models.TableModel;
+import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
@@ -174,7 +174,8 @@ public class AjaxSubmitComponent
 
                         public Page createPage()
                         {
-                            return new DialogPage(modal, new MenuItemModel(uiMenuItem), para, AjaxSubmitComponent.this);
+                            return new DialogPage(modal, new UIModel<UIMenuItem>(uiMenuItem),
+                                            para, AjaxSubmitComponent.this);
                         }
                     });
                     modal.setInitialHeight(150);

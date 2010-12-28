@@ -42,8 +42,8 @@ import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.modalwindow.UpdateParentCallback;
 import org.efaps.ui.wicket.components.table.TablePanel;
 import org.efaps.ui.wicket.models.FormModel;
-import org.efaps.ui.wicket.models.TableHeaderModel;
 import org.efaps.ui.wicket.models.TableModel;
+import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.models.objects.UITableHeader;
@@ -141,13 +141,13 @@ public class HeaderPanel
 
         int fixed = 0;
         for (int j = 0; j < uitable.getHeaders().size(); j++) {
-            final UITableHeader headermodel = uitable.getHeaders().get(j);
+            final UITableHeader uiHeader = uitable.getHeaders().get(j);
 
             final HeaderCellPanel cell = new HeaderCellPanel(cellRepeater.newChildId(),
-                            new TableHeaderModel(headermodel), uitable);
+                            new UIModel<UITableHeader>(uiHeader), uitable);
 
-            if (headermodel.isFixedWidth()) {
-                widths.add(".eFapsCellFixedWidth" + i + "{width: " + headermodel.getWidth() + "px; }\n");
+            if (uiHeader.isFixedWidth()) {
+                widths.add(".eFapsCellFixedWidth" + i + "{width: " + uiHeader.getWidth() + "px; }\n");
                 if (firstcell) {
                     firstcell = false;
                     cell.add(new SimpleAttributeModifier("class",  "eFapsTableFirstCell eFapsTableHeaderCell"
@@ -155,13 +155,13 @@ public class HeaderPanel
                 } else {
                     cell.add(new SimpleAttributeModifier("class",  "eFapsTableHeaderCell eFapsCellFixedWidth" + i));
                 }
-                fixed += headermodel.getWidth();
+                fixed += uiHeader.getWidth();
             } else {
                 Integer width = 0;
                 if (uitable.isUserSetWidth()) {
-                    width = headermodel.getWidth();
+                    width = uiHeader.getWidth();
                 } else {
-                    width = browserWidth / uitable.getWidthWeight() * headermodel.getWidth();
+                    width = browserWidth / uitable.getWidthWeight() * uiHeader.getWidth();
                 }
                 widths.add(".eFapsCellWidth" + i + "{width: " + width.toString() + "px;}\n");
                 if (firstcell) {
@@ -176,7 +176,7 @@ public class HeaderPanel
             cell.setOutputMarkupId(true);
             cellRepeater.add(cell);
 
-            if (j + 1 < uitable.getHeaders().size() && !headermodel.isFixedWidth()) {
+            if (j + 1 < uitable.getHeaders().size() && !uiHeader.isFixedWidth()) {
                 boolean add = false;
                 for (int k = j + 1; k < uitable.getHeaders().size(); k++) {
                     if (!uitable.getHeaders().get(k).isFixedWidth()) {

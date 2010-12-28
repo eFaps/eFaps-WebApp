@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import org.apache.wicket.model.IModel;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.behaviors.RowSelectedInput;
 import org.efaps.ui.wicket.components.table.row.RowPanel;
-import org.efaps.ui.wicket.models.RowModel;
+import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.UIFieldTable;
 import org.efaps.ui.wicket.models.objects.UIRow;
 import org.efaps.ui.wicket.models.objects.UITable;
@@ -97,7 +97,7 @@ public class TablePanel
             boolean odd = true;
             for (final Iterator<UIRow> rowIter = uiTable.getValues().iterator(); rowIter.hasNext(); odd = !odd) {
 
-                final RowPanel row = new RowPanel(rowsRepeater.newChildId(), new RowModel(rowIter.next()), this,
+                final RowPanel row = new RowPanel(rowsRepeater.newChildId(), new UIModel<UIRow>(rowIter.next()), this,
                                                ContentContainerPage.IFRAME_PAGEMAP_NAME.equals(_page.getPageMapName()));
                 row.setOutputMarkupId(true);
                 if (odd) {

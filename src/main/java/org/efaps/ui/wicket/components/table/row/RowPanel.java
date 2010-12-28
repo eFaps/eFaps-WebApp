@@ -36,7 +36,7 @@ import org.efaps.ui.wicket.components.table.AjaxAddRemoveRowPanel;
 import org.efaps.ui.wicket.components.table.TablePanel;
 import org.efaps.ui.wicket.components.table.cell.CellPanel;
 import org.efaps.ui.wicket.models.TableModel;
-import org.efaps.ui.wicket.models.cell.TableCellModel;
+import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.cell.UIHiddenCell;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
@@ -101,11 +101,11 @@ public class RowPanel
         }
 
         final Map<String, Component> name2comp = new HashMap<String, Component>();
-        for (final UITableCell cellmodel : uirow.getValues()) {
-            final CellPanel cell = new CellPanel(cellRepeater.newChildId(), new TableCellModel(cellmodel),
+        for (final UITableCell uiCell : uirow.getValues()) {
+            final CellPanel cell = new CellPanel(cellRepeater.newChildId(), new UIModel<UITableCell>(uiCell),
                                                       _updateListMenu, uiTable);
             cell.setOutputMarkupId(true);
-            if (cellmodel.isFixedWidth()) {
+            if (uiCell.isFixedWidth()) {
                 if (firstCell) {
                     firstCell = false;
                     cell.add(new SimpleAttributeModifier("class",  "eFapsTableFirstCell eFapsTableCell"
@@ -124,7 +124,7 @@ public class RowPanel
             }
             cellRepeater.add(cell);
             i++;
-            name2comp.put(cellmodel.getName(), cell);
+            name2comp.put(uiCell.getName(), cell);
         }
 
         final RepeatingView hiddenRepeater = new RepeatingView("hiddenRepeater");
