@@ -240,7 +240,7 @@ public class AjaxEditRowPanel
             throws EFapsException
         {
             final UIStructurBrowser strucBr = (UIStructurBrowser) getNode().getUserObject();
-            strucBr.setValuesFromUI(Context.getThreadContext().getParameters(), getNode());
+            final String js = strucBr.setValuesFromUI(Context.getThreadContext().getParameters(), getNode());
             UIStructurBrowser newStruBrws = null;
             try {
                 newStruBrws = strucBr.getClone4New();
@@ -256,6 +256,7 @@ public class AjaxEditRowPanel
             treeModel.insertNodeInto(newTreeNode, (DefaultMutableTreeNode) getNode().getParent(),
                             getNode().getParent().getIndex(getNode()));
             treeTable.updateTree(_target);
+            _target.appendJavascript(js);
         }
     }
 
@@ -288,11 +289,11 @@ public class AjaxEditRowPanel
          */
         @Override
         public void onSubmit(final AjaxRequestTarget _target,
-                            final Form<?> _form)
+                             final Form<?> _form)
             throws EFapsException
         {
             final UIStructurBrowser strucBr = (UIStructurBrowser) getNode().getUserObject();
-            strucBr.setValuesFromUI(Context.getThreadContext().getParameters(), getNode());
+            final String js = strucBr.setValuesFromUI(Context.getThreadContext().getParameters(), getNode());
             UIStructurBrowser newStruBrws = null;
             try {
                 newStruBrws = strucBr.getClone4New();
@@ -308,6 +309,7 @@ public class AjaxEditRowPanel
             final DefaultTreeModel treeModel = (DefaultTreeModel) treeTable.getModelObject();
             treeModel.insertNodeInto(newTreeNode, getNode(), getNode().getChildCount());
             treeTable.updateTree(_target);
+            _target.appendJavascript(js);
         }
     }
 
@@ -344,7 +346,7 @@ public class AjaxEditRowPanel
             throws EFapsException
         {
             final UIStructurBrowser strucBr = (UIStructurBrowser) getNode().getUserObject();
-            strucBr.setValuesFromUI(Context.getThreadContext().getParameters(), getNode());
+            final String js = strucBr.setValuesFromUI(Context.getThreadContext().getParameters(), getNode());
             UIStructurBrowser newStruBrws = null;
             try {
                 newStruBrws = strucBr.getClone4New();
@@ -360,6 +362,7 @@ public class AjaxEditRowPanel
             final DefaultTreeModel treeModel = (DefaultTreeModel) treeTable.getModelObject();
             treeModel.insertNodeInto(newTreeNode, getNode(), getNode().getChildCount());
             treeTable.updateTree(_target);
+            _target.appendJavascript(js);
         }
     }
 }

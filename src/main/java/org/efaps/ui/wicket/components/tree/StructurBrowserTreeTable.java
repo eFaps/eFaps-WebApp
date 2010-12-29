@@ -339,7 +339,8 @@ public class StructurBrowserTreeTable
             final MarkupContainer nodeLink;
             if (uiStru.isRoot()) {
                 nodeLink = new WebMarkupContainer("nodeLink");
-                nodeLink.add(new Label("label", DBProperties.getProperty(uiStru.getCommand().getName() + ".root")));
+                nodeLink.add(new Label("label", DBProperties.getProperty(uiStru.getCommand().getName()
+                                + ".StructurBrowser.root")));
                 add(new WebComponent("rowId").setVisible(false));
                 add(new WebComponent("level").setVisible(false));
                 add(new WebComponent("allowChilds").setVisible(false));
