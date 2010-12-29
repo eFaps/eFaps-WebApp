@@ -479,7 +479,10 @@ public class UIStructurBrowser
                                 attr = type.getAttribute(field.getAttribute());
                             }
                         } else {
-                            if (field.getSelectAlternateOID() != null) {
+                            //the previous field might have set the different instance
+                            if (field.getSelectAlternateOID() == null) {
+                                instance = print.getCurrentInstance();
+                            } else {
                                 instance = Instance.get(print.<String>getSelect(field.getSelectAlternateOID()));
                             }
                             if (field.getSelect() != null) {
@@ -495,7 +498,7 @@ public class UIStructurBrowser
                         final FieldValue fieldvalue = new FieldValue(field, attr, value, instance, getInstance());
                         final String strValue;
                         final String htmlTitle;
-                        if (value != null || row4Create) {
+                        if (value != null || row4Create || isEditMode()) {
                             if ((isCreateMode() || isEditMode()) && field.isEditableDisplay(getMode())) {
                                 strValue = fieldvalue.getEditHtml(getMode());
                             } else {
