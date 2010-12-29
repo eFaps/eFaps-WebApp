@@ -37,7 +37,6 @@ import org.efaps.util.EFapsException;
 public class StructurBrowserTreePanel
     extends Panel
 {
-
     /**
      * Needed for serialization.
      */
@@ -77,7 +76,6 @@ public class StructurBrowserTreePanel
         if (!model.isInitialized()) {
             model.execute();
         }
-
         final StructurBrowserTree tree = new StructurBrowserTree("tree", model.getTreeModel(), _listmenukey);
         this.add(tree);
     }

@@ -171,7 +171,7 @@ public class AjaxEditRowPanel
                 @Override
                 protected void onError(final AjaxRequestTarget _target)
                 {
-
+                    //not implemented
                 }
 
                 @Override
@@ -179,9 +179,7 @@ public class AjaxEditRowPanel
                 {
                     return new AppendingStringBuffer(super.getEventHandler()).append("; return false;");
                 }
-
             });
-
         }
 
         /**
@@ -195,10 +193,13 @@ public class AjaxEditRowPanel
         }
 
         /**
+         * @param _target   AjaxRequestTarget
+         * @param _form     Form
+         * @throws EFapsException on error
          */
         public void onSubmit(final AjaxRequestTarget _target,
                              final Form<?> _form)
-        throws EFapsException
+            throws EFapsException
         {
             final StructurBrowserTreeTable treeTable = findParent(StructurBrowserTreeTable.class);
             final DefaultTreeModel treeModel = (DefaultTreeModel) treeTable.getModelObject();
@@ -218,7 +219,6 @@ public class AjaxEditRowPanel
          */
         private static final long serialVersionUID = 1L;
 
-
         /**
          * @param _wicketId wicket ID of this component
          * @param _model    model for this component
@@ -229,11 +229,10 @@ public class AjaxEditRowPanel
                          final TreeNode _node)
         {
             super(_wicketId, _model, _node);
-
         }
 
-        /* (non-Javadoc)
-         * @see org.apache.wicket.ajax.markup.html.AjaxLink#onClick(org.apache.wicket.ajax.AjaxRequestTarget)
+        /**
+         * {@inheritDoc}
          */
         @Override
         public void onSubmit(final AjaxRequestTarget _target,
@@ -241,7 +240,7 @@ public class AjaxEditRowPanel
             throws EFapsException
         {
             final UIStructurBrowser strucBr = (UIStructurBrowser) getNode().getUserObject();
-
+            strucBr.setValuesFromUI(Context.getThreadContext().getParameters(), getNode());
             UIStructurBrowser newStruBrws = null;
             try {
                 newStruBrws = strucBr.getClone4New();
@@ -284,8 +283,8 @@ public class AjaxEditRowPanel
             super(_wicketId, _model, _node);
         }
 
-        /* (non-Javadoc)
-         * @see org.apache.wicket.ajax.markup.html.AjaxLink#onClick(org.apache.wicket.ajax.AjaxRequestTarget)
+        /**
+         * {@inheritDoc}
          */
         @Override
         public void onSubmit(final AjaxRequestTarget _target,
@@ -293,7 +292,7 @@ public class AjaxEditRowPanel
             throws EFapsException
         {
             final UIStructurBrowser strucBr = (UIStructurBrowser) getNode().getUserObject();
-
+            strucBr.setValuesFromUI(Context.getThreadContext().getParameters(), getNode());
             UIStructurBrowser newStruBrws = null;
             try {
                 newStruBrws = strucBr.getClone4New();
@@ -336,16 +335,14 @@ public class AjaxEditRowPanel
             super(_wicketId, _model, _node);
         }
 
-        /*
-         * (non-Javadoc)
-         * @see org.apache.wicket.ajax.markup.html.AjaxLink#onClick(org.apache.wicket.ajax.AjaxRequestTarget)
+        /**
+         * {@inheritDoc}
          */
         @Override
         public void onSubmit(final AjaxRequestTarget _target,
                             final Form<?> _form)
             throws EFapsException
         {
-
             final UIStructurBrowser strucBr = (UIStructurBrowser) getNode().getUserObject();
             strucBr.setValuesFromUI(Context.getThreadContext().getParameters(), getNode());
             UIStructurBrowser newStruBrws = null;
@@ -356,7 +353,6 @@ public class AjaxEditRowPanel
             }
             newStruBrws.setAllowChilds(false);
             newStruBrws.checkHideColumn4Row();
-            strucBr.getChilds().add(newStruBrws);
             final DefaultMutableTreeNode newTreeNode = new DefaultMutableTreeNode(newStruBrws);
             newTreeNode.setAllowsChildren(false);
             final StructurBrowserTreeTable treeTable = findParent(StructurBrowserTreeTable.class);

@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteBehavior;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteSettings;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
@@ -41,6 +42,7 @@ import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
 import org.efaps.ui.wicket.behaviors.SetSelectedRowBehavior;
 import org.efaps.ui.wicket.components.form.command.AjaxCmdBehavior;
 import org.efaps.ui.wicket.models.cell.UITableCell;
+import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 import org.efaps.util.EFapsException;
@@ -153,7 +155,7 @@ public class AutoCompleteField
         if (this.cols > 0) {
             _tag.put("size", this.cols);
         }
-        if (this.uiAbstractCell.getParent().isEditMode()) {
+        if (this.uiAbstractCell.getParent().isEditMode() || this.uiAbstractCell.getParent().isCreateMode()) {
             _tag.put("value", this.uiAbstractCell.getCellTitle());
         }
     }
@@ -190,12 +192,12 @@ public class AutoCompleteField
         cmp.append("<input type=\"hidden\" ").append("name=\"").append(this.fieldName).append("\" id=\"").append(
                         _tag.getString("id")).append("_hidden\" ");
         try {
-            if (this.uiAbstractCell.getParent().isEditMode() && this.uiAbstractCell.getInstance() != null) {
+            if ((this.uiAbstractCell.getParent().isEditMode() || this.uiAbstractCell.getParent().isCreateMode())
+                            && this.uiAbstractCell.getInstance() != null) {
                 cmp.append(" value=\"").append(this.uiAbstractCell.getInstance().getOid()).append("\"");
             }
         } catch (final EFapsException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new RestartResponseException(new ErrorPage(e));
         }
         cmp.append(">");
         replaceComponentTagBody(_markupStream, _tag, cmp);

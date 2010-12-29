@@ -41,6 +41,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.html.tree.ITreeState;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.field.Field.Display;
@@ -338,20 +339,7 @@ public class StructurBrowserTreeTable
             final MarkupContainer nodeLink;
             if (uiStru.isRoot()) {
                 nodeLink = new WebMarkupContainer("nodeLink");
-                nodeLink.add(new Label("label", new AbstractReadOnlyModel<String>()
-                {
-
-                    private static final long serialVersionUID = 1L;
-
-                    /**
-                     * @see org.apache.wicket.model.AbstractReadOnlyModel#getObject()
-                     */
-                    @Override
-                    public String getObject()
-                    {
-                        return "root";
-                    }
-                }));
+                nodeLink.add(new Label("label", DBProperties.getProperty(uiStru.getCommand().getName() + ".root")));
                 add(new WebComponent("rowId").setVisible(false));
                 add(new WebComponent("level").setVisible(false));
                 add(new WebComponent("allowChilds").setVisible(false));

@@ -79,7 +79,7 @@ public class UITableCell
     /**
      * Title for the cell. Will be e.g rendered as title in a div.
      */
-    private final String cellTitle;
+    private String cellTitle;
 
     /**
      * Stores if the field has an esjp used for auto completion.
@@ -226,6 +226,17 @@ public class UITableCell
     public String getCellTitle()
     {
         return this.cellTitle == null ? "" : this.cellTitle;
+    }
+
+    /**
+     * Setter method for instance variable {@link #cellTitle}.
+     *
+     * @param _cellTitle value for instance variable {@link #cellTitle}
+     */
+
+    public void setCellTitle(final String _cellTitle)
+    {
+        this.cellTitle = _cellTitle;
     }
 
     /**

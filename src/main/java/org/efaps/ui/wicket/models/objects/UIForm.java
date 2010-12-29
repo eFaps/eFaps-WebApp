@@ -662,7 +662,7 @@ public class UIForm
                                     final String fattrTypeName = child != null
                                                                 ? child.getAttributeType().getName() : null;
                                     final UIFormCell fcell = new UIFormCell(this, fValue, fValue.getEditHtml(getMode()),
-                                                    null, null, fattrTypeName);
+                                                    "", null, fattrTypeName);
                                     ((UIFormCellSet) cell).addDefiniton(idx, fcell);
                                 }
                                 idx++;
@@ -670,7 +670,7 @@ public class UIForm
                         } else if (field instanceof FieldCommand) {
                             cell = new UIFormCellCmd(this, (FieldCommand) field, null, label);
                         } else {
-                            cell = new UIFormCell(this, fieldvalue, strValue, null, label, attrTypeName);
+                            cell = new UIFormCell(this, fieldvalue, strValue, "", label, attrTypeName);
                             if (isSearchMode()) {
                                 cell.setReference(null);
                             } else if (strValue != null && !this.fileUpload) {

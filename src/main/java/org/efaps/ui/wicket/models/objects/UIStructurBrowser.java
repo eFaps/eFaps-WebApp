@@ -872,6 +872,38 @@ public class UIStructurBrowser
     }
 
     /**
+     * @param _parameters   Parameter as send from the UserInterface
+     * @param _node         Node the _parameters were send from
+     * @throws EFapsException on error
+     */
+    public void setValuesFromUI(final Map<String, String[]> _parameters,
+                                final DefaultMutableTreeNode _node)
+        throws EFapsException
+    {
+        final Enumeration<?> preOrdEnum = ((DefaultMutableTreeNode) _node.getRoot()).preorderEnumeration();
+        int i = 0;
+        while (preOrdEnum.hasMoreElements()) {
+            final DefaultMutableTreeNode node = (DefaultMutableTreeNode) preOrdEnum.nextElement();
+            if (!node.isRoot()) {
+                final UIStructurBrowser uiObject = (UIStructurBrowser) node.getUserObject();
+                for (final UIStructurBrowserTableCell cell : uiObject.getColumns()) {
+                    final String[] values = _parameters.get(cell.getName());
+                    if (cell.isAutoComplete()) {
+                        final String[] autoValues = _parameters.get(cell.getName() + "AutoComplete");
+                        cell.setCellTitle(autoValues[i]);
+                        cell.setInstanceKey(values[i]);
+                    } else {
+                        if (values != null) {
+                            cell.setValueFromUI(values[i]);
+                        }
+                    }
+                }
+                i++;
+            }
+        }
+    }
+
+    /**
      * Get the Value of a Column identified by the index of the Column.
      *
      * @param _index index of the Column
@@ -1209,32 +1241,5 @@ public class UIStructurBrowser
          * Needed for serialization.
          */
         private static final long serialVersionUID = 1L;
-    }
-
-    /**
-     * @param _parameters
-     * @param _node
-     * @throws EFapsException
-     */
-    public void setValuesFromUI(final Map<String, String[]> _parameters,
-                                final DefaultMutableTreeNode _node)
-        throws EFapsException
-    {
-        final Enumeration<?> preOrdEnum = ((DefaultMutableTreeNode) _node.getRoot()).preorderEnumeration();
-        int i = 0;
-        while (preOrdEnum.hasMoreElements()) {
-            final DefaultMutableTreeNode node = (DefaultMutableTreeNode) preOrdEnum.nextElement();
-            if (!node.isRoot()) {
-                final UIStructurBrowser uiObject = (UIStructurBrowser) node.getUserObject();
-                for (final UIStructurBrowserTableCell cell : uiObject.getColumns()) {
-                    final String[] values = _parameters.get(cell.getName());
-                    if (values != null) {
-                        System.out.println(values[i]);
-                        cell.setValueFromUI(values[i]);
-                    }
-                }
-                i++;
-            }
-        }
     }
 }
