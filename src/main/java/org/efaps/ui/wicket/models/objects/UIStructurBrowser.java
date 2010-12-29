@@ -107,6 +107,13 @@ public class UIStructurBrowser
         CHECKFORCHILDREN,
         /** Method is creating a new folder. */
         CHECKHIDECOLUMN4ROW,
+        /**
+         * Method is called after the insert etc. of a new node in edit mode to
+         * get a JavaScript that will be appended to the AjaxTarget. In this
+         * Step the values for the StructurBrowsers also can be altered.
+         * @see {@link UIStructurBrowser.#setValuesFromUI(Map, DefaultMutableTreeNode)setValuesFromUI}
+         */
+        GETJAVASCRIPT4TARGET,
         /** Method execute is executed. */
         EXECUTE,
         /** Method sort is executed. */
@@ -875,8 +882,9 @@ public class UIStructurBrowser
      * @param _parameters   Parameter as send from the UserInterface
      * @param _node         Node the _parameters were send from
      * @throws EFapsException on error
+     * @return JavaScript for the UserInterface
      */
-    public void setValuesFromUI(final Map<String, String[]> _parameters,
+    public String setValuesFromUI(final Map<String, String[]> _parameters,
                                 final DefaultMutableTreeNode _node)
         throws EFapsException
     {
@@ -901,7 +909,32 @@ public class UIStructurBrowser
                 i++;
             }
         }
+        return getJavaScript4Target(_parameters);
     }
+
+    /**
+     * Method is called from the StructurBrowser in edit mode from
+     * {@link #setValuesFromUI(Map, DefaultMutableTreeNode)} to get
+     * additional JavaScript to be appended to the AjaxTarget.
+     * @param _parameters   Parameter as send from the UserInterface
+     * @return JavaScript for the UserInterface
+     */
+    private String getJavaScript4Target(final Map<String, String[]> _parameters)
+    {
+        String ret;
+        setExecutionStatus(UIStructurBrowser.ExecutionStatus.GETJAVASCRIPT4TARGET);
+        try {
+            final List<Return> retList = getObject4Event().executeEvents(EventType.UI_TABLE_EVALUATE,
+                                ParameterValues.INSTANCE, getInstance(),
+                                ParameterValues.CLASS, this,
+                                ParameterValues.PARAMETERS, _parameters);
+            ret = (String) retList.get(0).get(ReturnValues.SNIPLETT);
+        } catch (final EFapsException e) {
+            throw new RestartResponseException(new ErrorPage(e));
+        }
+        return ret;
+    }
+
 
     /**
      * Get the Value of a Column identified by the index of the Column.

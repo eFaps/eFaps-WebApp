@@ -157,9 +157,14 @@ public class StructurBrowserTreeTablePanel
         public Component newHeader(final MarkupContainer _parent,
                                    final String _wicketId)
         {
-            return new SortHeaderColumnLink(_wicketId, this.header, this.model);
+            Component ret;
+            if (this.model.getObject().isCreateMode() || this.model.getObject().isEditMode()) {
+                ret = super.newHeader(_parent, _wicketId);
+            } else {
+                ret = new SortHeaderColumnLink(_wicketId, this.header, this.model);
+            }
+            return ret;
         }
-
     }
 
     /**

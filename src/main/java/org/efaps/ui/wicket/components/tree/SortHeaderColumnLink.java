@@ -20,13 +20,18 @@
 
 package org.efaps.ui.wicket.components.tree;
 
+import org.apache.wicket.Page;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.IModel;
 import org.efaps.admin.ui.AbstractCommand.SortDirection;
+import org.efaps.ui.wicket.models.FormModel;
 import org.efaps.ui.wicket.models.UIModel;
+import org.efaps.ui.wicket.models.objects.UIFieldStructurBrowser;
+import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
+import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
@@ -113,7 +118,13 @@ public class SortHeaderColumnLink
         }
         structurBrowser.sort();
         try {
-            getRequestCycle().setResponsePage(new StructurBrowserPage(new UIModel<UIStructurBrowser>(structurBrowser)));
+            Page page;
+            if (structurBrowser instanceof UIFieldStructurBrowser) {
+                page = new FormPage(new FormModel((UIForm) getPage().getDefaultModelObject()));
+            } else {
+                page = new StructurBrowserPage(new UIModel<UIStructurBrowser>(structurBrowser));
+            }
+            getRequestCycle().setResponsePage(page);
         } catch (final EFapsException e) {
             getRequestCycle().setResponsePage(new ErrorPage(e));
         }
