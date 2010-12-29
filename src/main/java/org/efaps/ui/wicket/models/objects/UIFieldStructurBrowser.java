@@ -94,8 +94,8 @@ public class UIFieldStructurBrowser
         throws EFapsException
     {
         final FieldTable field = FieldTable.get(((UIFieldStructurBrowser) _parent).fieldTabelId);
-        return new UIFieldStructurBrowser(_parent.getCommandUUID(), _instance == null ? null : _instance.getKey(),
-                        _parent.getSortDirection(), field);
+        return new UIFieldStructurBrowser(_parent.getCommandUUID(), _instance == null
+                        ? null : _instance.getKey(), _parent.getSortDirection(), field);
     }
 
     /**

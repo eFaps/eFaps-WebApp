@@ -104,7 +104,7 @@ public class StructurBrowserTreeTable
         this.add(StaticHeaderContributor.forCss(StructurBrowserTreeTable.CSS));
         this.parentLink = _parentLink;
 
-        setRootLess(!_model.getObject().isCreateMode());
+        setRootLess(!(_model.getObject().isCreateMode() || _model.getObject().isEditMode()));
 
         final ITreeState treeState = getTreeState();
 

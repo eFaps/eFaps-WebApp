@@ -537,10 +537,14 @@ public class UIStructurBrowser
                 }
                 if (this.root && row4Create) {
                     this.emptyRow = child;
+                } else if (this.root && isEditMode() && this.emptyRow == null) {
+                    this.emptyRow = child;
+                    this.childs.add(child);
                 } else {
                     this.childs.add(child);
                 }
                 row4Create = false;
+                child.checkHideColumn4Row();
             }
         } catch (final EFapsException e) {
             throw new RestartResponseException(new ErrorPage(e));
@@ -652,24 +656,6 @@ public class UIStructurBrowser
     }
 
     /**
-     * Method is called from the StructurBrowser in edit mode before rendering
-     * the columns for row to be able to hide the columns for different rows by
-     * setting the cell model to hide.
-     */
-    public void checkHideColumn4Row()
-    {
-        setExecutionStatus(UIStructurBrowser.ExecutionStatus.CHECKHIDECOLUMN4ROW);
-        try {
-            getObject4Event().executeEvents(EventType.UI_TABLE_EVALUATE,
-                            ParameterValues.INSTANCE, getInstance(),
-                            ParameterValues.CLASS, this);
-        } catch (final EFapsException e) {
-            throw new RestartResponseException(new ErrorPage(e));
-        }
-    }
-
-
-    /**
      * Getter method for the instance variable {@link #allowChilds}.
      *
      * @return value of instance variable {@link #allowChilds}
@@ -716,12 +702,60 @@ public class UIStructurBrowser
     }
 
     /**
+     * Method is called from the StructurBrowser in edit mode before rendering
+     * the columns for row to be able to hide the columns for different rows by
+     * setting the cell model to hide.
+     */
+    public void checkHideColumn4Row()
+    {
+        setExecutionStatus(UIStructurBrowser.ExecutionStatus.CHECKHIDECOLUMN4ROW);
+        try {
+            getObject4Event().executeEvents(EventType.UI_TABLE_EVALUATE,
+                            ParameterValues.INSTANCE, getInstance(),
+                            ParameterValues.CLASS, this);
+        } catch (final EFapsException e) {
+            throw new RestartResponseException(new ErrorPage(e));
+        }
+    }
+
+    /**
+     * This method should be called to add children to a Node in the Tree.<br>
+     * e.g. in a standard implementation the children would be added to the Tree
+     * on the expand-Event of the tree. The children a retrieved from an esjp
+     * with the EventType UI_TABLE_EVALUATE.
+     *
+     * @param _parent the DefaultMutableTreeNode the new children should be
+     *            added
+     */
+    @SuppressWarnings("unchecked")
+    public void addChildren(final DefaultMutableTreeNode _parent)
+    {
+        setExecutionStatus(UIStructurBrowser.ExecutionStatus.ADDCHILDREN);
+        _parent.removeAllChildren();
+        List<Return> ret;
+        try {
+            ret = getObject4Event().executeEvents(EventType.UI_TABLE_EVALUATE, ParameterValues.INSTANCE, getInstance(),
+                            ParameterValues.CLASS, this);
+            final Map<Instance, Boolean> map = (Map<Instance, Boolean>) ret.get(0).get(ReturnValues.VALUES);
+
+            if (this.tableuuid == null) {
+                executeTree(map, false);
+            } else {
+                executeTreeTable(map, false);
+            }
+            addNode(_parent, this.childs);
+        } catch (final EFapsException e) {
+            throw new RestartResponseException(new ErrorPage(e));
+        }
+    }
+
+    /**
      * This method is used to check if a node has potential children.
      *
      * @param _instance Instance of a Node to be checked
      * @return true if this Node has children, else false
      */
-    private boolean checkForAllowChilds(final Instance _instance)
+    protected boolean checkForAllowChilds(final Instance _instance)
     {
         setExecutionStatus(UIStructurBrowser.ExecutionStatus.ALLOWSCHILDREN);
         try {
@@ -732,6 +766,48 @@ public class UIStructurBrowser
         } catch (final EFapsException e) {
             throw new RestartResponseException(new ErrorPage(e));
         }
+    }
+
+    /**
+     * This method is used to check if a node has potential children.
+     *
+     * @param _instance Instance of a Node to be checked
+     * @return true if this Node has children, else false
+     */
+    protected boolean checkForChildren(final Instance _instance)
+    {
+        setExecutionStatus(UIStructurBrowser.ExecutionStatus.CHECKFORCHILDREN);
+        try {
+            final List<Return> ret = getObject4Event().executeEvents(EventType.UI_TABLE_EVALUATE,
+                            ParameterValues.INSTANCE, _instance,
+                            ParameterValues.CLASS, this);
+            return ret.isEmpty() ? false : ret.get(0).get(ReturnValues.TRUE) != null;
+        } catch (final EFapsException e) {
+            throw new RestartResponseException(new ErrorPage(e));
+        }
+    }
+
+    /**
+     * Method is called from the StructurBrowser in edit mode from
+     * {@link #setValuesFromUI(Map, DefaultMutableTreeNode)} to get
+     * additional JavaScript to be appended to the AjaxTarget.
+     * @param _parameters   Parameter as send from the UserInterface
+     * @return JavaScript for the UserInterface
+     */
+    protected String getJavaScript4Target(final Map<String, String[]> _parameters)
+    {
+        String ret;
+        setExecutionStatus(UIStructurBrowser.ExecutionStatus.GETJAVASCRIPT4TARGET);
+        try {
+            final List<Return> retList = getObject4Event().executeEvents(EventType.UI_TABLE_EVALUATE,
+                                ParameterValues.INSTANCE, getInstance(),
+                                ParameterValues.CLASS, this,
+                                ParameterValues.PARAMETERS, _parameters);
+            ret = (String) retList.get(0).get(ReturnValues.SNIPLETT);
+        } catch (final EFapsException e) {
+            throw new RestartResponseException(new ErrorPage(e));
+        }
+        return ret;
     }
 
     /**
@@ -752,25 +828,6 @@ public class UIStructurBrowser
     public void setParent(final boolean _parent)
     {
         this.parent = _parent;
-    }
-
-    /**
-     * This method is used to check if a node has potential children.
-     *
-     * @param _instance Instance of a Node to be checked
-     * @return true if this Node has children, else false
-     */
-    private boolean checkForChildren(final Instance _instance)
-    {
-        setExecutionStatus(UIStructurBrowser.ExecutionStatus.CHECKFORCHILDREN);
-        try {
-            final List<Return> ret = getObject4Event().executeEvents(EventType.UI_TABLE_EVALUATE,
-                            ParameterValues.INSTANCE, _instance,
-                            ParameterValues.CLASS, this);
-            return ret.isEmpty() ? false : ret.get(0).get(ReturnValues.TRUE) != null;
-        } catch (final EFapsException e) {
-            throw new RestartResponseException(new ErrorPage(e));
-        }
     }
 
     /**
@@ -848,37 +905,6 @@ public class UIStructurBrowser
     }
 
     /**
-     * This method should be called to add children to a Node in the Tree.<br>
-     * e.g. in a standard implementation the children would be added to the Tree
-     * on the expand-Event of the tree. The children a retrieved from an esjp
-     * with the EventType UI_TABLE_EVALUATE.
-     *
-     * @param _parent the DefaultMutableTreeNode the new children should be
-     *            added
-     */
-    @SuppressWarnings("unchecked")
-    public void addChildren(final DefaultMutableTreeNode _parent)
-    {
-        setExecutionStatus(UIStructurBrowser.ExecutionStatus.ADDCHILDREN);
-        _parent.removeAllChildren();
-        List<Return> ret;
-        try {
-            ret = getObject4Event().executeEvents(EventType.UI_TABLE_EVALUATE, ParameterValues.INSTANCE, getInstance(),
-                            ParameterValues.CLASS, this);
-            final Map<Instance, Boolean> map = (Map<Instance, Boolean>) ret.get(0).get(ReturnValues.VALUES);
-
-            if (this.tableuuid == null) {
-                executeTree(map, false);
-            } else {
-                executeTreeTable(map, false);
-            }
-            addNode(_parent, this.childs);
-        } catch (final EFapsException e) {
-            throw new RestartResponseException(new ErrorPage(e));
-        }
-    }
-
-    /**
      * @param _parameters   Parameter as send from the UserInterface
      * @param _node         Node the _parameters were send from
      * @throws EFapsException on error
@@ -911,30 +937,6 @@ public class UIStructurBrowser
         }
         return getJavaScript4Target(_parameters);
     }
-
-    /**
-     * Method is called from the StructurBrowser in edit mode from
-     * {@link #setValuesFromUI(Map, DefaultMutableTreeNode)} to get
-     * additional JavaScript to be appended to the AjaxTarget.
-     * @param _parameters   Parameter as send from the UserInterface
-     * @return JavaScript for the UserInterface
-     */
-    private String getJavaScript4Target(final Map<String, String[]> _parameters)
-    {
-        String ret;
-        setExecutionStatus(UIStructurBrowser.ExecutionStatus.GETJAVASCRIPT4TARGET);
-        try {
-            final List<Return> retList = getObject4Event().executeEvents(EventType.UI_TABLE_EVALUATE,
-                                ParameterValues.INSTANCE, getInstance(),
-                                ParameterValues.CLASS, this,
-                                ParameterValues.PARAMETERS, _parameters);
-            ret = (String) retList.get(0).get(ReturnValues.SNIPLETT);
-        } catch (final EFapsException e) {
-            throw new RestartResponseException(new ErrorPage(e));
-        }
-        return ret;
-    }
-
 
     /**
      * Get the Value of a Column identified by the index of the Column.

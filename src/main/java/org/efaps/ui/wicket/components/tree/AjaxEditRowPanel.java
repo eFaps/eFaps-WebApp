@@ -201,10 +201,13 @@ public class AjaxEditRowPanel
                              final Form<?> _form)
             throws EFapsException
         {
+            final UIStructurBrowser strucBr = (UIStructurBrowser) getNode().getUserObject();
+            final String js = strucBr.setValuesFromUI(Context.getThreadContext().getParameters(), getNode());
             final StructurBrowserTreeTable treeTable = findParent(StructurBrowserTreeTable.class);
             final DefaultTreeModel treeModel = (DefaultTreeModel) treeTable.getModelObject();
             treeModel.removeNodeFromParent(this.node);
             treeTable.updateTree(_target);
+            _target.appendJavascript(js);
         }
     }
 
