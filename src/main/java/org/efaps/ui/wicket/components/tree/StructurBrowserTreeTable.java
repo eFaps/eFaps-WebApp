@@ -111,6 +111,9 @@ public class StructurBrowserTreeTable
         treeState.addTreeStateListener(new AsyncronTreeUpdateListener());
 
         final DefaultMutableTreeNode root = (DefaultMutableTreeNode) getModelObject().getRoot();
+        if (!isRootLess() && _model.getObject().isForceExpanded()) {
+            getTreeState().expandNode(root);
+        }
         expandChildren(root);
     }
 
@@ -321,14 +324,33 @@ public class StructurBrowserTreeTable
                                            final IRenderNodeCallback _nodeCallback)
         {
             super(_wicketId);
+            final UIStructurBrowser uiStru = (UIStructurBrowser) ((DefaultMutableTreeNode) _node).getUserObject();
 
             add(newIndentation(this, "indent", _node, _level));
 
-            add(newJunctionLink(this, "link", "image", _node));
+            if (uiStru.isForceExpanded()) {
+                final WebMarkupContainer junctionLink = new WebMarkupContainer("link")
+                {
+                    private static final long serialVersionUID = 1L;
 
+                    /**
+                     * @see org.apache.wicket.Component#onComponentTag(org.apache.wicket.markup.ComponentTag )
+                     */
+                    @Override
+                    protected void onComponentTag(final ComponentTag _tag)
+                    {
+                        super.onComponentTag(_tag);
+                        _tag.put("onclick", "return false");
+                    }
+                };
+                add(junctionLink);
+                junctionLink.add(newJunctionImage(junctionLink, "image", _node));
+            } else {
+                add(newJunctionLink(this, "link", "image", _node));
+            }
             final WebComponent direction = new WebComponent("direction");
             add(direction);
-            final UIStructurBrowser uiStru = (UIStructurBrowser) ((DefaultMutableTreeNode) _node).getUserObject();
+
             if (uiStru == null || uiStru.getDirection() == null) {
                 direction.setVisible(false);
             } else if (uiStru.getDirection()) {

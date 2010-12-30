@@ -245,6 +245,12 @@ public class UIStructurBrowser
     private UIStructurBrowser emptyRow;
 
     /**
+     * If true the tree is always expanded and the inks for expand and
+     * collapse will not work.
+     */
+    private boolean forceExpanded = false;
+
+    /**
      * Constructor.
      *
      * @param _parameters Page parameters
@@ -339,6 +345,7 @@ public class UIStructurBrowser
             this.valueLabel = DBProperties.getProperty(tmplabel);
         }
     }
+
 
     /**
      * This method should be called to actually execute this
@@ -566,13 +573,13 @@ public class UIStructurBrowser
     {
         try {
             // only if the element was opened the first time e.g. reload etc.
-            if ((isRoot() || _expand) && Context.getThreadContext().containsSessionAttribute(getCacheKey())) {
+            if ((isRoot() || _expand)
+                       && (Context.getThreadContext().containsSessionAttribute(getCacheKey()) || this.forceExpanded)) {
                 final Map<String, Boolean> sessMap = (Map<String, Boolean>) Context
                                 .getThreadContext().getSessionAttribute(getCacheKey());
                 for (final UIStructurBrowser uiChild : this.childs) {
-
-                    if (sessMap.containsKey(uiChild.getInstanceKey())) {
-                        final Boolean expandedTmp = sessMap.get(uiChild.getInstanceKey());
+                    if (sessMap == null || sessMap.containsKey(uiChild.getInstanceKey())) {
+                        final Boolean expandedTmp = sessMap == null ? true : sessMap.get(uiChild.getInstanceKey());
                         if (expandedTmp != null && expandedTmp && uiChild.isParent()) {
                             uiChild.setExecutionStatus(UIStructurBrowser.ExecutionStatus.ADDCHILDREN);
                             final List<Return> ret = getObject4Event().executeEvents(EventType.UI_TABLE_EVALUATE,
@@ -656,6 +663,27 @@ public class UIStructurBrowser
             ret.getColumns().add(newCol);
         }
         return ret;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #forceExpanded}.
+     *
+     * @return value of instance variable {@link #forceExpanded}
+     */
+    public boolean isForceExpanded()
+    {
+        return this.forceExpanded;
+    }
+
+    /**
+     * Setter method for instance variable {@link #forceExpanded}.
+     *
+     * @param _forceExpanded value for instance variable {@link #forceExpanded}
+     */
+
+    protected void setForceExpanded(final boolean _forceExpanded)
+    {
+        this.forceExpanded = _forceExpanded;
     }
 
     /**

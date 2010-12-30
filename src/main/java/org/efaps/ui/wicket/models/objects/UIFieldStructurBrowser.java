@@ -108,6 +108,7 @@ public class UIFieldStructurBrowser
         if (getCommand() == null) {
             super.initialise();
         }
+        setForceExpanded(isEditMode() || isCreateMode());
     }
 
     /**
