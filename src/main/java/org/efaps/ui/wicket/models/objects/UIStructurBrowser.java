@@ -503,15 +503,19 @@ public class UIStructurBrowser
                             }
                         }
                         final FieldValue fieldvalue = new FieldValue(field, attr, value, instance, getInstance());
-                        final String strValue;
-                        final String htmlTitle;
+                        String strValue;
+                        String htmlTitle;
                         if (value != null || row4Create || isEditMode()) {
                             if ((isCreateMode() || isEditMode()) && field.isEditableDisplay(getMode())) {
                                 strValue = fieldvalue.getEditHtml(getMode());
+                                htmlTitle = fieldvalue.getStringValue(getMode());
+                            } else if (field.isHiddenDisplay(getMode())) {
+                                strValue = fieldvalue.getHiddenHtml(getMode());
+                                htmlTitle = "";
                             } else {
-                                strValue = fieldvalue.getStringValue(getMode());
+                                strValue = fieldvalue.getReadOnlyHtml(getMode());
+                                htmlTitle = fieldvalue.getStringValue(getMode());
                             }
-                            htmlTitle = fieldvalue.getStringValue(getMode());
                         } else {
                             strValue = "";
                             htmlTitle = "";
