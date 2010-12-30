@@ -213,10 +213,11 @@ public class StructurBrowserTree
                     }
                 }
                 final UUID commandUUID = cmd.getUUID();
-                InlineFrame page;
+
+                IPageLink pageLink;
                 if (cmd.getTargetTable() != null) {
-                    page = new InlineFrame(ContentContainerPage.IFRAME_WICKETID, PageMap
-                                    .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME), new IPageLink() {
+                    pageLink = new IPageLink()
+                    {
 
                         private static final long serialVersionUID = 1L;
 
@@ -237,10 +238,11 @@ public class StructurBrowserTree
                         {
                             return TablePage.class;
                         }
-                    });
+                    };
+
                 } else {
-                    page = new InlineFrame(ContentContainerPage.IFRAME_WICKETID, PageMap
-                                    .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME), new IPageLink() {
+                    pageLink = new IPageLink()
+                    {
 
                         private static final long serialVersionUID = 1L;
 
@@ -260,9 +262,10 @@ public class StructurBrowserTree
                         {
                             return FormPage.class;
                         }
-                    });
+                    };
                 }
-
+                final InlineFrame page = new InlineFrame(ContentContainerPage.IFRAME_WICKETID, PageMap
+                                .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME), pageLink);
                 final InlineFrame component = (InlineFrame) getPage().get(
                                 ((ContentContainerPage) getPage()).getInlinePath());
                 page.setOutputMarkupId(true);

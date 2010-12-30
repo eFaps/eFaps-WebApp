@@ -105,7 +105,7 @@ public class StructurBrowserTreeTable
         this.add(StaticHeaderContributor.forCss(StructurBrowserTreeTable.CSS));
         this.parentLink = _parentLink;
 
-        setRootLess(!(_model.getObject().isCreateMode() || _model.getObject().isEditMode()));
+        setRootLess(!(_model.getObject().isEditable()));
 
         final ITreeState treeState = getTreeState();
 
@@ -374,7 +374,11 @@ public class StructurBrowserTreeTable
                     nodeLink = new WebMarkupContainer("nodeLink");
                     nodeLink.add(new TreeCellPanel("label", _node, uiStru.getBrowserFieldIndex()));
                 } else {
-                    nodeLink = newNodeLink(this, "nodeLink", _node);
+                    if (uiObject.getReference() == null) {
+                        nodeLink = new WebMarkupContainer("nodeLink");
+                    } else {
+                        nodeLink = newNodeLink(this, "nodeLink", _node);
+                    }
                     nodeLink.add(new LabelComponent("label", new UIModel<UIStructurBrowserTableCell>(uiObject)));
                 }
 

@@ -24,6 +24,8 @@ import java.util.UUID;
 
 import org.efaps.admin.AbstractAdminObject;
 import org.efaps.admin.ui.AbstractCommand.SortDirection;
+import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
+import org.efaps.admin.ui.field.Field.Display;
 import org.efaps.admin.ui.field.FieldTable;
 import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
@@ -64,6 +66,8 @@ public class UIFieldStructurBrowser
         setTableuuid(_field.getTargetTable().getUUID());
         setBrowserFieldName(_field.getTargetStructurBrowserField());
         this.fieldTabelId = _field.getId();
+        setShowCheckBoxes(_field.isTargetShowCheckBoxes());
+        setForceExpanded(_field.isTargetStructurBrowserForceExpand());
     }
 
     /**
@@ -83,6 +87,8 @@ public class UIFieldStructurBrowser
         setTableuuid(_field.getTargetTable().getUUID());
         setBrowserFieldName(_field.getTargetStructurBrowserField());
         this.fieldTabelId = _field.getId();
+        setShowCheckBoxes(_field.isTargetShowCheckBoxes());
+        setForceExpanded(_field.isTargetStructurBrowserForceExpand());
     }
 
     /**
@@ -108,7 +114,6 @@ public class UIFieldStructurBrowser
         if (getCommand() == null) {
             super.initialise();
         }
-        setForceExpanded(isEditMode() || isCreateMode());
     }
 
     /**
@@ -118,5 +123,27 @@ public class UIFieldStructurBrowser
     protected AbstractAdminObject getObject4Event()
     {
         return FieldTable.get(this.fieldTabelId);
+    }
+
+    /**
+     * Get the Display of the Field this StructurBrowser is bedded in.
+     * @param _mode target mode the display will be evaluate for
+     * @return Display
+     */
+    public Display getFieldDisplay(final TargetMode _mode)
+    {
+        return FieldTable.get(this.fieldTabelId).getDisplay(_mode);
+    }
+
+    /**
+     * In create or edit mode this StructurBrowser is editable,
+     * if the Field this StructurBroeser is bedded in is editable also.
+     *
+     * @return is this StructurBrowser editable.
+     */
+    @Override
+    public boolean isEditable()
+    {
+        return getFieldDisplay(getMode()).equals(Display.EDITABLE) && (isCreateMode() || isEditMode());
     }
 }

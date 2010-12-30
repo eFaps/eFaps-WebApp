@@ -65,26 +65,29 @@ public class StructurBrowserTreeTablePanel
     {
         super(_wicketId, _model);
 
-        final UIStructurBrowser model = (UIStructurBrowser) super.getDefaultModelObject();
-        if (!model.isInitialized()) {
-            model.execute();
-        }
-        final IColumn[] columns = new IColumn[model.getHeaders().size() + 1];
-        if (model.isCreateMode() || model.isEditMode()) {
-            columns[0] = new EditColumn(new ColumnLocation(Alignment.LEFT, 16, Unit.PX), "", _model);
-        } else {
-            columns[0] = new SelectColumn(new ColumnLocation(Alignment.LEFT, 16, Unit.PX), "");
+        final UIStructurBrowser uiObject = (UIStructurBrowser) super.getDefaultModelObject();
+
+        if (!uiObject.isInitialized()) {
+            uiObject.execute();
         }
         int i = 0;
-        for (final UITableHeader header : model.getHeaders()) {
+        final int add = uiObject.isEditable() || uiObject.isShowCheckBoxes() ? 1 : 0;
+        final IColumn[] columns = new IColumn[uiObject.getHeaders().size() + add];
+        if (uiObject.isEditable()) {
+            columns[i] = new EditColumn(new ColumnLocation(Alignment.LEFT, 16, Unit.PX), "", _model);
+        } else if (uiObject.isShowCheckBoxes()) {
+            columns[i] = new SelectColumn(new ColumnLocation(Alignment.LEFT, 16, Unit.PX), "");
+        }
+        i = i + add;
+        for (final UITableHeader header : uiObject.getHeaders()) {
             final int width = header.getWidth();
             final Unit unit = header.isFixedWidth() ? Unit.PX : Unit.PROPORTIONAL;
-            if (header.getFieldName().equals(model.getBrowserFieldName())) {
-                columns[i + 1] = new TreeColumn(new ColumnLocation(Alignment.MIDDLE, width, unit),
+            if (header.getFieldName().equals(uiObject.getBrowserFieldName())) {
+                columns[i] = new TreeColumn(new ColumnLocation(Alignment.MIDDLE, width, unit),
                                 header.getLabel(), _model);
             } else {
-                columns[i + 1] = new SimpleColumn(new ColumnLocation(Alignment.MIDDLE, width, unit),
-                                header.getLabel(), i);
+                columns[i] = new SimpleColumn(new ColumnLocation(Alignment.MIDDLE, width, unit),
+                                header.getLabel(), i - add);
             }
             i++;
         }

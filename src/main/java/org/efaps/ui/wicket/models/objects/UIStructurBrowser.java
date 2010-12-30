@@ -251,6 +251,12 @@ public class UIStructurBrowser
     private boolean forceExpanded = false;
 
     /**
+     * Stores if the StructurBrowser should show CheckBoxes.
+     */
+    private boolean showCheckBoxes = false;
+
+
+    /**
      * Constructor.
      *
      * @param _parameters Page parameters
@@ -340,6 +346,7 @@ public class UIStructurBrowser
         if ((command != null) && (command.getTargetTable() != null)) {
             this.tableuuid = command.getTargetTable().getUUID();
             this.browserFieldName = command.getTargetStructurBrowserField();
+            this.showCheckBoxes = command.isTargetShowCheckBoxes();
         } else if (getInstance() != null) {
             final String tmplabel = Menu.getTypeTreeMenu(getInstance().getType()).getLabel();
             this.valueLabel = DBProperties.getProperty(tmplabel);
@@ -1238,7 +1245,7 @@ public class UIStructurBrowser
     private void storeInSession()
     {
         try {
-            if (!getMode().equals(TargetMode.CREATE) && !getMode().equals(TargetMode.EDIT)) {
+            if (!getMode().equals(TargetMode.CREATE)) {
                 final Map<String, Boolean> sessMap;
                 if (Context.getThreadContext().containsSessionAttribute(getCacheKey())) {
                     sessMap = (Map<String, Boolean>) Context.getThreadContext().getSessionAttribute(getCacheKey());
@@ -1276,6 +1283,52 @@ public class UIStructurBrowser
     }
 
     /**
+     * Getter method for the instance variable {@link #root}.
+     *
+     * @return value of instance variable {@link #root}
+     */
+    public boolean isRoot()
+    {
+        return this.root;
+    }
+
+    /**
+     * @return <i>true</i> if the check boxes must be shown, other <i>false</i>
+     *         is returned.
+     * @see #showCheckBoxes
+     */
+    public boolean isShowCheckBoxes()
+    {
+        boolean ret;
+        if (super.isSubmit() && !isCreateMode()) {
+            ret = true;
+        } else {
+            ret = this.showCheckBoxes;
+        }
+        return ret;
+    }
+
+    /**
+     * Setter method for instance variable {@link #showCheckBoxes}.
+     *
+     * @param _showCheckBoxes value for instance variable {@link #showCheckBoxes}
+     */
+    protected void setShowCheckBoxes(final boolean _showCheckBoxes)
+    {
+        this.showCheckBoxes = _showCheckBoxes;
+    }
+
+    /**
+     * In create or edit mode this StructurBrowser is editable.
+     *
+     * @return is this StructurBrowser editable.
+     */
+    public boolean isEditable()
+    {
+        return isCreateMode() || isEditMode();
+    }
+
+    /**
      * (non-Javadoc).
      *
      * @see org.apache.wicket.model.Model#toString()
@@ -1285,16 +1338,6 @@ public class UIStructurBrowser
     public String toString()
     {
         return this.label;
-    }
-
-    /**
-     * Getter method for the instance variable {@link #root}.
-     *
-     * @return value of instance variable {@link #root}
-     */
-    public boolean isRoot()
-    {
-        return this.root;
     }
 
     /**
