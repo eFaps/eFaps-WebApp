@@ -34,13 +34,9 @@ import org.apache.wicket.extensions.markup.html.tree.table.ColumnLocation.Alignm
 import org.apache.wicket.extensions.markup.html.tree.table.ColumnLocation.Unit;
 import org.apache.wicket.extensions.markup.html.tree.table.IColumn;
 import org.apache.wicket.extensions.markup.html.tree.table.IRenderable;
-import org.apache.wicket.markup.html.link.ILinkListener;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.util.string.Strings;
 import org.efaps.ui.wicket.behaviors.RowSelectedInput;
-import org.efaps.ui.wicket.components.table.cell.ContentContainerLink;
-import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.cell.UIStructurBrowserTableCell;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.models.objects.UITableHeader;
@@ -185,11 +181,6 @@ public class StructurBrowserTreeTablePanel
         private final int index;
 
         /**
-         * Counter index for the Link element.
-         */
-        private int idx = 0;
-
-        /**
          * @param _location Location
          * @param _header header
          * @param _index index
@@ -202,7 +193,6 @@ public class StructurBrowserTreeTablePanel
             this.index = _index;
             setContentAsTooltip(true);
         }
-
 
         /**
          * This method is used to populate the cell for given node in case when
@@ -253,51 +243,7 @@ public class StructurBrowserTreeTablePanel
                     }
                 };
             } else {
-                final UIStructurBrowserTableCell uiObject = uiStru.getColumnValue(getIndex());
-                if (uiStru.isEditMode() || uiStru.isCreateMode()) {
-                    ret = null;
-                } else {
-
-                    if (uiObject.getReference() == null) {
-                        ret = super.newCell(_node, _level);
-                    } else {
-                        this.idx++;
-                        final IModel<UIStructurBrowserTableCell> model = new UIModel<UIStructurBrowserTableCell>(
-                                        uiObject);
-                        final ContentContainerLink<UIStructurBrowserTableCell> celllink
-                            = new ContentContainerLink<UIStructurBrowserTableCell>("link" + uiObject.getName()
-                                            + this.idx, model);
-                        getPage().add(celllink);
-                        celllink.rendered();
-                        ret = new IRenderable()
-                        {
-
-                            private static final long serialVersionUID = 1L;
-
-                            public void render(final TreeNode _node,
-                                               final Response _response)
-                            {
-                                final CharSequence url = celllink.urlFor(ILinkListener.INTERFACE);
-                                String content = getNodeValue(_node);
-
-                                // escape if necessary
-                                if (isEscapeContent()) {
-                                    content = Strings.escapeMarkup(content).toString();
-                                }
-
-                                _response.write("<a");
-                                if (isContentAsTooltip()) {
-                                    _response.write(" title=\"" + content + "\"");
-                                }
-                                _response.write(" href=\"");
-                                _response.write(url);
-                                _response.write("\">");
-                                _response.write(content);
-                                _response.write("</a>");
-                            }
-                        };
-                    }
-                }
+                ret = null;
             }
             return ret;
         }

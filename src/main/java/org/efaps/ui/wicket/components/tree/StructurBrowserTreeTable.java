@@ -39,7 +39,6 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.html.tree.ITreeState;
-import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.AbstractCommand.Target;
@@ -47,6 +46,8 @@ import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.field.Field.Display;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.behaviors.AbstractAjaxCallBackBehavior;
+import org.efaps.ui.wicket.components.LabelComponent;
+import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.cell.UIStructurBrowserTableCell;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
@@ -374,20 +375,7 @@ public class StructurBrowserTreeTable
                     nodeLink.add(new TreeCellPanel("label", _node, uiStru.getBrowserFieldIndex()));
                 } else {
                     nodeLink = newNodeLink(this, "nodeLink", _node);
-                    nodeLink.add(new Label("label", new AbstractReadOnlyModel<String>()
-                    {
-
-                        private static final long serialVersionUID = 1L;
-
-                        /**
-                         * @see org.apache.wicket.model.AbstractReadOnlyModel#getObject()
-                         */
-                        @Override
-                        public String getObject()
-                        {
-                            return _nodeCallback.renderNode(_node);
-                        }
-                    }));
+                    nodeLink.add(new LabelComponent("label", new UIModel<UIStructurBrowserTableCell>(uiObject)));
                 }
 
                 final WebComponent rowId = new WebComponent("rowId") {

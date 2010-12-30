@@ -30,6 +30,7 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.efaps.admin.ui.field.Field.Display;
 import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
 import org.efaps.ui.wicket.behaviors.ExpandTextareaBehavior;
 import org.efaps.ui.wicket.behaviors.SetSelectedRowBehavior;
@@ -75,20 +76,22 @@ public class TreeCellPanel
             add(new AttributeAppender("style", true, new Model<String>("display:none"), ";"));
         }
         final Component label;
-        if (uiCell.isAutoComplete()) {
+        if (uiCell.isAutoComplete() && uiCell.getDisplay().equals(Display.EDITABLE)) {
             label = new AutoCompleteField("label", cellModel, false);
         } else {
             label = new LabelComponent("label", cellModel);
         }
-        label.add(new SetSelectedRowBehavior(uiCell.getName()));
-        if (uiCell.isFieldUpdate()) {
-            label.add(new AjaxFieldUpdateBehavior(uiCell.getFieldUpdateEvent(), cellModel));
-        }
-        if (uiCell.isMultiRows()) {
-            label.add(new ExpandTextareaBehavior());
+        if (uiCell.getDisplay().equals(Display.EDITABLE)) {
+            label.add(new SetSelectedRowBehavior(uiCell.getName()));
+            if (uiCell.isFieldUpdate()) {
+                label.add(new AjaxFieldUpdateBehavior(uiCell.getFieldUpdateEvent(), cellModel));
+            }
+            if (uiCell.isMultiRows()) {
+                label.add(new ExpandTextareaBehavior());
+            }
         }
         add(label);
-        if (uiCell.isValuePicker()) {
+        if (uiCell.isValuePicker() && uiCell.getDisplay().equals(Display.EDITABLE)) {
             this.add(new AjaxPickerLink("valuePicker", cellModel, label));
         } else {
             add(new WebMarkupContainer("valuePicker").setVisible(false));
