@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -130,7 +130,6 @@ public abstract class AbstractMergePage
      * @see #mergeStatics()
      * @see org.apache.wicket.Page#onBeforeRender()
      */
-    @SuppressWarnings("unchecked")
     @Override
     protected void onBeforeRender()
     {
@@ -145,7 +144,7 @@ public abstract class AbstractMergePage
             for (final Entry<StaticHeaderContributor.HeaderType, List<StaticHeaderContributor>> entry : resources
                             .entrySet()) {
                 if (entry.getValue().size() > 1) {
-                    final List namelist = getReferenceNameList(entry.getValue());
+                    final List<String> namelist = getReferenceNameList(entry.getValue());
                     // get a new Bundle
                     String name = "";
                     try {

@@ -41,8 +41,10 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class AjaxFieldUpdateBehavior extends AjaxFormSubmitBehavior
+public class AjaxFieldUpdateBehavior
+    extends AjaxFormSubmitBehavior
 {
+
     /**
      * Reference to the javascript.
      */
@@ -64,14 +66,15 @@ public class AjaxFieldUpdateBehavior extends AjaxFormSubmitBehavior
      */
     public AjaxFieldUpdateBehavior(final String _event)
     {
-        this (_event, null);
+        this(_event, null);
     }
 
     /**
-     * @param _event    event that this behavior should be executed on;
-     * @param _model    model that willbe used on submit
+     * @param _event event that this behavior should be executed on;
+     * @param _model model that willbe used on submit
      */
-    public AjaxFieldUpdateBehavior(final String _event, final IModel<?> _model)
+    public AjaxFieldUpdateBehavior(final String _event,
+                                   final IModel<?> _model)
     {
         super(_event);
         this.model = _model;
@@ -89,6 +92,7 @@ public class AjaxFieldUpdateBehavior extends AjaxFormSubmitBehavior
 
     /**
      * Default means nothing is done on error.
+     *
      * @see org.apache.wicket.ajax.form.AjaxFormSubmitBehavior#onError(org.apache.wicket.ajax.AjaxRequestTarget)
      * @param _target AjaxRequestTarget
      */
@@ -116,6 +120,7 @@ public class AjaxFieldUpdateBehavior extends AjaxFormSubmitBehavior
             for (final Return aReturn : returns) {
                 final Object ob = aReturn.get(ReturnValues.VALUES);
                 if (ob instanceof List) {
+                    @SuppressWarnings("unchecked")
                     final List<Map<String, String>> list = (List<Map<String, String>>) ob;
                     for (final Map<String, String> mapObj : list) {
                         map.putAll(mapObj);
@@ -132,8 +137,10 @@ public class AjaxFieldUpdateBehavior extends AjaxFormSubmitBehavior
                 // if the map contains a key that is not defined in this class it is assumed to be the name of a field
                 if (!(EFapsKey.FIELDUPDATE_JAVASCRIPT.getKey().equals(keyString))) {
                     js.append("eFapsSetFieldValue('").append(getComponentMarkupId()).append("','")
-                        .append(keyString).append("',").append(map.get(keyString).contains("Array(") ? "" : "'")
-                      .append(map.get(keyString)).append(map.get(keyString).contains("Array(") ? "" : "'").append(");");
+                                    .append(keyString).append("',")
+                                    .append(map.get(keyString).contains("Array(") ? "" : "'")
+                                    .append(map.get(keyString))
+                                    .append(map.get(keyString).contains("Array(") ? "" : "'").append(");");
                 }
             }
         }
@@ -146,6 +153,7 @@ public class AjaxFieldUpdateBehavior extends AjaxFormSubmitBehavior
 
     /**
      * Method to get the ComponentMarkupId.
+     *
      * @return markup id of the component.
      */
     protected String getComponentMarkupId()
@@ -154,9 +162,9 @@ public class AjaxFieldUpdateBehavior extends AjaxFormSubmitBehavior
     }
 
     /**
-     * Overwritten to deactivate the visit of all other components
-     * and the setting of model objects. This would lead to an
-     * error, because this component does not have a model.
+     * Overwritten to deactivate the visit of all other components and the
+     * setting of model objects. This would lead to
+     * an error, because this component does not have a model.
      *
      * @see org.apache.wicket.ajax.form.AjaxFormSubmitBehavior#onEvent(org.apache.wicket.ajax.AjaxRequestTarget)
      * @param _target AjaxRequestTarget
