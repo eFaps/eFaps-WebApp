@@ -417,8 +417,10 @@ public class UIStructurBrowser
                 this.childs.add(child);
                 child.setDirection(_map.get(instance));
                 child.setLabel(value.toString());
-
-                child.setParent(checkForChildren(instance));
+                child.setAllowChilds(checkForAllowChilds(instance));
+                if (isAllowChilds()) {
+                    child.setParent(checkForChildren(instance));
+                }
                 child.setImage(Image.getTypeIcon(instance.getType()) != null ? Image.getTypeIcon(instance.getType())
                                 .getUrl() : null);
             }
