@@ -591,8 +591,9 @@ public class UIStructurBrowser
                 final Map<String, Boolean> sessMap = (Map<String, Boolean>) Context
                                 .getThreadContext().getSessionAttribute(getCacheKey());
                 for (final UIStructurBrowser uiChild : this.childs) {
-                    if (sessMap == null || sessMap.containsKey(uiChild.getInstanceKey())) {
-                        final Boolean expandedTmp = sessMap == null ? true : sessMap.get(uiChild.getInstanceKey());
+                    if (isForceExpanded() || sessMap == null || sessMap.containsKey(uiChild.getInstanceKey())) {
+                        final Boolean expandedTmp = sessMap == null || isForceExpanded()
+                                                ? true : sessMap.get(uiChild.getInstanceKey());
                         if (expandedTmp != null && expandedTmp && uiChild.isParent()) {
                             uiChild.setExecutionStatus(UIStructurBrowser.ExecutionStatus.ADDCHILDREN);
                             final List<Return> ret = getObject4Event().executeEvents(EventType.UI_TABLE_EVALUATE,
