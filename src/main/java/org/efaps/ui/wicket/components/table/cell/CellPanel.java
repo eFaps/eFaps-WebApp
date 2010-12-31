@@ -126,7 +126,7 @@ public class CellPanel
                                 celllink = new WebMarkupContainer("link");
                                 celllink.setVisible(false);
                             } else {
-                                celllink = new AjaxLoadInOpenerLink("link", _model);
+                                celllink = new AjaxLoadInOpenerLink<UITableCell>("link", _model);
                             }
                         } else {
                             celllink = new ContentContainerLink<UITableCell>("link", _model);

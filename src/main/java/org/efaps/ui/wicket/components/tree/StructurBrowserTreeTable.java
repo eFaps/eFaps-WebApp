@@ -239,7 +239,6 @@ public class StructurBrowserTreeTable
                 }
             };
         } else {
-
             ret = newLink(_parent, _wicketId, new ILinkCallback()
             {
 
@@ -375,7 +374,18 @@ public class StructurBrowserTreeTable
                     nodeLink.add(new TreeCellPanel("label", _node, uiStru.getBrowserFieldIndex()));
                 } else {
                     if (uiObject.getReference() == null) {
-                        nodeLink = new WebMarkupContainer("nodeLink");
+                        nodeLink = new WebMarkupContainer("nodeLink") {
+
+                            private static final long serialVersionUID = 1L;
+
+                            @Override
+                            protected void onComponentTag(final ComponentTag _tag)
+                            {
+                                _tag.setName("span");
+                                super.onComponentTag(_tag);
+                            }
+
+                        };
                     } else {
                         nodeLink = newNodeLink(this, "nodeLink", _node);
                     }

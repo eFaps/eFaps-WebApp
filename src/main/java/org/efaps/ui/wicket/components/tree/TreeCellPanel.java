@@ -24,22 +24,32 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.PageMap;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
+import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.link.PopupSettings;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.admin.ui.field.Field.Display;
 import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
 import org.efaps.ui.wicket.behaviors.ExpandTextareaBehavior;
 import org.efaps.ui.wicket.behaviors.SetSelectedRowBehavior;
 import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.autocomplete.AutoCompleteField;
+import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
 import org.efaps.ui.wicket.components.picker.AjaxPickerLink;
+import org.efaps.ui.wicket.components.table.cell.AjaxLinkContainer;
+import org.efaps.ui.wicket.components.table.cell.AjaxLoadInOpenerLink;
+import org.efaps.ui.wicket.components.table.cell.CheckOutLink;
+import org.efaps.ui.wicket.components.table.cell.ContentContainerLink;
 import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.cell.UIStructurBrowserTableCell;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
+import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 
 /**
  * Class is used to render a cell inside a table.
@@ -75,7 +85,44 @@ public class TreeCellPanel
         if (uiCell.isHide()) {
             add(new AttributeAppender("style", true, new Model<String>("display:none"), ";"));
         }
-        final Component label;
+        final WebMarkupContainer link;
+        if (uiCell.getReference() == null
+                        || (uiStru.isSearchMode() && uiCell.getTarget() != Target.POPUP && uiStru.isSubmit())) {
+            link = new WebMarkupContainer("link")
+            {
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                protected void onComponentTag(final ComponentTag _tag)
+                {
+                    _tag.setName("span");
+                    super.onComponentTag(_tag);
+                }
+            };
+        } else {
+            if ((getRequest().getPage() instanceof ContentContainerPage
+                            || getRequest().getPage().getPageMapName().equals(ContentContainerPage.IFRAME_PAGEMAP_NAME))
+                            && uiCell.getTarget() != Target.POPUP) {
+                link = new AjaxLinkContainer("link", cellModel);
+            } else {
+                if (uiCell.isCheckOut()) {
+                    link = new CheckOutLink("link", cellModel);
+                } else {
+                    if (uiStru.isSearchMode() && uiCell.getTarget() != Target.POPUP) {
+                        link = new AjaxLoadInOpenerLink<UIStructurBrowserTableCell>("link", cellModel);
+                    } else {
+                        link = new ContentContainerLink<UIStructurBrowserTableCell>("link", cellModel);
+                        if (uiCell.getTarget() == Target.POPUP) {
+                            final PopupSettings popup = new PopupSettings(PageMap.forName("popup"));
+                            ((ContentContainerLink<?>) link).setPopupSettings(popup);
+                        }
+                    }
+                }
+            }
+        }
+        add(link);
+
+        Component label;
         if (uiCell.isAutoComplete() && uiCell.getDisplay().equals(Display.EDITABLE)) {
             label = new AutoCompleteField("label", cellModel, false);
         } else {
@@ -89,8 +136,15 @@ public class TreeCellPanel
             if (uiCell.isMultiRows()) {
                 label.add(new ExpandTextareaBehavior());
             }
+            link.add(new WebMarkupContainer("icon").setVisible(false));
+        } else {
+            if (uiCell.getIcon() == null) {
+                link.add(new WebMarkupContainer("icon").setVisible(false));
+            } else {
+                link.add(new StaticImageComponent("icon", uiCell.getIcon()));
+            }
         }
-        add(label);
+        link.add(label);
         if (uiCell.isValuePicker() && uiCell.getDisplay().equals(Display.EDITABLE)) {
             this.add(new AjaxPickerLink("valuePicker", cellModel, label));
         } else {

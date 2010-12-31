@@ -33,7 +33,7 @@ import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 
 /**
- * Class extends a Link to work in the content container. Used also by the
+ * Class extends a Link open a new  content container. Used also by the
  * StructurBrowserTable.
  *
  * @author The eFaps Team

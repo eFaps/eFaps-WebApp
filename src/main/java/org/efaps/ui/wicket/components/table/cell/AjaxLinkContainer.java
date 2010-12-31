@@ -28,7 +28,6 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
-
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
@@ -38,16 +37,20 @@ import org.efaps.ui.wicket.components.menutree.MenuTree;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
+import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 
 /**
- * @author jmox
+ * Class extends a Link to work inside a content container. Used also by the
+ * StructurBrowserTable.
+ * @author The eFaps Team
  * @version $Id:AjaxLinkContainer.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class AjaxLinkContainer extends WebMarkupContainer
+public class AjaxLinkContainer
+    extends WebMarkupContainer
 {
 
     /**
@@ -61,7 +64,8 @@ public class AjaxLinkContainer extends WebMarkupContainer
      * @param _wicketId wicket id of this component
      * @param _model model for thid component
      */
-    public AjaxLinkContainer(final String _wicketId, final IModel<?> _model)
+    public AjaxLinkContainer(final String _wicketId,
+                             final IModel<?> _model)
     {
         super(_wicketId, _model);
         this.add(new AjaxSelfCallBackBehavior());
@@ -84,7 +88,8 @@ public class AjaxLinkContainer extends WebMarkupContainer
      * Class is used to call an event from inside the parent.
      *
      */
-    public class AjaxParentCallBackBehavior extends AbstractAjaxCallBackBehavior
+    public class AjaxParentCallBackBehavior
+        extends AbstractAjaxCallBackBehavior
     {
 
         /**
@@ -116,9 +121,10 @@ public class AjaxLinkContainer extends WebMarkupContainer
                 try {
                     instance = cellmodel.getInstance();
                     menu = Menu.getTypeTreeMenu(instance.getType());
+                  //CHECKSTYLE:OFF
                 } catch (final Exception e) {
                     throw new RestartResponseException(new ErrorPage(e));
-                }
+                } //CHECKSTYLE:ON
                 if (menu == null) {
                     final Exception ex = new Exception("no tree menu defined for type " + instance.getType().getName());
                     throw new RestartResponseException(new ErrorPage(ex));
@@ -137,7 +143,8 @@ public class AjaxLinkContainer extends WebMarkupContainer
      * Class is used to call an event from inside istself.
      *
      */
-    public class AjaxSelfCallBackBehavior extends AjaxEventBehavior
+    public class AjaxSelfCallBackBehavior
+        extends AjaxEventBehavior
     {
 
         /**
@@ -168,9 +175,10 @@ public class AjaxLinkContainer extends WebMarkupContainer
                 try {
                     instance = cellmodel.getInstance();
                     menu = Menu.getTypeTreeMenu(instance.getType());
+                //CHECKSTYLE:OFF
                 } catch (final Exception e) {
                     throw new RestartResponseException(new ErrorPage(e));
-                }
+                } //CHECKSTYLE:ON
                 if (menu == null) {
                     final Exception ex = new Exception("no tree menu defined for type " + instance.getType().getName());
                     throw new RestartResponseException(new ErrorPage(ex));
@@ -186,10 +194,17 @@ public class AjaxLinkContainer extends WebMarkupContainer
                 Page page;
                 try {
                     if (menu.getTargetTable() != null) {
-                        page = new TablePage(PageMap.forName(ContentContainerPage.IFRAME_PAGEMAP_NAME), menu.getUUID(),
-                                        cellmodel.getInstanceKey())
+                        if (menu.getTargetStructurBrowserField() == null) {
+                            page = new TablePage(PageMap.forName(ContentContainerPage.IFRAME_PAGEMAP_NAME),
+                                            menu.getUUID(), cellmodel.getInstanceKey())
                                         .setMenuTreeKey(((AbstractContentPage) getComponent().getPage())
                                                         .getMenuTreeKey());
+                        } else {
+                            page = new StructurBrowserPage(PageMap.forName(ContentContainerPage.IFRAME_PAGEMAP_NAME),
+                                            menu.getUUID(), cellmodel.getInstanceKey())
+                                            .setMenuTreeKey(((AbstractContentPage) getComponent().getPage())
+                                                            .getMenuTreeKey());
+                        }
                     } else {
                         page = new FormPage(PageMap.forName(ContentContainerPage.IFRAME_PAGEMAP_NAME), menu.getUUID(),
                                         cellmodel.getInstanceKey())
