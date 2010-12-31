@@ -55,6 +55,11 @@ public class StructurBrowserTreeTablePanel
     private static final long serialVersionUID = 1L;
 
     /**
+     * must the link be done using the parent or the listmenu updated.
+     */
+    private final boolean parentLink;
+
+    /**
      * @param _wicketId wicket id of this component
      * @param _model model for this component
      * @param _parentLink must the link be done using the parent
@@ -64,7 +69,7 @@ public class StructurBrowserTreeTablePanel
                                          final boolean _parentLink)
     {
         super(_wicketId, _model);
-
+        this.parentLink = _parentLink;
         final UIStructurBrowser uiObject = (UIStructurBrowser) super.getDefaultModelObject();
 
         if (!uiObject.isInitialized()) {
@@ -213,9 +218,8 @@ public class StructurBrowserTreeTablePanel
                                  final TreeNode _node,
                                  final int _level)
         {
-            return new TreeCellPanel(_wicketId, _node, this.index);
+            return new TreeCellPanel(_wicketId, _node, this.index, StructurBrowserTreeTablePanel.this.parentLink);
         }
-
 
         /**
          * For edit or create Mode null is returned and therefore

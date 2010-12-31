@@ -49,7 +49,6 @@ import org.efaps.ui.wicket.components.table.cell.ContentContainerLink;
 import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.cell.UIStructurBrowserTableCell;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
-import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 
 /**
  * Class is used to render a cell inside a table.
@@ -67,13 +66,15 @@ public class TreeCellPanel
     private static final long serialVersionUID = 1L;
 
     /**
-     * @param _wicketId wicketID for this Component
-     * @param _node     treeNode the cell belongs to
-     * @param _index    index of the column
+     * @param _wicketId         wicketID for this Component
+     * @param _node             treeNode the cell belongs to
+     * @param _index            index of the column
+     * @param _updateListMenu   must the list menu be update by a link
      */
     public TreeCellPanel(final String _wicketId,
                          final TreeNode _node,
-                         final int _index)
+                         final int _index,
+                         final boolean _updateListMenu)
     {
         super(_wicketId);
         final UIStructurBrowser uiStru = (UIStructurBrowser) ((DefaultMutableTreeNode) _node).getUserObject();
@@ -100,9 +101,8 @@ public class TreeCellPanel
                 }
             };
         } else {
-            if ((getRequest().getPage() instanceof ContentContainerPage
-                            || getRequest().getPage().getPageMapName().equals(ContentContainerPage.IFRAME_PAGEMAP_NAME))
-                            && uiCell.getTarget() != Target.POPUP) {
+
+            if (_updateListMenu && uiCell.getTarget() != Target.POPUP) {
                 link = new AjaxLinkContainer("link", cellModel);
             } else {
                 if (uiCell.isCheckOut()) {

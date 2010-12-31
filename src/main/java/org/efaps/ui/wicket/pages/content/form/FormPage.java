@@ -53,6 +53,7 @@ import org.efaps.ui.wicket.models.objects.UIForm.FormElement;
 import org.efaps.ui.wicket.models.objects.UIHeading;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
+import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 import org.efaps.util.EFapsException;
@@ -247,7 +248,8 @@ public class FormPage
             } else if (element.getType().equals(ElementType.STRUCBRWS)) {
                 final StructurBrowserTreeTablePanel strucBrws = new StructurBrowserTreeTablePanel(
                                 elementRepeater.newChildId(), new UIModel<UIStructurBrowser>(
-                                                (UIFieldStructurBrowser) element.getElement()), false);
+                                                (UIFieldStructurBrowser) element.getElement()),
+                                               ContentContainerPage.IFRAME_PAGEMAP_NAME.equals(_page.getPageMapName()));
                 elementRepeater.add(strucBrws);
             } else if (element.getType().equals(ElementType.SUBFORM)) {
                 final UIFieldForm uiFieldForm = (UIFieldForm) element.getElement();

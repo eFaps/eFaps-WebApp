@@ -371,7 +371,8 @@ public class StructurBrowserTreeTable
 
                 if ((uiStru.isEditMode() || uiStru.isCreateMode()) &&  uiObject.getDisplay().equals(Display.EDITABLE)) {
                     nodeLink = new WebMarkupContainer("nodeLink");
-                    nodeLink.add(new TreeCellPanel("label", _node, uiStru.getBrowserFieldIndex()));
+                    nodeLink.add(new TreeCellPanel("label", _node, uiStru.getBrowserFieldIndex(),
+                                    StructurBrowserTreeTable.this.parentLink));
                 } else {
                     if (uiObject.getReference() == null) {
                         nodeLink = new WebMarkupContainer("nodeLink") {
