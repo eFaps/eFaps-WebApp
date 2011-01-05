@@ -88,7 +88,8 @@ public class TreeCellPanel
         }
         final WebMarkupContainer link;
         if (uiCell.getReference() == null
-                        || (uiStru.isSearchMode() && uiCell.getTarget() != Target.POPUP && uiStru.isSubmit())) {
+                        || (uiStru.isSearchMode() && uiCell.getTarget() != Target.POPUP && uiStru.isSubmit())
+                        || uiStru.isCreateMode() || uiStru.isEditMode()) {
             link = new WebMarkupContainer("link")
             {
                 private static final long serialVersionUID = 1L;
