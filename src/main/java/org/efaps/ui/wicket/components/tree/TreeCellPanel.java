@@ -139,10 +139,10 @@ public class TreeCellPanel
             }
             link.add(new WebMarkupContainer("icon").setVisible(false));
         } else {
-            if (uiCell.getIcon() == null && !uiCell.getIcon().isEmpty()) {
-                link.add(new WebMarkupContainer("icon").setVisible(false));
-            } else {
+            if (uiCell.getIcon() != null && !uiCell.getIcon().isEmpty()) {
                 link.add(new StaticImageComponent("icon", uiCell.getIcon()));
+            } else {
+                link.add(new WebMarkupContainer("icon").setVisible(false));
             }
         }
         link.add(label);
