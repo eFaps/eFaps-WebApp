@@ -122,7 +122,7 @@ public class ValueCellPanel extends Panel
             } else {
                 final Component label;
                 //check for AutoComplete field
-                if (uiFormCell.isAutoComplete() && (_formmodel.isCreateMode() || _formmodel.isSearchMode())) {
+                if (uiFormCell.isAutoComplete() && uiFormCell.getDisplay().equals(Display.EDITABLE)) {
                     label = new AutoCompleteField("label", _model, false);
                 } else {
                     label = new LabelComponent("label",
