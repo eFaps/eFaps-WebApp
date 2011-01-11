@@ -2,7 +2,7 @@
 
 <!--
 
-  Copyright 2003 - 2010 The eFaps Team
+  Copyright 2003 - 2011 The eFaps Team
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -23,7 +23,8 @@
 
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
@@ -97,7 +98,7 @@
         <site>
             <id>efaps.googlecode.com</id>
             <name>eFaps WebApp Site</name>
-            <url>svn:https://eFaps.googlecode.com/svn/site/eFaps-WebApp</url>
+            <url>svn:https://efaps.googlecode.com/svn/site/eFaps-WebApp</url>
         </site>
         <snapshotRepository>
             <id>sonatype-nexus-snapshots</id>
@@ -110,7 +111,6 @@
             <url>http://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
-
 
     <!-- ************************************************************************
     * Profiles
@@ -133,6 +133,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
+                        <version>2.7.1</version>
                         <configuration>
                             <skip>true</skip>
                         </configuration>
@@ -141,6 +142,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
+                        <version>2.1.2</version>
                         <executions>
                             <execution>
                                 <id>attach-sources</id>
@@ -155,6 +157,7 @@
                         <inherited>true</inherited>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.7</version>
                         <executions>
                             <execution>
                                 <id>attach-javadocs</id>
@@ -169,6 +172,7 @@
                         <inherited>true</inherited>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-deploy-plugin</artifactId>
+                        <version>2.5</version>
                         <configuration>
                             <updateReleaseInfo>true</updateReleaseInfo>
                         </configuration>
@@ -177,6 +181,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.1</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
@@ -274,12 +279,13 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
-                <version>3.0-beta-2</version>
+                <version>3.0-beta-3</version>
                 <configuration>
                     <reportPlugins>
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-project-info-reports-plugin</artifactId>
+                            <version>2.1.1</version>
                             <reportSets>
                                 <reportSet>
                                     <reports>
@@ -300,6 +306,7 @@
                         <plugin>
                             <groupId>org.codehaus.mojo</groupId>
                             <artifactId>javacc-maven-plugin</artifactId>
+                            <version>2.6</version>
                         </plugin>
                         <!-- java doc -->
                         <plugin>
@@ -319,8 +326,7 @@
                             <artifactId>maven-jxr-plugin</artifactId>
                             <version>2.2</version>
                             <configuration>
-                                <linkJavadoc>false</linkJavadoc>
-                                <javadocDir>apidocs</javadocDir>
+                                <linkJavadoc>true</linkJavadoc>
                             </configuration>
                         </plugin>
                         <!-- checkstyle -->
@@ -354,7 +360,6 @@
                 </configuration>
             </plugin>
         </plugins>
-        <!-- Needed for the upload of the site -->
         <!-- Needed for the upload of the site -->
         <extensions>
             <extension>
