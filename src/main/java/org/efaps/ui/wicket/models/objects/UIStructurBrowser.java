@@ -863,14 +863,17 @@ public class UIStructurBrowser
     /**
      * This method is used to execute a listener with a specific event.
      * @param _status status to be executed
+     * @param _uiID2Oid UI Id 2 Oid mapping
      */
-    public void executeListener(final ExecutionStatus _status)
+    public void executeListener(final ExecutionStatus _status,
+                                final Map<String, String> _uiID2Oid)
     {
         setExecutionStatus(_status);
         try {
             getObject4Event().executeEvents(EventType.UI_TABLE_EVALUATE,
                             ParameterValues.INSTANCE, getInstance(),
-                            ParameterValues.CLASS, this);
+                            ParameterValues.CLASS, this,
+                            ParameterValues.OIDMAP4UI,  _uiID2Oid);
         } catch (final EFapsException e) {
             throw new RestartResponseException(new ErrorPage(e));
         }
@@ -1038,7 +1041,7 @@ public class UIStructurBrowser
      * @return JavaScript for the UserInterface
      */
     public String setValuesFromUI(final Map<String, String[]> _parameters,
-                                final DefaultMutableTreeNode _node)
+                                  final DefaultMutableTreeNode _node)
         throws EFapsException
     {
         final Enumeration<?> preOrdEnum = ((DefaultMutableTreeNode) _node.getRoot()).preorderEnumeration();

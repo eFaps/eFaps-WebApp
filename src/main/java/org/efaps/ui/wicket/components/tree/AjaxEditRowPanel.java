@@ -20,6 +20,8 @@
 
 package org.efaps.ui.wicket.components.tree;
 
+import java.util.Map;
+
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
@@ -35,6 +37,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.string.AppendingStringBuffer;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
+import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
@@ -202,7 +205,9 @@ public class AjaxEditRowPanel
             throws EFapsException
         {
             final UIStructurBrowser strucBr = (UIStructurBrowser) getNode().getUserObject();
-            strucBr.executeListener(UIStructurBrowser.ExecutionStatus.NODE_REMOVE);
+            final Map<String, String> uiID2Oid = ((AbstractUIPageObject) (findPage().getDefaultModelObject()))
+                                                            .getUiID2Oid();
+            strucBr.executeListener(UIStructurBrowser.ExecutionStatus.NODE_REMOVE, uiID2Oid);
             final String js = strucBr.setValuesFromUI(Context.getThreadContext().getParameters(), getNode());
             final StructurBrowserTreeTable treeTable = findParent(StructurBrowserTreeTable.class);
             final DefaultTreeModel treeModel = (DefaultTreeModel) treeTable.getModelObject();
@@ -244,7 +249,9 @@ public class AjaxEditRowPanel
             throws EFapsException
         {
             final UIStructurBrowser strucBr = (UIStructurBrowser) getNode().getUserObject();
-            strucBr.executeListener(UIStructurBrowser.ExecutionStatus.NODE_INSERTITEM);
+            final Map<String, String> uiID2Oid = ((AbstractUIPageObject) (findPage().getDefaultModelObject()))
+                                                        .getUiID2Oid();
+            strucBr.executeListener(UIStructurBrowser.ExecutionStatus.NODE_INSERTITEM, uiID2Oid);
             final String js = strucBr.setValuesFromUI(Context.getThreadContext().getParameters(), getNode());
             UIStructurBrowser newStruBrws = null;
             try {
@@ -298,7 +305,9 @@ public class AjaxEditRowPanel
             throws EFapsException
         {
             final UIStructurBrowser strucBr = (UIStructurBrowser) getNode().getUserObject();
-            strucBr.executeListener(UIStructurBrowser.ExecutionStatus.NODE_INSERTCHILDFOLDER);
+            final Map<String, String> uiID2Oid = ((AbstractUIPageObject) (findPage().getDefaultModelObject()))
+                                                        .getUiID2Oid();
+            strucBr.executeListener(UIStructurBrowser.ExecutionStatus.NODE_INSERTCHILDFOLDER, uiID2Oid);
             final String js = strucBr.setValuesFromUI(Context.getThreadContext().getParameters(), getNode());
             UIStructurBrowser newStruBrws = null;
             try {
@@ -352,7 +361,9 @@ public class AjaxEditRowPanel
             throws EFapsException
         {
             final UIStructurBrowser strucBr = (UIStructurBrowser) getNode().getUserObject();
-            strucBr.executeListener(UIStructurBrowser.ExecutionStatus.NODE_INSERTCHILDITEM);
+            final Map<String, String> uiID2Oid = ((AbstractUIPageObject) (findPage().getDefaultModelObject()))
+                                                        .getUiID2Oid();
+            strucBr.executeListener(UIStructurBrowser.ExecutionStatus.NODE_INSERTCHILDITEM, uiID2Oid);
             final String js = strucBr.setValuesFromUI(Context.getThreadContext().getParameters(), getNode());
             UIStructurBrowser newStruBrws = null;
             try {
