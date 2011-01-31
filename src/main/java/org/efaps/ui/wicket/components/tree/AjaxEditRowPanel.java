@@ -103,7 +103,7 @@ public class AjaxEditRowPanel
             insertFolderImage.setReference(AjaxEditRowPanel.ICON_FOLDER_ADD);
             insertFolderlink.add(insertFolderImage);
 
-            if (uiStru.isRoot()) {
+            if (uiStru.isRoot() || !uiStru.isAllowItems()) {
                 add(new WebComponent("addLink").setVisible(false));
             } else {
                 final InsertChildRow insertlink = new InsertChildRow("addLink", _model, _node);
@@ -202,6 +202,7 @@ public class AjaxEditRowPanel
             throws EFapsException
         {
             final UIStructurBrowser strucBr = (UIStructurBrowser) getNode().getUserObject();
+            strucBr.executeListener(UIStructurBrowser.ExecutionStatus.NODE_REMOVE);
             final String js = strucBr.setValuesFromUI(Context.getThreadContext().getParameters(), getNode());
             final StructurBrowserTreeTable treeTable = findParent(StructurBrowserTreeTable.class);
             final DefaultTreeModel treeModel = (DefaultTreeModel) treeTable.getModelObject();
@@ -243,6 +244,7 @@ public class AjaxEditRowPanel
             throws EFapsException
         {
             final UIStructurBrowser strucBr = (UIStructurBrowser) getNode().getUserObject();
+            strucBr.executeListener(UIStructurBrowser.ExecutionStatus.NODE_INSERTITEM);
             final String js = strucBr.setValuesFromUI(Context.getThreadContext().getParameters(), getNode());
             UIStructurBrowser newStruBrws = null;
             try {
@@ -296,6 +298,7 @@ public class AjaxEditRowPanel
             throws EFapsException
         {
             final UIStructurBrowser strucBr = (UIStructurBrowser) getNode().getUserObject();
+            strucBr.executeListener(UIStructurBrowser.ExecutionStatus.NODE_INSERTCHILDFOLDER);
             final String js = strucBr.setValuesFromUI(Context.getThreadContext().getParameters(), getNode());
             UIStructurBrowser newStruBrws = null;
             try {
@@ -349,6 +352,7 @@ public class AjaxEditRowPanel
             throws EFapsException
         {
             final UIStructurBrowser strucBr = (UIStructurBrowser) getNode().getUserObject();
+            strucBr.executeListener(UIStructurBrowser.ExecutionStatus.NODE_INSERTCHILDITEM);
             final String js = strucBr.setValuesFromUI(Context.getThreadContext().getParameters(), getNode());
             UIStructurBrowser newStruBrws = null;
             try {

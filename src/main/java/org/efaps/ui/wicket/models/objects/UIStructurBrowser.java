@@ -103,6 +103,8 @@ public class UIStructurBrowser
         ADDCHILDREN,
         /** Method addChildren is executed. */
         ALLOWSCHILDREN,
+        /** Method is executed to check if the in case of edit the creation of items is allowed. */
+        ALLOWSITEM,
         /** Method checkForChildren is executed. */
         CHECKFORCHILDREN,
         /** Method is creating a new folder. */
@@ -116,6 +118,26 @@ public class UIStructurBrowser
         GETJAVASCRIPT4TARGET,
         /** Method execute is executed. */
         EXECUTE,
+        /**
+         * Executed on removal of a node as an listener and does not
+         * effect directly the tree, but allows to manipulate it.
+         */
+        NODE_REMOVE,
+        /**
+         * Executed on insert of an new item node as an listener and does not
+         * effect directly the tree, but allows to manipulate it.
+         */
+        NODE_INSERTITEM,
+        /**
+         * Executed on insert of an item as child as an listener and does not
+         * effect directly the tree, but allows to manipulate it.
+         */
+        NODE_INSERTCHILDITEM,
+        /**
+         * Executed on insert of an folder as child as an listener and does not
+         * effect directly the tree, but allows to manipulate it.
+         */
+        NODE_INSERTCHILDFOLDER,
         /** Method sort is executed. */
         SORT;
     }
@@ -144,12 +166,17 @@ public class UIStructurBrowser
      */
     private UUID tableuuid;
 
-
     /**
      *  This instance variable holds if this StructurBrowserModel can have
      *  children at all.
      */
     private boolean allowChilds;
+
+    /**
+     *  This instance variable holds if this StructurBrowserModel can have
+     *  children of type items, will onlye be evaluated if allowChils is true.
+     */
+    private boolean allowItems;
 
     /**
      * This instance variable holds if this StructurBrowserModel is a
@@ -543,6 +570,7 @@ public class UIStructurBrowser
                             child.setLabel(strValue);
                             child.setAllowChilds(checkForAllowChilds(instance));
                             if (child.isAllowChilds()) {
+                                child.setAllowItems(checkForAllowItems(instance));
                                 child.setParent(checkForChildren(instance));
                             }
                             if (row4Create) {
@@ -722,6 +750,25 @@ public class UIStructurBrowser
         this.allowChilds = _allowChilds;
     }
 
+    /**
+     * Getter method for the instance variable {@link #allowItems}.
+     *
+     * @return value of instance variable {@link #allowItems}
+     */
+    public boolean isAllowItems()
+    {
+        return this.allowItems;
+    }
+
+    /**
+     * Setter method for instance variable {@link #allowItems}.
+     *
+     * @param _allowItems value for instance variable {@link #allowItems}
+     */
+    public void setAllowItems(final boolean _allowItems)
+    {
+        this.allowItems = _allowItems;
+    }
 
     /**
      * Method used to evaluate the type for this table from the connected
@@ -808,6 +855,41 @@ public class UIStructurBrowser
                             ParameterValues.INSTANCE, _instance,
                             ParameterValues.CLASS, this);
             return ret.isEmpty() ? false : ret.get(0).get(ReturnValues.TRUE) != null;
+        } catch (final EFapsException e) {
+            throw new RestartResponseException(new ErrorPage(e));
+        }
+    }
+
+    /**
+     * This method is used to execute a listener with a specific event.
+     * @param _status status to be executed
+     */
+    public void executeListener(final ExecutionStatus _status)
+    {
+        setExecutionStatus(_status);
+        try {
+            getObject4Event().executeEvents(EventType.UI_TABLE_EVALUATE,
+                            ParameterValues.INSTANCE, getInstance(),
+                            ParameterValues.CLASS, this);
+        } catch (final EFapsException e) {
+            throw new RestartResponseException(new ErrorPage(e));
+        }
+    }
+
+    /**
+     * This method is used to check if a node has potential children.
+     *
+     * @param _instance Instance of a Node to be checked
+     * @return true if this Node has children, else false
+     */
+    protected boolean checkForAllowItems(final Instance _instance)
+    {
+        setExecutionStatus(UIStructurBrowser.ExecutionStatus.ALLOWSITEM);
+        try {
+            final List<Return> ret = getObject4Event().executeEvents(EventType.UI_TABLE_EVALUATE,
+                            ParameterValues.INSTANCE, _instance,
+                            ParameterValues.CLASS, this);
+            return ret.isEmpty() ? false : ret.get(0) == null ? false : ret.get(0).get(ReturnValues.TRUE) != null;
         } catch (final EFapsException e) {
             throw new RestartResponseException(new ErrorPage(e));
         }

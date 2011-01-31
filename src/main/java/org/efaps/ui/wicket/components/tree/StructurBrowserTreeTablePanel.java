@@ -91,7 +91,8 @@ public class StructurBrowserTreeTablePanel
                 columns[i] = new TreeColumn(new ColumnLocation(Alignment.MIDDLE, width, unit),
                                 header.getLabel(), _model);
             } else {
-                columns[i] = new SimpleColumn(new ColumnLocation(Alignment.MIDDLE, width, unit),
+                columns[i] = new SimpleColumn(new ColumnLocation(header.isFixedWidth()
+                                ? Alignment.RIGHT : Alignment.MIDDLE, width, unit),
                                 header.getLabel(), i - add);
             }
             i++;
