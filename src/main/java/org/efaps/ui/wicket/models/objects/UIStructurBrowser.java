@@ -1050,19 +1050,21 @@ public class UIStructurBrowser
             final DefaultMutableTreeNode node = (DefaultMutableTreeNode) preOrdEnum.nextElement();
             if (!node.isRoot()) {
                 final UIStructurBrowser uiObject = (UIStructurBrowser) node.getUserObject();
-                for (final UIStructurBrowserTableCell cell : uiObject.getColumns()) {
-                    final String[] values = _parameters.get(cell.getName());
-                    if (cell.isAutoComplete()) {
-                        final String[] autoValues = _parameters.get(cell.getName() + "AutoComplete");
-                        cell.setCellTitle(autoValues[i]);
-                        cell.setInstanceKey(values[i]);
-                    } else {
-                        if (values != null) {
-                            cell.setValueFromUI(values[i]);
+                if (uiObject != null) {
+                    for (final UIStructurBrowserTableCell cell : uiObject.getColumns()) {
+                        final String[] values = _parameters.get(cell.getName());
+                        if (cell.isAutoComplete()) {
+                            final String[] autoValues = _parameters.get(cell.getName() + "AutoComplete");
+                            cell.setCellTitle(autoValues[i]);
+                            cell.setInstanceKey(values[i]);
+                        } else {
+                            if (values != null) {
+                                cell.setValueFromUI(values[i]);
+                            }
                         }
                     }
+                    i++;
                 }
-                i++;
             }
         }
         return getJavaScript4Target(_parameters);
