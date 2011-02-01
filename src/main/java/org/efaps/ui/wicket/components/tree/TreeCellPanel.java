@@ -20,6 +20,8 @@
 
 package org.efaps.ui.wicket.components.tree;
 
+import java.util.Iterator;
+
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 
@@ -27,12 +29,16 @@ import org.apache.wicket.Component;
 import org.apache.wicket.PageMap;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
+import org.apache.wicket.datetime.StyleDateConverter;
+import org.apache.wicket.datetime.markup.html.form.DateTextField;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.link.PopupSettings;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.efaps.admin.datamodel.ui.DateTimeUI;
+import org.efaps.admin.datamodel.ui.DateUI;
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.admin.ui.field.Field.Display;
 import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
@@ -40,6 +46,8 @@ import org.efaps.ui.wicket.behaviors.ExpandTextareaBehavior;
 import org.efaps.ui.wicket.behaviors.SetSelectedRowBehavior;
 import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.autocomplete.AutoCompleteField;
+import org.efaps.ui.wicket.components.date.DateTimePanel;
+import org.efaps.ui.wicket.components.date.UnnestedDatePickers;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
 import org.efaps.ui.wicket.components.picker.AjaxPickerLink;
 import org.efaps.ui.wicket.components.table.cell.AjaxLinkContainer;
@@ -70,11 +78,13 @@ public class TreeCellPanel
      * @param _node             treeNode the cell belongs to
      * @param _index            index of the column
      * @param _updateListMenu   must the list menu be update by a link
+     * @param _datePickers
      */
     public TreeCellPanel(final String _wicketId,
                          final TreeNode _node,
                          final int _index,
-                         final boolean _updateListMenu)
+                         final boolean _updateListMenu,
+                         final UnnestedDatePickers _datePickers)
     {
         super(_wicketId);
         final UIStructurBrowser uiStru = (UIStructurBrowser) ((DefaultMutableTreeNode) _node).getUserObject();
@@ -131,11 +141,30 @@ public class TreeCellPanel
         }
         if (uiCell.getDisplay().equals(Display.EDITABLE)) {
             label.add(new SetSelectedRowBehavior(uiCell.getName()));
-            if (uiCell.isFieldUpdate()) {
-                label.add(new AjaxFieldUpdateBehavior(uiCell.getFieldUpdateEvent(), cellModel));
-            }
-            if (uiCell.isMultiRows()) {
-                label.add(new ExpandTextareaBehavior());
+
+            if (uiCell.getUiClass() instanceof DateUI || uiCell.getUiClass() instanceof DateTimeUI) {
+                label = new DateTimePanel("label", uiCell.getCompareValue(),
+                                                         new StyleDateConverter(false), uiCell.getName(),
+                                                         uiCell.getUiClass() instanceof DateTimeUI);
+                if (uiCell.isFieldUpdate()) {
+                    // the update behavior must be added to the inner text field
+                    final Iterator<? extends Component> iter = ((WebMarkupContainer) label).iterator();
+                    while (iter.hasNext()) {
+                        final Component comp = iter.next();
+                        if (comp instanceof DateTextField) {
+                            comp.add(new AjaxFieldUpdateBehavior(uiCell.getFieldUpdateEvent(), cellModel));
+                            break;
+                        }
+                    }
+                }
+                ((DateTimePanel) label).getDatePicker().setUnNestedComponent(_datePickers);
+            } else {
+                if (uiCell.isFieldUpdate()) {
+                    label.add(new AjaxFieldUpdateBehavior(uiCell.getFieldUpdateEvent(), cellModel));
+                }
+                if (uiCell.isMultiRows()) {
+                    label.add(new ExpandTextareaBehavior());
+                }
             }
             link.add(new WebMarkupContainer("icon").setVisible(false));
         } else {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2011 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import java.util.Date;
 
 import org.apache.wicket.datetime.DateConverter;
 import org.apache.wicket.datetime.markup.html.form.DateTextField;
-import org.apache.wicket.extensions.yui.calendar.DatePicker;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebComponent;
@@ -44,8 +43,10 @@ import org.joda.time.format.ISODateTimeFormat;
  * @author The eFaps Team
  * @version $Id$
  */
-public class DateTimePanel extends Panel
+public class DateTimePanel
+    extends Panel
 {
+
     /**
      * Needed for serialization.
      */
@@ -67,25 +68,34 @@ public class DateTimePanel extends Panel
     private final DateTime datetime;
 
     /**
-     * @param _wicketId     wicket id of this componnet
-     * @param _dateObject   object containing a DateTime, if null or not DateTime
-     *                      a new DateTime will be instantiated
-     * @param _converter    DateConverter needed to enable date formating related
-     *                      to the locale
-     * @param _fieldName    Name of the field this DateTimePanel belongs to
-     * @param _time must    the time be rendered also
+     * The datepicker for the panel.
      */
-    public DateTimePanel(final String _wicketId, final Object _dateObject, final DateConverter _converter,
-                         final String _fieldName, final boolean _time)
+    private DatePickerBehavior datePicker;
+
+    /**
+     * @param _wicketId wicket id of this component
+     * @param _dateObject object containing a DateTime, if null or not DateTime
+     *                       a new DateTime will be instantiated
+     * @param _converter DateConverter needed to enable date formating related
+     *                       to the locale
+     * @param _fieldName Name of the field this DateTimePanel belongs to
+     * @param _time must the time be rendered also
+     */
+    public DateTimePanel(final String _wicketId,
+                         final Object _dateObject,
+                         final DateConverter _converter,
+                         final String _fieldName,
+                         final boolean _time)
     {
         super(_wicketId);
-        this.datetime = ((_dateObject == null || !(_dateObject instanceof DateTime)) ? new DateTime()
-                        : (DateTime) _dateObject);
+        this.datetime = _dateObject == null || !(_dateObject instanceof DateTime) ? new DateTime()
+                        : (DateTime) _dateObject;
 
         this.converter = _converter;
 
         this.fieldName = _fieldName;
-        final DateTextField dateField = new DateTextField("date", new Model<Date>(this.datetime.toDate()), _converter) {
+        final DateTextField dateField = new DateTextField("date", new Model<Date>(this.datetime.toDate()), _converter)
+        {
 
             private static final long serialVersionUID = 1L;
 
@@ -97,17 +107,10 @@ public class DateTimePanel extends Panel
         };
         this.add(dateField);
 
-        dateField.add(new DatePicker() {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            protected boolean enableMonthYearSelection()
-            {
-                return true;
-            }
-        });
-
-        final WebComponent hour = new WebComponent("hours") {
+        this.datePicker = new DatePickerBehavior();
+        dateField.add(this.datePicker);
+        final WebComponent hour = new WebComponent("hours")
+        {
 
             private static final long serialVersionUID = 1L;
 
@@ -124,7 +127,8 @@ public class DateTimePanel extends Panel
         this.add(hour);
         hour.setVisible(_time);
 
-        final WebComponent minutes = new WebComponent("minutes") {
+        final WebComponent minutes = new WebComponent("minutes")
+        {
 
             private static final long serialVersionUID = 1L;
 
@@ -141,7 +145,8 @@ public class DateTimePanel extends Panel
         this.add(minutes);
         minutes.setVisible(_time);
 
-        final WebComponent ampm = new WebComponent("ampm") {
+        final WebComponent ampm = new WebComponent("ampm")
+        {
 
             private static final long serialVersionUID = 1L;
 
@@ -156,7 +161,8 @@ public class DateTimePanel extends Panel
              * set an am or pm option
              */
             @Override
-            protected void onComponentTagBody(final MarkupStream _markupStream, final ComponentTag _openTag)
+            protected void onComponentTagBody(final MarkupStream _markupStream,
+                                              final ComponentTag _openTag)
             {
                 super.onComponentTagBody(_markupStream, _openTag);
                 final StringBuilder html = new StringBuilder();
@@ -180,12 +186,23 @@ public class DateTimePanel extends Panel
 
     /**
      * Depending on the locale am/pm is used or not.
+     *
      * @return true if 12 hour format else false
      */
     protected boolean use12HourFormat()
     {
         final String pattern = DateTimeFormat.patternForStyle("-S", getLocale());
         return pattern.indexOf('a') != -1 || pattern.indexOf('h') != -1 || pattern.indexOf('K') != -1;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #datePicker}.
+     *
+     * @return value of instance variable {@link #datePicker}
+     */
+    public DatePickerBehavior getDatePicker()
+    {
+        return this.datePicker;
     }
 
     /**
@@ -197,7 +214,6 @@ public class DateTimePanel extends Panel
     {
         return this.fieldName;
     }
-
 
     /**
      * @return name for the field containing the date
@@ -232,16 +248,17 @@ public class DateTimePanel extends Panel
     }
 
     /**
-     * Method to get for the parameters returned from the form as a valid string.
-     * for a datetime
+     * Method to get for the parameters returned from the form as a valid string. for a datetime
      *
-     * @param _date     date
-     * @param _hour     hour
-     * @param _minute   minutes
-     * @param _ampm     am/pm
-     * @return  valid string
+     * @param _date date
+     * @param _hour hour
+     * @param _minute minutes
+     * @param _ampm am/pm
+     * @return valid string
      */
-    public String getDateAsString(final String[] _date, final String[] _hour, final String[] _minute,
+    public String getDateAsString(final String[] _date,
+                                  final String[] _hour,
+                                  final String[] _minute,
                                   final String[] _ampm)
     {
         String ret = null;

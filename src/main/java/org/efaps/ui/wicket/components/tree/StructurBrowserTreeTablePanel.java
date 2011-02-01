@@ -37,6 +37,7 @@ import org.apache.wicket.extensions.markup.html.tree.table.IRenderable;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.efaps.ui.wicket.behaviors.RowSelectedInput;
+import org.efaps.ui.wicket.components.date.UnnestedDatePickers;
 import org.efaps.ui.wicket.models.cell.UIStructurBrowserTableCell;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.models.objects.UITableHeader;
@@ -58,6 +59,8 @@ public class StructurBrowserTreeTablePanel
      * must the link be done using the parent or the listmenu updated.
      */
     private final boolean parentLink;
+
+    private final UnnestedDatePickers datePickers;
 
     /**
      * @param _wicketId wicket id of this component
@@ -97,8 +100,11 @@ public class StructurBrowserTreeTablePanel
             }
             i++;
         }
+        this.datePickers = new UnnestedDatePickers("datePickers");
+        add(this.datePickers);
         add(new RowSelectedInput("selected"));
-        final StructurBrowserTreeTable tree = new StructurBrowserTreeTable("treeTable", _model, columns, _parentLink);
+        final StructurBrowserTreeTable tree = new StructurBrowserTreeTable("treeTable", _model, columns, _parentLink,
+                        this.datePickers);
         add(tree);
     }
 
@@ -219,7 +225,8 @@ public class StructurBrowserTreeTablePanel
                                  final TreeNode _node,
                                  final int _level)
         {
-            return new TreeCellPanel(_wicketId, _node, this.index, StructurBrowserTreeTablePanel.this.parentLink);
+            return new TreeCellPanel(_wicketId, _node, this.index, StructurBrowserTreeTablePanel.this.parentLink,
+                            StructurBrowserTreeTablePanel.this.datePickers);
         }
 
         /**

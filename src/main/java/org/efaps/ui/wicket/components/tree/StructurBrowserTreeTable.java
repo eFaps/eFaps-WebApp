@@ -47,6 +47,7 @@ import org.efaps.admin.ui.field.Field.Display;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.behaviors.AbstractAjaxCallBackBehavior;
 import org.efaps.ui.wicket.components.LabelComponent;
+import org.efaps.ui.wicket.components.date.UnnestedDatePickers;
 import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.cell.UIStructurBrowserTableCell;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
@@ -89,17 +90,24 @@ public class StructurBrowserTreeTable
     private final boolean parentLink;
 
     /**
+     * DatePicker.
+     */
+    private final UnnestedDatePickers datePickers;
+
+    /**
      * Constructor.
      *
      * @param _wicketId     wicket id for this component
      * @param _model        model
      * @param _columns      columns
      * @param _parentLink   must the link be done over the parent
+     * @param _datePickers  DatePicker
      */
     public StructurBrowserTreeTable(final String _wicketId,
                                     final IModel<UIStructurBrowser> _model,
                                     final IColumn[] _columns,
-                                    final boolean _parentLink)
+                                    final boolean _parentLink,
+                                    final UnnestedDatePickers _datePickers)
     {
         super(_wicketId, _model.getObject().getTreeModel(), _columns);
         this.add(StaticHeaderContributor.forCss(StructurBrowserTreeTable.CSS));
@@ -116,6 +124,7 @@ public class StructurBrowserTreeTable
             getTreeState().expandNode(root);
         }
         expandChildren(root);
+        this.datePickers = _datePickers;
     }
 
     /**
@@ -372,7 +381,8 @@ public class StructurBrowserTreeTable
                 if ((uiStru.isEditMode() || uiStru.isCreateMode()) &&  uiObject.getDisplay().equals(Display.EDITABLE)) {
                     nodeLink = new WebMarkupContainer("nodeLink");
                     nodeLink.add(new TreeCellPanel("label", _node, uiStru.getBrowserFieldIndex(),
-                                    StructurBrowserTreeTable.this.parentLink));
+                                    StructurBrowserTreeTable.this.parentLink,
+                                    StructurBrowserTreeTable.this.datePickers));
                 } else {
                     if (uiObject.getReference() == null) {
                         nodeLink = new WebMarkupContainer("nodeLink") {
