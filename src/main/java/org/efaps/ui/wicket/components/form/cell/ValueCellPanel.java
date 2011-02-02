@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2011 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,8 +55,10 @@ import org.efaps.ui.wicket.models.objects.UIForm;
  * @author The eFaps Team
  * @version $Id$
  */
-public class ValueCellPanel extends Panel
+public class ValueCellPanel
+    extends Panel
 {
+
     /**
      * Needed for serialization.
      */
@@ -75,8 +77,10 @@ public class ValueCellPanel extends Panel
      * @param _formmodel model of the form
      * @param _ajaxLink is this panel an ajax link
      */
-    public ValueCellPanel(final String _wicketId, final IModel<UIFormCell> _model, final UIForm _formmodel,
-                    final boolean _ajaxLink)
+    public ValueCellPanel(final String _wicketId,
+                          final IModel<UIFormCell> _model,
+                          final UIForm _formmodel,
+                          final boolean _ajaxLink)
     {
         super(_wicketId, _model);
         setOutputMarkupId(true);
@@ -91,18 +95,19 @@ public class ValueCellPanel extends Panel
             }
             // in case of create or edit for a Date or DateTime that is editable
             if ((_formmodel.isCreateMode() || _formmodel.isEditMode())
-                          && ("Date".equals(uiFormCell.getTypeName())
-                                          || uiFormCell.getUiClass() instanceof DateUI
-                                          || "DateTime".equals(uiFormCell.getTypeName())
+                            && ("Date".equals(uiFormCell.getTypeName())
+                                            || uiFormCell.getUiClass() instanceof DateUI
+                                            || "DateTime".equals(uiFormCell.getTypeName())
                                           || uiFormCell.getUiClass() instanceof DateTimeUI)
-                          && uiFormCell.getDisplay().equals(Display.EDITABLE)) {
+                            && uiFormCell.getDisplay().equals(Display.EDITABLE)) {
 
                 this.dateTextField = new DateTimePanel("label", uiFormCell.getCompareValue(),
                                                        new StyleDateConverter(false), uiFormCell.getName(),
                                                        "DateTime".equals(uiFormCell.getTypeName())
-                                                       || uiFormCell.getUiClass() instanceof DateTimeUI);
+                                                                       || uiFormCell.getUiClass() instanceof DateTimeUI,
+                                                       uiFormCell.getField().getCols());
                 if (uiFormCell.isFieldUpdate()) {
-                    //the update behavior must be added to the inner text field
+                    // the update behavior must be added to the inner text field
                     final Iterator<? extends Component> iter = this.dateTextField.iterator();
                     while (iter.hasNext()) {
                         final Component comp = iter.next();
@@ -114,14 +119,14 @@ public class ValueCellPanel extends Panel
                 }
                 this.add(this.dateTextField);
                 this.add(new WebComponent("valuePicker").setVisible(false));
-            } else  if ((_formmodel.isCreateMode() || _formmodel.isEditMode())
+            } else if ((_formmodel.isCreateMode() || _formmodel.isEditMode())
                             && ("FormatedString".equals(uiFormCell.getTypeName()))
                             && uiFormCell.getDisplay().equals(Display.EDITABLE)) {
                 this.add(new EditorPanel("label", _model));
                 this.add(new WebComponent("valuePicker").setVisible(false));
             } else {
                 final Component label;
-                //check for AutoComplete field
+                // check for AutoComplete field
                 if (uiFormCell.isAutoComplete() && uiFormCell.getDisplay().equals(Display.EDITABLE)) {
                     label = new AutoCompleteField("label", _model, false);
                 } else {

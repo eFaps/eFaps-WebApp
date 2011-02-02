@@ -80,12 +80,14 @@ public class DateTimePanel
      *                       to the locale
      * @param _fieldName Name of the field this DateTimePanel belongs to
      * @param _time must the time be rendered also
+     * @param _inputSize size of the input
      */
     public DateTimePanel(final String _wicketId,
                          final Object _dateObject,
                          final DateConverter _converter,
                          final String _fieldName,
-                         final boolean _time)
+                         final boolean _time,
+                         final Integer _inputSize)
     {
         super(_wicketId);
         this.datetime = _dateObject == null || !(_dateObject instanceof DateTime) ? new DateTime()
@@ -103,6 +105,15 @@ public class DateTimePanel
             public String getInputName()
             {
                 return DateTimePanel.this.getDateFieldName();
+            }
+
+            @Override
+            protected void onComponentTag(final ComponentTag _tag)
+            {
+                super.onComponentTag(_tag);
+                if (_inputSize != null) {
+                    _tag.put("size", _inputSize);
+                }
             }
         };
         this.add(dateField);

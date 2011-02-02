@@ -78,7 +78,7 @@ public class TreeCellPanel
      * @param _node             treeNode the cell belongs to
      * @param _index            index of the column
      * @param _updateListMenu   must the list menu be update by a link
-     * @param _datePickers
+     * @param _datePickers      unnested DatePickers
      */
     public TreeCellPanel(final String _wicketId,
                          final TreeNode _node,
@@ -143,9 +143,11 @@ public class TreeCellPanel
             label.add(new SetSelectedRowBehavior(uiCell.getName()));
 
             if (uiCell.getUiClass() instanceof DateUI || uiCell.getUiClass() instanceof DateTimeUI) {
+
                 label = new DateTimePanel("label", uiCell.getCompareValue(),
                                                          new StyleDateConverter(false), uiCell.getName(),
-                                                         uiCell.getUiClass() instanceof DateTimeUI);
+                                                         uiCell.getUiClass() instanceof DateTimeUI,
+                                                         uiCell.getField().getCols());
                 if (uiCell.isFieldUpdate()) {
                     // the update behavior must be added to the inner text field
                     final Iterator<? extends Component> iter = ((WebMarkupContainer) label).iterator();

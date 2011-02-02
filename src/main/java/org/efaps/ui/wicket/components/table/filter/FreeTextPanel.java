@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2011 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,15 +28,14 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-import org.joda.time.DateTime;
-
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.models.objects.UITable;
-import org.efaps.ui.wicket.models.objects.UITableHeader;
 import org.efaps.ui.wicket.models.objects.UITable.Filter;
+import org.efaps.ui.wicket.models.objects.UITableHeader;
 import org.efaps.ui.wicket.models.objects.UITableHeader.FilterType;
+import org.joda.time.DateTime;
 
 /**
  * TODO comment!
@@ -44,7 +43,8 @@ import org.efaps.ui.wicket.models.objects.UITableHeader.FilterType;
  * @author The eFaps Team
  * @version $Id$
  */
-public class FreeTextPanel extends Panel
+public class FreeTextPanel
+    extends Panel
 {
     /**
      * Needed for serialization.
@@ -60,11 +60,13 @@ public class FreeTextPanel extends Panel
     private String toFieldName;
 
     /**
-     * @param _wicketId         wicket id for this component
-     * @param _model            model for this component
-     * @param _uitableHeader    UITableHeader this panel belongs to
+     * @param _wicketId wicket id for this component
+     * @param _model model for this component
+     * @param _uitableHeader UITableHeader this panel belongs to
      */
-    public FreeTextPanel(final String _wicketId, final IModel<UITable> _model, final UITableHeader _uitableHeader)
+    public FreeTextPanel(final String _wicketId,
+                         final IModel<UITable> _model,
+                         final UITableHeader _uitableHeader)
     {
         super(_wicketId, _model);
         final UITable uitable = (UITable) super.getDefaultModelObject();
@@ -94,10 +96,10 @@ public class FreeTextPanel extends Panel
             this.add(new Label("textTo", DBProperties.getProperty("FilterPage.textTo")));
 
             final DateTimePanel dateFrom = new DateTimePanel("dateFrom", fromDate,
-                                                             new StyleDateConverter(false), "dateFrom", false);
+                                                             new StyleDateConverter(false), "dateFrom", false, null);
             this.add(dateFrom);
             final DateTimePanel dateTo = new DateTimePanel("dateTo", toDate,
-                                                           new StyleDateConverter(false), "dateTo", false);
+                                                           new StyleDateConverter(false), "dateTo", false, null);
             this.add(dateTo);
 
             final StyleDateConverter conv = new StyleDateConverter(false);
@@ -105,7 +107,8 @@ public class FreeTextPanel extends Panel
             final StringBuilder js = new StringBuilder();
             js.append("<a href=\"#\" onclick=\"document.getElementsByName('").append(dateFrom.getDateFieldName())
                 .append("')[0].value='").append(dateStr)
-                .append("';document.getElementsByName('").append(dateTo.getDateFieldName()).append("')[0].value='")
+                .append("';document.getElementsByName('").append(dateTo.getDateFieldName())
+                .append("')[0].value='")
                 .append(dateStr).append("';\">")
                 .append(DBProperties.getProperty("FilterPage.Today")).append("</a>");
             if (filter == null || filter.getDateFrom() == null) {
@@ -113,7 +116,8 @@ public class FreeTextPanel extends Panel
                     .append("Wicket.Event.add(window, \"domready\", function(event) {")
                     .append("document.getElementsByName('").append(dateFrom.getDateFieldName())
                     .append("')[0].value='';")
-                    .append("document.getElementsByName('").append(dateTo.getDateFieldName()).append("')[0].value='';")
+                    .append("document.getElementsByName('").append(dateTo.getDateFieldName())
+                    .append("')[0].value='';")
                     .append(" });")
                     .append("</script>");
             }
@@ -124,7 +128,7 @@ public class FreeTextPanel extends Panel
             this.add(new WebMarkupContainer("from").setVisible(false));
             this.add(new WebMarkupContainer("to").setVisible(false));
 
-        }  else if (filterType.equals(FilterType.INTEGER) || filterType.equals(FilterType.DECIMAL)) {
+        } else if (filterType.equals(FilterType.INTEGER) || filterType.equals(FilterType.DECIMAL)) {
             this.add(new Label("textFrom", DBProperties.getProperty("FilterPage.textFrom")));
             this.add(new Label("textTo", DBProperties.getProperty("FilterPage.textTo")));
             this.add(new TextField<Object>("from"));
