@@ -277,7 +277,7 @@ public class StructurBrowserTree
                                 .getFromCache(StructurBrowserTree.this.listMenuKey);
 
                 final MenuTree newmenutree = new MenuTree(menutree.getId(), model.getCommandUUID(), model
-                                .getInstanceKey(), menutree.getMenuKey());
+                                .getInstanceKey(), menutree.getMenuKey(), null);
 
                 menutree.replaceWith(newmenutree);
                 newmenutree.updateTree(_target);

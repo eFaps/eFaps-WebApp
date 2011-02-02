@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2011 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,8 +37,8 @@ import org.efaps.admin.ui.Search;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.Opener;
 import org.efaps.ui.wicket.behaviors.dojo.BorderBehavior;
-import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.BorderBehavior.Design;
+import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior.Region;
 import org.efaps.ui.wicket.components.ChildCallBackHeaderContributer;
 import org.efaps.ui.wicket.components.split.ListOnlyPanel;
@@ -47,6 +47,7 @@ import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
+import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
@@ -142,15 +143,14 @@ public class ContentContainerPage
         final UUID commandUUID;
         final String instanceKey;
         if (opener.getModel() != null) {
-            final AbstractUIObject uiObject = ((AbstractUIObject) opener.getModel().getObject());
+            final AbstractUIObject uiObject = (AbstractUIObject) opener.getModel().getObject();
             commandUUID = uiObject.getCommandUUID();
             instanceKey = uiObject.getInstanceKey();
         } else {
             commandUUID = opener.getCommandUUID();
             instanceKey = opener.getInstanceKey();
         }
-
-        initialise(commandUUID, instanceKey);
+        initialise(commandUUID, instanceKey, null);
     }
 
     /**
@@ -163,7 +163,7 @@ public class ContentContainerPage
         throws EFapsException
     {
         super();
-        initialise(_uuid, _instanceKey);
+        initialise(_uuid, _instanceKey, null);
     }
 
     /**
@@ -181,6 +181,24 @@ public class ContentContainerPage
     }
 
     /**
+     * @param _pageMap          page map
+     * @param _uuid             UUID of the calling command
+     * @param _instanceKey      instance key
+     * @param _selectedCmdUUID  UUID of the selected command
+     * @throws EFapsException on error
+     */
+    public ContentContainerPage(final IPageMap _pageMap,
+                                final UUID _uuid,
+                                final String _instanceKey,
+                                final UUID _selectedCmdUUID)
+        throws EFapsException
+    {
+        super(_pageMap);
+        this.structurbrowser = false;
+        initialise(_uuid, _instanceKey, _selectedCmdUUID);
+    }
+
+    /**
      * @param _pageMap page map
      * @param _uuid UUID of the command
      * @param _instanceKey oid
@@ -195,18 +213,20 @@ public class ContentContainerPage
     {
         super(_pageMap);
         this.structurbrowser = _addStructurBrowser;
-        initialise(_uuid, _instanceKey);
+        initialise(_uuid, _instanceKey, null);
     }
 
     /**
      * Method to initialize the Page.
      *
-     * @param _uuid uuid of the command
-     * @param _instanceKey key to the instance
+     * @param _uuid             uuid of the command
+     * @param _instanceKey      key to the instance
+     * @param _selectCmdUUID    uuid of the selected Command
      * @throws EFapsException on error
      */
     private void initialise(final UUID _uuid,
-                            final String _instanceKey)
+                            final String _instanceKey,
+                            final UUID _selectCmdUUID)
         throws EFapsException
     {
         ((EFapsSession) getSession()).getUpdateBehaviors().clear();
@@ -226,9 +246,9 @@ public class ContentContainerPage
         split.add(new BorderBehavior(Design.SIDEBAR));
         // add a StructurBowser?
         if (this.structurbrowser) {
-            split.add(new StructBrowsSplitPanel("left", _uuid, _instanceKey, this.menuTreeKey));
+            split.add(new StructBrowsSplitPanel("left", _uuid, _instanceKey, this.menuTreeKey, _selectCmdUUID));
         } else {
-            split.add(new ListOnlyPanel("left", _uuid, _instanceKey, this.menuTreeKey));
+            split.add(new ListOnlyPanel("left", _uuid, _instanceKey, this.menuTreeKey, _selectCmdUUID));
         }
         final WebMarkupContainer right = new WebMarkupContainer("right");
         split.add(right);
@@ -246,7 +266,11 @@ public class ContentContainerPage
         this.webForm = cmd.getTargetForm() != null;
         if (cmd instanceof Menu) {
             for (final AbstractCommand childcmd : ((Menu) cmd).getCommands()) {
-                if (childcmd.isDefaultSelected()) {
+                if (_selectCmdUUID == null && childcmd.isDefaultSelected()) {
+                    uuidTmp = childcmd.getUUID();
+                    this.webForm = childcmd.getTargetForm() != null;
+                    break;
+                } else if (childcmd.getUUID().equals(_selectCmdUUID)) {
                     uuidTmp = childcmd.getUUID();
                     this.webForm = childcmd.getTargetForm() != null;
                     break;
@@ -268,7 +292,11 @@ public class ContentContainerPage
                     if (ContentContainerPage.this.webForm) {
                         page = new FormPage(uuid4NewPage, _instanceKey);
                     } else {
-                        page = new TablePage(uuid4NewPage, _instanceKey);
+                        if (Command.get(uuid4NewPage).getTargetStructurBrowserField() == null) {
+                            page = new TablePage(uuid4NewPage, _instanceKey);
+                        } else {
+                            page = new StructurBrowserPage(uuid4NewPage, _instanceKey);
+                        }
                     }
                 } catch (final EFapsException e) {
                     error = new ErrorPage(e);

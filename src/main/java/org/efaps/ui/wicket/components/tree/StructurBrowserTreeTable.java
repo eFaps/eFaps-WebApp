@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2010 The eFaps Team
+ * Copyright 2003 - 2011 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,8 +45,10 @@ import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.field.Field.Display;
 import org.efaps.db.Instance;
+import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.behaviors.AbstractAjaxCallBackBehavior;
 import org.efaps.ui.wicket.components.LabelComponent;
+import org.efaps.ui.wicket.components.RecentObjectLink;
 import org.efaps.ui.wicket.components.date.UnnestedDatePickers;
 import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.cell.UIStructurBrowserTableCell;
@@ -62,9 +64,8 @@ import org.efaps.util.EFapsException;
 
 /**
  * This class renders a TreeTable, which loads the children asynchron.<br>
- * The items of the tree consists of junction link, icon and label. An
- * additional arrow showing the direction of the child can be rendered
- * depending on a Tristate. The table shows the columns as defined in the model.
+ * The items of the tree consists of junction link, icon and label. An additional arrow showing the direction of the
+ * child can be rendered depending on a Tristate. The table shows the columns as defined in the model.
  *
  * @author The eFaps Team
  * @version $Id$
@@ -97,11 +98,11 @@ public class StructurBrowserTreeTable
     /**
      * Constructor.
      *
-     * @param _wicketId     wicket id for this component
-     * @param _model        model
-     * @param _columns      columns
-     * @param _parentLink   must the link be done over the parent
-     * @param _datePickers  DatePicker
+     * @param _wicketId wicket id for this component
+     * @param _model model
+     * @param _columns columns
+     * @param _parentLink must the link be done over the parent
+     * @param _datePickers DatePicker
      */
     public StructurBrowserTreeTable(final String _wicketId,
                                     final IModel<UIStructurBrowser> _model,
@@ -301,15 +302,14 @@ public class StructurBrowserTreeTable
             if (isNodeExpanded(_node)) {
                 ret = getFolderOpen();
             } else {
-                ret =  getFolderClosed();
+                ret = getFolderClosed();
             }
         }
         return ret;
     }
 
     /**
-     * This class renders a Fragment of the TreeTable, representing
-     * a Node including the junctionlink, the icon etc.
+     * This class renders a Fragment of the TreeTable, representing a Node including the junctionlink, the icon etc.
      *
      */
     private class StructurBrowserTreeFragment
@@ -340,6 +340,7 @@ public class StructurBrowserTreeTable
             if (uiStru.isForceExpanded()) {
                 final WebMarkupContainer junctionLink = new WebMarkupContainer("link")
                 {
+
                     private static final long serialVersionUID = 1L;
 
                     /**
@@ -378,14 +379,15 @@ public class StructurBrowserTreeTable
             } else {
                 final UIStructurBrowserTableCell uiObject = uiStru.getColumnValue(uiStru.getBrowserFieldIndex());
 
-                if ((uiStru.isEditMode() || uiStru.isCreateMode()) &&  uiObject.getDisplay().equals(Display.EDITABLE)) {
+                if ((uiStru.isEditMode() || uiStru.isCreateMode()) && uiObject.getDisplay().equals(Display.EDITABLE)) {
                     nodeLink = new WebMarkupContainer("nodeLink");
                     nodeLink.add(new TreeCellPanel("label", _node, uiStru.getBrowserFieldIndex(),
                                     StructurBrowserTreeTable.this.parentLink,
                                     StructurBrowserTreeTable.this.datePickers));
                 } else {
                     if (uiObject.getReference() == null) {
-                        nodeLink = new WebMarkupContainer("nodeLink") {
+                        nodeLink = new WebMarkupContainer("nodeLink")
+                        {
 
                             private static final long serialVersionUID = 1L;
 
@@ -403,7 +405,8 @@ public class StructurBrowserTreeTable
                     nodeLink.add(new LabelComponent("label", new UIModel<UIStructurBrowserTableCell>(uiObject)));
                 }
 
-                final WebComponent rowId = new WebComponent("rowId") {
+                final WebComponent rowId = new WebComponent("rowId")
+                {
 
                     /**
                      * Needed for serialization.
@@ -419,24 +422,27 @@ public class StructurBrowserTreeTable
                         super.onComponentTag(_tag);
                         if (uiObject.getUserinterfaceId() == null) {
                             final AbstractUIPageObject uiPageObject = (AbstractUIPageObject) getPage()
-                                .getDefaultModelObject();
+                                            .getDefaultModelObject();
                             uiObject.setUserinterfaceId(uiPageObject.getNewRandom());
 
                             try {
-                                uiPageObject.getUiID2Oid().put(uiObject.getUserinterfaceId(),
-                                               uiObject.getInstance() == null ? null : uiObject.getInstance().getOid());
+                                uiPageObject.getUiID2Oid()
+                                                .put(uiObject.getUserinterfaceId(),
+                                                                uiObject.getInstance() == null ? null : uiObject
+                                                                                .getInstance().getOid());
                             } catch (final EFapsException e) {
                                 throw new RestartResponseException(new ErrorPage(e));
                             }
                         }
                         _tag.put("name", EFapsKey.TABLEROW_NAME.getKey());
                         _tag.put("value", uiObject.getUserinterfaceId());
-                        _tag.put("type" , "hidden");
+                        _tag.put("type", "hidden");
                     }
                 };
                 this.add(rowId);
 
-                final WebComponent type = new WebComponent("allowChilds") {
+                final WebComponent type = new WebComponent("allowChilds")
+                {
 
                     /**
                      * Needed for serialization.
@@ -453,12 +459,13 @@ public class StructurBrowserTreeTable
 
                         _tag.put("name", EFapsKey.STRUCBRWSR_ALLOWSCHILDS.getKey());
                         _tag.put("value", _node.getAllowsChildren());
-                        _tag.put("type" , "hidden");
+                        _tag.put("type", "hidden");
                     }
                 };
                 this.add(type);
 
-                final WebComponent level = new WebComponent("level") {
+                final WebComponent level = new WebComponent("level")
+                {
 
                     /**
                      * Needed for serialization.
@@ -472,7 +479,7 @@ public class StructurBrowserTreeTable
 
                         _tag.put("name", EFapsKey.STRUCBRWSR_LEVEL.getKey());
                         _tag.put("value", _level);
-                        _tag.put("type" , "hidden");
+                        _tag.put("type", "hidden");
                     }
                 };
                 this.add(level);
@@ -502,6 +509,7 @@ public class StructurBrowserTreeTable
 
         /**
          * Constructor.
+         *
          * @param _node current node
          */
         public AjaxParentCallBackBehavior(final TreeNode _node)
@@ -518,13 +526,23 @@ public class StructurBrowserTreeTable
         @Override
         protected void onEvent(final AjaxRequestTarget _target)
         {
-            Instance instance = null;
-            final UIStructurBrowser model = (UIStructurBrowser) ((DefaultMutableTreeNode) this.node).getUserObject();
 
-            if (model.getInstanceKey() != null) {
+            final UIStructurBrowser uiRootObject = (UIStructurBrowser) ((DefaultMutableTreeNode)
+                            ((DefaultMutableTreeNode) this.node).getRoot()).getUserObject();
+            try {
+                final RecentObjectLink recent = new RecentObjectLink(uiRootObject);
+                ((EFapsSession) getSession()).addRecent(recent);
+            } catch (final EFapsException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
+
+            Instance instance = null;
+            final UIStructurBrowser uiObject = (UIStructurBrowser) ((DefaultMutableTreeNode) this.node).getUserObject();
+            if (uiObject.getInstanceKey() != null) {
                 Menu menu = null;
                 try {
-                    instance = model.getInstance();
+                    instance = uiObject.getInstance();
                     menu = Menu.getTypeTreeMenu(instance.getType());
                 } catch (final EFapsException e) {
                     throw new RestartResponseException(new ErrorPage(e));
@@ -536,11 +554,11 @@ public class StructurBrowserTreeTable
                 }
                 Page page;
                 try {
-                    if (model.getTarget() == org.efaps.admin.ui.AbstractCommand.Target.POPUP) {
-                        page = new ContentContainerPage(menu.getUUID(), model.getInstanceKey());
+                    if (uiObject.getTarget() == org.efaps.admin.ui.AbstractCommand.Target.POPUP) {
+                        page = new ContentContainerPage(menu.getUUID(), uiObject.getInstanceKey());
                     } else {
                         page = new ContentContainerPage(PageMap.forName(MainPage.IFRAME_PAGEMAP_NAME), menu.getUUID(),
-                                        model.getInstanceKey(), true);
+                                        uiObject.getInstanceKey(), true);
                     }
                 } catch (final EFapsException e) {
                     page = new ErrorPage(e);

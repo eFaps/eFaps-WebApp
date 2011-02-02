@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2010 The eFaps Team
+ * Copyright 2003 - 2011 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -125,15 +125,17 @@ public class MenuTree
     /**
      * Constructor used for a new MenuTree.
      *
-     * @param _wicketId wicket id of the component
-     * @param _commandUUID uuid of the command
-     * @param _oid oid
-     * @param _menukey key to the menu
+     * @param _wicketId     wicket id of the component
+     * @param _commandUUID  uuid of the command
+     * @param _oid          oid
+     * @param _menukey      key to the menu
+     * @param _selectCmdUUID    UUID of the selected Command
      */
     public MenuTree(final String _wicketId,
                     final UUID _commandUUID,
                     final String _oid,
-                    final String _menukey)
+                    final String _menukey,
+                    final UUID _selectCmdUUID)
     {
         super(_wicketId);
 
@@ -157,9 +159,16 @@ public class MenuTree
         while (newNodes.hasMoreElements()) {
             final DefaultMutableTreeNode newNode = (DefaultMutableTreeNode) newNodes.nextElement();
             final UIMenuItem newmodel = (UIMenuItem) newNode.getUserObject();
-            if (newmodel.isDefaultSelected()) {
-                getTreeState().selectNode(newNode, true);
-                noChildSelected = false;
+            if (_selectCmdUUID == null) {
+                if (newmodel.isDefaultSelected()) {
+                    getTreeState().selectNode(newNode, true);
+                    noChildSelected = false;
+                }
+            } else {
+                if (newmodel.getCommandUUID().equals(_selectCmdUUID)) {
+                    getTreeState().selectNode(newNode, true);
+                    noChildSelected = false;
+                }
             }
         }
         if (noChildSelected) {
@@ -375,8 +384,7 @@ public class MenuTree
         if (_model.getCommand().getTargetTable() != null) {
 
             page = new InlineFrame(ContentContainerPage.IFRAME_WICKETID, PageMap
-                            .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME), new IPageLink()
-            {
+                            .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME), new IPageLink() {
 
                 private static final long serialVersionUID = 1L;
 
@@ -403,8 +411,7 @@ public class MenuTree
             });
         } else {
             page = new InlineFrame(ContentContainerPage.IFRAME_WICKETID, PageMap
-                            .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME), new IPageLink()
-            {
+                            .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME), new IPageLink() {
 
                 private static final long serialVersionUID = 1L;
 

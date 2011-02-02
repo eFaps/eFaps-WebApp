@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2011 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,11 +24,10 @@ import java.util.UUID;
 
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
-
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.behaviors.dojo.BorderBehavior;
-import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.BorderBehavior.Design;
+import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior.Region;
 import org.efaps.ui.wicket.components.menutree.MenuTree;
 import org.efaps.ui.wicket.components.split.header.SplitHeaderPanel;
@@ -39,10 +38,11 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 import org.efaps.util.EFapsException;
 
 /**
- * @author jmox
+ * @author The eFaps Team
  * @version $Id:StructBrowsSplitPanel.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class StructBrowsSplitPanel extends Panel
+public class StructBrowsSplitPanel
+    extends Panel
 {
 
     /**
@@ -59,18 +59,23 @@ public class StructBrowsSplitPanel extends Panel
     /**
      * Constructor.
      *
-     * @param _wicketId wicket id of this component
-     * @param _commandUUID UUID of the related command
-     * @param _oid oid
-     * @param _listMenuKey key to the list menu
-     * @throws EFapsException
+     * @param _wicketId     wicket id of this component
+     * @param _commandUUID  UUID of the related command
+     * @param _oid          oid
+     * @param _listMenuKey  key to the list menu
+     * @param _selectCmdUUID UUID of the selected command
+     * @throws EFapsException on error
      */
-    public StructBrowsSplitPanel(final String _wicketId, final UUID _commandUUID, final String _oid,
-                    final String _listMenuKey) throws EFapsException
+    public StructBrowsSplitPanel(final String _wicketId,
+                                 final UUID _commandUUID,
+                                 final String _oid,
+                                 final String _listMenuKey,
+                                 final UUID _selectCmdUUID)
+        throws EFapsException
     {
         super(_wicketId);
 
-        this.add(StaticHeaderContributor.forCss(CSS));
+        this.add(StaticHeaderContributor.forCss(StructBrowsSplitPanel.CSS));
         String positionH = null;
         String hiddenStrH = null;
         String positionV = null;
@@ -124,7 +129,7 @@ public class StructBrowsSplitPanel extends Panel
         final WebMarkupContainer menuact = new WebMarkupContainer("menuact");
         menuact.setOutputMarkupId(true);
         bottom.add(menuact);
-        menuact.add(new MenuTree("menu", _commandUUID, _oid, _listMenuKey));
+        menuact.add(new MenuTree("menu", _commandUUID, _oid, _listMenuKey, _selectCmdUUID));
 
     }
 }

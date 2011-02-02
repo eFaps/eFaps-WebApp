@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2011 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import java.util.UUID;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
-
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior.Region;
@@ -35,74 +34,82 @@ import org.efaps.ui.wicket.components.split.header.SplitHeaderPanel.PositionUser
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class is used to render a Panel which contains a ListMenu.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public class ListOnlyPanel extends Panel {
+public class ListOnlyPanel
+    extends Panel
+{
+    /**
+     * Reference to the StyleSheet.
+     */
+    public static final EFapsContentReference CSS = new EFapsContentReference(ListOnlyPanel.class, "ListOnlyPanel.css");
 
-  /**
-   * Reference to the StyleSheet.
-   */
-  public static final EFapsContentReference CSS
-          = new EFapsContentReference(ListOnlyPanel.class, "ListOnlyPanel.css");
+    /**
+     * Logger.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(ListOnlyPanel.class);
 
-  /**
-   * Needed for serialization.
-   */
-  private static final long serialVersionUID = 1L;
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
-  /**
-   * Constructor.
-   *
-   * @param _wicketId     wicket id of this component
-   * @param _commandUUID  UUID of the related command
-   * @param _oid          oid
-   * @param _listMenuKey  key to the list menu
-   * @throws EFapsException
-   */
-  public ListOnlyPanel(final String _wicketId,
-                       final UUID _commandUUID, final String _oid,
-                       final String _listMenuKey) {
-    super(_wicketId);
-    this.add(StaticHeaderContributor.forCss(CSS));
-    String position = null;
-    String hiddenStr = null;
-    try {
-      position = Context.getThreadContext().getUserAttribute(
-          PositionUserAttribute.HORIZONTAL.getKey());
-      hiddenStr = Context.getThreadContext().getUserAttribute(
-          PositionUserAttribute.HORIZONTAL_COLLAPSED.getKey());
-    } catch (final EFapsException e) {
-      // error is catch because its only user attributes
-      e.printStackTrace();
-    }
-    final boolean hidden = "true".equalsIgnoreCase(hiddenStr);
-    if (hidden) {
-      position = "20";
-    } else if (position == null) {
-      position = "200";
-    }
-    this.add(new ContentPaneBehavior(Region.LEADING,
+    /**
+     * Constructor.
+     *
+     * @param _wicketId         wicket id of this component
+     * @param _commandUUID      UUID of the related command
+     * @param _oid              oid
+     * @param _listMenuKey      key to the list menu
+     * @param _selectCmdUUID    UUID of the selected Command
+     */
+    public ListOnlyPanel(final String _wicketId,
+                         final UUID _commandUUID,
+                         final String _oid,
+                         final String _listMenuKey,
+                         final UUID _selectCmdUUID)
+    {
+        super(_wicketId);
+        this.add(StaticHeaderContributor.forCss(ListOnlyPanel.CSS));
+        String position = null;
+        String hiddenStr = null;
+        try {
+            position = Context.getThreadContext().getUserAttribute(
+                            PositionUserAttribute.HORIZONTAL.getKey());
+            hiddenStr = Context.getThreadContext().getUserAttribute(
+                            PositionUserAttribute.HORIZONTAL_COLLAPSED.getKey());
+        } catch (final EFapsException e) {
+            // error is catch because its only user attributes
+            ListOnlyPanel.LOG.error("catched error with user attributes");
+        }
+        final boolean hidden = "true".equalsIgnoreCase(hiddenStr);
+        if (hidden) {
+            position = "20";
+        } else if (position == null) {
+            position = "200";
+        }
+        this.add(new ContentPaneBehavior(Region.LEADING,
                                      true,
                                      position + "px",
                                      null));
 
-    final SplitHeaderPanel header
-                         = new SplitHeaderPanel("header", false, hidden, false);
-    this.add(header);
+        final SplitHeaderPanel header = new SplitHeaderPanel("header", false, hidden, false);
+        this.add(header);
 
-    final WebMarkupContainer overflow = new WebMarkupContainer("overflow");
-    overflow.setOutputMarkupId(true);
-    overflow.add(new MenuTree("menu", _commandUUID, _oid, _listMenuKey)
-        .setOutputMarkupId(true));
-    this.add(overflow);
-    if (hidden) {
-      overflow.add(new SimpleAttributeModifier("style", "display:none;"));
+        final WebMarkupContainer overflow = new WebMarkupContainer("overflow");
+        overflow.setOutputMarkupId(true);
+        overflow.add(new MenuTree("menu", _commandUUID, _oid, _listMenuKey, _selectCmdUUID).setOutputMarkupId(true));
+        this.add(overflow);
+        if (hidden) {
+            overflow.add(new SimpleAttributeModifier("style", "display:none;"));
+        }
+        header.addHideComponent(overflow);
     }
-    header.addHideComponent(overflow);
-  }
 }
