@@ -21,11 +21,13 @@
 package org.efaps.ui.wicket.components.form.row;
 
 import org.apache.wicket.Page;
+import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.form.FormPanel;
 import org.efaps.ui.wicket.components.form.cell.ValueCellPanel;
@@ -128,7 +130,7 @@ public class RowPanel
             }
             valueCell.add(new SimpleAttributeModifier("colspan", colspan.toString()));
             cellRepeater.add(valueCell);
-            valueCell.add(new SimpleAttributeModifier("class", "eFapsFormValue"));
+            valueCell.add(new AttributeAppender("class", true, new Model<String>("eFapsFormValue"), " "));
         }
     }
 }

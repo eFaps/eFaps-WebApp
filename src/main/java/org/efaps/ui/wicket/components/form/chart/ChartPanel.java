@@ -58,7 +58,7 @@ public class ChartPanel
                       final IModel<UIFormCellChart> _model)
     {
         super(_wicketId, _model);
-        this.add(new AttributeAppender("class", true, new Model<String>("eFapsChart"), ""));
+        this.add(new AttributeAppender("class", true, new Model<String>("eFapsChart"), " "));
         try {
             _model.getObject().initialize();
         } catch (final EFapsException e) {
