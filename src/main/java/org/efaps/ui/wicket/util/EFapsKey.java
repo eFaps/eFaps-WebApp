@@ -39,7 +39,8 @@ public enum EFapsKey {
     AUTOCOMPLETE_KEY("eFapsAutoCompleteKEY"),
     /** Key used for the javascript in the map. */
     AUTOCOMPLETE_JAVASCRIPT("eFapsAutoCompleteJS"),
-
+    /** Used in conjunction with the fieldName as postfix to create a name for the map of an chart image.*/
+    CHARTMAPPOSTFIX("eFapsChartMap"),
     /** Key used to deactivate the escape functionalities in Picker. */
     PICKER_DEACTIVATEESCAPE("eFapsPickerDeactivateEscape4HTMLandJS"),
     /** Key used for the value in the map. */

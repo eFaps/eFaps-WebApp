@@ -29,10 +29,12 @@ import org.apache.wicket.model.IModel;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.form.FormPanel;
 import org.efaps.ui.wicket.components.form.cell.ValueCellPanel;
+import org.efaps.ui.wicket.components.form.chart.ChartPanel;
 import org.efaps.ui.wicket.components.form.command.CommandCellPanel;
 import org.efaps.ui.wicket.components.form.set.YPanel;
 import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.cell.UIFormCell;
+import org.efaps.ui.wicket.models.cell.UIFormCellChart;
 import org.efaps.ui.wicket.models.cell.UIFormCellCmd;
 import org.efaps.ui.wicket.models.cell.UIFormCellSet;
 import org.efaps.ui.wicket.models.objects.UIForm;
@@ -104,6 +106,9 @@ public class RowPanel
                 valueCell = new CommandCellPanel(cellRepeater.newChildId(), new UIModel<UIFormCellCmd>(
                                 (UIFormCellCmd) cell),
                                 _formmodel, _form);
+            } else if (cell instanceof UIFormCellChart) {
+                valueCell = new ChartPanel(cellRepeater.newChildId(), new UIModel<UIFormCellChart>(
+                                (UIFormCellChart) cell));
             } else {
                 valueCell = new ValueCellPanel(cellRepeater.newChildId(), new UIModel<UIFormCell>(cell), _formmodel,
                                 ContentContainerPage.IFRAME_PAGEMAP_NAME.equals(_page.getPageMapName()));

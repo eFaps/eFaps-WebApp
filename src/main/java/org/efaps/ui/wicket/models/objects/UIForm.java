@@ -44,6 +44,7 @@ import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.Form;
 import org.efaps.admin.ui.Image;
 import org.efaps.admin.ui.field.Field;
+import org.efaps.admin.ui.field.FieldChart;
 import org.efaps.admin.ui.field.FieldClassification;
 import org.efaps.admin.ui.field.FieldCommand;
 import org.efaps.admin.ui.field.FieldGroup;
@@ -53,6 +54,7 @@ import org.efaps.admin.ui.field.FieldTable;
 import org.efaps.db.Instance;
 import org.efaps.db.PrintQuery;
 import org.efaps.ui.wicket.models.cell.UIFormCell;
+import org.efaps.ui.wicket.models.cell.UIFormCellChart;
 import org.efaps.ui.wicket.models.cell.UIFormCellCmd;
 import org.efaps.ui.wicket.models.cell.UIFormCellSet;
 import org.efaps.ui.wicket.models.cell.UIHiddenCell;
@@ -375,6 +377,9 @@ public class UIForm
             } else if (_field instanceof FieldCommand) {
                 final UIFormCellCmd fieldCmd = new UIFormCellCmd(this, (FieldCommand) _field, fieldInstance, label);
                 _row.add(fieldCmd);
+            } else if (_field instanceof FieldChart) {
+                final UIFormCellChart fieldChart = new UIFormCellChart(this, (FieldChart) _field, fieldInstance, label);
+                _row.add(fieldChart);
             } else {
                 evaluateField(_row, _query, _field, fieldInstance, label, attr);
             }
