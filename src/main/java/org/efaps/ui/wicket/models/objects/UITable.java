@@ -512,8 +512,8 @@ public class UITable
                     }  else if (field.getPhrase() != null) {
                         value = _multi.getPhrase(field.getName());
                     }
-
-                    final FieldValue fieldvalue = new FieldValue(field, attr, value, instance, getInstance());
+                    final FieldValue fieldvalue = new FieldValue(field, attr, value, instance, getInstance(),
+                                    new ArrayList<Instance>(_multi.getInstanceList()));
                     String htmlTitle = null;
                     boolean hidden = false;
                     if (isPrintMode()) {
@@ -550,7 +550,7 @@ public class UITable
                     // isw stored, and can be used
                     // to create new rows
                     if (isEditMode() && first) {
-                        final FieldValue fldVal = new FieldValue(field, attr, null, null, null);
+                        final FieldValue fldVal = new FieldValue(field, attr);
                         final String cellvalue;
                         final String cellTitle;
                         if (field.isEditableDisplay(getMode())) {
@@ -623,7 +623,7 @@ public class UITable
                 if (field.getAttribute() != null) {
                     attr = type.getAttribute(field.getAttribute());
                 }
-                final FieldValue fieldvalue = new FieldValue(field, attr, null, null, getInstance());
+                final FieldValue fieldvalue = new FieldValue(field, attr, null, null, getInstance(), null);
                 String htmlValue;
                 String htmlTitle = null;
                 boolean hidden = false;

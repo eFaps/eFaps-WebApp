@@ -477,7 +477,7 @@ public class UIStructurBrowser
                 instances.add(inst);
             }
             // evaluate for all expressions in the table
-            final MultiPrintQuery print = new MultiPrintQuery(instances);
+            final MultiPrintQuery multi = new MultiPrintQuery(instances);
             Type type = instances.isEmpty() ? null : instances.get(0).getType();
             for (final Field field : getTable().getFields()) {
                 Attribute attr = null;
@@ -485,14 +485,14 @@ public class UIStructurBrowser
                                 && !field.isNoneDisplay(getMode()) && !field.isHiddenDisplay(getMode())) {
                     if (_map.size() > 0) {
                         if (field.getSelect() != null) {
-                            print.addSelect(field.getSelect());
+                            multi.addSelect(field.getSelect());
                         } else if (field.getAttribute() != null) {
-                            print.addAttribute(field.getAttribute());
+                            multi.addAttribute(field.getAttribute());
                         } else if (field.getPhrase() != null) {
-                            print.addPhrase(field.getName(), field.getPhrase());
+                            multi.addPhrase(field.getName(), field.getPhrase());
                         }
                         if (field.getSelectAlternateOID() != null) {
-                            print.addSelect(field.getSelectAlternateOID());
+                            multi.addSelect(field.getSelectAlternateOID());
                         }
                     }
                     if (field.getAttribute() != null && type != null) {
@@ -504,13 +504,13 @@ public class UIStructurBrowser
                 }
             }
             boolean row4Create = false;
-            if (!print.execute()) {
+            if (!multi.execute()) {
                 row4Create = isCreateMode();
                 type = getTypeFromEvent();
             }
             Attribute attr = null;
-            while (print.next() || row4Create) {
-                Instance instance = print.getCurrentInstance();
+            while (multi.next() || row4Create) {
+                Instance instance = multi.getCurrentInstance();
                 final UIStructurBrowser child = getNewStructurBrowser(instance, this);
                 child.setDirection(_map.get(instance));
                 for (final Field field : getTable().getFields()) {
@@ -524,21 +524,22 @@ public class UIStructurBrowser
                         } else {
                             //the previous field might have set the different instance
                             if (field.getSelectAlternateOID() == null) {
-                                instance = print.getCurrentInstance();
+                                instance = multi.getCurrentInstance();
                             } else {
-                                instance = Instance.get(print.<String>getSelect(field.getSelectAlternateOID()));
+                                instance = Instance.get(multi.<String>getSelect(field.getSelectAlternateOID()));
                             }
                             if (field.getSelect() != null) {
-                                value = print.getSelect(field.getSelect());
-                                attr = print.getAttribute4Select(field.getSelect());
+                                value = multi.getSelect(field.getSelect());
+                                attr = multi.getAttribute4Select(field.getSelect());
                             } else if (field.getAttribute() != null) {
-                                value = print.getAttribute(field.getAttribute());
-                                attr = print.getAttribute4Attribute(field.getAttribute());
+                                value = multi.getAttribute(field.getAttribute());
+                                attr = multi.getAttribute4Attribute(field.getAttribute());
                             } else if (field.getPhrase() != null) {
-                                value = print.getPhrase(field.getName());
+                                value = multi.getPhrase(field.getName());
                             }
                         }
-                        final FieldValue fieldvalue = new FieldValue(field, attr, value, instance, getInstance());
+                        final FieldValue fieldvalue = new FieldValue(field, attr, value, instance, getInstance(),
+                                        new ArrayList<Instance>(multi.getInstanceList()));
                         String strValue;
                         String htmlTitle;
                         if ((isCreateMode() || isEditMode()) && field.isEditableDisplay(getMode())) {
@@ -690,7 +691,7 @@ public class UIStructurBrowser
         final UIStructurBrowser ret = getNewStructurBrowser(null, parentTmp);
         ret.initialise();
         for (final UIStructurBrowserTableCell col : parentTmp.columns) {
-            final FieldValue fieldValue = new FieldValue(col.getField(), col.getAttribute(), null, null, null);
+            final FieldValue fieldValue = new FieldValue(col.getField(), col.getAttribute());
             final String htmlValue;
             if (col.getDisplay().equals(Display.EDITABLE)) {
                 htmlValue = fieldValue.getEditHtml(getMode());
