@@ -541,19 +541,20 @@ public class UIStructurBrowser
                         final FieldValue fieldvalue = new FieldValue(field, attr, value, instance, getInstance());
                         String strValue;
                         String htmlTitle;
-                        if (value != null || row4Create || isEditMode()) {
-                            if ((isCreateMode() || isEditMode()) && field.isEditableDisplay(getMode())) {
-                                strValue = fieldvalue.getEditHtml(getMode());
-                                htmlTitle = fieldvalue.getStringValue(getMode());
-                            } else if (field.isHiddenDisplay(getMode())) {
-                                strValue = fieldvalue.getHiddenHtml(getMode());
-                                htmlTitle = "";
-                            } else {
-                                strValue = fieldvalue.getReadOnlyHtml(getMode());
-                                htmlTitle = fieldvalue.getStringValue(getMode());
-                            }
+                        if ((isCreateMode() || isEditMode()) && field.isEditableDisplay(getMode())) {
+                            strValue = fieldvalue.getEditHtml(getMode());
+                            htmlTitle = fieldvalue.getStringValue(getMode());
+                        } else if (field.isHiddenDisplay(getMode())) {
+                            strValue = fieldvalue.getHiddenHtml(getMode());
+                            htmlTitle = "";
                         } else {
+                            strValue = fieldvalue.getReadOnlyHtml(getMode());
+                            htmlTitle = fieldvalue.getStringValue(getMode());
+                        }
+                        if (strValue == null) {
                             strValue = "";
+                        }
+                        if (htmlTitle == null) {
                             htmlTitle = "";
                         }
                         String icon = field.getIcon();
