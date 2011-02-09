@@ -652,7 +652,7 @@ public class UIStructurBrowser
     {
         setExecutionStatus(UIStructurBrowser.ExecutionStatus.SORT);
         try {
-            getCommand().executeEvents(EventType.UI_TABLE_EVALUATE, ParameterValues.CLASS, this);
+            getObject4Event().executeEvents(EventType.UI_TABLE_EVALUATE, ParameterValues.CLASS, this);
 
             if (getSortDirection() == SortDirection.DESCENDING) {
                 Collections.reverse(this.childs);
