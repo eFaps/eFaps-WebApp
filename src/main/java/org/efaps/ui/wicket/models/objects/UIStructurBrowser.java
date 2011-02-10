@@ -517,6 +517,7 @@ public class UIStructurBrowser
                     if (field.hasAccess(getMode(), getInstance())
                                     && !field.isNoneDisplay(getMode()) && !field.isHiddenDisplay(getMode())) {
                         Object value = null;
+                        attr = null;
                         if (row4Create) {
                             if (field.getAttribute() != null && type != null) {
                                 attr = type.getAttribute(field.getAttribute());
