@@ -29,6 +29,7 @@ import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.models.objects.UISearchItem;
+import org.efaps.util.EFapsException;
 
 /**
  * @author The eFaps Team
@@ -48,9 +49,11 @@ public class MenuPanel
      *
      * @param _wicketId wicket id for the component
      * @param _model model for this component
+     * @throws EFapsException on error
      */
     public MenuPanel(final String _wicketId,
                      final IModel<?> _model)
+        throws EFapsException
     {
         this(_wicketId, _model, null);
     }
@@ -61,10 +64,12 @@ public class MenuPanel
      * @param _wicketId wicket id for this component
      * @param _model model for this component
      * @param _form form
+     * @throws EFapsException on error
      */
     public MenuPanel(final String _wicketId,
                      final IModel<?> _model,
                      final FormContainer _form)
+        throws EFapsException
     {
         super(_wicketId, _model);
 
