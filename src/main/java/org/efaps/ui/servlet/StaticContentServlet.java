@@ -40,7 +40,7 @@ import org.efaps.db.Checkout;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.AutomaticCache;
+import org.efaps.util.cache.AbstractAutomaticCache;
 import org.efaps.util.cache.CacheObjectInterface;
 import org.efaps.util.cache.CacheReloadException;
 import org.joda.time.DateTime;
@@ -273,7 +273,7 @@ public class StaticContentServlet
      * Cache class.
      */
     private static class StaticContentCache
-        extends AutomaticCache<StaticContentServlet.ContentMapper>
+        extends AbstractAutomaticCache<StaticContentServlet.ContentMapper>
     {
 
         /**
