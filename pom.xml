@@ -87,9 +87,9 @@
 
     <!-- SubVersion Repository -->
     <scm>
-        <connection>scm:svn:http://efaps.googlecode.com/svn/eFaps-WebApp/tags/V1.11.1</connection>
-        <developerConnection>scm:svn:https://efaps.googlecode.com/svn/eFaps-WebApp/tags/V1.11.1</developerConnection>
-        <url>http://efaps.googlecode.com/svn/eFaps-Kernel/tags/V1.11.1</url>
+        <connection>scm:svn:http://efaps.googlecode.com/svn/eFaps-WebApp/trunk</connection>
+        <developerConnection>scm:svn:https://efaps.googlecode.com/svn/eFaps-WebApp/trunk</developerConnection>
+        <url>http://efaps.googlecode.com/svn/eFaps-WebApp</url>
     </scm>
 
     <!-- Distribution Repository -->
