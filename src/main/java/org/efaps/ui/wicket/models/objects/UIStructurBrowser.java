@@ -888,7 +888,7 @@ public class UIStructurBrowser
      * @param _instance Instance of a Node to be checked
      * @return true if this Node has children, else false
      */
-    protected boolean checkForAllowItems(final Instance _instance)
+    public boolean checkForAllowItems(final Instance _instance)
     {
         setExecutionStatus(UIStructurBrowser.ExecutionStatus.ALLOWSITEM);
         try {

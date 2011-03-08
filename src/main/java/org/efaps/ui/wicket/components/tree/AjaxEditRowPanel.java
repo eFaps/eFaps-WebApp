@@ -317,6 +317,7 @@ public class AjaxEditRowPanel
             }
             strucBr.getChilds().add(newStruBrws);
             newStruBrws.setAllowChilds(true);
+            newStruBrws.setAllowItems(newStruBrws.checkForAllowItems(newStruBrws.getInstance()));
             newStruBrws.checkHideColumn4Row();
             final DefaultMutableTreeNode newTreeNode = new DefaultMutableTreeNode(newStruBrws);
             newTreeNode.setAllowsChildren(true);
