@@ -385,7 +385,8 @@ public class StructurBrowserTreeTable
                                     StructurBrowserTreeTable.this.parentLink,
                                     StructurBrowserTreeTable.this.datePickers));
                 } else {
-                    if (uiObject.getReference() == null) {
+                    if (uiObject.getReference() == null
+                                    || Target.MODAL.equals(uiObject.getParent().getTarget())) {
                         nodeLink = new WebMarkupContainer("nodeLink")
                         {
 
