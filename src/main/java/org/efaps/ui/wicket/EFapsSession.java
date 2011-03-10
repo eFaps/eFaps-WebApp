@@ -394,6 +394,8 @@ public class EFapsSession
             boolean ok = false;
 
             try {
+                // on a new login the cache for Person is reseted
+                Person.initialize();
                 final EFapsApplication app = (EFapsApplication) getApplication();
                 final LoginHandler loginHandler = new LoginHandler(app.getApplicationKey());
                 final Person person = loginHandler.checkLogin(_name, _passwd);
