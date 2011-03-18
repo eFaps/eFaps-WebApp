@@ -23,6 +23,8 @@ package org.efaps.ui.wicket.pages.company;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -153,7 +155,15 @@ public class CompanyPage
         } catch (final EFapsException e) {
             throw new RestartResponseException(new ErrorPage(e));
         }
+        Collections.sort(companies, new Comparator<CompanyObject>() {
+            @Override
+            public int compare(final CompanyObject _o1,
+                               final CompanyObject _o2)
+            {
+                return _o1.getName().compareTo(_o2.getName());
+            }
 
+        });
         @SuppressWarnings({ "rawtypes", "unchecked" })
         final IModel<Collection<? extends CompanyObject>> model = new Model((Serializable) companies);
         final SelectOptions<CompanyObject> options = new SelectOptions<CompanyObject>("manychoices", model, renderer);
@@ -198,6 +208,16 @@ public class CompanyPage
         {
             this.id = ((Long) _company.getId()).toString();
             this.name = _company.getName();
+        }
+
+        /**
+         * Getter method for the instance variable {@link #name}.
+         *
+         * @return value of instance variable {@link #name}
+         */
+        protected String getName()
+        {
+            return this.name;
         }
     }
 
