@@ -147,8 +147,8 @@ public class CompanyPage
 
         final List<CompanyObject> companies = new ArrayList<CompanyObject>();
         try {
-            for (final Company comp :  Context.getThreadContext().getPerson().getCompanies()) {
-                companies.add(new CompanyObject(comp));
+            for (final Long comp :  Context.getThreadContext().getPerson().getCompanies()) {
+                companies.add(new CompanyObject(Company.get(comp)));
             }
         } catch (final EFapsException e) {
             throw new RestartResponseException(new ErrorPage(e));
