@@ -379,7 +379,7 @@
         <dependency>
             <groupId>org.efaps</groupId>
             <artifactId>efaps-kernel</artifactId>
-            <version>1.13.0-SNAPSHOT</version>
+            <version>1.13.1-SNAPSHOT</version>
         </dependency>
 
         <!-- to define a higher version (needed from another tool) -->
