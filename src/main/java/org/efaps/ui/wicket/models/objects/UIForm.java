@@ -218,7 +218,7 @@ public class UIForm
         // evaluate the Form to make the query
         final PrintQuery print = new PrintQuery(getInstance());
         for (final Field field : form.getFields()) {
-            if (field.hasAccess(getMode(), getInstance()) && !field.isNoneDisplay(getMode())) {
+            if (field.hasAccess(getMode(), getInstance(), getCommand()) && !field.isNoneDisplay(getMode())) {
                 if (field.getSelect() != null) {
                     print.addSelect(field.getSelect());
                 } else if (field.getAttribute() != null) {
@@ -244,7 +244,7 @@ public class UIForm
             boolean addNew = true;
             UIClassification uiclass = null;
             for (final Field field : form.getFields()) {
-                if (field.hasAccess(getMode(), getInstance()) && !field.isNoneDisplay(getMode())) {
+                if (field.hasAccess(getMode(), getInstance(), getCommand()) && !field.isNoneDisplay(getMode())) {
                     if (field instanceof FieldGroup) {
                         final FieldGroup group = (FieldGroup) field;
                         // in case that the first field is a group the element must be initiated
@@ -577,7 +577,7 @@ public class UIForm
         UIClassification uiclass = null;
         boolean firstTable = true;
         for (final Field field : form.getFields()) {
-            if (field.hasAccess(getMode(), getInstance()) && !field.isNoneDisplay(getMode())) {
+            if (field.hasAccess(getMode(), getInstance(), getCommand()) && !field.isNoneDisplay(getMode())) {
                 if (field instanceof FieldGroup) {
                     final FieldGroup group = (FieldGroup) field;
                  // in case that the first field is a group the element must be initiated

@@ -400,7 +400,7 @@ public class UITable
         }
 
         for (final Field field : fields) {
-            if (field.hasAccess(getMode(), getInstance())
+            if (field.hasAccess(getMode(), getInstance(), getCommand())
                             && !field.isNoneDisplay(getMode()) && !field.isHiddenDisplay(getMode())) {
                 Attribute attr = null;
                 if (instances.size() > 0) {
@@ -500,7 +500,7 @@ public class UITable
                 } else {
                     instance = _multi.getCurrentInstance();
                 }
-                if (field.hasAccess(getMode(), instance) && !field.isNoneDisplay(getMode())) {
+                if (field.hasAccess(getMode(), instance, getCommand()) && !field.isNoneDisplay(getMode())) {
                     Object value = null;
                     Attribute attr = null;
                     if (field.getSelect() != null) {
@@ -590,7 +590,7 @@ public class UITable
         final List<Integer> userWidthList = getUserWidths();
         int i = 1;
         for (final Field field : fields) {
-            if (field.hasAccess(getMode(), getInstance())
+            if (field.hasAccess(getMode(), getInstance(), getCommand())
                             && !field.isNoneDisplay(getMode()) && !field.isHiddenDisplay(getMode())) {
                 SortDirection sortdirection = SortDirection.NONE;
                 if (field.getName().equals(this.sortKey)) {
@@ -618,7 +618,7 @@ public class UITable
         Attribute attr = null;
 
         for (final Field field : fields) {
-            if (field.hasAccess(getMode(), getInstance()) && !field.isNoneDisplay(getMode())) {
+            if (field.hasAccess(getMode(), getInstance(), getCommand()) && !field.isNoneDisplay(getMode())) {
                 attr = null;
                 if (field.getAttribute() != null) {
                     attr = type.getAttribute(field.getAttribute());
