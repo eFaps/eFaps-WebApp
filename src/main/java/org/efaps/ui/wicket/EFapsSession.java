@@ -341,6 +341,11 @@ public class EFapsSession
         final String[] pwd = (String[]) parameter.get("password");
         if (checkLogin(name[0], pwd[0])) {
             this.userName = name[0];
+            // on login a valid Context for the User must be opened to ensure that the
+            // session attributes that depend on the user are set correctly before any
+            // further requests are made (e.g. setting the current company
+            openContext();
+            closeContext();
             setAttribute(EFapsSession.LOGIN_ATTRIBUTE_NAME, this.userName);
         } else {
             this.userName = null;
