@@ -1091,6 +1091,7 @@ public class UITable
         super.setInitialized(false);
         this.values.clear();
         this.headers.clear();
+        getHiddenCells().clear();
     }
 
     /**

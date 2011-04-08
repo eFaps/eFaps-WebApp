@@ -181,6 +181,7 @@ public class UIForm
     {
         setInitialized(false);
         this.elements.clear();
+        getHiddenCells().clear();
     }
 
     /**
