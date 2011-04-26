@@ -280,10 +280,8 @@ public class DateTimePanel
 
             if (_hour != null && _hour[0].length() > 0) {
                 final int hour = Integer.parseInt(_hour[0]);
-                if (use12HourFormat()) {
-                    if ("pm".equals(_ampm[0])) {
-                        mdt.setHourOfDay(hour + 12);
-                    }
+                if (use12HourFormat() && "pm".equals(_ampm[0])) {
+                    mdt.setHourOfDay(hour + 12);
                 } else {
                     mdt.setHourOfDay(hour);
                 }
