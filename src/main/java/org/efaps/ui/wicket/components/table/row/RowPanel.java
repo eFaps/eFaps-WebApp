@@ -90,7 +90,7 @@ public class RowPanel
             i++;
             firstCell = true;
         }
-        if (uiTable.isCreateMode() || uiTable.isEditMode()) {
+        if (uiTable.isEditable()) {
             final AjaxAddRemoveRowPanel remove = new AjaxAddRemoveRowPanel(cellRepeater.newChildId(),
                                                                            new TableModel(uiTable), this);
             remove.setOutputMarkupId(true);

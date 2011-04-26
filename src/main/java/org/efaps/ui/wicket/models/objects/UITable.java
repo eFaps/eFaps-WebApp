@@ -1095,6 +1095,16 @@ public class UITable
     }
 
     /**
+     * In create or edit mode this Table is editable.
+     *
+     * @return is this Table editable.
+     */
+    public boolean isEditable()
+    {
+        return isCreateMode() || isEditMode();
+    }
+
+    /**
      * Method to set the order of the columns.
      *
      * @param _markupsIds ids of the columns as a string with ; separated

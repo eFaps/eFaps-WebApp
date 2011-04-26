@@ -108,7 +108,7 @@ public class TablePanel
                 rowsRepeater.add(row);
             }
         }
-        if (uiTable.isCreateMode() || uiTable.isEditMode()) {
+        if (uiTable.isEditable()) {
             rowsRepeater.add(new AjaxAddRemoveRowPanel(rowsRepeater.newChildId(), _uitable, rowsRepeater));
             if (uiTable instanceof UIFieldTable)  {
                 if (((UIFieldTable) uiTable).isFirstTable()) {

@@ -128,7 +128,7 @@ public class HeaderPanel
             i++;
             firstcell = true;
         }
-        if (uitable.isCreateMode() || uitable.isEditMode()) {
+        if (uitable.isEditable()) {
             final HeaderCellPanel cell = new HeaderCellPanel(cellRepeater.newChildId(), false,
                             "eFapsTableRemoveRowCell", i);
             cell.setOutputMarkupId(true);

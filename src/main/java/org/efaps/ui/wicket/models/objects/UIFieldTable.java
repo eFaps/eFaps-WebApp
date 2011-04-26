@@ -29,7 +29,9 @@ import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractCommand.SortDirection;
+import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.field.Field;
+import org.efaps.admin.ui.field.Field.Display;
 import org.efaps.admin.ui.field.FieldTable;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
@@ -59,7 +61,7 @@ public class UIFieldTable
     /**
      * Id of the FieldTable.
      */
-    private final long id;
+    private final long fieldId;
 
     /**
      * Name of the FieldTable.
@@ -85,7 +87,7 @@ public class UIFieldTable
     {
         super(_commanduuid, _instanceKey);
         setTableUUID(_fieldTable.getTargetTable().getUUID());
-        this.id = _fieldTable.getId();
+        this.fieldId = _fieldTable.getId();
         this.name = _fieldTable.getName();
         try {
             if (Context.getThreadContext().containsUserAttribute(getCacheKey(UserCacheKey.SORTKEY))) {
@@ -139,7 +141,7 @@ public class UIFieldTable
     protected List<Instance> getInstanceList()
         throws EFapsException
     {
-        final List<Return> ret = FieldTable.get(this.id).executeEvents(EventType.UI_TABLE_EVALUATE,
+        final List<Return> ret = FieldTable.get(this.fieldId).executeEvents(EventType.UI_TABLE_EVALUATE,
                         ParameterValues.INSTANCE, getInstance());
         final List<Instance> lists = (List<Instance>) ret.get(0).get(ReturnValues.VALUES);
         return lists;
@@ -163,6 +165,28 @@ public class UIFieldTable
     @Override
     protected List<EventDefinition> getEvents(final EventType _eventType)
     {
-        return Field.get(this.id).getEvents(_eventType);
+        return Field.get(this.fieldId).getEvents(_eventType);
+    }
+
+    /**
+     * Get the Display of the Field this StructurBrowser is bedded in.
+     * @param _mode target mode the display will be evaluate for
+     * @return Display
+     */
+    public Display getFieldDisplay(final TargetMode _mode)
+    {
+        return FieldTable.get(this.fieldId).getDisplay(_mode);
+    }
+
+    /**
+     * In create or edit mode this FieldTable is editable,
+     * if the Field this StructurBroeser is bedded in is editable also.
+     *
+     * @return is this StructurBrowser editable.
+     */
+    @Override
+    public boolean isEditable()
+    {
+        return getFieldDisplay(getMode()).equals(Display.EDITABLE) && (isCreateMode() || isEditMode());
     }
 }
