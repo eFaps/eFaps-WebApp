@@ -22,7 +22,7 @@ package org.efaps.ui.wicket.components.menu;
 
 import java.util.Iterator;
 
-import org.apache.wicket.PageMap;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
@@ -100,7 +100,8 @@ public class MenuContainer
      * @param _wicketId wicket id
      * @param _model model of this component
      */
-    public MenuContainer(final String _wicketId, final IModel<?> _model)
+    public MenuContainer(final String _wicketId,
+                         final IModel<?> _model)
     {
         this(_wicketId, _model, null);
     }
@@ -232,7 +233,7 @@ public class MenuContainer
                 if (childModel.getTarget() == Target.POPUP) {
                     final AbstractCommand command = childModel.getCommand();
 
-                    final PopupSettings popup = new PopupSettings(PageMap.forName("popup")).setHeight(
+                    final PopupSettings popup = new PopupSettings("popup").setHeight(
                                     command.getWindowHeight()).setWidth(command.getWindowWidth());
                     item.setPopupSettings(popup);
                     popup.setTarget("\"" + url + "\"");
@@ -252,10 +253,8 @@ public class MenuContainer
                 final UIMenuItem childModel = (UIMenuItem) item.getDefaultModelObject();
 
                 final String url = (String) item.urlFor(ILinkListener.INTERFACE);
-
                 childModel.setURL(url);
             }
-
         }
         super.onBeforeRender();
     }
@@ -294,10 +293,8 @@ public class MenuContainer
             convertItem2Html(menuItem, html, true, new StringBuilder());
             html.append(",\n");
         }
-
         html.append("];").append("cmDraw ('").append(id).append("', ").append(id).append(", 'hbr', cmThemeOffice);")
                         .append(JavascriptUtils.SCRIPT_CLOSE_TAG);
-
         return html.toString();
     }
 
@@ -314,7 +311,6 @@ public class MenuContainer
                                   final boolean _isMain,
                                   final StringBuilder _prefix)
     {
-
         _html.append("['");
         if (_menuItem.getImage() != null) {
             if (_isMain) {
@@ -329,7 +325,8 @@ public class MenuContainer
             _html.append("<img src=\"").append(MenuContainer.IMG_BLANK.getImageUrl())
                             .append("\" class=\"eFapsMenuMainBlankImage\"/>");
         }
-        _html.append("','<span class=\"eFapsMenuLabel\">").append(_menuItem.getLabel()).append("</span>', '");
+        _html.append("','<span class=\"eFapsMenuLabel\">")
+            .append(StringEscapeUtils.escapeJavaScript(_menuItem.getLabel())).append("</span>', '");
         if (_menuItem.getUrl() != null) {
             _html.append(_menuItem.getUrl());
         }
