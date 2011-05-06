@@ -362,11 +362,12 @@ public class EFapsSession
             try {
                 ((UserAttributesSet) this.sessionAttributes.get(UserAttributesSet.CONTEXTMAPKEY)).storeInDb();
             } catch (final EFapsException e) {
-                throw new RestartResponseException(new ErrorPage(e));
+                EFapsSession.LOG.error("Error on logout", e);
+            } finally {
+                this.sessionAttributes.clear();
+                removeAttribute(EFapsSession.LOGIN_ATTRIBUTE_NAME);
+                invalidate();
             }
-            this.sessionAttributes.clear();
-            removeAttribute(EFapsSession.LOGIN_ATTRIBUTE_NAME);
-            invalidate();
         }
         closeContext();
         this.userName = null;
@@ -488,7 +489,6 @@ public class EFapsSession
     public void closeContext()
     {
         if (isLogedIn()) {
-
             try {
                 if (!Context.isTMNoTransaction()) {
                     if (Context.isTMActive()) {
