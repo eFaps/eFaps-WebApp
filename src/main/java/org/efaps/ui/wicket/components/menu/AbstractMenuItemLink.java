@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2010 The eFaps Team
+ * Copyright 2003 - 2011 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,6 @@ import org.efaps.ui.wicket.models.objects.UIMenuItem;
 public abstract class AbstractMenuItemLink
     extends Link<UIMenuItem>
 {
-
     /**
      * Needed for serialization.
      */

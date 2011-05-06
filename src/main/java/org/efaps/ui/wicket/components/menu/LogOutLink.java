@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2011 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,6 @@ import org.efaps.ui.wicket.pages.login.LoginPage;
 public class LogOutLink
     extends StandardLink
 {
-
     /**
      * Needed for serialization.
      */
@@ -48,9 +47,6 @@ public class LogOutLink
         super(_wicketId, _model);
     }
 
-    /* (non-Javadoc)
-     * @see org.efaps.ui.wicket.components.menu.StandardLink#onClick()
-     */
     @Override
     public void onClick()
     {

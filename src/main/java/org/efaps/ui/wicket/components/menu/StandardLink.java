@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2010 The eFaps Team
+ * Copyright 2003 - 2011 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,12 +56,10 @@ public class StandardLink
     extends AbstractMenuItemLink
     implements IRecent
 {
-
     /**
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
-
 
     /**
      * Constructor.
@@ -113,8 +111,8 @@ public class StandardLink
 
                         getPage().addOrReplace(iframe);
                     } else {
-                        final TablePage table = new TablePage(getPopupSettings().getPageMap(null), model
-                                        .getCommandUUID(), model.getInstanceKey(), openerId);
+                        final TablePage table = new TablePage(PageMap.forName(getPopupSettings().getPageMapName(null)),
+                                        model.getCommandUUID(), model.getInstanceKey(), openerId);
                         if (getPage() instanceof AbstractContentPage) {
                             table.setMenuTreeKey(((AbstractContentPage) getPage()).getMenuTreeKey());
                         }
@@ -128,8 +126,8 @@ public class StandardLink
                     final InlineFrame iframe = new InlineFrame(MainPage.IFRAME_WICKETID, page);
                     getPage().addOrReplace(iframe);
                 } else {
-                    final FormPage formpage = new FormPage(getPopupSettings().getPageMap(null), model.getCommandUUID(),
-                                    model.getInstanceKey(), openerId);
+                    final FormPage formpage = new FormPage(PageMap.forName(getPopupSettings().getPageMapName(null)),
+                                    model.getCommandUUID(), model.getInstanceKey(), openerId);
                     if (getPage() instanceof AbstractContentPage) {
                         formpage.setMenuTreeKey(((AbstractContentPage) getPage()).getMenuTreeKey());
                     }
@@ -180,7 +178,6 @@ public class StandardLink
             }
         }
     }
-
 
     /**
      * {@inheritDoc}
