@@ -82,11 +82,11 @@ public class SortLink
             uiTableHeader.setSortDirection(SortDirection.DESCENDING);
         }
 
-        uiTable.setSortDirection(uiTableHeader.getSortDirection());
-        uiTable.sort();
-
         final String menuTreeKey = ((AbstractContentPage) getPage()).getMenuTreeKey();
         try {
+            uiTable.setSortDirection(uiTableHeader.getSortDirection());
+            uiTable.sort();
+
             AbstractContentPage page;
             if (getPage() instanceof TablePage) {
                 page = new TablePage(new TableModel(uiTable));

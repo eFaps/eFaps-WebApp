@@ -1155,16 +1155,21 @@ public class UITable
     /**
      * The instance method sorts the table values depending on the sort key in
      * {@link #sortKey} and the sort direction in {@link #sortDirection}.
+     * @throws EFapsException on error
      */
     public void sort()
+        throws EFapsException
     {
         if (getSortKey() != null && getSortKey().length() > 0) {
             int sortKeyTmp = 0;
             for (int i = 0; i < getTable().getFields().size(); i++) {
                 final Field field = getTable().getFields().get(i);
-                if (field.getName().equals(getSortKey())) {
-                    sortKeyTmp = i;
-                    break;
+                if (field.hasAccess(getMode(), getInstance(), getCommand())
+                                && !field.isNoneDisplay(getMode()) && !field.isHiddenDisplay(getMode())) {
+                    if (field.getName().equals(getSortKey())) {
+                        break;
+                    }
+                    sortKeyTmp++;
                 }
             }
             final int index = sortKeyTmp;
@@ -1172,7 +1177,7 @@ public class UITable
 
                 public int compare(final UIRow _rowModel1,
                                    final UIRow _rowModel2)
-                                            {
+                {
 
                     final UITableCell cellModel1 = _rowModel1.getValues().get(index);
                     final FieldValue fValue1 = new FieldValue(getTable().getFields().get(index), cellModel1
