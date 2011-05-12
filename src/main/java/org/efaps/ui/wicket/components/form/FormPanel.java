@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2011 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,9 +41,10 @@ import org.efaps.ui.wicket.models.objects.UIForm.FormElement;
 import org.efaps.ui.wicket.models.objects.UIForm.FormRow;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
+import org.efaps.util.EFapsException;
 
 /**
- * TODO description
+ * TODO description.
  *
  * @author The eFaps Team
  * @version $Id$
@@ -85,12 +86,14 @@ public class FormPanel
      * @param _model model of this component
      * @param _formelementmodel model of the form element
      * @param _form fom container
+     * @throws EFapsException on error
      */
     public FormPanel(final String _wicketId,
                      final Page _page,
                      final IModel<UIForm> _model,
                      final FormElement _formelementmodel,
                      final FormContainer _form)
+        throws EFapsException
     {
         super(_wicketId, _model);
         final UIForm uiForm = _model.getObject();

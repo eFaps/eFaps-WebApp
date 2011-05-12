@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2011 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import java.util.UUID;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
+import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
@@ -303,10 +304,10 @@ public class ClassificationPathPanel
                 }
                 try {
                     add2Elements(uiform, (UIClassification) getDefaultModelObject(), uuid2InstanceKey);
+                    FormPage.updateFormContainer(page, form, uiform);
                 } catch (final EFapsException e) {
-                    getRequestCycle().setResponsePage(new ErrorPage(e));
+                    throw new RestartResponseException(new ErrorPage(e));
                 }
-                FormPage.updateFormContainer(page, form, uiform);
                 _target.addComponent(form);
                 // TODO this should not be done always, needed for the editor so that it is loaded correctly
                 _target.appendJavascript("dojo.parser.parse(document.body)");

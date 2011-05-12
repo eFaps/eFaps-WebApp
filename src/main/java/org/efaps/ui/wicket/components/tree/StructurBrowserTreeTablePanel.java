@@ -26,6 +26,7 @@ import javax.swing.tree.TreeNode;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.Response;
+import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.extensions.markup.html.tree.table.AbstractColumn;
 import org.apache.wicket.extensions.markup.html.tree.table.AbstractRenderableColumn;
 import org.apache.wicket.extensions.markup.html.tree.table.AbstractTreeColumn;
@@ -41,6 +42,8 @@ import org.efaps.ui.wicket.components.date.UnnestedDatePickers;
 import org.efaps.ui.wicket.models.cell.UIStructurBrowserTableCell;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.models.objects.UITableHeader;
+import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.util.EFapsException;
 
 /**
  * @author The eFaps Team
@@ -228,8 +231,12 @@ public class StructurBrowserTreeTablePanel
                                  final TreeNode _node,
                                  final int _level)
         {
-            return new TreeCellPanel(_wicketId, _node, this.index, StructurBrowserTreeTablePanel.this.parentLink,
-                            StructurBrowserTreeTablePanel.this.datePickers);
+            try {
+                return new TreeCellPanel(_wicketId, _node, this.index, StructurBrowserTreeTablePanel.this.parentLink,
+                                StructurBrowserTreeTablePanel.this.datePickers);
+            } catch (final EFapsException e) {
+                throw new RestartResponseException(new ErrorPage(e));
+            }
         }
 
         /**

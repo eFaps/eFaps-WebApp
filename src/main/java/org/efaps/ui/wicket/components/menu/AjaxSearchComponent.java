@@ -23,6 +23,7 @@ package org.efaps.ui.wicket.components.menu;
 import java.util.Iterator;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
@@ -31,6 +32,8 @@ import org.efaps.ui.wicket.components.heading.HeadingPanel;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
+import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.util.EFapsException;
 
 /**
  * Class is used to render a link o page containing a search.
@@ -113,41 +116,44 @@ public class AjaxSearchComponent
         @Override
         protected void onEvent(final AjaxRequestTarget _target)
         {
+            try {
+                FormContainer form = null;
+                HeadingPanel heading = null;
+                boolean break1 = false;
+                boolean break2 = false;
 
-            FormContainer form = null;
-            HeadingPanel heading = null;
-            boolean break1 = false;
-            boolean break2 = false;
+                final Iterator<? extends Component> iter = getPage().iterator();
+                while (iter.hasNext()) {
+                    final Component comp = iter.next();
+                    if (comp instanceof FormContainer) {
+                        _target.addComponent(comp);
+                        form = (FormContainer) comp;
+                        break1 = true;
+                    }
+                    if (comp instanceof HeadingPanel) {
+                        _target.addComponent(comp);
+                        heading = (HeadingPanel) comp;
+                        break2 = true;
+                    }
+                    if (break1 && break2) {
+                        break;
+                    }
+                }
+                heading.removeAll();
+                form.removeAll();
 
-            final Iterator<? extends Component> iter = getPage().iterator();
-            while (iter.hasNext()) {
-                final Component comp = iter.next();
-                if (comp instanceof FormContainer) {
-                    _target.addComponent(comp);
-                    form = (FormContainer) comp;
-                    break1 = true;
-                }
-                if (comp instanceof HeadingPanel) {
-                    _target.addComponent(comp);
-                    heading = (HeadingPanel) comp;
-                    break2 = true;
-                }
-                if (break1 && break2) {
-                    break;
-                }
+                final UIMenuItem menuitem = (UIMenuItem) getComponent().getDefaultModelObject();
+
+                final UIForm uiform = (UIForm) getPage().getDefaultModelObject();
+                uiform.resetModel();
+                uiform.setCommandUUID(menuitem.getCommandUUID());
+                uiform.setFormUUID(uiform.getCommand().getTargetForm().getUUID());
+                uiform.execute();
+                heading.addComponents(uiform.getTitle());
+                FormPage.updateFormContainer(getPage(), form, uiform);
+            } catch (final EFapsException e) {
+                throw new RestartResponseException(new ErrorPage(e));
             }
-            heading.removeAll();
-            form.removeAll();
-
-            final UIMenuItem menuitem = (UIMenuItem) getComponent().getDefaultModelObject();
-
-            final UIForm uiform = (UIForm) getPage().getDefaultModelObject();
-            uiform.resetModel();
-            uiform.setCommandUUID(menuitem.getCommandUUID());
-            uiform.setFormUUID(uiform.getCommand().getTargetForm().getUUID());
-            uiform.execute();
-            heading.addComponents(uiform.getTitle());
-            FormPage.updateFormContainer(getPage(), form, uiform);
         }
 
         /**

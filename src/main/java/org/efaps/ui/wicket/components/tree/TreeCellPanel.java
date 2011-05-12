@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2010 The eFaps Team
+ * Copyright 2003 - 2011 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.PageMap;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.datetime.StyleDateConverter;
@@ -57,6 +56,7 @@ import org.efaps.ui.wicket.components.table.cell.ContentContainerLink;
 import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.cell.UIStructurBrowserTableCell;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
+import org.efaps.util.EFapsException;
 
 /**
  * Class is used to render a cell inside a table.
@@ -79,12 +79,14 @@ public class TreeCellPanel
      * @param _index            index of the column
      * @param _updateListMenu   must the list menu be update by a link
      * @param _datePickers      unnested DatePickers
+     * @throws EFapsException on error
      */
     public TreeCellPanel(final String _wicketId,
                          final TreeNode _node,
                          final int _index,
                          final boolean _updateListMenu,
                          final UnnestedDatePickers _datePickers)
+        throws EFapsException
     {
         super(_wicketId);
         final UIStructurBrowser uiStru = (UIStructurBrowser) ((DefaultMutableTreeNode) _node).getUserObject();
@@ -124,7 +126,7 @@ public class TreeCellPanel
                     } else {
                         link = new ContentContainerLink<UIStructurBrowserTableCell>("link", cellModel);
                         if (uiCell.getTarget() == Target.POPUP) {
-                            final PopupSettings popup = new PopupSettings(PageMap.forName("popup"));
+                            final PopupSettings popup = new PopupSettings("popup");
                             ((ContentContainerLink<?>) link).setPopupSettings(popup);
                         }
                     }

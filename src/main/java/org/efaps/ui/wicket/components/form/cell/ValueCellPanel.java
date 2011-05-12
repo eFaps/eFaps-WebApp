@@ -48,6 +48,7 @@ import org.efaps.ui.wicket.components.table.cell.AjaxLinkContainer;
 import org.efaps.ui.wicket.components.table.cell.ContentContainerLink;
 import org.efaps.ui.wicket.models.cell.UIFormCell;
 import org.efaps.ui.wicket.models.objects.UIForm;
+import org.efaps.util.EFapsException;
 
 /**
  * Class renders a cell in a Form.
@@ -76,11 +77,13 @@ public class ValueCellPanel
      * @param _model model of the component
      * @param _formmodel model of the form
      * @param _ajaxLink is this panel an ajax link
+     * @throws EFapsException on error
      */
     public ValueCellPanel(final String _wicketId,
                           final IModel<UIFormCell> _model,
                           final UIForm _formmodel,
                           final boolean _ajaxLink)
+        throws EFapsException
     {
         super(_wicketId, _model);
         setOutputMarkupId(true);

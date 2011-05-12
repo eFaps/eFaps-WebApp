@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2010 The eFaps Team
+ * Copyright 2003 - 2011 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -195,13 +195,15 @@ public class FormPage
     /**
      * Method used to update the Form Container.
      *
-     * @param _page page
-     * @param _form formcontainer
-     * @param _uiForm model
+     * @param _page     page
+     * @param _form     formcontainer
+     * @param _uiForm   model
+     * @throws EFapsException on error
      */
     public static void updateFormContainer(final Page _page,
                                            final FormContainer _form,
                                            final UIForm _uiForm)
+        throws EFapsException
     {
 
         if (!_uiForm.isInitialized()) {

@@ -209,7 +209,11 @@ public class StructurBrowserTreeTable
                                      final int _level,
                                      final IRenderNodeCallback _nodeCallback)
     {
-        return new StructurBrowserTreeFragment(_wicketId, _node, _level, _nodeCallback);
+        try {
+            return new StructurBrowserTreeFragment(_wicketId, _node, _level, _nodeCallback);
+        } catch (final EFapsException e) {
+            throw new RestartResponseException(new ErrorPage(e));
+        }
     }
 
     /**
@@ -326,11 +330,13 @@ public class StructurBrowserTreeTable
          * @param _node node
          * @param _level level
          * @param _nodeCallback callback
+         * @throws EFapsException on error
          */
         public StructurBrowserTreeFragment(final String _wicketId,
                                            final TreeNode _node,
                                            final int _level,
                                            final IRenderNodeCallback _nodeCallback)
+            throws EFapsException
         {
             super(_wicketId);
             final UIStructurBrowser uiStru = (UIStructurBrowser) ((DefaultMutableTreeNode) _node).getUserObject();

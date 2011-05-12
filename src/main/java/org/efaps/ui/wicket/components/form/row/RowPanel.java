@@ -43,6 +43,7 @@ import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIForm.FormElement;
 import org.efaps.ui.wicket.models.objects.UIForm.FormRow;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
+import org.efaps.util.EFapsException;
 
 /**
  * TODO description!
@@ -67,6 +68,7 @@ public class RowPanel
      * @param _formPanel    form panel this RowPanel is in
      * @param _form         form this RowPanel is in
      * @param _formelementmodel element this rowpanel belongs to
+     * @throws EFapsException on error
      *
      */
     public RowPanel(final String _wicketId,
@@ -76,6 +78,7 @@ public class RowPanel
                     final FormPanel _formPanel,
                     final FormContainer _form,
                     final FormElement _formelementmodel)
+        throws EFapsException
     {
         super(_wicketId, _model);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2010 The eFaps Team
+ * Copyright 2003 - 2011 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,8 @@ import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.models.objects.UITableHeader;
 import org.efaps.ui.wicket.pages.content.table.filter.FilterPage;
+import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.util.EFapsException;
 
 /**
  * Class renders a link that opens the form to filter the tables.
@@ -121,7 +123,13 @@ public class AjaxFilterLink
          */
         public Page createPage()
         {
-            return new FilterPage(new TableModel(this.uitable), this.modalwindow, this.uitableHeader);
+            Page ret;
+            try {
+                ret = new FilterPage(new TableModel(this.uitable), this.modalwindow, this.uitableHeader);
+            } catch (final EFapsException e) {
+                ret = new ErrorPage(e);
+            }
+            return ret;
         }
     }
 }

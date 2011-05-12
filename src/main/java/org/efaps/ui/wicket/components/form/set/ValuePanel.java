@@ -40,6 +40,7 @@ import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.cell.UIFormCell;
 import org.efaps.ui.wicket.models.cell.UIFormCellSet;
 import org.efaps.ui.wicket.models.objects.UIForm;
+import org.efaps.util.EFapsException;
 
 /**
  * Class renders one row for a AttributeSet.
@@ -60,12 +61,14 @@ public class ValuePanel extends Panel
      * @param _yCoord       y-coordinate
      * @param _value        value object
      * @param _formmodel    formModel
+     * @throws EFapsException on error
      */
     public ValuePanel(final String _wicketId,
                       final UIFormCellSet _set,
                       final Integer _yCoord,
                       final Map<Integer, UIFormCell> _value,
                       final UIForm _formmodel)
+        throws EFapsException
     {
         super(_wicketId);
         final NumberFormat nf = NumberFormat.getInstance();

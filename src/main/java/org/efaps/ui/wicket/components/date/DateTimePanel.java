@@ -30,6 +30,8 @@ import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
+import org.efaps.db.Context;
+import org.efaps.util.EFapsException;
 import org.joda.time.DateTime;
 import org.joda.time.MutableDateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -81,6 +83,7 @@ public class DateTimePanel
      * @param _fieldName Name of the field this DateTimePanel belongs to
      * @param _time must the time be rendered also
      * @param _inputSize size of the input
+     * @throws EFapsException on error
      */
     public DateTimePanel(final String _wicketId,
                          final Object _dateObject,
@@ -88,9 +91,11 @@ public class DateTimePanel
                          final String _fieldName,
                          final boolean _time,
                          final Integer _inputSize)
+        throws EFapsException
     {
         super(_wicketId);
-        this.datetime = _dateObject == null || !(_dateObject instanceof DateTime) ? new DateTime()
+        this.datetime = _dateObject == null || !(_dateObject instanceof DateTime)
+                        ? new DateTime(Context.getThreadContext().getChronology())
                         : (DateTime) _dateObject;
 
         this.converter = _converter;
@@ -266,15 +271,18 @@ public class DateTimePanel
      * @param _minute minutes
      * @param _ampm am/pm
      * @return valid string
+     * @throws EFapsException on error
      */
     public String getDateAsString(final String[] _date,
                                   final String[] _hour,
                                   final String[] _minute,
                                   final String[] _ampm)
+        throws EFapsException
     {
         String ret = null;
         if (_date != null && _date[0].length() > 0) {
-            final DateTimeFormatter fmt = DateTimeFormat.forPattern(this.converter.getDatePattern());
+            final DateTimeFormatter fmt = DateTimeFormat.forPattern(this.converter.getDatePattern())
+                .withChronology(Context.getThreadContext().getChronology());
             fmt.withLocale(getLocale());
             final MutableDateTime mdt = fmt.parseMutableDateTime(_date[0]);
 

@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
@@ -44,8 +45,10 @@ import org.efaps.ui.wicket.components.table.filter.PickerPanel;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.models.objects.UITableHeader;
 import org.efaps.ui.wicket.models.objects.UITableHeader.FilterType;
+import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
+import org.efaps.util.EFapsException;
 
 /**
  * @author The eFaps Team
@@ -69,10 +72,12 @@ public class FilterPage
      * @param _model tablemodel
      * @param _modalwindow modalwindow this page is in
      * @param _uitableHeader uitablehaeder this FilterPage belongs to
+     * @throws EFapsException on error
      */
     public FilterPage(final IModel<UITable> _model,
                       final ModalWindowContainer _modalwindow,
                       final UITableHeader _uitableHeader)
+        throws EFapsException
     {
         super(_model);
         final UITable uiTable = (UITable) super.getDefaultModelObject();
@@ -96,59 +101,63 @@ public class FilterPage
             protected void onSubmit(final AjaxRequestTarget _target,
                                     final Form<?> _form)
             {
+                try {
+                    if (_uitableHeader.isFilterPickList()) {
+                        final String[] selection = getRequestCycle().getRequest().getParameters(
+                                        PickerPanel.CHECKBOXNAME);
 
-                if (_uitableHeader.isFilterPickList()) {
-                    final String[] selection = getRequestCycle().getRequest().getParameters(PickerPanel.CHECKBOXNAME);
-
-                    if (selection != null) {
-                        final List<?> picklist = ((PickerPanel) panel).getPickList();
-                        // all value are selected, meaning that nothing must be
-                        // filtered
-                        if (selection.length == picklist.size()) {
-                            uiTable.removeFilter(_uitableHeader);
-                        } else {
-                            final Set<Object> filterList = new HashSet<Object>();
-                            for (int i = 0; i < selection.length; i++) {
-                                final Integer intpos = Integer.valueOf(selection[i]);
-                                filterList.add(picklist.get(intpos));
+                        if (selection != null) {
+                            final List<?> picklist = ((PickerPanel) panel).getPickList();
+                            // all value are selected, meaning that nothing must be
+                            // filtered
+                            if (selection.length == picklist.size()) {
+                                uiTable.removeFilter(_uitableHeader);
+                            } else {
+                                final Set<Object> filterList = new HashSet<Object>();
+                                for (int i = 0; i < selection.length; i++) {
+                                    final Integer intpos = Integer.valueOf(selection[i]);
+                                    filterList.add(picklist.get(intpos));
+                                }
+                                uiTable.addFilterList(_uitableHeader, filterList);
                             }
-                            uiTable.addFilterList(_uitableHeader, filterList);
+                            _modalwindow.setUpdateParent(true);
+                        } else {
+                            _modalwindow.setUpdateParent(false);
+                        }
+                        _modalwindow.close(_target);
+                    } else if (_uitableHeader.getFilterType().equals(FilterType.DATE)) {
+                        final FreeTextPanel freeTextPanel = (FreeTextPanel) panel;
+                        final Iterator<? extends Component> iter = freeTextPanel.iterator();
+                        String from = null;
+                        String to = null;
+                        while (iter.hasNext()) {
+                            final Component comp = iter.next();
+                            if (comp instanceof DateTimePanel) {
+                                final DateTimePanel datePanel = (DateTimePanel) comp;
+                                if (datePanel.getId().equals(freeTextPanel.getFromFieldName())) {
+                                    final String[] tmp = getRequestCycle().getRequest().getParameters(
+                                                    datePanel.getDateFieldName());
+                                    if (tmp.length > 0) {
+                                        from = datePanel.getDateAsString(tmp, null, null, null);
+                                    }
+                                } else {
+                                    final String[] tmp = getRequestCycle().getRequest().getParameters(
+                                                    datePanel.getDateFieldName());
+                                    if (tmp.length > 0) {
+                                        to = datePanel.getDateAsString(tmp, null, null, null);
+                                    }
+                                }
+                            }
+                        }
+                        uiTable.addFilterRange(_uitableHeader, from, to);
+                        if (!_uitableHeader.isFilterMemoryBased()) {
+                            uiTable.resetModel();
                         }
                         _modalwindow.setUpdateParent(true);
-                    } else {
-                        _modalwindow.setUpdateParent(false);
+                        _modalwindow.close(_target);
                     }
-                    _modalwindow.close(_target);
-                } else if (_uitableHeader.getFilterType().equals(FilterType.DATE)) {
-                    final FreeTextPanel freeTextPanel = (FreeTextPanel) panel;
-                    final Iterator<? extends Component> iter = freeTextPanel.iterator();
-                    String from = null;
-                    String to = null;
-                    while (iter.hasNext()) {
-                        final Component comp = iter.next();
-                        if (comp instanceof DateTimePanel) {
-                            final DateTimePanel datePanel = (DateTimePanel) comp;
-                            if (datePanel.getId().equals(freeTextPanel.getFromFieldName())) {
-                                final String[] tmp = getRequestCycle().getRequest().getParameters(
-                                                datePanel.getDateFieldName());
-                                if (tmp.length > 0) {
-                                    from = datePanel.getDateAsString(tmp, null, null, null);
-                                }
-                            } else {
-                                final String[] tmp = getRequestCycle().getRequest().getParameters(
-                                                datePanel.getDateFieldName());
-                                if (tmp.length > 0) {
-                                    to = datePanel.getDateAsString(tmp, null, null, null);
-                                }
-                            }
-                        }
-                    }
-                    uiTable.addFilterRange(_uitableHeader, from, to);
-                    if (!_uitableHeader.isFilterMemoryBased()) {
-                        uiTable.resetModel();
-                    }
-                    _modalwindow.setUpdateParent(true);
-                    _modalwindow.close(_target);
+                } catch (final EFapsException e) {
+                    throw new RestartResponseException(new ErrorPage(e));
                 }
             }
         };

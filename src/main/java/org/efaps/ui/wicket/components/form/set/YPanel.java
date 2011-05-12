@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2011 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import org.efaps.ui.wicket.models.cell.UIFormCell;
 import org.efaps.ui.wicket.models.cell.UIFormCellSet;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.util.EFapsException;
 
 /**
  * Class is responsible for rendering the y-coordinates for an AttributeSet.
@@ -68,10 +69,12 @@ public class YPanel
      * @param _wicketId wicketId for the component
      * @param _model model for the component
      * @param _formmodel FormModel
+     * @throws EFapsException on error
      */
     public YPanel(final String _wicketId,
                   final IModel<UIFormCellSet> _model,
                   final UIForm _formmodel)
+        throws EFapsException
     {
         super(_wicketId, _model);
         final UIFormCellSet set = (UIFormCellSet) super.getDefaultModelObject();

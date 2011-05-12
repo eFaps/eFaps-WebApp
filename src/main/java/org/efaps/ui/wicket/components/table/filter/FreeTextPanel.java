@@ -35,6 +35,7 @@ import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.models.objects.UITable.Filter;
 import org.efaps.ui.wicket.models.objects.UITableHeader;
 import org.efaps.ui.wicket.models.objects.UITableHeader.FilterType;
+import org.efaps.util.EFapsException;
 import org.joda.time.DateTime;
 
 /**
@@ -63,10 +64,12 @@ public class FreeTextPanel
      * @param _wicketId wicket id for this component
      * @param _model model for this component
      * @param _uitableHeader UITableHeader this panel belongs to
+     * @throws EFapsException on error
      */
     public FreeTextPanel(final String _wicketId,
                          final IModel<UITable> _model,
                          final UITableHeader _uitableHeader)
+        throws EFapsException
     {
         super(_wicketId, _model);
         final UITable uitable = (UITable) super.getDefaultModelObject();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2011 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -148,22 +148,21 @@ public class AjaxSubmitCloseBehavior
         final String[] other = getComponent().getRequestCycle().getRequest().getParameters("selectedRow");
         final List<Classification> classifications = new ArrayList<Classification>();
         others.put("selectedRow", other);
-
-        convertDateFieldValues();
-        if (this.uiObject instanceof UIForm) {
-            final UIForm uiform = (UIForm) this.uiObject;
-            others.putAll(uiform.getNewValues());
-            // if the form contains classifications, they are added to a list and passed on to the esjp
-            if (uiform.isClassified()) {
-                for (final Element element : uiform.getElements()) {
-                    if (element.getType().equals(ElementType.SUBFORM)) {
-                        final UIFieldForm uifieldform = (UIFieldForm) element.getElement();
-                        classifications.add((Classification) Type.get(uifieldform.getClassificationUUID()));
+        try {
+            convertDateFieldValues();
+            if (this.uiObject instanceof UIForm) {
+                final UIForm uiform = (UIForm) this.uiObject;
+                others.putAll(uiform.getNewValues());
+                // if the form contains classifications, they are added to a list and passed on to the esjp
+                if (uiform.isClassified()) {
+                    for (final Element element : uiform.getElements()) {
+                        if (element.getType().equals(ElementType.SUBFORM)) {
+                            final UIFieldForm uifieldform = (UIFieldForm) element.getElement();
+                            classifications.add((Classification) Type.get(uifieldform.getClassificationUUID()));
+                        }
                     }
                 }
             }
-        }
-        try {
             if (checkForRequired(_target) && validateFieldValues(_target)
                             && (validateForm(_target, others, classifications))) {
                 if (executeEvents(_target, others, classifications)) {
@@ -268,8 +267,10 @@ public class AjaxSubmitCloseBehavior
     /**
      * Method used to convert the date value from the ui in date values for
      * eFaps.
+     * @throws EFapsException on error
      */
     private void convertDateFieldValues()
+        throws EFapsException
     {
         final List<FormPanel> formpl = getFormPanels();
         for (final FormPanel panel : formpl) {
