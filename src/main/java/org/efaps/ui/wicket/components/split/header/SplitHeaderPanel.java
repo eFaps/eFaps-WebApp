@@ -185,11 +185,13 @@ public class SplitHeaderPanel
      * @param _showVertical show the vertical collapse/expand button
      * @param _horizontalCollapsed is horizontal collapsed
      * @param _verticalCollapsed is vertical collapsed
+     * @throws EFapsException on error
      */
     public SplitHeaderPanel(final String _wicketId,
                             final boolean _showVertical,
                             final boolean _horizontalCollapsed,
                             final boolean _verticalCollapsed)
+        throws EFapsException
     {
         super(_wicketId);
         this.showVertical = _showVertical;

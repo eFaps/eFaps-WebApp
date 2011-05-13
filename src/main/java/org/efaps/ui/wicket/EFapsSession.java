@@ -148,6 +148,7 @@ public class EFapsSession
      * Standard Constructor from Wicket.
      *
      * @param _request Request
+     * @throws EFapsException
      */
     public EFapsSession(final Request _request)
     {
@@ -157,7 +158,11 @@ public class EFapsSession
                         UUID.fromString("50a65460-2d08-4ea8-b801-37594e93dad5"));
         this.stackSize = 5;
         if (config != null) {
-            this.stackSize = config.getAttributeValueAsInteger("RecentCacheSize");
+            try {
+                this.stackSize = config.getAttributeValueAsInteger("RecentCacheSize");
+            } catch (final EFapsException e) {
+                EFapsSession.LOG.error("error on reading Sytem,Configuration", e);
+            }
         }
     }
 

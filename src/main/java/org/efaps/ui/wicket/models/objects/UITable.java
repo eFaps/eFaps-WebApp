@@ -716,11 +716,13 @@ public class UITable
      * @param _uitableHeader UitableHeader this filter belongs to
      * @param _from from value
      * @param _to to value
+     * @throws EFapsException on error
      *
      */
     public void addFilterRange(final UITableHeader _uitableHeader,
                                final String _from,
                                final String _to)
+        throws EFapsException
     {
         final Filter filter = new Filter(_uitableHeader, _from, _to);
         this.filters.put(_uitableHeader, filter);
@@ -1308,10 +1310,11 @@ public class UITable
          * @param _uitableHeader UITableHeader this filter lies in
          * @param _from value for from
          * @param _to value for to
+         * @throws EFapsException on error
          */
         public Filter(final UITableHeader _uitableHeader,
                       final String _from,
-                      final String _to)
+                      final String _to) throws EFapsException
         {
             this.uiTableHeader = _uitableHeader;
             this.from = _from;

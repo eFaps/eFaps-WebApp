@@ -69,12 +69,14 @@ public class ListOnlyPanel
      * @param _oid              oid
      * @param _listMenuKey      key to the list menu
      * @param _selectCmdUUID    UUID of the selected Command
+     * @throws EFapsException on error
      */
     public ListOnlyPanel(final String _wicketId,
                          final UUID _commandUUID,
                          final String _oid,
                          final String _listMenuKey,
                          final UUID _selectCmdUUID)
+        throws EFapsException
     {
         super(_wicketId);
         this.add(StaticHeaderContributor.forCss(ListOnlyPanel.CSS));
@@ -95,10 +97,7 @@ public class ListOnlyPanel
         } else if (position == null) {
             position = "200";
         }
-        this.add(new ContentPaneBehavior(Region.LEADING,
-                                     true,
-                                     position + "px",
-                                     null));
+        this.add(new ContentPaneBehavior(Region.LEADING, true, position + "px", null));
 
         final SplitHeaderPanel header = new SplitHeaderPanel("header", false, hidden, false);
         this.add(header);
