@@ -98,11 +98,9 @@ public class FreeTextPanel
             this.add(new Label("textFrom", DBProperties.getProperty("FilterPage.textFrom")));
             this.add(new Label("textTo", DBProperties.getProperty("FilterPage.textTo")));
 
-            final DateTimePanel dateFrom = new DateTimePanel("dateFrom", fromDate,
-                                                             new StyleDateConverter(false), "dateFrom", false, null);
+            final DateTimePanel dateFrom = new DateTimePanel("dateFrom", fromDate, "dateFrom", false, null);
             this.add(dateFrom);
-            final DateTimePanel dateTo = new DateTimePanel("dateTo", toDate,
-                                                           new StyleDateConverter(false), "dateTo", false, null);
+            final DateTimePanel dateTo = new DateTimePanel("dateTo", toDate, "dateTo", false, null);
             this.add(dateTo);
 
             final StyleDateConverter conv = new StyleDateConverter(false);

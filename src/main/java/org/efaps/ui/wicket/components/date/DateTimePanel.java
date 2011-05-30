@@ -23,6 +23,7 @@ package org.efaps.ui.wicket.components.date;
 import java.util.Date;
 
 import org.apache.wicket.datetime.DateConverter;
+import org.apache.wicket.datetime.StyleDateConverter;
 import org.apache.wicket.datetime.markup.html.form.DateTextField;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
@@ -33,10 +34,13 @@ import org.apache.wicket.model.Model;
 import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.MutableDateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class to render a datefield with picker and in case that a time is wanted
@@ -48,6 +52,10 @@ import org.joda.time.format.ISODateTimeFormat;
 public class DateTimePanel
     extends Panel
 {
+    /**
+     * Logger for this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(DateTimePanel.class);
 
     /**
      * Needed for serialization.
@@ -78,8 +86,6 @@ public class DateTimePanel
      * @param _wicketId wicket id of this component
      * @param _dateObject object containing a DateTime, if null or not DateTime
      *                       a new DateTime will be instantiated
-     * @param _converter DateConverter needed to enable date formating related
-     *                       to the locale
      * @param _fieldName Name of the field this DateTimePanel belongs to
      * @param _time must the time be rendered also
      * @param _inputSize size of the input
@@ -87,7 +93,6 @@ public class DateTimePanel
      */
     public DateTimePanel(final String _wicketId,
                          final Object _dateObject,
-                         final DateConverter _converter,
                          final String _fieldName,
                          final boolean _time,
                          final Integer _inputSize)
@@ -98,10 +103,30 @@ public class DateTimePanel
                         ? new DateTime(Context.getThreadContext().getChronology())
                         : (DateTime) _dateObject;
 
-        this.converter = _converter;
+        this.converter = new StyleDateConverter(false) {
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            protected DateTimeZone getTimeZone()
+            {
+                DateTimeZone ret = null;
+                try {
+                    ret = Context.getThreadContext().getTimezone();
+                } catch (final EFapsException e) {
+                    DateTimePanel.LOG.error("EFapsException", e);
+                } finally {
+                    if (ret == null) {
+                        super.getTimeZone();
+                    }
+                }
+                return ret;
+            }
+        };
 
         this.fieldName = _fieldName;
-        final DateTextField dateField = new DateTextField("date", new Model<Date>(this.datetime.toDate()), _converter)
+        final DateTextField dateField = new DateTextField("date", new Model<Date>(this.datetime.toDate()),
+                        this.converter)
         {
 
             private static final long serialVersionUID = 1L;

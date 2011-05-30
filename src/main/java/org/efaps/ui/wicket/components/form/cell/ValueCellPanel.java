@@ -24,7 +24,6 @@ import java.util.Iterator;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.PageMap;
-import org.apache.wicket.datetime.StyleDateConverter;
 import org.apache.wicket.datetime.markup.html.form.DateTextField;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -59,7 +58,6 @@ import org.efaps.util.EFapsException;
 public class ValueCellPanel
     extends Panel
 {
-
     /**
      * Needed for serialization.
      */
@@ -105,7 +103,7 @@ public class ValueCellPanel
                             && uiFormCell.getDisplay().equals(Display.EDITABLE)) {
 
                 this.dateTextField = new DateTimePanel("label", uiFormCell.getCompareValue(),
-                                                       new StyleDateConverter(false), uiFormCell.getName(),
+                                                       uiFormCell.getName(),
                                                        "DateTime".equals(uiFormCell.getTypeName())
                                                                        || uiFormCell.getUiClass() instanceof DateTimeUI,
                                                        uiFormCell.getField().getCols());

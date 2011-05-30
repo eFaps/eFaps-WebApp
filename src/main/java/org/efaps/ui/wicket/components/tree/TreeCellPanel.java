@@ -28,7 +28,6 @@ import javax.swing.tree.TreeNode;
 import org.apache.wicket.Component;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
-import org.apache.wicket.datetime.StyleDateConverter;
 import org.apache.wicket.datetime.markup.html.form.DateTextField;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -146,8 +145,7 @@ public class TreeCellPanel
 
             if (uiCell.getUiClass() instanceof DateUI || uiCell.getUiClass() instanceof DateTimeUI) {
 
-                label = new DateTimePanel("label", uiCell.getCompareValue(),
-                                                         new StyleDateConverter(false), uiCell.getName(),
+                label = new DateTimePanel("label", uiCell.getCompareValue(), uiCell.getName(),
                                                          uiCell.getUiClass() instanceof DateTimeUI,
                                                          uiCell.getField().getCols());
                 if (uiCell.isFieldUpdate()) {
