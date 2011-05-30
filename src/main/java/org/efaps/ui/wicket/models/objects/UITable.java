@@ -939,7 +939,7 @@ public class UITable
                 ret = fields;
             }
         } catch (final EFapsException e) {
-            e.printStackTrace();
+            UITable.LOG.debug("Error on sorting columns");
         }
         return ret;
     }
@@ -1164,8 +1164,9 @@ public class UITable
     {
         if (getSortKey() != null && getSortKey().length() > 0) {
             int sortKeyTmp = 0;
-            for (int i = 0; i < getTable().getFields().size(); i++) {
-                final Field field = getTable().getFields().get(i);
+            final List<Field> fields = getUserSortedColumns();
+            for (int i = 0; i < fields.size(); i++) {
+                final Field field = fields.get(i);
                 if (field.hasAccess(getMode(), getInstance(), getCommand())
                                 && !field.isNoneDisplay(getMode()) && !field.isHiddenDisplay(getMode())) {
                     if (field.getName().equals(getSortKey())) {
