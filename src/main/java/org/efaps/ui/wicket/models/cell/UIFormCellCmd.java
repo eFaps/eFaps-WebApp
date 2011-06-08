@@ -21,6 +21,7 @@
 package org.efaps.ui.wicket.models.cell;
 
 import java.util.List;
+import java.util.Map;
 
 import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.event.EventType;
@@ -107,13 +108,14 @@ public class UIFormCellCmd
      * @return list of returns
      * @throws EFapsException on error
      */
-    public List<Return> executeEvents(final Object _others)
+    public List<Return> executeEvents(final Object _others,
+                                      final Map<String, String> _uiID2Oid)
         throws EFapsException
     {
         if (this.executionStatus == null) {
             this.executionStatus = UIFormCellCmd.ExecutionStatus.EXECUTE;
         }
-        final List<Return> ret = executeEvents(_others, EventType.UI_FIELD_CMD);
+        final List<Return> ret = executeEvents(EventType.UI_FIELD_CMD, _others, _uiID2Oid);
 
         if (this.executionStatus == UIFormCellCmd.ExecutionStatus.EXECUTE) {
             this.executionStatus = null;
@@ -150,12 +152,13 @@ public class UIFormCellCmd
      * @throws EFapsException on error
      *
      */
-    public String getRenderedContent(final String _script)
+    public String getRenderedContent(final String _script,
+                                     final Map<String, String> _uiID2Oid)
         throws EFapsException
     {
         this.executionStatus = UIFormCellCmd.ExecutionStatus.RENDER;
         final StringBuilder snip = new StringBuilder();
-        final List<Return> returns = executeEvents(_script);
+        final List<Return> returns = executeEvents(_script, _uiID2Oid);
         for (final Return oneReturn : returns) {
             if (oneReturn.contains(ReturnValues.SNIPLETT)) {
                 snip.append(oneReturn.get(ReturnValues.SNIPLETT));

@@ -84,7 +84,7 @@ public class UIFormCellChart
     public void initialize()
         throws EFapsException
     {
-        final List<Return> rets = executeEvents(null, EventType.UI_FIELD_VALUE);
+        final List<Return> rets = executeEvents(EventType.UI_FIELD_VALUE, null, null);
         if (rets != null && !rets.isEmpty()) {
             for (final Return ret : rets) {
                 if (ret.contains(ReturnValues.VALUES)) {

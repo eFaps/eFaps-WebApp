@@ -22,6 +22,7 @@ package org.efaps.ui.wicket.models.cell;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.event.EventDefinition;
@@ -281,13 +282,14 @@ public class UITableCell
     /**
      * Method to execute the events.
      *
-     * @param _others object to be passed to the executed event.
-     * @param _eventType type of the event to be executed
+     * @param _eventType    type of the event to be executed
+     * @param _others       object to be passed to the executed event with ParameterValues.OTHERS
      * @return List of Returns
      * @throws EFapsException on error
      */
-    public List<Return> executeEvents(final Object _others,
-                                      final EventType _eventType)
+    public List<Return> executeEvents(final EventType _eventType,
+                                      final Object _others,
+                                      final Map<String, String> _uiID2Oid)
         throws EFapsException
     {
         List<Return> ret = new ArrayList<Return>();
@@ -296,8 +298,12 @@ public class UITableCell
             final Context context = Context.getThreadContext();
             final String[] contextoid = { getInstanceKey() };
             context.getParameters().put("oid", contextoid);
-            ret = field.executeEvents(_eventType, ParameterValues.INSTANCE, getInstance(), ParameterValues.OTHERS,
-                            _others, ParameterValues.PARAMETERS, context.getParameters(), ParameterValues.CLASS, this);
+            ret = field.executeEvents(_eventType,
+                            ParameterValues.INSTANCE, getInstance(),
+                            ParameterValues.OTHERS, _others,
+                            ParameterValues.PARAMETERS, context.getParameters(),
+                            ParameterValues.CLASS, this,
+                            ParameterValues.OIDMAP4UI, _uiID2Oid);
         }
         return ret;
     }
@@ -327,13 +333,15 @@ public class UITableCell
      * Method to get the auto completion event.
      *
      * @param _others object to be passed to the executed event
+     * @param _uiID2Oid mapping of UserInterface Id and OID
      * @return List of Returns
      * @throws EFapsException on error
      */
-    public List<Return> getAutoCompletion(final Object _others)
+    public List<Return> getAutoCompletion(final Object _others,
+                                          final Map<String, String> _uiID2Oid)
         throws EFapsException
     {
-        return executeEvents(_others, EventType.UI_FIELD_AUTOCOMPLETE);
+        return executeEvents(EventType.UI_FIELD_AUTOCOMPLETE, _others, _uiID2Oid);
     }
 
     /**
@@ -359,14 +367,16 @@ public class UITableCell
     /**
      * Method to get the field update event.
      *
-     * @param _others object to be passed to the executed event
+     * @param _others   object to be passed to the executed event
+     * @param _uiID2Oid mapping of UserInterface Id and OID
      * @return List of Returns
      * @throws EFapsException on error
      */
-    public List<Return> getFieldUpdate(final Object _others)
+    public List<Return> getFieldUpdate(final Object _others,
+                                       final Map<String, String> _uiID2Oid)
         throws EFapsException
     {
-        return executeEvents(_others, EventType.UI_FIELD_UPDATE);
+        return executeEvents(EventType.UI_FIELD_UPDATE, _others, _uiID2Oid);
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2010 The eFaps Team
+ * Copyright 2003 - 2011 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,6 +42,7 @@ import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
 import org.efaps.ui.wicket.behaviors.SetSelectedRowBehavior;
 import org.efaps.ui.wicket.components.form.command.AjaxCmdBehavior;
 import org.efaps.ui.wicket.models.cell.UITableCell;
+import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
@@ -218,7 +219,9 @@ public class AutoCompleteField
         final UITableCell uiObject = (UITableCell) this.model.getObject();
         final List<Map<String, String>> retList = new ArrayList<Map<String, String>>();
         try {
-            final List<Return> returns = uiObject.getAutoCompletion(_input);
+            final AbstractUIPageObject pageObject = (AbstractUIPageObject) (getPage().getDefaultModelObject());
+            final Map<String, String> uiID2Oid = pageObject == null ? null : pageObject.getUiID2Oid();
+            final List<Return> returns = uiObject.getAutoCompletion(_input, uiID2Oid);
             for (final Return aReturn : returns) {
                 final Object ob = aReturn.get(ReturnValues.VALUES);
                 if (ob instanceof List) {

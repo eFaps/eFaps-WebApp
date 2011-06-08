@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2010 The eFaps Team
+ * Copyright 2003 - 2011 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@
 package org.efaps.ui.wicket.components.form.command;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -31,6 +32,7 @@ import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.models.cell.UIFormCellCmd;
+import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 
@@ -62,7 +64,6 @@ public class AjaxExecuteLink
     }
 
     /**
-     * @see org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink#onSubmit(org.apache.wicket.ajax.AjaxRequestTarget, org.apache.wicket.markup.html.form.Form)
      * @param _target   AjaxRequestTarget
      * @param _form     form
      */
@@ -73,7 +74,9 @@ public class AjaxExecuteLink
         final UIFormCellCmd uiObject = (UIFormCellCmd) getDefaultModelObject();
         final StringBuilder snip = new StringBuilder();
         try {
-            final List<Return> returns = uiObject.executeEvents(null);
+            final AbstractUIPageObject pageObject = (AbstractUIPageObject) (getPage().getDefaultModelObject());
+            final Map<String, String> uiID2Oid = pageObject == null ? null : pageObject.getUiID2Oid();
+            final List<Return> returns = uiObject.executeEvents(null, uiID2Oid);
             for (final Return oneReturn : returns) {
                 if (oneReturn.contains(ReturnValues.SNIPLETT)) {
                     snip.append(oneReturn.get(ReturnValues.SNIPLETT));

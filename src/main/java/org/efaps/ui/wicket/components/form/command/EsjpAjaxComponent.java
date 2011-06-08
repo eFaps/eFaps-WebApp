@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2011 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,17 @@
 
 package org.efaps.ui.wicket.components.form.command;
 
+import java.util.Map;
+
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.model.IModel;
 import org.efaps.ui.wicket.models.cell.UIFormCellCmd;
+import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO comment!
@@ -38,8 +43,13 @@ public class EsjpAjaxComponent
 {
 
     /**
-   *
-   */
+     * Logger for this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(AjaxCmdBehavior.class);
+
+    /**
+     *
+     */
     private static final long serialVersionUID = 1L;
 
     /**
@@ -60,11 +70,12 @@ public class EsjpAjaxComponent
         final String script = ((AjaxCmdBehavior) getBehaviors().get(0)).getJavaScript();
         final UIFormCellCmd uiObject = (UIFormCellCmd) getDefaultModelObject();
         try {
-            final String content = uiObject.getRenderedContent(script);
+            final AbstractUIPageObject pageObject = (AbstractUIPageObject) (getPage().getDefaultModelObject());
+            final Map<String, String> uiID2Oid = pageObject == null ? null : pageObject.getUiID2Oid();
+            final String content = uiObject.getRenderedContent(script, uiID2Oid);
             replaceComponentTagBody(_markupstream, _componenttag, content);
         } catch (final EFapsException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            EsjpAjaxComponent.LOG.error("onComponentTagBody", e);
         }
     }
 }

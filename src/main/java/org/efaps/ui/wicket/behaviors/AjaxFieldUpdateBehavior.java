@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2011 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,10 +30,13 @@ import org.apache.wicket.model.IModel;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.ui.wicket.models.cell.UITableCell;
+import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 import org.efaps.ui.wicket.util.EFapsKey;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO comment!
@@ -44,12 +47,16 @@ import org.efaps.util.EFapsException;
 public class AjaxFieldUpdateBehavior
     extends AjaxFormSubmitBehavior
 {
-
     /**
      * Reference to the javascript.
      */
     public static final EFapsContentReference JS = new EFapsContentReference(AjaxFieldUpdateBehavior.class,
                                                                              "FieldUpdate.js");
+
+    /**
+     * Logger for this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(AjaxFieldUpdateBehavior.class);
 
     /**
      * Needed for serialization.
@@ -116,7 +123,10 @@ public class AjaxFieldUpdateBehavior
         }
         final Map<String, String> map = new HashMap<String, String>();
         try {
-            final List<Return> returns = uiObject.getFieldUpdate(getComponent().getMarkupId());
+            final AbstractUIPageObject pageObject = (AbstractUIPageObject) (getComponent().getPage()
+                            .getDefaultModelObject());
+            final Map<String, String> uiID2Oid = pageObject == null ? null : pageObject.getUiID2Oid();
+            final List<Return> returns = uiObject.getFieldUpdate(getComponent().getMarkupId(), uiID2Oid);
             for (final Return aReturn : returns) {
                 final Object ob = aReturn.get(ReturnValues.VALUES);
                 if (ob instanceof List) {
@@ -128,8 +138,7 @@ public class AjaxFieldUpdateBehavior
                 }
             }
         } catch (final EFapsException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            AjaxFieldUpdateBehavior.LOG.error("onSubmit", e);
         }
         final StringBuilder js = new StringBuilder();
         if (map.size() > 0) {
@@ -137,17 +146,16 @@ public class AjaxFieldUpdateBehavior
                 // if the map contains a key that is not defined in this class it is assumed to be the name of a field
                 if (!(EFapsKey.FIELDUPDATE_JAVASCRIPT.getKey().equals(keyString))) {
                     js.append("eFapsSetFieldValue('").append(getComponentMarkupId()).append("','")
-                                    .append(keyString).append("',")
-                                    .append(map.get(keyString).contains("Array(") ? "" : "'")
-                                    .append(map.get(keyString))
-                                    .append(map.get(keyString).contains("Array(") ? "" : "'").append(");");
+                        .append(keyString).append("',")
+                        .append(map.get(keyString).contains("Array(") ? "" : "'")
+                        .append(map.get(keyString))
+                        .append(map.get(keyString).contains("Array(") ? "" : "'").append(");");
                 }
             }
         }
         if (map.containsKey(EFapsKey.FIELDUPDATE_JAVASCRIPT.getKey())) {
             js.append(map.get(EFapsKey.FIELDUPDATE_JAVASCRIPT.getKey()));
         }
-
         _target.appendJavascript(js.toString());
     }
 
