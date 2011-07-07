@@ -748,7 +748,7 @@ public class UITable
      * @param _uitableHeader UitableHeader this filter belongs to
      * @return List of Values
      */
-    public List<?> getFilterPickList(final UITableHeader _uitableHeader)
+    public List<String> getFilterPickList(final UITableHeader _uitableHeader)
     {
         final List<String> ret = new ArrayList<String>();
         for (final UIRow rowmodel : this.values) {
@@ -763,6 +763,7 @@ public class UITable
                 }
             }
         }
+        Collections.sort(ret);
         return ret;
     }
 
