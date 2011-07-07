@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2011 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,6 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.models.objects.UITableHeader;
@@ -43,7 +42,8 @@ import org.efaps.ui.wicket.models.objects.UITableHeader;
  * @author The eFaps Team
  * @version $Id$
  */
-public class PickerPanel extends Panel
+public class PickerPanel
+    extends Panel
 {
     /**
      * Name of the checkbox.
@@ -55,15 +55,21 @@ public class PickerPanel extends Panel
      */
     private static final long serialVersionUID = 1L;
 
-    private final List<?> pickList;
+    /**
+     * List of Picker positions.
+     */
+    private final List<String> pickList;
 
     /**
-     * @param id
-     * @param model
+     * @param _wicketId         wicket id for this component
+     * @param _model            model
+     * @param _uitableHeader    table header this picker belongs to
      */
-    public PickerPanel(final String id, final IModel<?> model,final UITableHeader _uitableHeader)
+    public PickerPanel(final String _wicketId,
+                       final IModel<?> _model,
+                       final UITableHeader _uitableHeader)
     {
-        super(id, model);
+        super(_wicketId, _model);
         final UITable table = (UITable) super.getDefaultModelObject();
         this.add(new Label("checkAll", DBProperties.getProperty("FilterPage.All")));
         this.pickList = table.getFilterPickList(_uitableHeader);
@@ -71,34 +77,45 @@ public class PickerPanel extends Panel
         this.add(checksList);
     }
 
-
     /**
      * Getter method for instance variable {@link #pickList}.
      *
      * @return value of instance variable {@link #pickList}
      */
-    public List<?> getPickList()
+    public List<String> getPickList()
     {
         return this.pickList;
     }
 
-
-    @SuppressWarnings("unchecked")
-    public class FilterListView extends ListView
+    /**
+     * List for Filter.
+     */
+    public class FilterListView
+        extends ListView<String>
     {
-
+        /**
+         * Needed for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
+        /**
+         * To be added.
+         */
         private boolean odd = true;
 
-        public FilterListView(final String _id, final List<?> _list)
+        /**
+         * @param _wicketId wixcket id of the component
+         * @param _list     list to be used
+         */
+        public FilterListView(final String _wicketId,
+                              final List<String> _list)
         {
-            super(_id, _list);
+            super(_wicketId, _list);
             setReuseItems(true);
         }
 
         @Override
-        protected void populateItem(final ListItem _item)
+        protected void populateItem(final ListItem<String> _item)
         {
             final WebMarkupContainer tr = new WebMarkupContainer("listview_tr");
             _item.add(tr);
@@ -110,26 +127,39 @@ public class PickerPanel extends Panel
             }
 
             this.odd = !this.odd;
-            tr.add(new ValueCheckBox("listview_tr_check", new Model(_item.getIndex())));
+            tr.add(new ValueCheckBox<Integer>("listview_tr_check", new Model<Integer>(_item.getIndex())));
             tr.add(new Label("listview_tr_label", _item.getDefaultModelObjectAsString()));
         }
     }
-    public class ValueCheckBox<T> extends FormComponent<T>
+
+    /**
+     * CheckBox Component.
+     */
+    public class ValueCheckBox<T>
+        extends FormComponent<T>
     {
 
+        /**
+         * Needed for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
-        public ValueCheckBox(final String _id, final IModel<T> _model)
+        /**
+         * @param _wicketId wicket id of this component
+         * @param _model    model for this component
+         */
+        public ValueCheckBox(final String _wicketId,
+                             final IModel<T> _model)
         {
-            super(_id, _model);
+            super(_wicketId, _model);
         }
 
         @Override
-        protected void onComponentTag(final ComponentTag tag)
+        protected void onComponentTag(final ComponentTag _tag)
         {
-            super.onComponentTag(tag);
-            tag.put("value", getValue());
-            tag.put("name", CHECKBOXNAME);
+            super.onComponentTag(_tag);
+            _tag.put("value", getValue());
+            _tag.put("name", PickerPanel.CHECKBOXNAME);
         }
     }
 }
