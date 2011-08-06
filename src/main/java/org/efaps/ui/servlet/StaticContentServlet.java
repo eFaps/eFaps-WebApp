@@ -298,12 +298,11 @@ public class StaticContentServlet
                 while (multi.next()) {
                     final String name = multi.<String>getAttribute(CIAdminProgram.StaticCompiled.Name);
                     final String file = multi.<String>getAttribute(CIAdminProgram.StaticCompiled.FileName);
-                    final String oid = multi.<String>getAttribute(CIAdminProgram.StaticCompiled.OID);
                     final Long filelength = multi.<Long>getAttribute(CIAdminProgram.StaticCompiled.FileLength);
                     final DateTime datetime = multi.<DateTime>getAttribute(CIAdminProgram.StaticCompiled.Modified);
 
-                    final ContentMapper mapper = new ContentMapper(name, file, oid, filelength,
-                                    datetime.getMillis());
+                    final ContentMapper mapper = new ContentMapper(name, file, multi.getCurrentInstance().getOid(),
+                                    filelength, datetime.getMillis());
 
                     _cache4Name.put(mapper.getName(), mapper);
                 }

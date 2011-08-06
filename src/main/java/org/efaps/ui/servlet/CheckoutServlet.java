@@ -21,13 +21,16 @@
 package org.efaps.ui.servlet;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.efaps.db.Checkout;
+import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
 
 /**
@@ -67,16 +70,16 @@ public class CheckoutServlet
         final String oid = _req.getParameter(CheckoutServlet.PARAM_OID);
 
         try {
-            final Checkout checkout = new Checkout(oid);
-            checkout.preprocess();
-            if (checkout.getFileName() != null) {
-                _res.setContentType(getServletContext().getMimeType(
+            final Instance instance = Instance.get(oid);
+            if (instance.isValid()) {
+                final Checkout checkout = new Checkout(instance);
+                final InputStream input = checkout.execute();
+                _res.setContentType(this.getServletContext().getMimeType(
                                 checkout.getFileName()));
                 _res.setContentLength((int) checkout.getFileLength());
                 _res.addHeader("Content-Disposition", "inline; filename=\""
                                 + checkout.getFileName() + "\"");
-
-                checkout.execute(_res.getOutputStream());
+                IOUtils.copy(input, _res.getOutputStream());
             }
         } catch (final IOException e) {
             throw new ServletException(e);

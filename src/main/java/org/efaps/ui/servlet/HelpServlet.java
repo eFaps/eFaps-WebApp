@@ -94,7 +94,7 @@ public class HelpServlet
                 if (multi.next()) {
                     final Long length = multi.<Long>getAttribute("FileLength");
                     final Checkout checkout = new Checkout(multi.getCurrentInstance());
-                    _res.setContentType(getServletContext().getMimeType(end));
+                    _res.setContentType(this.getServletContext().getMimeType(end));
                     _res.setContentLength(length.intValue());
                     _res.setDateHeader("Expires", System.currentTimeMillis() + (3600 * 1000));
                     _res.setHeader("Cache-Control", "max-age=3600");
@@ -129,7 +129,7 @@ public class HelpServlet
                 if (Context.getThreadContext().containsSessionAttribute(HelpServlet.MENU_SESSION_KEY)) {
                     menuStr = (String) Context.getThreadContext().getSessionAttribute(HelpServlet.MENU_SESSION_KEY);
                 } else {
-                    menuStr = getMenu();
+                    menuStr = this.getMenu();
                     Context.getThreadContext().setSessionAttribute(HelpServlet.MENU_SESSION_KEY, menuStr);
                 }
 
@@ -169,7 +169,6 @@ public class HelpServlet
                     query.execute();
                     if (query.next()) {
                         final Checkout checkout = new Checkout(query.getCurrentValue());
-                        checkout.preprocess();
                         if (checkout.getFileName() != null) {
                             final BufferedReader reader = new BufferedReader(new InputStreamReader(checkout.execute()));
                             String line = null;
@@ -223,7 +222,7 @@ public class HelpServlet
             }
             ret.append("<li><a href=\"").append(link).append("\">").append(DBProperties.getProperty(name + ".Label"))
                             .append("</a></li>");
-            ret.append(getSubMenues(multi.getCurrentInstance()));
+            ret.append(this.getSubMenues(multi.getCurrentInstance()));
         }
         ret.append("</ul>");
         return ret.toString();
@@ -268,7 +267,7 @@ public class HelpServlet
             final StringBuilder menu = new StringBuilder()
                 .append("<li><a href=\"").append(link).append("\">")
                 .append(DBProperties.getProperty(name + ".Label")).append("</a></li>")
-                .append(getSubMenues(print.getCurrentInstance()));
+                .append(this.getSubMenues(print.getCurrentInstance()));
             subs.put(multi.getCurrentInstance().getId(), menu.toString());
         }
         if (!subs.isEmpty()) {
