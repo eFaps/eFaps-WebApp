@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2011 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,29 +27,46 @@ import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 
 /**
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public class AjaxMenuTreeLink extends AjaxLink<Object> {
+public class AjaxMenuTreeLink
+    extends AjaxLink<Object>
+{
 
-  private static final long serialVersionUID = 1L;
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
-  private final DefaultMutableTreeNode node;
+    /**
+     * Node the component belongs to.
+     */
+    private final DefaultMutableTreeNode node;
 
-  public AjaxMenuTreeLink(final String _wicketId, DefaultMutableTreeNode _node) {
-    super(_wicketId);
-    this.node = _node;
-  }
+    /**
+     * @param _wicketId Wicket ID for the Component
+     * @param _node     node the component belongs to
+     */
+    public AjaxMenuTreeLink(final String _wicketId,
+                            final DefaultMutableTreeNode _node)
+    {
+        super(_wicketId);
+        this.node = _node;
+    }
 
-  @Override
-  public void onClick(final AjaxRequestTarget _target) {
-    final UIMenuItem model = (UIMenuItem) this.node.getUserObject();
-    final MenuTree menutree = (MenuTree) this.findParent(MenuTree.class);
+    /* (non-Javadoc)
+     * @see org.apache.wicket.ajax.markup.html.AjaxLink#onClick(org.apache.wicket.ajax.AjaxRequestTarget)
+     */
+    @Override
+    public void onClick(final AjaxRequestTarget _target)
+    {
+        final UIMenuItem model = (UIMenuItem) this.node.getUserObject();
+        final MenuTree menutree = this.findParent(MenuTree.class);
 
-    menutree.changeContent(model, _target);
+        menutree.changeContent(model, _target);
 
-    menutree.getTreeState().selectNode(this.node, true);
-    menutree.updateTree(_target);
-  }
-
+        menutree.getTreeState().selectNode(this.node, true);
+        menutree.updateTree(_target);
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2010 The eFaps Team
+ * Copyright 2003 - 2011 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import org.efaps.db.Checkout;
 import org.efaps.db.Instance;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
+import org.efaps.db.SelectBuilder;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.AbstractAutomaticCache;
 import org.efaps.util.cache.CacheObjectInterface;
@@ -48,13 +49,12 @@ import org.slf4j.LoggerFactory;
  * E.g.:<br/>
  * <code>/efaps/servlet/image/Admin_UI_Image</code>.
  *
- * @author tmo
+ * @author The eFaps Team
  * @version $Id:ImageServlet.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class ImageServlet
     extends HttpServlet
 {
-
     /**
      * Needed for serialization.
      */
@@ -89,10 +89,6 @@ public class ImageServlet
         imgName = imgName.substring(imgName.lastIndexOf('/') + 1);
 
         try {
-            if (!ImageServlet.CACHE.hasEntries()) {
-                ImageServlet.loadCache();
-            }
-
             final ImageMapper imageMapper = ImageServlet.CACHE.get(imgName);
 
             if (imageMapper != null) {
@@ -107,7 +103,6 @@ public class ImageServlet
                 _res.setHeader("Cache-Control", "max-age=3600");
 
                 checkout.execute(_res.getOutputStream());
-
                 checkout.close();
             }
         } catch (final IOException e) {
@@ -123,28 +118,12 @@ public class ImageServlet
     }
 
     /**
-     * A query is made for all user interface images and caches the name, file
-     * name and object id. The cache is needed to reference from an image name
-     * to the object id and the original file name.
-     *
-     * @throws CacheReloadException if search query fails
-     * @see #CACHE
-     * @see #ImageMapper
-     */
-    private static void loadCache()
-        throws CacheReloadException
-    {
-
-    }
-
-    /**
      * The class is used to map from the administrational image name to the
      * image file name and image object id.
      */
     private static final class ImageMapper
         implements CacheObjectInterface
     {
-
         /**
          * The instance variable stores the administational name of the image.
          */
@@ -230,7 +209,6 @@ public class ImageServlet
     private static class ImageCache
         extends AbstractAutomaticCache<ImageServlet.ImageMapper>
     {
-
         /**
          * {@inheritDoc}
          */
@@ -243,15 +221,16 @@ public class ImageServlet
             try {
                 final QueryBuilder queryBldr = new QueryBuilder(CIAdminUserInterface.Image);
                 final MultiPrintQuery multi = queryBldr.getPrint();
+                final SelectBuilder selLabel = new SelectBuilder().file().label();
+                final SelectBuilder selLength = new SelectBuilder().file().length();
+                multi.addSelect(selLabel, selLength);
                 multi.addAttribute(CIAdminUserInterface.Image.Name,
-                                   CIAdminUserInterface.Image.FileName,
-                                   CIAdminUserInterface.Image.FileLength,
                                    CIAdminUserInterface.Image.Modified);
                 multi.executeWithoutAccessCheck();
                 while (multi.next()) {
                     final String name = multi.<String>getAttribute(CIAdminUserInterface.Image.Name);
-                    final String file =  multi.<String>getAttribute(CIAdminUserInterface.Image.FileName);
-                    final Long filelength = multi.<Long>getAttribute(CIAdminUserInterface.Image.FileLength);
+                    final String file =  multi.<String>getSelect(selLabel);
+                    final Long filelength = multi.<Long>getSelect(selLength);
                     final DateTime time = multi.<DateTime>getAttribute(CIAdminUserInterface.Image.Modified);
                     final ImageMapper mapper = new ImageMapper(multi.getCurrentInstance(),
                                     name, file, filelength, time.getMillis());

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2010 The eFaps Team
+ * Copyright 2003 - 2011 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ import org.efaps.ci.CIAdminProgram;
 import org.efaps.db.Checkout;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
+import org.efaps.db.SelectBuilder;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.AbstractAutomaticCache;
 import org.efaps.util.cache.CacheObjectInterface;
@@ -56,7 +57,6 @@ import org.slf4j.LoggerFactory;
 public class StaticContentServlet
     extends HttpServlet
 {
-
     /**
      * Needed for serialization.
      */
@@ -76,7 +76,6 @@ public class StaticContentServlet
      * Cache duration time default value.
      */
     private int cacheDuration = 3600;
-
 
     /**
      * The method checks the image from the user interface image object out and
@@ -152,7 +151,6 @@ public class StaticContentServlet
                 while ((bytesRead = in.read(buffer)) != -1) {
                     _res.getOutputStream().write(buffer, 0, bytesRead);
                 }
-
             }
         } catch (final IOException e) {
             StaticContentServlet.LOG.error("while reading Static Content", e);
@@ -187,7 +185,6 @@ public class StaticContentServlet
     private static final class ContentMapper
         implements CacheObjectInterface
     {
-
         /**
          * The instance variable stores the administational name of the image.
          */
@@ -275,7 +272,6 @@ public class StaticContentServlet
     private static class StaticContentCache
         extends AbstractAutomaticCache<StaticContentServlet.ContentMapper>
     {
-
         /**
          * {@inheritDoc}
          */
@@ -288,17 +284,18 @@ public class StaticContentServlet
             try {
                 final QueryBuilder queryBldr = new QueryBuilder(CIAdminProgram.StaticCompiled);
                 final MultiPrintQuery multi = queryBldr.getPrint();
+                final SelectBuilder selLabel = new SelectBuilder().file().label();
+                final SelectBuilder selLength = new SelectBuilder().file().length();
+                multi.addSelect(selLabel, selLength);
                 multi.addAttribute(CIAdminProgram.StaticCompiled.Name,
-                                CIAdminProgram.StaticCompiled.FileName,
                                 CIAdminProgram.StaticCompiled.OID,
-                                CIAdminProgram.StaticCompiled.FileLength,
                                 CIAdminProgram.StaticCompiled.Modified);
                 multi.executeWithoutAccessCheck();
 
                 while (multi.next()) {
                     final String name = multi.<String>getAttribute(CIAdminProgram.StaticCompiled.Name);
-                    final String file = multi.<String>getAttribute(CIAdminProgram.StaticCompiled.FileName);
-                    final Long filelength = multi.<Long>getAttribute(CIAdminProgram.StaticCompiled.FileLength);
+                    final String file = multi.<String>getSelect(selLabel);
+                    final Long filelength = multi.<Long>getSelect(selLength);
                     final DateTime datetime = multi.<DateTime>getAttribute(CIAdminProgram.StaticCompiled.Modified);
 
                     final ContentMapper mapper = new ContentMapper(name, file, multi.getCurrentInstance().getOid(),

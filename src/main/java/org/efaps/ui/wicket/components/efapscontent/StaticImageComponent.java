@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2011 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,71 +22,106 @@ package org.efaps.ui.wicket.components.efapscontent;
 
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebComponent;
-
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 
 /**
- * @author jmox * @version $Id:StaticImageComponent.java 1510 2007-10-18 14:35:40Z jmox $
+ * Component to show static images.
+ *
+ * @author The eFaps Team
+ * @version $Id$
  */
-public class StaticImageComponent extends WebComponent {
+public class StaticImageComponent
+    extends WebComponent
+{
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
-  private static final long serialVersionUID = 1L;
+    /**
+     * URL for the static image.
+     */
+    private String url;
 
-  private String url;
+    /**
+     * @param _wicketid     wicket id for the component
+     */
+    public StaticImageComponent(final String _wicketid)
+    {
+        super(_wicketid);
+    }
 
-  public StaticImageComponent(final String _wicketid) {
-    super(_wicketid);
-  }
+    /**
+     * @param _wicketid     wicket id for the component
+     * @param _scope        class scope used to determine the url
+     * @param _name         name of the image to be used
+     */
+    public StaticImageComponent(final String _wicketid,
+                                final Class<?> _scope,
+                                final String _name)
+    {
+        this(_wicketid, _scope.getPackage().getName() + "." + _name);
+    }
 
-  public StaticImageComponent(final String _wicketid, final Class<?> _scope,
-                              final String _name) {
-    this(_wicketid, _scope.getPackage().getName() + "." + _name);
-  }
+    /**
+     * @param _wicketid     wicket id for the component
+     * @param _url          url to the image
+     */
+    public StaticImageComponent(final String _wicketid,
+                                final String _url)
+    {
+        super(_wicketid);
+        this.url = _url;
+    }
 
-  public StaticImageComponent(final String _wicketid, final String _url) {
-    super(_wicketid);
-    this.url = _url;
-  }
+    /**
+     * @param _wicketid     wicket id for the component
+     * @param _reference    reference to the content
+     */
+    public StaticImageComponent(final String _wicketid,
+                                final EFapsContentReference _reference)
+    {
+        super(_wicketid);
+        this.url = _reference.getImageUrl();
+    }
 
-  public StaticImageComponent(final String _wicketid,
-                              final EFapsContentReference _reference) {
-    super(_wicketid);
-    this.url = _reference.getImageUrl();
-  }
+    /*
+     * (non-Javadoc)
+     * @see org.apache.wicket.Component#onComponentTag(org.apache.wicket.markup.ComponentTag)
+     */
+    @Override
+    protected void onComponentTag(final ComponentTag _tag)
+    {
+        super.onComponentTag(_tag);
+        checkComponentTag(_tag, "img");
+        _tag.put("src", this.url);
+    }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.apache.wicket.Component#onComponentTag(org.apache.wicket.markup.ComponentTag)
-   */
-  @Override
-  protected void onComponentTag(ComponentTag tag) {
-    super.onComponentTag(tag);
-    checkComponentTag(tag, "img");
-    tag.put("src", this.url);
-  }
+    /**
+     * This is the getter method for the instance variable {@link #url}.
+     *
+     * @return value of instance variable {@link #url}
+     */
+    public String getUrl()
+    {
+        return this.url;
+    }
 
-  /**
-   * This is the getter method for the instance variable {@link #url}.
-   *
-   * @return value of instance variable {@link #url}
-   */
-  public String getUrl() {
-    return this.url;
-  }
+    /**
+     * This is the setter method for the instance variable {@link #url}.
+     *
+     * @param _url the url to set
+     */
+    public void setUrl(final String _url)
+    {
+        this.url = _url;
+    }
 
-  /**
-   * This is the setter method for the instance variable {@link #url}.
-   *
-   * @param _url
-   *                the url to set
-   */
-  public void setUrl(final String _url) {
-    this.url = _url;
-  }
-
-  public void setReference(final EFapsContentReference _reference) {
-    this.url = _reference.getImageUrl();
-  }
-
+    /**
+     * @param _reference    reference to be set
+     */
+    public void setReference(final EFapsContentReference _reference)
+    {
+        this.url = _reference.getImageUrl();
+    }
 }
