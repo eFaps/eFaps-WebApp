@@ -33,7 +33,7 @@
     <packaging>jar</packaging>
     <groupId>org.efaps</groupId>
     <artifactId>efaps-webapp</artifactId>
-    <version>1.17.1-SNAPSHOT</version>
+    <version>1.17.1</version>
     <name>eFaps WebApp</name>
     <description>
         eFaps WebApp provides a web interface as the User Interface for eFaps
@@ -87,9 +87,9 @@
 
     <!-- SubVersion Repository -->
     <scm>
-        <connection>scm:svn:http://efaps.googlecode.com/svn/eFaps-WebApp/trunk</connection>
-        <developerConnection>scm:svn:https://efaps.googlecode.com/svn/eFaps-WebApp/trunk</developerConnection>
-        <url>http://efaps.googlecode.com/svn/eFaps-WebApp</url>
+        <connection>scm:svn:http://efaps.googlecode.com/svn/eFaps-WebApp/tags/V1.17.1</connection>
+        <developerConnection>scm:svn:https://efaps.googlecode.com/svn/eFaps-WebApp/tags/V1.17.1</developerConnection>
+        <url>http://efaps.googlecode.com/svn/eFaps-WebApp/tags/V1.17.1</url>
     </scm>
 
     <!-- Distribution Repository -->
@@ -373,7 +373,7 @@
         <dependency>
             <groupId>org.efaps</groupId>
             <artifactId>efaps-kernel</artifactId>
-            <version>1.17.1-SNAPSHOT</version>
+            <version>1.17.1</version>
         </dependency>
 
         <!-- to define a higher version (needed from another tool) -->
