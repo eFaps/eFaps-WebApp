@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2010 The eFaps Team
+ * Copyright 2003 - 2011 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +45,8 @@ import org.efaps.db.PrintQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.ui.wicket.behaviors.dojo.DojoReference;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The servlet shows the help.
@@ -55,11 +57,15 @@ import org.efaps.util.EFapsException;
 public class HelpServlet
     extends HttpServlet
 {
-
     /**
      * Key to store the menu in the session context of the user.
      */
     public static final String MENU_SESSION_KEY = "eFapsHelpServletMenu";
+
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(HelpServlet.class);
 
     /**
      * Defaut serial Number.
@@ -80,6 +86,7 @@ public class HelpServlet
                          final HttpServletResponse _res)
         throws ServletException
     {
+        HelpServlet.LOG.debug("Recieved Request for Help Servlet: {}", _req);
         try {
             final List<String> wikis = new ArrayList<String>();
             String path = _req.getPathInfo().substring(1);
@@ -200,6 +207,7 @@ public class HelpServlet
     private String getMenu()
         throws EFapsException
     {
+        HelpServlet.LOG.debug("Reading Main Help Menu");
         final StringBuilder ret = new StringBuilder();
         ret.append("<ul>");
         final QueryBuilder queryBldr = new QueryBuilder(Type.get("Admin_Help_Menu"));
@@ -239,6 +247,7 @@ public class HelpServlet
     private CharSequence getSubMenues(final Instance _instance)
         throws EFapsException
     {
+        HelpServlet.LOG.debug("Reading Submenues for OID: {}", _instance.getOid());
         final StringBuilder ret = new StringBuilder();
 
         final QueryBuilder queryBldr = new QueryBuilder(Type.get("Admin_Help_Menu2Menu"));
@@ -264,7 +273,7 @@ public class HelpServlet
             } else {
                 link = (String) links;
             }
-
+            HelpServlet.LOG.debug("  Submenue '{}' with OID: {}", name, print.getCurrentInstance().getOid());
             final StringBuilder menu = new StringBuilder()
                 .append("<li><a href=\"").append(link).append("\">")
                 .append(DBProperties.getProperty(name + ".Label")).append("</a></li>")
