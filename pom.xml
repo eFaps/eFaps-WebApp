@@ -236,6 +236,16 @@
                 </configuration>
             </plugin>
 
+             <!-- checkstyle -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <configLocation>${basedir}/src/checkstyle/efaps_checks.xml</configLocation>
+                </configuration>
+            </plugin>
+
             <!--
                 eFaps Jetty plug in
             -->
