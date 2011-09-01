@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2011 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,7 +76,7 @@ public final class DojoReference
 
             public void renderHead(final IHeaderResponse _response)
             {
-                _response.renderString(getConfigJavaScript(DojoReference.JS_DOJO));
+                _response.renderString(DojoReference.getConfigJavaScript(DojoReference.JS_DOJO));
             }
         });
     }
@@ -95,7 +95,7 @@ public final class DojoReference
 
             public void renderHead(final IHeaderResponse _response)
             {
-                _response.renderString(getConfigJavaScript(DojoReference.JS_EFAPSDOJO));
+                _response.renderString(DojoReference.getConfigJavaScript(DojoReference.JS_EFAPSDOJO));
             }
         });
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2011 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,15 +25,14 @@ import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.IHeaderResponse;
 
 /**
- * This class renders the drag and drop ability from the DojoToolKit to a
- * component.<br>
- * It is used for all tags which can be part of the Dojo-dnd. The handles, items
- * and the Source.
+ * This class renders the drag and drop ability from the DojoToolKit to a component.<br>
+ * It is used for all tags which can be part of the Dojo-dnd. The handles, items and the Source.
  *
  * @author The eFaps Team
  * @version $Id$
  */
-public class DnDBehavior extends AbstractDojoBehavior
+public class DnDBehavior
+    extends AbstractDojoBehavior
 {
 
     /**
@@ -60,26 +59,30 @@ public class DnDBehavior extends AbstractDojoBehavior
     private final BehaviorType type;
 
     /**
-     * this instance variable stores if the orientation for drag and drop is
-     * horizontal or vertical. It is only used in case of BehaviorType.SOURCE
+     * this instance variable stores if the orientation for drag and
+     * drop is horizontal or vertical. It is only used in
+     * case of BehaviorType.SOURCE
      */
     private boolean horizontal = false;
 
     /**
-     * this instance variable stores if the items inside the source can only by
-     * draged by an handle. It is only used in case of BehaviorType.SOURCE
+     * this instance variable stores if the items inside the source
+     * can only by draged by an handle. It is only used in
+     * case of BehaviorType.SOURCE
      */
     private boolean handles = false;
 
     /**
-     * this instance variable stores if it is allowed to copy items instead of
-     * drag and drop. It is only used in case of BehaviorType.SOURCE
+     * this instance variable stores if it is allowed to copy items
+     * instead of drag and drop. It is only used in case of
+     * BehaviorType.SOURCE
      */
     private boolean allowCopy = false;
 
     /**
-     * this instance variable stores a javascript which will be executed after
-     * the drag and drop. It is only used in case of BehaviorType.SOURCE
+     * this instance variable stores a javascript which will be
+     * executed after the drag and drop. It is only used in
+     * case of BehaviorType.SOURCE
      */
     private String appendJavaScript;
 
@@ -89,8 +92,9 @@ public class DnDBehavior extends AbstractDojoBehavior
     private CharSequence dndType = "eFapsdnd";
 
     /**
-     * Constructor setting the Type of the DnDBehavior. Instead of using this
-     * constructor it can be used on e of the static methods. <li>
+     * Constructor setting the Type of the DnDBehavior. Instead of
+     * using this constructor it can be used on e of the
+     * static methods. <li>
      * {@link #getHandleBehavior()}</li> <li>{@link #getItemBehavior()}</li> <li>
      * {@link #getSourceBehavior()}</li>
      *
@@ -107,15 +111,15 @@ public class DnDBehavior extends AbstractDojoBehavior
      * @param _type BehaviorType of this DnDBehavior
      * @param _dndType dndType
      */
-    public DnDBehavior(final BehaviorType _type, final String _dndType)
+    public DnDBehavior(final BehaviorType _type,
+                       final String _dndType)
     {
         this.type = _type;
         this.dndType = _dndType;
     }
 
     /**
-     * The tag of the component must be altered, so that the dojo dnd will be
-     * rendered.
+     * The tag of the component must be altered, so that the dojo dnd will be rendered.
      *
      * @see org.apache.wicket.behavior.AbstractBehavior#onComponentTag(org.apache.wicket.Component,
      *      org.apache.wicket.markup.ComponentTag)
@@ -123,7 +127,8 @@ public class DnDBehavior extends AbstractDojoBehavior
      * @param _tag tag to edit
      */
     @Override
-    public void onComponentTag(final Component _component, final ComponentTag _tag)
+    public void onComponentTag(final Component _component,
+                               final ComponentTag _tag)
     {
         super.onComponentTag(_component, _tag);
 
@@ -216,7 +221,8 @@ public class DnDBehavior extends AbstractDojoBehavior
     /**
      * Add the javascriupt to the head of the webpage.
      *
-     * @see org.efaps.ui.wicket.behaviors.dojo.AbstractDojoBehavior#renderHead(org.apache.wicket.markup.html.IHeaderResponse)
+     * @see org.efaps.ui.wicket.behaviors.dojo.AbstractDojoBehavior#renderHead(
+     * org.apache.wicket.markup.html.IHeaderResponse)
      * @param _response rseponse
      */
     @Override
@@ -254,8 +260,7 @@ public class DnDBehavior extends AbstractDojoBehavior
     }
 
     /**
-     * This is the getter method for the instance variable
-     * {@link #appendJavaScript}.
+     * This is the getter method for the instance variable {@link #appendJavaScript}.
      *
      * @return value of instance variable {@link #appendJavaScript}
      */
@@ -265,8 +270,7 @@ public class DnDBehavior extends AbstractDojoBehavior
     }
 
     /**
-     * This is the setter method for the instance variable
-     * {@link #appendJavaScript}.
+     * This is the setter method for the instance variable {@link #appendJavaScript}.
      *
      * @param _appendJavaScript the appendJavaScript to set
      */
@@ -346,5 +350,4 @@ public class DnDBehavior extends AbstractDojoBehavior
     {
         return new DnDBehavior(DnDBehavior.BehaviorType.HANDLE);
     }
-
 }

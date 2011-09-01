@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2011 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ import org.apache.wicket.RequestCycle;
 import org.apache.wicket.Session;
 import org.apache.wicket.behavior.AbstractBehavior;
 import org.apache.wicket.behavior.IBehaviorListener;
-
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.components.menu.FileRequestTarget;
 
@@ -37,13 +36,19 @@ import org.efaps.ui.wicket.components.menu.FileRequestTarget;
  * @author The eFaps Team
  * @version $Id$
  */
-public class ShowFileCallBackBehavior extends AbstractBehavior implements IBehaviorListener
+public class ShowFileCallBackBehavior
+    extends AbstractBehavior
+    implements IBehaviorListener
 {
 
     /**
-     *
+     * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * The component the bahavior is binded to.
+     */
     private Component component;
 
     /**
@@ -57,7 +62,7 @@ public class ShowFileCallBackBehavior extends AbstractBehavior implements IBehav
 
     /**
      * @see org.apache.wicket.behavior.AbstractBehavior#bind(org.apache.wicket.Component)
-     * @param _component
+     * @param _component Component to bind to
      */
     @Override
     public void bind(final Component _component)
@@ -66,6 +71,9 @@ public class ShowFileCallBackBehavior extends AbstractBehavior implements IBehav
         this.component = _component;
     }
 
+    /**
+     * @return the callback script
+     */
     public String getCallbackScript()
     {
         if (getComponent() == null) {
@@ -73,13 +81,15 @@ public class ShowFileCallBackBehavior extends AbstractBehavior implements IBehav
         }
         final StringBuilder script = new StringBuilder();
         script.append("top.frames[\"eFapsFrameHidden\"].location.href=\"")
-            .append(getComponent().urlFor(this, IBehaviorListener.INTERFACE)).append("\"");
+                        .append(getComponent().urlFor(this, IBehaviorListener.INTERFACE)).append("\"");
         return script.toString();
     }
 
+    /**
+     * @return the binded component
+     */
     protected Component getComponent()
     {
         return this.component;
     }
-
 }

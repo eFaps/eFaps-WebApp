@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2011 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,152 +23,166 @@ package org.efaps.ui.wicket.behaviors.dojo;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.ComponentTag;
 
-
 /**
  * This class turns a Component into a Dojo-ContentPane.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public class ContentPaneBehavior extends AbstractDojoBehavior {
-
-
-  /**
-   * Enum is used when this ContentPaneBehavior is used as a child inside
-   * a BorderContainer. The BorderContainer is widget is partitioned into up to
-   * five regions: left (or leading), right (or trailing), top, and bottom with
-   * a mandatory center to fill in any remaining space. Each edge region may
-   * have an optional splitter user interface for manual resizing.
-   */
-  public enum Region {
-    /** center region. */
-    CENTER("center"),
-    /** top region. */
-    TOP("top"),
-    /** bottom region. */
-    BOTTOM("bottom"),
-    /** leading region. */
-    LEADING("leading"),
-    /** trailing region. */
-    TRAILING("trailing"),
-    /** left region. */
-    LEFT("left"),
-    /** right region. */
-    RIGHT("right");
+public class ContentPaneBehavior
+    extends AbstractDojoBehavior
+{
 
     /**
-     * Stores the key of the Region.
+     * Enum is used when this ContentPaneBehavior is used as a child
+     * inside a BorderContainer. The BorderContainer is
+     * widget is partitioned into up to five regions: left (or leading),
+     * right (or trailing), top, and bottom with a
+     * mandatory center to fill in any remaining space.
+     * Each edge region may have an optional splitter user interface
+     * for manual resizing.
      */
-    private final String key;
+    public enum Region
+    {
+        /** center region. */
+        CENTER("center"),
+        /** top region. */
+        TOP("top"),
+        /** bottom region. */
+        BOTTOM("bottom"),
+        /** leading region. */
+        LEADING("leading"),
+        /** trailing region. */
+        TRAILING("trailing"),
+        /** left region. */
+        LEFT("left"),
+        /** right region. */
+        RIGHT("right");
 
-    /**
-     * Private Constructor.
-     * @param _key Key
-     */
-    private Region(final String _key) {
-      this.key = _key;
+        /**
+         * Stores the key of the Region.
+         */
+        private final String key;
+
+        /**
+         * Private Constructor.
+         *
+         * @param _key Key
+         */
+        private Region(final String _key)
+        {
+            this.key = _key;
+        }
+
+        /**
+         * Getter method for instance variable {@link #key}.
+         *
+         * @return value of instance variable {@link #key}
+         */
+        public String getKey()
+        {
+            return this.key;
+        }
     }
 
     /**
-     * Getter method for instance variable {@link #key}.
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * Region of this ContenPane.
+     */
+    private final Region region;
+
+    /**
+     * Width of this ContenPane.
+     */
+    private String width;
+
+    /**
+     * Height of this ContenPane.
+     */
+    private final String height;
+
+    /**
+     * Sould a splitter be added.
+     */
+    private final Boolean splitter;
+
+    /**
+     * Constructor.
      *
-     * @return value of instance variable {@link #key}
+     * @param _region region of this ContentPaneBehavior
+     * @param _splitter should a splitter be rendered
+     *
      */
-    public String getKey() {
-      return this.key;
+    public ContentPaneBehavior(final Region _region,
+                               final boolean _splitter)
+    {
+        this(_region, _splitter, null, null);
     }
-  }
 
-  /**
-   * Needed for serialization.
-   */
-  private static final long serialVersionUID = 1L;
-
-  /**
-   * Region of this ContenPane.
-   */
-  private final Region region;
-
-  /**
-   * Width of this ContenPane.
-   */
-  private String width;
-
-  /**
-   * Height of this ContenPane.
-   */
-  private final String height;
-
-  /**
-   * Sould a splitter be added.
-   */
-  private final Boolean splitter;
-
-  /**
-   * Constructor.
-   *
-   * @param _region    region of this ContentPaneBehavior
-   * @param _splitter  should a splitter be rendered
-   *
-   */
-  public ContentPaneBehavior(final Region _region, final boolean _splitter) {
-   this(_region, _splitter, null, null);
-  }
-
-  /**
-   * Constructor.
-   *
-   * @param _region    region of this ContentPaneBehavior
-   * @param _splitter  should a splitter be rendered
-   * @param _width     width of this ContentPaneBehavior
-   * @param _height    height of this ContentPaneBehavior
-   *
-   */
-  public ContentPaneBehavior(final Region _region, final boolean _splitter,
-                             final String _width, final String _height) {
-    super();
-    this.region = _region;
-    this.width = _width;
-    this.height = _height;
-    this.splitter = _splitter;
-  }
-
-  /**
-   * The tag of the related component must be set, so that a dojo
-   * BorderContainer will be rendered.
-   * @param _component  component this Behavior belongs to
-   * @param _tag        Tag to write to
-   */
-  @Override
-  public void onComponentTag(final Component _component,
-                             final ComponentTag _tag) {
-    super.onComponentTag(_component, _tag);
-    _tag.put("dojoType", "dijit.layout.ContentPane");
-    _tag.put("region", this.region.getKey());
-    if (this.width != null) {
-      _tag.put("style", "width: " + this.width);
+    /**
+     * Constructor.
+     *
+     * @param _region region of this ContentPaneBehavior
+     * @param _splitter should a splitter be rendered
+     * @param _width width of this ContentPaneBehavior
+     * @param _height height of this ContentPaneBehavior
+     *
+     */
+    public ContentPaneBehavior(final Region _region,
+                               final boolean _splitter,
+                               final String _width,
+                               final String _height)
+    {
+        super();
+        this.region = _region;
+        this.width = _width;
+        this.height = _height;
+        this.splitter = _splitter;
     }
-    if (this.height != null) {
-      _tag.put("style", "height: " + this.height);
+
+    /**
+     * The tag of the related component must be set, so that a dojo BorderContainer will be rendered.
+     *
+     * @param _component component this Behavior belongs to
+     * @param _tag Tag to write to
+     */
+    @Override
+    public void onComponentTag(final Component _component,
+                               final ComponentTag _tag)
+    {
+        super.onComponentTag(_component, _tag);
+        _tag.put("dojoType", "dijit.layout.ContentPane");
+        _tag.put("region", this.region.getKey());
+        if (this.width != null) {
+            _tag.put("style", "width: " + this.width);
+        }
+        if (this.height != null) {
+            _tag.put("style", "height: " + this.height);
+        }
+        _tag.put("splitter", this.splitter.toString());
     }
-    _tag.put("splitter", this.splitter.toString());
-  }
 
-  /**
-   * Getter method for instance variable {@link #width}.
-   *
-   * @return value of instance variable {@link #width}
-   */
-  public String getWidth() {
-    return this.width;
-  }
+    /**
+     * Getter method for instance variable {@link #width}.
+     *
+     * @return value of instance variable {@link #width}
+     */
+    public String getWidth()
+    {
+        return this.width;
+    }
 
-  /**
-   * Setter method for instance variable {@link #width}.
-   *
-   * @param _width value for instance variable {@link #width}
-   */
-  public void setWidth(final String _width) {
-    this.width = _width;
-  }
+    /**
+     * Setter method for instance variable {@link #width}.
+     *
+     * @param _width value for instance variable {@link #width}
+     */
+    public void setWidth(final String _width)
+    {
+        this.width = _width;
+    }
 }

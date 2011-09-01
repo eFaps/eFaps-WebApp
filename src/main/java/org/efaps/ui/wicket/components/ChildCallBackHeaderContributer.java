@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2011 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,37 +24,36 @@ import org.apache.wicket.behavior.StringHeaderContributor;
 import org.apache.wicket.util.string.JavascriptUtils;
 
 /**
- * Header Contributer that adds a javascript to the header needed to executed
- * a method for a child in the parent frame.
+ * Header Contributer that adds a javascript to the header needed
+ * to executed a method for a child in the parent frame.
  *
- * @author Jan Moxter
+ * @author The eFaps Team
  * @version $Id$
  */
-public class ChildCallBackHeaderContributer extends StringHeaderContributor {
+public class ChildCallBackHeaderContributer
+    extends StringHeaderContributor
+{
+    /**
+     * The Constant serialVersionUID.
+     */
+    private static final long serialVersionUID = 1L;
 
-  /**
-   * The Constant serialVersionUID.
-   */
-  private static final long serialVersionUID = 1L;
+    /**
+     * The Constant javaScript.
+     */
+    private static final String JAVASCRIPT =
+                    JavascriptUtils.SCRIPT_OPEN_TAG
+                        + "function childCallBack(_call){\n"
+                        + "  _call = _call.replace(/^javascript:/, \"\");\n"
+                        + "  eval(_call);\n"
+                        + "}\n"
+                        + JavascriptUtils.SCRIPT_CLOSE_TAG;
 
-  /**
-   * The Constant javaScript.
-   */
-  private static final String JAVASCRIPT =
-      JavascriptUtils.SCRIPT_OPEN_TAG
-          + "function childCallBack(_call){\n"
-          + "  _call = _call.replace(/^javascript:/, \"\");\n"
-          + "  eval(_call);\n"
-          + "}\n"
-          + JavascriptUtils.SCRIPT_CLOSE_TAG;
-
-  /**
-   * Instantiates a new child call back header contributer.
-   */
-  public ChildCallBackHeaderContributer() {
-    super(JAVASCRIPT);
-  }
-
-
-
+    /**
+     * Instantiates a new child call back header contributer.
+     */
+    public ChildCallBackHeaderContributer()
+    {
+        super(ChildCallBackHeaderContributer.JAVASCRIPT);
+    }
 }

@@ -61,7 +61,8 @@ public class SetSelectedRowBehavior extends AbstractBehavior
     }
 
     /**
-     * @see org.apache.wicket.behavior.AbstractBehavior#onComponentTag(org.apache.wicket.Component, org.apache.wicket.markup.ComponentTag)
+     * @see org.apache.wicket.behavior.AbstractBehavior#onComponentTag(org.apache.wicket.Component,
+     * org.apache.wicket.markup.ComponentTag)
      * @param _component component
      * @param _tag       tag
      */
