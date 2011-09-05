@@ -18,45 +18,53 @@
  * Last Changed By: $Author$
  */
 
+
 package org.efaps.ui.wicket.components.menutree;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.efaps.ui.wicket.models.objects.UIMenuItem;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
+
 
 /**
+ * TODO comment!
+ *
  * @author The eFaps Team
  * @version $Id$
  */
-public class AjaxMenuTreeLink
-    extends AbstractAjaxLink
+public abstract class AbstractAjaxLink
+    extends AjaxLink<Object>
 {
-
     /**
-     * Needed for serialization.
+     * Needed for serialiazzation.
      */
     private static final long serialVersionUID = 1L;
 
-        /**
-     * @param _wicketId Wicket ID for the Component
-     * @param _node     node the component belongs to
+    /**
+     * The current node.
      */
-    public AjaxMenuTreeLink(final String _wicketId,
+    private final DefaultMutableTreeNode node;
+
+    /**
+     * Construtor setting the ID and the Node of this Component.
+     *
+     * @param _wicketId wicketid for this component
+     * @param _node     node for this component
+     */
+    public AbstractAjaxLink(final String _wicketId,
                             final DefaultMutableTreeNode _node)
     {
-        super(_wicketId, _node);
+        super(_wicketId);
+        this.node = _node;
     }
 
-    @Override
-    public void onClick(final AjaxRequestTarget _target)
+    /**
+     * Getter method for the instance variable {@link #node}.
+     *
+     * @return value of instance variable {@link #node}
+     */
+    protected DefaultMutableTreeNode getNode()
     {
-        final UIMenuItem model = (UIMenuItem) getNode().getUserObject();
-        final MenuTree menutree = this.findParent(MenuTree.class);
-
-        menutree.changeContent(model, _target);
-
-        menutree.getTreeState().selectNode(getNode(), true);
-        menutree.updateTree(_target);
+        return this.node;
     }
 }

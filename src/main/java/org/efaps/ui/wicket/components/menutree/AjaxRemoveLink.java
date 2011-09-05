@@ -24,59 +24,59 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 
 /**
- * This Class renders a Link wich removes a Child from a MenuTree
+ * This Class renders a Link which removes a Child from a MenuTree.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id:AjaxRemoveLink.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class AjaxRemoveLink extends AjaxLink<Object> {
+public class AjaxRemoveLink
+    extends AbstractAjaxLink
+{
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
-  private static final long serialVersionUID = 1L;
-
-  private final DefaultMutableTreeNode node;
-
-  /**
-   * Construtor setting the ID and the Node of this Component
-   *
-   * @param _id
-   * @param _model
-   */
-  public AjaxRemoveLink(final String _id, final DefaultMutableTreeNode _node) {
-    super(_id);
-    this.node = _node;
-  }
-
-  @Override
-  public void onClick(final AjaxRequestTarget _target) {
-    final MenuTree menutree = (MenuTree) findParent(MenuTree.class);
-    final DefaultMutableTreeNode parent =
-        (DefaultMutableTreeNode) this.node.getParent();
-    final DefaultMutableTreeNode selected =
-        (DefaultMutableTreeNode) menutree.getTreeState().getSelectedNodes()
-            .iterator().next();
-    boolean selectParent = false;
-    if (this.node.isNodeDescendant(selected)) {
-      selectParent = true;
-    }
-    menutree.getTreeState().selectNode(parent, true);
-
-    ((DefaultTreeModel) menutree.getDefaultModelObject())
-        .removeNodeFromParent(this.node);
-
-    if (selectParent) {
-      menutree.getTreeState().selectNode(parent, true);
-      menutree.changeContent((UIMenuItem) parent.getUserObject(), _target);
-    } else {
-      menutree.getTreeState().selectNode(selected, true);
-      _target.addComponent(menutree.getNodeComponent(parent));
+    /**
+     * Construtor setting the ID and the Node of this Component.
+     *
+     * @param _wicketId wicketid for this component
+     * @param _node     node for his component
+     */
+    public AjaxRemoveLink(final String _wicketId,
+                          final DefaultMutableTreeNode _node)
+    {
+        super(_wicketId, _node);
     }
 
-    menutree.updateTree(_target);
+    @Override
+    public void onClick(final AjaxRequestTarget _target)
+    {
+        final MenuTree menutree = findParent(MenuTree.class);
+        final DefaultMutableTreeNode parent =
+                        (DefaultMutableTreeNode) getNode().getParent();
+        final DefaultMutableTreeNode selected =
+                        (DefaultMutableTreeNode) menutree.getTreeState().getSelectedNodes()
+                                        .iterator().next();
+        boolean selectParent = false;
+        if (getNode().isNodeDescendant(selected)) {
+            selectParent = true;
+        }
+        menutree.getTreeState().selectNode(parent, true);
 
-  }
+        ((DefaultTreeModel) menutree.getDefaultModelObject())
+                        .removeNodeFromParent(getNode());
 
+        if (selectParent) {
+            menutree.getTreeState().selectNode(parent, true);
+            menutree.changeContent((UIMenuItem) parent.getUserObject(), _target);
+        } else {
+            menutree.getTreeState().selectNode(selected, true);
+            _target.addComponent(menutree.getNodeComponent(parent));
+        }
+        menutree.updateTree(_target);
+    }
 }

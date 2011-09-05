@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2011 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,9 +25,7 @@ import javax.swing.tree.DefaultTreeModel;
 
 import org.apache.wicket.PageMap;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.link.InlineFrame;
-
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
@@ -38,28 +36,28 @@ import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 
 /**
- * @author The eFasp Team
+ * @author The eFaps Team
  * @version $Id:AjaxGoIntoLink.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class AjaxGoIntoLink extends AjaxLink<Object>
+public class AjaxGoIntoLink
+    extends AbstractAjaxLink
 {
+
     /**
      * Needed foer serialization.
      */
     private static final long serialVersionUID = 1L;
 
-    private final DefaultMutableTreeNode node;
-
-    /**
-     * Construtor setting the ID and the Node of this Component
+   /**
+     * Construtor setting the ID and the Node of this Component.
      *
-     * @param _id
-     * @param _model
+     * @param _wicketId wicketid for this component
+     * @param _node     node for his component
      */
-    public AjaxGoIntoLink(final String _id, final DefaultMutableTreeNode _node)
+    public AjaxGoIntoLink(final String _wicketId,
+                          final DefaultMutableTreeNode _node)
     {
-        super(_id);
-        this.node = _node;
+        super(_wicketId, _node);
     }
 
     /**
@@ -70,7 +68,7 @@ public class AjaxGoIntoLink extends AjaxLink<Object>
     public void onClick(final AjaxRequestTarget _target)
     {
         // update the Content
-        final UIMenuItem model = (UIMenuItem) this.node.getUserObject();
+        final UIMenuItem model = (UIMenuItem) getNode().getUserObject();
 
         final AbstractCommand cmd = model.getCommand();
 
@@ -98,14 +96,14 @@ public class AjaxGoIntoLink extends AjaxLink<Object>
         // update MenuTree
         final MenuTree menutree = findParent(MenuTree.class);
 
-        final MenuTree newMenuTree = new MenuTree(menutree.getId(), new DefaultTreeModel(this.node), menutree
+        final MenuTree newMenuTree = new MenuTree(menutree.getId(), new DefaultTreeModel(getNode()), menutree
                         .getMenuKey());
         ((EFapsSession) getSession()).putIntoCache(menutree.getMenuKey(), newMenuTree);
 
         model.setStepInto(true);
         model.setAncestor((DefaultMutableTreeNode) ((DefaultTreeModel) menutree.getDefaultModelObject()).getRoot());
         menutree.replaceWith(newMenuTree);
-        newMenuTree.getTreeState().selectNode(this.node, true);
+        newMenuTree.getTreeState().selectNode(getNode(), true);
         newMenuTree.updateTree(_target);
     }
 }

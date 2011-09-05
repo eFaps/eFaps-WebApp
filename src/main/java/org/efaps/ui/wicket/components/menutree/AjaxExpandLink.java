@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2011 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,46 +24,46 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
 
 /**
- * This class renders a Link wich is used to collapse and expand the ChildItems
- * of a Header inside a MenuTree.
+ * This class renders a Link which is used to collapse and expand
+ * the ChildItems of a Header inside a MenuTree.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id:AjaxCollapseLink.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class AjaxExpandLink extends AjaxLink<Object> {
+public class AjaxExpandLink
+    extends AbstractAjaxLink
+{
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
-  private static final long serialVersionUID = 1L;
-
-  private final DefaultMutableTreeNode node;
-
-  /**
-   * Construtor setting the ID and the Node of this Component
-   *
-   * @param _id
-   * @param _model
-   */
-  public AjaxExpandLink(final String _id, final DefaultMutableTreeNode _node) {
-    super(_id);
-    this.node = _node;
-  }
-
-  @Override
-  public void onClick(final AjaxRequestTarget _target) {
-    MenuTree menutree = (MenuTree) findParent(MenuTree.class);
-    if (menutree.getTreeState().isNodeExpanded(this.node)) {
-      menutree.getTreeState().collapseNode(this.node);
-      menutree.nodeCollapsed(this.node);
-    } else {
-      menutree.getTreeState().expandNode(this.node);
-      menutree.nodeExpanded(this.node);
+    /**
+     * Construtor setting the ID and the Node of this Component.
+     *
+     * @param _wicketId wicketid for this component
+     * @param _node     node for this component
+     */
+    public AjaxExpandLink(final String _wicketId,
+                          final DefaultMutableTreeNode _node)
+    {
+        super(_wicketId, _node);
     }
 
-    ((DefaultTreeModel) menutree.getDefaultModelObject()).nodeChanged(this.node);
-
-    menutree.updateTree(_target);
-  }
-
+    @Override
+    public void onClick(final AjaxRequestTarget _target)
+    {
+        final MenuTree menutree = findParent(MenuTree.class);
+        if (menutree.getTreeState().isNodeExpanded(getNode())) {
+            menutree.getTreeState().collapseNode(getNode());
+            menutree.nodeCollapsed(getNode());
+        } else {
+            menutree.getTreeState().expandNode(getNode());
+            menutree.nodeExpanded(getNode());
+        }
+        ((DefaultTreeModel) menutree.getDefaultModelObject()).nodeChanged(getNode());
+        menutree.updateTree(_target);
+    }
 }

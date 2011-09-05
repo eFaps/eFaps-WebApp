@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2011 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,46 +25,48 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 
 /**
- * @author jmox
+ * @author The eFaps Team
  * @version $Id:AjaxGoUpLink.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class AjaxGoUpLink extends AjaxLink<Object> {
+public class AjaxGoUpLink
+    extends AbstractAjaxLink
+{
+    /**
+     * Needed foer serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
-  private static final long serialVersionUID = 1L;
+    /**
+     * Construtor setting the ID and the Node of this Component.
+     *
+     * @param _wicketId wicketid for this component
+     * @param _node     node for his component
+     */
+    public AjaxGoUpLink(final String _wicketId,
+                        final DefaultMutableTreeNode _node)
+    {
+        super(_wicketId, _node);
+    }
 
-  private final DefaultMutableTreeNode node;
+    @Override
+    public void onClick(final AjaxRequestTarget _target)
+    {
+        final MenuTree menutree = findParent(MenuTree.class);
+        final TreeNode selected =
+                        (TreeNode) menutree.getTreeState().getSelectedNodes().iterator().next();
 
-  /**
-   * Construtor setting the ID and the Node of this Component
-   *
-   * @param _id
-   * @param _model
-   */
-  public AjaxGoUpLink(final String _id, final DefaultMutableTreeNode _node) {
-    super(_id);
-    this.node = _node;
-  }
+        final UIMenuItem model = (UIMenuItem) getNode().getUserObject();
+        model.setStepInto(false);
+        final MenuTree newMenuTree =
+                        new MenuTree(menutree.getId(),
+                                        new DefaultTreeModel(model.getAncestor()), menutree.getMenuKey());
 
-  @Override
-  public void onClick(final AjaxRequestTarget _target) {
-    MenuTree menutree = (MenuTree) findParent(MenuTree.class);
-    TreeNode selected =
-        (TreeNode) menutree.getTreeState().getSelectedNodes().iterator().next();
+        menutree.replaceWith(newMenuTree);
 
-    UIMenuItem model = (UIMenuItem) this.node.getUserObject();
-    model.setStepInto(false);
-    MenuTree newMenuTree =
-        new MenuTree(menutree.getId(),
-            new DefaultTreeModel(model.getAncestor()), menutree.getMenuKey());
-
-    menutree.replaceWith(newMenuTree);
-
-    newMenuTree.getTreeState().selectNode(selected, true);
-    newMenuTree.updateTree(_target);
-
-  }
+        newMenuTree.getTreeState().selectNode(selected, true);
+        newMenuTree.updateTree(_target);
+    }
 }
