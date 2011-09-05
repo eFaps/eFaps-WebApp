@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2010 The eFaps Team
+ * Copyright 2003 - 2011 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,9 @@ import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
+import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class renders a table.
@@ -55,6 +58,11 @@ public class TablePanel
     public static final EFapsContentReference CSS = new EFapsContentReference(TablePanel.class, "TablePanel.css");
 
     /**
+     * Logger for this class.
+     */
+    protected static final Logger LOG = LoggerFactory.getLogger(TablePanel.class);
+
+    /**
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
@@ -63,10 +71,12 @@ public class TablePanel
      * @param _wicketId wicket id of this component
      * @param _uitable    model for this component
      * @param _page     page this component is in
+     * @throws EFapsException on error
      */
     public TablePanel(final String _wicketId,
                       final IModel<UITable> _uitable,
                       final Page _page)
+        throws EFapsException
     {
         super(_wicketId, _uitable);
 

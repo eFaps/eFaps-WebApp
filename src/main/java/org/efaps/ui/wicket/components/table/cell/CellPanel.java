@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2010 The eFaps Team
+ * Copyright 2003 - 2011 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@
 
 package org.efaps.ui.wicket.components.table.cell;
 
-import org.apache.wicket.PageMap;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -131,7 +130,7 @@ public class CellPanel
                         } else {
                             celllink = new ContentContainerLink<UITableCell>("link", _model);
                             if (uiTableCell.getTarget() == Target.POPUP) {
-                                final PopupSettings popup = new PopupSettings(PageMap.forName("popup"));
+                                final PopupSettings popup = new PopupSettings("popup");
                                 ((ContentContainerLink<?>) celllink).setPopupSettings(popup);
                             }
                         }
