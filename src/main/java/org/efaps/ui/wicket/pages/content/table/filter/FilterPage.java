@@ -138,13 +138,19 @@ public class FilterPage
                                     final String[] tmp = getRequestCycle().getRequest().getParameters(
                                                     datePanel.getDateFieldName());
                                     if (tmp.length > 0) {
-                                        from = datePanel.getDateAsString(tmp, null, null, null);
+                                        final String[] fromTmp = datePanel.getDateAsString(tmp, null, null, null);
+                                        if (fromTmp != null) {
+                                            from = fromTmp[0];
+                                        }
                                     }
                                 } else {
                                     final String[] tmp = getRequestCycle().getRequest().getParameters(
                                                     datePanel.getDateFieldName());
                                     if (tmp.length > 0) {
-                                        to = datePanel.getDateAsString(tmp, null, null, null);
+                                        final String[] toTmp = datePanel.getDateAsString(tmp, null, null, null);
+                                        if (toTmp != null) {
+                                            to = toTmp[0];
+                                        }
                                     }
                                 }
                             }
