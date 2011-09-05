@@ -31,7 +31,11 @@ import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
+import org.efaps.admin.datamodel.ui.DateTimeUI;
+import org.efaps.admin.datamodel.ui.DateUI;
+import org.efaps.admin.ui.field.Field.Display;
 import org.efaps.ui.wicket.components.LabelComponent;
+import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.table.AjaxAddRemoveRowPanel;
 import org.efaps.ui.wicket.components.table.TablePanel;
 import org.efaps.ui.wicket.components.table.cell.CellPanel;
@@ -65,12 +69,14 @@ public class RowPanel
      * @param _model            model for this component
      * @param _tablePanel       tablepanel this row is in
      * @param _updateListMenu   must the listmenu be updated
+     * @throws EFapsException on error
      *
      */
     public RowPanel(final String _wicketId,
                     final IModel<UIRow> _model,
                     final TablePanel _tablePanel,
                     final boolean _updateListMenu)
+        throws EFapsException
     {
         super(_wicketId, _model);
         final UIRow uirow = (UIRow) super.getDefaultModelObject();
@@ -102,8 +108,16 @@ public class RowPanel
 
         final Map<String, Component> name2comp = new HashMap<String, Component>();
         for (final UITableCell uiCell : uirow.getValues()) {
-            final CellPanel cell = new CellPanel(cellRepeater.newChildId(), new UIModel<UITableCell>(uiCell),
+            final Panel cell;
+            if (uiTable.isEditable() && uiCell.getDisplay().equals(Display.EDITABLE)
+                            && (uiCell.getUiClass() instanceof DateUI || uiCell.getUiClass() instanceof DateTimeUI)) {
+                cell = new DateTimePanel("label", uiCell.getCompareValue(), uiCell.getName(),
+                                uiCell.getUiClass() instanceof DateTimeUI,
+                                uiCell.getField().getCols());
+            } else {
+                cell = new CellPanel(cellRepeater.newChildId(), new UIModel<UITableCell>(uiCell),
                                                       _updateListMenu, uiTable);
+            }
             cell.setOutputMarkupId(true);
             if (uiCell.isFixedWidth()) {
                 if (firstCell) {
