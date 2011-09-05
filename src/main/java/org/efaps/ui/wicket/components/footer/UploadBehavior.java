@@ -20,8 +20,6 @@
 
 package org.efaps.ui.wicket.components.footer;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -33,7 +31,6 @@ import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.Session;
 import org.apache.wicket.behavior.AbstractBehavior;
 import org.apache.wicket.behavior.StringHeaderContributor;
-import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.util.string.JavascriptUtils;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
@@ -42,10 +39,9 @@ import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.Opener;
-import org.efaps.ui.wicket.components.IFileUploadListener;
 import org.efaps.ui.wicket.components.FormContainer;
+import org.efaps.ui.wicket.components.IFileUploadListener;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
-import org.efaps.ui.wicket.components.form.FormPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.AbstractModel;
 import org.efaps.ui.wicket.models.TableModel;
@@ -159,44 +155,17 @@ public class UploadBehavior
     private void convertDateFieldValues()
         throws EFapsException
     {
-        final List<FormPanel> formpl = getFormPanels();
-        for (final FormPanel panel : formpl) {
-            for (final DateTimePanel datepicker : panel.getDateComponents()) {
-                final Map<String, String[]> map = Context.getThreadContext().getParameters();
-                if (map.containsKey(datepicker.getDateFieldName())) {
-                    final String[] date = map.get(datepicker.getDateFieldName());
-                    final String[] hour = map.get(datepicker.getHourFieldName());
-                    final String[] minute = map.get(datepicker.getMinuteFieldName());
-                    final String[] ampm = map.get(datepicker.getAmPmFieldName());
-                    map.put(datepicker.getFieldName(),
-                            new String[] {datepicker.getDateAsString(date, hour, minute, ampm)});
-                }
+        for (final DateTimePanel datepicker : ((FormContainer) this.component).getDateComponents()) {
+            final Map<String, String[]> map = Context.getThreadContext().getParameters();
+            if (map.containsKey(datepicker.getDateFieldName())) {
+                final String[] date = map.get(datepicker.getDateFieldName());
+                final String[] hour = map.get(datepicker.getHourFieldName());
+                final String[] minute = map.get(datepicker.getMinuteFieldName());
+                final String[] ampm = map.get(datepicker.getAmPmFieldName());
+                map.put(datepicker.getFieldName(),
+                        new String[] {datepicker.getDateAsString(date, hour, minute, ampm)});
             }
         }
-    }
-
-    /**
-     * Method to get the FormPanel of this Page.
-     *
-     * @return FormPanel
-     */
-    private List<FormPanel> getFormPanels()
-    {
-        final List<FormPanel> ret = new ArrayList<FormPanel>();
-        final Iterator<?> iterator = ((FormContainer) this.component).iterator();
-        while (iterator.hasNext()) {
-            final Object object = iterator.next();
-            if (object instanceof WebMarkupContainer) {
-                final Iterator<?> iterator2 = ((WebMarkupContainer) object).iterator();
-                while (iterator2.hasNext()) {
-                    final Object object2 = iterator2.next();
-                    if (object2 instanceof FormPanel) {
-                        ret.add((FormPanel) object2);
-                    }
-                }
-            }
-        }
-        return ret;
     }
 
     /**

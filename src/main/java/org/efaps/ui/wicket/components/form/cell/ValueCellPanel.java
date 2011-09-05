@@ -23,7 +23,6 @@ package org.efaps.ui.wicket.components.form.cell;
 import java.util.Iterator;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.PageMap;
 import org.apache.wicket.datetime.markup.html.form.DateTextField;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -41,7 +40,6 @@ import org.efaps.ui.wicket.components.autocomplete.AutoCompleteField;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.editor.EditorPanel;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
-import org.efaps.ui.wicket.components.form.FormPanel;
 import org.efaps.ui.wicket.components.picker.AjaxPickerLink;
 import org.efaps.ui.wicket.components.table.cell.AjaxLinkContainer;
 import org.efaps.ui.wicket.components.table.cell.ContentContainerLink;
@@ -62,11 +60,6 @@ public class ValueCellPanel
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
-
-    /**
-     * Instance field needed in case that a field needs a datefield.
-     */
-    private DateTimePanel dateTextField = null;
 
     /**
      * Constructor.
@@ -102,14 +95,14 @@ public class ValueCellPanel
                                           || uiFormCell.getUiClass() instanceof DateTimeUI)
                             && uiFormCell.getDisplay().equals(Display.EDITABLE)) {
 
-                this.dateTextField = new DateTimePanel("label", uiFormCell.getCompareValue(),
+                final DateTimePanel dateField = new DateTimePanel("label", uiFormCell.getCompareValue(),
                                                        uiFormCell.getName(),
                                                        "DateTime".equals(uiFormCell.getTypeName())
                                                                        || uiFormCell.getUiClass() instanceof DateTimeUI,
                                                        uiFormCell.getField().getCols());
                 if (uiFormCell.isFieldUpdate()) {
                     // the update behavior must be added to the inner text field
-                    final Iterator<? extends Component> iter = this.dateTextField.iterator();
+                    final Iterator<? extends Component> iter = dateField.iterator();
                     while (iter.hasNext()) {
                         final Component comp = iter.next();
                         if (comp instanceof DateTextField) {
@@ -118,7 +111,7 @@ public class ValueCellPanel
                         }
                     }
                 }
-                this.add(this.dateTextField);
+                this.add(dateField);
                 this.add(new WebComponent("valuePicker").setVisible(false));
             } else if ((_formmodel.isCreateMode() || _formmodel.isEditMode())
                             && ("FormatedString".equals(uiFormCell.getTypeName()))
@@ -158,7 +151,7 @@ public class ValueCellPanel
             } else {
                 link = new ContentContainerLink<UIFormCell>("link", _model);
                 if (uiFormCell.getTarget() == Target.POPUP) {
-                    final PopupSettings popup = new PopupSettings(PageMap.forName("popup"));
+                    final PopupSettings popup = new PopupSettings("popup");
                     ((ContentContainerLink<?>) link).setPopupSettings(popup);
                 }
             }
@@ -169,19 +162,6 @@ public class ValueCellPanel
             }
             link.add(new LabelComponent("linkLabel", new Model<String>(uiFormCell.getCellValue())));
             this.add(link);
-        }
-    }
-
-    /**
-     * After rendering the datefields are added to the parent.
-     */
-    @Override
-    protected void onAfterRender()
-    {
-        super.onAfterRender();
-        if (this.dateTextField != null) {
-            final FormPanel formpanel = this.findParent(FormPanel.class);
-            formpanel.addDateComponent(this.dateTextField);
         }
     }
 }

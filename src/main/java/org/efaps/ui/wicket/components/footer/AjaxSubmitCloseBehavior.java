@@ -272,18 +272,15 @@ public class AjaxSubmitCloseBehavior
     private void convertDateFieldValues()
         throws EFapsException
     {
-        final List<FormPanel> formpl = getFormPanels();
-        for (final FormPanel panel : formpl) {
-            for (final DateTimePanel datepicker : panel.getDateComponents()) {
-                final Map<String, String[]> map = getComponent().getRequestCycle().getRequest().getParameterMap();
-                if (map.containsKey(datepicker.getDateFieldName())) {
-                    final String[] date = map.get(datepicker.getDateFieldName());
-                    final String[] hour = map.get(datepicker.getHourFieldName());
-                    final String[] minute = map.get(datepicker.getMinuteFieldName());
-                    final String[] ampm = map.get(datepicker.getAmPmFieldName());
-                    map.put(datepicker.getFieldName(),
-                            new String[] {datepicker.getDateAsString(date, hour, minute, ampm)});
-                }
+        for (final DateTimePanel datepicker : this.form.getDateComponents()) {
+            final Map<String, String[]> map = getComponent().getRequestCycle().getRequest().getParameterMap();
+            if (map.containsKey(datepicker.getDateFieldName())) {
+                final String[] date = map.get(datepicker.getDateFieldName());
+                final String[] hour = map.get(datepicker.getHourFieldName());
+                final String[] minute = map.get(datepicker.getMinuteFieldName());
+                final String[] ampm = map.get(datepicker.getAmPmFieldName());
+                map.put(datepicker.getFieldName(),
+                        new String[] {datepicker.getDateAsString(date, hour, minute, ampm)});
             }
         }
     }

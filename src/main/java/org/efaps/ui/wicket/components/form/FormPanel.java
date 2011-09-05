@@ -21,9 +21,7 @@
 package org.efaps.ui.wicket.components.form;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.wicket.Page;
 import org.apache.wicket.markup.html.basic.Label;
@@ -32,7 +30,6 @@ import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.LabelComponent;
-import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.form.row.RowPanel;
 import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.cell.UIHiddenCell;
@@ -53,7 +50,6 @@ import org.efaps.util.EFapsException;
 public class FormPanel
     extends Panel
 {
-
     /**
      * Reference to the style sheet.
      */
@@ -74,11 +70,6 @@ public class FormPanel
      * Map containing the required Components. Used for the check if this components are filled in.
      */
     private final Map<String, Label> requiredComponents = new HashMap<String, Label>();
-
-    /**
-     * Set contains the date components of this formpanel.
-     */
-    private final Set<DateTimePanel> dateComponents = new HashSet<DateTimePanel>();
 
     /**
      * @param _wicketId wicket id of this component
@@ -145,25 +136,5 @@ public class FormPanel
                                      final Label _label)
     {
         this.requiredComponents.put(_name, _label);
-    }
-
-    /**
-     * Add a date component.
-     *
-     * @param _dateTimePanel date picker
-     */
-    public void addDateComponent(final DateTimePanel _dateTimePanel)
-    {
-        this.dateComponents.add(_dateTimePanel);
-    }
-
-    /**
-     * Getter method for instance variable {@link #dateComponents}.
-     *
-     * @return instance variable {@link #dateComponents}
-     */
-    public Set<DateTimePanel> getDateComponents()
-    {
-        return this.dateComponents;
     }
 }

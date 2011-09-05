@@ -20,7 +20,9 @@
 
 package org.efaps.ui.wicket.components;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.ComponentTag;
@@ -28,6 +30,8 @@ import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.IFormSubmitListener;
 import org.apache.wicket.util.string.JavascriptUtils;
+import org.efaps.ui.wicket.components.date.DateTimePanel;
+import org.efaps.ui.wicket.components.date.IDateListener;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.UIForm;
 
@@ -39,6 +43,7 @@ import org.efaps.ui.wicket.models.objects.UIForm;
  */
 public class FormContainer
     extends Form<Object>
+    implements IDateListener
 {
 
     /**
@@ -55,6 +60,11 @@ public class FormContainer
      * Is this form a used to upload a file.
      */
     private boolean fileUpload = false;
+
+    /**
+     * Set contains the date components of this formpanel.
+     */
+    private final Set<DateTimePanel> dateComponents = new HashSet<DateTimePanel>();
 
     /**
      * Constructor setting the wicket id of this component.
@@ -188,5 +198,25 @@ public class FormContainer
         bldr.append("Wicket.Event.add(Wicket.$('").append(this.getMarkupId())
             .append("'), 'submit', function (evt){ evt.preventDefault();});");
         JavascriptUtils.writeJavascript(getResponse(), bldr.toString());
+    }
+
+    /**
+     * Add a date component.
+     *
+     * @param _dateTimePanel date picker
+     */
+    public void addDateComponent(final DateTimePanel _dateTimePanel)
+    {
+        this.dateComponents.add(_dateTimePanel);
+    }
+
+    /**
+     * Getter method for instance variable {@link #dateComponents}.
+     *
+     * @return instance variable {@link #dateComponents}
+     */
+    public Set<DateTimePanel> getDateComponents()
+    {
+        return this.dateComponents;
     }
 }

@@ -328,4 +328,17 @@ public class DateTimePanel
         }
         return ret;
     }
+
+    /**
+     * After rendering the datefields are added to the parent.
+     */
+    @Override
+    protected void onAfterRender()
+    {
+        super.onAfterRender();
+        final IDateListener container = this.findParent(IDateListener.class);
+        if (container != null) {
+            container.addDateComponent(this);
+        }
+    }
 }
