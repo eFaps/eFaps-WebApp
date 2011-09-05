@@ -162,8 +162,7 @@ public class UploadBehavior
                 final String[] hour = map.get(datepicker.getHourFieldName());
                 final String[] minute = map.get(datepicker.getMinuteFieldName());
                 final String[] ampm = map.get(datepicker.getAmPmFieldName());
-                map.put(datepicker.getFieldName(),
-                        new String[] {datepicker.getDateAsString(date, hour, minute, ampm)});
+                map.put(datepicker.getFieldName(), datepicker.getDateAsString(date, hour, minute, ampm));
             }
         }
     }

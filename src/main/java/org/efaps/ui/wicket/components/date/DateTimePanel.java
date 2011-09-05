@@ -20,7 +20,9 @@
 
 package org.efaps.ui.wicket.components.date;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.wicket.datetime.DateConverter;
 import org.apache.wicket.datetime.StyleDateConverter;
@@ -298,35 +300,38 @@ public class DateTimePanel
      * @return valid string
      * @throws EFapsException on error
      */
-    public String getDateAsString(final String[] _date,
-                                  final String[] _hour,
-                                  final String[] _minute,
-                                  final String[] _ampm)
+    public String[] getDateAsString(final String[] _date,
+                                    final String[] _hour,
+                                    final String[] _minute,
+                                    final String[] _ampm)
         throws EFapsException
     {
-        String ret = null;
-        if (_date != null && _date[0].length() > 0) {
-            final DateTimeFormatter fmt = DateTimeFormat.forPattern(this.converter.getDatePattern())
-                .withChronology(Context.getThreadContext().getChronology());
-            fmt.withLocale(getLocale());
-            final MutableDateTime mdt = fmt.parseMutableDateTime(_date[0]);
-
-            if (_hour != null && _hour[0].length() > 0) {
-                final int hour = Integer.parseInt(_hour[0]);
-                if (use12HourFormat() && "pm".equals(_ampm[0])) {
-                    mdt.setHourOfDay(hour + 12);
-                } else {
-                    mdt.setHourOfDay(hour);
-                }
-                if (_minute != null && _minute[0].length() > 0) {
-                    final int minute = Integer.parseInt(_minute[0]);
-                    mdt.setMinuteOfHour(minute);
+        final List<String> dates = new ArrayList<String>();
+        if (_date != null) {
+            for (int i = 0; i < _date.length; i++) {
+                if (!_date[i].isEmpty()) {
+                    final DateTimeFormatter fmt = DateTimeFormat.forPattern(this.converter.getDatePattern())
+                        .withChronology(Context.getThreadContext().getChronology());
+                    fmt.withLocale(getLocale());
+                    final MutableDateTime mdt = fmt.parseMutableDateTime(_date[i]);
+                    if (_hour != null && !_hour[i].isEmpty()) {
+                        final int hour = Integer.parseInt(_hour[i]);
+                        if (use12HourFormat() && "pm".equals(_ampm[i])) {
+                            mdt.setHourOfDay(hour + 12);
+                        } else {
+                            mdt.setHourOfDay(hour);
+                        }
+                        if (_minute != null && !_minute[i].isEmpty()) {
+                            final int minute = Integer.parseInt(_minute[i]);
+                            mdt.setMinuteOfHour(minute);
+                        }
+                    }
+                    final DateTimeFormatter isofmt = ISODateTimeFormat.dateTime();
+                    dates.add(mdt.toString(isofmt));
                 }
             }
-            final DateTimeFormatter isofmt = ISODateTimeFormat.dateTime();
-            ret = mdt.toString(isofmt);
         }
-        return ret;
+        return dates.isEmpty() ? null : dates.toArray(new String[dates.size()]);
     }
 
     /**
