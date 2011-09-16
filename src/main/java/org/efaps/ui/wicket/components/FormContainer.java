@@ -89,7 +89,7 @@ public class FormContainer
     {
         final Object uiObject = getPage().getDefaultModelObject();
         if (uiObject instanceof UIForm && ((UIForm) uiObject).isFileUpload()
-                        && (((UIForm) uiObject).isCreateMode() || ((UIForm) uiObject).isCreateMode())) {
+                        && (((UIForm) uiObject).isCreateMode() || ((UIForm) uiObject).isEditMode())) {
             setMultiPart(true);
             setMaxSize(getApplication().getApplicationSettings().getDefaultMaximumUploadSize());
         }
