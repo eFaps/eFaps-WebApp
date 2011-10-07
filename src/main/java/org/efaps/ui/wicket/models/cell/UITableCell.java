@@ -112,6 +112,8 @@ public class UITableCell
      */
     private final UIPicker picker;
 
+    private final boolean showNumbering;
+
     /**
      * Constructor.
      *
@@ -132,7 +134,7 @@ public class UITableCell
         throws EFapsException
     {
         super(_parent, _fieldValue, _instance == null ? null : _instance.getKey(), _cellvalue);
-
+        this.showNumbering = _fieldValue.getField().isShowNumbering();
         this.compareValue = _fieldValue.getObject4Compare();
         this.fixedWidth = _fieldValue.getField().isFixedWidth();
         this.align = _fieldValue.getField().getAlign();
@@ -280,10 +282,21 @@ public class UITableCell
     }
 
     /**
+     * Getter method for instance variable {@link #showNumbering}.
+     *
+     * @return value of instance variable {@link #showNumbering}
+     */
+    public boolean isShowNumbering()
+    {
+        return this.showNumbering;
+    }
+
+    /**
      * Method to execute the events.
      *
      * @param _eventType    type of the event to be executed
      * @param _others       object to be passed to the executed event with ParameterValues.OTHERS
+     * @param _uiID2Oid     mapping of session userinterface ids to oids
      * @return List of Returns
      * @throws EFapsException on error
      */

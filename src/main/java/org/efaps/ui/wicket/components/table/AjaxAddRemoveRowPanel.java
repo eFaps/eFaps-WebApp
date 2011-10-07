@@ -203,7 +203,7 @@ public class AjaxAddRemoveRowPanel
                         RowPanel row;
                         try {
                             row = new RowPanel(AjaxAddRemoveRowPanel.AjaxAddRow.this.rowsRep.newChildId(),
-                                             new UIModel<UIRow>(uirow), tablepanel, false);
+                                             new UIModel<UIRow>(uirow), tablepanel, false, 0);
                             row.add(new SimpleAttributeModifier("class", "eFapsTableRowOdd"));
                             row.setOutputMarkupId(true);
                             AjaxAddRemoveRowPanel.AjaxAddRow.this.rowsRep.add(row);

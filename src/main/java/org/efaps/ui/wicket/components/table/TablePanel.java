@@ -105,10 +105,11 @@ public class TablePanel
             rowsRepeater.add(nodata);
         } else {
             boolean odd = true;
+            int i = 0;
             for (final Iterator<UIRow> rowIter = uiTable.getValues().iterator(); rowIter.hasNext(); odd = !odd) {
-
+                i++;
                 final RowPanel row = new RowPanel(rowsRepeater.newChildId(), new UIModel<UIRow>(rowIter.next()), this,
-                                               ContentContainerPage.IFRAME_PAGEMAP_NAME.equals(_page.getPageMapName()));
+                                           ContentContainerPage.IFRAME_PAGEMAP_NAME.equals(_page.getPageMapName()), i);
                 row.setOutputMarkupId(true);
                 if (odd) {
                     row.add(new SimpleAttributeModifier("class", "eFapsTableRowOdd"));

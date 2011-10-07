@@ -214,6 +214,11 @@ public class UITable
     private int widthWeight;
 
     /**
+     * The size of the current values list including filtereing etc. Update on filter events etc.
+     */
+    private int size;
+
+    /**
      * Constructor setting the parameters.
      *
      * @param _parameters PageParameters
@@ -1013,6 +1018,7 @@ public class UITable
         } else {
             ret = this.values;
         }
+        this.size = ret.size();
         return ret;
     }
 
@@ -1133,6 +1139,12 @@ public class UITable
             UITable.LOG.error("error during the setting of UserAttributes", e);
         }
     }
+
+    public int getSize()
+    {
+        return this.size;
+    }
+
 
     /**
      * This is the setter method for the instance variable {@link #tableUUID}.

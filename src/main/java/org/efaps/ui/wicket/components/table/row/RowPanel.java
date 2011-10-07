@@ -69,13 +69,15 @@ public class RowPanel
      * @param _model            model for this component
      * @param _tablePanel       tablepanel this row is in
      * @param _updateListMenu   must the listmenu be updated
+     * @param _idx              index of the current row
      * @throws EFapsException on error
      *
      */
     public RowPanel(final String _wicketId,
                     final IModel<UIRow> _model,
                     final TablePanel _tablePanel,
-                    final boolean _updateListMenu)
+                    final boolean _updateListMenu,
+                    final int _idx)
         throws EFapsException
     {
         super(_wicketId, _model);
@@ -116,7 +118,7 @@ public class RowPanel
                                 uiCell.getField().getCols());
             } else {
                 cell = new CellPanel(cellRepeater.newChildId(), new UIModel<UITableCell>(uiCell),
-                                                      _updateListMenu, uiTable);
+                                                      _updateListMenu, uiTable, _idx);
             }
             cell.setOutputMarkupId(true);
             if (uiCell.isFixedWidth()) {

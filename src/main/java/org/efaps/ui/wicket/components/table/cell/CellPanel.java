@@ -20,9 +20,13 @@
 
 package org.efaps.ui.wicket.components.table.cell;
 
+import java.text.NumberFormat;
+
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
+import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.PopupSettings;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
@@ -65,7 +69,8 @@ public class CellPanel
     {
         super(_wicketId);
         add(new CheckBoxComponent("checkbox", _oid));
-        add(new WebMarkupContainer("link").setVisible(false));
+        add(new WebComponent("numbering").setVisible(false));
+        add(new WebComponent("link").setVisible(false));
         add(new WebMarkupContainer("icon").setVisible(false));
         add(new WebMarkupContainer("label").setVisible(false));
         add(new WebMarkupContainer("valuePicker").setVisible(false));
@@ -75,15 +80,17 @@ public class CellPanel
      * Constructor for all cases minus checkbox.
      *
      * @see #CellPanel(String, String)
-     * @param _wicketId wicket id for this component
-     * @param _model model for this component
-     * @param _updateListMenu must the list be updated
-     * @param _uitable uitable
+     * @param _wicketId         wicket id for this component
+     * @param _model            model for this component
+     * @param _updateListMenu   must the list be updated
+     * @param _uitable          uitable
+     * @param _idx              index fo the current row
      */
     public CellPanel(final String _wicketId,
                      final IModel<UITableCell> _model,
                      final boolean _updateListMenu,
-                     final UITable _uitable)
+                     final UITable _uitable,
+                     final int _idx)
     {
         super(_wicketId, _model);
         final UITableCell uiTableCell = (UITableCell) super.getDefaultModelObject();
@@ -96,6 +103,7 @@ public class CellPanel
             add(new WebMarkupContainer("checkbox").setVisible(false));
             add(new WebMarkupContainer("link").setVisible(false));
             add(new WebMarkupContainer("icon").setVisible(false));
+            add(new WebComponent("numbering").setVisible(false));
             final AutoCompleteField label = new AutoCompleteField("label", _model, true);
             add(label);
             if (uiTableCell.isValuePicker()) {
@@ -106,6 +114,14 @@ public class CellPanel
         } else {
             // make the checkbox invisible
             add(new WebMarkupContainer("checkbox").setVisible(false));
+            if (uiTableCell.isShowNumbering()) {
+                final Integer size = _uitable.getSize();
+                final NumberFormat formatter = NumberFormat.getInstance();;
+                formatter.setMinimumIntegerDigits(size.toString().length());
+                add(new Label("numbering", formatter.format(_idx) + ". "));
+            } else {
+                add(new WebComponent("numbering").setVisible(false));
+            }
 
             WebMarkupContainer celllink;
             if (uiTableCell.getReference() == null) {
