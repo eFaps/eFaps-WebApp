@@ -760,7 +760,7 @@ public class UITable
             final List<UITableCell> cells = rowmodel.getValues();
             for (final UITableCell cell : cells) {
                 if (cell.getFieldId() == _uitableHeader.getFieldId()) {
-                    final String value = cell.getCellValue();
+                    final String value = cell.getCellTitle();
                     if (!ret.contains(value)) {
                         ret.add(value);
                     }
@@ -1395,7 +1395,7 @@ public class UITable
                 for (final UITableCell cell : cells) {
                     if (cell.getFieldId() == this.uiTableHeader.getFieldId()) {
                         if (this.filterList != null) {
-                            final String value = cell.getCellValue();
+                            final String value = cell.getCellTitle();
                             if (!this.filterList.contains(value)) {
                                 ret = true;
                             }
