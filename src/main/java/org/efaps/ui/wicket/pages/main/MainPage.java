@@ -162,7 +162,7 @@ public class MainPage extends AbstractMergePage
             final String companyName = context.getCompany() == null ? "" : context.getCompany().getName();
             logo.add(new Label("company", companyName));
             logo.add(new AttributeModifier("class", true,
-                            new Model<String>("eFapsLogo " + companyName.replace(" " , ""))));
+                            new Model<String>("eFapsLogo " + companyName.replaceAll("\\W" , ""))));
             final long usrId = context.getPersonId();
             //Admin_Common_SystemMessageAlert
             final StandardLink alert = new StandardLink("useralert",
