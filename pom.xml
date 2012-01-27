@@ -252,7 +252,7 @@
             <plugin>
                 <groupId>org.efaps</groupId>
                 <artifactId>maven-efaps-jetty</artifactId>
-                <version>1.18.0-7.4.3.v20110701</version>
+                <version>1.19.0-7.5.4.v20111024</version>
                 <configuration>
                     <jaasConfigFile>${basedir}/src/main/jetty/jaas.config</jaasConfigFile>
                     <configFile>file:${basedir}/src/main/jetty/eFaps-jetty.xml</configFile>
