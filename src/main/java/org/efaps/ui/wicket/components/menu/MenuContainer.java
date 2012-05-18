@@ -229,7 +229,7 @@ public class MenuContainer
                 final StandardLink item = (StandardLink) child;
                 final UIMenuItem childModel = item.getModelObject();
 
-                String url = (String) item.urlFor(ILinkListener.INTERFACE);
+                CharSequence url = item.urlFor(ILinkListener.INTERFACE);
                 if (childModel.getTarget() == Target.POPUP) {
                     final AbstractCommand command = childModel.getCommand();
 
@@ -240,7 +240,7 @@ public class MenuContainer
                     final String tmp = popup.getPopupJavaScript().replaceAll("'", "\"");
                     url = "javascript:" + tmp.replace("return false;", "");
                 }
-                childModel.setURL(url);
+                childModel.setURL(url.toString());
             } else if (child instanceof AbstractMenuItemAjaxComponent) {
                 final AbstractMenuItemAjaxComponent item = (AbstractMenuItemAjaxComponent) child;
                 final UIMenuItem childModel = (UIMenuItem) item.getDefaultModelObject();
