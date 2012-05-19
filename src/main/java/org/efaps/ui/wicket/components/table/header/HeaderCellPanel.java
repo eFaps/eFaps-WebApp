@@ -34,7 +34,7 @@ import org.efaps.ui.wicket.behaviors.dojo.DnDBehavior;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.models.objects.UITableHeader;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContributor;
+import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
 
 /**
  * This class renders the Cells inside a Header, providing all necessary Links.
@@ -120,7 +120,7 @@ public class HeaderCellPanel
 
         final UITableHeader uiTableHeader = (UITableHeader) super.getDefaultModelObject();
 
-        add(StaticHeaderContributor.forCss(HeaderCellPanel.CSS));
+        add(StaticHeaderContrBehavior.forCss(HeaderCellPanel.CSS));
 
         this.add(AttributeModifier.replace("title", uiTableHeader.getLabel()));
 

@@ -46,7 +46,7 @@ import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContributor;
+import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
 import org.efaps.util.EFapsException;
 
 /**
@@ -97,7 +97,7 @@ public class DialogPage
 
         final String cmdName = menuItem.getCommand().getName();
 
-        this.add(StaticHeaderContributor.forCss(DialogPage.CSS));
+        this.add(StaticHeaderContrBehavior.forCss(DialogPage.CSS));
 
         this.add(new Label("textLabel", DBProperties.getProperty(cmdName + ".Question")));
 
@@ -124,7 +124,7 @@ public class DialogPage
                       final AjaxSubmitCloseBehavior _behavior)
     {
         this.modal = _modal;
-        this.add(StaticHeaderContributor.forCss(DialogPage.CSS));
+        this.add(StaticHeaderContrBehavior.forCss(DialogPage.CSS));
 
         if (_isSniplett) {
             this.add(new LabelComponent("textLabel", _value));

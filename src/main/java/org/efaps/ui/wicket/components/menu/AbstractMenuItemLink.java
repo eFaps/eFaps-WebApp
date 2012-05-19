@@ -52,8 +52,6 @@ public abstract class AbstractMenuItemLink
 
     /**
      * For the JSCookMenu nothing must be rendered, because JavaScript is used to create the Menu.
-     *
-     * @param _markupStream Markup Stream
      */
     @Override
     protected void onRender()

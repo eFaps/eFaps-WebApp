@@ -40,7 +40,7 @@ import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContributor;
+import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
 import org.efaps.util.EFapsException;
 
 /**
@@ -126,7 +126,7 @@ public abstract class AbstractContentPage
         //set the title for the Page
         add(new Label("pageTitle", DBProperties.getProperty("Logo.Version.Label")));
 
-        add(StaticHeaderContributor.forCss(AbstractContentPage.CSS));
+        add(StaticHeaderContrBehavior.forCss(AbstractContentPage.CSS));
         add(new SetMessageStatusBehavior());
 
         this.body = new WebMarkupContainer("body") {

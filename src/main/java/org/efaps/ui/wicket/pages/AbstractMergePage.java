@@ -38,7 +38,7 @@ import org.efaps.admin.program.bundle.BundleMaker;
 import org.efaps.admin.program.bundle.TempFileBundle;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContributor;
+import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
 import org.efaps.util.EFapsException;
 
 /**
@@ -102,14 +102,14 @@ public abstract class AbstractMergePage
     protected void onBeforeRender()
     {
         if (mergeStatics()) {
-            final Map<StaticHeaderContributor.HeaderType, List<StaticHeaderContributor>> resources
-                = new HashMap<StaticHeaderContributor.HeaderType, List<StaticHeaderContributor>>();
+            final Map<StaticHeaderContrBehavior.HeaderType, List<StaticHeaderContrBehavior>> resources
+                = new HashMap<StaticHeaderContrBehavior.HeaderType, List<StaticHeaderContrBehavior>>();
 
             // get all StaticHeaderContributor from all childs
             addStaticBehaviors(resources, this.getBehaviors());
             addChildStatics(resources, this);
 
-            for (final Entry<StaticHeaderContributor.HeaderType, List<StaticHeaderContributor>> entry : resources
+            for (final Entry<StaticHeaderContrBehavior.HeaderType, List<StaticHeaderContrBehavior>> entry : resources
                             .entrySet()) {
                 if (entry.getValue().size() > 1) {
                     final List<String> namelist = getReferenceNameList(entry.getValue());
@@ -122,11 +122,11 @@ public abstract class AbstractMergePage
                     }
                     // add the new Bundle to the Page
                     final TempFileBundle bundle = (TempFileBundle) BundleMaker.getBundle(name);
-                    if (entry.getKey().equals(StaticHeaderContributor.HeaderType.CSS)) {
-                        this.add(StaticHeaderContributor.forCss(new EFapsContentReference(name), true));
+                    if (entry.getKey().equals(StaticHeaderContrBehavior.HeaderType.CSS)) {
+                        this.add(StaticHeaderContrBehavior.forCss(new EFapsContentReference(name), true));
                         bundle.setContentType("text/css");
-                    } else if (entry.getKey().equals(StaticHeaderContributor.HeaderType.JS)) {
-                        this.add(StaticHeaderContributor.forJavaScript(new EFapsContentReference(name), true));
+                    } else if (entry.getKey().equals(StaticHeaderContrBehavior.HeaderType.JS)) {
+                        this.add(StaticHeaderContrBehavior.forJavaScript(new EFapsContentReference(name), true));
                         bundle.setContentType("text/javascript");
                     }
                 }
@@ -143,10 +143,10 @@ public abstract class AbstractMergePage
      *            added to a List
      * @return a List with the Names of the Reference
      */
-    protected List<String> getReferenceNameList(final List<StaticHeaderContributor> _behaviors)
+    protected List<String> getReferenceNameList(final List<StaticHeaderContrBehavior> _behaviors)
     {
         final List<String> ret = new ArrayList<String>();
-        for (final StaticHeaderContributor behavior : _behaviors) {
+        for (final StaticHeaderContrBehavior behavior : _behaviors) {
             ret.add(behavior.getReference().getName());
             behavior.getComponent().remove(behavior);
         }
@@ -163,17 +163,17 @@ public abstract class AbstractMergePage
      * @see #addChildStatics(Map, MarkupContainer)
      */
     protected void addStaticBehaviors(
-                    final Map<StaticHeaderContributor.HeaderType, List<StaticHeaderContributor>> _resources,
+                    final Map<StaticHeaderContrBehavior.HeaderType, List<StaticHeaderContrBehavior>> _resources,
                     final List<? extends Behavior> _list)
     {
 
         for (final Behavior oneBehavior : _list) {
-            if (oneBehavior instanceof StaticHeaderContributor) {
-                final StaticHeaderContributor behavior = (StaticHeaderContributor) oneBehavior;
+            if (oneBehavior instanceof StaticHeaderContrBehavior) {
+                final StaticHeaderContrBehavior behavior = (StaticHeaderContrBehavior) oneBehavior;
                 if (!behavior.isMerged()) {
-                    List<StaticHeaderContributor> behaviors = _resources.get(behavior.getHeaderType());
+                    List<StaticHeaderContrBehavior> behaviors = _resources.get(behavior.getHeaderType());
                     if (behaviors == null) {
-                        behaviors = new ArrayList<StaticHeaderContributor>();
+                        behaviors = new ArrayList<StaticHeaderContrBehavior>();
                         _resources.put(behavior.getHeaderType(), behaviors);
                     }
                     behaviors.add(behavior);
@@ -191,7 +191,7 @@ public abstract class AbstractMergePage
      * @see #addStaticBehaviors(Map, List)
      */
     protected void addChildStatics(
-                    final Map<StaticHeaderContributor.HeaderType, List<StaticHeaderContributor>> _resources,
+                    final Map<StaticHeaderContrBehavior.HeaderType, List<StaticHeaderContrBehavior>> _resources,
                     final MarkupContainer _markupcontainer)
     {
         final Iterator<?> it = _markupcontainer.iterator();

@@ -30,7 +30,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContributor;
+import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,7 +70,7 @@ public class ErrorPage
     public ErrorPage(final Exception _exception)
     {
         super();
-        this.add(StaticHeaderContributor.forCss(ErrorPage.CSS));
+        this.add(StaticHeaderContrBehavior.forCss(ErrorPage.CSS));
 
         ErrorPage.LOG.error("ErrorPage was called", _exception);
 
@@ -81,7 +81,7 @@ public class ErrorPage
         String errorAdvanced = "";
 
         if (_exception instanceof EFapsException) {
-            this.add(StaticHeaderContributor.forCss(ErrorPage.CSS));
+            this.add(StaticHeaderContrBehavior.forCss(ErrorPage.CSS));
 
             final EFapsException eFapsException = (EFapsException) _exception;
             errorKey = eFapsException.getClassName().getName() + "." + eFapsException.getId();

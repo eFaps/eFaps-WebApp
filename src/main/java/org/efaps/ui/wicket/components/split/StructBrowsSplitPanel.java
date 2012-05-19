@@ -34,7 +34,7 @@ import org.efaps.ui.wicket.components.split.header.SplitHeaderPanel;
 import org.efaps.ui.wicket.components.split.header.SplitHeaderPanel.PositionUserAttribute;
 import org.efaps.ui.wicket.components.tree.StructurBrowserTreePanel;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContributor;
+import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
 import org.efaps.util.EFapsException;
 
 /**
@@ -75,7 +75,7 @@ public class StructBrowsSplitPanel
     {
         super(_wicketId);
 
-        this.add(StaticHeaderContributor.forCss(StructBrowsSplitPanel.CSS));
+        this.add(StaticHeaderContrBehavior.forCss(StructBrowsSplitPanel.CSS));
         String positionH = null;
         String hiddenStrH = null;
         String positionV = null;

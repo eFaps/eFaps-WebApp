@@ -30,7 +30,6 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes.Method;
 import org.apache.wicket.ajax.attributes.ThrottlingSettings;
-import org.apache.wicket.core.util.string.JavaScriptUtils;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.head.IHeaderResponse;
@@ -58,7 +57,7 @@ import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.empty.EmptyPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContributor;
+import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
 import org.efaps.util.EFapsException;
 
 /**
@@ -127,14 +126,14 @@ public class MainPage
 
         // we need to add a JavaScript Function to resize the iFrame
         // don't merge it to keep the sequence
-        add(StaticHeaderContributor.forJavaScript(MainPage.FRAMEJS, true));
+        add(StaticHeaderContrBehavior.forJavaScript(MainPage.FRAMEJS, true));
 
         // set the title for the Page
         add(new Label("pageTitle", DBProperties.getProperty("Logo.Version.Label")));
         add(this.modal);
 
 
-        this.add(StaticHeaderContributor.forCss(MainPage.CSS));
+        this.add(StaticHeaderContrBehavior.forCss(MainPage.CSS));
         this.add(new ChildCallBackHeaderContributer());
 
         this.resize = new ResizeEventBehavior();
@@ -149,11 +148,9 @@ public class MainPage
                 super.renderHead(_response);
                 final CharSequence resizeScript = MainPage.this.resize.getCallbackScript();
                 final StringBuilder js = new StringBuilder()
-                    .append(JavaScriptUtils.SCRIPT_OPEN_TAG).append(" window.onresize = ")
-                    .append(resizeScript).append("; \n  window.onload = eFapsSetIFrameHeight; \n")
-                    .append(JavaScriptUtils.SCRIPT_CLOSE_TAG);
-
-                _response.render(JavaScriptHeaderItem.forScript(js, "ss"));
+                    .append(" window.onresize = ")
+                    .append(resizeScript).append("; \n  window.onload = eFapsSetIFrameHeight; \n");
+                _response.render(JavaScriptHeaderItem.forScript(js, MainPage.class.getName()));
             }
         };
         logo.add(welcome);

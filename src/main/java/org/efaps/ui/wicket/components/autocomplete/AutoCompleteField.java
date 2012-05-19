@@ -45,7 +45,7 @@ import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContributor;
+import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -121,7 +121,7 @@ public class AutoCompleteField
         if (field != null) {
             this.cols = field.getCols();
         }
-        add(StaticHeaderContributor.forCss(AutoCompleteField.CSS));
+        add(StaticHeaderContrBehavior.forCss(AutoCompleteField.CSS));
 
         if (_selectRow) {
             this.add(new SetSelectedRowBehavior(this.fieldName));

@@ -110,10 +110,8 @@ public abstract class AbstractParentMarkupContainer
         final Iterator<?> childs = this.iterator();
         while (childs.hasNext()) {
             markupStream.setCurrentIndex(markupStart);
-
             final Component child = (Component) childs.next();
-
-            child.render();
+            child.rendered();
         }
 
         markupStream.setCurrentIndex(markupStart);

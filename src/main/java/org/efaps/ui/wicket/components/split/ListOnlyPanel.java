@@ -32,7 +32,7 @@ import org.efaps.ui.wicket.components.menutree.MenuTree;
 import org.efaps.ui.wicket.components.split.header.SplitHeaderPanel;
 import org.efaps.ui.wicket.components.split.header.SplitHeaderPanel.PositionUserAttribute;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContributor;
+import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,7 +79,7 @@ public class ListOnlyPanel
         throws EFapsException
     {
         super(_wicketId);
-        this.add(StaticHeaderContributor.forCss(ListOnlyPanel.CSS));
+        this.add(StaticHeaderContrBehavior.forCss(ListOnlyPanel.CSS));
         String position = null;
         String hiddenStr = null;
         try {

@@ -31,7 +31,7 @@ import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContributor;
+import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
 import org.efaps.util.EFapsException;
 
 /**
@@ -113,7 +113,7 @@ public class StructurBrowserPage
     protected void addComponents()
         throws EFapsException
     {
-        add(StaticHeaderContributor.forCss(StructurBrowserPage.CSS));
+        add(StaticHeaderContrBehavior.forCss(StructurBrowserPage.CSS));
 
         final UIStructurBrowser uiObject = (UIStructurBrowser) super.getDefaultModelObject();
         if (!uiObject.isInitialized()) {

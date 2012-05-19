@@ -42,7 +42,7 @@ import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.components.tree.StructurBrowserTree;
 import org.efaps.ui.wicket.models.objects.UIClassification;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContributor;
+import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
 import org.efaps.util.EFapsException;
 
 /**
@@ -94,8 +94,8 @@ public class ClassificationTree
         throws EFapsException
     {
         super(_wicketId, new WicketTreeModel());
-        this.add(StaticHeaderContributor.forCss(ClassificationTree.CSS));
-        this.add(StaticHeaderContributor.forCss(ClassificationTree.TCSS));
+        this.add(StaticHeaderContrBehavior.forCss(ClassificationTree.CSS));
+        this.add(StaticHeaderContrBehavior.forCss(ClassificationTree.TCSS));
         final UIClassification classification = _model.getObject();
         final TreeModel model = classification.getTreeModel();
         setModelObject(model);

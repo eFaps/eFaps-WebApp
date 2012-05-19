@@ -28,8 +28,10 @@ import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
+import org.apache.wicket.markup.html.link.ILinkListener;
 import org.apache.wicket.markup.html.link.PopupSettings;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractCommand.Target;
@@ -39,7 +41,7 @@ import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.models.objects.UISearchItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContributor;
+import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
 import org.efaps.util.RequestHandler;
 
 /**
@@ -129,8 +131,8 @@ public class MenuContainer
         super(_wicketId, _model);
         this.form = _form;
 
-        add(StaticHeaderContributor.forCss(MenuContainer.CSS));
-        add(StaticHeaderContributor.forJavaScript(MenuContainer.EFAPSEXTENSION));
+        add(StaticHeaderContrBehavior.forCss(MenuContainer.CSS));
+        add(StaticHeaderContrBehavior.forJavaScript(MenuContainer.EFAPSEXTENSION));
 
         final UIMenuItem model = (UIMenuItem) super.getDefaultModelObject();
         for (final UIMenuItem menuItem : model.getChilds()) {
@@ -146,15 +148,11 @@ public class MenuContainer
     {
         super.renderHead(_response);
         final StringBuilder js = new StringBuilder()
-            .append(JavaScriptUtils.SCRIPT_OPEN_TAG)
             .append("var myThemeOfficeBase=\"")
             .append(RequestHandler.replaceMacrosInUrl(MenuContainer.URL_THEME_IMAGES).replaceAll("\\?", ""))
-            .append("\";\n")
-            .append(JavaScriptUtils.SCRIPT_CLOSE_TAG)
-            .append("<script type=\"text/javascript\" src=\"")
-            .append(MenuContainer.THEME.getStaticContentUrl())
-            .append("\"></script>\n");
+            .append("\";");
         _response.render(JavaScriptHeaderItem.forScript(js, MenuContainer.class.getName()));
+        _response.render(JavaScriptHeaderItem.forUrl(MenuContainer.THEME.getStaticContentUrl()));
     }
 
     /**
@@ -227,7 +225,7 @@ public class MenuContainer
                 final StandardLink item = (StandardLink) child;
                 final UIMenuItem childModel = item.getModelObject();
 
-                CharSequence url = item.urlFor(getRequestCycle().getActiveRequestHandler());
+                CharSequence url = item.urlFor(ILinkListener.INTERFACE, new PageParameters());
                 if (childModel.getTarget() == Target.POPUP) {
                     final AbstractCommand command = childModel.getCommand();
 

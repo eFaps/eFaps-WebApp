@@ -53,7 +53,7 @@ import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContributor;
+import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
 import org.efaps.util.EFapsException;
 
 /**
@@ -98,7 +98,7 @@ public class CompanyPage
         // set the title for the Page
         add(new Label("pageTitle", DBProperties.getProperty("Logo.Version.Label")));
 
-        this.add(StaticHeaderContributor.forCss(CompanyPage.CSS));
+        this.add(StaticHeaderContrBehavior.forCss(CompanyPage.CSS));
 
         this.add(new LabelComponent("title",
                                     DBProperties.getProperty("org.efaps.ui.wicket.pages.company.title.Label")));

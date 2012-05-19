@@ -56,7 +56,7 @@ import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContributor;
+import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
 import org.efaps.ui.wicket.util.EFapsKey;
 import org.efaps.util.EFapsException;
 
@@ -109,7 +109,7 @@ public class StructurBrowserTreeTable
                                     final UnnestedDatePickers _datePickers)
     {
         super(_wicketId, _model.getObject().getTreeModel(), _columns);
-        this.add(StaticHeaderContributor.forCss(StructurBrowserTreeTable.CSS));
+        this.add(StaticHeaderContrBehavior.forCss(StructurBrowserTreeTable.CSS));
         this.parentLink = _parentLink;
 
         setRootLess(!(_model.getObject().isEditable()));

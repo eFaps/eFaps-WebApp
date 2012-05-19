@@ -59,7 +59,7 @@ import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContributor;
+import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
 import org.efaps.util.EFapsException;
 
 /**
@@ -111,7 +111,7 @@ public class StructurBrowserTree
     {
         super(_wicketId, _model);
         this.listMenuKey = _listMenuKey;
-        this.add(StaticHeaderContributor.forCss(StructurBrowserTree.CSS));
+        this.add(StaticHeaderContrBehavior.forCss(StructurBrowserTree.CSS));
 
         setRootLess(true);
         // we want a tree that is collapsed and updated asynchron

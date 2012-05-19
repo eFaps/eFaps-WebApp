@@ -53,7 +53,7 @@ import org.efaps.ui.wicket.models.objects.UIHeading;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContributor;
+import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
 import org.efaps.util.EFapsException;
 
 /**
@@ -162,7 +162,7 @@ public class FormPage
             model.execute();
         }
 
-        add(StaticHeaderContributor.forCss(FormPage.CSS));
+        add(StaticHeaderContrBehavior.forCss(FormPage.CSS));
 
         final FormContainer form = new FormContainer("form");
         add(form);

@@ -51,7 +51,7 @@ import org.efaps.ui.wicket.pages.classification.ClassificationPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContributor;
+import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
 import org.efaps.util.EFapsException;
 
 /**
@@ -96,7 +96,7 @@ public class ClassificationPathPanel
                                    final IModel<UIClassification> _model)
     {
         super(_wicketId, _model);
-        add(StaticHeaderContributor.forCss(ClassificationPathPanel.CSS));
+        add(StaticHeaderContrBehavior.forCss(ClassificationPathPanel.CSS));
         this.add(new ClassificationPath("path", _model));
         if (_model.getObject().getMode().equals(TargetMode.EDIT)
                         || _model.getObject().getMode().equals(TargetMode.CREATE)) {

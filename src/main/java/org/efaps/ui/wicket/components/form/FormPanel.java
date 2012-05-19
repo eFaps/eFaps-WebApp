@@ -37,7 +37,7 @@ import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIForm.FormElement;
 import org.efaps.ui.wicket.models.objects.UIForm.FormRow;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContributor;
+import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
 import org.efaps.util.EFapsException;
 
 /**
@@ -92,9 +92,9 @@ public class FormPanel
             uiForm.execute();
         }
 
-        add(StaticHeaderContributor.forCss(FormPanel.CSS));
+        add(StaticHeaderContrBehavior.forCss(FormPanel.CSS));
         if (uiForm.isFileUpload()) {
-            add(StaticHeaderContributor.forJavaScript(FormPanel.FILEINPUT));
+            add(StaticHeaderContrBehavior.forJavaScript(FormPanel.FILEINPUT));
         }
         final RepeatingView rowRepeater = new RepeatingView("rowRepeater");
         this.add(rowRepeater);

@@ -36,7 +36,7 @@ import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.pages.dialog.DialogPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContributor;
+import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
 
 /**
  * This class renders the Footer under a WebForm or WebTable.<br>
@@ -88,7 +88,7 @@ public class FooterPanel
         super(_wicketId, _model);
         this.modalWindow = _modalWindow;
 
-        add(StaticHeaderContributor.forCss(FooterPanel.CSS));
+        add(StaticHeaderContrBehavior.forCss(FooterPanel.CSS));
 
         final AbstractUIPageObject uiObject = (AbstractUIPageObject) super.getDefaultModelObject();
 

@@ -23,9 +23,9 @@ package org.efaps.ui.wicket.resources;
 import org.apache.wicket.Component;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.head.CssHeaderItem;
+import org.apache.wicket.markup.head.HeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
-import org.apache.wicket.markup.html.IHeaderContributor;
 
 /**
  * A HeaderContributor for Content which is stored inside the eFaps-DataBase.<br>
@@ -40,7 +40,7 @@ import org.apache.wicket.markup.html.IHeaderContributor;
  * @version $Id: StaticHeaderContributor.java 3447 2009-11-29 22:46:39Z
  *          tim.moxter $
  */
-public class StaticHeaderContributor
+public class StaticHeaderContrBehavior
     extends Behavior
 {
 
@@ -72,25 +72,24 @@ public class StaticHeaderContributor
     private boolean merged = false;
 
     /**
-     * Component this StaticHeaderContributor is bind to.
-     */
-    private Component component;
-
-    /**
      * The HeaderType of this StaticHeaderContributor.
      */
     private HeaderType headerType;
 
     /**
+     * Component this behavior is bind to;
+     */
+    private Component component;
+
+    /**
      * Constructor setting the IHeaderContributor in the SuperClass and the
      * Reference.
      *
-     * @param _headerContributor IHeaderContributor
      * @param _reference EFapsContentReference
      */
-    public StaticHeaderContributor(final IHeaderContributor _headerContributor,
-                                   final EFapsContentReference _reference)
+    private StaticHeaderContrBehavior(final EFapsContentReference _reference)
     {
+        this.headerType = HeaderType.JS;
         this.reference = _reference;
     }
 
@@ -101,33 +100,24 @@ public class StaticHeaderContributor
      * @param _reference Reference to the Content
      * @return StaticHeaderContributor
      */
-    public static final StaticHeaderContributor forCss(final EFapsContentReference _reference)
+    public static final StaticHeaderContrBehavior forCss(final EFapsContentReference _reference)
     {
-        return StaticHeaderContributor.forCss(_reference, false);
+        return StaticHeaderContrBehavior.forCss(_reference, false);
     }
 
     /**
      * Static method to get a StaticHeaderContributor for CSS.
      *
      * @param _reference Reference to the Content
-     * @param _merged should this StaticHeaderContributor merged
+     * @param _noMerge should this StaticHeaderContributor merged
      * @return StaticHeaderContributor
      */
-    public static final StaticHeaderContributor forCss(final EFapsContentReference _reference,
-                                                       final boolean _merged)
+    public static final StaticHeaderContrBehavior forCss(final EFapsContentReference _reference,
+                                                                final boolean _noMerge)
     {
-        final StaticHeaderContributor ret =
-                        new StaticHeaderContributor(new IHeaderContributor()
-                        {
-
-                            private static final long serialVersionUID = 1L;
-
-                            public void renderHead(final IHeaderResponse _response)
-                            {
-                                _response.render(CssHeaderItem.forUrl(_reference.getStaticContentUrl()));
-                            }
-                        }, _reference);
-        ret.setHeaderType(StaticHeaderContributor.HeaderType.CSS);
+        final StaticHeaderContrBehavior ret = new StaticHeaderContrBehavior(_reference);
+        ret.setHeaderType(StaticHeaderContrBehavior.HeaderType.CSS);
+        ret.setMerged(_noMerge);
         return ret;
     }
 
@@ -138,9 +128,9 @@ public class StaticHeaderContributor
      * @param _reference Reference to the Content
      * @return StaticHeaderContributor
      */
-    public static final StaticHeaderContributor forJavaScript(final EFapsContentReference _reference)
+    public static final StaticHeaderContrBehavior forJavaScript(final EFapsContentReference _reference)
     {
-        return StaticHeaderContributor.forJavaScript(_reference, false);
+        return StaticHeaderContrBehavior.forJavaScript(_reference, false);
     }
 
     /**
@@ -150,24 +140,35 @@ public class StaticHeaderContributor
      * @param _nomerge should this StaticHeaderContributor not bemerged
      * @return StaticHeaderContributor
      */
-    public static final StaticHeaderContributor forJavaScript(final EFapsContentReference _reference,
-                                                              final boolean _nomerge)
+    public static final StaticHeaderContrBehavior forJavaScript(final EFapsContentReference _reference,
+                                                                       final boolean _nomerge)
     {
 
-        final StaticHeaderContributor ret =
-                        new StaticHeaderContributor(new IHeaderContributor()
-                        {
-
-                            private static final long serialVersionUID = 1L;
-
-                            public void renderHead(final IHeaderResponse _response)
-                            {
-                                _response.render(JavaScriptHeaderItem.forUrl(_reference.getStaticContentUrl()));
-                            }
-                        }, _reference);
-        ret.setHeaderType(StaticHeaderContributor.HeaderType.JS);
-        ret.merged = _nomerge;
+        final StaticHeaderContrBehavior ret = new StaticHeaderContrBehavior(_reference);
+        ret.setHeaderType(StaticHeaderContrBehavior.HeaderType.JS);
+        ret.setMerged(_nomerge);
         return ret;
+    }
+
+
+    /* (non-Javadoc)
+     * @see org.apache.wicket.behavior.Behavior#bind(org.apache.wicket.Component)
+     */
+    @Override
+    public void bind(final Component _component)
+    {
+        super.bind(_component);
+        this.component = _component;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #component}.
+     *
+     * @return value of instance variable {@link #component}
+     */
+    public Component getComponent()
+    {
+        return this.component;
     }
 
     /**
@@ -181,18 +182,6 @@ public class StaticHeaderContributor
     }
 
     /**
-     * (non-Javadoc).
-     *
-     * @see org.apache.wicket.behavior.AbstractBehavior#bind(org.apache.wicket.Component)
-     * @param _component Component
-     */
-    @Override
-    public void bind(final Component _component)
-    {
-        this.component = _component;
-    }
-
-    /**
      * This is the setter method for the instance variable {@link #merged}.
      *
      * @param _merged the merged to set
@@ -200,16 +189,6 @@ public class StaticHeaderContributor
     public void setMerged(final boolean _merged)
     {
         this.merged = _merged;
-    }
-
-    /**
-     * This is the getter method for the instance variable {@link #component}.
-     *
-     * @return value of instance variable {@link #component}
-     */
-    public Component getComponent()
-    {
-        return this.component;
     }
 
     /**
@@ -240,5 +219,25 @@ public class StaticHeaderContributor
     public void setHeaderType(final HeaderType _headerType)
     {
         this.headerType = _headerType;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.apache.wicket.behavior.Behavior#renderHead(org.apache.wicket.Component
+     * , org.apache.wicket.markup.head.IHeaderResponse)
+     */
+    @Override
+    public void renderHead(final Component _component,
+                           final IHeaderResponse _response)
+    {
+        super.renderHead(_component, _response);
+        final HeaderItem headerItem;
+        if (this.headerType.equals(HeaderType.CSS)) {
+            headerItem = CssHeaderItem.forUrl(this.reference.getStaticContentUrl());
+        } else {
+            headerItem = JavaScriptHeaderItem.forUrl(this.reference.getStaticContentUrl());
+        }
+        _response.render(headerItem);
     }
 }

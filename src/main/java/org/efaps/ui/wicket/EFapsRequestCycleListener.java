@@ -20,14 +20,9 @@
 
 package org.efaps.ui.wicket;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.wicket.protocol.http.WebApplication;
-import org.apache.wicket.request.IRequestHandler;
 import org.apache.wicket.request.Request;
-import org.apache.wicket.request.Url;
-import org.apache.wicket.request.cycle.IRequestCycleListener;
+import org.apache.wicket.request.cycle.AbstractRequestCycleListener;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.session.ISessionStore;
 import org.slf4j.Logger;
@@ -42,7 +37,7 @@ import org.slf4j.LoggerFactory;
  * @version $Id$
  */
 public class EFapsRequestCycleListener
-    implements IRequestCycleListener
+    extends AbstractRequestCycleListener
 {
 
     /**
@@ -51,13 +46,9 @@ public class EFapsRequestCycleListener
     private static final Logger LOG = LoggerFactory.getLogger(EFapsRequestCycleListener.class);
 
     /**
-     * Map used as a cache.
-     */
-    private final Map<String, Object> cache = new HashMap<String, Object>();
-
-    /**
      * Method to get the EFapsSession.
      *
+     * @param _request Request the Session is wanted for
      * @return EFapsSession
      */
     private EFapsSession getEFapsSession(final Request _request)
@@ -67,34 +58,10 @@ public class EFapsRequestCycleListener
         return session;
     }
 
-
     /**
-     * This Method stores a Component in the Cache.
+     * Called when the request cycle object is beginning its response.
      *
-     * @param _key Key the Component should be stored in
-     * @param _object Object to be stored
-     * @see #componentcache
-     */
-    public void putIntoCache(final String _key,
-                             final Object _object)
-    {
-        this.cache.put(_key, _object);
-    }
-
-    /**
-     * Retrieve a Component from the ComponentCache.
-     *
-     * @param _key Key of the Component to be retrieved
-     * @return Component if found, else null
-     * @see #componentcache
-     */
-    public Object getFromCache(final String _key)
-    {
-        return this.cache.get(_key);
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.wicket.request.cycle.IRequestCycleListener#onBeginRequest(org.apache.wicket.request.cycle.RequestCycle)
+     * @param _cycle    RequestCycle this Listener belongs to
      */
     @Override
     public void onBeginRequest(final RequestCycle _cycle)
@@ -103,10 +70,13 @@ public class EFapsRequestCycleListener
         if (session != null) {
             session.openContext();
         }
+        EFapsRequestCycleListener.LOG.debug("Begin of Request.");
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.wicket.request.cycle.IRequestCycleListener#onEndRequest(org.apache.wicket.request.cycle.RequestCycle)
+    /**
+     * Called when the request cycle object has finished its response.
+     *
+     * @param _cycle    RequestCycle this Listener belongs to
      */
     @Override
     public void onEndRequest(final RequestCycle _cycle)
@@ -115,100 +85,6 @@ public class EFapsRequestCycleListener
         if (session != null) {
             session.closeContext();
         }
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.wicket.request.cycle.IRequestCycleListener#onDetach(org.apache.wicket.request.cycle.RequestCycle)
-     */
-    @Override
-    public void onDetach(final RequestCycle _cycle)
-    {
-        // TODO Auto-generated method stub
-
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.wicket.request.cycle.IRequestCycleListener#onRequestHandlerResolved(org.apache.wicket.request.cycle.RequestCycle, org.apache.wicket.request.IRequestHandler)
-     */
-    @Override
-    public void onRequestHandlerResolved(final RequestCycle _cycle,
-                                         final IRequestHandler _handler)
-    {
-        // TODO Auto-generated method stub
-
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.wicket.request.cycle.IRequestCycleListener#onRequestHandlerScheduled(org.apache.wicket.request.cycle.RequestCycle, org.apache.wicket.request.IRequestHandler)
-     */
-    @Override
-    public void onRequestHandlerScheduled(final RequestCycle _cycle,
-                                          final IRequestHandler _handler)
-    {
-        // TODO Auto-generated method stub
-
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.wicket.request.cycle.IRequestCycleListener#onException(org.apache.wicket.request.cycle.RequestCycle, java.lang.Exception)
-     */
-    @Override
-    public IRequestHandler onException(final RequestCycle _cycle,
-                                       final Exception _exception)
-    {
-//        final Page ret;
-//        if (_exception instanceof AuthorizationException) {
-//            ret =  super.onRuntimeException(_page, _exception);
-//        } else if (_exception instanceof PageExpiredException || _exception instanceof InvalidUrlException) {
-//            final EFapsSession session = (EFapsSession) Session.get();
-//            if (session.isTemporary() || !session.isLogedIn()) {
-//                // this was an actual session expiry or the user has loged out
-//                EFapsWebRequestCycle.LOG.info("session expired and request cannot be honored, "
-//                                + "redirected to LoginPage");
-//                ret =  new LoginPage();
-//            } else {
-//                EFapsWebRequestCycle.LOG.error("unable to find page for an active session!");
-//                ret = new ErrorPage(_exception);
-//            }
-//        } else {
-//            ret = new ErrorPage(_exception);
-//        }
-//        return ret;
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.wicket.request.cycle.IRequestCycleListener#onExceptionRequestHandlerResolved(org.apache.wicket.request.cycle.RequestCycle, org.apache.wicket.request.IRequestHandler, java.lang.Exception)
-     */
-    @Override
-    public void onExceptionRequestHandlerResolved(final RequestCycle _cycle,
-                                                  final IRequestHandler _handler,
-                                                  final Exception _exception)
-    {
-        // TODO Auto-generated method stub
-
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.wicket.request.cycle.IRequestCycleListener#onRequestHandlerExecuted(org.apache.wicket.request.cycle.RequestCycle, org.apache.wicket.request.IRequestHandler)
-     */
-    @Override
-    public void onRequestHandlerExecuted(final RequestCycle _cycle,
-                                         final IRequestHandler _handler)
-    {
-        // TODO Auto-generated method stub
-
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.wicket.request.cycle.IRequestCycleListener#onUrlMapped(org.apache.wicket.request.cycle.RequestCycle, org.apache.wicket.request.IRequestHandler, org.apache.wicket.request.Url)
-     */
-    @Override
-    public void onUrlMapped(final RequestCycle _cycle,
-                            final IRequestHandler _handler,
-                            final Url _url)
-    {
-        // TODO Auto-generated method stub
-
+        EFapsRequestCycleListener.LOG.debug("End of Request.");
     }
 }

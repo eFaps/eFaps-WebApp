@@ -48,7 +48,7 @@ import org.efaps.ui.wicket.models.objects.UITableHeader;
 import org.efaps.ui.wicket.models.objects.UITableHeader.FilterType;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContributor;
+import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
 import org.efaps.util.EFapsException;
 
 /**
@@ -82,7 +82,7 @@ public class FilterPage
     {
         super(_model);
         final UITable uiTable = (UITable) super.getDefaultModelObject();
-        add(StaticHeaderContributor.forCss(FilterPage.CSS));
+        add(StaticHeaderContrBehavior.forCss(FilterPage.CSS));
         _modalwindow.setTitle(DBProperties.getProperty("FilterPage.Title") + _uitableHeader.getLabel());
         final FormContainer form = new FormContainer("eFapsForm");
         this.add(form);

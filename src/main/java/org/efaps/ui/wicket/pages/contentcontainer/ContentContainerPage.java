@@ -49,7 +49,7 @@ import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContributor;
+import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
 import org.efaps.util.EFapsException;
 
 /**
@@ -214,9 +214,9 @@ public class ContentContainerPage
         final ClientProperties properties = ((WebClientInfo) getSession().getClientInfo()).getProperties();
         // we use different StyleSheets for different Bowsers
         if (properties.isBrowserInternetExplorer()) {
-            add(StaticHeaderContributor.forCss(ContentContainerPage.CSS_IE));
+            add(StaticHeaderContrBehavior.forCss(ContentContainerPage.CSS_IE));
         } else {
-            add(StaticHeaderContributor.forCss(ContentContainerPage.CSS));
+            add(StaticHeaderContrBehavior.forCss(ContentContainerPage.CSS));
         }
 
         this.menuTreeKey = "MenuTree_";

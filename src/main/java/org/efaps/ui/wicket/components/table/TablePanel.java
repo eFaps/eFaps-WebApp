@@ -37,7 +37,7 @@ import org.efaps.ui.wicket.models.objects.UIFieldTable;
 import org.efaps.ui.wicket.models.objects.UIRow;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContributor;
+import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,7 +87,7 @@ public class TablePanel
         setOutputMarkupId(true);
         this.add(AttributeModifier.append("class", "eFapsTableBody"));
 
-        add(StaticHeaderContributor.forCss(TablePanel.CSS));
+        add(StaticHeaderContrBehavior.forCss(TablePanel.CSS));
 
         final RepeatingView rowsRepeater = new RepeatingView("rowRepeater");
         add(rowsRepeater);

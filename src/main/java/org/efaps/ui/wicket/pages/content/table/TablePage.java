@@ -32,7 +32,7 @@ import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContributor;
+import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
 import org.efaps.util.EFapsException;
 
 /**
@@ -134,7 +134,7 @@ public class TablePage
     protected void addComponents()
         throws EFapsException
     {
-        this.add(StaticHeaderContributor.forCss(TablePage.CSS));
+        this.add(StaticHeaderContrBehavior.forCss(TablePage.CSS));
 
         final UITable table = (UITable) super.getDefaultModelObject();
         if (!table.isInitialized()) {

@@ -24,9 +24,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.Session;
 import org.efaps.db.Instance;
-import org.efaps.ui.wicket.EFapsRequestCycleListener;
 import org.efaps.ui.wicket.util.EFapsKey;
 import org.efaps.util.EFapsException;
 
@@ -80,15 +79,10 @@ public abstract class AbstractInstanceObject
         throws EFapsException
     {
         Instance ret = null;
-        Map<String, Instance> map;
-
-        final EFapsRequestCycleListener cycle = (EFapsRequestCycleListener) RequestCycle.get().getListeners().iterator()
-                        .next();
-
-        map = (Map<String, Instance>) cycle.getFromCache(EFapsKey.INSTANCE_CACHEKEY.getKey());
+        Map<String, Instance> map = (Map<String, Instance>) Session.get().getAttribute(EFapsKey.INSTANCE_CACHEKEY.getKey());
         if (map == null) {
             map = new HashMap<String, Instance>();
-            cycle.putIntoCache(EFapsKey.INSTANCE_CACHEKEY.getKey(), map);
+            Session.get().setAttribute(EFapsKey.INSTANCE_CACHEKEY.getKey(), (Serializable) map);
         }
         if (map.containsKey(this.instanceKey)) {
             ret = map.get(this.instanceKey);

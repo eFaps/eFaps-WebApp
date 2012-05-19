@@ -32,7 +32,7 @@ import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContributor;
+import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
 import org.efaps.ui.wicket.util.EFapsKey;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
@@ -94,7 +94,7 @@ public class AjaxFieldUpdateBehavior
     protected void onBind()
     {
         super.onBind();
-        getComponent().add(StaticHeaderContributor.forJavaScript(AjaxFieldUpdateBehavior.JS));
+        getComponent().add(StaticHeaderContrBehavior.forJavaScript(AjaxFieldUpdateBehavior.JS));
     }
 
     /**

@@ -57,7 +57,7 @@ import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContributor;
+import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -146,7 +146,7 @@ public class MenuTree
 
         setDefaultModel(new Model<Serializable>((Serializable) model.getTreeModel()));
 
-        add(StaticHeaderContributor.forCss(MenuTree.CSS));
+        add(StaticHeaderContrBehavior.forCss(MenuTree.CSS));
         ((EFapsSession) getSession()).putIntoCache(this.menuKey, this);
 
         final DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode) ((DefaultTreeModel) getDefaultModelObject())
@@ -196,7 +196,7 @@ public class MenuTree
         final ITreeState treestate = getTreeState();
         treestate.expandAll();
 
-        add(StaticHeaderContributor.forCss(MenuTree.CSS));
+        add(StaticHeaderContrBehavior.forCss(MenuTree.CSS));
         ((EFapsSession) getSession()).putIntoCache(this.menuKey, this);
 
         final AjaxUpdateBehavior update = new AjaxUpdateBehavior();

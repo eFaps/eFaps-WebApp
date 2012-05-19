@@ -45,7 +45,7 @@ import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior;
 import org.efaps.ui.wicket.components.IRecent;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContributor;
+import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
 import org.efaps.util.EFapsException;
 
 /**
@@ -198,7 +198,7 @@ public class SplitHeaderPanel
         this.showVertical = _showVertical;
         this.hiddenH = _horizontalCollapsed;
         setOutputMarkupId(true);
-        this.add(StaticHeaderContributor.forCss(SplitHeaderPanel.CSS));
+        this.add(StaticHeaderContrBehavior.forCss(SplitHeaderPanel.CSS));
 
         this.add(new AjaxStoreHorizontalPositionBehavior());
         final Label titel = new Label("titel", DBProperties.getProperty("Split.Titel"));

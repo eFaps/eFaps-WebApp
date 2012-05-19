@@ -52,7 +52,7 @@ import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContributor;
+import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
 import org.efaps.util.EFapsException;
 
 /**
@@ -197,7 +197,7 @@ public class HeaderPanel
         this.modal.setWindowClosedCallback(new UpdateParentCallback(this, this.modal, false));
         this.css = getWidthStyle(widthsTmp);
 
-        this.add(StaticHeaderContributor.forJavaScript(HeaderPanel.JAVASCRIPT));
+        this.add(StaticHeaderContrBehavior.forJavaScript(HeaderPanel.JAVASCRIPT));
     }
 
     /* (non-Javadoc)

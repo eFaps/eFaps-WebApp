@@ -31,14 +31,18 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.UUID;
 
+import javax.servlet.ServletRequest;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.protocol.http.WebSession;
+import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
 import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.util.string.StringValue;
 import org.apache.wicket.util.upload.FileItem;
+import org.apache.wicket.util.upload.FileUploadException;
 import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.admin.user.Person;
 import org.efaps.admin.user.UserAttributesSet;
@@ -447,21 +451,34 @@ public class EFapsSession
         if (isLogedIn()) {
             try {
                 if (!Context.isTMActive()) {
-                    RequestCycle.get().getRequest();
+                    ServletWebRequest request = (ServletWebRequest) RequestCycle.get().getRequest();
+                    final ServletRequest filterRequest = request.getContainerRequest();
 
-//                    final String contentType = request.get .getHttpServletRequest().getContentType();
-//
-//                    if ((contentType != null) && contentType.startsWith("multipart/form-data")) {
-//                        request = request.newMultipartWebRequest(getApplication().getApplicationSettings()
-//                                        .getDefaultMaximumUploadSize());
-//                    }
-//
-//                    final Map<String, String[]> parameters = request.getParameterMap();
-//                    Map<String, Context.FileParameter> fileParams = null;
+                    final String contentType = filterRequest.getContentType();
+
+                    if ((contentType != null) && contentType.startsWith("multipart/form-data")) {
+                        request = request.newMultipartWebRequest(getApplication().getApplicationSettings()
+                                        .getDefaultMaximumUploadSize(), "eFapsMultiPart");
+                    }
+
+                    final Map<String, String[]> parameters = new HashMap<String, String[]>();
+                    final IRequestParameters reqPara = request.getRequestParameters();
+                    for (final String name : reqPara.getParameterNames()) {
+                        final List<StringValue> values = reqPara.getParameterValues(name);
+                        final String[] valArray = new String[values.size()];
+                        int i = 0;
+                        for (final StringValue value : values) {
+                            valArray[i] = value.toString();
+                            i++;
+                        }
+                        parameters.put(name, valArray);
+                    }
+
+                    final Map<String, Context.FileParameter> fileParams = null;
 //
 //                    // If we successfully installed a multipart request
 //                    if (request instanceof IMultipartWebRequest) {
-//                        final Map<String, FileItem> fileMap = ((IMultipartWebRequest) request).getFiles();
+//                        final Map<String, List<FileItem>> fileMap = ((IMultipartWebRequest) request).getFiles();
 //                        fileParams = new HashMap<String, Context.FileParameter>(fileMap.size());
 //
 //                        for (final Map.Entry<String, FileItem> entry : fileMap.entrySet()) {
@@ -469,16 +486,18 @@ public class EFapsSession
 //                        }
 //                        RequestCycle.get().setRequest(request);
 //                    }
-//
-//                    Context.begin(this.userName, super.getLocale(), this.sessionAttributes, parameters, fileParams,
-//                                    true);
-//                    // set the locale in the context and in the session
-//                    setLocale(Context.getThreadContext().getLocale());
-//                    request.getHttpServletRequest().getSession().setAttribute(UserAttributesSet.CONTEXTMAPKEY,
-//                                                                 Context.getThreadContext().getUserAttributes());
-//                    Context.getThreadContext().setPath(request.getHttpServletRequest().getContextPath());
+
+                    Context.begin(this.userName, super.getLocale(), this.sessionAttributes, parameters, fileParams,
+                                    true);
+                    // set the locale in the context and in the session
+                    setLocale(Context.getThreadContext().getLocale());
+                    setAttribute(UserAttributesSet.CONTEXTMAPKEY, Context.getThreadContext().getUserAttributes());
+                    Context.getThreadContext().setPath(request.getContextPath());
                 }
             } catch (final EFapsException e) {
+                EFapsSession.LOG.error("could not initialise the context", e);
+                throw new RestartResponseException(new ErrorPage(e));
+            } catch (final FileUploadException e) {
                 EFapsSession.LOG.error("could not initialise the context", e);
                 throw new RestartResponseException(new ErrorPage(e));
             }
