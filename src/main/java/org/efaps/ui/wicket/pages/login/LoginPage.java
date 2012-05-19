@@ -21,7 +21,6 @@
 package org.efaps.ui.wicket.pages.login;
 
 import org.apache.wicket.Session;
-import org.apache.wicket.core.util.string.JavaScriptUtils;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
@@ -64,27 +63,6 @@ public class LoginPage
     public LoginPage()
     {
         this(false);
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see
-     * org.apache.wicket.Component#renderHead(org.apache.wicket.markup.head.
-     * IHeaderResponse)
-     */
-    @Override
-    public void renderHead(final IHeaderResponse _response)
-    {
-        super.renderHead(_response);
-        _response.render(CssHeaderItem.forReference(new CssResourceReference(LoginPage.class, "LoginPage.css")));
-        final StringBuilder js = new StringBuilder();
-        js.append(JavaScriptUtils.SCRIPT_OPEN_TAG).append("function test4top() {\n")
-                        .append("  if(top!=self) {\n")
-                        .append("    top.location = self.location;\n")
-                        .append("  }\n" + "}\n")
-                        .append(JavaScriptUtils.SCRIPT_CLOSE_TAG);
-
-        _response.render(JavaScriptHeaderItem.forScript(js, LoginPage.class.getName()));
     }
 
     /**
@@ -146,5 +124,24 @@ public class LoginPage
         } else {
             this.add(new WebMarkupContainer("msg").setVisible(false));
         }
+    }
+
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.wicket.Component#renderHead(org.apache.wicket.markup.head.IHeaderResponse)
+     */
+    @Override
+    public void renderHead(final IHeaderResponse _response)
+    {
+        super.renderHead(_response);
+        _response.render(CssHeaderItem.forReference(new CssResourceReference(LoginPage.class, "LoginPage.css")));
+        final StringBuilder js = new StringBuilder();
+        js.append("function test4top() {\n")
+            .append("  if(top!=self) {\n")
+            .append("    top.location = self.location;\n")
+            .append("  }\n")
+            .append("}\n");
+        _response.render(JavaScriptHeaderItem.forScript(js, LoginPage.class.getName()));
     }
 }
