@@ -25,6 +25,10 @@ import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
+import org.apache.wicket.request.IRequestHandler;
+import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.request.handler.resource.ResourceReferenceRequestHandler;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import org.apache.wicket.request.resource.ResourceReference;
@@ -34,7 +38,8 @@ import org.apache.wicket.request.resource.ResourceReference;
  * using Dojo.
  *
  * @author The eFaps Team
- * @version $Id$
+ * @version $Id: AbstractDojoBehavior.java 7532 2012-05-19 06:31:05Z
+ *          jan@moxter.net $
  */
 public abstract class AbstractDojoBehavior
     extends Behavior
@@ -77,6 +82,12 @@ public abstract class AbstractDojoBehavior
                            final IHeaderResponse _response)
     {
         super.renderHead(_component, _response);
+        final IRequestHandler handler = new ResourceReferenceRequestHandler(AbstractDojoBehavior.JS_DOJO,
+                        new PageParameters());
+        final String url = RequestCycle.get().urlFor(handler).toString();
+        final StringBuilder js = new StringBuilder()
+            .append("djConfig.baseUrl=\"").append(url.substring(0, url.lastIndexOf("/"))).append("\";");
+        _response.render(JavaScriptHeaderItem.forScript(js, AbstractDojoBehavior.class.getName()));
         _response.render(JavaScriptHeaderItem.forReference(AbstractDojoBehavior.JS_DOJO));
         _response.render(JavaScriptHeaderItem.forReference(AbstractDojoBehavior.JS_EFAPSDOJO));
         _response.render(CssHeaderItem.forReference(AbstractDojoBehavior.CSS_TUNDRA));
