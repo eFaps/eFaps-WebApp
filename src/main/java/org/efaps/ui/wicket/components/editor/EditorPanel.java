@@ -20,18 +20,13 @@
 
 package org.efaps.ui.wicket.components.editor;
 
-import org.apache.wicket.AttributeModifier;
-import org.apache.wicket.Page;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
-import org.efaps.ui.wicket.behaviors.dojo.AbstractDojoBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.EditorBehavior;
 import org.efaps.ui.wicket.models.cell.UIFormCell;
-import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 
 /**
  * TODO comment!
@@ -114,30 +109,5 @@ public class EditorPanel
         };
         editor.add(new EditorBehavior(null));
         this.add(editor);
-    }
-
-    /**
-     * @see org.apache.wicket.Component#onBeforeRender()
-     */
-    @Override
-    protected void onBeforeRender()
-    {
-        ((AbstractContentPage) getPage()).getBody().add(
-                        new AttributeModifier("class", true, new Model<String>("tundra")));
-        super.onBeforeRender();
-    }
-
-    /**
-     * Prepares a page so that it is able top render this editor correctly, even
-     * when called via ajax.
-     *
-     * @param _page Page the dojo is added to
-     */
-    public static void prepare(final Page _page)
-    {
-        _page.add(new AbstractDojoBehavior()
-        {
-        });
-        ((AbstractContentPage) _page).getBody().add(new AttributeModifier("class", true, new Model<String>("tundra")));
     }
 }

@@ -54,10 +54,6 @@ public abstract class AbstractContentPage
     extends AbstractMergePage
     implements IAjaxIndicatorAware
 {
-    /**
-     * Static Variable used as the name for the page map for PopUps.
-     */
-    public static final String POPUP_PAGEMAP_NAME = "eFapsPopUp";
 
     /**
      * Reference to the StyleSheet of this Page stored in the eFaps-DataBase.
@@ -84,12 +80,6 @@ public abstract class AbstractContentPage
      * This instance variable contains the ModalWindow from this Page.
      */
     private final ModalWindowContainer modal = new ModalWindowContainer("modal");
-
-    /**
-     * Variable to hold the body of this page, so that it can be modified,
-     * during runtime.
-     */
-    private WebMarkupContainer body;
 
     /**
      * Constructor.
@@ -123,19 +113,11 @@ public abstract class AbstractContentPage
     protected void addComponents(final FormContainer _form)
         throws EFapsException
     {
-        //set the title for the Page
+        // set the title for the Page
         add(new Label("pageTitle", DBProperties.getProperty("Logo.Version.Label")));
 
         add(StaticHeaderContrBehavior.forCss(AbstractContentPage.CSS));
         add(new SetMessageStatusBehavior());
-
-        this.body = new WebMarkupContainer("body") {
-
-            private static final long serialVersionUID = 1L;
-
-
-        };
-        add(this.body);
 
         add(this.modal);
 
@@ -151,7 +133,7 @@ public abstract class AbstractContentPage
             exLink = new ExternalLink("help",
                             "/servlet/help/" + ((AbstractUIPageObject) super.getDefaultModelObject()).getHelpTarget(),
                             DBProperties.getProperty("org.efaps.ui.wicket.pages.content.AbstractContentPage.HelpLink"))
-                           .setPopupSettings(set).setContextRelative(true);
+                            .setPopupSettings(set).setContextRelative(true);
 
             exLink.add(AttributeModifier.append("class", "eFapsHelpLink"));
             if (true) {
@@ -161,7 +143,7 @@ public abstract class AbstractContentPage
             exLink = new WebMarkupContainer("help");
             exLink.setVisible(false);
         }
-        this.body.add(exLink);
+        add(exLink);
         WebMarkupContainer footerpanel;
         if (uiObject.isCreateMode() || uiObject.isEditMode() || uiObject.isSearchMode() || uiObject.isPicker()) {
             footerpanel = new FooterPanel("footer", getDefaultModel(), this.modalWindow, _form);
@@ -206,16 +188,6 @@ public abstract class AbstractContentPage
     {
         this.menuTreeKey = _menuTreeKey;
         return this;
-    }
-
-    /**
-     * Getter method for instance variable {@link #body}.
-     *
-     * @return value of instance variable {@link #body}
-     */
-    public WebMarkupContainer getBody()
-    {
-        return this.body;
     }
 
     /**

@@ -96,7 +96,14 @@ public class MainPage
      * Key to the parameter for storing the height and width of the browser
      * window.
      */
-    private static String HEIGTHWIDTH_PARAMETERNAME = "eFapsWindowHeightWidth";
+    private static String HEIGTH_PARAMETERNAME = "eFapsWindowHeight";
+
+    /**
+     * Key to the parameter for storing the height and width of the browser
+     * window.
+     */
+    private static String WIDTH_PARAMETERNAME = "eFapsWindowWidth";
+
 
     /**
      * The MainPage has a ModalWindow that can be called from the childPages.
@@ -137,24 +144,23 @@ public class MainPage
         this.add(new ChildCallBackHeaderContributer());
 
         this.resize = new ResizeEventBehavior();
-
+        add(this.resize);
         final WebMarkupContainer logo = new WebMarkupContainer("logo");
         this.add(logo);
         final Label welcome = new Label("welcome", DBProperties.getProperty("Logo.Welcome.Label")) {
+
+            private static final long serialVersionUID = 1L;
 
             @Override
             public void renderHead(final IHeaderResponse _response)
             {
                 super.renderHead(_response);
                 final CharSequence resizeScript = MainPage.this.resize.getCallbackScript();
-                final StringBuilder js = new StringBuilder()
-                    .append(" window.onresize = ")
-                    .append(resizeScript).append("; \n  window.onload = eFapsSetIFrameHeight; \n");
-                _response.render(JavaScriptHeaderItem.forScript(js, MainPage.class.getName()));
+                _response.render(JavaScriptHeaderItem.forScript(resizeScript, MainPage.class.getName()));
             }
         };
         logo.add(welcome);
-        welcome.add(this.resize);
+
 
         try {
             final Context context = Context.getThreadContext();
@@ -248,13 +254,17 @@ public class MainPage
         @Override
         public CharSequence getCallbackScript()
         {
-
-            final StringBuilder ret = new StringBuilder();
-//            ret.append("function(){").append("eFapsSetIFrameHeight();").append(
-//                            generateCallbackScript("wicketAjaxPost('" + getCallbackUrl() + "','"
-//                                            + MainPage.HEIGTHWIDTH_PARAMETERNAME + "='"
-//                                            + "+window.innerWidth+\";\"+window.innerHeight ")).append("}\n");
-            return ret.toString();
+            final StringBuilder js = new StringBuilder()
+                .append("function eFapsPostSize(").append(MainPage.WIDTH_PARAMETERNAME).append(",")
+                .append(MainPage.HEIGTH_PARAMETERNAME).append(") {\n")
+                .append(getCallbackFunctionBody(MainPage.WIDTH_PARAMETERNAME, MainPage.HEIGTH_PARAMETERNAME))
+                .append("}\n")
+                .append("window.onresize = ")
+                .append("function(){\n").append("eFapsSetIFrameHeight();\n")
+                .append("eFapsPostSize(window.innerWidth, window.innerHeight);\n")
+                .append("}\n")
+                .append("Wicket.Event.add(window, \"domready\", function(event) { eFapsSetIFrameHeight();}); \n");
+            return js.toString();
         }
 
         /**
@@ -287,13 +297,14 @@ public class MainPage
         @Override
         protected void onEvent(final AjaxRequestTarget _target)
         {
-             final StringValue size = getComponent().getRequest().getRequestParameters().getParameterValue(MainPage.HEIGTHWIDTH_PARAMETERNAME);
-
-            if (size != null) {
-                final String[] sizes = size.toString().split(";");
+            final StringValue width = getComponent().getRequest().getRequestParameters()
+                            .getParameterValue(MainPage.WIDTH_PARAMETERNAME);
+            final StringValue height = getComponent().getRequest().getRequestParameters()
+                            .getParameterValue(MainPage.HEIGTH_PARAMETERNAME);
+            if (height != null) {
                 final WebClientInfo asd = (WebClientInfo) Session.get().getClientInfo();
-                asd. getProperties().setBrowserWidth(Integer.parseInt(sizes[0]));
-                asd.getProperties().setBrowserHeight(Integer.parseInt(sizes[1]));
+                asd.getProperties().setBrowserWidth(Integer.parseInt(width.toString()));
+                asd.getProperties().setBrowserHeight(Integer.parseInt(height.toString()));
             }
         }
     }

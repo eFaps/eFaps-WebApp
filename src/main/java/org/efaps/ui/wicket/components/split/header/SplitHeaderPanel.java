@@ -30,7 +30,6 @@ import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.core.util.string.JavaScriptUtils;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -340,7 +339,7 @@ public class SplitHeaderPanel
     public void renderHead(final IHeaderResponse _response)
     {
         super.renderHead(_response);
-        _response.render(JavaScriptHeaderItem.forScript(getJavaScript(), "cssads"));
+        _response.render(JavaScriptHeaderItem.forScript(getJavaScript(), SplitHeaderPanel.class.getName()));
     }
     /**
      * Get the JavaScript which actually toggles the Split.
@@ -392,8 +391,7 @@ public class SplitHeaderPanel
         }
         hideIds.append(")");
 
-        ret.append(JavaScriptUtils.SCRIPT_OPEN_TAG)
-            .append("  var connections = [];\n")
+        ret.append("  var connections = [];\n")
             .append("  function togglePaneHorizontal(_width, _hide) {\n")
             .append("    var header = dojo.byId('").append(headerId).append("');\n")
             .append("    var hideIds = ").append(hideIds).append(";\n")
@@ -505,8 +503,6 @@ public class SplitHeaderPanel
             ret.append((this.getBehaviors(AjaxStoreVerticalPositionBehavior.class).get(0))
                             .getJavaScript(innerPane));
         }
-
-        ret.append(JavaScriptUtils.SCRIPT_CLOSE_TAG);
         return ret.toString();
     }
 }

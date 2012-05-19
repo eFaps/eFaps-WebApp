@@ -23,6 +23,7 @@ package org.efaps.ui.wicket.components.menu;
 import java.util.Iterator;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.wicket.behavior.IBehaviorListener;
 import org.apache.wicket.core.util.string.JavaScriptUtils;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
@@ -248,7 +249,7 @@ public class MenuContainer
                 final AjaxSearchComponent item = (AjaxSearchComponent) child;
                 final UIMenuItem childModel = (UIMenuItem) item.getDefaultModelObject();
 
-                final CharSequence url = item.urlFor(getRequestCycle().getActiveRequestHandler());
+                final CharSequence url = item.urlFor(IBehaviorListener.INTERFACE, new PageParameters());
                 childModel.setURL(url.toString());
             }
         }

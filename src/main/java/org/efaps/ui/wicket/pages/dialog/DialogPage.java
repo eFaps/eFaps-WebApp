@@ -198,12 +198,13 @@ public class DialogPage
             this.behavior.setValidated(true);
             DialogPage.this.modal.close(_target);
             final StringBuilder js = new StringBuilder();
-//            js.append("var wind = parent.frames[parent.frames.length - 2];")
-//                            .append("function cllIt(){")
-//                            .append(this.behavior.getEventHandler().toString()
-//                                            .replace("var wcall=wicketSubmitFormById", "wind.wicketSubmitFormById"))
-//                            .append("};")
-//                            .append("wind.setTimeout(cllIt(),1);");
+            // js.append("var wind = parent.frames[parent.frames.length - 2];")
+            // .append("function cllIt(){")
+            // .append(this.behavior.getEventHandler().toString()
+            // .replace("var wcall=wicketSubmitFormById",
+            // "wind.wicketSubmitFormById"))
+            // .append("};")
+            // .append("wind.setTimeout(cllIt(),1);");
             _target.appendJavaScript(js.toString());
         }
     }
@@ -315,21 +316,17 @@ public class DialogPage
         /** Needed for serialization. */
         private static final long serialVersionUID = 1L;
 
-
-        /* (non-Javadoc)
-         * @see org.apache.wicket.behavior.Behavior#renderHead(org.apache.wicket.Component, org.apache.wicket.markup.head.IHeaderResponse)
-         */
         @Override
         public void renderHead(final Component _component,
-                              final IHeaderResponse _response)
+                               final IHeaderResponse _response)
         {
             super.renderHead(_component, _response);
             final StringBuilder js = new StringBuilder();
-            js.append("<script type=\"text/javascript\">").append("function pressed (_event) {").append(
-                            "var b=Wicket.$('").append(_component.getMarkupId()).append(
-                            "'); if (typeof(b.onclick) != 'undefined') { b.onclick();  }").append("}").append(
-                            "window.onkeydown = pressed;").append("</script>");
-            _response.render(JavaScriptHeaderItem.forScript(js, "js" + _component.getMarkupId()));
+            js.append("function pressed (_event) {")
+                .append("var b=Wicket.$('").append(_component.getMarkupId())
+                .append("'); if (typeof(b.onclick) != 'undefined') { b.onclick();  }")
+                .append("}").append("window.onkeydown = pressed;");
+            _response.render(JavaScriptHeaderItem.forScript(js, DialogPage.class.getName()));
         }
     }
 }

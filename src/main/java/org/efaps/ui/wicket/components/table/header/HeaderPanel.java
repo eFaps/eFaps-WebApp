@@ -28,8 +28,6 @@ import org.apache.wicket.Component;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.core.util.string.CssUtils;
-import org.apache.wicket.core.util.string.JavaScriptUtils;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
@@ -91,6 +89,9 @@ public class HeaderPanel
      */
     private final String headerproperties;
 
+    /**
+     * StyleSheet information.
+     */
     private final String css;
 
     /**
@@ -168,10 +169,10 @@ public class HeaderPanel
                 widthsTmp.add(".eFapsCellWidth" + i + "{width: " + width.toString() + "px;}\n");
                 if (firstcell) {
                     firstcell = false;
-                    cell.add( AttributeModifier.append("class",  "eFapsTableFirstCell eFapsTableHeaderCell"
+                    cell.add(AttributeModifier.append("class",  "eFapsTableFirstCell eFapsTableHeaderCell"
                                     + " eFapsCellWidth" + i));
                 } else {
-                    cell.add( AttributeModifier.append("class",  "eFapsTableHeaderCell eFapsCellWidth" + i));
+                    cell.add(AttributeModifier.append("class",  "eFapsTableHeaderCell eFapsCellWidth" + i));
                 }
                 cell.add(DnDBehavior.getItemBehavior(this.headerproperties));
             }
@@ -207,8 +208,8 @@ public class HeaderPanel
     public void renderHead(final IHeaderResponse _response)
     {
         super.renderHead(_response);
-        _response.render(CssHeaderItem.forCSS(this.css, "assdas"));
-        _response.render(JavaScriptHeaderItem.forScript(getScript(), "asdasd"));
+        _response.render(CssHeaderItem.forCSS(this.css, HeaderPanel.class.getName()));
+        _response.render(JavaScriptHeaderItem.forScript(getScript(), HeaderPanel.class.getName()));
     }
 
 
@@ -225,8 +226,7 @@ public class HeaderPanel
      */
     private String getScript()
     {
-
-        final StringBuilder js = new StringBuilder().append(JavaScriptUtils.SCRIPT_OPEN_TAG)
+        final StringBuilder js = new StringBuilder()
             .append("  var ").append(this.headerproperties).append(" = new headerProperties();\n  ")
             .append(this.headerproperties).append(".headerID = \"").append(this.getMarkupId()).append("\";\n  ")
             .append(this.headerproperties + ".bodyID = \"").append(this.tablepanel.getMarkupId()).append("\";\n  ")
@@ -240,8 +240,7 @@ public class HeaderPanel
                 .append((this.getBehaviors(AjaxReloadTableBehavior.class).get(0)).getJavaScript())
                 .append("  addOnResizeEvent(function (){positionTableColumns(").append(this.headerproperties)
                 .append(");});\n")
-            .append("  dojo.addOnLoad(function (){positionTableColumns(" + this.headerproperties + ");});\n")
-            .append(JavaScriptUtils.SCRIPT_CLOSE_TAG);
+            .append("  dojo.addOnLoad(function (){positionTableColumns(" + this.headerproperties + ");});\n");
         return js.toString();
     }
 
@@ -251,15 +250,11 @@ public class HeaderPanel
      */
     private String getWidthStyle(final List<String> _widths)
     {
-
         final StringBuilder ret = new StringBuilder();
-
-        ret.append(CssUtils.INLINE_OPEN_TAG).append(".eFapsCSSId").append(
-                        ((UITable) super.getDefaultModelObject()).getTableId()).append("{}\n");
+        ret.append(".eFapsCSSId").append(((UITable) super.getDefaultModelObject()).getTableId()).append("{}\n");
         for (final String width : _widths) {
             ret.append(width);
         }
-        ret.append(CssUtils.INLINE_CLOSE_TAG);
         return ret.toString();
     }
 

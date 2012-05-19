@@ -89,7 +89,6 @@ public class TablePage
 
 
     /**
-     * @param _pagemap pagemap
      * @param _uuid uuid of a command
      * @param _instanceKey key to an instance
      * @param _openerId id of an opener
@@ -104,7 +103,6 @@ public class TablePage
     }
 
     /**
-     * @param _pagemap pagemap
      * @param _model modle for the table
      * @throws EFapsException on error
      */

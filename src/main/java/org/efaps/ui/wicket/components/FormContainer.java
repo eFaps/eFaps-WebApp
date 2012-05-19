@@ -92,8 +92,8 @@ public class FormContainer
             setMultiPart(true);
             setMaxSize(getApplication().getApplicationSettings().getDefaultMaximumUploadSize());
         }
-        super.onComponentTag(_tag);
         this.actionUrl = urlFor(getRequestCycle().getActiveRequestHandler()).toString();
+        super.onComponentTag(_tag);
         if (getPage().getDefaultModelObject() != null) {
             // only on SearchMode we want normal submit, in any other case we
             // use AjaxSubmit

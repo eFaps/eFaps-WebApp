@@ -25,7 +25,6 @@ import java.util.UUID;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.behavior.Behavior;
-import org.apache.wicket.core.util.string.JavaScriptUtils;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.efaps.admin.ui.Command;
@@ -53,9 +52,8 @@ public class SetMessageStatusBehavior
      * Render to the web response whatever the component wants to contribute to
      * the head section.
      *
-     * @param component
-     *
-     * @param response Response object
+     * @param _component    Component this behavior belongs to
+     * @param _response     Response object
      */
     @Override
     public void renderHead(final Component _component,
@@ -80,16 +78,15 @@ public class SetMessageStatusBehavior
     {
         final StringBuilder js = new StringBuilder();
         final long usrId = Context.getThreadContext().getPersonId();
-        js.append(JavaScriptUtils.SCRIPT_OPEN_TAG);
         if (MessageStatusHolder.hasUnreadMsg(usrId) || MessageStatusHolder.hasReadMsg(usrId)) {
             js.append("var ma = top.document.getElementById('eFapsUserMsg');")
-                            .append("ma.style.display = 'table-cell';")
-                            .append("ma.getElementsByTagName('A')[0].firstChild.nodeValue= '")
-                            .append(StringEscapeUtils.escapeJavaScript(
-                                            SetMessageStatusBehavior.getLabel(
-                                                            MessageStatusHolder.getUnReadCount(usrId),
-                                                            MessageStatusHolder.getReadCount(usrId))))
-                            .append("';");
+                .append("ma.style.display = 'table-cell';")
+                .append("ma.getElementsByTagName('A')[0].firstChild.nodeValue= '")
+                .append(StringEscapeUtils.escapeJavaScript(
+                                SetMessageStatusBehavior.getLabel(
+                                                MessageStatusHolder.getUnReadCount(usrId),
+                                                MessageStatusHolder.getReadCount(usrId))))
+                .append("';");
             if (MessageStatusHolder.hasUnreadMsg(usrId)) {
                 js.append("ma.className = 'unread';");
             } else {
@@ -98,7 +95,6 @@ public class SetMessageStatusBehavior
         } else {
             js.append("top.document.getElementById('eFapsUserMsg').style.display = 'none';");
         }
-        js.append(JavaScriptUtils.SCRIPT_CLOSE_TAG);
         return js.toString();
     }
 

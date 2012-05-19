@@ -30,7 +30,6 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.classification.ClassificationPathPanel;
-import org.efaps.ui.wicket.components.editor.EditorPanel;
 import org.efaps.ui.wicket.components.form.FormPanel;
 import org.efaps.ui.wicket.components.heading.HeadingPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
@@ -200,7 +199,7 @@ public class FormPage
         // already in the cache of the browser
         // TODO Is there a better way?
         if (_uiForm.isClassified() && (_uiForm.isEditMode() || _uiForm.isCreateMode())) {
-            EditorPanel.prepare(_page);
+            //EditorPanel.prepare(_page);
         }
         // the hidden cells must be marked as not added yet.
         for (final UIHiddenCell cell : _uiForm.getHiddenCells()) {
