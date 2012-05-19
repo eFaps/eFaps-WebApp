@@ -20,9 +20,9 @@
 
 package org.efaps.ui.wicket.components.table;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebComponent;
@@ -30,6 +30,7 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.util.string.StringValue;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
 import org.efaps.ui.wicket.components.table.row.RowPanel;
 import org.efaps.ui.wicket.models.UIModel;
@@ -43,11 +44,13 @@ import org.efaps.util.EFapsException;
  * Panel renders the add, insert and remove buttons for tables on insert.
  *
  * @author The eFaps Team
- * @version $Id$
+ * @version $Id: AjaxAddRemoveRowPanel.java 7505 2012-05-11 18:14:52Z
+ *          jan@moxter.net $
  */
 public class AjaxAddRemoveRowPanel
     extends Panel
 {
+
     /**
      * Content reference for the delete icon.
      */
@@ -96,7 +99,8 @@ public class AjaxAddRemoveRowPanel
 
         add(new WebMarkupContainer("delLink").setVisible(false));
 
-        add(new WebComponent("script") {
+        add(new WebComponent("script")
+        {
 
             /**
              * Needed for serialization.
@@ -110,16 +114,16 @@ public class AjaxAddRemoveRowPanel
              * @param _tag
              */
             @Override
-            protected void onComponentTagBody(final MarkupStream _markupstream,
-                                              final ComponentTag _tag)
+            public void onComponentTagBody(final MarkupStream _markupstream,
+                                           final ComponentTag _tag)
             {
                 super.onComponentTagBody(_markupstream, _tag);
                 final StringBuilder js = new StringBuilder();
                 js.append("<script type=\"text/javascript\">")
-                    .append("function ").append(AjaxAddRemoveRowPanel.this.functionName)
-                    .append("(_count, _successHandler, _rowId) {")
-                    .append(AjaxAddRemoveRowPanel.this.script)
-                    .append("}</script>");
+                                .append("function ").append(AjaxAddRemoveRowPanel.this.functionName)
+                                .append("(_count, _successHandler, _rowId) {")
+                                .append(AjaxAddRemoveRowPanel.this.script)
+                                .append("}</script>");
                 replaceComponentTagBody(_markupstream, _tag, js);
             }
         });
@@ -161,7 +165,7 @@ public class AjaxAddRemoveRowPanel
     {
 
         /**
-         *Needed for serialization.
+         * Needed for serialization.
          */
         private static final long serialVersionUID = 1L;
 
@@ -182,19 +186,22 @@ public class AjaxAddRemoveRowPanel
         {
             super(_wicketId, _model);
             this.rowsRep = _rowsRepeater;
-            add(new AjaxEventBehavior("onclick") {
+            add(new AjaxEventBehavior("onclick")
+            {
 
                 private static final long serialVersionUID = 1L;
 
                 @Override
                 protected void onEvent(final AjaxRequestTarget _target)
                 {
-                    final String newRows = getComponent().getRequest().getParameter("eFapsNewRows");
-                    final String rowId = getComponent().getRequest().getParameter("eFapsRowId");
-                    final int count = Integer.parseInt(newRows);
+                    final StringValue newRows = getComponent().getRequest().getRequestParameters()
+                                    .getParameterValue("eFapsNewRows");
+                    final StringValue rowId = getComponent().getRequest().getRequestParameters()
+                                    .getParameterValue("eFapsRowId");
+                    final int count = Integer.parseInt(newRows.toString());
                     final UITable uitable = (UITable) getDefaultModelObject();
                     final UIRow uirow = uitable.getEmptyRow() != null
-                                                    ? uitable.getEmptyRow() : uitable.getValues().get(0);
+                                    ? uitable.getEmptyRow() : uitable.getValues().get(0);
                     final TablePanel tablepanel = getComponent().findParent(TablePanel.class);
 
                     for (int i = 0; i < count; i++) {
@@ -203,29 +210,39 @@ public class AjaxAddRemoveRowPanel
                         RowPanel row;
                         try {
                             row = new RowPanel(AjaxAddRemoveRowPanel.AjaxAddRow.this.rowsRep.newChildId(),
-                                             new UIModel<UIRow>(uirow), tablepanel, false, 0);
-                            row.add(new SimpleAttributeModifier("class", "eFapsTableRowOdd"));
+                                            new UIModel<UIRow>(uirow), tablepanel, false, 0);
+                            row.add(AttributeModifier.append("class", "eFapsTableRowOdd"));
                             row.setOutputMarkupId(true);
                             AjaxAddRemoveRowPanel.AjaxAddRow.this.rowsRep.add(row);
-                            // first execute javascript which creates a placeholder
+                            // first execute javascript which creates a
+                            // placeholder
                             // tag in markup for this item
                             final StringBuilder js = new StringBuilder();
-                            js.append("var item=document.createElement('").append("tr").append("');")
-                                .append("item.id='").append(row.getMarkupId()).append("';")
-                                .append("Wicket.$('").append(tablepanel.getMarkupId())
-                                .append("').insertBefore(item, Wicket.$('")
-                                .append(rowId != null && rowId.length() > 0 && !rowId.equalsIgnoreCase("null")
-                                                ? rowId
-                                                : AjaxAddRemoveRowPanel.this.getMarkupId()).append("'));");
-                            _target.prependJavascript(js.toString());
-                            // notice how we set the newly created item tag's id to
+                            js.append("var item=document.createElement('")
+                                            .append("tr")
+                                            .append("');")
+                                            .append("item.id='")
+                                            .append(row.getMarkupId())
+                                            .append("';")
+                                            .append("Wicket.$('")
+                                            .append(tablepanel.getMarkupId())
+                                            .append("').insertBefore(item, Wicket.$('")
+                                            .append(rowId != null && rowId.toString().length() > 0
+                                                            && !rowId.toString().equalsIgnoreCase("null")
+                                                            ? rowId
+                                                            : AjaxAddRemoveRowPanel.this.getMarkupId()).append("'));");
+                            _target.prependJavaScript(js.toString());
+                            // notice how we set the newly created item tag's id
+                            // to
                             // that of the newly created
-                            // Wicket component, this is what will link this markup
+                            // Wicket component, this is what will link this
+                            // markup
                             // tag to Wicket component
                             // during Ajax repaint
 
-                            // all thats left is to repaint the new item via Ajax
-                            _target.addComponent(row);
+                            // all thats left is to repaint the new item via
+                            // Ajax
+                            _target.add(row);
                         } catch (final EFapsException e) {
                             TablePanel.LOG.error("error in adding row", e);
                         }
@@ -236,8 +253,9 @@ public class AjaxAddRemoveRowPanel
                  * @see org.apache.wicket.ajax.AbstractDefaultAjaxBehavior#getCallbackScript()
                  * @return
                  */
+
                 @Override
-                protected CharSequence getCallbackScript()
+                public CharSequence getCallbackScript()
                 {
                     final String name;
                     if (getComponent().getDefaultModelObject() instanceof UIFieldTable) {
@@ -246,8 +264,10 @@ public class AjaxAddRemoveRowPanel
                         name = ((UITable) getComponent().getDefaultModelObject()).getTable().getName();
                     }
                     AjaxAddRemoveRowPanel.this.functionName = "addNewRows_" + name;
-                    AjaxAddRemoveRowPanel.this.script = "var w = wicketAjaxGet('" + getCallbackUrl(false)
-                                    + "&eFapsNewRows=' + _count + '&eFapsRowId=' + _rowId,_successHandler,null,null)";
+                    // AjaxAddRemoveRowPanel.this.script =
+                    // "var w = wicketAjaxGet('" + getCallbackUrl(false)
+                    // +
+                    // "&eFapsNewRows=' + _count + '&eFapsRowId=' + _rowId,_successHandler,null,null)";
                     return AjaxAddRemoveRowPanel.this.functionName + "(1, null, null)";
                 }
             });
@@ -261,6 +281,7 @@ public class AjaxAddRemoveRowPanel
     public class RemoveRow
         extends WebMarkupContainer
     {
+
         /**
          * Needed for serialization.
          */
@@ -292,12 +313,11 @@ public class AjaxAddRemoveRowPanel
             super.onComponentTag(_tag);
             final StringBuilder js = new StringBuilder();
             js.append("var e = document.getElementById('").append(this.rowPanel.getMarkupId()).append("');")
-                .append("var p = e.parentNode;")
-                .append("p.removeChild(e);");
+                            .append("var p = e.parentNode;")
+                            .append("p.removeChild(e);");
             _tag.put("onclick", js);
         }
     }
-
 
     /**
      * Render an insert button.
@@ -306,6 +326,7 @@ public class AjaxAddRemoveRowPanel
     public class InsertRow
         extends WebMarkupContainer
     {
+
         /**
          * Needed for serialization.
          */
@@ -318,7 +339,7 @@ public class AjaxAddRemoveRowPanel
 
         /**
          * @param _wicketId wicket ID of this component
-         * @param _model    model for this component
+         * @param _model model for this component
          * @param _rowPanel rowpnale this component belongs to
          */
         public InsertRow(final String _wicketId,
@@ -345,7 +366,7 @@ public class AjaxAddRemoveRowPanel
             }
             final StringBuilder js = new StringBuilder();
             js.append("addNewRows_").append(name).append("(1, null, '")
-                .append(this.rowPanel.getMarkupId()).append("');");
+                            .append(this.rowPanel.getMarkupId()).append("');");
             _tag.put("onclick", js);
         }
     }

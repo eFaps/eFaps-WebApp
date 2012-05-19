@@ -22,7 +22,7 @@ package org.efaps.ui.wicket.components.table.filter;
 
 import java.util.List;
 
-import org.apache.wicket.behavior.SimpleAttributeModifier;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -121,9 +121,9 @@ public class PickerPanel
             _item.add(tr);
 
             if (this.odd) {
-                tr.add(new SimpleAttributeModifier("class", "eFapsTableRowOdd"));
+                tr.add(AttributeModifier.append("class", "eFapsTableRowOdd"));
             } else {
-                tr.add(new SimpleAttributeModifier("class", "eFapsTableRowEven"));
+                tr.add(AttributeModifier.append("class", "eFapsTableRowEven"));
             }
 
             this.odd = !this.odd;

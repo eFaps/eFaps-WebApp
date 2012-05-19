@@ -34,7 +34,6 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.util.string.AppendingStringBuffer;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
@@ -177,11 +176,11 @@ public class AjaxEditRowPanel
                     //not implemented
                 }
 
-                @Override
-                protected CharSequence getEventHandler()
-                {
-                    return new AppendingStringBuffer(super.getEventHandler()).append("; return false;");
-                }
+
+//                protected CharSequence getEventHandler()
+//                {
+//                    return new AppendingStringBuffer(super.getEventHandler()).append("; return false;");
+//                }
             });
         }
 
@@ -213,7 +212,7 @@ public class AjaxEditRowPanel
             final DefaultTreeModel treeModel = (DefaultTreeModel) treeTable.getModelObject();
             treeModel.removeNodeFromParent(this.node);
             treeTable.updateTree(_target);
-            _target.appendJavascript(js);
+            _target.appendJavaScript(js);
         }
     }
 
@@ -268,7 +267,7 @@ public class AjaxEditRowPanel
             treeModel.insertNodeInto(newTreeNode, (DefaultMutableTreeNode) getNode().getParent(),
                             getNode().getParent().getIndex(getNode()));
             treeTable.updateTree(_target);
-            _target.appendJavascript(js);
+            _target.appendJavaScript(js);
         }
     }
 
@@ -325,7 +324,7 @@ public class AjaxEditRowPanel
             final DefaultTreeModel treeModel = (DefaultTreeModel) treeTable.getModelObject();
             treeModel.insertNodeInto(newTreeNode, getNode(), getNode().getChildCount());
             treeTable.updateTree(_target);
-            _target.appendJavascript(js);
+            _target.appendJavaScript(js);
         }
     }
 
@@ -381,7 +380,7 @@ public class AjaxEditRowPanel
             final DefaultTreeModel treeModel = (DefaultTreeModel) treeTable.getModelObject();
             treeModel.insertNodeInto(newTreeNode, getNode(), getNode().getChildCount());
             treeTable.updateTree(_target);
-            _target.appendJavascript(js);
+            _target.appendJavaScript(js);
         }
     }
 }

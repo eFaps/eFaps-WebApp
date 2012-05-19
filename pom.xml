@@ -167,26 +167,26 @@
         <!-- wicket -->
        <dependency>
             <groupId>org.apache.wicket</groupId>
-            <artifactId>wicket</artifactId>
-            <version>1.4.20</version>
+            <artifactId>wicket-core</artifactId>
+            <version>6.0.0-beta1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-extensions</artifactId>
-            <version>1.4.20</version>
+            <version>6.0.0-beta1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-datetime</artifactId>
-            <version>1.4.20</version>
+            <version>6.0.0-beta1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-devutils</artifactId>
-            <version>1.4.20</version>
+            <version>6.0.0-beta1</version>
             <scope>compile</scope>
         </dependency>
 
@@ -196,16 +196,5 @@
             <version>2.5</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>fop</artifactId>
-            <version>1.0</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>commons-logging</artifactId>
-                    <groupId>commons-logging</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-    </dependencies>
+   </dependencies>
 </project>

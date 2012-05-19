@@ -95,7 +95,7 @@ public class SortHeaderColumnLink
      * @param _openTag ComponentTag
      */
     @Override
-    protected void onComponentTagBody(final MarkupStream _markupStream,
+    public void onComponentTagBody(final MarkupStream _markupStream,
                                       final ComponentTag _openTag)
     {
         replaceComponentTagBody(_markupStream, _openTag, this.header);

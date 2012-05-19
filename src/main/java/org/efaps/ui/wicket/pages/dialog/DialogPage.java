@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2012 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,9 +27,9 @@ import org.apache.wicket.Component;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.behavior.HeaderContributor;
-import org.apache.wicket.markup.html.IHeaderContributor;
-import org.apache.wicket.markup.html.IHeaderResponse;
+import org.apache.wicket.behavior.Behavior;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
@@ -56,7 +56,8 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class DialogPage extends AbstractMergePage
+public class DialogPage
+    extends AbstractMergePage
 {
 
     /**
@@ -84,8 +85,10 @@ public class DialogPage extends AbstractMergePage
      * @param _parameters Parameters wich must be past on, in case of submit
      * @param _parent the ParentComponent
      */
-    public DialogPage(final ModalWindowContainer _modal, final IModel<UIMenuItem> _model, final Map<?, ?> _parameters,
-                    final Component _parent)
+    public DialogPage(final ModalWindowContainer _modal,
+                      final IModel<UIMenuItem> _model,
+                      final Map<?, ?> _parameters,
+                      final Component _parent)
     {
         super(_model);
         this.parent = _parent;
@@ -108,21 +111,23 @@ public class DialogPage extends AbstractMergePage
     /**
      * Constructor setting the ModalWindow.
      *
-     * @param _modal            modal window
-     * @param _value            value is depending on parameter "_isSniplett" the
-     *                          key to a DBProperty or a snipplet
-     * @param _isSniplett       is it a snipplet or not
-     * @param _behavior         if a _behavior is given a button will be
-     *                          rendered to execute it
+     * @param _modal modal window
+     * @param _value value is depending on parameter "_isSniplett" the key to a
+     *            DBProperty or a snipplet
+     * @param _isSniplett is it a snipplet or not
+     * @param _behavior if a _behavior is given a button will be rendered to
+     *            execute it
      */
-    public DialogPage(final ModalWindowContainer _modal, final String _value, final boolean _isSniplett,
+    public DialogPage(final ModalWindowContainer _modal,
+                      final String _value,
+                      final boolean _isSniplett,
                       final AjaxSubmitCloseBehavior _behavior)
     {
         this.modal = _modal;
         this.add(StaticHeaderContributor.forCss(DialogPage.CSS));
 
         if (_isSniplett) {
-            this.add(new LabelComponent("textLabel",  _value));
+            this.add(new LabelComponent("textLabel", _value));
         } else {
             this.add(new Label("textLabel", DBProperties.getProperty(_value + ".Message")));
         }
@@ -138,7 +143,7 @@ public class DialogPage extends AbstractMergePage
         this.add(new Button("closeButton", ajaxCloseLink, DialogPage.getLabel(_value, "Close"),
                         Button.ICON.CANCEL.getReference()));
 
-        this.add(new HeaderContributor(new KeyListenerContributor(ajaxCloseLink)));
+        ajaxCloseLink.add(new KeyListenerBehavior());
     }
 
     /**
@@ -149,7 +154,8 @@ public class DialogPage extends AbstractMergePage
      * @param _keytype type of the key e.g. "Cancel", "Submit", "Close"
      * @return Label
      */
-    private static String getLabel(final String _cmdName, final String _keytype)
+    private static String getLabel(final String _cmdName,
+                                   final String _keytype)
     {
         String ret;
         if (DBProperties.hasProperty(_cmdName + ".Button." + _keytype)) {
@@ -160,24 +166,23 @@ public class DialogPage extends AbstractMergePage
         return ret;
     }
 
-
     /**
      * AjaxLink that closes the ModalWindow this Page was opened in.
      */
-    public class AjaxGoOnLink extends AjaxLink<Object>
+    public class AjaxGoOnLink
+        extends AjaxLink<Object>
     {
+
         /** Needed for serialization. */
         private static final long serialVersionUID = 1L;
         private final AjaxSubmitCloseBehavior behavior;
-
-
-
 
         /**
          * @param _wicketId wicket id of this component
          * @param onClickScript
          */
-        public AjaxGoOnLink(final String _wicketId, final AjaxSubmitCloseBehavior _behavior)
+        public AjaxGoOnLink(final String _wicketId,
+                            final AjaxSubmitCloseBehavior _behavior)
         {
             super(_wicketId);
             this.behavior = _behavior;
@@ -193,21 +198,23 @@ public class DialogPage extends AbstractMergePage
             this.behavior.setValidated(true);
             DialogPage.this.modal.close(_target);
             final StringBuilder js = new StringBuilder();
-            js.append("var wind = parent.frames[parent.frames.length - 2];")
-                .append("function cllIt(){")
-                .append(this.behavior.getEventHandler().toString().replace("var wcall=wicketSubmitFormById", "wind.wicketSubmitFormById"))
-                .append("};")
-                .append("wind.setTimeout(cllIt(),1);");
-            _target.appendJavascript(js.toString());
+//            js.append("var wind = parent.frames[parent.frames.length - 2];")
+//                            .append("function cllIt(){")
+//                            .append(this.behavior.getEventHandler().toString()
+//                                            .replace("var wcall=wicketSubmitFormById", "wind.wicketSubmitFormById"))
+//                            .append("};")
+//                            .append("wind.setTimeout(cllIt(),1);");
+            _target.appendJavaScript(js.toString());
         }
     }
-
 
     /**
      * AjaxLink that closes the ModalWindow this Page was opened in.
      */
-    public class AjaxCloseLink extends AjaxLink<Object>
+    public class AjaxCloseLink
+        extends AjaxLink<Object>
     {
+
         /** Needed for serialization. */
         private static final long serialVersionUID = 1L;
 
@@ -232,15 +239,17 @@ public class DialogPage extends AbstractMergePage
             bldr.append("var inp = top.frames[0].document").append(".getElementById('eFapsContentDiv')").append(
                             ".getElementsByTagName('input');").append("if(inp!=null){").append("  inp[0].focus();")
                             .append("}");
-            _target.appendJavascript(bldr.toString());
+            _target.appendJavaScript(bldr.toString());
         }
     }
 
     /**
      * AjaxLink that submits the Parameters and closes the ModalWindow.
      */
-    public class AjaxSubmitLink extends AjaxLink<UIMenuItem>
+    public class AjaxSubmitLink
+        extends AjaxLink<UIMenuItem>
     {
+
         /** Needed for serialization. */
         private static final long serialVersionUID = 1L;
 
@@ -250,11 +259,13 @@ public class DialogPage extends AbstractMergePage
         private final Map<?, ?> parameters;
 
         /**
-         * @param _wicketId     wicket id of this component
-         * @param _model        model for this component
-         * @param _parameters   parameters
+         * @param _wicketId wicket id of this component
+         * @param _model model for this component
+         * @param _parameters parameters
          */
-        public AjaxSubmitLink(final String _wicketId, final IModel<UIMenuItem> _model, final Map<?, ?> _parameters)
+        public AjaxSubmitLink(final String _wicketId,
+                              final IModel<UIMenuItem> _model,
+                              final Map<?, ?> _parameters)
         {
             super(_wicketId, _model);
             this.parameters = _parameters;
@@ -283,7 +294,7 @@ public class DialogPage extends AbstractMergePage
                     if (update.isAjaxCallback()) {
                         update.setInstanceKey(model.getInstanceKey());
                         update.setMode(model.getMode());
-                        _target.prependJavascript(update.getAjaxCallback());
+                        _target.prependJavaScript(update.getAjaxCallback());
                     }
                 }
             }
@@ -297,37 +308,28 @@ public class DialogPage extends AbstractMergePage
     /**
      * CLass is used to listen to keyboard entries.
      */
-    private static final class KeyListenerContributor implements IHeaderContributor
+    private static final class KeyListenerBehavior
+        extends Behavior
     {
 
         /** Needed for serialization. */
         private static final long serialVersionUID = 1L;
 
-        /**
-         * Component this listener belongs to.
-         */
-        private final Component component;
 
-        /**
-         * @param _component Component
+        /* (non-Javadoc)
+         * @see org.apache.wicket.behavior.Behavior#renderHead(org.apache.wicket.Component, org.apache.wicket.markup.head.IHeaderResponse)
          */
-        public KeyListenerContributor(final Component _component)
+        @Override
+        public void renderHead(final Component _component,
+                              final IHeaderResponse _response)
         {
-            this.component = _component;
-        }
-
-        /**
-         * @see org.apache.wicket.markup.html.IHeaderContributor#renderHead(org.apache.wicket.markup.html.IHeaderResponse)
-         * @param _iheaderresponse respones
-         */
-        public void renderHead(final IHeaderResponse _iheaderresponse)
-        {
-            final StringBuilder bldr = new StringBuilder();
-            bldr.append("<script type=\"text/javascript\">").append("function pressed (_event) {").append(
-                            "var b=Wicket.$('").append(this.component.getMarkupId()).append(
+            super.renderHead(_component, _response);
+            final StringBuilder js = new StringBuilder();
+            js.append("<script type=\"text/javascript\">").append("function pressed (_event) {").append(
+                            "var b=Wicket.$('").append(_component.getMarkupId()).append(
                             "'); if (typeof(b.onclick) != 'undefined') { b.onclick();  }").append("}").append(
                             "window.onkeydown = pressed;").append("</script>");
-            _iheaderresponse.renderString(bldr);
+            _response.render(JavaScriptHeaderItem.forScript(js, "js" + _component.getMarkupId()));
         }
     }
 }

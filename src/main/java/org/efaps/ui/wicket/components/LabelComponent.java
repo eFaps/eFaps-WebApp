@@ -23,7 +23,7 @@ package org.efaps.ui.wicket.components;
 import java.util.List;
 import java.util.Map.Entry;
 
-import org.apache.wicket.behavior.IBehavior;
+import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebComponent;
@@ -84,7 +84,7 @@ public class LabelComponent
      * @param _openTag Tag
      */
     @Override
-    protected void onComponentTagBody(final MarkupStream _markupStream,
+    public void onComponentTagBody(final MarkupStream _markupStream,
                                       final ComponentTag _openTag)
     {
         setEscapeModelStrings(false);
@@ -93,9 +93,9 @@ public class LabelComponent
         // will be moved to the subcomponent
         if (value != null && value.contains(UIInterface.EFAPSTMPTAG)) {
             final StringBuilder tagBldr = new StringBuilder();
-            final List<IBehavior> behaviors = getBehaviors();
+            final List<? extends Behavior> behaviors = getBehaviors();
             final ComponentTag tmpTag = new ComponentTag(_openTag);
-            for (final IBehavior behavior : behaviors) {
+            for (final Behavior behavior : behaviors) {
                 behavior.onComponentTag(this, tmpTag);
             }
             final IValueMap map = tmpTag.getAttributes();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2012 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,8 @@ package org.efaps.ui.wicket.pages.content.table;
 
 import java.util.UUID;
 
-import org.apache.wicket.IPageMap;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.table.TablePanel;
@@ -42,8 +41,10 @@ import org.efaps.util.EFapsException;
  * @author The Faps Team
  * @version $Id:TablePage.java 1491 2007-10-15 23:40:43Z jmox $
  */
-public class TablePage extends AbstractContentPage
+public class TablePage
+    extends AbstractContentPage
 {
+
     /**
      * Reference to the style sheet.
      */
@@ -55,7 +56,7 @@ public class TablePage extends AbstractContentPage
      * opener.
      *
      * @param _parameters PageParameters
-     * @throws EFapsException  on error
+     * @throws EFapsException on error
      */
     public TablePage(final PageParameters _parameters)
         throws EFapsException
@@ -65,7 +66,7 @@ public class TablePage extends AbstractContentPage
 
     /**
      * @param _model modle for the table
-     * @throws EFapsException  on error
+     * @throws EFapsException on error
      */
     public TablePage(final IModel<UITable> _model)
         throws EFapsException
@@ -74,9 +75,9 @@ public class TablePage extends AbstractContentPage
     }
 
     /**
-     *  @param _model model for the page
+     * @param _model model for the page
      * @param _modalWindow modal window
-     * @throws EFapsException  on error
+     * @throws EFapsException on error
      */
     public TablePage(final IModel<?> _model,
                      final ModalWindowContainer _modalWindow)
@@ -88,58 +89,46 @@ public class TablePage extends AbstractContentPage
 
 
     /**
-     * @param _pagemap      pagemap
-     * @param _uuid         uuid of a command
-     * @param _instanceKey  key to an instance
+     * @param _pagemap pagemap
+     * @param _uuid uuid of a command
+     * @param _instanceKey key to an instance
+     * @param _openerId id of an opener
      * @throws EFapsException on error
      */
-    public TablePage(final IPageMap _pagemap, final UUID _uuid, final String _instanceKey)
-        throws EFapsException
-    {
-        this(_pagemap, _uuid, _instanceKey, null);
-    }
-
-    /**
-     * @param _pagemap      pagemap
-     * @param _uuid         uuid of a command
-     * @param _instanceKey  key to an instance
-     * @param _openerId     id of an opener
-     * @throws EFapsException  on error
-     */
-    public TablePage(final IPageMap _pagemap,
-                     final UUID _uuid,
+    public TablePage(final UUID _uuid,
                      final String _instanceKey,
                      final String _openerId)
         throws EFapsException
     {
-        this(_pagemap, new TableModel(new UITable(_uuid, _instanceKey, _openerId)));
+        this(new TableModel(new UITable(_uuid, _instanceKey, _openerId)));
     }
 
     /**
-     * @param _pagemap  pagemap
-     * @param _model    modle for the table
-     * @throws EFapsException  on error
+     * @param _pagemap pagemap
+     * @param _model modle for the table
+     * @throws EFapsException on error
      */
-    public TablePage(final IPageMap _pagemap, final TableModel _model)
+    public TablePage(final TableModel _model)
         throws EFapsException
     {
-        super(_pagemap, _model, null);
+        super(_model, null);
         this.addComponents();
     }
 
     /**
-     * @param _uuid         uuid of a commmand
-     * @param _instanceKey  key to an instance
-     * @throws EFapsException  on error
+     * @param _uuid uuid of a commmand
+     * @param _instanceKey key to an instance
+     * @throws EFapsException on error
      */
-    public TablePage(final UUID _uuid, final String _instanceKey)
+    public TablePage(final UUID _uuid,
+                     final String _instanceKey)
         throws EFapsException
     {
         this(new TableModel(new UITable(_uuid, _instanceKey)));
     }
 
     /**
-     * @throws EFapsException  on error
+     * @throws EFapsException on error
      *
      */
     protected void addComponents()

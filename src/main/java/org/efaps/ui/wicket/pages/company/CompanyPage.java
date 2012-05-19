@@ -29,20 +29,20 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.IClusterable;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.behavior.StringHeaderContributor;
 import org.apache.wicket.extensions.markup.html.form.select.IOptionRenderer;
 import org.apache.wicket.extensions.markup.html.form.select.Select;
 import org.apache.wicket.extensions.markup.html.form.select.SelectOptions;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.util.io.IClusterable;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.user.Company;
 import org.efaps.db.Context;
@@ -94,8 +94,9 @@ public class CompanyPage
         super();
         this.modal = _modal;
         this.link = _link;
+
         // set the title for the Page
-        this.add(new StringHeaderContributor("<title>" + DBProperties.getProperty("Logo.Version.Label") + "</title>"));
+        add(new Label("pageTitle", DBProperties.getProperty("Logo.Version.Label")));
 
         this.add(StaticHeaderContributor.forCss(CompanyPage.CSS));
 

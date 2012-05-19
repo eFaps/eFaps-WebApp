@@ -85,6 +85,17 @@ public class AjaxExecuteLink
         } catch (final EFapsException e) {
             throw new RestartResponseException(new ErrorPage(e));
         }
-        _target.appendJavascript(snip.toString());
+        _target.appendJavaScript(snip.toString());
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink#onError(org.apache.wicket.ajax.AjaxRequestTarget, org.apache.wicket.markup.html.form.Form)
+     */
+    @Override
+    protected void onError(final AjaxRequestTarget _target,
+                           final Form<?> _form)
+    {
+        // TODO Auto-generated method stub
+
     }
 }

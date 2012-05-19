@@ -28,13 +28,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.IPageMap;
 import org.apache.wicket.MarkupContainer;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.RestartResponseException;
-import org.apache.wicket.behavior.IBehavior;
+import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.efaps.admin.program.bundle.BundleMaker;
 import org.efaps.admin.program.bundle.TempFileBundle;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
@@ -81,37 +80,6 @@ public abstract class AbstractMergePage
     public AbstractMergePage(final IModel<?> _model)
     {
         super(_model);
-    }
-
-    /**
-     * Constructor that passes to the SuperConstructor.
-     * @param _pagemap  pagemap for this page
-     * @param _model    model for this page
-     */
-    public AbstractMergePage(final IPageMap _pagemap,
-                             final IModel<?> _model)
-    {
-        super(_pagemap, _model);
-    }
-
-    /**
-     * Constructor that passes to the SuperConstructor.
-     * @param _pagemap  pagemap for this page
-     */
-    public AbstractMergePage(final IPageMap _pagemap)
-    {
-        super(_pagemap);
-    }
-
-    /**
-     * Constructor that passes to the SuperConstructor.
-     * @param _pagemap      pagemap for this page
-     * @param _parameters   parameters for this page
-     */
-    public AbstractMergePage(final IPageMap _pagemap,
-                             final PageParameters _parameters)
-    {
-        super(_pagemap, _parameters);
     }
 
     /**
@@ -190,16 +158,16 @@ public abstract class AbstractMergePage
      * StaticHeaderContributor and puts them in the map.
      *
      * @param _resources the map the List of SaticHeaderContributors will be put
-     * @param _behaviors a List a Behaviors that will be searched for instances
+     * @param _list a List a Behaviors that will be searched for instances
      *            of StaticHeaderContributor
      * @see #addChildStatics(Map, MarkupContainer)
      */
     protected void addStaticBehaviors(
                     final Map<StaticHeaderContributor.HeaderType, List<StaticHeaderContributor>> _resources,
-                    final List<IBehavior> _behaviors)
+                    final List<? extends Behavior> _list)
     {
 
-        for (final IBehavior oneBehavior : _behaviors) {
+        for (final Behavior oneBehavior : _list) {
             if (oneBehavior instanceof StaticHeaderContributor) {
                 final StaticHeaderContributor behavior = (StaticHeaderContributor) oneBehavior;
                 if (!behavior.isMerged()) {

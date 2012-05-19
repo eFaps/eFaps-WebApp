@@ -21,7 +21,7 @@
 package org.efaps.ui.wicket.behaviors;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.behavior.AbstractBehavior;
+import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.ComponentTag;
 
 /**
@@ -31,7 +31,7 @@ import org.apache.wicket.markup.ComponentTag;
  * @version $Id: $
  */
 public class ExpandTextareaBehavior
-    extends AbstractBehavior
+    extends Behavior
 {
 
     /**

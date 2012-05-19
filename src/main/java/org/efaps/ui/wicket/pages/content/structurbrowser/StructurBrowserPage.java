@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2012 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,16 +22,14 @@ package org.efaps.ui.wicket.pages.content.structurbrowser;
 
 import java.util.UUID;
 
-import org.apache.wicket.IPageMap;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.tree.StructurBrowserTreeTablePanel;
 import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
-import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 import org.efaps.util.EFapsException;
@@ -71,18 +69,6 @@ public class StructurBrowserPage
     }
 
     /**
-     * @param _commandUUID UUID of the calling command
-     * @param _oid oid
-     * @throws EFapsException on error
-     */
-    public StructurBrowserPage(final UUID _commandUUID,
-                               final String _oid)
-        throws EFapsException
-    {
-        this(new UIModel<UIStructurBrowser>(new UIStructurBrowser(_commandUUID, _oid)));
-    }
-
-    /**
      * @param _model model for this pager
      * @throws EFapsException  on error
      */
@@ -112,12 +98,11 @@ public class StructurBrowserPage
      * @param _oid oid
      * @throws EFapsException on error
      */
-    public StructurBrowserPage(final IPageMap _pageMap,
-                               final UUID _commandUUID,
+    public StructurBrowserPage(final UUID _commandUUID,
                                final String _oid)
         throws EFapsException
     {
-        super(_pageMap, new UIModel<UIStructurBrowser>(new UIStructurBrowser(_commandUUID, _oid)), null);
+        super(new UIModel<UIStructurBrowser>(new UIStructurBrowser(_commandUUID, _oid)), null);
         this.addComponents();
     }
 
@@ -138,7 +123,6 @@ public class StructurBrowserPage
         final FormContainer form = new FormContainer("form");
         this.add(form);
         super.addComponents(form);
-        form.add(new StructurBrowserTreeTablePanel("structurBrowserTable", new UIModel<UIStructurBrowser>(uiObject),
-                          ContentContainerPage.IFRAME_PAGEMAP_NAME.equals(getPageMapName())));
+        form.add(new StructurBrowserTreeTablePanel("structurBrowserTable", new UIModel<UIStructurBrowser>(uiObject), true));
     }
 }

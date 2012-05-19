@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2012 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,9 +25,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.Session;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.EventType;
@@ -148,11 +148,7 @@ public abstract class AbstractUIObject
      */
     public AbstractUIObject(final PageParameters _parameters)
     {
-        if (_parameters.get(Opener.OPENER_PARAKEY) instanceof String[]) {
-            this.openerId = ((String[]) _parameters.get(Opener.OPENER_PARAKEY))[0];
-        } else {
-            this.openerId = (String) _parameters.get(Opener.OPENER_PARAKEY);
-        }
+        this.openerId = _parameters.get(Opener.OPENER_PARAKEY).toString();
         final Opener opener = ((EFapsSession) Session.get()).getOpener(this.openerId);
         final AbstractUIObject uiObject = (AbstractUIObject) opener.getModel().getObject();
         initialize(uiObject.getCommandUUID(), this.openerId);

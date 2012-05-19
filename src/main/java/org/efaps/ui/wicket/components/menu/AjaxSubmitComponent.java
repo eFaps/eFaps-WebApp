@@ -20,6 +20,7 @@
 
 package org.efaps.ui.wicket.components.menu;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.wicket.Page;
@@ -119,7 +120,7 @@ public class AjaxSubmitComponent
          */
         public String getJavaScript()
         {
-            final String script = super.getEventHandler().toString();
+            final String script = super.getCallbackScript().toString();
             return "javascript:" + script.replace("'", "\"");
         }
 
@@ -145,7 +146,7 @@ public class AjaxSubmitComponent
         {
             final UIMenuItem uiMenuItem = (UIMenuItem) super.getComponent().getDefaultModelObject();
 
-            final Map<?, ?> para = this.form.getRequest().getParameterMap();
+            final Map<?, ?> para = new HashMap();// this.form.getRequest().getParameterMap();
 
             boolean check = false;
             if (uiMenuItem.getSubmitSelectedRows() > -1) {

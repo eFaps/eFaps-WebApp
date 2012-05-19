@@ -20,9 +20,9 @@
 
 package org.efaps.ui.wicket.components.form.row;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Page;
 import org.apache.wicket.behavior.AttributeAppender;
-import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
@@ -42,7 +42,6 @@ import org.efaps.ui.wicket.models.cell.UIFormCellSet;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIForm.FormElement;
 import org.efaps.ui.wicket.models.objects.UIForm.FormRow;
-import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.util.EFapsException;
 
 /**
@@ -92,15 +91,15 @@ public class RowPanel
                 cellRepeater.add(labelCell);
 
                 if (cell.isRequired()) {
-                    labelCell.add(new SimpleAttributeModifier("class", "eFapsFormLabelRequired"));
+                    labelCell.add(AttributeModifier.replace("class", "eFapsFormLabelRequired"));
                     labelCell.setOutputMarkupId(true);
                     _formPanel.addRequiredComponent(cell.getName(), labelCell);
                 } else {
-                    labelCell.add(new SimpleAttributeModifier("class", "eFapsFormLabel"));
+                    labelCell.add(AttributeModifier.replace("class", "eFapsFormLabel"));
                     labelCell.setOutputMarkupId(true);
                 }
                 if (cell.getRowSpan() > 0) {
-                    labelCell.add(new SimpleAttributeModifier("rowspan", ((Integer) cell.getRowSpan()).toString()));
+                    labelCell.add(AttributeModifier.replace("rowspan", ((Integer) cell.getRowSpan()).toString()));
                 }
             }
             Panel valueCell;
@@ -116,10 +115,10 @@ public class RowPanel
                                 (UIFormCellChart) cell));
             } else {
                 valueCell = new ValueCellPanel(cellRepeater.newChildId(), new UIModel<UIFormCell>(cell), _formmodel,
-                                ContentContainerPage.IFRAME_PAGEMAP_NAME.equals(_page.getPageMapName()));
+                                true);
             }
             if (cell.getRowSpan() > 0) {
-                valueCell.add(new SimpleAttributeModifier("rowspan", ((Integer) cell.getRowSpan()).toString()));
+                valueCell.add(AttributeModifier.replace("rowspan", ((Integer) cell.getRowSpan()).toString()));
             }
 
             Integer colspan = 2 * (_formelementmodel.getMaxGroupCount() - _model.getObject().getGroupCount()) + 1;
@@ -131,9 +130,9 @@ public class RowPanel
             if (row.isRowSpan()) {
                 colspan = colspan - 2;
             }
-            valueCell.add(new SimpleAttributeModifier("colspan", colspan.toString()));
+            valueCell.add(AttributeModifier.replace("colspan", colspan.toString()));
             cellRepeater.add(valueCell);
-            valueCell.add(new AttributeAppender("class", true, new Model<String>("eFapsFormValue"), " "));
+            valueCell.add(new AttributeAppender("class", new Model<String>("eFapsFormValue"), " "));
         }
     }
 }

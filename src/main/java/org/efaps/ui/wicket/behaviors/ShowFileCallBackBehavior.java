@@ -20,15 +20,11 @@
 
 package org.efaps.ui.wicket.behaviors;
 
-import java.io.File;
-
 import org.apache.wicket.Component;
-import org.apache.wicket.RequestCycle;
 import org.apache.wicket.Session;
-import org.apache.wicket.behavior.AbstractBehavior;
+import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.behavior.IBehaviorListener;
 import org.efaps.ui.wicket.EFapsSession;
-import org.efaps.ui.wicket.components.menu.FileRequestTarget;
 
 /**
  * TODO comment!
@@ -37,7 +33,7 @@ import org.efaps.ui.wicket.components.menu.FileRequestTarget;
  * @version $Id$
  */
 public class ShowFileCallBackBehavior
-    extends AbstractBehavior
+    extends Behavior
     implements IBehaviorListener
 {
 
@@ -56,8 +52,7 @@ public class ShowFileCallBackBehavior
      */
     public void onRequest()
     {
-        final File file = ((EFapsSession) Session.get()).getFile();
-        RequestCycle.get().setRequestTarget(new FileRequestTarget(file));
+        ((EFapsSession) Session.get()).getFile();
     }
 
     /**
@@ -81,7 +76,7 @@ public class ShowFileCallBackBehavior
         }
         final StringBuilder script = new StringBuilder();
         script.append("top.frames[\"eFapsFrameHidden\"].location.href=\"")
-                        .append(getComponent().urlFor(this, IBehaviorListener.INTERFACE)).append("\"");
+                        .append(getComponent().urlFor(this, IBehaviorListener.INTERFACE, null)).append("\"");
         return script.toString();
     }
 

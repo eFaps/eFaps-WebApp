@@ -22,7 +22,7 @@ package org.efaps.ui.wicket.components.split;
 
 import java.util.UUID;
 
-import org.apache.wicket.behavior.SimpleAttributeModifier;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.efaps.db.Context;
@@ -107,7 +107,7 @@ public class ListOnlyPanel
         overflow.add(new MenuTree("menu", _commandUUID, _oid, _listMenuKey, _selectCmdUUID).setOutputMarkupId(true));
         this.add(overflow);
         if (hidden) {
-            overflow.add(new SimpleAttributeModifier("style", "display:none;"));
+            overflow.add(AttributeModifier.replace("style", "display:none;"));
         }
         header.addHideComponent(overflow);
     }

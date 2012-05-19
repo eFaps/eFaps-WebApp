@@ -26,7 +26,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import org.apache.wicket.markup.html.image.resource.DynamicImageResource;
+import org.apache.wicket.request.resource.DynamicImageResource;
 import org.efaps.ui.wicket.models.cell.UIFormCellChart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,7 +70,7 @@ public class ChartResource
      * @see org.apache.wicket.markup.html.image.resource.DynamicImageResource#getImageData()
      */
     @Override
-    protected byte[] getImageData()
+    protected byte[] getImageData(final Attributes _attributes)
     {
         byte[] bytes = null;
         try {

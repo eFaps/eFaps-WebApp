@@ -23,8 +23,8 @@ package org.efaps.ui.wicket.components.tree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 
-import org.apache.wicket.IClusterable;
-import org.apache.wicket.markup.html.tree.ITreeStateListener;
+import org.apache.wicket.extensions.markup.html.tree.ITreeStateListener;
+import org.apache.wicket.util.io.IClusterable;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser.BogusNode;
 

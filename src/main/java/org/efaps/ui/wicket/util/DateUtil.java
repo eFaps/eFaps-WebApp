@@ -35,7 +35,6 @@ import org.joda.time.format.DateTimeFormatter;
  */
 public final class DateUtil
 {
-
     /**
      * Singelton.
      */
@@ -45,16 +44,17 @@ public final class DateUtil
 
     /**
      * Convert a date from a parameter into a <code>DateTime</code>.
-     * @param _value    value to be converted
-     * @return  DateTime
+     *
+     * @param _value value to be converted
+     * @return DateTime
      * @throws EFapsException on error
      */
     public static DateTime getDateFromParameter(final String _value)
         throws EFapsException
     {
         final StyleDateConverter styledate = new StyleDateConverter(false);
-        final DateTimeFormatter fmt = DateTimeFormat.forPattern(styledate
-                        .getDatePattern());
+        final DateTimeFormatter fmt = DateTimeFormat.forPattern(styledate.getDatePattern(Context.getThreadContext()
+                        .getLocale()));
         fmt.withLocale(Context.getThreadContext().getLocale());
         final DateTime dt = fmt.parseDateTime(_value);
         return dt;

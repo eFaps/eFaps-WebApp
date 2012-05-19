@@ -24,11 +24,10 @@ import java.io.File;
 import java.util.List;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.Page;
-import org.apache.wicket.PageMap;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.markup.html.link.InlineFrame;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.request.http.handler.RedirectRequestHandler;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
@@ -86,7 +85,7 @@ public class StandardLink
         String openerId = null;
         // in case of popup is opened store the Opener in the session
         if (command.getTarget() == Target.POPUP) {
-            final Opener opener = new Opener(getPage().getDefaultModel(), getPage().getPageMapName());
+            final Opener opener = new Opener(getPage().getDefaultModel());
             ((EFapsSession) getSession()).storeOpener(opener);
             openerId = opener.getId();
             opener.setCommandUUID(command.getUUID());
@@ -97,22 +96,19 @@ public class StandardLink
         try {
             if (command.getTargetTable() != null) {
                 if (command.getTargetStructurBrowserField() != null) {
-                    final StructurBrowserPage page = new StructurBrowserPage(PageMap
-                                    .forName(MainPage.IFRAME_PAGEMAP_NAME), model.getCommandUUID(), model
+                    final StructurBrowserPage page = new StructurBrowserPage(model.getCommandUUID(), model
                                     .getInstanceKey());
 
                     final InlineFrame iframe = new InlineFrame(MainPage.IFRAME_WICKETID, page);
                     getPage().addOrReplace(iframe);
                 } else {
                     if (getPage() instanceof MainPage) {
-                        final TablePage page = new TablePage(PageMap.forName(MainPage.IFRAME_PAGEMAP_NAME), model
-                                        .getCommandUUID(), model.getInstanceKey());
+                        final TablePage page = new TablePage(model.getCommandUUID(), model.getInstanceKey());
                         final InlineFrame iframe = new InlineFrame(MainPage.IFRAME_WICKETID, page);
 
                         getPage().addOrReplace(iframe);
                     } else {
-                        final TablePage table = new TablePage(PageMap.forName(getPopupSettings().getPageMapName(null)),
-                                        model.getCommandUUID(), model.getInstanceKey(), openerId);
+                        final TablePage table = new TablePage(model.getCommandUUID(), model.getInstanceKey(), openerId);
                         if (getPage() instanceof AbstractContentPage) {
                             table.setMenuTreeKey(((AbstractContentPage) getPage()).getMenuTreeKey());
                         }
@@ -121,13 +117,11 @@ public class StandardLink
                 }
             } else if (command.getTargetForm() != null || command.getTargetSearch() != null) {
                 if (getPage() instanceof MainPage && command.getTargetSearch() == null) {
-                    final FormPage page = new FormPage(PageMap.forName(MainPage.IFRAME_PAGEMAP_NAME), model
-                                    .getCommandUUID(), model.getInstanceKey());
+                    final FormPage page = new FormPage(model.getCommandUUID(), model.getInstanceKey());
                     final InlineFrame iframe = new InlineFrame(MainPage.IFRAME_WICKETID, page);
                     getPage().addOrReplace(iframe);
                 } else {
-                    final FormPage formpage = new FormPage(PageMap.forName(getPopupSettings().getPageMapName(null)),
-                                    model.getCommandUUID(), model.getInstanceKey(), openerId);
+                    final FormPage formpage = new FormPage(model.getCommandUUID(), model.getInstanceKey(), openerId);
                     if (getPage() instanceof AbstractContentPage) {
                         formpage.setMenuTreeKey(((AbstractContentPage) getPage()).getMenuTreeKey());
                     }
@@ -139,14 +133,15 @@ public class StandardLink
                     if (command.isTargetShowFile()) {
                         final Object object = rets.get(0).get(ReturnValues.VALUES);
                         if (object instanceof File) {
-                            getRequestCycle().setRequestTarget(new FileRequestTarget((File) object));
+                            getRequestCycle().scheduleRequestHandlerAfterCurrent(new RedirectRequestHandler("/usage.html"));
+
                         }
                     }
                 } catch (final EFapsException e) {
                     throw new RestartResponseException(new ErrorPage(e));
                 }
                 if ("true".equals(command.getProperty("NoUpdateAfterCOMMAND"))) {
-                    getRequestCycle().setRequestTarget(null);
+                    getRequestCycle().setRequest(null);
                 }
             }
         } catch (final EFapsException e) {
@@ -164,16 +159,14 @@ public class StandardLink
         final UIMenuItem model = super.getModelObject();
 
         final AbstractCommand command = model.getCommand();
-        final Page callerPage = _openComponent.getPage();
+        _openComponent.getPage();
         if (command.getTargetTable() != null) {
             if (command.getTargetStructurBrowserField() != null) {
-                final StructurBrowserPage page = new StructurBrowserPage(PageMap
-                                .forName(MainPage.IFRAME_PAGEMAP_NAME), model.getCommandUUID(), model
+                final StructurBrowserPage page = new StructurBrowserPage(model.getCommandUUID(), model
                                 .getInstanceKey());
                 setResponsePage(page);
             } else {
-                final TablePage page = new TablePage(callerPage.getPageMap(), model
-                                    .getCommandUUID(), model.getInstanceKey());
+                final TablePage page = new TablePage(model.getCommandUUID(), model.getInstanceKey());
                 setResponsePage(page);
             }
         }

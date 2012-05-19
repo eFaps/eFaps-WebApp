@@ -21,16 +21,18 @@
 package org.efaps.ui.wicket.pages.login;
 
 import org.apache.wicket.Session;
-import org.apache.wicket.behavior.StringHeaderContributor;
+import org.apache.wicket.core.util.string.JavaScriptUtils;
 import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.head.CssHeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.resources.StyleSheetReference;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.util.string.JavascriptUtils;
+import org.apache.wicket.request.resource.CssResourceReference;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.EFapsNoAuthorizationNeededInterface;
 import org.efaps.ui.wicket.EFapsSession;
@@ -38,10 +40,10 @@ import org.efaps.ui.wicket.pages.main.MainPage;
 
 /**
  * This class renders the LoginPage for the eFaps-WebApplication.<br>
- * It is called from the
- * #{@link #onRuntimeException(org.efaps.ui.wicket.EFapsWebRequestCycle)}
- * method, in the case that noone is logged in. In case of a wrong
- * login try, an additional Message is shown to the User.
+ * It is called from the #
+ * {@link #onRuntimeException(org.efaps.ui.wicket.EFapsWebRequestCycle)} method,
+ * in the case that noone is logged in. In case of a wrong login try, an
+ * additional Message is shown to the User.
  *
  * @author The eFaps Team
  * @version $Id:LoginPage.java 1510 2007-10-18 14:35:40Z jmox $
@@ -50,12 +52,39 @@ public class LoginPage
     extends WebPage
     implements EFapsNoAuthorizationNeededInterface
 {
+
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
     /**
      * Standard Constructor showing no Message.
      */
     public LoginPage()
     {
         this(false);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.apache.wicket.Component#renderHead(org.apache.wicket.markup.head.
+     * IHeaderResponse)
+     */
+    @Override
+    public void renderHead(final IHeaderResponse _response)
+    {
+        super.renderHead(_response);
+        _response.render(CssHeaderItem.forReference(new CssResourceReference(LoginPage.class, "LoginPage.css")));
+        final StringBuilder js = new StringBuilder();
+        js.append(JavaScriptUtils.SCRIPT_OPEN_TAG).append("function test4top() {\n")
+                        .append("  if(top!=self) {\n")
+                        .append("    top.location = self.location;\n")
+                        .append("  }\n" + "}\n")
+                        .append(JavaScriptUtils.SCRIPT_CLOSE_TAG);
+
+        _response.render(JavaScriptHeaderItem.forScript(js, LoginPage.class.getName()));
     }
 
     /**
@@ -65,16 +94,6 @@ public class LoginPage
      */
     public LoginPage(final boolean _msg)
     {
-
-        this.add(new StringHeaderContributor(""
-                        + JavascriptUtils.SCRIPT_OPEN_TAG
-                        + "function test4top() {\n"
-                        + "  if(top!=self) {\n"
-                        + "    top.location = self.location;\n"
-                        + "  }\n" + "}\n"
-                        + JavascriptUtils.SCRIPT_CLOSE_TAG));
-
-        this.add(new StyleSheetReference("css", getClass(), "LoginPage.css"));
 
         final Form<Object> form = new Form<Object>("form")
         {

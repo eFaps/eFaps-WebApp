@@ -26,9 +26,9 @@ import java.io.InputStream;
 import java.util.Locale;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.wicket.Application;
 import org.apache.wicket.RestartResponseException;
-import org.apache.wicket.markup.html.WebResource;
+import org.apache.wicket.request.resource.AbstractResource;
+import org.apache.wicket.util.lang.Bytes;
 import org.apache.wicket.util.resource.IResourceStream;
 import org.apache.wicket.util.resource.ResourceStreamNotFoundException;
 import org.apache.wicket.util.time.Time;
@@ -47,7 +47,7 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  */
 public abstract class AbstractEFapsResource
-    extends WebResource
+    extends AbstractResource
 {
 
     /**
@@ -68,7 +68,7 @@ public abstract class AbstractEFapsResource
     /**
      * the ResourceStream for this AbstractEFapsResource.
      */
-    private AbstractEFapsResourceStream stream;
+    private final AbstractEFapsResourceStream stream;
 
     /**
      * @param _name name
@@ -96,17 +96,7 @@ public abstract class AbstractEFapsResource
      */
     protected abstract AbstractEFapsResourceStream setNewResourceStream();
 
-    /**
-     * @return Gets the resource to render to the requester
-     */
-    @Override
-    public IResourceStream getResourceStream()
-    {
-        if (this.stream == null) {
-            this.stream = setNewResourceStream();
-        }
-        return this.stream;
-    }
+
 
     /**
      * Abstract class implementing the IResourceStream. It is used to retreive
@@ -134,7 +124,7 @@ public abstract class AbstractEFapsResource
          * @see #AbstractEFapsResource()
          * @see #lastModifiedTime()
          */
-        private Time time;
+        private final Time time;
 
         /**
          * this instance variiable stores the actual data wich will be returned
@@ -195,10 +185,10 @@ public abstract class AbstractEFapsResource
         *
         * @return The size of this resource in the number of bytes, or -1 if unknown
         */
-        public long length()
+        public Bytes length()
         {
             checkData(true);
-            return this.data != null ? this.data.length : 0;
+            return this.data != null ? Bytes.bytes(this.data.length) : Bytes.bytes(0);
         }
 
         /**
@@ -231,13 +221,13 @@ public abstract class AbstractEFapsResource
          */
         protected void checkData(final boolean _checkDuration)
         {
-            if ((Application.DEVELOPMENT.equals(Application.get()
-                            .getConfigurationType()) || ((Time.now())
-                            .subtract(lastModifiedTime()).getMilliseconds() / 1000 > getCacheDuration()))
-                            && _checkDuration) {
-                this.time = Time.now();
-                setData();
-            }
+//            if ((Application.DEVELOPMENT.equals(Application.get()
+//                            .getConfigurationType()) || ((Time.now())
+//                            .subtract(lastModifiedTime()).getMilliseconds() / 1000 > getCacheDuration()))
+//                            && _checkDuration) {
+//                this.time = Time.now();
+//                setData();
+//            }
             if (this.data == null) {
                 setData();
             }

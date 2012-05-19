@@ -22,8 +22,8 @@ package org.efaps.ui.wicket.components.table.cell;
 
 import java.text.NumberFormat;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.behavior.AttributeAppender;
-import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -95,7 +95,7 @@ public class CellPanel
         super(_wicketId, _model);
         final UITableCell uiTableCell = (UITableCell) super.getDefaultModelObject();
         // set the title of the cell
-        add(new SimpleAttributeModifier("title", uiTableCell.getCellTitle()));
+        add(AttributeModifier.replace("title", uiTableCell.getCellTitle()));
         add(new AttributeAppender("style", true, new Model<String>("text-align:" + uiTableCell.getAlign()), ";"));
 
         if (uiTableCell.isAutoComplete() && (_uitable.isCreateMode() || _uitable.isEditMode())

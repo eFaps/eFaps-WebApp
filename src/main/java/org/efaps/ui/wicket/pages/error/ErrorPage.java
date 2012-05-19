@@ -24,7 +24,6 @@ import java.text.MessageFormat;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.behavior.StringHeaderContributor;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
@@ -102,7 +101,10 @@ public class ErrorPage
         for (int i = 0; i < traceElements.length; i++) {
             errorAdvanced += traceElements[i].toString() + "\n";
         }
-        this.add(new StringHeaderContributor("<title>" + DBProperties.getProperty("ErrorPage.Titel") + "</title>"));
+
+     // set the title for the Page
+        add(new Label("pageTitle", DBProperties.getProperty("ErrorPage.Titel")));
+
 
         add(new Label("errorIDLabel", DBProperties.getProperty("ErrorPage.Id.Label")));
         add(new Label("errorID", errorId));
@@ -137,8 +139,8 @@ public class ErrorPage
 
                 replace(label);
 
-                _target.addComponent(label);
-                _target.addComponent(advanced);
+                _target.add(label);
+                _target.add(advanced);
 
             }
         };

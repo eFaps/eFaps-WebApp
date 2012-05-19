@@ -21,15 +21,14 @@
 
 package org.efaps.ui.wicket.components;
 
+import java.io.Serializable;
 import java.io.StringReader;
 import java.util.UUID;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.IClusterable;
 import org.apache.wicket.Page;
-import org.apache.wicket.PageMap;
-import org.apache.wicket.RequestCycle;
 import org.apache.wicket.RestartResponseException;
+import org.apache.wicket.request.cycle.RequestCycle;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.Menu;
@@ -41,7 +40,6 @@ import org.efaps.db.PrintQuery;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
-import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.util.EFapsException;
 
 
@@ -52,7 +50,7 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  */
 public class RecentObjectLink
-    implements IRecent, IClusterable
+    implements IRecent, Serializable
 {
     /**
      * Needed for serialization.
@@ -119,8 +117,7 @@ public class RecentObjectLink
     {
         Page page;
         try {
-            page = new ContentContainerPage(PageMap.forName(MainPage.IFRAME_PAGEMAP_NAME),
-                                                this.menuUUID, getInstance().getOid(), this.cmdUUID);
+            page = new ContentContainerPage(this.menuUUID, getInstance().getOid(), this.cmdUUID);
         } catch (final EFapsException e) {
             page = new ErrorPage(e);
         }

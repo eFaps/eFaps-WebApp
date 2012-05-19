@@ -57,7 +57,8 @@ public class RowSelectedInput
      * @param _tag          ComponentTag
      */
     @Override
-    protected void onComponentTagBody(final MarkupStream _markupStream, final ComponentTag _tag)
+    public void onComponentTagBody(final MarkupStream _markupStream,
+                                   final ComponentTag _tag)
     {
         final StringBuilder html = new StringBuilder();
         html.append("<input type=\"hidden\" name=\"").append(SetSelectedRowBehavior.INPUT_NAME).append("\"/>")

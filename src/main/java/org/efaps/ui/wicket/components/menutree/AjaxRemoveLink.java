@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2012 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,7 +75,7 @@ public class AjaxRemoveLink
             menutree.changeContent((UIMenuItem) parent.getUserObject(), _target);
         } else {
             menutree.getTreeState().selectNode(selected, true);
-            _target.addComponent(menutree.getNodeComponent(parent));
+            _target.add(menutree.getNodeComponent(parent));
         }
         menutree.updateTree(_target);
     }

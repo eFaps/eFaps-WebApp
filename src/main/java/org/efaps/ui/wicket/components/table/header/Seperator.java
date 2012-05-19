@@ -20,7 +20,7 @@
 
 package org.efaps.ui.wicket.components.table.header;
 
-import org.apache.wicket.behavior.SimpleAttributeModifier;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebComponent;
 
@@ -55,12 +55,9 @@ public class Seperator
     {
         super(_wicketId);
         this.outputId = _outputid;
-        add(new SimpleAttributeModifier("class", "eFapsTableHeaderSeperator"));
-        add(new SimpleAttributeModifier("onmousedown",
-                        "beginColumnSize(this,event)"));
-
-        add(new SimpleAttributeModifier("onmouseup",
-                        "endColumnSize(this,event," + _propId + ")"));
+        add(AttributeModifier.append("class", "eFapsTableHeaderSeperator"));
+        add(AttributeModifier.replace("onmousedown", "beginColumnSize(this,event)"));
+        add(AttributeModifier.replace("onmouseup", "endColumnSize(this,event," + _propId + ")"));
     }
 
     /*

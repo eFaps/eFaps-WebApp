@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2012 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,7 @@ import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-
-import org.efaps.ui.wicket.behaviors.dojo.DojoReference;
+import org.efaps.ui.wicket.behaviors.dojo.AbstractDojoBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.EditorBehavior;
 import org.efaps.ui.wicket.models.cell.UIFormCell;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
@@ -40,20 +39,25 @@ import org.efaps.ui.wicket.pages.content.AbstractContentPage;
  * @author The eFaps Team
  * @version $Id$
  */
-public class EditorPanel extends Panel
+public class EditorPanel
+    extends Panel
 {
+
     /** Needed for serialization. */
     private static final long serialVersionUID = 1L;
 
     /**
-     * @param _wicketId     wicketID for this component
-     * @param _model        model for this componet
+     * @param _wicketId wicketID for this component
+     * @param _model model for this componet
      */
-    public EditorPanel(final String _wicketId, final IModel<UIFormCell> _model)
+    public EditorPanel(final String _wicketId,
+                       final IModel<UIFormCell> _model)
     {
         super(_wicketId, _model);
 
-        final WebComponent text = new WebComponent("text", _model) {
+        final WebComponent text = new WebComponent("text", _model)
+        {
+
             /**
              *
              */
@@ -72,16 +76,18 @@ public class EditorPanel extends Panel
             }
 
             @Override
-            protected void onComponentTagBody(final MarkupStream _markupStream, final ComponentTag _openTag)
+            public void onComponentTagBody(final MarkupStream _markupStream,
+                                           final ComponentTag _openTag)
             {
                 replaceComponentTagBody(_markupStream, _openTag,
-                                        ((UIFormCell) super.getDefaultModelObject()).getCellValue());
+                                ((UIFormCell) super.getDefaultModelObject()).getCellValue());
             }
         };
         this.add(text);
         text.setOutputMarkupId(true);
 
-        final WebComponent editor = new WebComponent("editor", _model) {
+        final WebComponent editor = new WebComponent("editor", _model)
+        {
 
             private static final long serialVersionUID = 1L;
 
@@ -93,21 +99,22 @@ public class EditorPanel extends Panel
             }
 
             /**
-             * @see org.apache.wicket.Component#onComponentTagBody(org.apache.wicket.markup.MarkupStream, org.apache.wicket.markup.ComponentTag)
+             * @see org.apache.wicket.Component#onComponentTagBody(org.apache.wicket.markup.MarkupStream,
+             *      org.apache.wicket.markup.ComponentTag)
              * @param _markupStream
              * @param _openTag
              */
             @Override
-            protected void onComponentTagBody(final MarkupStream _markupStream, final ComponentTag _openTag)
+            public void onComponentTagBody(final MarkupStream _markupStream,
+                                           final ComponentTag _openTag)
             {
                 replaceComponentTagBody(_markupStream, _openTag,
-                                        ((UIFormCell) super.getDefaultModelObject()).getCellValue());
+                                ((UIFormCell) super.getDefaultModelObject()).getCellValue());
             }
         };
         editor.add(new EditorBehavior(null));
         this.add(editor);
     }
-
 
     /**
      * @see org.apache.wicket.Component#onBeforeRender()
@@ -121,15 +128,16 @@ public class EditorPanel extends Panel
     }
 
     /**
-     * Prepares a page so that it is able top render this editor correctly,
-     * even when called via ajax.
+     * Prepares a page so that it is able top render this editor correctly, even
+     * when called via ajax.
      *
      * @param _page Page the dojo is added to
      */
     public static void prepare(final Page _page)
     {
-        _page.add(DojoReference.getHeaderContributerforDojo());
-        _page.add(DojoReference.getHeaderContributerforEfapsDojo());
+        _page.add(new AbstractDojoBehavior()
+        {
+        });
         ((AbstractContentPage) _page).getBody().add(new AttributeModifier("class", true, new Model<String>("tundra")));
     }
 }

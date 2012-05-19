@@ -20,7 +20,6 @@
 
 package org.efaps.ui.wicket.components.menu;
 
-import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.model.IModel;
 
@@ -53,12 +52,11 @@ public abstract class AbstractMenuItemAjaxComponent
     /**
      * For the JSCookMenu nothing must be rendered, because JavaScript is used to create the Menu.
      *
-     * @param _markupStream MarkupStream
      */
     @Override
-    protected void onRender(final MarkupStream _markupStream)
+    protected void onRender()
     {
-        _markupStream.next();
+
     }
 
     /**

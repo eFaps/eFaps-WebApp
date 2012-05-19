@@ -143,7 +143,7 @@ public class ClassificationTreeLabelPanel
                     final DefaultMutableTreeNode parentTmp = (DefaultMutableTreeNode) parent.getParent();
                     final UIClassification parentClass = (UIClassification) parentTmp.getUserObject();
                     parentClass.setSelected(true);
-                    _target.addComponent(tree.getComponent(parentTmp));
+                    _target.add(tree.getComponent(parentTmp));
                     if (!classification.isMultipleSelect()) {
                         final Enumeration<?> col = parentTmp.children();
                         while (col.hasMoreElements()) {
@@ -153,7 +153,7 @@ public class ClassificationTreeLabelPanel
                                 final UIClassification classInner = (UIClassification) child.getUserObject();
                                 if (classInner.isSelected()) {
                                     classInner.setSelected(false);
-                                    _target.addComponent(tree.getComponent(child));
+                                    _target.add(tree.getComponent(child));
                                 }
                             }
                         }
@@ -182,7 +182,7 @@ public class ClassificationTreeLabelPanel
                 final UIClassification classification = (UIClassification) node.getUserObject();
                 if (classification.isSelected()) {
                     classification.setSelected(false);
-                    _target.addComponent(_tree.getComponent(node));
+                    _target.add(_tree.getComponent(node));
                 }
             }
         }

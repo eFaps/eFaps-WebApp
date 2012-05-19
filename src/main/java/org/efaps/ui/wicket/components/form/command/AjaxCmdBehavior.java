@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
 /**
  * TODO comment!
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
 public class AjaxCmdBehavior
@@ -83,16 +83,6 @@ public class AjaxCmdBehavior
         this.targetComponent = _targetComponent;
     }
 
-    /**
-     * This Method returns the JavaScript which is executed by the JSCooKMenu.
-     *
-     * @return String with the JavaScript
-     */
-    public String getJavaScript()
-    {
-        final String script = super.getEventHandler().toString();
-        return script;
-    }
 
     @Override
     protected void onError(final AjaxRequestTarget _target)
@@ -133,7 +123,7 @@ public class AjaxCmdBehavior
             parent.addOrReplace(newComp);
             newComp.setOutputMarkupId(true);
             this.targetComponent = newComp;
-            _target.addComponent(parent);
+            _target.add(parent);
         } else {
             final StringBuilder jScript = new StringBuilder();
             jScript.append("var ele = document.getElementById('")
@@ -141,7 +131,7 @@ public class AjaxCmdBehavior
                 .append("var nS = document.createElement('span');")
                 .append("ele.appendChild(nS);")
                 .append("nS.innerHTML='").append(snip).append("'");
-            _target.prependJavascript(jScript.toString());
+            _target.prependJavaScript(jScript.toString());
         }
     }
 

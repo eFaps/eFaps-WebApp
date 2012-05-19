@@ -23,12 +23,11 @@ package org.efaps.ui.wicket.pages.content.form;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.wicket.IPageMap;
 import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.classification.ClassificationPathPanel;
 import org.efaps.ui.wicket.components.editor.EditorPanel;
@@ -53,7 +52,6 @@ import org.efaps.ui.wicket.models.objects.UIForm.FormElement;
 import org.efaps.ui.wicket.models.objects.UIHeading;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
-import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 import org.efaps.util.EFapsException;
@@ -138,31 +136,15 @@ public class FormPage
      * @param _pageMap pagemap to be used
      * @param _commandUUID UUID of the command
      * @param _oid oid of the instance
-     * @throws EFapsException on error
-     */
-    public FormPage(final IPageMap _pageMap,
-                    final UUID _commandUUID,
-                    final String _oid)
-        throws EFapsException
-    {
-        super(_pageMap, new FormModel(new UIForm(_commandUUID, _oid)), null);
-        this.addComponents();
-    }
-
-    /**
-     * @param _pageMap pagemap to be used
-     * @param _commandUUID UUID of the command
-     * @param _oid oid of the instance
      * @param _openerId id of the opener
      * @throws EFapsException on error
      */
-    public FormPage(final IPageMap _pageMap,
-                    final UUID _commandUUID,
+    public FormPage(final UUID _commandUUID,
                     final String _oid,
                     final String _openerId)
         throws EFapsException
     {
-        super(_pageMap, new FormModel(new UIForm(_commandUUID, _oid, _openerId)), null);
+        super(new FormModel(new UIForm(_commandUUID, _oid, _openerId)), null);
         this.addComponents();
     }
 
@@ -250,8 +232,7 @@ public class FormPage
             } else if (element.getType().equals(ElementType.STRUCBRWS)) {
                 final StructurBrowserTreeTablePanel strucBrws = new StructurBrowserTreeTablePanel(
                                 elementRepeater.newChildId(), new UIModel<UIStructurBrowser>(
-                                                (UIFieldStructurBrowser) element.getElement()),
-                                               ContentContainerPage.IFRAME_PAGEMAP_NAME.equals(_page.getPageMapName()));
+                                                (UIFieldStructurBrowser) element.getElement()),true);
                 elementRepeater.add(strucBrws);
             } else if (element.getType().equals(ElementType.SUBFORM)) {
                 final UIFieldForm uiFieldForm = (UIFieldForm) element.getElement();

@@ -26,7 +26,6 @@ import java.util.Map;
 
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebComponent;
 import org.efaps.ui.wicket.models.objects.UIForm;
 
@@ -80,15 +79,14 @@ public class AjaxRemoveNew
         return ((AjaxRemoveNewBehavior) super.getBehaviors().get(0)).getJavaScript();
     }
 
-    /**
-     * Nothing must be rendered, because JavaScript is used.
-     *
-     * @param _markupStream MarkupStream
+
+    /* (non-Javadoc)
+     * @see org.apache.wicket.markup.html.WebComponent#onRender()
      */
     @Override
-    protected void onRender(final MarkupStream _markupStream)
+    protected void onRender()
     {
-        _markupStream.next();
+        // TODO Auto-generated method stub
     }
 
     /**
@@ -146,7 +144,7 @@ public class AjaxRemoveNew
             script.append("var thisNode = document.getElementById('").append(getComponent().getMarkupId())
                             .append("');").append("thisNode.parentNode.removeChild(thisNode);");
 
-            _target.appendJavascript(script.toString());
+            _target.appendJavaScript(script.toString());
         }
 
         /**

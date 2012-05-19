@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2012 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,16 +26,17 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.behavior.SimpleAttributeModifier;
-import org.apache.wicket.behavior.StringHeaderContributor;
+import org.apache.wicket.core.util.string.JavaScriptUtils;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
-import org.apache.wicket.util.string.JavascriptUtils;
 import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.db.Context;
@@ -206,7 +207,7 @@ public class SplitHeaderPanel
         // the recent link part
         final WebMarkupContainer recent = new WebMarkupContainer("recent");
         this.add(recent);
-        recent.add(new SimpleAttributeModifier("class",
+        recent.add(AttributeModifier.append("class",
                         SplitHeaderPanel.Css.RECENT.value));
         final List<IRecent> allRecents = ((EFapsSession) getSession()).getAllRecents();
         if (allRecents.isEmpty()) {
@@ -256,7 +257,7 @@ public class SplitHeaderPanel
                     final StringBuilder ret = new StringBuilder();
                     ret.append("togglePaneVertical(").append(position)
                                     .append(",").append("false".equalsIgnoreCase(hidden)).append(");");
-                    _target.appendJavascript(ret.toString());
+                    _target.appendJavaScript(ret.toString());
                     _target.focusComponent(getParent());
                 }
             };
@@ -264,11 +265,9 @@ public class SplitHeaderPanel
             final WebMarkupContainer linkDiv = new WebMarkupContainer("expandContractVDiv");
             linkvertical.add(linkDiv);
             if (_verticalCollapsed) {
-                linkDiv.add(new SimpleAttributeModifier("class",
-                                SplitHeaderPanel.Css.IMAGE_EXPAND_VERTICAL.value));
+                linkDiv.add(AttributeModifier.append("class", SplitHeaderPanel.Css.IMAGE_EXPAND_VERTICAL.value));
             } else {
-                linkDiv.add(new SimpleAttributeModifier("class",
-                                SplitHeaderPanel.Css.IMAGE_CONTRACT_VERTICAL.value));
+                linkDiv.add(AttributeModifier.append("class", SplitHeaderPanel.Css.IMAGE_CONTRACT_VERTICAL.value));
             }
         } else {
             this.add(new WebMarkupContainer("expandContractV").setVisible(false));
@@ -304,7 +303,7 @@ public class SplitHeaderPanel
                 final StringBuilder ret = new StringBuilder();
                 ret.append("togglePaneHorizontal(").append(position)
                                 .append(",").append("false".equalsIgnoreCase(hidden)).append(");");
-                _target.appendJavascript(ret.toString());
+                _target.appendJavaScript(ret.toString());
                 _target.focusComponent(getParent());
             }
         };
@@ -314,14 +313,13 @@ public class SplitHeaderPanel
         link.add(linkDiv);
 
         if (_horizontalCollapsed) {
-            linkDiv.add(new SimpleAttributeModifier("class", SplitHeaderPanel.Css.IMAGE_EXPAND.value));
-            this.add(new SimpleAttributeModifier("class", SplitHeaderPanel.Css.HEADER_CLOSED.value));
-            titel.add(new SimpleAttributeModifier("class", SplitHeaderPanel.Css.TITEL_HIDE.value));
+            linkDiv.add(AttributeModifier.append("class", SplitHeaderPanel.Css.IMAGE_EXPAND.value));
+            this.add(AttributeModifier.append("class", SplitHeaderPanel.Css.HEADER_CLOSED.value));
+            titel.add(AttributeModifier.append("class", SplitHeaderPanel.Css.TITEL_HIDE.value));
         } else {
-            linkDiv.add(new SimpleAttributeModifier("class",
-                            SplitHeaderPanel.Css.IMAGE_CONTRACT.value));
-            this.add(new SimpleAttributeModifier("class", SplitHeaderPanel.Css.HEADER_OPEN.value));
-            titel.add(new SimpleAttributeModifier("class", SplitHeaderPanel.Css.TITEL.value));
+            linkDiv.add(AttributeModifier.append("class", SplitHeaderPanel.Css.IMAGE_CONTRACT.value));
+            this.add(AttributeModifier.append("class", SplitHeaderPanel.Css.HEADER_OPEN.value));
+            titel.add(AttributeModifier.append("class", SplitHeaderPanel.Css.TITEL.value));
         }
     }
 
@@ -335,17 +333,15 @@ public class SplitHeaderPanel
         this.hideComponents.add(_component);
     }
 
-    /**
-     * before rendering the JavaScript must be added to the header of the page.
+    /* (non-Javadoc)
+     * @see org.apache.wicket.Component#renderHead(org.apache.wicket.markup.head.IHeaderResponse)
      */
     @Override
-    protected void onBeforeRender()
+    public void renderHead(final IHeaderResponse _response)
     {
-        this.add(new StringHeaderContributor(getJavaScript()));
-        super.onBeforeRender();
-
+        super.renderHead(_response);
+        _response.render(JavaScriptHeaderItem.forScript(getJavaScript(), "cssads"));
     }
-
     /**
      * Get the JavaScript which actually toggles the Split.
      *
@@ -396,7 +392,7 @@ public class SplitHeaderPanel
         }
         hideIds.append(")");
 
-        ret.append(JavascriptUtils.SCRIPT_OPEN_TAG)
+        ret.append(JavaScriptUtils.SCRIPT_OPEN_TAG)
             .append("  var connections = [];\n")
             .append("  function togglePaneHorizontal(_width, _hide) {\n")
             .append("    var header = dojo.byId('").append(headerId).append("');\n")
@@ -510,7 +506,7 @@ public class SplitHeaderPanel
                             .getJavaScript(innerPane));
         }
 
-        ret.append(JavascriptUtils.SCRIPT_CLOSE_TAG);
+        ret.append(JavaScriptUtils.SCRIPT_CLOSE_TAG);
         return ret.toString();
     }
 }

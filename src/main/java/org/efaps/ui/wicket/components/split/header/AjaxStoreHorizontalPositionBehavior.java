@@ -22,6 +22,7 @@ package org.efaps.ui.wicket.components.split.header;
 
 import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.util.string.StringValue;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.components.split.header.SplitHeaderPanel.PositionUserAttribute;
 import org.efaps.util.EFapsException;
@@ -57,12 +58,12 @@ public class AjaxStoreHorizontalPositionBehavior
     public String getJavaScript(final String _paneId)
     {
         final StringBuilder ret = new StringBuilder();
-        ret.append("function storePositionH(){\n")
-            .append("  var pane = dojo.byId(\"").append(_paneId).append("\");\n")
-            .append(generateCallbackScript("wicketAjaxPost('" + getCallbackUrl(false)
-                                        + "','" + AjaxStoreHorizontalPositionBehavior.POSITION_PARAMETERNAMERNAME
-                                        + "=' + pane.clientWidth"))
-            .append("\n" + "  }\n");
+//        ret.append("function storePositionH(){\n")
+//            .append("  var pane = dojo.byId(\"").append(_paneId).append("\");\n")
+//            .append(generateCallbackScript("wicketAjaxPost('" + getCallbackUrl(false)
+//                                        + "','" + AjaxStoreHorizontalPositionBehavior.POSITION_PARAMETERNAMERNAME
+//                                        + "=' + pane.clientWidth"))
+//            .append("\n" + "  }\n");
         return ret.toString();
     }
 
@@ -74,11 +75,11 @@ public class AjaxStoreHorizontalPositionBehavior
     @Override
     protected void respond(final AjaxRequestTarget _target)
     {
-        final String position = getComponent().getRequest().getParameter(
+        final StringValue position = getComponent().getRequest().getRequestParameters().getParameterValue(
                         AjaxStoreHorizontalPositionBehavior.POSITION_PARAMETERNAMERNAME);
         try {
             Context.getThreadContext().setUserAttribute(
-                            PositionUserAttribute.HORIZONTAL.getKey(), position);
+                            PositionUserAttribute.HORIZONTAL.getKey(), position.toString());
             Context.getThreadContext().setUserAttribute(
                             PositionUserAttribute.HORIZONTAL_COLLAPSED.getKey(), "false");
         } catch (final EFapsException e) {

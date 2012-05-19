@@ -20,18 +20,17 @@
 
 package org.efaps.ui.wicket.pages.content;
 
-import org.apache.wicket.IPageMap;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.IAjaxIndicatorAware;
-import org.apache.wicket.behavior.SimpleAttributeModifier;
-import org.apache.wicket.behavior.StringHeaderContributor;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.link.PopupSettings;
 import org.apache.wicket.model.IModel;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.Opener;
-import org.efaps.ui.wicket.behaviors.SetMessageStatusContributor;
+import org.efaps.ui.wicket.behaviors.SetMessageStatusBehavior;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.footer.FooterPanel;
 import org.efaps.ui.wicket.components.heading.HeadingPanel;
@@ -40,7 +39,6 @@ import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
-import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 import org.efaps.util.EFapsException;
@@ -117,18 +115,6 @@ public abstract class AbstractContentPage
     }
 
     /**
-     * @param _pagemap page map
-     * @param _model model for this page
-     * @param _modalWindow modal window
-     */
-    public AbstractContentPage(final IPageMap _pagemap, final IModel<?> _model,
-                               final ModalWindowContainer _modalWindow)
-    {
-        super(_pagemap, _model);
-        this.modalWindow = _modalWindow;
-    }
-
-    /**
      * Method that adds the Components to the Page.
      *
      * @param _form FormContainer
@@ -137,25 +123,21 @@ public abstract class AbstractContentPage
     protected void addComponents(final FormContainer _form)
         throws EFapsException
     {
-        // set the title for the Page
-        add(new StringHeaderContributor("<title>" + DBProperties.getProperty("Logo.Version.Label") + "</title>"));
+        //set the title for the Page
+        add(new Label("pageTitle", DBProperties.getProperty("Logo.Version.Label")));
+
         add(StaticHeaderContributor.forCss(AbstractContentPage.CSS));
-        add(new SetMessageStatusContributor());
+        add(new SetMessageStatusBehavior());
 
         this.body = new WebMarkupContainer("body") {
 
             private static final long serialVersionUID = 1L;
 
-            @Override
-            public boolean isTransparentResolver()
-            {
-                return true;
-            }
+
         };
         add(this.body);
 
         add(this.modal);
-        this.modal.setPageMapName("modal");
 
         final AbstractUIObject uiObject = (AbstractUIObject) super.getDefaultModelObject();
         add(new HeadingPanel("titel", uiObject.getTitle()));
@@ -170,11 +152,10 @@ public abstract class AbstractContentPage
                             "/servlet/help/" + ((AbstractUIPageObject) super.getDefaultModelObject()).getHelpTarget(),
                             DBProperties.getProperty("org.efaps.ui.wicket.pages.content.AbstractContentPage.HelpLink"))
                            .setPopupSettings(set).setContextRelative(true);
-            final String style = "eFapsHelpLink";
-            if (MainPage.IFRAME_PAGEMAP_NAME.equals(getPageMapName())) {
-                exLink.add(new SimpleAttributeModifier("class", style + " eFapsHelpMainLink"));
-            } else {
-                exLink.add(new SimpleAttributeModifier("class", style));
+
+            exLink.add(AttributeModifier.append("class", "eFapsHelpLink"));
+            if (true) {
+                exLink.add(AttributeModifier.append("class", " eFapsHelpMainLink"));
             }
         } else {
             exLink = new WebMarkupContainer("help");

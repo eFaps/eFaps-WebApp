@@ -28,7 +28,7 @@ import java.util.Map.Entry;
 import java.util.Random;
 import java.util.UUID;
 
-import org.apache.wicket.PageParameters;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.ui.AbstractCommand;

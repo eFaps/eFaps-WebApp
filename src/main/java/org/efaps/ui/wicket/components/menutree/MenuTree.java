@@ -30,23 +30,22 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
-import org.apache.wicket.PageMap;
-import org.apache.wicket.RequestCycle;
-import org.apache.wicket.Response;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.behavior.AbstractBehavior;
-import org.apache.wicket.behavior.SimpleAttributeModifier;
+import org.apache.wicket.behavior.Behavior;
+import org.apache.wicket.extensions.markup.html.tree.AbstractTree;
+import org.apache.wicket.extensions.markup.html.tree.ITreeState;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.IPageLink;
 import org.apache.wicket.markup.html.link.InlineFrame;
-import org.apache.wicket.markup.html.tree.AbstractTree;
-import org.apache.wicket.markup.html.tree.ITreeState;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.request.Response;
+import org.apache.wicket.request.cycle.RequestCycle;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.behaviors.update.AbstractAjaxUpdateBehavior;
@@ -277,7 +276,7 @@ public class MenuTree
         final UIMenuItem model = (UIMenuItem) node.getUserObject();
 
         // mark the item as selected/not selected
-        _item.add(new AbstractBehavior()
+        _item.add(new Behavior()
         {
 
             private static final long serialVersionUID = 1L;
@@ -326,7 +325,7 @@ public class MenuTree
         }
 
         if (model.isHeader()) {
-            label.add(new SimpleAttributeModifier("class", "eFapsMenuTreeHeader"));
+            label.add(AttributeModifier.append("class", "eFapsMenuTreeHeader"));
 
             String imageUrl = model.getImage();
             if (imageUrl == null) {
@@ -363,7 +362,7 @@ public class MenuTree
                 _item.add(new WebMarkupContainer("goUplink").setVisible(false));
             }
         } else {
-            label.add(new SimpleAttributeModifier("class", "eFapsMenuTreeItem"));
+            label.add(AttributeModifier.append("class", "eFapsMenuTreeItem"));
             link.add(new WebMarkupContainer("icon").setVisible(false));
             _item.add(new WebMarkupContainer("goIntolink").setVisible(false));
             _item.add(new WebMarkupContainer("removelink").setVisible(false));
@@ -383,8 +382,7 @@ public class MenuTree
         InlineFrame page = null;
         if (_model.getCommand().getTargetTable() != null) {
 
-            page = new InlineFrame(ContentContainerPage.IFRAME_WICKETID, PageMap
-                            .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME), new IPageLink() {
+            page = new InlineFrame(ContentContainerPage.IFRAME_WICKETID, new IPageLink() {
 
                 private static final long serialVersionUID = 1L;
 
@@ -410,8 +408,7 @@ public class MenuTree
                 }
             });
         } else {
-            page = new InlineFrame(ContentContainerPage.IFRAME_WICKETID, PageMap
-                            .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME), new IPageLink() {
+            page = new InlineFrame(ContentContainerPage.IFRAME_WICKETID, new IPageLink() {
 
                 private static final long serialVersionUID = 1L;
 
@@ -438,7 +435,7 @@ public class MenuTree
         page.setOutputMarkupId(true);
 
         component.replaceWith(page);
-        _target.addComponent(page.getParent());
+        _target.add(page.getParent());
 
     }
 
@@ -482,8 +479,8 @@ public class MenuTree
          *
          */
         @Override
-        protected void onComponentTagBody(final MarkupStream _markupStream,
-                                          final ComponentTag _openTag)
+        public void onComponentTagBody(final MarkupStream _markupStream,
+                                        final ComponentTag _openTag)
         {
             final Response response = RequestCycle.get().getResponse();
             for (int i = this.level - 1; i >= 0; --i) {

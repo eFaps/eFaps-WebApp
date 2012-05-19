@@ -20,13 +20,11 @@
 
 package org.efaps.ui.wicket.components.table.cell;
 
-import org.apache.wicket.IPageMap;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.RestartResponseException;
-import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.EFapsSession;
@@ -35,7 +33,6 @@ import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
-import org.efaps.ui.wicket.pages.main.MainPage;
 
 /**
  * Class is used as link to load a page from an popup window inside the opener window.
@@ -104,12 +101,9 @@ public class AjaxLoadInOpenerLink<T>
             parameters.add(Opener.OPENER_PARAKEY,
                             openerId);
 
-            // the url must be in the pagemap of the frame inside the mainpage
-            final IPageMap pageMap = Session.get().pageMapForName(MainPage.IFRAME_PAGEMAP_NAME, false);
-            final String url =
-                            (String) urlFor(pageMap, ContentContainerPage.class, parameters);
+            final String url = (String) urlFor( ContentContainerPage.class, parameters);
 
-            _target.prependJavascript(new StringBuilder()
+            _target.prependJavaScript(new StringBuilder()
                             .append("opener.eFapsFrameContent.location.href = '")
                             .append(url).append("'").toString());
         }

@@ -22,7 +22,8 @@ package org.efaps.ui.wicket.behaviors.dojo;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.ComponentTag;
-import org.apache.wicket.markup.html.IHeaderResponse;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 
 /**
  * This class renders the drag and drop ability from the DojoToolKit to a component.<br>
@@ -134,15 +135,15 @@ public class DnDBehavior
 
         if (this.type == DnDBehavior.BehaviorType.ITEM) {
             String value = "dojoDndItem ";
-            if (_tag.getString("class") != null) {
-                value += _tag.getString("class");
+            if (_tag.getAttribute("class") != null) {
+                value += _tag.getAttribute("class");
             }
             _tag.put("class", value);
             _tag.put("dndType", this.dndType);
         } else if (this.type == DnDBehavior.BehaviorType.HANDLE) {
             String value = "dojoDndHandle ";
-            if (_tag.getString("class") != null) {
-                value += _tag.getString("class");
+            if (_tag.getAttribute("class") != null) {
+                value += _tag.getAttribute("class");
             }
             _tag.put("class", value);
         } else if (this.type == DnDBehavior.BehaviorType.SOURCE) {
@@ -223,12 +224,15 @@ public class DnDBehavior
      *
      * @see org.efaps.ui.wicket.behaviors.dojo.AbstractDojoBehavior#renderHead(
      * org.apache.wicket.markup.html.IHeaderResponse)
+     *
+     * @param _component component the header will be rendered for
      * @param _response rseponse
      */
     @Override
-    public void renderHead(final IHeaderResponse _response)
+    public void renderHead(final Component _component,
+                           final IHeaderResponse _response)
     {
-        super.renderHead(_response);
+        super.renderHead(_component, _response);
         if (this.type == DnDBehavior.BehaviorType.SOURCE) {
 
             final String varName = "subcription" + ((Long) System.currentTimeMillis()).toString();
@@ -254,7 +258,7 @@ public class DnDBehavior
                     .append("  dojo.subscribe(\"/dnd/cancel\", function(){\n")
                     .append("    dojo.unsubscribe(").append(varName).append(");\n  });\n");
 
-                _response.renderJavascript(builder.toString(), DnDBehavior.class.toString());
+                _response.render(JavaScriptHeaderItem.forScript(builder.toString(), DnDBehavior.class.toString()));
             }
         }
     }

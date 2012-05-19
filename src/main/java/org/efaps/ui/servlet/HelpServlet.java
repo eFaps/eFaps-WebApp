@@ -43,7 +43,7 @@ import org.efaps.db.InstanceQuery;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.PrintQuery;
 import org.efaps.db.QueryBuilder;
-import org.efaps.ui.wicket.behaviors.dojo.DojoReference;
+import org.efaps.ui.wicket.behaviors.dojo.AbstractDojoBehavior;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -143,16 +143,16 @@ public class HelpServlet
                 final StringBuilder html = new StringBuilder();
                 html.append("<html><head>")
                     .append("<script type=\"text/javascript\" src=\"../../resources/")
-                    .append(DojoReference.JS_DOJO.getScope().getName()).append("/")
-                    .append(DojoReference.JS_DOJO.getName())
+                    .append(AbstractDojoBehavior.JS_DOJO.getScope().getName()).append("/")
+                    .append(AbstractDojoBehavior.JS_DOJO.getName())
                     .append("\" djConfig=\"parseOnLoad: true\"></script>\n")
                     .append("<script type=\"text/javascript\" src=\"../../resources/")
-                    .append(DojoReference.JS_EFAPSDOJO.getScope().getName()).append("/")
-                    .append(DojoReference.JS_EFAPSDOJO.getName())
+                    .append(AbstractDojoBehavior.JS_EFAPSDOJO.getScope().getName()).append("/")
+                    .append(AbstractDojoBehavior.JS_EFAPSDOJO.getName())
                     .append("\" djConfig=\"parseOnLoad: true\"></script>\n")
                     .append("<link rel=\"stylesheet\" type=\"text/css\" href=\"../../resources/")
-                    .append(DojoReference.CSS_TUNDRA.getScope().getName()).append("/")
-                    .append(DojoReference.CSS_TUNDRA.getName())
+                    .append(AbstractDojoBehavior.CSS_TUNDRA.getScope().getName()).append("/")
+                    .append(AbstractDojoBehavior.CSS_TUNDRA.getName())
                     .append("\" />")
                     .append("<link rel=\"stylesheet\" type=\"text/css\" ")
                     .append(" href=\"../../servlet/static/org.efaps.help.Help.css?")

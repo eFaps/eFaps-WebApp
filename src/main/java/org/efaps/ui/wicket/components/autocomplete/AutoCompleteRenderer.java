@@ -23,8 +23,8 @@ package org.efaps.ui.wicket.components.autocomplete;
 import java.util.Map;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.wicket.Response;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AbstractAutoCompleteTextRenderer;
+import org.apache.wicket.request.Response;
 import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 import org.efaps.ui.wicket.util.EFapsKey;
@@ -101,7 +101,7 @@ public class AutoCompleteRenderer
      *         default behavior is intented
      */
     @Override
-    protected CharSequence getOnSelectJavascriptExpression(final Map<String, String> _map)
+    protected CharSequence getOnSelectJavaScriptExpression(final Map<String, String> _map)
     {
         final String key = _map.get(EFapsKey.AUTOCOMPLETE_KEY.getKey()) != null
                         ? _map.get(EFapsKey.AUTOCOMPLETE_KEY.getKey())

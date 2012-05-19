@@ -126,12 +126,12 @@ public class AjaxSearchComponent
                 while (iter.hasNext()) {
                     final Component comp = iter.next();
                     if (comp instanceof FormContainer) {
-                        _target.addComponent(comp);
+                        _target.add(comp);
                         form = (FormContainer) comp;
                         break1 = true;
                     }
                     if (comp instanceof HeadingPanel) {
-                        _target.addComponent(comp);
+                        _target.add(comp);
                         heading = (HeadingPanel) comp;
                         break2 = true;
                     }

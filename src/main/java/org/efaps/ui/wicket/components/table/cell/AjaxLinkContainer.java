@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2012 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@
 package org.efaps.ui.wicket.components.table.cell;
 
 import org.apache.wicket.Page;
-import org.apache.wicket.PageMap;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -39,7 +38,6 @@ import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
-import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 
@@ -195,18 +193,16 @@ public class AjaxLinkContainer
                 try {
                     if (menu.getTargetTable() != null) {
                         if (menu.getTargetStructurBrowserField() == null) {
-                            page = new TablePage(PageMap.forName(ContentContainerPage.IFRAME_PAGEMAP_NAME),
-                                            menu.getUUID(), cellmodel.getInstanceKey())
+                            page = new TablePage(menu.getUUID(), cellmodel.getInstanceKey())
                                         .setMenuTreeKey(((AbstractContentPage) getComponent().getPage())
                                                         .getMenuTreeKey());
                         } else {
-                            page = new StructurBrowserPage(PageMap.forName(ContentContainerPage.IFRAME_PAGEMAP_NAME),
-                                            menu.getUUID(), cellmodel.getInstanceKey())
+                            page = new StructurBrowserPage(menu.getUUID(), cellmodel.getInstanceKey())
                                             .setMenuTreeKey(((AbstractContentPage) getComponent().getPage())
                                                             .getMenuTreeKey());
                         }
                     } else {
-                        page = new FormPage(PageMap.forName(ContentContainerPage.IFRAME_PAGEMAP_NAME), menu.getUUID(),
+                        page = new FormPage(menu.getUUID(),
                                         cellmodel.getInstanceKey())
                                         .setMenuTreeKey(((AbstractContentPage) getComponent().getPage())
                                                         .getMenuTreeKey());

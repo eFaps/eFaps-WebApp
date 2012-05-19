@@ -29,23 +29,22 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.Page;
-import org.apache.wicket.PageMap;
-import org.apache.wicket.ResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.behavior.AbstractBehavior;
-import org.apache.wicket.behavior.SimpleAttributeModifier;
+import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.extensions.markup.html.tree.DefaultAbstractTree;
+import org.apache.wicket.extensions.markup.html.tree.ITreeState;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.IPageLink;
 import org.apache.wicket.markup.html.link.InlineFrame;
-import org.apache.wicket.markup.html.tree.ITreeState;
 import org.apache.wicket.model.AbstractReadOnlyModel;
+import org.apache.wicket.request.resource.ResourceReference;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.Menu;
@@ -264,14 +263,13 @@ public class StructurBrowserTree
                         }
                     };
                 }
-                final InlineFrame page = new InlineFrame(ContentContainerPage.IFRAME_WICKETID, PageMap
-                                .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME), pageLink);
+                final InlineFrame page = new InlineFrame(ContentContainerPage.IFRAME_WICKETID, pageLink);
                 final InlineFrame component = (InlineFrame) getPage().get(
                                 ((ContentContainerPage) getPage()).getInlinePath());
                 page.setOutputMarkupId(true);
 
                 component.replaceWith(page);
-                _target.addComponent(page.getParent());
+                _target.add(page.getParent());
 
                 final MenuTree menutree = (MenuTree) ((EFapsSession) getSession())
                                 .getFromCache(StructurBrowserTree.this.listMenuKey);
@@ -309,9 +307,9 @@ public class StructurBrowserTree
         if (model.getDirection() == null) {
             direction.setVisible(false);
         } else if (model.getDirection()) {
-            direction.add(new SimpleAttributeModifier("class", "directionDown"));
+            direction.add( AttributeModifier.append("class", "directionDown"));
         } else {
-            direction.add(new SimpleAttributeModifier("class", "directionUp"));
+            direction.add( AttributeModifier.append("class", "directionUp"));
         }
 
         final MarkupContainer nodeLink = newNodeLink(_item, "nodeLink", node);
@@ -333,7 +331,7 @@ public class StructurBrowserTree
         // do distinguish between selected and unselected rows we add an
         // behavior
         // that modifies row css class.
-        _item.add(new AbstractBehavior() {
+        _item.add(new Behavior() {
 
             private static final long serialVersionUID = 1L;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2012 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,12 +32,12 @@ import java.util.Stack;
 import java.util.UUID;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.Request;
-import org.apache.wicket.RequestCycle;
 import org.apache.wicket.RestartResponseException;
-import org.apache.wicket.protocol.http.IMultipartWebRequest;
-import org.apache.wicket.protocol.http.WebRequest;
 import org.apache.wicket.protocol.http.WebSession;
+import org.apache.wicket.request.IRequestParameters;
+import org.apache.wicket.request.Request;
+import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.util.string.StringValue;
 import org.apache.wicket.util.upload.FileItem;
 import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.admin.user.Person;
@@ -341,11 +341,11 @@ public class EFapsSession
      */
     public final void login()
     {
-        final Map<?, ?> parameter = RequestCycle.get().getRequest().getParameterMap();
-        final String[] name = (String[]) parameter.get("name");
-        final String[] pwd = (String[]) parameter.get("password");
-        if (checkLogin(name[0], pwd[0])) {
-            this.userName = name[0];
+        final IRequestParameters paras = RequestCycle.get().getRequest().getRequestParameters() ;
+        final StringValue name = paras.getParameterValue("name");
+        final StringValue pwd = paras.getParameterValue("password");
+        if (checkLogin(name.toString(), pwd.toString())) {
+            this.userName = name.toString();
             // on login a valid Context for the User must be opened to ensure that the
             // session attributes that depend on the user are set correctly before any
             // further requests are made (e.g. setting the current company
@@ -447,36 +447,36 @@ public class EFapsSession
         if (isLogedIn()) {
             try {
                 if (!Context.isTMActive()) {
-                    WebRequest request = (WebRequest) RequestCycle.get().getRequest();
+                    RequestCycle.get().getRequest();
 
-                    final String contentType = request.getHttpServletRequest().getContentType();
-
-                    if ((contentType != null) && contentType.startsWith("multipart/form-data")) {
-                        request = request.newMultipartWebRequest(getApplication().getApplicationSettings()
-                                        .getDefaultMaximumUploadSize());
-                    }
-
-                    final Map<String, String[]> parameters = request.getParameterMap();
-                    Map<String, Context.FileParameter> fileParams = null;
-
-                    // If we successfully installed a multipart request
-                    if (request instanceof IMultipartWebRequest) {
-                        final Map<String, FileItem> fileMap = ((IMultipartWebRequest) request).getFiles();
-                        fileParams = new HashMap<String, Context.FileParameter>(fileMap.size());
-
-                        for (final Map.Entry<String, FileItem> entry : fileMap.entrySet()) {
-                            fileParams.put(entry.getKey(), new FileParameter(entry.getKey(), entry.getValue()));
-                        }
-                        RequestCycle.get().setRequest(request);
-                    }
-
-                    Context.begin(this.userName, super.getLocale(), this.sessionAttributes, parameters, fileParams,
-                                    true);
-                    // set the locale in the context and in the session
-                    setLocale(Context.getThreadContext().getLocale());
-                    request.getHttpServletRequest().getSession().setAttribute(UserAttributesSet.CONTEXTMAPKEY,
-                                                                 Context.getThreadContext().getUserAttributes());
-                    Context.getThreadContext().setPath(request.getHttpServletRequest().getContextPath());
+//                    final String contentType = request.get .getHttpServletRequest().getContentType();
+//
+//                    if ((contentType != null) && contentType.startsWith("multipart/form-data")) {
+//                        request = request.newMultipartWebRequest(getApplication().getApplicationSettings()
+//                                        .getDefaultMaximumUploadSize());
+//                    }
+//
+//                    final Map<String, String[]> parameters = request.getParameterMap();
+//                    Map<String, Context.FileParameter> fileParams = null;
+//
+//                    // If we successfully installed a multipart request
+//                    if (request instanceof IMultipartWebRequest) {
+//                        final Map<String, FileItem> fileMap = ((IMultipartWebRequest) request).getFiles();
+//                        fileParams = new HashMap<String, Context.FileParameter>(fileMap.size());
+//
+//                        for (final Map.Entry<String, FileItem> entry : fileMap.entrySet()) {
+//                            fileParams.put(entry.getKey(), new FileParameter(entry.getKey(), entry.getValue()));
+//                        }
+//                        RequestCycle.get().setRequest(request);
+//                    }
+//
+//                    Context.begin(this.userName, super.getLocale(), this.sessionAttributes, parameters, fileParams,
+//                                    true);
+//                    // set the locale in the context and in the session
+//                    setLocale(Context.getThreadContext().getLocale());
+//                    request.getHttpServletRequest().getSession().setAttribute(UserAttributesSet.CONTEXTMAPKEY,
+//                                                                 Context.getThreadContext().getUserAttributes());
+//                    Context.getThreadContext().setPath(request.getHttpServletRequest().getContextPath());
                 }
             } catch (final EFapsException e) {
                 EFapsSession.LOG.error("could not initialise the context", e);

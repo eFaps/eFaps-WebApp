@@ -21,15 +21,13 @@ package org.efaps.ui.wicket.pages.contentcontainer;
 
 import java.util.UUID;
 
-import org.apache.wicket.IPageMap;
 import org.apache.wicket.Page;
-import org.apache.wicket.PageMap;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.link.IPageLink;
 import org.apache.wicket.markup.html.link.InlineFrame;
 import org.apache.wicket.protocol.http.ClientProperties;
 import org.apache.wicket.protocol.http.request.WebClientInfo;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Command;
 import org.efaps.admin.ui.Menu;
@@ -139,7 +137,7 @@ public class ContentContainerPage
         throws EFapsException
     {
         super();
-        final Opener opener = ((EFapsSession) getSession()).getOpener(_parameters.getString(Opener.OPENER_PARAKEY));
+        final Opener opener = ((EFapsSession) getSession()).getOpener(_parameters.get(Opener.OPENER_PARAKEY).toString());
         final UUID commandUUID;
         final String instanceKey;
         if (opener.getModel() != null) {
@@ -162,40 +160,23 @@ public class ContentContainerPage
                                 final String _instanceKey)
         throws EFapsException
     {
-        super();
         initialise(_uuid, _instanceKey, null);
     }
 
-    /**
-     * @param _pageMap page map
-     * @param _uuid UUID of the command
-     * @param _instanceKey oid
-     * @throws EFapsException on error
-     */
-    public ContentContainerPage(final IPageMap _pageMap,
-                                final UUID _uuid,
-                                final String _instanceKey)
-        throws EFapsException
-    {
-        this(_pageMap, _uuid, _instanceKey, false);
-    }
-
-    /**
+       /**
      * @param _pageMap          page map
      * @param _uuid             UUID of the calling command
      * @param _instanceKey      instance key
      * @param _selectedCmdUUID  UUID of the selected command
      * @throws EFapsException on error
      */
-    public ContentContainerPage(final IPageMap _pageMap,
-                                final UUID _uuid,
+    public ContentContainerPage(final UUID _uuid,
                                 final String _instanceKey,
                                 final UUID _selectedCmdUUID)
         throws EFapsException
     {
-        super(_pageMap);
-        this.structurbrowser = false;
-        initialise(_uuid, _instanceKey, _selectedCmdUUID);
+
+        this(_uuid, _instanceKey, _selectedCmdUUID, false);
     }
 
     /**
@@ -205,15 +186,14 @@ public class ContentContainerPage
      * @param _addStructurBrowser add a structor browser
      * @throws EFapsException on error
      */
-    public ContentContainerPage(final IPageMap _pageMap,
-                                final UUID _uuid,
+    public ContentContainerPage(final UUID _uuid,
                                 final String _instanceKey,
+                                final UUID _selectedCmdUUID,
                                 final boolean _addStructurBrowser)
         throws EFapsException
     {
-        super(_pageMap);
         this.structurbrowser = _addStructurBrowser;
-        initialise(_uuid, _instanceKey, null);
+        initialise(_uuid, _instanceKey, _selectedCmdUUID);
     }
 
     /**
@@ -231,7 +211,7 @@ public class ContentContainerPage
     {
         ((EFapsSession) getSession()).getUpdateBehaviors().clear();
 
-        final ClientProperties properties = ((WebClientInfo) getRequestCycle().getClientInfo()).getProperties();
+        final ClientProperties properties = ((WebClientInfo) getSession().getClientInfo()).getProperties();
         // we use different StyleSheets for different Bowsers
         if (properties.isBrowserInternetExplorer()) {
             add(StaticHeaderContributor.forCss(ContentContainerPage.CSS_IE));
@@ -239,7 +219,7 @@ public class ContentContainerPage
             add(StaticHeaderContributor.forCss(ContentContainerPage.CSS));
         }
 
-        this.menuTreeKey = "MenuTree_" + getPageMapName();
+        this.menuTreeKey = "MenuTree_";
         // add a Split
         final WebMarkupContainer split = new WebMarkupContainer("split");
         this.add(split);
@@ -279,8 +259,7 @@ public class ContentContainerPage
         }
         final UUID uuid4NewPage = uuidTmp;
         // add the IFrame
-        final InlineFrame inline = new InlineFrame(ContentContainerPage.IFRAME_WICKETID, PageMap
-                        .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME), new IPageLink() {
+        final InlineFrame inline = new InlineFrame(ContentContainerPage.IFRAME_WICKETID, new IPageLink() {
 
             private static final long serialVersionUID = 1L;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2012 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,52 +21,61 @@
 package org.efaps.ui.wicket.components.button;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.behavior.AbstractBehavior;
+import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.ComponentTag;
-import org.apache.wicket.markup.html.IHeaderResponse;
+import org.apache.wicket.markup.head.CssHeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 
 /**
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public class ButtonStyleBehavior extends AbstractBehavior {
+public class ButtonStyleBehavior
+    extends Behavior
+{
 
-  private static final long serialVersionUID = 1L;
+    /**
+     * Reference to the StyleSheet.
+     */
+    public static final EFapsContentReference CSS = new EFapsContentReference(ButtonStyleBehavior.class,
+                                    "ButtonStyleBehavior.css");
 
-  public final static EFapsContentReference CSS =
-      new EFapsContentReference(ButtonStyleBehavior.class,
-          "ButtonStyleBehavior.css");
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.apache.wicket.behavior.AbstractBehavior#renderHead(org.apache.wicket.markup.html.IHeaderResponse)
-   */
-  @Override
-  public void renderHead(final IHeaderResponse _response) {
-    super.renderHead(_response);
-    _response.renderCSSReference(CSS.getStaticContentUrl());
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.apache.wicket.behavior.AbstractBehavior#onComponentTag(org.apache.wicket.Component,
-   *      org.apache.wicket.markup.ComponentTag)
-   */
-  @Override
-  public void onComponentTag(final Component _component, final ComponentTag _tag) {
-    super.onComponentTag(_component, _tag);
-    if (_component instanceof WebMarkupContainer) {
-      _tag.put("class", "eFapsButton");
+    /* (non-Javadoc)
+     * @see org.apache.wicket.behavior.Behavior#renderHead(org.apache.wicket.Component,
+     * org.apache.wicket.markup.head.IHeaderResponse)
+     */
+    @Override
+    public void renderHead(final Component _component,
+                           final IHeaderResponse _response)
+    {
+        super.renderHead(_component, _response);
+        _response.render(CssHeaderItem.forUrl(ButtonStyleBehavior.CSS.getStaticContentUrl()));
     }
-    if (_component instanceof Label) {
-      _tag.put("class", "eFapsButtonLabel");
-    }
-  }
 
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.apache.wicket.behavior.AbstractBehavior#onComponentTag(org.apache
+     * .wicket.Component, org.apache.wicket.markup.ComponentTag)
+     */
+    @Override
+    public void onComponentTag(final Component _component,
+                               final ComponentTag _tag)
+    {
+        super.onComponentTag(_component, _tag);
+        if (_component instanceof WebMarkupContainer) {
+            _tag.put("class", "eFapsButton");
+        }
+        if (_component instanceof Label) {
+            _tag.put("class", "eFapsButtonLabel");
+        }
+    }
 }

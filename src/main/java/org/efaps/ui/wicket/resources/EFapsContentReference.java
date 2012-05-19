@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2012 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,75 +20,81 @@
 
 package org.efaps.ui.wicket.resources;
 
-import org.apache.wicket.IClusterable;
-
+import org.apache.wicket.util.io.IClusterable;
 import org.efaps.util.RequestHandler;
 
 /**
  * This class is used as a Reference to an Object in the eFaps-DataBase.<br>
  *
- * @author jmox
- * @version $Id$
+ * @author The eFaps Team
+ * @version $Id: EFapsContentReference.java 3447 2009-11-29 22:46:39Z tim.moxter
+ *          $
  */
-public class EFapsContentReference implements IClusterable {
+public class EFapsContentReference
+    implements IClusterable
+{
 
-  private static final long serialVersionUID = 1L;
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
-  /**
-   * the name of this EFapsContentReference. With this name the Object from the
-   * eFpas-DataBase will be identified.
-   */
-  private final String name;
+    /**
+     * the name of this EFapsContentReference. With this name the Object from
+     * the eFpas-DataBase will be identified.
+     */
+    private final String name;
 
-  /**
-   * Constructor setting the name of the EFapsContentReference, from combining
-   * the name of the class and the name.
-   *
-   * @param _scope
-   *                class the name will be included
-   * @param _name
-   *                name of the Object
-   */
-  public EFapsContentReference(final Class<?> _scope, final String _name) {
-    this(_scope.getPackage().getName() + "." + _name);
-  }
+    /**
+     * Constructor setting the name of the EFapsContentReference, from combining
+     * the name of the class and the name.
+     *
+     * @param _scope class the name will be included
+     * @param _name name of the Object
+     */
+    public EFapsContentReference(final Class<?> _scope,
+                                 final String _name)
+    {
+        this(_scope.getPackage().getName() + "." + _name);
+    }
 
-  /**
-   * Constructor setting the name of the EFapsContentReference
-   *
-   * @param _name
-   *                Name to set
-   */
-  public EFapsContentReference(final String _name) {
-    this.name = _name;
-  }
+    /**
+     * Constructor setting the name of the EFapsContentReference.
+     *
+     * @param _name Name to set
+     */
+    public EFapsContentReference(final String _name)
+    {
+        this.name = _name;
+    }
 
-  /**
-   * This is the getter method for the instance variable {@link #name}.
-   *
-   * @return value of instance variable {@link #name}
-   */
-  public String getName() {
-    return this.name;
-  }
+    /**
+     * This is the getter method for the instance variable {@link #name}.
+     *
+     * @return value of instance variable {@link #name}
+     */
+    public String getName()
+    {
+        return this.name;
+    }
 
-  /**
-   * get the URL to an Image from the eFaps-DataBase
-   *
-   * @return URL as a String
-   */
-  public String getImageUrl() {
-    return RequestHandler.replaceMacrosInUrl(RequestHandler.URL_IMAGE
-        + this.name);
-  }
+    /**
+     * get the URL to an Image from the eFaps-DataBase.
+     *
+     * @return URL as a String
+     */
+    public String getImageUrl()
+    {
+        return RequestHandler.replaceMacrosInUrl(RequestHandler.URL_IMAGE + this.name);
+    }
 
-  /**
-   * get the URL to a Static Content from the eFaps-DataBase
-   *
-   * @return URL as a String
-   */
-  public String getStaticContentUrl() {
-    return RequestHandler.replaceMacrosInUrl(RequestHandler.URL_STATIC
-        + this.name);
-  }
+    /**
+     * get the URL to a Static Content from the eFaps-DataBase.
+     *
+     * @return URL as a String
+     */
+    public String getStaticContentUrl()
+    {
+        return RequestHandler.replaceMacrosInUrl(RequestHandler.URL_STATIC + this.name);
+    }
 }

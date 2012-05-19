@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2012 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,13 +20,13 @@
 
 package org.efaps.ui.wicket.models;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.wicket.IClusterable;
-import org.apache.wicket.RequestCycle;
+import org.apache.wicket.request.cycle.RequestCycle;
 import org.efaps.db.Instance;
-import org.efaps.ui.wicket.EFapsWebRequestCycle;
+import org.efaps.ui.wicket.EFapsRequestCycleListener;
 import org.efaps.ui.wicket.util.EFapsKey;
 import org.efaps.util.EFapsException;
 
@@ -38,7 +38,7 @@ import org.efaps.util.EFapsException;
  *          tim.moxter $
  */
 public abstract class AbstractInstanceObject
-    implements IClusterable
+    implements Serializable
 {
 
     /**
@@ -82,7 +82,8 @@ public abstract class AbstractInstanceObject
         Instance ret = null;
         Map<String, Instance> map;
 
-        final EFapsWebRequestCycle cycle = (EFapsWebRequestCycle) RequestCycle.get();
+        final EFapsRequestCycleListener cycle = (EFapsRequestCycleListener) RequestCycle.get().getListeners().iterator()
+                        .next();
 
         map = (Map<String, Instance>) cycle.getFromCache(EFapsKey.INSTANCE_CACHEKEY.getKey());
         if (map == null) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2012 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,27 +25,32 @@ import org.apache.wicket.model.Model;
 /**
  * TODO comment
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public class XYModel extends Model<XYValue> {
+public class XYModel
+    extends Model<XYValue>
+{
 
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  private XYValue xymodel;
+    private XYValue xymodel;
 
-  public XYModel (final XYValue _xymodel) {
-    this.xymodel = _xymodel;
-  }
+    public XYModel(final XYValue _xymodel)
+    {
+        this.xymodel = _xymodel;
+    }
 
-  @Override
-  public XYValue getObject() {
-    return this.xymodel;
-  }
+    @Override
+    public XYValue getObject()
+    {
+        return this.xymodel;
+    }
 
-  @Override
-  public void setObject(final XYValue _xymodel) {
-    this.xymodel = _xymodel;
-  }
+    @Override
+    public void setObject(final XYValue _xymodel)
+    {
+        this.xymodel = _xymodel;
+    }
 
 }

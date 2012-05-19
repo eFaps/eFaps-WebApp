@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2012 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.util.string.StringValue;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.button.Button;
@@ -103,19 +104,18 @@ public class FilterPage
             {
                 try {
                     if (_uitableHeader.isFilterPickList()) {
-                        final String[] selection = getRequestCycle().getRequest().getParameters(
-                                        PickerPanel.CHECKBOXNAME);
+                        final List<StringValue> selection = getRequest().getRequestParameters().getParameterValues(PickerPanel.CHECKBOXNAME);
 
                         if (selection != null) {
                             final List<?> picklist = ((PickerPanel) panel).getPickList();
                             // all value are selected, meaning that nothing must be
                             // filtered
-                            if (selection.length == picklist.size()) {
+                            if (selection.size() == picklist.size()) {
                                 uiTable.removeFilter(_uitableHeader);
                             } else {
                                 final Set<Object> filterList = new HashSet<Object>();
-                                for (int i = 0; i < selection.length; i++) {
-                                    final Integer intpos = Integer.valueOf(selection[i]);
+                                for (final StringValue value :  selection) {
+                                    final Integer intpos = Integer.valueOf(value.toString());
                                     filterList.add(picklist.get(intpos));
                                 }
                                 uiTable.addFilterList(_uitableHeader, filterList);
@@ -134,25 +134,28 @@ public class FilterPage
                             final Component comp = iter.next();
                             if (comp instanceof DateTimePanel) {
                                 final DateTimePanel datePanel = (DateTimePanel) comp;
-                                if (datePanel.getId().equals(freeTextPanel.getFromFieldName())) {
-                                    final String[] tmp = getRequestCycle().getRequest().getParameters(
-                                                    datePanel.getDateFieldName());
-                                    if (tmp.length > 0) {
-                                        final String[] fromTmp = datePanel.getDateAsString(tmp, null, null, null);
-                                        if (fromTmp != null) {
-                                            from = fromTmp[0];
-                                        }
-                                    }
-                                } else {
-                                    final String[] tmp = getRequestCycle().getRequest().getParameters(
-                                                    datePanel.getDateFieldName());
-                                    if (tmp.length > 0) {
-                                        final String[] toTmp = datePanel.getDateAsString(tmp, null, null, null);
-                                        if (toTmp != null) {
-                                            to = toTmp[0];
-                                        }
-                                    }
-                                }
+//                                if (datePanel.getId().equals(freeTextPanel.getFromFieldName())) {
+//                                    final List<StringValue> selection = getRequest().getRequestParameters().getParameterValues(PickerPanel.CHECKBOXNAME);
+//
+//
+//                                    final String[] tmp = getRequestCycle().getRequest().getParameters(
+//                                                    datePanel.getDateFieldName());
+//                                    if (tmp.length > 0) {
+//                                        final String[] fromTmp = datePanel.getDateAsString(tmp, null, null, null);
+//                                        if (fromTmp != null) {
+//                                            from = fromTmp[0];
+//                                        }
+//                                    }
+//                                } else {
+//                                    final String[] tmp = getRequestCycle().getRequest().getParameters(
+//                                                    datePanel.getDateFieldName());
+//                                    if (tmp.length > 0) {
+//                                        final String[] toTmp = datePanel.getDateAsString(tmp, null, null, null);
+//                                        if (toTmp != null) {
+//                                            to = toTmp[0];
+//                                        }
+//                                    }
+//                                }
                             }
                         }
                         uiTable.addFilterRange(_uitableHeader, from, to);
@@ -165,6 +168,14 @@ public class FilterPage
                 } catch (final EFapsException e) {
                     throw new RestartResponseException(new ErrorPage(e));
                 }
+            }
+
+            @Override
+            protected void onError(final AjaxRequestTarget _target,
+                                   final Form<?> _form)
+            {
+                // TODO Auto-generated method stub
+
             }
         };
 

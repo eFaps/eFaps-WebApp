@@ -92,7 +92,7 @@ public class AjaxPickerLink
      * @param _openTag      open tag
      */
     @Override
-    protected void onComponentTagBody(final MarkupStream _markupStream,
+    public void onComponentTagBody(final MarkupStream _markupStream,
                                       final ComponentTag _openTag)
     {
         super.onComponentTagBody(_markupStream, _openTag);

@@ -104,7 +104,7 @@ public class PickerCallBack
             if (map.containsKey(EFapsKey.PICKER_JAVASCRIPT.getKey())) {
                 js.append(map.get(EFapsKey.PICKER_JAVASCRIPT.getKey()));
             }
-            _target.prependJavascript(js.toString());
+            _target.prependJavaScript(js.toString());
             this.picker.setExecuted(false);
         }
     }

@@ -24,17 +24,15 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.Request;
-import org.apache.wicket.RequestCycle;
-import org.apache.wicket.Response;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.Session;
 import org.apache.wicket.authorization.Action;
 import org.apache.wicket.authorization.IAuthorizationStrategy;
-import org.apache.wicket.javascript.DefaultJavascriptCompressor;
+import org.apache.wicket.javascript.DefaultJavaScriptCompressor;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
-import org.apache.wicket.protocol.http.WebRequest;
+import org.apache.wicket.request.Request;
+import org.apache.wicket.request.Response;
 import org.efaps.jaas.AppAccessHandler;
 import org.efaps.ui.filter.AbstractFilter;
 import org.efaps.ui.wicket.pages.login.LoginPage;
@@ -51,23 +49,6 @@ import org.efaps.ui.wicket.pages.main.MainPage;
 public class EFapsApplication
     extends WebApplication
 {
-    /**
-     * New request cycle.
-     *
-     * @param _request the request
-     * @param _response the response
-     *
-     * @return the request cycle
-     *
-     * @see org.apache.wicket.protocol.http.WebApplication#newRequestCycle(org.apache.wicket.Request,
-     *      org.apache.wicket.Response)
-     */
-    @Override
-    public RequestCycle newRequestCycle(final Request _request,
-                                        final Response _response)
-    {
-        return new EFapsWebRequestCycle(this, (WebRequest) _request, _response);
-    }
 
     /**
      * @see org.apache.wicket.Application#getHomePage()
@@ -100,15 +81,15 @@ public class EFapsApplication
         getMarkupSettings().setStripWicketTags(true);
         getMarkupSettings().setStripComments(true);
         getMarkupSettings().setCompressWhitespace(true);
-        getMarkupSettings().setStripXmlDeclarationFromOutput(true);
+        getMarkupSettings().setAutomaticLinking(false);
         getRequestCycleSettings().setGatherExtendedBrowserInfo(true);
         getDebugSettings().setAjaxDebugModeEnabled(false);
         getDebugSettings().setDevelopmentUtilitiesEnabled(false);
         getSecuritySettings().setAuthorizationStrategy(new EFapsFormBasedAuthorizationStartegy());
         getApplicationSettings().setPageExpiredErrorPage(LoginPage.class);
-        getPageSettings().setAutomaticMultiWindowSupport(true);
-        getResourceSettings().setJavascriptCompressor(new DefaultJavascriptCompressor());
+        getResourceSettings().setJavaScriptCompressor(new DefaultJavaScriptCompressor());
         getRequestLoggerSettings().setRequestLoggerEnabled(false);
+        getRequestCycleListeners().add(new EFapsRequestCycleListener());
     }
 
     /**

@@ -25,13 +25,10 @@ import java.util.Map;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
-import org.apache.wicket.PageMap;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.Session;
-import org.apache.wicket.behavior.AbstractBehavior;
-import org.apache.wicket.behavior.StringHeaderContributor;
-import org.apache.wicket.util.string.JavascriptUtils;
+import org.apache.wicket.core.util.string.JavaScriptUtils;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
@@ -39,8 +36,8 @@ import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.Opener;
+import org.efaps.ui.wicket.components.FileUploadBehavior;
 import org.efaps.ui.wicket.components.FormContainer;
-import org.efaps.ui.wicket.components.IFileUploadListener;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.AbstractModel;
@@ -50,7 +47,6 @@ import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
-import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.util.EFapsException;
 
 /**
@@ -60,8 +56,7 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  */
 public class UploadBehavior
-    extends AbstractBehavior
-    implements IFileUploadListener
+    extends FileUploadBehavior
 {
 
     /**
@@ -116,12 +111,12 @@ public class UploadBehavior
 
         final StringBuilder script = new StringBuilder();
         if (uiForm.getTarget() == Target.MODAL) {
-            script.append(JavascriptUtils.SCRIPT_OPEN_TAG)
+            script.append(JavaScriptUtils.SCRIPT_OPEN_TAG)
                 .append("  window.onload = function() {")
                 .append(this.modalWindow.getReloadJavaScript())
                 .append(this.modalWindow.getCloseJavacript())
                 .append("}")
-                .append(JavascriptUtils.SCRIPT_CLOSE_TAG);
+                .append(JavaScriptUtils.SCRIPT_CLOSE_TAG);
         } else {
             final AbstractModel<?> openermodel = (AbstractModel<?>) ((EFapsSession) Session.get()).getOpener(
                             uiForm.getOpenerId()).getModel();
@@ -135,16 +130,15 @@ public class UploadBehavior
             final PageParameters parameters = new PageParameters();
             parameters.add(Opener.OPENER_PARAKEY, uiForm.getOpenerId());
 
-            final CharSequence url = this.component.urlFor(PageMap.forName(MainPage.IFRAME_PAGEMAP_NAME), clazz,
-                            parameters);
+            final CharSequence url = this.component.urlFor(clazz, parameters);
 
-            script.append(JavascriptUtils.SCRIPT_OPEN_TAG)
+            script.append(JavaScriptUtils.SCRIPT_OPEN_TAG)
                 .append("  window.onload = function() {")
                 .append(" opener.location.href = '").append(url).append("'; self.close();")
                 .append("  top.window.close();}")
-                .append(JavascriptUtils.SCRIPT_CLOSE_TAG);
+                .append(JavaScriptUtils.SCRIPT_CLOSE_TAG);
         }
-        this.component.getRequestCycle().getResponsePage().add(new StringHeaderContributor(script.toString()));
+//        this.component.getResponse().getContainerResponse() getRequestCycle().getResponse(). .getResponse()  .getResponsePage().add(new StringHeaderContributor(script.toString()));
     }
 
     /**
@@ -158,11 +152,10 @@ public class UploadBehavior
         for (final DateTimePanel datepicker : ((FormContainer) this.component).getDateComponents()) {
             final Map<String, String[]> map = Context.getThreadContext().getParameters();
             if (map.containsKey(datepicker.getDateFieldName())) {
-                final String[] date = map.get(datepicker.getDateFieldName());
-                final String[] hour = map.get(datepicker.getHourFieldName());
-                final String[] minute = map.get(datepicker.getMinuteFieldName());
-                final String[] ampm = map.get(datepicker.getAmPmFieldName());
-                map.put(datepicker.getFieldName(), datepicker.getDateAsString(date, hour, minute, ampm));
+                map.get(datepicker.getDateFieldName());
+                map.get(datepicker.getHourFieldName());
+                map.get(datepicker.getMinuteFieldName());
+                map.get(datepicker.getAmPmFieldName());
             }
         }
     }

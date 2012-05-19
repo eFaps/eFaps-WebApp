@@ -20,13 +20,13 @@
 
 package org.efaps.ui.wicket.models.cell;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.wicket.IClusterable;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Parameter.ParameterValues;
@@ -49,7 +49,7 @@ import org.efaps.util.EFapsException;
  */
 public class UIPicker
     extends AbstractInstanceObject
-    implements IClusterable, ICmdUIObject, IEventUIObject
+    implements Serializable, ICmdUIObject, IEventUIObject
 
 {
     /**

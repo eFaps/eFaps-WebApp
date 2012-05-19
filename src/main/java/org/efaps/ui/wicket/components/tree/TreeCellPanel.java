@@ -25,9 +25,9 @@ import java.util.Iterator;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.behavior.AttributeAppender;
-import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.datetime.markup.html.form.DateTextField;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -92,7 +92,7 @@ public class TreeCellPanel
         final UIStructurBrowserTableCell uiCell = uiStru.getColumnValue(_index);
         final IModel<UIStructurBrowserTableCell> cellModel = new UIModel<UIStructurBrowserTableCell>(uiCell);
         // set the title of the cell
-        add(new SimpleAttributeModifier("title", uiCell.getCellTitle()));
+        add(AttributeModifier.append("title", uiCell.getCellTitle()));
         add(new AttributeAppender("style", true, new Model<String>("text-align:" + uiCell.getAlign()), ";"));
         if (uiCell.isHide()) {
             add(new AttributeAppender("style", true, new Model<String>("display:none"), ";"));

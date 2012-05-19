@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2012 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,31 +23,30 @@ package org.efaps.ui.wicket.pages.main;
 import java.util.UUID;
 
 import org.apache.wicket.AttributeModifier;
-import org.apache.wicket.PageMap;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.IAjaxCallDecorator;
-import org.apache.wicket.ajax.calldecorator.AjaxCallThrottlingDecorator;
-import org.apache.wicket.behavior.HeaderContributor;
-import org.apache.wicket.behavior.StringHeaderContributor;
+import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
+import org.apache.wicket.ajax.attributes.AjaxRequestAttributes.Method;
+import org.apache.wicket.ajax.attributes.ThrottlingSettings;
+import org.apache.wicket.core.util.string.JavaScriptUtils;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
-import org.apache.wicket.markup.html.IHeaderContributor;
-import org.apache.wicket.markup.html.IHeaderResponse;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.InlineFrame;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.http.request.WebClientInfo;
-import org.apache.wicket.util.string.JavascriptUtils;
+import org.apache.wicket.util.string.StringValue;
 import org.apache.wicket.util.time.Duration;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.db.Context;
 import org.efaps.message.MessageStatusHolder;
 import org.efaps.ui.wicket.EFapsSession;
-import org.efaps.ui.wicket.behaviors.SetMessageStatusContributor;
+import org.efaps.ui.wicket.behaviors.SetMessageStatusBehavior;
 import org.efaps.ui.wicket.behaviors.ShowFileCallBackBehavior;
 import org.efaps.ui.wicket.components.ChildCallBackHeaderContributer;
 import org.efaps.ui.wicket.components.menu.MenuContainer;
@@ -71,17 +70,18 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class MainPage extends AbstractMergePage
+public class MainPage
+    extends AbstractMergePage
 {
-    /**
-     * this static variable contains the Key for the PageMap for the IFrame.
-     */
-    public static final String IFRAME_PAGEMAP_NAME = "MainPageIFramePageMap";
-
     /**
      * this static variable contains the id for the htmlFrame.
      */
     public static final String IFRAME_WICKETID = "content";
+
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
     /**
      * Reference to the StyleSheet for this Page.
@@ -115,23 +115,24 @@ public class MainPage extends AbstractMergePage
     public MainPage()
     {
         super();
-        // call the client info to force the relaod script to be executed on the beginning of a session,
+        // call the client info to force the relaod script to be executed on the
+        // beginning of a session,
         // if an ajax call would be doen as fisrt an error occurs
         Session.get().getClientInfo();
-        // add the file call back used to open a file in the session and the main page
+        // add the file call back used to open a file in the session and the
+        // main page
         final ShowFileCallBackBehavior fileCall = new ShowFileCallBackBehavior();
         this.add(fileCall);
         ((EFapsSession) getSession()).setFileCallBack(fileCall);
 
         // we need to add a JavaScript Function to resize the iFrame
         // don't merge it to keep the sequence
-        this.add(StaticHeaderContributor.forJavaScript(MainPage.FRAMEJS, true));
+        add(StaticHeaderContributor.forJavaScript(MainPage.FRAMEJS, true));
 
         // set the title for the Page
-        this.add(new StringHeaderContributor("<title>" + DBProperties.getProperty("Logo.Version.Label") + "</title>"));
-
+        add(new Label("pageTitle", DBProperties.getProperty("Logo.Version.Label")));
         add(this.modal);
-        this.modal.setPageMapName("modal");
+
 
         this.add(StaticHeaderContributor.forCss(MainPage.CSS));
         this.add(new ChildCallBackHeaderContributer());
@@ -140,20 +141,23 @@ public class MainPage extends AbstractMergePage
 
         final WebMarkupContainer logo = new WebMarkupContainer("logo");
         this.add(logo);
-        final Label welcome = new Label("welcome", DBProperties.getProperty("Logo.Welcome.Label"));
-        logo.add(welcome);
-        welcome.add(this.resize);
-        welcome.add(new HeaderContributor(new IHeaderContributor() {
+        final Label welcome = new Label("welcome", DBProperties.getProperty("Logo.Welcome.Label")) {
 
-            private static final long serialVersionUID = 1L;
-
+            @Override
             public void renderHead(final IHeaderResponse _response)
             {
+                super.renderHead(_response);
                 final CharSequence resizeScript = MainPage.this.resize.getCallbackScript();
-                _response.renderString(JavascriptUtils.SCRIPT_OPEN_TAG + " window.onresize = " +  resizeScript + "; \n"
-                                + "  window.onload = eFapsSetIFrameHeight; \n" + JavascriptUtils.SCRIPT_CLOSE_TAG);
+                final StringBuilder js = new StringBuilder()
+                    .append(JavaScriptUtils.SCRIPT_OPEN_TAG).append(" window.onresize = ")
+                    .append(resizeScript).append("; \n  window.onload = eFapsSetIFrameHeight; \n")
+                    .append(JavaScriptUtils.SCRIPT_CLOSE_TAG);
+
+                _response.render(JavaScriptHeaderItem.forScript(js, "ss"));
             }
-        }));
+        };
+        logo.add(welcome);
+        welcome.add(this.resize);
 
         try {
             final Context context = Context.getThreadContext();
@@ -161,20 +165,15 @@ public class MainPage extends AbstractMergePage
             logo.add(new Label("lastname", context.getPerson().getLastName()));
             final String companyName = context.getCompany() == null ? "" : context.getCompany().getName();
             logo.add(new Label("company", companyName));
-            logo.add(new AttributeModifier("class", true,
-                            new Model<String>("eFapsLogo " + companyName.replaceAll("\\W" , ""))));
+            logo.add(new AttributeModifier("class",
+                            new Model<String>("eFapsLogo " + companyName.replaceAll("\\W", ""))));
             final long usrId = context.getPersonId();
-            //Admin_Common_SystemMessageAlert
+            // Admin_Common_SystemMessageAlert
             final StandardLink alert = new StandardLink("useralert",
-                           new UIModel<UIMenuItem>(new UIMenuItem(SetMessageStatusContributor.getCmdUUD()))) {
+                            new UIModel<UIMenuItem>(new UIMenuItem(SetMessageStatusBehavior.getCmdUUD())))
+            {
 
                 private static final long serialVersionUID = 1L;
-
-                @Override
-                protected void onRender(final MarkupStream _markupStream)
-                {
-                    renderComponent(_markupStream);
-                }
 
                 @Override
                 protected void onComponentTag(final ComponentTag _tag)
@@ -183,27 +182,25 @@ public class MainPage extends AbstractMergePage
                 }
 
                 @Override
-                protected void onComponentTagBody(final MarkupStream _markupStream,
+                public void onComponentTagBody(final MarkupStream _markupStream,
                                                   final ComponentTag _openTag)
                 {
                     super.onComponentTagBody(_markupStream, _openTag);
                     replaceComponentTagBody(_markupStream, _openTag,
-                                    SetMessageStatusContributor.getLabel(MessageStatusHolder.getUnReadCount(usrId),
-                                    MessageStatusHolder.getReadCount(usrId)));
+                                    SetMessageStatusBehavior.getLabel(MessageStatusHolder.getUnReadCount(usrId),
+                                                    MessageStatusHolder.getReadCount(usrId)));
                 }
             };
             this.add(alert);
             if (MessageStatusHolder.hasUnreadMsg(usrId)) {
-                alert.add(new AttributeModifier("class", true, new Model<String>("unread")));
+                alert.add(new AttributeModifier("class", new Model<String>("unread")));
             } else if (!MessageStatusHolder.hasReadMsg(usrId)) {
-                alert.add(new AttributeModifier("style", true, new Model<String>("display:none")));
+                alert.add(new AttributeModifier("style", new Model<String>("display:none")));
             }
-
 
         } catch (final EFapsException e) {
             throw new RestartResponseException(new ErrorPage(e));
         }
-
 
         // add the MainToolBar to the Page
         final MenuContainer menu = new MenuContainer("menu", new UIModel<UIMenuItem>(new UIMenuItem(UUID
@@ -212,11 +209,9 @@ public class MainPage extends AbstractMergePage
 
         this.add(new Label("version", DBProperties.getProperty("Logo.Version.Label")));
 
+        this.add(new InlineFrame(MainPage.IFRAME_WICKETID, EmptyPage.class));
 
-        this.add(new InlineFrame(MainPage.IFRAME_WICKETID,
-                                 PageMap.forName(MainPage.IFRAME_PAGEMAP_NAME), EmptyPage.class));
-
-        this.add(new InlineFrame("hidden", getPageMap(), EmptyPage.class));
+        this.add(new InlineFrame("hidden", EmptyPage.class));
     }
 
     /**
@@ -232,12 +227,13 @@ public class MainPage extends AbstractMergePage
     /**
      * Event that is fired on the resize of the client browser window.
      */
-    public class ResizeEventBehavior extends AjaxEventBehavior
+    public class ResizeEventBehavior
+        extends AjaxEventBehavior
     {
 
         /**
-        * Needed for serialization.
-        */
+         * Needed for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
         /**
@@ -255,15 +251,18 @@ public class MainPage extends AbstractMergePage
         @Override
         public CharSequence getCallbackScript()
         {
+
             final StringBuilder ret = new StringBuilder();
-            ret.append("function(){").append("eFapsSetIFrameHeight();").append(
-                            generateCallbackScript("wicketAjaxPost('" + getCallbackUrl(false) + "','"
-                                            + MainPage.HEIGTHWIDTH_PARAMETERNAME + "='"
-                                            + "+window.innerWidth+\";\"+window.innerHeight ")).append("}\n");
+//            ret.append("function(){").append("eFapsSetIFrameHeight();").append(
+//                            generateCallbackScript("wicketAjaxPost('" + getCallbackUrl() + "','"
+//                                            + MainPage.HEIGTHWIDTH_PARAMETERNAME + "='"
+//                                            + "+window.innerWidth+\";\"+window.innerHeight ")).append("}\n");
             return ret.toString();
         }
 
-        /** Overwritten to be deactivated.
+        /**
+         * Overwritten to be deactivated.
+         *
          * @see org.apache.wicket.ajax.AbstractDefaultAjaxBehavior#getPreconditionScript()
          * @return null
          */
@@ -273,32 +272,30 @@ public class MainPage extends AbstractMergePage
             return null;
         }
 
-        /**
-         * Decorator for the call, so that the event is only fired one a
-         * second.
-         * @see org.apache.wicket.ajax.AbstractDefaultAjaxBehavior#getAjaxCallDecorator()
-         * @return CallDecorator
-         */
         @Override
-        protected IAjaxCallDecorator getAjaxCallDecorator()
+        protected void updateAjaxAttributes(final AjaxRequestAttributes _attributes)
         {
-            return new AjaxCallThrottlingDecorator(getComponent().getMarkupId(), Duration.milliseconds(500));
+            super.updateAjaxAttributes(_attributes);
+            _attributes.setThrottlingSettings(new ThrottlingSettings("mainThrottel", Duration.seconds(2)));
+            _attributes.setMethod(Method.POST);
         }
 
         /**
-         * On event the actual size of the browser window is stored in the requestcycle.
+         * On event the actual size of the browser window is stored in the
+         * requestcycle.
+         *
          * @see org.apache.wicket.ajax.AjaxEventBehavior#onEvent(org.apache.wicket.ajax.AjaxRequestTarget)
          * @param _target AjaxRequestTarget
          */
         @Override
         protected void onEvent(final AjaxRequestTarget _target)
         {
-            final String size = getComponent().getRequest().getParameter(MainPage.HEIGTHWIDTH_PARAMETERNAME);
+             final StringValue size = getComponent().getRequest().getRequestParameters().getParameterValue(MainPage.HEIGTHWIDTH_PARAMETERNAME);
 
             if (size != null) {
-                final String[] sizes = size.split(";");
-                final WebClientInfo asd = (WebClientInfo) getRequestCycle().getClientInfo();
-                asd.getProperties().setBrowserWidth(Integer.parseInt(sizes[0]));
+                final String[] sizes = size.toString().split(";");
+                final WebClientInfo asd = (WebClientInfo) Session.get().getClientInfo();
+                asd. getProperties().setBrowserWidth(Integer.parseInt(sizes[0]));
                 asd.getProperties().setBrowserHeight(Integer.parseInt(sizes[1]));
             }
         }

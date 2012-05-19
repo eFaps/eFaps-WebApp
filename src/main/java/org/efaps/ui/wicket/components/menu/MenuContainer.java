@@ -23,15 +23,13 @@ package org.efaps.ui.wicket.components.menu;
 import java.util.Iterator;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.wicket.behavior.HeaderContributor;
+import org.apache.wicket.core.util.string.JavaScriptUtils;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
-import org.apache.wicket.markup.html.IHeaderContributor;
-import org.apache.wicket.markup.html.IHeaderResponse;
-import org.apache.wicket.markup.html.link.ILinkListener;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.html.link.PopupSettings;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.util.string.JavascriptUtils;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractCommand.Target;
@@ -134,29 +132,29 @@ public class MenuContainer
         add(StaticHeaderContributor.forCss(MenuContainer.CSS));
         add(StaticHeaderContributor.forJavaScript(MenuContainer.EFAPSEXTENSION));
 
-        // appends theme
-        add(new HeaderContributor(new IHeaderContributor() {
-            private static final long serialVersionUID = 1L;
-
-            public void renderHead(final IHeaderResponse _response)
-            {
-                final StringBuilder html = new StringBuilder()
-                    .append(JavascriptUtils.SCRIPT_OPEN_TAG)
-                    .append("var myThemeOfficeBase=\"")
-                    .append(RequestHandler.replaceMacrosInUrl(MenuContainer.URL_THEME_IMAGES).replaceAll("\\?", ""))
-                    .append("\";\n")
-                    .append(JavascriptUtils.SCRIPT_CLOSE_TAG)
-                    .append("<script type=\"text/javascript\" src=\"")
-                    .append(MenuContainer.THEME.getStaticContentUrl())
-                    .append("\"></script>\n");
-                _response.renderString(html.toString());
-            }
-        }));
-
         final UIMenuItem model = (UIMenuItem) super.getDefaultModelObject();
         for (final UIMenuItem menuItem : model.getChilds()) {
             addLink(menuItem);
         }
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.wicket.Component#renderHead(org.apache.wicket.markup.head.IHeaderResponse)
+     */
+    @Override
+    public void renderHead(final IHeaderResponse _response)
+    {
+        super.renderHead(_response);
+        final StringBuilder js = new StringBuilder()
+            .append(JavaScriptUtils.SCRIPT_OPEN_TAG)
+            .append("var myThemeOfficeBase=\"")
+            .append(RequestHandler.replaceMacrosInUrl(MenuContainer.URL_THEME_IMAGES).replaceAll("\\?", ""))
+            .append("\";\n")
+            .append(JavaScriptUtils.SCRIPT_CLOSE_TAG)
+            .append("<script type=\"text/javascript\" src=\"")
+            .append(MenuContainer.THEME.getStaticContentUrl())
+            .append("\"></script>\n");
+        _response.render(JavaScriptHeaderItem.forScript(js, MenuContainer.class.getName()));
     }
 
     /**
@@ -229,7 +227,7 @@ public class MenuContainer
                 final StandardLink item = (StandardLink) child;
                 final UIMenuItem childModel = item.getModelObject();
 
-                CharSequence url = item.urlFor(ILinkListener.INTERFACE);
+                CharSequence url = item.urlFor(getRequestCycle().getActiveRequestHandler());
                 if (childModel.getTarget() == Target.POPUP) {
                     final AbstractCommand command = childModel.getCommand();
 
@@ -252,8 +250,8 @@ public class MenuContainer
                 final AjaxSearchComponent item = (AjaxSearchComponent) child;
                 final UIMenuItem childModel = (UIMenuItem) item.getDefaultModelObject();
 
-                final String url = (String) item.urlFor(ILinkListener.INTERFACE);
-                childModel.setURL(url);
+                final CharSequence url = item.urlFor(getRequestCycle().getActiveRequestHandler());
+                childModel.setURL(url.toString());
             }
         }
         super.onBeforeRender();
@@ -266,7 +264,7 @@ public class MenuContainer
      * @param _openTag      tag
      */
     @Override
-    protected void onComponentTagBody(final MarkupStream _markupStream,
+    public void onComponentTagBody(final MarkupStream _markupStream,
                                       final ComponentTag _openTag)
     {
 
@@ -281,20 +279,20 @@ public class MenuContainer
      */
     private String convert2Html(final ComponentTag _openTag)
     {
-        final CharSequence id = _openTag.getString("id");
+        final CharSequence id = _openTag.getAttribute("id");
 
         final UIMenuItem model = (UIMenuItem) super.getDefaultModelObject();
 
         final StringBuilder html = new StringBuilder();
 
-        html.append(JavascriptUtils.SCRIPT_OPEN_TAG).append("var ").append(id).append("=[");
+        html.append(JavaScriptUtils.SCRIPT_OPEN_TAG).append("var ").append(id).append("=[");
 
         for (final UIMenuItem menuItem : model.getChilds()) {
             convertItem2Html(menuItem, html, true, new StringBuilder());
             html.append(",\n");
         }
         html.append("];").append("cmDraw ('").append(id).append("', ").append(id).append(", 'hbr', cmThemeOffice);")
-                        .append(JavascriptUtils.SCRIPT_CLOSE_TAG);
+                        .append(JavaScriptUtils.SCRIPT_CLOSE_TAG);
         return html.toString();
     }
 

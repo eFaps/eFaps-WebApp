@@ -20,8 +20,8 @@
 
 package org.efaps.ui.wicket.components.table.header;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.behavior.AttributeAppender;
-import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -94,7 +94,7 @@ public class HeaderCellPanel
                            final int _columnNumber)
     {
         super(_wicketId);
-        this.add(new SimpleAttributeModifier("class", _styleClass + " eFapsCellFixedWidth" + _columnNumber));
+        this.add(AttributeModifier.append("class", _styleClass + " eFapsCellFixedWidth" + _columnNumber));
         if (_checkbox) {
             this.add(new Checkbox("checkBox"));
         } else {
@@ -122,7 +122,7 @@ public class HeaderCellPanel
 
         add(StaticHeaderContributor.forCss(HeaderCellPanel.CSS));
 
-        this.add(new SimpleAttributeModifier("title", uiTableHeader.getLabel()));
+        this.add(AttributeModifier.replace("title", uiTableHeader.getLabel()));
 
         this.add(new WebComponent("checkBox").setVisible(false));
 
@@ -130,14 +130,14 @@ public class HeaderCellPanel
             final SortLink sortlink = new SortLink("sortlink", _model);
 
             if (uiTableHeader.getSortDirection() == SortDirection.NONE) {
-                sortlink.add(new SimpleAttributeModifier("class", "eFapsHeaderSort"));
+                sortlink.add( AttributeModifier.append("class", "eFapsHeaderSort"));
             } else if (uiTableHeader.getSortDirection() == SortDirection.ASCENDING) {
-                sortlink.add(new SimpleAttributeModifier("class", "eFapsHeaderSortAscending"));
-                sortlink.add(new SimpleAttributeModifier("style", " background-image: url("
+                sortlink.add( AttributeModifier.append("class", "eFapsHeaderSortAscending"));
+                sortlink.add( AttributeModifier.replace("style", " background-image: url("
                                 + HeaderCellPanel.ICON_SORTASC.getImageUrl() + ");"));
             } else if (uiTableHeader.getSortDirection() == SortDirection.DESCENDING) {
-                sortlink.add(new SimpleAttributeModifier("class", "eFapsHeaderSortDescending"));
-                sortlink.add(new SimpleAttributeModifier("style", " background-image: url("
+                sortlink.add( AttributeModifier.append("class", "eFapsHeaderSortDescending"));
+                sortlink.add(AttributeModifier.replace("style", " background-image: url("
                                 + HeaderCellPanel.ICON_SORTDESC.getImageUrl() + ");"));
             }
 
@@ -165,12 +165,12 @@ public class HeaderCellPanel
             final AjaxFilterLink filterlink = new AjaxFilterLink("filterlink", _model);
 
             if (uiTableHeader.isFilterApplied() && _uitable.isFiltered()) {
-                filterlink.add(new SimpleAttributeModifier("class", "eFapsHeaderFilterActive"));
-                filterlink.add(new SimpleAttributeModifier("style", " background-image: url("
+                filterlink.add( AttributeModifier.append("class", "eFapsHeaderFilterActive"));
+                filterlink.add( AttributeModifier.append("style", " background-image: url("
                                 + HeaderCellPanel.ICON_FILTERACTIVE.getImageUrl() + ");"));
             } else {
-                filterlink.add(new SimpleAttributeModifier("class", "eFapsHeaderFilter"));
-                filterlink.add(new SimpleAttributeModifier("style", " background-image: url("
+                filterlink.add( AttributeModifier.append("class", "eFapsHeaderFilter"));
+                filterlink.add( AttributeModifier.append("style", " background-image: url("
                                 + HeaderCellPanel.ICON_FILTER.getImageUrl() + ");"));
             }
             this.add(filterlink);

@@ -200,7 +200,7 @@ public class ValuePanel extends Panel
                 newmap.put(keyString, newvalues);
             }
             getParent().getParent().setVisible(false);
-            _target.addComponent(getParent().getParent());
+            _target.add(getParent().getParent());
         }
     }
 }

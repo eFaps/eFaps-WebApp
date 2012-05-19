@@ -27,7 +27,7 @@ import java.util.Map;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.AjaxRequestTarget.IJavascriptResponse;
+import org.apache.wicket.ajax.AjaxRequestTarget.IJavaScriptResponse;
 import org.apache.wicket.ajax.AjaxRequestTarget.IListener;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
@@ -42,7 +42,8 @@ import org.apache.wicket.markup.html.WebComponent;
  * @version $Id$
  */
 public class UnnestedDatePickers
-    extends WebComponent implements IListener
+    extends WebComponent
+    implements IListener
 {
     /**
      * Needed for serialization.
@@ -73,8 +74,8 @@ public class UnnestedDatePickers
      * org.apache.wicket.markup.ComponentTag)
      */
     @Override
-    protected void onComponentTagBody(final MarkupStream _markupStream,
-                                      final ComponentTag _openTag)
+    public void onComponentTagBody(final MarkupStream _markupStream,
+                                   final ComponentTag _openTag)
     {
         final StringBuilder html = new StringBuilder();
         for (final DatePickerBehavior picker : this.pickers) {
@@ -107,13 +108,18 @@ public class UnnestedDatePickers
     public void onBeforeRespond(final Map<String, Component> _map,
                                 final AjaxRequestTarget _target)
     {
-        _target.addComponent(this);
+        _target.add(this);
     }
 
+
+    /* (non-Javadoc)
+     * @see org.apache.wicket.ajax.AjaxRequestTarget.IListener#onAfterRespond(java.util.Map,
+     * org.apache.wicket.ajax.AjaxRequestTarget.IJavaScriptResponse)
+     */
     @Override
     public void onAfterRespond(final Map<String, Component> _map,
-                               final IJavascriptResponse _response)
+                               final IJavaScriptResponse _response)
     {
-        // implemented to comply to interface api, but not used
+        // nothing must be done
     }
 }

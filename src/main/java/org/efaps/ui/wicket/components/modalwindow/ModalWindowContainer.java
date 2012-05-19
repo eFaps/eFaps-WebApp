@@ -21,11 +21,10 @@
 package org.efaps.ui.wicket.components.modalwindow;
 
 import org.apache.wicket.Page;
-import org.apache.wicket.PageMap;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.protocol.http.request.WebClientInfo;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.AppendingStringBuffer;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.EFapsSession;
@@ -38,7 +37,6 @@ import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
-import org.efaps.ui.wicket.pages.main.MainPage;
 
 /**
  * This is a wrapper class for a modal window.
@@ -108,7 +106,7 @@ public class ModalWindowContainer
     {
         super.close(_target);
         if (this.reloadChild) {
-            _target.prependJavascript(getReloadJavaScript());
+            _target.prependJavaScript(getReloadJavaScript());
         }
     }
 
@@ -130,15 +128,15 @@ public class ModalWindowContainer
             } else if (model instanceof UIStructurBrowser) {
                 clazz = StructurBrowserPage.class;
             }
-            final Opener opener = new Opener(getPage().getDefaultModel(), getPage().getPageMapName());
+            final Opener opener = new Opener(getPage().getDefaultModel());
             opener.setMenuTreeKey(((AbstractContentPage) getPage()).getMenuTreeKey());
             final PageParameters parameters = new PageParameters();
             parameters.add(Opener.OPENER_PARAKEY, opener.getId());
             ((EFapsSession) getSession()).storeOpener(opener);
             opener.setMarked4Remove(true);
-            final CharSequence url = urlFor(PageMap.forName(getPage().getPageMapName()), clazz, parameters);
+            final CharSequence url = urlFor(clazz, parameters);
 
-            if (getPage().getPageMapName().equals(MainPage.IFRAME_PAGEMAP_NAME)) {
+            if (true) {
                 javascript.append("top.frames[0].location.href = '");
             } else {
                 javascript.append("top.frames[0].frames[0].location.href = '");
@@ -190,7 +188,6 @@ public class ModalWindowContainer
         super.setPageCreator(null);
         super.setCloseButtonCallback(null);
         super.setWindowClosedCallback(null);
-        super.setPageMapName("modal-dialog-pagemap");
     }
 
     /**
@@ -216,7 +213,7 @@ public class ModalWindowContainer
     public ModalWindow setInitialHeight(final int _initialHeight)
     {
         int height = _initialHeight;
-        final WebClientInfo asd = (WebClientInfo) getRequestCycle().getClientInfo();
+        final WebClientInfo asd = (WebClientInfo) getSession().getClientInfo();
         asd.getProperties().getBrowserHeight();
         if (asd.getProperties().getBrowserHeight() < height) {
             height = asd.getProperties().getBrowserHeight() - 33;
@@ -235,7 +232,7 @@ public class ModalWindowContainer
     public ModalWindow setInitialWidth(final int _initialWidth)
     {
         int width = _initialWidth;
-        final WebClientInfo asd = (WebClientInfo) getRequestCycle().getClientInfo();
+        final WebClientInfo asd = (WebClientInfo) getSession().getClientInfo();
         if (asd.getProperties().getBrowserWidth() < _initialWidth) {
             width = asd.getProperties().getBrowserWidth();
         }

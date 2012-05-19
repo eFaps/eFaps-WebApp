@@ -24,6 +24,7 @@ import java.util.Iterator;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.IMarkupFragment;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
@@ -77,15 +78,16 @@ public abstract class AbstractParentMarkupContainer
 
     /**
      * @see org.apache.wicket.MarkupContainer#onRender(org.apache.wicket.markup.MarkupStream)
-     * @param _markupStream the markup stream
      */
     @Override
-    protected void onRender(final MarkupStream _markupStream)
+    public void onRender()
     {
-        final int markupStart = _markupStream.getCurrentIndex();
+        final IMarkupFragment markup = getMarkup();
+        final MarkupStream markupStream = new MarkupStream(markup);
+        final int markupStart = markupStream.getCurrentIndex();
 
         // Get mutable copy of next tag
-        final ComponentTag openTag = _markupStream.getTag();
+        final ComponentTag openTag = markupStream.getTag();
         final ComponentTag tag = openTag.mutable();
 
         // Call any tag handler
@@ -95,36 +97,36 @@ public abstract class AbstractParentMarkupContainer
         if (!getRenderBodyOnly()) {
             renderComponentTag(tag);
         }
-        _markupStream.next();
+        markupStream.next();
 
         // Render the body only if open-body-close. Do not render if
         // open-close.
         if (tag.isOpen()) {
             // Render the body
-            onComponentTagBody(_markupStream, tag);
+            onComponentTagBody(markupStream, tag);
         }
-        _markupStream.setCurrentIndex(markupStart);
+        markupStream.setCurrentIndex(markupStart);
 
         final Iterator<?> childs = this.iterator();
         while (childs.hasNext()) {
-            _markupStream.setCurrentIndex(markupStart);
+            markupStream.setCurrentIndex(markupStart);
 
             final Component child = (Component) childs.next();
 
-            child.render(getMarkupStream());
+            child.render();
         }
 
-        _markupStream.setCurrentIndex(markupStart);
-        _markupStream.next();
+        markupStream.setCurrentIndex(markupStart);
+        markupStream.next();
         // Render close tag
 
         if (tag.isOpen()) {
             if (openTag.isOpen()) {
                 // Get the close tag from the stream
-                ComponentTag closeTag = _markupStream.getTag();
+                ComponentTag closeTag = markupStream.getTag();
 
                 // If the open tag had its id changed
-                if (tag.getNameChanged()) {
+                if (tag.isAutoComponentTag()) {
                     // change the id of the close tag
                     closeTag = closeTag.mutable();
                     closeTag.setName(tag.getName());
@@ -132,7 +134,7 @@ public abstract class AbstractParentMarkupContainer
 
                 // Render the close tag
                 renderComponentTag(closeTag);
-                _markupStream.next();
+                markupStream.next();
             }
         }
     }

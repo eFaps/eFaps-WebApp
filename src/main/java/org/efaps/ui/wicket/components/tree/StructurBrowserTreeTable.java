@@ -23,14 +23,13 @@ package org.efaps.ui.wicket.components.tree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.Page;
-import org.apache.wicket.PageMap;
-import org.apache.wicket.ResourceReference;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.behavior.SimpleAttributeModifier;
+import org.apache.wicket.extensions.markup.html.tree.ITreeState;
 import org.apache.wicket.extensions.markup.html.tree.table.IColumn;
 import org.apache.wicket.extensions.markup.html.tree.table.TreeTable;
 import org.apache.wicket.markup.ComponentTag;
@@ -38,8 +37,8 @@ import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.markup.html.tree.ITreeState;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.request.resource.ResourceReference;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.admin.ui.Menu;
@@ -56,7 +55,6 @@ import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
-import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 import org.efaps.ui.wicket.util.EFapsKey;
@@ -282,8 +280,8 @@ public class StructurBrowserTreeTable
                             if (model.getTarget() == Target.POPUP) {
                                 page = new ContentContainerPage(menu.getUUID(), model.getInstanceKey());
                             } else {
-                                page = new ContentContainerPage(getPage().getPageMap(), menu.getUUID(), model
-                                                .getInstanceKey(), true);
+                                page = new ContentContainerPage(menu.getUUID(), model
+                                                .getInstanceKey(),null, true);
                             }
                         } catch (final EFapsException e) {
                             page = new ErrorPage(e);
@@ -370,9 +368,9 @@ public class StructurBrowserTreeTable
             if (uiStru == null || uiStru.getDirection() == null) {
                 direction.setVisible(false);
             } else if (uiStru.getDirection()) {
-                direction.add(new SimpleAttributeModifier("class", "directionDown"));
+                direction.add(AttributeModifier.append("class", "directionDown"));
             } else {
-                direction.add(new SimpleAttributeModifier("class", "directionUp"));
+                direction.add(AttributeModifier.append("class", "directionUp"));
             }
             final MarkupContainer nodeLink;
             if (uiStru.isRoot()) {
@@ -564,8 +562,8 @@ public class StructurBrowserTreeTable
                     if (uiObject.getTarget() == org.efaps.admin.ui.AbstractCommand.Target.POPUP) {
                         page = new ContentContainerPage(menu.getUUID(), uiObject.getInstanceKey());
                     } else {
-                        page = new ContentContainerPage(PageMap.forName(MainPage.IFRAME_PAGEMAP_NAME), menu.getUUID(),
-                                        uiObject.getInstanceKey(), true);
+                        page = new ContentContainerPage(menu.getUUID(),
+                                        uiObject.getInstanceKey(),null, true);
                     }
                 } catch (final EFapsException e) {
                     page = new ErrorPage(e);

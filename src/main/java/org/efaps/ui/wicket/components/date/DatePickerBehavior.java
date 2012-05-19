@@ -22,9 +22,8 @@
 package org.efaps.ui.wicket.components.date;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.Response;
-import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.yui.calendar.DatePicker;
+import org.apache.wicket.request.Response;
 import org.apache.wicket.util.string.Strings;
 
 
@@ -70,10 +69,11 @@ public class DatePickerBehavior
         this.unnestedComp = _unnested;
         this.unnestedComp.addPicker(this);
         setNested(false);
-        final AjaxRequestTarget target = AjaxRequestTarget.get();
-        if (target != null) {
-            target.addListener(this.unnestedComp);
-        }
+
+//        final AjaxRequestTarget target = AjaxRequestTarget .get();
+//        if (target != null) {
+//            target.addListener(this.unnestedComp);
+//        }
     }
 
     /**
@@ -87,10 +87,10 @@ public class DatePickerBehavior
     }
 
     @Override
-    public void onRendered(final Component _component)
+    public void afterRender(final Component _component)
     {
         if (isNested()) {
-            super.onRendered(_component);
+            super.afterRender(_component);
         } else {
             final Response response = _component.getResponse();
             response.write("<img style=\"");

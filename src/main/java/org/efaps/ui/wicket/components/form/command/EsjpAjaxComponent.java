@@ -63,16 +63,16 @@ public class EsjpAjaxComponent
     }
 
     @Override
-    protected void onComponentTagBody(final MarkupStream _markupstream,
+    public void onComponentTagBody(final MarkupStream _markupstream,
                                       final ComponentTag _componenttag)
     {
         super.onComponentTagBody(_markupstream, _componenttag);
-        final String script = ((AjaxCmdBehavior) getBehaviors().get(0)).getJavaScript();
+        final CharSequence script = ((AjaxCmdBehavior) getBehaviors().get(0)).getCallbackScript();
         final UIFormCellCmd uiObject = (UIFormCellCmd) getDefaultModelObject();
         try {
             final AbstractUIPageObject pageObject = (AbstractUIPageObject) (getPage().getDefaultModelObject());
             final Map<String, String> uiID2Oid = pageObject == null ? null : pageObject.getUiID2Oid();
-            final String content = uiObject.getRenderedContent(script, uiID2Oid);
+            final String content = uiObject.getRenderedContent(script.toString(), uiID2Oid);
             replaceComponentTagBody(_markupstream, _componenttag, content);
         } catch (final EFapsException e) {
             EsjpAjaxComponent.LOG.error("onComponentTagBody", e);

@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.wicket.IClusterable;
+import org.apache.wicket.util.io.IClusterable;
 
 /**
  * Class is used to create wizard like behavior for a webpage. Meaning that it
@@ -37,7 +37,8 @@ import org.apache.wicket.IClusterable;
  * @author The eFaps Team
  * @version $Id$
  */
-public class UIWizardObject implements IClusterable
+public class UIWizardObject
+    implements IClusterable
 {
 
     /**
@@ -124,7 +125,8 @@ public class UIWizardObject implements IClusterable
      * @param _uiObject object used as key
      * @param _parameters parameters
      */
-    public void addParameters(final AbstractUIObject _uiObject, final Map<String, String[]> _parameters)
+    public void addParameters(final AbstractUIObject _uiObject,
+                              final Map<String, String[]> _parameters)
     {
         this.parameters.put(_uiObject, _parameters);
     }

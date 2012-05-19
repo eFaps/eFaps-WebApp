@@ -25,11 +25,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.core.util.string.JavaScriptUtils;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.IFormSubmitListener;
-import org.apache.wicket.util.string.JavascriptUtils;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.date.IDateListener;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
@@ -94,7 +93,7 @@ public class FormContainer
             setMaxSize(getApplication().getApplicationSettings().getDefaultMaximumUploadSize());
         }
         super.onComponentTag(_tag);
-        this.actionUrl = urlFor(IFormSubmitListener.INTERFACE).toString();
+        this.actionUrl = urlFor(getRequestCycle().getActiveRequestHandler()).toString();
         if (getPage().getDefaultModelObject() != null) {
             // only on SearchMode we want normal submit, in any other case we
             // use AjaxSubmit
@@ -110,6 +109,7 @@ public class FormContainer
      *
      * @return value of instance variable {@link #actionUrl}
      */
+    @Override
     public String getActionUrl()
     {
         return this.actionUrl;
@@ -126,9 +126,9 @@ public class FormContainer
     {
         super.onSubmit();
         if (this.fileUpload) {
-            final List<IFileUploadListener> uploadListeners = this.getBehaviors(IFileUploadListener.class);
-            for (final IFileUploadListener listener : uploadListeners) {
-                listener.onSubmit();
+            final List<FileUploadBehavior> uploadBehaviors = this.getBehaviors(FileUploadBehavior.class);
+            for (final FileUploadBehavior behavior : uploadBehaviors) {
+
             }
         }
     }
@@ -197,7 +197,7 @@ public class FormContainer
         final StringBuilder bldr = new StringBuilder();
         bldr.append("Wicket.Event.add(Wicket.$('").append(this.getMarkupId())
             .append("'), 'submit', function (evt){ evt.preventDefault();});");
-        JavascriptUtils.writeJavascript(getResponse(), bldr.toString());
+        JavaScriptUtils.writeJavaScript(getResponse(), bldr.toString());
     }
 
     /**

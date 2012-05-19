@@ -22,8 +22,8 @@ package org.efaps.ui.wicket.components.table;
 
 import java.util.Iterator;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Page;
-import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -36,7 +36,6 @@ import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.UIFieldTable;
 import org.efaps.ui.wicket.models.objects.UIRow;
 import org.efaps.ui.wicket.models.objects.UITable;
-import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 import org.efaps.util.EFapsException;
@@ -86,7 +85,7 @@ public class TablePanel
             uiTable.execute();
         }
         setOutputMarkupId(true);
-        this.add(new SimpleAttributeModifier("class", "eFapsTableBody"));
+        this.add(AttributeModifier.append("class", "eFapsTableBody"));
 
         add(StaticHeaderContributor.forCss(TablePanel.CSS));
 
@@ -101,20 +100,19 @@ public class TablePanel
                 text = DBProperties.getProperty("WebTable.NoData");
             }
             final Label nodata = new Label(rowsRepeater.newChildId(), text);
-            nodata.add(new SimpleAttributeModifier("class", "eFapsTableNoData"));
+            nodata.add(AttributeModifier.append("class", "eFapsTableNoData"));
             rowsRepeater.add(nodata);
         } else {
             boolean odd = true;
             int i = 0;
             for (final Iterator<UIRow> rowIter = uiTable.getValues().iterator(); rowIter.hasNext(); odd = !odd) {
                 i++;
-                final RowPanel row = new RowPanel(rowsRepeater.newChildId(), new UIModel<UIRow>(rowIter.next()), this,
-                                           ContentContainerPage.IFRAME_PAGEMAP_NAME.equals(_page.getPageMapName()), i);
+                final RowPanel row = new RowPanel(rowsRepeater.newChildId(), new UIModel<UIRow>(rowIter.next()), this, true, i);
                 row.setOutputMarkupId(true);
                 if (odd) {
-                    row.add(new SimpleAttributeModifier("class", "eFapsTableRowOdd"));
+                    row.add(AttributeModifier.append("class", "eFapsTableRowOdd"));
                 } else {
-                    row.add(new SimpleAttributeModifier("class", "eFapsTableRowEven"));
+                    row.add(AttributeModifier.append("class", "eFapsTableRowEven"));
                 }
                 rowsRepeater.add(row);
             }

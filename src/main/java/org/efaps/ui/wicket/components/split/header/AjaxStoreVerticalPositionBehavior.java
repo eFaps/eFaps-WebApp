@@ -22,6 +22,7 @@ package org.efaps.ui.wicket.components.split.header;
 
 import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.util.string.StringValue;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.components.split.header.SplitHeaderPanel.PositionUserAttribute;
 import org.efaps.util.EFapsException;
@@ -57,13 +58,13 @@ public class AjaxStoreVerticalPositionBehavior
     public String getJavaScript(final String _paneId)
     {
         final StringBuilder ret = new StringBuilder();
-        ret.append("function storePositionV(){\n")
-            .append("  var pane = dojo.byId(\"").append(_paneId).append("\");\n")
-            .append(generateCallbackScript("wicketAjaxPost('" + getCallbackUrl(false)
-                                                        + "','"
-                                                        + AjaxStoreVerticalPositionBehavior.POSITION_PARAMETERNAMERNAME
-                                                        + "=' + pane.clientHeight"))
-            .append("\n" + "  }\n");
+//        ret.append("function storePositionV(){\n")
+//            .append("  var pane = dojo.byId(\"").append(_paneId).append("\");\n")
+//            .append(generateCallbackScript("wicketAjaxPost('" + getCallbackUrl(false)
+//                                                        + "','"
+//                                                        + AjaxStoreVerticalPositionBehavior.POSITION_PARAMETERNAMERNAME
+//                                                        + "=' + pane.clientHeight"))
+//            .append("\n" + "  }\n");
         return ret.toString();
     }
 
@@ -75,12 +76,12 @@ public class AjaxStoreVerticalPositionBehavior
     @Override
     protected void respond(final AjaxRequestTarget _target)
     {
-        final String position = getComponent().getRequest().getParameter(
+        final StringValue position = getComponent().getRequest().getRequestParameters().getParameterValue(
                         AjaxStoreVerticalPositionBehavior.POSITION_PARAMETERNAMERNAME);
 
         try {
             Context.getThreadContext().setUserAttribute(
-                            PositionUserAttribute.VERTICAL.getKey(), position);
+                            PositionUserAttribute.VERTICAL.getKey(), position.toString());
             Context.getThreadContext().setUserAttribute(
                             PositionUserAttribute.VERTICAL_COLLAPSED.getKey(), "false");
         } catch (final EFapsException e) {

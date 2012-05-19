@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2012 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
  */
 package org.efaps.ui.wicket.components.heading;
 
-import org.apache.wicket.behavior.SimpleAttributeModifier;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -28,60 +28,67 @@ import org.apache.wicket.markup.html.panel.Panel;
  * Class is used to render a panel containing a title for a page or a subtitle
  * inside a page.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id:TitelPanel.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class HeadingPanel extends Panel {
+public class HeadingPanel
+    extends Panel
+{
 
-  /**
-   * Needed for serialization.
-   */
-  private static final long serialVersionUID = 1L;
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
-  /**
-   * Instance variable storing the level of the Heading, if the level is 0
-   * (default) than a Title will be rendered.
-   */
-  private int level = 0;
+    /**
+     * Instance variable storing the level of the Heading, if the level is 0
+     * (default) than a Title will be rendered.
+     */
+    private int level = 0;
 
-  /**
-   * Constructor.
-   *
-   * @param _wicketId   wicket id for this component
-   * @param _heading    heading for this HeadingPanel
-   */
-  public HeadingPanel(final String _wicketId, final String _heading) {
-    this(_wicketId, _heading, 0);
-  }
-
-  /**
-   * Constructor.
-   *
-   * @param _wicketId   wicket id for this component
-   * @param _heading    heading for this HeadingPanel
-   * @param _level      level of the heading
-   */
-  public HeadingPanel(final String _wicketId, final String _heading,
-                      final int _level) {
-    super(_wicketId);
-    this.level = _level;
-    this.setOutputMarkupId(true);
-    addComponents(_heading);
-  }
-
-  /**
-   * Method to add the Component to this Panel.
-   * @param _heading  Heading to set.
-   */
-  public void addComponents(final String _heading) {
-    final WebMarkupContainer container = new WebMarkupContainer("container");
-    this.add(container);
-    if (this.level == 0) {
-      container.add(new SimpleAttributeModifier("class", "eFapsFrameTitle"));
-    } else {
-      container.add(new SimpleAttributeModifier("class", "eFapsHeading"
-          + this.level));
+    /**
+     * Constructor.
+     *
+     * @param _wicketId wicket id for this component
+     * @param _heading heading for this HeadingPanel
+     */
+    public HeadingPanel(final String _wicketId,
+                        final String _heading)
+    {
+        this(_wicketId, _heading, 0);
     }
-    container.add(new Label("heading", _heading));
-  }
+
+    /**
+     * Constructor.
+     *
+     * @param _wicketId wicket id for this component
+     * @param _heading heading for this HeadingPanel
+     * @param _level level of the heading
+     */
+    public HeadingPanel(final String _wicketId,
+                        final String _heading,
+                        final int _level)
+    {
+        super(_wicketId);
+        this.level = _level;
+        setOutputMarkupId(true);
+        addComponents(_heading);
+    }
+
+    /**
+     * Method to add the Component to this Panel.
+     *
+     * @param _heading Heading to set.
+     */
+    public void addComponents(final String _heading)
+    {
+        final WebMarkupContainer container = new WebMarkupContainer("container");
+        this.add(container);
+        if (this.level == 0) {
+            container.add(AttributeModifier.replace("class", "eFapsFrameTitle"));
+        } else {
+            container.add(AttributeModifier.replace("class", "eFapsHeading" + this.level));
+        }
+        container.add(new Label("heading", _heading));
+    }
 }

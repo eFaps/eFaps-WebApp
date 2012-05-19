@@ -48,7 +48,7 @@ public class ClosePopUpLink
     public ClosePopUpLink(final String _wicketId,
                           final AbstractUIObject _uiObject)
     {
-        super(_wicketId, new Model<AbstractUIObject>(_uiObject));
+        super(_wicketId, Model.of(_uiObject));
     }
 
     /**

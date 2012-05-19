@@ -156,7 +156,7 @@ public class AjaxFieldUpdateBehavior
         if (map.containsKey(EFapsKey.FIELDUPDATE_JAVASCRIPT.getKey())) {
             js.append(map.get(EFapsKey.FIELDUPDATE_JAVASCRIPT.getKey()));
         }
-        _target.appendJavascript(js.toString());
+        _target.appendJavaScript(js.toString());
     }
 
     /**

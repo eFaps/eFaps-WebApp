@@ -25,18 +25,17 @@ import javax.swing.tree.TreeNode;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
-import org.apache.wicket.Response;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.extensions.markup.html.tree.table.AbstractColumn;
-import org.apache.wicket.extensions.markup.html.tree.table.AbstractRenderableColumn;
-import org.apache.wicket.extensions.markup.html.tree.table.AbstractTreeColumn;
 import org.apache.wicket.extensions.markup.html.tree.table.ColumnLocation;
 import org.apache.wicket.extensions.markup.html.tree.table.ColumnLocation.Alignment;
 import org.apache.wicket.extensions.markup.html.tree.table.ColumnLocation.Unit;
 import org.apache.wicket.extensions.markup.html.tree.table.IColumn;
 import org.apache.wicket.extensions.markup.html.tree.table.IRenderable;
+import org.apache.wicket.extensions.markup.html.tree.table.PropertyRenderableColumn;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.request.Response;
 import org.efaps.ui.wicket.behaviors.RowSelectedInput;
 import org.efaps.ui.wicket.components.date.UnnestedDatePickers;
 import org.efaps.ui.wicket.models.cell.UIStructurBrowserTableCell;
@@ -118,7 +117,7 @@ public class StructurBrowserTreeTablePanel
      * Class for the column that contains the tree.
      */
     public class TreeColumn
-        extends AbstractTreeColumn
+        extends PropertyRenderableColumn
     {
 
         /**
@@ -145,21 +144,9 @@ public class StructurBrowserTreeTablePanel
                           final String _header,
                           final IModel<UIStructurBrowser> _model)
         {
-            super(_location, _header);
+            super(_location, _header, null);
             this.header = _header;
             this.model = _model;
-        }
-
-        /**
-         * Render value for the node.
-         *
-         * @param _node node to render
-         * @return String with the value for the node
-         */
-        @Override
-        public String renderNode(final TreeNode _node)
-        {
-            return _node.toString();
         }
 
         /**
@@ -188,7 +175,7 @@ public class StructurBrowserTreeTablePanel
      * Class for the standard column.
      */
     public class SimpleColumn
-        extends AbstractRenderableColumn
+        extends PropertyRenderableColumn
     {
 
         /**
@@ -210,7 +197,7 @@ public class StructurBrowserTreeTablePanel
                             final String _header,
                             final int _index)
         {
-            super(_location, _header);
+            super(_location, _header, null);
             this.index = _index;
             setContentAsTooltip(true);
         }
@@ -302,7 +289,7 @@ public class StructurBrowserTreeTablePanel
      * Class for the column containing a select box.
      */
     public class SelectColumn
-        extends AbstractRenderableColumn
+        extends PropertyRenderableColumn
     {
 
         /**
@@ -317,7 +304,7 @@ public class StructurBrowserTreeTablePanel
         public SelectColumn(final ColumnLocation _location,
                             final String _header)
         {
-            super(_location, _header);
+            super(_location, _header, null);
         }
 
         /**
@@ -336,6 +323,8 @@ public class StructurBrowserTreeTablePanel
 
                 private static final long serialVersionUID = 1L;
 
+
+                @Override
                 public void render(final TreeNode _node,
                                    final Response _response)
                 {

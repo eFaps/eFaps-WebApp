@@ -61,8 +61,8 @@ public class ClassificationPath
      * @param _openTag      open tag
      */
     @Override
-    protected void onComponentTagBody(final MarkupStream _markupStream,
-                                      final ComponentTag _openTag)
+    public void onComponentTagBody(final MarkupStream _markupStream,
+                                   final ComponentTag _openTag)
     {
         super.onComponentTagBody(_markupStream, _openTag);
         final StringBuilder html = new StringBuilder();

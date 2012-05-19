@@ -23,9 +23,9 @@ package org.efaps.ui.wicket.components.table.row;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.RestartResponseException;
-import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -93,7 +93,7 @@ public class RowPanel
         if (uiTable.isShowCheckBoxes()) {
             final CellPanel cellpanel = new CellPanel(cellRepeater.newChildId(), uirow.getInstanceKey());
             cellpanel.setOutputMarkupId(true);
-            cellpanel.add(new SimpleAttributeModifier("class", "eFapsTableCheckBoxCell"));
+            cellpanel.add(AttributeModifier.append("class", "eFapsTableCheckBoxCell"));
             cellRepeater.add(cellpanel);
             i++;
             firstCell = true;
@@ -102,7 +102,7 @@ public class RowPanel
             final AjaxAddRemoveRowPanel remove = new AjaxAddRemoveRowPanel(cellRepeater.newChildId(),
                                                                            new TableModel(uiTable), this);
             remove.setOutputMarkupId(true);
-            remove.add(new SimpleAttributeModifier("class", "eFapsTableRemoveRowCell"));
+            remove.add(AttributeModifier.append("class", "eFapsTableRemoveRowCell"));
             cellRepeater.add(remove);
             i++;
             firstCell = true;
@@ -124,18 +124,18 @@ public class RowPanel
             if (uiCell.isFixedWidth()) {
                 if (firstCell) {
                     firstCell = false;
-                    cell.add(new SimpleAttributeModifier("class",  "eFapsTableFirstCell eFapsTableCell"
+                    cell.add(AttributeModifier.append("class",  "eFapsTableFirstCell eFapsTableCell"
                                     + " eFapsCellFixedWidth" + i));
                 } else {
-                    cell.add(new SimpleAttributeModifier("class",  "eFapsTableCell eFapsCellFixedWidth" + i));
+                    cell.add(AttributeModifier.append("class",  "eFapsTableCell eFapsCellFixedWidth" + i));
                 }
             } else {
                 if (firstCell) {
                     firstCell = false;
-                    cell.add(new SimpleAttributeModifier("class",  "eFapsTableFirstCell eFapsTableCell"
+                    cell.add(AttributeModifier.append("class",  "eFapsTableFirstCell eFapsTableCell"
                                     + " eFapsCellWidth" + i));
                 } else {
-                    cell.add(new SimpleAttributeModifier("class",  "eFapsTableCell eFapsCellWidth" + i));
+                    cell.add(AttributeModifier.append("class",  "eFapsTableCell eFapsCellWidth" + i));
                 }
             }
             cellRepeater.add(cell);

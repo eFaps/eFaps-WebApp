@@ -23,7 +23,6 @@ package org.efaps.ui.wicket.components.menutree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
-import org.apache.wicket.PageMap;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.link.InlineFrame;
 import org.efaps.admin.ui.AbstractCommand;
@@ -48,11 +47,11 @@ public class AjaxGoIntoLink
      */
     private static final long serialVersionUID = 1L;
 
-   /**
+    /**
      * Construtor setting the ID and the Node of this Component.
      *
      * @param _wicketId wicketid for this component
-     * @param _node     node for his component
+     * @param _node node for his component
      */
     public AjaxGoIntoLink(final String _wicketId,
                           final DefaultMutableTreeNode _node)
@@ -75,12 +74,10 @@ public class AjaxGoIntoLink
         InlineFrame frame;
         try {
             if (cmd.getTargetTable() != null) {
-                final TablePage page = new TablePage(PageMap.forName(ContentContainerPage.IFRAME_PAGEMAP_NAME), model
-                                .getCommandUUID(), model.getInstanceKey());
+                final TablePage page = new TablePage(model.getCommandUUID(), model.getInstanceKey());
                 frame = new InlineFrame(ContentContainerPage.IFRAME_WICKETID, page);
             } else {
-                final FormPage page = new FormPage(PageMap.forName(ContentContainerPage.IFRAME_PAGEMAP_NAME), model
-                                .getCommandUUID(), model.getInstanceKey());
+                final FormPage page = new FormPage(model.getCommandUUID(), model.getInstanceKey());
                 frame = new InlineFrame(ContentContainerPage.IFRAME_WICKETID, page);
             }
         } catch (final EFapsException e) {
@@ -91,7 +88,7 @@ public class AjaxGoIntoLink
         frame.setOutputMarkupId(true);
 
         component.replaceWith(frame);
-        _target.addComponent(frame.getParent());
+        _target.add(frame.getParent());
 
         // update MenuTree
         final MenuTree menutree = findParent(MenuTree.class);

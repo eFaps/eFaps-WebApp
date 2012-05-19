@@ -84,7 +84,7 @@ public class ChartPanel
                 private static final long serialVersionUID = 1L;
 
                 @Override
-                protected void onComponentTagBody(final MarkupStream _markupStream,
+                public void onComponentTagBody(final MarkupStream _markupStream,
                                                   final ComponentTag _openTag)
                 {
                     super.onComponentTagBody(_markupStream, _openTag);

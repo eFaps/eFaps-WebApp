@@ -135,7 +135,7 @@ public abstract class AbstractAjaxUpdateBehavior
      * @return JavaScript
      */
     @Override
-    protected CharSequence getCallbackScript()
+    public CharSequence getCallbackScript()
     {
         return new StringBuilder().append("function findFrame(_current, _target) {")
                         .append("  var ret = _current.frames[_target];")
@@ -151,7 +151,7 @@ public abstract class AbstractAjaxUpdateBehavior
                         .append("  fen = top;")
                         .append("}")
                         .append("fen.setTimeout(function(){ fen.childCallBack(\"javascript:")
-                        .append(generateCallbackScript("wicketAjaxGet('" + getCallbackUrl(false) + "'"))
+                        .append(getCallbackFunction("wicketAjaxGet('" + getCallbackUrl() + "'"))
                         .append("\");},0);");
         // the timeout is needed due to a bug in Firefox, that does not close the
         // nsIXMLHttpRequest and therefore throws an error that disables any

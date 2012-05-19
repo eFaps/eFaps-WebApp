@@ -186,12 +186,12 @@ public class AutoCompleteField
      * @param _tag tag
      */
     @Override
-    protected void onComponentTagBody(final MarkupStream _markupStream,
-                                      final ComponentTag _tag)
+    public void onComponentTagBody(final MarkupStream _markupStream,
+                                   final ComponentTag _tag)
     {
         final StringBuilder cmp = new StringBuilder();
         cmp.append("<input type=\"hidden\" ").append("name=\"").append(this.fieldName).append("\" id=\"").append(
-                        _tag.getString("id")).append("_hidden\" ");
+                        _tag.getAttribute("id")).append("_hidden\" ");
         try {
             if ((this.uiAbstractCell.getParent().isEditMode() || this.uiAbstractCell.getParent().isCreateMode())
                             && this.uiAbstractCell.getInstance() != null) {

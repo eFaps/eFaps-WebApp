@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2012 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,10 +24,13 @@ import org.apache.wicket.ajax.AjaxEventBehavior;
 
 /**
  * @author The eFasp Team
- * @version $Id:AbstractAjaxCallBackBehavior.java 1510 2007-10-18 14:35:40Z jmox $
+ * @version $Id:AbstractAjaxCallBackBehavior.java 1510 2007-10-18 14:35:40Z jmox
+ *          $
  */
-public abstract class AbstractAjaxCallBackBehavior extends AjaxEventBehavior
+public abstract class AbstractAjaxCallBackBehavior
+    extends AjaxEventBehavior
 {
+
     /**
      * Enum used to define the targets.
      */
@@ -69,7 +72,8 @@ public abstract class AbstractAjaxCallBackBehavior extends AjaxEventBehavior
      * @param _event event the behavior should be executed on
      * @param _target target of the javascript
      */
-    public AbstractAjaxCallBackBehavior(final String _event, final Target _target)
+    public AbstractAjaxCallBackBehavior(final String _event,
+                                        final Target _target)
     {
         super(_event);
         this.target = _target;
@@ -82,7 +86,7 @@ public abstract class AbstractAjaxCallBackBehavior extends AjaxEventBehavior
      * @return JavaScript
      */
     @Override
-    protected CharSequence getCallbackScript()
+    public CharSequence getCallbackScript()
     {
         final String str = super.getCallbackScript().toString().replace("return !wcall;", "");
         CharSequence ret = null;

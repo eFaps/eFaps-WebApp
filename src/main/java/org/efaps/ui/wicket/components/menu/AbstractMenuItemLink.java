@@ -20,7 +20,6 @@
 
 package org.efaps.ui.wicket.components.menu;
 
-import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.IModel;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
@@ -57,8 +56,8 @@ public abstract class AbstractMenuItemLink
      * @param _markupStream Markup Stream
      */
     @Override
-    protected void onRender(final MarkupStream _markupStream)
+    protected void onRender()
     {
-        _markupStream.next();
+
     }
 }

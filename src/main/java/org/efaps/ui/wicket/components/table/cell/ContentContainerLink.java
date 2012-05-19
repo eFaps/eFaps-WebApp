@@ -87,7 +87,7 @@ public class ContentContainerLink<T>
                 if (cellmodel.getTarget() == Target.POPUP) {
                     page = new ContentContainerPage(menu.getUUID(), cellmodel.getInstanceKey());
                 } else {
-                    page = new ContentContainerPage(getPage().getPageMap(), menu.getUUID(), cellmodel.getInstanceKey());
+                    page = new ContentContainerPage(menu.getUUID(), cellmodel.getInstanceKey());
                 }
             } catch (final EFapsException e) {
                 page = new ErrorPage(e);

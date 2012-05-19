@@ -20,8 +20,8 @@
 
 package org.efaps.ui.wicket.components;
 
-import org.apache.wicket.behavior.StringHeaderContributor;
-import org.apache.wicket.util.string.JavascriptUtils;
+import org.apache.wicket.behavior.Behavior;
+import org.apache.wicket.core.util.string.JavaScriptUtils;
 
 /**
  * Header Contributer that adds a javascript to the header needed
@@ -31,7 +31,7 @@ import org.apache.wicket.util.string.JavascriptUtils;
  * @version $Id$
  */
 public class ChildCallBackHeaderContributer
-    extends StringHeaderContributor
+    extends Behavior
 {
     /**
      * The Constant serialVersionUID.
@@ -42,18 +42,12 @@ public class ChildCallBackHeaderContributer
      * The Constant javaScript.
      */
     private static final String JAVASCRIPT =
-                    JavascriptUtils.SCRIPT_OPEN_TAG
+                    JavaScriptUtils.SCRIPT_OPEN_TAG
                         + "function childCallBack(_call){\n"
                         + "  _call = _call.replace(/^javascript:/, \"\");\n"
                         + "  eval(_call);\n"
                         + "}\n"
-                        + JavascriptUtils.SCRIPT_CLOSE_TAG;
+                        + JavaScriptUtils.SCRIPT_CLOSE_TAG;
 
-    /**
-     * Instantiates a new child call back header contributer.
-     */
-    public ChildCallBackHeaderContributer()
-    {
-        super(ChildCallBackHeaderContributer.JAVASCRIPT);
-    }
+
 }

@@ -30,14 +30,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.RequestCycle;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.behavior.IBehavior;
+import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.protocol.http.WebResponse;
+import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.request.http.WebResponse;
 import org.efaps.ui.wicket.components.autocomplete.AutoCompleteField;
 import org.efaps.ui.wicket.components.autocomplete.AutoCompleteFieldBehavior;
 import org.efaps.ui.wicket.components.form.cell.ValueCellPanel;
@@ -146,15 +146,15 @@ public class AjaxAddNew
                                 new UIModel<UIFormCell>(entry.getValue()), this.formModel, false);
                 this.repeater.add(cell);
                 cell.setRenderBodyOnly(true);
-                cell.renderComponent();
+                cell.internalRenderComponent();
                 final Iterator<? extends Component> iter = cell.iterator();
                 while (iter.hasNext()) {
                     final Component comp = iter.next();
                     if (comp instanceof AutoCompleteField) {
-                        final List<IBehavior> list = ((AutoCompleteField) comp).getBehaviors();
-                        for (final IBehavior behavior : list) {
+                        final List<? extends Behavior> list = ((AutoCompleteField) comp).getBehaviors();
+                        for (final Behavior behavior : list) {
                             if (behavior instanceof AutoCompleteFieldBehavior) {
-                                _target.appendJavascript(((AutoCompleteFieldBehavior) behavior).getInitScript());
+                                _target.appendJavaScript(((AutoCompleteFieldBehavior) behavior).getInitScript());
                             }
                         }
                     }
@@ -185,7 +185,7 @@ public class AjaxAddNew
                 .append("container.insertBefore(div, document.getElementById('").append(this.getMarkupId())
                 .append("'));");
 
-            _target.prependJavascript(script.toString());
+            _target.prependJavaScript(script.toString());
         } catch (final EFapsException e) {
             throw new RestartResponseException(new ErrorPage(e));
         }

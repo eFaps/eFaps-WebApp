@@ -31,14 +31,16 @@ import org.apache.wicket.model.IModel;
  * pop up window, so that the information needed about the parent can be
  * accessed from the pop up window. Each instance of this class is stored with a
  * unique key in the EFapSession. This enables that no information like OID or
- * an UUID must be passed as parameters from the Browser and therefore could
- * be altered.
+ * an UUID must be passed as parameters from the Browser and therefore could be
+ * altered.
  *
  * @author The eFaps Team
  * @version $Id$
  */
-public class Opener implements Serializable
+public class Opener
+    implements Serializable
 {
+
     /**
      * Key used to pass the id as parameter inside the session of a page.
      */
@@ -58,11 +60,6 @@ public class Opener implements Serializable
      * Stores the model of the opener.
      */
     private final IModel<?> model;
-
-    /**
-     * The name of the page map of this opener.
-     */
-    private final String pageMapName;
 
     /**
      * The key for the related menuTree of the opener.
@@ -91,14 +88,11 @@ public class Opener implements Serializable
      * Constructor.
      *
      * @param _model model of the openr
-     * @param _pageMapName pagemap of the opener
      */
-    public Opener(final IModel<?> _model,
-                  final String _pageMapName)
+    public Opener(final IModel<?> _model)
     {
         this.id = ((Long) (new Random().nextLong())).toString();
         this.model = _model;
-        this.pageMapName = _pageMapName;
     }
 
     /**
@@ -119,16 +113,6 @@ public class Opener implements Serializable
     public IModel<?> getModel()
     {
         return this.model;
-    }
-
-    /**
-     * Getter method for instance variable {@link #pageMapName}.
-     *
-     * @return value of instance variable {@link #pageMapName}
-     */
-    public String getPageMapName()
-    {
-        return this.pageMapName;
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2012 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@
 package org.efaps.ui.wicket.behaviors;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.behavior.AbstractBehavior;
+import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.ComponentTag;
 
 /**
@@ -30,7 +30,8 @@ import org.apache.wicket.markup.ComponentTag;
  * @author The eFaps Team
  * @version $Id$
  */
-public class SetSelectedRowBehavior extends AbstractBehavior
+public class SetSelectedRowBehavior
+    extends Behavior
 {
     /**
      * Name of the hidden input for the field name.
@@ -67,7 +68,8 @@ public class SetSelectedRowBehavior extends AbstractBehavior
      * @param _tag       tag
      */
     @Override
-    public void onComponentTag(final Component _component, final ComponentTag _tag)
+    public void onComponentTag(final Component _component,
+                               final ComponentTag _tag)
     {
         super.onComponentTag(_component, _tag);
         _tag.put("onfocus", getJavaScript());

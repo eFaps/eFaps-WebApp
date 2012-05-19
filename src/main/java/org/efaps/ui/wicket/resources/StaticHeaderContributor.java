@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2012 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,25 +21,27 @@
 package org.efaps.ui.wicket.resources;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.behavior.HeaderContributor;
+import org.apache.wicket.behavior.Behavior;
+import org.apache.wicket.markup.head.CssHeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.html.IHeaderContributor;
-import org.apache.wicket.markup.html.IHeaderResponse;
 
 /**
- * A HeaderContributor for Content wich is stored inside the eFaps-DataBase.<br>
- * Unlike other HeaderContributor the Instance of StaticHeaderContributor migtht
+ * A HeaderContributor for Content which is stored inside the eFaps-DataBase.<br>
+ * Unlike other HeaderContributor the Instance of StaticHeaderContributor might
  * be removed on rendering from the component to merge it with other
  * StaticHeaderContributor and added as a new merged StaticHeaderContributor to
  * a ParentComponent. To prevent a StaticHeaderContributor from merging for e.g.
- * keep the Sequence of Behaviors in a Compoment {@link #merged} must be set to
+ * keep the Sequence of Behaviors in a Component {@link #merged} must be set to
  * true.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id: StaticHeaderContributor.java 3447 2009-11-29 22:46:39Z
  *          tim.moxter $
  */
 public class StaticHeaderContributor
-    extends HeaderContributor
+    extends Behavior
 {
 
     /**
@@ -51,7 +53,8 @@ public class StaticHeaderContributor
      * this enum is used to distinguish between the different Types of the
      * Header.
      */
-    public static enum HeaderType {
+    public static enum HeaderType
+    {
         /** CSS. */
         CSS,
         /** JS. */
@@ -82,13 +85,12 @@ public class StaticHeaderContributor
      * Constructor setting the IHeaderContributor in the SuperClass and the
      * Reference.
      *
-     * @param _headerContributor    IHeaderContributor
-     * @param _reference            EFapsContentReference
+     * @param _headerContributor IHeaderContributor
+     * @param _reference EFapsContentReference
      */
     public StaticHeaderContributor(final IHeaderContributor _headerContributor,
                                    final EFapsContentReference _reference)
     {
-        super(_headerContributor);
         this.reference = _reference;
     }
 
@@ -115,13 +117,14 @@ public class StaticHeaderContributor
                                                        final boolean _merged)
     {
         final StaticHeaderContributor ret =
-                        new StaticHeaderContributor(new IHeaderContributor() {
+                        new StaticHeaderContributor(new IHeaderContributor()
+                        {
 
                             private static final long serialVersionUID = 1L;
 
                             public void renderHead(final IHeaderResponse _response)
                             {
-                                _response.renderCSSReference(_reference.getStaticContentUrl());
+                                _response.render(CssHeaderItem.forUrl(_reference.getStaticContentUrl()));
                             }
                         }, _reference);
         ret.setHeaderType(StaticHeaderContributor.HeaderType.CSS);
@@ -152,13 +155,14 @@ public class StaticHeaderContributor
     {
 
         final StaticHeaderContributor ret =
-                        new StaticHeaderContributor(new IHeaderContributor() {
+                        new StaticHeaderContributor(new IHeaderContributor()
+                        {
 
                             private static final long serialVersionUID = 1L;
 
                             public void renderHead(final IHeaderResponse _response)
                             {
-                                _response.renderJavascriptReference(_reference.getStaticContentUrl());
+                                _response.render(JavaScriptHeaderItem.forUrl(_reference.getStaticContentUrl()));
                             }
                         }, _reference);
         ret.setHeaderType(StaticHeaderContributor.HeaderType.JS);
@@ -178,6 +182,7 @@ public class StaticHeaderContributor
 
     /**
      * (non-Javadoc).
+     *
      * @see org.apache.wicket.behavior.AbstractBehavior#bind(org.apache.wicket.Component)
      * @param _component Component
      */

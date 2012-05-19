@@ -108,7 +108,6 @@ public class ClassificationPathPanel
         this.modal = new ModalWindowContainer("modal");
         add(this.modal);
         this.modal.reset();
-        this.modal.setPageMapName("modal-2");
         this.modal.setWindowClosedCallback(new UpdateCallback());
         // it must be used a Page Creator, because only a modal window using a
         // page creator can be moved over the whole srceen
@@ -191,7 +190,7 @@ public class ClassificationPathPanel
          * @param _openTag tag
          */
         @Override
-        protected void onComponentTagBody(final MarkupStream _markupStream,
+        public void onComponentTagBody(final MarkupStream _markupStream,
                                           final ComponentTag _openTag)
         {
             super.onComponentTagBody(_markupStream, _openTag);
@@ -308,9 +307,9 @@ public class ClassificationPathPanel
                 } catch (final EFapsException e) {
                     throw new RestartResponseException(new ErrorPage(e));
                 }
-                _target.addComponent(form);
+                _target.add(form);
                 // TODO this should not be done always, needed for the editor so that it is loaded correctly
-                _target.appendJavascript("dojo.parser.parse(document.body)");
+                _target.appendJavaScript("dojo.parser.parse(document.body)");
             }
         }
 

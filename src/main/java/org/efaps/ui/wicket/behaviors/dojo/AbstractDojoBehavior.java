@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2012 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,13 @@
 package org.efaps.ui.wicket.behaviors.dojo;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.behavior.AbstractBehavior;
-import org.apache.wicket.markup.html.IHeaderResponse;
+import org.apache.wicket.behavior.Behavior;
+import org.apache.wicket.markup.head.CssHeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptHeaderItem;
+import org.apache.wicket.request.resource.CssResourceReference;
+import org.apache.wicket.request.resource.JavaScriptResourceReference;
+import org.apache.wicket.request.resource.ResourceReference;
 
 /**
  * This class renders the Links for the JavaScripts in the Head for Behaviors
@@ -31,8 +36,29 @@ import org.apache.wicket.markup.html.IHeaderResponse;
  * @author The eFaps Team
  * @version $Id$
  */
-public abstract class AbstractDojoBehavior extends AbstractBehavior
+public abstract class AbstractDojoBehavior
+    extends Behavior
 {
+
+    /**
+     * Reference to the stylesheet.
+     */
+    public static final ResourceReference CSS_TUNDRA = new CssResourceReference(AbstractDojoBehavior.class,
+                    "dijit/themes/tundra/tundra.css");
+
+    /**
+     * Reference to the JavaScript.
+     */
+    public static final JavaScriptResourceReference JS_DOJO = new JavaScriptResourceReference(
+                    AbstractDojoBehavior.class,
+                    "dojo/dojo.js");
+
+    /**
+     * Reference to the JavaScript.
+     */
+    public static final JavaScriptResourceReference JS_EFAPSDOJO = new JavaScriptResourceReference(
+                    AbstractDojoBehavior.class,
+                    "dojo/eFapsDojo.js");
 
     /**
      * Needed for serialization.
@@ -43,15 +69,17 @@ public abstract class AbstractDojoBehavior extends AbstractBehavior
      * Render the links for the head.
      *
      * @see org.apache.wicket.behavior.AbstractBehavior#renderHead(org.apache.wicket.markup.html.IHeaderResponse)
+     * @param _component component the header will be rendered for
      * @param _response resonse to add
      */
     @Override
-    public void renderHead(final IHeaderResponse _response)
+    public void renderHead(final Component _component,
+                           final IHeaderResponse _response)
     {
-        super.renderHead(_response);
-        _response.renderString(DojoReference.getConfigJavaScript(DojoReference.JS_DOJO));
-        _response.renderString(DojoReference.getConfigJavaScript(DojoReference.JS_EFAPSDOJO));
-        _response.renderCSSReference(DojoReference.CSS_TUNDRA);
+        super.renderHead(_component, _response);
+        _response.render(JavaScriptHeaderItem.forReference(AbstractDojoBehavior.JS_DOJO));
+        _response.render(JavaScriptHeaderItem.forReference(AbstractDojoBehavior.JS_EFAPSDOJO));
+        _response.render(CssHeaderItem.forReference(AbstractDojoBehavior.CSS_TUNDRA));
     }
 
     /**
