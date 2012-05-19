@@ -19,6 +19,6 @@
  */
 
 /**
- * The dojo package.
+ * The dojo package. includes all js from dojo 1.7.2.
  */
 package org.efaps.ui.wicket.behaviors.dojo;

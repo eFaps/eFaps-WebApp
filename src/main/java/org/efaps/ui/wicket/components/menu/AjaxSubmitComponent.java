@@ -203,9 +203,9 @@ public class AjaxSubmitComponent
                     Page page = null;
                     try {
                         if (uiObject instanceof UITable) {
-                            page = new TablePage(new TableModel((UITable) uiObject));
+                            page = new TablePage(new TableModel((UITable) uiObject), false);
                         } else if (uiObject instanceof UIForm) {
-                            page = new FormPage(new FormModel((UIForm) uiObject));
+                            page = new FormPage(new FormModel((UIForm) uiObject), false);
                         }
                     } catch (final EFapsException e) {
                         page = new ErrorPage(e);

@@ -75,20 +75,22 @@ public class FormPage
      * @param _parameters PageParameters
      * @throws EFapsException on error
      */
-    public FormPage(final PageParameters _parameters)
+    public FormPage(final PageParameters _parameters,
+                    final boolean _updateMenu)
         throws EFapsException
     {
-        this(new FormModel(new UIForm(_parameters)));
+        this(new FormModel(new UIForm(_parameters)), _updateMenu);
     }
 
     /**
      * @param _model model for the page
      * @throws EFapsException on error
      */
-    public FormPage(final IModel<?> _model)
+    public FormPage(final IModel<?> _model,
+                    final boolean _updateMenu)
         throws EFapsException
     {
-        this(_model, null);
+        this(_model, null, _updateMenu);
     }
 
     /**
@@ -97,10 +99,11 @@ public class FormPage
      * @throws EFapsException on error
      */
     public FormPage(final UUID _commandUUID,
-                    final String _oid)
+                    final String _oid,
+                    final boolean _updateMenu)
         throws EFapsException
     {
-        this(_commandUUID, _oid, (ModalWindowContainer) null);
+        this(_commandUUID, _oid, (ModalWindowContainer) null, _updateMenu);
     }
 
     /**
@@ -111,10 +114,11 @@ public class FormPage
      */
     public FormPage(final UUID _commandUUID,
                     final String _oid,
-                    final ModalWindowContainer _modalWindow)
+                    final ModalWindowContainer _modalWindow,
+                    final boolean _updateMenu)
         throws EFapsException
     {
-        super(new FormModel(new UIForm(_commandUUID, _oid)), _modalWindow);
+        super(new FormModel(new UIForm(_commandUUID, _oid)), _modalWindow, _updateMenu);
         this.addComponents();
     }
 
@@ -124,10 +128,11 @@ public class FormPage
      * @throws EFapsException on error
      */
     public FormPage(final IModel<?> _model,
-                    final ModalWindowContainer _modalWindow)
+                    final ModalWindowContainer _modalWindow,
+                    final boolean _updateMenu)
         throws EFapsException
     {
-        super(_model, _modalWindow);
+        super(_model, _modalWindow, _updateMenu);
         this.addComponents();
     }
 
@@ -143,7 +148,7 @@ public class FormPage
                     final String _openerId)
         throws EFapsException
     {
-        super(new FormModel(new UIForm(_commandUUID, _oid, _openerId)), null);
+        super(new FormModel(new UIForm(_commandUUID, _oid, _openerId)), null, false);
         this.addComponents();
     }
 
@@ -231,7 +236,7 @@ public class FormPage
             } else if (element.getType().equals(ElementType.STRUCBRWS)) {
                 final StructurBrowserTreeTablePanel strucBrws = new StructurBrowserTreeTablePanel(
                                 elementRepeater.newChildId(), new UIModel<UIStructurBrowser>(
-                                                (UIFieldStructurBrowser) element.getElement()),true);
+                                                (UIFieldStructurBrowser) element.getElement()), true);
                 elementRepeater.add(strucBrws);
             } else if (element.getType().equals(ElementType.SUBFORM)) {
                 final UIFieldForm uiFieldForm = (UIFieldForm) element.getElement();

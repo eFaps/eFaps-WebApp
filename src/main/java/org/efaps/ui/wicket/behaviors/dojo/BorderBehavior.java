@@ -36,7 +36,8 @@ import org.apache.wicket.markup.ComponentTag;
  * @author The eFaps Team
  * @version $Id$
  */
-public class BorderBehavior extends AbstractDojoBehavior
+public class BorderBehavior
+    extends AbstractDojoBehavior
 {
 
     /**

@@ -117,11 +117,11 @@ public class UpdateParentCallback
             AbstractContentPage page = null;
             try {
                 if (uiObject instanceof UITable) {
-                    page = new TablePage(new TableModel((UITable) uiObject));
+                    page = new TablePage(new TableModel((UITable) uiObject), false);
                 } else if (uiObject instanceof UIForm) {
-                    page = new FormPage(new FormModel((UIForm) uiObject));
+                    page = new FormPage(new FormModel((UIForm) uiObject), false);
                 } else if (uiObject instanceof UIStructurBrowser) {
-                    page = new StructurBrowserPage(new UIModel<UIStructurBrowser>((UIStructurBrowser) uiObject));
+                    page = new StructurBrowserPage(new UIModel<UIStructurBrowser>((UIStructurBrowser) uiObject), false);
                 }
                 // copy the MenuKey to the new page
                 page.setMenuTreeKey(((AbstractContentPage) this.panel.getPage()).getMenuTreeKey());

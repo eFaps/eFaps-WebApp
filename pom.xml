@@ -118,6 +118,37 @@
     * Project itself
     ************************************************************************* -->
     <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <id>prepare</id>
+                        <phase>validate</phase>
+                        <configuration>
+                            <target>
+                                <echo message="prepare phase" />
+                                <exec executable="tar">
+                                        <arg value="--extract"/>
+                                        <arg value="--gzip"/>
+                                        <arg value="--file=lib/dojo-release-1.7.2.tar.gz"/>
+                                        <arg value="--directory=src/main/java/org/efaps/ui/wicket/behaviors/dojo"/>
+                                        <arg value="--strip-components=1"/>
+                                </exec>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+
+
+
         <!-- required that the template files for wicket are copied -->
         <resources>
             <resource>
@@ -132,6 +163,8 @@
                 </includes>
                 <excludes>
                     <exclude>**/*.java</exclude>
+                    <exclude>**/*.uncompressed.js</exclude>
+                    <exclude>**/*.txt</exclude>
                 </excludes>
             </resource>
         </resources>

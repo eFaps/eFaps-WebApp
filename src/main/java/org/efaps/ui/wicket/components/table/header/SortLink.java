@@ -89,9 +89,9 @@ public class SortLink
 
             AbstractContentPage page;
             if (getPage() instanceof TablePage) {
-                page = new TablePage(new TableModel(uiTable));
+                page = new TablePage(new TableModel(uiTable), true);
             } else {
-                page = new FormPage(new FormModel((UIForm) getPage().getDefaultModelObject()));
+                page = new FormPage(new FormModel((UIForm) getPage().getDefaultModelObject()), true);
             }
             page.setMenuTreeKey(menuTreeKey);
             getRequestCycle().setResponsePage(page);

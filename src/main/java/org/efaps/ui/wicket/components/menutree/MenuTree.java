@@ -391,9 +391,9 @@ public class MenuTree
                     Page ret;
                     try {
                         if (_model.getCommand().getTargetStructurBrowserField() != null) {
-                            ret = new StructurBrowserPage(_model.getCommandUUID(), _model.getInstanceKey());
+                            ret = new StructurBrowserPage(_model.getCommandUUID(), _model.getInstanceKey(), false);
                         } else {
-                            ret = new TablePage(_model.getCommandUUID(), _model.getInstanceKey())
+                            ret = new TablePage(_model.getCommandUUID(), _model.getInstanceKey(), true)
                                             .setMenuTreeKey(getMenuKey());
                         }
                     } catch (final EFapsException e) {
@@ -416,7 +416,7 @@ public class MenuTree
                 {
                     Page page;
                     try {
-                        page = new FormPage(_model.getCommandUUID(), _model.getInstanceKey());
+                        page = new FormPage(_model.getCommandUUID(), _model.getInstanceKey(), true);
                         ((FormPage) page).setMenuTreeKey(getMenuKey());
                     } catch (final EFapsException e) {
                         page = new ErrorPage(e);

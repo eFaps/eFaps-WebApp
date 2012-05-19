@@ -62,20 +62,22 @@ public class StructurBrowserPage
      * @param _parameters PageParameters
      * @throws EFapsException on error
      */
-    public StructurBrowserPage(final PageParameters _parameters)
+    public StructurBrowserPage(final PageParameters _parameters,
+                               final boolean _updateMenu)
         throws EFapsException
     {
-        this(new UIModel<UIStructurBrowser>(new UIStructurBrowser(_parameters)));
+        this(new UIModel<UIStructurBrowser>(new UIStructurBrowser(_parameters)), _updateMenu);
     }
 
     /**
      * @param _model model for this pager
      * @throws EFapsException  on error
      */
-    public StructurBrowserPage(final IModel<UIStructurBrowser> _model)
+    public StructurBrowserPage(final IModel<UIStructurBrowser> _model,
+                               final boolean _updateMenu)
         throws EFapsException
     {
-        this(_model, null);
+        this(_model, null, _updateMenu);
     }
 
     /**
@@ -84,10 +86,11 @@ public class StructurBrowserPage
      * @throws EFapsException  on error
      */
     public StructurBrowserPage(final IModel<UIStructurBrowser> _model,
-                               final ModalWindowContainer _modalWindow)
+                               final ModalWindowContainer _modalWindow,
+                               final boolean _updateMenu)
         throws EFapsException
     {
-        super(_model, _modalWindow);
+        super(_model, _modalWindow, _updateMenu);
         this.addComponents();
     }
 
@@ -99,10 +102,11 @@ public class StructurBrowserPage
      * @throws EFapsException on error
      */
     public StructurBrowserPage(final UUID _commandUUID,
-                               final String _oid)
+                               final String _oid,
+                               final boolean _updateMenu)
         throws EFapsException
     {
-        super(new UIModel<UIStructurBrowser>(new UIStructurBrowser(_commandUUID, _oid)), null);
+        super(new UIModel<UIStructurBrowser>(new UIStructurBrowser(_commandUUID, _oid)), null, _updateMenu);
         this.addComponents();
     }
 

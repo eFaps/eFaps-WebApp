@@ -105,6 +105,7 @@ public class HeaderPanel
         this.tablepanel = _tablePanel;
         final UITable uitable = (UITable) super.getDefaultModelObject();
         this.headerproperties = "eFapsTable" + uitable.getTableId();
+        add(StaticHeaderContrBehavior.forJavaScript(HeaderPanel.JAVASCRIPT));
 
         this.add(new AjaxStoreColumnWidthBehavior());
         this.add(new AjaxStoreColumnOrderBehavior());
@@ -386,10 +387,10 @@ public class HeaderPanel
             model.getObject().resetModel();
             try {
                 if (getComponent().getPage() instanceof TablePage) {
-                    getComponent().setResponsePage(new TablePage(model));
+                    getComponent().setResponsePage(new TablePage(model, true));
                 } else {
                     final UIForm uiform = (UIForm) getComponent().getPage().getDefaultModelObject();
-                    getComponent().setResponsePage(new FormPage(new FormModel(uiform)));
+                    getComponent().setResponsePage(new FormPage(new FormModel(uiform), true));
                 }
             } catch (final EFapsException e) {
                 getComponent().setResponsePage(new ErrorPage(e));

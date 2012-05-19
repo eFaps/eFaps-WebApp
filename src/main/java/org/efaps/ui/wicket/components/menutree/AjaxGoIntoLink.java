@@ -74,10 +74,10 @@ public class AjaxGoIntoLink
         InlineFrame frame;
         try {
             if (cmd.getTargetTable() != null) {
-                final TablePage page = new TablePage(model.getCommandUUID(), model.getInstanceKey());
+                final TablePage page = new TablePage(model.getCommandUUID(), model.getInstanceKey(), true);
                 frame = new InlineFrame(ContentContainerPage.IFRAME_WICKETID, page);
             } else {
-                final FormPage page = new FormPage(model.getCommandUUID(), model.getInstanceKey());
+                final FormPage page = new FormPage(model.getCommandUUID(), model.getInstanceKey(), true);
                 frame = new InlineFrame(ContentContainerPage.IFRAME_WICKETID, page);
             }
         } catch (final EFapsException e) {

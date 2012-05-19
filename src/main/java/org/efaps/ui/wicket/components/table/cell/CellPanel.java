@@ -96,7 +96,7 @@ public class CellPanel
         final UITableCell uiTableCell = (UITableCell) super.getDefaultModelObject();
         // set the title of the cell
         add(AttributeModifier.replace("title", uiTableCell.getCellTitle()));
-        add(new AttributeAppender("style", true, new Model<String>("text-align:" + uiTableCell.getAlign()), ";"));
+        add(new AttributeAppender("style", new Model<String>("text-align:" + uiTableCell.getAlign()), ";"));
 
         if (uiTableCell.isAutoComplete() && (_uitable.isCreateMode() || _uitable.isEditMode())
                         && uiTableCell.getDisplay().equals(Display.EDITABLE)) {
@@ -116,7 +116,7 @@ public class CellPanel
             add(new WebMarkupContainer("checkbox").setVisible(false));
             if (uiTableCell.isShowNumbering()) {
                 final Integer size = _uitable.getSize();
-                final NumberFormat formatter = NumberFormat.getInstance();;
+                final NumberFormat formatter = NumberFormat.getInstance();
                 formatter.setMinimumIntegerDigits(size.toString().length());
                 add(new Label("numbering", formatter.format(_idx) + ". "));
             } else {

@@ -134,6 +134,7 @@ public class MenuContainer
 
         add(StaticHeaderContrBehavior.forCss(MenuContainer.CSS));
         add(StaticHeaderContrBehavior.forJavaScript(MenuContainer.EFAPSEXTENSION));
+        add(StaticHeaderContrBehavior.forJavaScript(MenuContainer.THEME));
 
         final UIMenuItem model = (UIMenuItem) super.getDefaultModelObject();
         for (final UIMenuItem menuItem : model.getChilds()) {
@@ -153,7 +154,6 @@ public class MenuContainer
             .append(RequestHandler.replaceMacrosInUrl(MenuContainer.URL_THEME_IMAGES).replaceAll("\\?", ""))
             .append("\";");
         _response.render(JavaScriptHeaderItem.forScript(js, MenuContainer.class.getName()));
-        _response.render(JavaScriptHeaderItem.forUrl(MenuContainer.THEME.getStaticContentUrl()));
     }
 
     /**

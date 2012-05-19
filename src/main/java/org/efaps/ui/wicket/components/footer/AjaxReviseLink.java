@@ -81,9 +81,9 @@ public class AjaxReviseLink
         final AbstractContentPage page;
         try {
             if (prevObject instanceof UITable) {
-                page = new TablePage(new TableModel((UITable) prevObject), modal);
+                page = new TablePage(new TableModel((UITable) prevObject), modal, true);
             } else {
-                page = new FormPage(new FormModel((UIForm) prevObject), modal);
+                page = new FormPage(new FormModel((UIForm) prevObject), modal, true);
             }
             getRequestCycle().setResponsePage(page);
         } catch (final EFapsException e) {

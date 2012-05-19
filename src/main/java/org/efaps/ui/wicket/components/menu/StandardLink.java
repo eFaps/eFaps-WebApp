@@ -97,13 +97,13 @@ public class StandardLink
             if (command.getTargetTable() != null) {
                 if (command.getTargetStructurBrowserField() != null) {
                     final StructurBrowserPage page = new StructurBrowserPage(model.getCommandUUID(), model
-                                    .getInstanceKey());
+                                    .getInstanceKey(), false);
 
                     final InlineFrame iframe = new InlineFrame(MainPage.IFRAME_WICKETID, page);
                     getPage().addOrReplace(iframe);
                 } else {
                     if (getPage() instanceof MainPage) {
-                        final TablePage page = new TablePage(model.getCommandUUID(), model.getInstanceKey());
+                        final TablePage page = new TablePage(model.getCommandUUID(), model.getInstanceKey(), false);
                         final InlineFrame iframe = new InlineFrame(MainPage.IFRAME_WICKETID, page);
 
                         getPage().addOrReplace(iframe);
@@ -117,7 +117,7 @@ public class StandardLink
                 }
             } else if (command.getTargetForm() != null || command.getTargetSearch() != null) {
                 if (getPage() instanceof MainPage && command.getTargetSearch() == null) {
-                    final FormPage page = new FormPage(model.getCommandUUID(), model.getInstanceKey());
+                    final FormPage page = new FormPage(model.getCommandUUID(), model.getInstanceKey(), false);
                     final InlineFrame iframe = new InlineFrame(MainPage.IFRAME_WICKETID, page);
                     getPage().addOrReplace(iframe);
                 } else {
@@ -163,10 +163,10 @@ public class StandardLink
         if (command.getTargetTable() != null) {
             if (command.getTargetStructurBrowserField() != null) {
                 final StructurBrowserPage page = new StructurBrowserPage(model.getCommandUUID(), model
-                                .getInstanceKey());
+                                .getInstanceKey(), false);
                 setResponsePage(page);
             } else {
-                final TablePage page = new TablePage(model.getCommandUUID(), model.getInstanceKey());
+                final TablePage page = new TablePage(model.getCommandUUID(), model.getInstanceKey(), false);
                 setResponsePage(page);
             }
         }

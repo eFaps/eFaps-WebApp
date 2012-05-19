@@ -80,15 +80,18 @@ public abstract class AbstractContentPage
      * This instance variable contains the ModalWindow from this Page.
      */
     private final ModalWindowContainer modal = new ModalWindowContainer("modal");
+    private final boolean updateMenu;
+
 
     /**
      * Constructor.
      *
      * @param _model model for this page
      */
-    public AbstractContentPage(final IModel<?> _model)
+    public AbstractContentPage(final IModel<?> _model,
+                               final boolean _updateMenu)
     {
-        this(_model, null);
+        this(_model, null, _updateMenu);
     }
 
     /**
@@ -98,10 +101,12 @@ public abstract class AbstractContentPage
      * @param _modalWindow modal window
      */
     public AbstractContentPage(final IModel<?> _model,
-                               final ModalWindowContainer _modalWindow)
+                               final ModalWindowContainer _modalWindow,
+                               final boolean _updateMenu)
     {
         super(_model);
         this.modalWindow = _modalWindow;
+        this.updateMenu = _updateMenu;
     }
 
     /**
@@ -162,6 +167,16 @@ public abstract class AbstractContentPage
     public ModalWindowContainer getModal()
     {
         return this.modal;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #updateMenu}.
+     *
+     * @return value of instance variable {@link #updateMenu}
+     */
+    public boolean isUpdateMenu()
+    {
+        return this.updateMenu;
     }
 
     /**

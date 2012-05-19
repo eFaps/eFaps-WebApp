@@ -36,6 +36,7 @@ import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.UIFieldTable;
 import org.efaps.ui.wicket.models.objects.UIRow;
 import org.efaps.ui.wicket.models.objects.UITable;
+import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
 import org.efaps.util.EFapsException;
@@ -51,6 +52,7 @@ import org.slf4j.LoggerFactory;
 public class TablePanel
     extends Panel
 {
+
     /**
      * Reference to the style sheet.
      */
@@ -68,8 +70,8 @@ public class TablePanel
 
     /**
      * @param _wicketId wicket id of this component
-     * @param _uitable    model for this component
-     * @param _page     page this component is in
+     * @param _uitable model for this component
+     * @param _page page this component is in
      * @throws EFapsException on error
      */
     public TablePanel(final String _wicketId,
@@ -107,7 +109,8 @@ public class TablePanel
             int i = 0;
             for (final Iterator<UIRow> rowIter = uiTable.getValues().iterator(); rowIter.hasNext(); odd = !odd) {
                 i++;
-                final RowPanel row = new RowPanel(rowsRepeater.newChildId(), new UIModel<UIRow>(rowIter.next()), this, true, i);
+                final RowPanel row = new RowPanel(rowsRepeater.newChildId(), new UIModel<UIRow>(rowIter.next()), this,
+                                ((AbstractContentPage) _page).isUpdateMenu(), i);
                 row.setOutputMarkupId(true);
                 if (odd) {
                     row.add(AttributeModifier.append("class", "eFapsTableRowOdd"));
@@ -119,7 +122,7 @@ public class TablePanel
         }
         if (uiTable.isEditable()) {
             rowsRepeater.add(new AjaxAddRemoveRowPanel(rowsRepeater.newChildId(), _uitable, rowsRepeater));
-            if (uiTable instanceof UIFieldTable)  {
+            if (uiTable instanceof UIFieldTable) {
                 if (((UIFieldTable) uiTable).isFirstTable()) {
                     this.add(new RowSelectedInput("selected"));
                 } else {

@@ -224,7 +224,7 @@ public class StructurBrowserTree
                         {
                             Page ret;
                             try {
-                                ret = new TablePage(commandUUID, model.getInstanceKey())
+                                ret = new TablePage(commandUUID, model.getInstanceKey(), true)
                                                 .setMenuTreeKey(StructurBrowserTree.this.listMenuKey);
                             } catch (final EFapsException e) {
                                 ret = new ErrorPage(e);
@@ -249,7 +249,7 @@ public class StructurBrowserTree
                         {
                             Page page;
                             try {
-                                page = new FormPage(commandUUID, model.getInstanceKey());
+                                page = new FormPage(commandUUID, model.getInstanceKey(), true);
                                 ((AbstractContentPage) page).setMenuTreeKey(StructurBrowserTree.this.listMenuKey);
                             } catch (final EFapsException e) {
                                 page = new ErrorPage(e);

@@ -120,9 +120,9 @@ public class SortHeaderColumnLink
         try {
             Page page;
             if (structurBrowser instanceof UIFieldStructurBrowser) {
-                page = new FormPage(new FormModel((UIForm) getPage().getDefaultModelObject()));
+                page = new FormPage(new FormModel((UIForm) getPage().getDefaultModelObject()), true);
             } else {
-                page = new StructurBrowserPage(new UIModel<UIStructurBrowser>(structurBrowser));
+                page = new StructurBrowserPage(new UIModel<UIStructurBrowser>(structurBrowser), true);
             }
             getRequestCycle().setResponsePage(page);
         } catch (final EFapsException e) {

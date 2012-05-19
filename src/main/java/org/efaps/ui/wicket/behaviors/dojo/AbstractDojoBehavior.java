@@ -20,18 +20,25 @@
 
 package org.efaps.ui.wicket.behaviors.dojo;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.head.CssHeaderItem;
+import org.apache.wicket.markup.head.HeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
-import org.apache.wicket.markup.head.JavaScriptHeaderItem;
+import org.apache.wicket.markup.head.IReferenceHeaderItem;
 import org.apache.wicket.request.IRequestHandler;
+import org.apache.wicket.request.Response;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.handler.resource.ResourceReferenceRequestHandler;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import org.apache.wicket.request.resource.ResourceReference;
+import org.apache.wicket.util.string.Strings;
 
 /**
  * This class renders the Links for the JavaScripts in the Head for Behaviors
@@ -59,13 +66,6 @@ public abstract class AbstractDojoBehavior
                     "dojo/dojo.js");
 
     /**
-     * Reference to the JavaScript.
-     */
-    public static final JavaScriptResourceReference JS_EFAPSDOJO = new JavaScriptResourceReference(
-                    AbstractDojoBehavior.class,
-                    "dojo/eFapsDojo.js");
-
-    /**
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
@@ -82,14 +82,7 @@ public abstract class AbstractDojoBehavior
                            final IHeaderResponse _response)
     {
         super.renderHead(_component, _response);
-        final IRequestHandler handler = new ResourceReferenceRequestHandler(AbstractDojoBehavior.JS_DOJO,
-                        new PageParameters());
-        final String url = RequestCycle.get().urlFor(handler).toString();
-        final StringBuilder js = new StringBuilder()
-            .append("djConfig.baseUrl=\"").append(url.substring(0, url.lastIndexOf("/"))).append("\";");
-        _response.render(JavaScriptHeaderItem.forScript(js, AbstractDojoBehavior.class.getName()));
-        _response.render(JavaScriptHeaderItem.forReference(AbstractDojoBehavior.JS_DOJO));
-        _response.render(JavaScriptHeaderItem.forReference(AbstractDojoBehavior.JS_EFAPSDOJO));
+        _response.render(new DojoHeaderItem(AbstractDojoBehavior.JS_DOJO, AbstractDojoBehavior.class.getName()));
         _response.render(CssHeaderItem.forReference(AbstractDojoBehavior.CSS_TUNDRA));
     }
 
@@ -104,5 +97,89 @@ public abstract class AbstractDojoBehavior
     {
         super.beforeRender(_component);
         _component.setOutputMarkupId(true);
+    }
+
+    /**
+     * Class to add Dojo script tags.
+     */
+    public final class DojoHeaderItem
+        extends HeaderItem
+        implements IReferenceHeaderItem
+    {
+        /**
+         * Resource refrecne with the actual script.
+         */
+        private final ResourceReference reference;
+
+        /**
+         * Id this script will be identified by.
+         */
+        private final String id;
+
+        /**
+         * @param _reference the ResourceReference3
+         * @param _id       id of this script
+         */
+        public DojoHeaderItem(final ResourceReference _reference,
+                              final String _id)
+        {
+            this.id = _id;
+            this.reference = _reference;
+        }
+
+        /**
+         * @return the reference for the item.
+         */
+        @Override
+        public ResourceReference getReference()
+        {
+            return this.reference;
+        }
+
+        /**
+         * @return The tokens this {@code HeaderItem} can be identified by. If
+         *         any of the tokens has already been rendered, this
+         *         {@code HeaderItem} will not be rendered.
+         */
+        @Override
+        public Iterable<?> getRenderTokens()
+        {
+            final String url = Strings.stripJSessionId(getUrl());
+            List<String> ret;
+            if (Strings.isEmpty(this.id)) {
+                ret = Collections.singletonList("javascript-" + url);
+            } else {
+                ret = Arrays.asList("javascript-" + this.id, "javascript-" + url);
+            }
+            return ret;
+        }
+
+        /**
+         * Renders the {@code HeaderItem} to the response.
+         *
+         * @param _response Response
+         */
+        @Override
+        public void render(final Response _response)
+        {
+            _response.write("<script type=\"text/javascript\" data-dojo-config=\"async: true\" ");
+            if (this.id != null) {
+                _response.write("id=\"" + this.id + "\" ");
+            }
+            _response.write("src=\"");
+            _response.write(getUrl());
+            _response.write("\"></script>");
+            _response.write("\n");
+        }
+
+        /**
+         * @return the url for this resource
+         */
+        private String getUrl()
+        {
+            final IRequestHandler handler = new ResourceReferenceRequestHandler(getReference(),
+                            new PageParameters());
+            return RequestCycle.get().urlFor(handler).toString();
+        }
     }
 }

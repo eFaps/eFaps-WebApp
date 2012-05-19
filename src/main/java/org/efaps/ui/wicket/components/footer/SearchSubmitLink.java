@@ -87,7 +87,7 @@ public class SearchSubmitLink
             }
             final FooterPanel footer = findParent(FooterPanel.class);
             final ModalWindowContainer modal = footer.getModalWindow();
-            final TablePage page = new TablePage(new TableModel(newTable), modal);
+            final TablePage page = new TablePage(new TableModel(newTable), modal, false);
 
             page.setMenuTreeKey(((AbstractContentPage) getPage()).getMenuTreeKey());
             getRequestCycle().setResponsePage(page);

@@ -86,18 +86,18 @@ public class ModalWindowAjaxPageCreator
             if (this.uiObject.getCommand().getTargetTable() == null) {
                 final UIForm uiform = new UIForm(this.uiObject.getCommand().getUUID(), this.uiObject.getInstanceKey());
                 addEventObject(uiform);
-                ret = new FormPage(new FormModel(uiform), this.modalWindow);
+                ret = new FormPage(new FormModel(uiform), this.modalWindow, false);
             } else {
                 if (this.uiObject.getCommand().getTargetStructurBrowserField() == null) {
                     final UITable uitable = new UITable(this.uiObject.getCommand().getUUID(),
                                     this.uiObject.getInstanceKey());
                     addEventObject(uitable);
-                    ret = new TablePage(new TableModel(uitable), this.modalWindow);
+                    ret = new TablePage(new TableModel(uitable), this.modalWindow, false);
                 } else {
                     final UIStructurBrowser uiPageObject = new UIStructurBrowser(this.uiObject.getCommand().getUUID(),
                                     this.uiObject.getInstanceKey());
                     addEventObject(uiPageObject);
-                    ret = new StructurBrowserPage(new UIModel<UIStructurBrowser>(uiPageObject), this.modalWindow);
+                    ret = new StructurBrowserPage(new UIModel<UIStructurBrowser>(uiPageObject), this.modalWindow, false);
                 }
             }
         } catch (final EFapsException e) {

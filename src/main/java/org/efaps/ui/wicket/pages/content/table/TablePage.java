@@ -58,20 +58,22 @@ public class TablePage
      * @param _parameters PageParameters
      * @throws EFapsException on error
      */
-    public TablePage(final PageParameters _parameters)
+    public TablePage(final PageParameters _parameters,
+                     final boolean _updateMenu)
         throws EFapsException
     {
-        this(new TableModel(new UITable(_parameters)));
+        this(new TableModel(new UITable(_parameters)), _updateMenu);
     }
 
     /**
      * @param _model modle for the table
      * @throws EFapsException on error
      */
-    public TablePage(final IModel<UITable> _model)
+    public TablePage(final IModel<UITable> _model,
+                     final boolean _updateMenu)
         throws EFapsException
     {
-        this(_model, null);
+        this(_model, null, _updateMenu);
     }
 
     /**
@@ -80,13 +82,13 @@ public class TablePage
      * @throws EFapsException on error
      */
     public TablePage(final IModel<?> _model,
-                     final ModalWindowContainer _modalWindow)
+                     final ModalWindowContainer _modalWindow,
+                     final boolean _updateMenu)
         throws EFapsException
     {
-        super(_model, _modalWindow);
+        super(_model, _modalWindow, _updateMenu);
         this.addComponents();
     }
-
 
     /**
      * @param _uuid uuid of a command
@@ -99,17 +101,18 @@ public class TablePage
                      final String _openerId)
         throws EFapsException
     {
-        this(new TableModel(new UITable(_uuid, _instanceKey, _openerId)));
+        this(new TableModel(new UITable(_uuid, _instanceKey, _openerId)), false);
     }
 
     /**
      * @param _model modle for the table
      * @throws EFapsException on error
      */
-    public TablePage(final TableModel _model)
+    public TablePage(final TableModel _model,
+                     final boolean _updateMenu)
         throws EFapsException
     {
-        super(_model, null);
+        super(_model, null, _updateMenu);
         this.addComponents();
     }
 
@@ -119,10 +122,11 @@ public class TablePage
      * @throws EFapsException on error
      */
     public TablePage(final UUID _uuid,
-                     final String _instanceKey)
+                     final String _instanceKey,
+                     final boolean _updateMenu)
         throws EFapsException
     {
-        this(new TableModel(new UITable(_uuid, _instanceKey)));
+        this(new TableModel(new UITable(_uuid, _instanceKey)), _updateMenu);
     }
 
     /**

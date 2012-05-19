@@ -121,9 +121,9 @@ public class MainPage
     public MainPage()
     {
         super();
-        // call the client info to force the relaod script to be executed on the
+        // call the client info to force the reload script to be executed on the
         // beginning of a session,
-        // if an ajax call would be doen as fisrt an error occurs
+        // if an ajax call would be done as first an error occurs
         Session.get().getClientInfo();
         // add the file call back used to open a file in the session and the
         // main page
@@ -263,7 +263,8 @@ public class MainPage
                 .append("function(){\n").append("eFapsSetIFrameHeight();\n")
                 .append("eFapsPostSize(window.innerWidth, window.innerHeight);\n")
                 .append("}\n")
-                .append("Wicket.Event.add(window, \"domready\", function(event) { eFapsSetIFrameHeight();}); \n");
+                .append("Wicket.Event.add(window, \"domready\", function(event) { eFapsSetIFrameHeight();")
+                .append("eFapsPostSize(window.innerWidth, window.innerHeight);}); \n");
             return js.toString();
         }
 

@@ -193,17 +193,17 @@ public class AjaxLinkContainer
                 try {
                     if (menu.getTargetTable() != null) {
                         if (menu.getTargetStructurBrowserField() == null) {
-                            page = new TablePage(menu.getUUID(), cellmodel.getInstanceKey())
+                            page = new TablePage(menu.getUUID(), cellmodel.getInstanceKey(), true)
                                         .setMenuTreeKey(((AbstractContentPage) getComponent().getPage())
                                                         .getMenuTreeKey());
                         } else {
-                            page = new StructurBrowserPage(menu.getUUID(), cellmodel.getInstanceKey())
+                            page = new StructurBrowserPage(menu.getUUID(), cellmodel.getInstanceKey(), true)
                                             .setMenuTreeKey(((AbstractContentPage) getComponent().getPage())
                                                             .getMenuTreeKey());
                         }
                     } else {
                         page = new FormPage(menu.getUUID(),
-                                        cellmodel.getInstanceKey())
+                                        cellmodel.getInstanceKey(), true)
                                         .setMenuTreeKey(((AbstractContentPage) getComponent().getPage())
                                                         .getMenuTreeKey());
                     }

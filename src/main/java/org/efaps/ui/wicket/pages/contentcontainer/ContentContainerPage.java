@@ -269,12 +269,12 @@ public class ContentContainerPage
                 AbstractContentPage page = null;
                 try {
                     if (ContentContainerPage.this.webForm) {
-                        page = new FormPage(uuid4NewPage, _instanceKey);
+                        page = new FormPage(uuid4NewPage, _instanceKey, true);
                     } else {
                         if (Command.get(uuid4NewPage).getTargetStructurBrowserField() == null) {
-                            page = new TablePage(uuid4NewPage, _instanceKey);
+                            page = new TablePage(uuid4NewPage, _instanceKey, true);
                         } else {
-                            page = new StructurBrowserPage(uuid4NewPage, _instanceKey);
+                            page = new StructurBrowserPage(uuid4NewPage, _instanceKey, true);
                         }
                     }
                 } catch (final EFapsException e) {
