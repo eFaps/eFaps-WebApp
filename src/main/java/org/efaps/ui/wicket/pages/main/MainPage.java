@@ -124,7 +124,7 @@ public class MainPage
         // call the client info to force the reload script to be executed on the
         // beginning of a session,
         // if an ajax call would be done as first an error occurs
-        Session.get().getClientInfo();
+        ((WebClientInfo) Session.get().getClientInfo()).getProperties();
         // add the file call back used to open a file in the session and the
         // main page
         final ShowFileCallBackBehavior fileCall = new ShowFileCallBackBehavior();

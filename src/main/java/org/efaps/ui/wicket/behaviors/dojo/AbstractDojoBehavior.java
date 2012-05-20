@@ -45,8 +45,7 @@ import org.apache.wicket.util.string.Strings;
  * using Dojo.
  *
  * @author The eFaps Team
- * @version $Id: AbstractDojoBehavior.java 7532 2012-05-19 06:31:05Z
- *          jan@moxter.net $
+ * @version $Id$
  */
 public abstract class AbstractDojoBehavior
     extends Behavior
@@ -166,17 +165,17 @@ public abstract class AbstractDojoBehavior
             _response.write("<script type=\"text/javascript\"> ");
             _response.write(" dojoConfig = {");
             _response.write("baseUrl:\"");
-             _response.write(url.substring(0, url.lastIndexOf("/")));
-             _response.write("\",");
+            _response.write(url.substring(0, url.lastIndexOf("/")));
+            _response.write("\",");
             _response.write("async:true,");
             _response.write("parseOnLoad: true");
             _response.write(" };");
             _response.write("</script>");
             _response.write("<script type=\"text/javascript\"");
             if (this.id != null) {
-                _response.write("id=\"" + this.id + "\" ");
+                _response.write(" id=\"" + this.id + "\" ");
             }
-            _response.write("src=\"");
+            _response.write(" src=\"");
             _response.write(url);
             _response.write("\"></script>");
             _response.write("\n");
