@@ -25,8 +25,8 @@ import java.util.UUID;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.efaps.db.Context;
-import org.efaps.ui.wicket.behaviors.dojo.BorderBehavior;
-import org.efaps.ui.wicket.behaviors.dojo.BorderBehavior.Design;
+import org.efaps.ui.wicket.behaviors.dojo.BorderContainerBehavior;
+import org.efaps.ui.wicket.behaviors.dojo.BorderContainerBehavior.Design;
 import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior.Region;
 import org.efaps.ui.wicket.components.menutree.MenuTree;
@@ -98,7 +98,7 @@ public class StructBrowsSplitPanel
 
         this.add(new ContentPaneBehavior(Region.LEADING, true, positionH + "px", null));
         // overwrite the contentpane
-        this.add(new BorderBehavior(Design.HEADLINE));
+        this.add(new BorderContainerBehavior(Design.HEADLINE));
         final boolean hiddenV = "true".equalsIgnoreCase(hiddenStrV);
 
         final SplitHeaderPanel header = new SplitHeaderPanel("header", true, hiddenH, hiddenV);

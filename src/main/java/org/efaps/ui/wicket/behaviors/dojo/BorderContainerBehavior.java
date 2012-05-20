@@ -22,6 +22,8 @@ package org.efaps.ui.wicket.behaviors.dojo;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 
 /**
  * Class renders a dojo border. It can be used to render a slipt between the
@@ -36,7 +38,7 @@ import org.apache.wicket.markup.ComponentTag;
  * @author The eFaps Team
  * @version $Id$
  */
-public class BorderBehavior
+public class BorderContainerBehavior
     extends AbstractDojoBehavior
 {
 
@@ -91,7 +93,7 @@ public class BorderBehavior
      *
      * @param _design Design for this BorderBehavior.
      */
-    public BorderBehavior(final Design _design)
+    public BorderContainerBehavior(final Design _design)
     {
         this.design = _design;
     }
@@ -104,13 +106,28 @@ public class BorderBehavior
      * @param _tag Tag to write to
      */
     @Override
-    public void onComponentTag(final Component _component, final ComponentTag _tag)
+    public void onComponentTag(final Component _component,
+                               final ComponentTag _tag)
     {
         super.onComponentTag(_component, _tag);
-        _tag.put("dojoType", "dijit.layout.BorderContainer");
-        _tag.put("design", this.design.getKey());
-        _tag.put("liveSplitters", "false");
-        _tag.put("gutters", "false");
+        _tag.put("data-dojo-type", "dijit.layout.BorderContainer");
+        _tag.put("data-dojo-props", "design: '" + this.design.key + "'");
         _tag.put("class", "tundra eFapsBorderContainer");
+    }
+
+    /**
+     * Render the links for the head.
+     *
+     * @param _component component the header will be rendered for
+     * @param _response resonse to add
+     */
+    @Override
+    public void renderHead(final Component _component,
+                           final IHeaderResponse _response)
+    {
+        super.renderHead(_component, _response);
+        _response.render(JavaScriptHeaderItem.forScript(
+                        "require([\"dijit/layout/BorderContainer\", \"dojo/parser\"]);",
+                        BorderContainerBehavior.class.getName()));
     }
 }

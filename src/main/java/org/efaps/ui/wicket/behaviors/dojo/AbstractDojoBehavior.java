@@ -162,12 +162,22 @@ public abstract class AbstractDojoBehavior
         @Override
         public void render(final Response _response)
         {
-            _response.write("<script type=\"text/javascript\" data-dojo-config=\"async: true\" ");
+            final String url = getUrl();
+            _response.write("<script type=\"text/javascript\"> ");
+            _response.write(" dojoConfig = {");
+            _response.write("baseUrl:\"");
+             _response.write(url.substring(0, url.lastIndexOf("/")));
+             _response.write("\",");
+            _response.write("async:true,");
+            _response.write("parseOnLoad: true");
+            _response.write(" };");
+            _response.write("</script>");
+            _response.write("<script type=\"text/javascript\"");
             if (this.id != null) {
                 _response.write("id=\"" + this.id + "\" ");
             }
             _response.write("src=\"");
-            _response.write(getUrl());
+            _response.write(url);
             _response.write("\"></script>");
             _response.write("\n");
         }

@@ -20,8 +20,11 @@
 
 package org.efaps.ui.wicket.behaviors.dojo;
 
+
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 
 /**
  * This class turns a Component into a Dojo-ContentPane.
@@ -34,13 +37,11 @@ public class ContentPaneBehavior
 {
 
     /**
-     * Enum is used when this ContentPaneBehavior is used as a child
-     * inside a BorderContainer. The BorderContainer is
-     * widget is partitioned into up to five regions: left (or leading),
-     * right (or trailing), top, and bottom with a
-     * mandatory center to fill in any remaining space.
-     * Each edge region may have an optional splitter user interface
-     * for manual resizing.
+     * Enum is used when this ContentPaneBehavior is used as a child inside a
+     * BorderContainer. The BorderContainer is widget is partitioned into up to
+     * five regions: left (or leading), right (or trailing), top, and bottom
+     * with a mandatory center to fill in any remaining space. Each edge region
+     * may have an optional splitter user interface for manual resizing.
      */
     public enum Region
     {
@@ -145,7 +146,8 @@ public class ContentPaneBehavior
     }
 
     /**
-     * The tag of the related component must be set, so that a dojo BorderContainer will be rendered.
+     * The tag of the related component must be set, so that a dojo
+     * BorderContainer will be rendered.
      *
      * @param _component component this Behavior belongs to
      * @param _tag Tag to write to
@@ -155,15 +157,16 @@ public class ContentPaneBehavior
                                final ComponentTag _tag)
     {
         super.onComponentTag(_component, _tag);
-        _tag.put("dojoType", "dijit.layout.ContentPane");
-        _tag.put("region", this.region.getKey());
+        _tag.put("data-dojo-type", "dijit.layout.ContentPane");
+        _tag.put("data-dojo-props", "region: '" + this.region.getKey() + "'"
+                        + (this.splitter ? ", splitter: true" : ""));
         if (this.width != null) {
             _tag.put("style", "width: " + this.width);
         }
         if (this.height != null) {
             _tag.put("style", "height: " + this.height);
         }
-        _tag.put("splitter", this.splitter.toString());
+
     }
 
     /**
@@ -185,4 +188,21 @@ public class ContentPaneBehavior
     {
         this.width = _width;
     }
+
+    /**
+     * Render the links for the head.
+     *
+     * @param _component component the header will be rendered for
+     * @param _response resonse to add
+     */
+    @Override
+    public void renderHead(final Component _component,
+                           final IHeaderResponse _response)
+    {
+        super.renderHead(_component, _response);
+        _response.render(JavaScriptHeaderItem.forScript(
+                        "require([\"dijit/layout/ContentPane\", \"dojo/parser\"]);",
+                        ContentPaneBehavior.class.getName()));
+    }
+
 }

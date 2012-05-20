@@ -21,10 +21,7 @@ package org.efaps.ui.wicket.pages.contentcontainer;
 
 import java.util.UUID;
 
-import org.apache.wicket.Page;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.link.IPageLink;
-import org.apache.wicket.markup.html.link.InlineFrame;
 import org.apache.wicket.protocol.http.ClientProperties;
 import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
@@ -34,20 +31,12 @@ import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.Search;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.Opener;
-import org.efaps.ui.wicket.behaviors.dojo.BorderBehavior;
-import org.efaps.ui.wicket.behaviors.dojo.BorderBehavior.Design;
+import org.efaps.ui.wicket.behaviors.dojo.BorderContainerBehavior;
+import org.efaps.ui.wicket.behaviors.dojo.BorderContainerBehavior.Design;
 import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior.Region;
-import org.efaps.ui.wicket.components.ChildCallBackHeaderContributer;
-import org.efaps.ui.wicket.components.split.ListOnlyPanel;
-import org.efaps.ui.wicket.components.split.StructBrowsSplitPanel;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
-import org.efaps.ui.wicket.pages.content.AbstractContentPage;
-import org.efaps.ui.wicket.pages.content.form.FormPage;
-import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
-import org.efaps.ui.wicket.pages.content.table.TablePage;
-import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
 import org.efaps.util.EFapsException;
@@ -64,12 +53,6 @@ import org.efaps.util.EFapsException;
 public class ContentContainerPage
     extends AbstractMergePage
 {
-
-    /**
-     * This static variable is used as an acesskey to the PageMap for the
-     * IFrame.
-     */
-    public static final String IFRAME_PAGEMAP_NAME = "eFapsContentContainerIFrame";
 
     /**
      * this static variable is used as the wicketid for the IFrame.
@@ -207,10 +190,21 @@ public class ContentContainerPage
     private void initialise(final UUID _uuid,
                             final String _instanceKey,
                             final UUID _selectCmdUUID)
-        throws EFapsException
     {
-        ((EFapsSession) getSession()).getUpdateBehaviors().clear();
+        final WebMarkupContainer borderPanel = new WebMarkupContainer("borderPanel");
+        this.add(borderPanel);
+        borderPanel.add(new BorderContainerBehavior(Design.SIDEBAR));
 
+        final WebMarkupContainer centerPanel = new WebMarkupContainer("centerPanel");
+        borderPanel.add(centerPanel);
+        centerPanel.add(new ContentPaneBehavior(Region.CENTER, false));
+
+        final WebMarkupContainer leftPanel = new WebMarkupContainer("leftPanel");
+        borderPanel.add(leftPanel);
+        leftPanel.add(new ContentPaneBehavior(Region.LEFT, true));
+
+//        ((EFapsSession) getSession()).getUpdateBehaviors().clear();
+//
         final ClientProperties properties = ((WebClientInfo) getSession().getClientInfo()).getProperties();
         // we use different StyleSheets for different Bowsers
         if (properties.isBrowserInternetExplorer()) {
@@ -218,86 +212,86 @@ public class ContentContainerPage
         } else {
             add(StaticHeaderContrBehavior.forCss(ContentContainerPage.CSS));
         }
-
-        this.menuTreeKey = "MenuTree_";
-        // add a Split
-        final WebMarkupContainer split = new WebMarkupContainer("split");
-        this.add(split);
-        split.add(new BorderBehavior(Design.SIDEBAR));
-        // add a StructurBowser?
-        if (this.structurbrowser) {
-            split.add(new StructBrowsSplitPanel("left", _uuid, _instanceKey, this.menuTreeKey, _selectCmdUUID));
-        } else {
-            split.add(new ListOnlyPanel("left", _uuid, _instanceKey, this.menuTreeKey, _selectCmdUUID));
-        }
-        final WebMarkupContainer right = new WebMarkupContainer("right");
-        split.add(right);
-
-        right.add(new ContentPaneBehavior(Region.CENTER, false));
-
-        final WebMarkupContainer parent = new WebMarkupContainer("splitrightact");
-        right.add(parent);
-        parent.setOutputMarkupId(true);
-
-        // select the defaultCommand
-
-        final AbstractCommand cmd = getCommand(_uuid);
-        UUID uuidTmp = _uuid;
-        this.webForm = cmd.getTargetForm() != null;
-        if (cmd instanceof Menu) {
-            for (final AbstractCommand childcmd : ((Menu) cmd).getCommands()) {
-                if (_selectCmdUUID == null && childcmd.isDefaultSelected()) {
-                    uuidTmp = childcmd.getUUID();
-                    this.webForm = childcmd.getTargetForm() != null;
-                    break;
-                } else if (childcmd.getUUID().equals(_selectCmdUUID)) {
-                    uuidTmp = childcmd.getUUID();
-                    this.webForm = childcmd.getTargetForm() != null;
-                    break;
-                }
-            }
-        }
-        final UUID uuid4NewPage = uuidTmp;
-        // add the IFrame
-        final InlineFrame inline = new InlineFrame(ContentContainerPage.IFRAME_WICKETID, new IPageLink() {
-
-            private static final long serialVersionUID = 1L;
-
-            public Page getPage()
-            {
-                Page error = null;
-                AbstractContentPage page = null;
-                try {
-                    if (ContentContainerPage.this.webForm) {
-                        page = new FormPage(uuid4NewPage, _instanceKey, true);
-                    } else {
-                        if (Command.get(uuid4NewPage).getTargetStructurBrowserField() == null) {
-                            page = new TablePage(uuid4NewPage, _instanceKey, true);
-                        } else {
-                            page = new StructurBrowserPage(uuid4NewPage, _instanceKey, true);
-                        }
-                    }
-                } catch (final EFapsException e) {
-                    error = new ErrorPage(e);
-                }
-                page.setMenuTreeKey(ContentContainerPage.this.menuTreeKey);
-
-                return error == null ? page : error;
-            }
-
-            public Class<AbstractContentPage> getPageIdentity()
-            {
-                return AbstractContentPage.class;
-            }
-        });
-
-        parent.add(inline);
-        // set the Path to the IFrame
-        this.inlinePath = inline.getPath().substring(inline.getPath().indexOf(":") + 1);
-        // set the Path to the Split
-        this.splitPath = split.getPath().substring(inline.getPath().indexOf(":") + 1);
-
-        this.add(new ChildCallBackHeaderContributer());
+//
+//        this.menuTreeKey = "MenuTree_";
+//        // add a Split
+//        final WebMarkupContainer split = new WebMarkupContainer("split");
+//        this.add(split);
+//        split.add(new BorderBehavior(Design.SIDEBAR));
+//        // add a StructurBowser?
+//        if (this.structurbrowser) {
+//            split.add(new StructBrowsSplitPanel("left", _uuid, _instanceKey, this.menuTreeKey, _selectCmdUUID));
+//        } else {
+//            split.add(new ListOnlyPanel("left", _uuid, _instanceKey, this.menuTreeKey, _selectCmdUUID));
+//        }
+//        final WebMarkupContainer right = new WebMarkupContainer("right");
+//        split.add(right);
+//
+//        right.add(new ContentPaneBehavior(Region.CENTER, false));
+//
+//        final WebMarkupContainer parent = new WebMarkupContainer("splitrightact");
+//        right.add(parent);
+//        parent.setOutputMarkupId(true);
+//
+//        // select the defaultCommand
+//
+//        final AbstractCommand cmd = getCommand(_uuid);
+//        UUID uuidTmp = _uuid;
+//        this.webForm = cmd.getTargetForm() != null;
+//        if (cmd instanceof Menu) {
+//            for (final AbstractCommand childcmd : ((Menu) cmd).getCommands()) {
+//                if (_selectCmdUUID == null && childcmd.isDefaultSelected()) {
+//                    uuidTmp = childcmd.getUUID();
+//                    this.webForm = childcmd.getTargetForm() != null;
+//                    break;
+//                } else if (childcmd.getUUID().equals(_selectCmdUUID)) {
+//                    uuidTmp = childcmd.getUUID();
+//                    this.webForm = childcmd.getTargetForm() != null;
+//                    break;
+//                }
+//            }
+//        }
+//        final UUID uuid4NewPage = uuidTmp;
+//        // add the IFrame
+//        final InlineFrame inline = new InlineFrame(ContentContainerPage.IFRAME_WICKETID, new IPageLink() {
+//
+//            private static final long serialVersionUID = 1L;
+//
+//            public Page getPage()
+//            {
+//                Page error = null;
+//                AbstractContentPage page = null;
+//                try {
+//                    if (ContentContainerPage.this.webForm) {
+//                        page = new FormPage(uuid4NewPage, _instanceKey, true);
+//                    } else {
+//                        if (Command.get(uuid4NewPage).getTargetStructurBrowserField() == null) {
+//                            page = new TablePage(uuid4NewPage, _instanceKey, true);
+//                        } else {
+//                            page = new StructurBrowserPage(uuid4NewPage, _instanceKey, true);
+//                        }
+//                    }
+//                } catch (final EFapsException e) {
+//                    error = new ErrorPage(e);
+//                }
+//                page.setMenuTreeKey(ContentContainerPage.this.menuTreeKey);
+//
+//                return error == null ? page : error;
+//            }
+//
+//            public Class<AbstractContentPage> getPageIdentity()
+//            {
+//                return AbstractContentPage.class;
+//            }
+//        });
+//
+//        parent.add(inline);
+//        // set the Path to the IFrame
+//        this.inlinePath = inline.getPath().substring(inline.getPath().indexOf(":") + 1);
+//        // set the Path to the Split
+//        this.splitPath = split.getPath().substring(inline.getPath().indexOf(":") + 1);
+//
+//        this.add(new ChildCallBackHeaderContributer());
     }
 
     /**
