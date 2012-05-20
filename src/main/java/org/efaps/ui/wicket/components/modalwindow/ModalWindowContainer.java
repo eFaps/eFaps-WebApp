@@ -25,7 +25,6 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.apache.wicket.util.string.AppendingStringBuffer;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.Opener;
@@ -237,22 +236,5 @@ public class ModalWindowContainer
             width = asd.getProperties().getBrowserWidth();
         }
         return super.setInitialWidth(width);
-    }
-
-    /**
-     *
-     * @see org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow#
-     *      postProcessSettings(org.apache.wicket.util.string.AppendingStringBuffer)
-     * @param _settings AppendingStringBuffer
-     * @return AppendingStringBuffer
-     */
-    @Override
-    protected AppendingStringBuffer postProcessSettings(final AppendingStringBuffer _settings)
-    {
-        // cut out that stupid PreconditionScript, because it will not work in
-        // case of frames
-        final int start = _settings.lastIndexOf("function()");
-        _settings.replace(start, _settings.capacity(), "null );};");
-        return _settings;
     }
 }

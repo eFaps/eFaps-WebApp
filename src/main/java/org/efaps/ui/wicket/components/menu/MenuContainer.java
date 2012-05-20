@@ -20,9 +20,12 @@
 
 package org.efaps.ui.wicket.components.menu;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.wicket.Component;
 import org.apache.wicket.behavior.IBehaviorListener;
 import org.apache.wicket.core.util.string.JavaScriptUtils;
 import org.apache.wicket.markup.ComponentTag;
@@ -95,6 +98,8 @@ public class MenuContainer
      */
     private int childID = 0;
 
+
+    private final Map<UIMenuItem, Component> menuItem2component = new HashMap<UIMenuItem, Component>();
     /**
      * Constructor.
      *
@@ -175,37 +180,36 @@ public class MenuContainer
     {
         final IModel<UIMenuItem> model = new UIModel<UIMenuItem>(_menuItem);
         // if we have no more childs we add a lnk
+        Component item = null;
         if (!_menuItem.hasChilds()) {
             if (_menuItem.getTarget() != Target.UNKNOWN) {
                 if (_menuItem.getTarget() == Target.MODAL) {
-                    final AjaxOpenModalComponent item = new AjaxOpenModalComponent(getNewChildId(), model,
+                   item = new AjaxOpenModalComponent(getNewChildId(), model,
                                                                   _menuItem.getCommand().isSubmit() ? this.form : null);
-                    this.add(item);
                 } else {
-                    final StandardLink item = new StandardLink(getNewChildId(), model);
-                    this.add(item);
+                    item = new StandardLink(getNewChildId(), model);
                 }
             } else {
                 if (_menuItem.getCommand().isSubmit()) {
-                    final AjaxSubmitComponent item = new AjaxSubmitComponent(getNewChildId(), model, this.form);
-                    this.add(item);
+                    item = new AjaxSubmitComponent(getNewChildId(), model, this.form);
                 } else if (super.getDefaultModelObject() instanceof UISearchItem) {
-                    final AjaxSearchComponent item = new AjaxSearchComponent(getNewChildId(), model);
-                    this.add(item);
+                    item = new AjaxSearchComponent(getNewChildId(), model);
                 }
             }
         } else if (_menuItem.getCommand().hasEvents(EventType.UI_COMMAND_EXECUTE)) {
-            final StandardLink item = new StandardLink(getNewChildId(), model);
-            this.add(item);
-        }
-        if (_menuItem.getReference() != null) {
+            item = new StandardLink(getNewChildId(), model);
+        } else if (_menuItem.getReference() != null) {
             _menuItem.setURL(_menuItem.getReference());
             if (_menuItem.getReference().equals("/" + getSession().getApplication().getApplicationKey() + "/logout?")) {
-                this.add(new LogOutLink(getNewChildId(), model));
+                item = new LogOutLink(getNewChildId(), model);
             } else if (_menuItem.getReference().equals(
                             "/" + getSession().getApplication().getApplicationKey() + "/setcompany?")) {
-                this.add(new AjaxSetCompanyLink(getNewChildId(), model));
+                item = new AjaxSetCompanyLink(getNewChildId(), model);
             }
+        }
+        if (item != null) {
+            this.add(item);
+            this.menuItem2component.put(_menuItem, item);
         }
         // add the children
         for (final UIMenuItem childs : _menuItem.getChilds()) {
@@ -239,11 +243,11 @@ public class MenuContainer
                 }
                 childModel.setURL(url.toString());
             } else if (child instanceof AbstractMenuItemAjaxComponent) {
-                final AbstractMenuItemAjaxComponent item = (AbstractMenuItemAjaxComponent) child;
-                final UIMenuItem childModel = (UIMenuItem) item.getDefaultModelObject();
+//                final AbstractMenuItemAjaxComponent item = (AbstractMenuItemAjaxComponent) child;
+                //final UIMenuItem childModel = (UIMenuItem) item.getDefaultModelObject();
 
-                final String url = item.getJavaScript();
-                childModel.setURL(url);
+                //final String url = item.getJavaScript();
+                //childModel.setURL(url);
 
             } else if (child instanceof AjaxSearchComponent) {
                 final AjaxSearchComponent item = (AjaxSearchComponent) child;
@@ -264,7 +268,7 @@ public class MenuContainer
      */
     @Override
     public void onComponentTagBody(final MarkupStream _markupStream,
-                                      final ComponentTag _openTag)
+                                   final ComponentTag _openTag)
     {
 
         super.replaceComponentTagBody(_markupStream, _openTag, convert2Html(_openTag));
@@ -322,7 +326,9 @@ public class MenuContainer
             _html.append("<img src=\"").append(MenuContainer.IMG_BLANK.getImageUrl())
                             .append("\" class=\"eFapsMenuMainBlankImage\"/>");
         }
-        _html.append("','<span class=\"eFapsMenuLabel\">")
+        _html.append("','<span class=\"eFapsMenuLabel\" id=\"")
+            .append(this.menuItem2component.containsKey(_menuItem)
+                            ? this.menuItem2component.get(_menuItem).getMarkupId(true) : "").append("\">")
             .append(StringEscapeUtils.escapeJavaScript(_menuItem.getLabel())).append("</span>', '");
         if (_menuItem.getUrl() != null) {
             _html.append(_menuItem.getUrl());
@@ -330,7 +336,7 @@ public class MenuContainer
         if (_menuItem.getTarget() == Target.HIDDEN) {
             _html.append("', 'eFapsFrameHidden', '");
         } else if (_menuItem.getTarget() == Target.MODAL) {
-            _html.append("', 'top', '");
+            _html.append("', '_self', '");
         } else {
             _html.append("', '_self', '");
         }
