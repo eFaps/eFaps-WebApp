@@ -36,6 +36,7 @@ import javax.servlet.ServletRequest;
 import org.apache.wicket.Component;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.protocol.http.WebSession;
+import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
 import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.request.Request;
@@ -181,6 +182,17 @@ public class EFapsSession
                 this.recentStack.remove(0);
             }
         }
+    }
+
+
+    @Override
+    public WebClientInfo getClientInfo()
+    {
+        if (this.clientInfo == null) {
+            final RequestCycle requestCycle = RequestCycle.get();
+            this.clientInfo = new WebClientInfo(requestCycle);
+        }
+        return (WebClientInfo)this.clientInfo;
     }
 
     /**

@@ -143,11 +143,14 @@ public class ModalWindowContainer
             final IRequestHandler handler = new RenderPageRequestHandler(new PageProvider(page));
             url = getRequestCycle().urlFor(handler).toString();
             if (true) {
-                javascript.append("top.frames[0].location.href = '");
+                javascript.append("top.dijit.byId(\"").append("mainPanel")
+                    .append("\").set(\"content\", dojo.create(\"iframe\", {")
+                    .append("\"src\": \"./wicket/").append(url)
+                    .append("\",\"style\": \"border: 0; width: 100%; height: 100%\"")
+                    .append("}));");
             } else {
                 javascript.append("top.frames[0].frames[0].location.href = '");
             }
-            javascript.append(url).append("';");
         }
         return javascript.toString();
     }
@@ -219,10 +222,9 @@ public class ModalWindowContainer
     public ModalWindow setInitialHeight(final int _initialHeight)
     {
         int height = _initialHeight;
-        final WebClientInfo asd = (WebClientInfo) getSession().getClientInfo();
-        asd.getProperties().getBrowserHeight();
-        if (asd.getProperties().getBrowserHeight() < height) {
-            height = asd.getProperties().getBrowserHeight() - 33;
+        final WebClientInfo wcInfo = (WebClientInfo) getSession().getClientInfo();
+        if (wcInfo.getProperties().getBrowserHeight() > 0 && wcInfo.getProperties().getBrowserHeight() < height) {
+            height = wcInfo.getProperties().getBrowserHeight() - 33;
         }
         return super.setInitialHeight(height);
     }
@@ -238,9 +240,9 @@ public class ModalWindowContainer
     public ModalWindow setInitialWidth(final int _initialWidth)
     {
         int width = _initialWidth;
-        final WebClientInfo asd = (WebClientInfo) getSession().getClientInfo();
-        if (asd.getProperties().getBrowserWidth() < _initialWidth) {
-            width = asd.getProperties().getBrowserWidth();
+        final WebClientInfo wcInfo = (WebClientInfo) getSession().getClientInfo();
+        if (wcInfo.getProperties().getBrowserWidth() > 0 && wcInfo.getProperties().getBrowserWidth() < _initialWidth) {
+            width = wcInfo.getProperties().getBrowserWidth();
         }
         return super.setInitialWidth(width);
     }

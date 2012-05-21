@@ -23,6 +23,7 @@ package org.efaps.ui.wicket.pages.main;
 import java.util.UUID;
 
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Component;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxEventBehavior;
@@ -33,6 +34,7 @@ import org.apache.wicket.ajax.attributes.ThrottlingSettings;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.Model;
@@ -115,6 +117,7 @@ public class MainPage
         // beginning of a session,
         // if an ajax call would be done as first an error occurs
         ((WebClientInfo) Session.get().getClientInfo()).getProperties();
+
         // add the file call back used to open a file in the session and the
         // main page
         final ShowFileCallBackBehavior fileCall = new ShowFileCallBackBehavior();
@@ -142,22 +145,10 @@ public class MainPage
 
         this.add(StaticHeaderContrBehavior.forCss(MainPage.CSS));
 
-        //this.resize = new ResizeEventBehavior();
-       // add(this.resize);
+        add(new ResizeEventBehavior());
         final WebMarkupContainer logo = new WebMarkupContainer("logo");
         headerPanel.add(logo);
-        final Label welcome = new Label("welcome", DBProperties.getProperty("Logo.Welcome.Label")) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public void renderHead(final IHeaderResponse _response)
-            {
-                super.renderHead(_response);
-//                final CharSequence resizeScript = MainPage.this.resize.getCallbackScript();
-//                _response.render(JavaScriptHeaderItem.forScript(resizeScript, MainPage.class.getName()));
-            }
-        };
+        final Label welcome = new Label("welcome", DBProperties.getProperty("Logo.Welcome.Label"));
         logo.add(welcome);
 
 
@@ -222,7 +213,6 @@ public class MainPage
     public class ResizeEventBehavior
         extends AjaxEventBehavior
     {
-
         /**
          * Needed for serialization.
          */
@@ -244,29 +234,12 @@ public class MainPage
         public CharSequence getCallbackScript()
         {
             final StringBuilder js = new StringBuilder()
-                .append("function eFapsPostSize(").append(MainPage.WIDTH_PARAMETERNAME).append(",")
-                .append(MainPage.HEIGTH_PARAMETERNAME).append(") {\n")
+                .append("window.onresize = function(event) {\n")
+                .append("var ").append(MainPage.WIDTH_PARAMETERNAME).append("=window.innerWidth;\n")
+                .append("var ").append(MainPage.HEIGTH_PARAMETERNAME).append("=window.innerHeight;\n")
                 .append(getCallbackFunctionBody(MainPage.WIDTH_PARAMETERNAME, MainPage.HEIGTH_PARAMETERNAME))
-                .append("}\n")
-                .append("window.onresize = ")
-                .append("function(){\n").append("eFapsSetIFrameHeight();\n")
-                .append("eFapsPostSize(window.innerWidth, window.innerHeight);\n")
-                .append("}\n")
-                .append("Wicket.Event.add(window, \"domready\", function(event) { eFapsSetIFrameHeight();")
-                .append("eFapsPostSize(window.innerWidth, window.innerHeight);}); \n");
+                .append("}\n");
             return js.toString();
-        }
-
-        /**
-         * Overwritten to be deactivated.
-         *
-         * @see org.apache.wicket.ajax.AbstractDefaultAjaxBehavior#getPreconditionScript()
-         * @return null
-         */
-        @Override
-        protected CharSequence getPreconditionScript()
-        {
-            return null;
         }
 
         @Override
@@ -291,11 +264,22 @@ public class MainPage
                             .getParameterValue(MainPage.WIDTH_PARAMETERNAME);
             final StringValue height = getComponent().getRequest().getRequestParameters()
                             .getParameterValue(MainPage.HEIGTH_PARAMETERNAME);
-            if (height != null) {
+            if (height.toString() != null) {
                 final WebClientInfo asd = (WebClientInfo) Session.get().getClientInfo();
                 asd.getProperties().setBrowserWidth(Integer.parseInt(width.toString()));
                 asd.getProperties().setBrowserHeight(Integer.parseInt(height.toString()));
             }
+        }
+
+        /* (non-Javadoc)
+         * @see org.apache.wicket.ajax.AjaxEventBehavior#renderHead(org.apache.wicket.Component, org.apache.wicket.markup.head.IHeaderResponse)
+         */
+        @Override
+        public void renderHead(final Component _component,
+                               final IHeaderResponse _response)
+        {
+            _response.render(JavaScriptHeaderItem.forScript(getCallbackScript(), MainPage.class.getName()));
+            super.renderHead(_component, _response);
         }
     }
 }

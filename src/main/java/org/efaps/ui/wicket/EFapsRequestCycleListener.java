@@ -21,6 +21,7 @@
 package org.efaps.ui.wicket;
 
 import org.apache.wicket.protocol.http.WebApplication;
+import org.apache.wicket.request.IRequestHandler;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.cycle.AbstractRequestCycleListener;
 import org.apache.wicket.request.cycle.RequestCycle;
@@ -87,4 +88,18 @@ public class EFapsRequestCycleListener
         }
         EFapsRequestCycleListener.LOG.debug("End of Request.");
     }
+
+    /* (non-Javadoc)
+     * @see org.apache.wicket.request.cycle.AbstractRequestCycleListener#onException(org.apache.wicket.request.cycle.RequestCycle, java.lang.Exception)
+     */
+    @Override
+    public IRequestHandler onException(final RequestCycle _cycle,
+                                       final Exception _ex)
+    {
+        // TODO Auto-generated method stub
+        return super.onException(_cycle, _ex);
+    }
+
+
+
 }

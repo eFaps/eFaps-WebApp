@@ -31,12 +31,10 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.request.resource.CssResourceReference;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.EFapsNoAuthorizationNeededInterface;
 import org.efaps.ui.wicket.EFapsSession;
-import org.efaps.ui.wicket.pages.main.MainPage;
 
 /**
  * This class renders the LoginPage for the eFaps-WebApplication.<br>
@@ -73,8 +71,6 @@ public class LoginPage
      */
     public LoginPage(final boolean _msg)
     {
-        ((WebClientInfo) Session.get().getClientInfo()).getProperties();
-
         final Form<Object> form = new Form<Object>("form")
         {
 
@@ -87,13 +83,12 @@ public class LoginPage
                 final EFapsSession session = (EFapsSession) getSession();
                 session.login();
                 if (session.isLogedIn()) {
-                    getRequestCycle().setResponsePage(MainPage.class);
+                    getRequestCycle().setResponsePage(new GatherInfoPage());
                 } else {
                     final LoginPage page = new LoginPage(true);
                     getRequestCycle().setResponsePage(page);
                 }
             }
-
         };
         this.add(form);
         form.add(new Label("formname", new Model<String>(DBProperties.getProperty("Login.Name.Label",

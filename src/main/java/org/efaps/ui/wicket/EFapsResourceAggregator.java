@@ -190,6 +190,10 @@ public class EFapsResourceAggregator
                 getRealResponse().render(itemToBeRendered);
             }
         }
+        if (combinedScript.length() > 0) {
+            getRealResponse().render(
+                            OnLoadHeaderItem.forScript(combinedScript.append("\n").toString()));
+        }
 
         combinedScript.setLength(0);
         for (final OnDojoReadyHeaderItem curItem : this.dojoReadyItemsToBeRendered) {
