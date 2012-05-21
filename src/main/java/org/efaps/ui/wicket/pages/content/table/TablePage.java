@@ -38,12 +38,16 @@ import org.efaps.util.EFapsException;
 /**
  * CLass renders a page containing a table.
  *
- * @author The Faps Team
+ * @author The eFaps Team
  * @version $Id:TablePage.java 1491 2007-10-15 23:40:43Z jmox $
  */
 public class TablePage
     extends AbstractContentPage
 {
+    /**
+     * Needed foer serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
     /**
      * Reference to the style sheet.
@@ -58,11 +62,10 @@ public class TablePage
      * @param _parameters PageParameters
      * @throws EFapsException on error
      */
-    public TablePage(final PageParameters _parameters,
-                     final boolean _updateMenu)
+    public TablePage(final PageParameters _parameters)
         throws EFapsException
     {
-        this(new TableModel(new UITable(_parameters)), _updateMenu);
+        this(new TableModel(new UITable(_parameters)), false);
     }
 
     /**

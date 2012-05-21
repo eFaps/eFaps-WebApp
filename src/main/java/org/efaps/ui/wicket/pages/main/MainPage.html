@@ -25,45 +25,27 @@
 -->
 
 <html xmlns="http://www.w3.org/1999/xhtml">
-    <head>
-        <title wicket:id="pageTitle"></title>
-    </head>
-  <body>
+<head>
+    <title wicket:id="pageTitle"></title>
+</head>
+<body class="tundra">
     <div wicket:id="modal"></div>
-    <div wicket:id="logo" class="eFapsLogo" id="eFapsLogo">
-      <div class="eFapsLogoUser">
-        <span wicket:id="welcome">Welcome</span>
-        <span wicket:id="firstname">The</span>
-        <span wicket:id="lastname">Administrator</span>
-      </div>
-      <div class="eFapsLogoCompany">
-        <span wicket:id="company">eFaps 1.0</span>
-      </div>
-    </div>
-    <div id="eFapsMainMenuTableWrapper">
-        <div id="eFapsMainMenuRowWrapper">
-            <div wicket:id="menu" id="eFapsMainMenu" class="eFapsMenu"></div>
-            <div id="eFapsUserMsg"><a wicket:id="useralert"></a></div>
-            <span wicket:id="version" id="eFapsVersion"></span>
+    <div wicket:id="borderPanel" id="borderPanel">
+        <div id="mainPanel" wicket:id="mainPanel"></div>
+        <div wicket:id="headerPanel">
+            <div wicket:id="logo" class="eFapsLogo" id="eFapsLogo">
+                <div class="eFapsLogoUser">
+                    <span wicket:id="welcome">Welcome</span>
+                    <span wicket:id="firstname">The</span>
+                    <span wicket:id="lastname">Administrator</span>
+                </div>
+                <div class="eFapsLogoCompany">
+                    <span wicket:id="company">eFaps 1.0</span>
+                </div>
+            </div>
+            <div wicket:id="menubar"></div>
         </div>
     </div>
-    <iframe wicket:id="content"
-            id="eFapsFrameContent"
-            src="EmptyPage.html"
-            name="eFapsFrameContent"
-            scrolling="no"
-            frameborder="0">
-    </iframe>
-
-    <iframe wicket:id="hidden"
-            id="eFapsFrameHidden"
-            src="EmptyPage.html"
-            name="eFapsFrameHidden"
-            class="eFapsFrameHidden"
-            scrolling="no"
-            frameborder="0">
-    </iframe>
-
-  </body>
+</body>
 </html>
 

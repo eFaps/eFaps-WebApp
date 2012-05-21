@@ -20,7 +20,7 @@
 
 package org.efaps.ui.wicket.components.footer;
 
-import org.apache.wicket.markup.html.form.SubmitLink;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 
@@ -32,7 +32,7 @@ import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
  * @version $Id$
  */
 public class AjaxSubmitCloseLink
-    extends SubmitLink
+    extends WebMarkupContainer
 {
     /**
      * Needed for serialization.
@@ -48,8 +48,7 @@ public class AjaxSubmitCloseLink
                                final AbstractUIPageObject _modelObject,
                                final FormContainer _form)
     {
-        super(_wicketid, _form);
-        this.add(new AjaxSubmitCloseBehavior(_modelObject, _form));
-        _form.setDefaultButton(this);
+        super(_wicketid);
+        add(new AjaxSubmitCloseBehavior(_modelObject, _form));
     }
 }

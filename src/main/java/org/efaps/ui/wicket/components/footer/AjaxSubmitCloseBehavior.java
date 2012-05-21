@@ -91,11 +91,6 @@ public class AjaxSubmitCloseBehavior
     private final AbstractUIPageObject uiObject;
 
     /**
-     * Instance variable storing the form to be submited.
-     */
-    private final FormContainer form;
-
-    /**
      * Has this form been already validated.
      */
     private boolean validated = false;
@@ -111,7 +106,6 @@ public class AjaxSubmitCloseBehavior
     {
         super(_form, "onclick");
         this.uiObject = _uiobject;
-        this.form = _form;
     }
 
     /**
@@ -201,7 +195,6 @@ public class AjaxSubmitCloseBehavior
                             }
                             footer.getModalWindow().setReloadChild(!this.uiObject.getCommand().isNoUpdateAfterCmd());
                             footer.getModalWindow().close(_target);
-
                         } else {
                             final Opener opener = ((EFapsSession) Session.get()).getOpener(this.uiObject.getOpenerId());
                             // mark the opener that it can be removed
@@ -217,7 +210,7 @@ public class AjaxSubmitCloseBehavior
                             final PageParameters parameters = new PageParameters();
                             parameters.add(Opener.OPENER_PARAKEY, this.uiObject.getOpenerId());
 
-                            final CharSequence url = this.form.urlFor(clazz, parameters);
+                            final CharSequence url = getForm().urlFor(clazz, parameters);
 
                             _target.appendJavaScript("opener.location.href = '" + url + "'; self.close();");
                         }
@@ -261,7 +254,7 @@ public class AjaxSubmitCloseBehavior
     private void convertDateFieldValues()
         throws EFapsException
     {
-        for (final DateTimePanel datepicker : this.form.getDateComponents()) {
+        for (final DateTimePanel datepicker : ((FormContainer) getForm()).getDateComponents()) {
             final IRequestParameters parameters = getComponent().getRequestCycle().getRequest().getPostParameters();
             final Set<String> names = getComponent().getRequestCycle().getRequest().getPostParameters().getParameterNames();
             if (names.contains(datepicker.getDateFieldName())) {
@@ -319,16 +312,16 @@ public class AjaxSubmitCloseBehavior
     {
         boolean ret = true;
         final List<Return> returns;
-        final AbstractUIPageObject uiPageObject = (AbstractUIPageObject) this.form.getParent().getDefaultModelObject();
+        final AbstractUIPageObject uiPageObject = (AbstractUIPageObject) getForm().getParent().getDefaultModelObject();
         if (_classifications.size() > 0) {
             returns = uiPageObject.executeEvents(ParameterValues.OTHERS, _other,
                             ParameterValues.CLASSIFICATIONS, _classifications,
                             ParameterValues.OIDMAP4UI,
-                                    ((AbstractUIPageObject) this.form.getPage().getDefaultModelObject()).getUiID2Oid());
+                                    ((AbstractUIPageObject) getForm().getPage().getDefaultModelObject()).getUiID2Oid());
         } else {
             returns = uiPageObject.executeEvents(ParameterValues.OTHERS, _other,
                             ParameterValues.OIDMAP4UI,
-                            ((AbstractUIPageObject) this.form.getPage().getDefaultModelObject()).getUiID2Oid());
+                            ((AbstractUIPageObject) getForm().getPage().getDefaultModelObject()).getUiID2Oid());
         }
 
         for (final Return oneReturn : returns) {
@@ -365,7 +358,7 @@ public class AjaxSubmitCloseBehavior
         throws EFapsException
     {
         boolean ret = true;
-        final AbstractUIObject uiobject = (AbstractUIObject) this.form.getParent().getDefaultModelObject();
+        final AbstractUIObject uiobject = (AbstractUIObject) getForm().getParent().getDefaultModelObject();
         final StringBuilder html = new StringBuilder();
         html.append("<table class=\"eFapsValidateFieldValuesTable\">");
         if (uiobject instanceof UIForm) {
@@ -481,16 +474,16 @@ public class AjaxSubmitCloseBehavior
         if (!this.validated) {
             final List<Return> returns;
             if (_classifications.size() > 0) {
-                returns = ((AbstractUIObject) this.form.getParent().getDefaultModelObject()).validate(
+                returns = ((AbstractUIObject) getForm().getParent().getDefaultModelObject()).validate(
                                 ParameterValues.OTHERS, _other,
                                 ParameterValues.CLASSIFICATIONS, _classifications,
                                 ParameterValues.OIDMAP4UI,
-                                    ((AbstractUIPageObject) this.form.getPage().getDefaultModelObject()).getUiID2Oid());
+                                    ((AbstractUIPageObject) getForm().getPage().getDefaultModelObject()).getUiID2Oid());
             } else {
-                returns = ((AbstractUIObject) this.form.getParent().getDefaultModelObject()).validate(
+                returns = ((AbstractUIObject) getForm().getParent().getDefaultModelObject()).validate(
                                 ParameterValues.OTHERS, _other,
                                 ParameterValues.OIDMAP4UI,
-                                ((AbstractUIPageObject) this.form.getPage().getDefaultModelObject()).getUiID2Oid());
+                                ((AbstractUIPageObject) getForm().getPage().getDefaultModelObject()).getUiID2Oid());
             }
 
             for (final Return oneReturn : returns) {
@@ -558,7 +551,7 @@ public class AjaxSubmitCloseBehavior
     private List<FormPanel> getFormPanels()
     {
         final List<FormPanel> ret = new ArrayList<FormPanel>();
-        final Iterator<?> iterator = this.form.iterator();
+        final Iterator<?> iterator = getForm().iterator();
         while (iterator.hasNext()) {
             final Object object = iterator.next();
             if (object instanceof WebMarkupContainer) {

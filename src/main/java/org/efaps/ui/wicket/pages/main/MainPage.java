@@ -33,10 +33,8 @@ import org.apache.wicket.ajax.attributes.ThrottlingSettings;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.head.IHeaderResponse;
-import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.link.InlineFrame;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.util.string.StringValue;
@@ -47,14 +45,16 @@ import org.efaps.message.MessageStatusHolder;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.behaviors.SetMessageStatusBehavior;
 import org.efaps.ui.wicket.behaviors.ShowFileCallBackBehavior;
-import org.efaps.ui.wicket.components.ChildCallBackHeaderContributer;
-import org.efaps.ui.wicket.components.menu.MenuContainer;
+import org.efaps.ui.wicket.behaviors.dojo.BorderContainerBehavior;
+import org.efaps.ui.wicket.behaviors.dojo.BorderContainerBehavior.Design;
+import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior;
+import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior.Region;
+import org.efaps.ui.wicket.components.menu.MenuBarPanel;
 import org.efaps.ui.wicket.components.menu.StandardLink;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
-import org.efaps.ui.wicket.pages.empty.EmptyPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
@@ -88,11 +88,6 @@ public class MainPage
     private static final EFapsContentReference CSS = new EFapsContentReference(MainPage.class, "MainPage.css");
 
     /**
-     * Reference to a JavaScript used for this Page.
-     */
-    private static final EFapsContentReference FRAMEJS = new EFapsContentReference(MainPage.class, "SetFrameHeight.js");
-
-    /**
      * Key to the parameter for storing the height and width of the browser
      * window.
      */
@@ -111,16 +106,11 @@ public class MainPage
     private final ModalWindowContainer modal = new ModalWindowContainer("modal");
 
     /**
-     * Event that is fired on resize.
-     */
-    private final ResizeEventBehavior resize;
-
-    /**
      * Constructor adding all Components to this Page.
      */
     public MainPage()
     {
-        super();
+
         // call the client info to force the reload script to be executed on the
         // beginning of a session,
         // if an ajax call would be done as first an error occurs
@@ -131,22 +121,31 @@ public class MainPage
         this.add(fileCall);
         ((EFapsSession) getSession()).setFileCallBack(fileCall);
 
-        // we need to add a JavaScript Function to resize the iFrame
-        // don't merge it to keep the sequence
-        add(StaticHeaderContrBehavior.forJavaScript(MainPage.FRAMEJS, true));
+        final WebMarkupContainer borderPanel = new WebMarkupContainer("borderPanel");
+        this.add(borderPanel);
+        borderPanel.add(new BorderContainerBehavior(Design.HEADLINE));
+
+        final WebMarkupContainer mainPanel = new WebMarkupContainer("mainPanel");
+        borderPanel.add(mainPanel);
+        mainPanel.add(new ContentPaneBehavior(Region.CENTER, false));
+
+        final WebMarkupContainer headerPanel = new WebMarkupContainer("headerPanel");
+        borderPanel.add(headerPanel);
+        headerPanel.add(new ContentPaneBehavior(Region.TOP, false));
+
+        headerPanel.add(new MenuBarPanel("menubar", new UIModel<UIMenuItem>(new UIMenuItem(UUID
+                      .fromString("87001cc3-c45c-44de-b8f1-776df507f268")))));
 
         // set the title for the Page
         add(new Label("pageTitle", DBProperties.getProperty("Logo.Version.Label")));
         add(this.modal);
 
-
         this.add(StaticHeaderContrBehavior.forCss(MainPage.CSS));
-        this.add(new ChildCallBackHeaderContributer());
 
-        this.resize = new ResizeEventBehavior();
-        add(this.resize);
+        //this.resize = new ResizeEventBehavior();
+       // add(this.resize);
         final WebMarkupContainer logo = new WebMarkupContainer("logo");
-        this.add(logo);
+        headerPanel.add(logo);
         final Label welcome = new Label("welcome", DBProperties.getProperty("Logo.Welcome.Label")) {
 
             private static final long serialVersionUID = 1L;
@@ -155,8 +154,8 @@ public class MainPage
             public void renderHead(final IHeaderResponse _response)
             {
                 super.renderHead(_response);
-                final CharSequence resizeScript = MainPage.this.resize.getCallbackScript();
-                _response.render(JavaScriptHeaderItem.forScript(resizeScript, MainPage.class.getName()));
+//                final CharSequence resizeScript = MainPage.this.resize.getCallbackScript();
+//                _response.render(JavaScriptHeaderItem.forScript(resizeScript, MainPage.class.getName()));
             }
         };
         logo.add(welcome);
@@ -194,7 +193,7 @@ public class MainPage
                                                     MessageStatusHolder.getReadCount(usrId)));
                 }
             };
-            this.add(alert);
+            //headerPanel.add(alert);
             if (MessageStatusHolder.hasUnreadMsg(usrId)) {
                 alert.add(new AttributeModifier("class", new Model<String>("unread")));
             } else if (!MessageStatusHolder.hasReadMsg(usrId)) {
@@ -204,17 +203,7 @@ public class MainPage
         } catch (final EFapsException e) {
             throw new RestartResponseException(new ErrorPage(e));
         }
-
-        // add the MainToolBar to the Page
-        final MenuContainer menu = new MenuContainer("menu", new UIModel<UIMenuItem>(new UIMenuItem(UUID
-                        .fromString("87001cc3-c45c-44de-b8f1-776df507f268"))));
-        this.add(menu);
-
-        this.add(new Label("version", DBProperties.getProperty("Logo.Version.Label")));
-
-        this.add(new InlineFrame(MainPage.IFRAME_WICKETID, EmptyPage.class));
-
-        this.add(new InlineFrame("hidden", EmptyPage.class));
+//        headerPanel.add(new Label("version", DBProperties.getProperty("Logo.Version.Label")));
     }
 
     /**

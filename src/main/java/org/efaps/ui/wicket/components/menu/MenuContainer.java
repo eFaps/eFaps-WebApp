@@ -198,7 +198,9 @@ public class MenuContainer
             }
         } else if (_menuItem.getCommand().hasEvents(EventType.UI_COMMAND_EXECUTE)) {
             item = new StandardLink(getNewChildId(), model);
-        } else if (_menuItem.getReference() != null) {
+        }
+
+        if (_menuItem.getReference() != null) {
             _menuItem.setURL(_menuItem.getReference());
             if (_menuItem.getReference().equals("/" + getSession().getApplication().getApplicationKey() + "/logout?")) {
                 item = new LogOutLink(getNewChildId(), model);

@@ -22,8 +22,11 @@ package org.efaps.ui.wicket.components.modalwindow;
 
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.core.request.handler.PageProvider;
+import org.apache.wicket.core.request.handler.RenderPageRequestHandler;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.protocol.http.request.WebClientInfo;
+import org.apache.wicket.request.IRequestHandler;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.EFapsSession;
@@ -36,6 +39,7 @@ import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
+import org.efaps.ui.wicket.pages.empty.EmptyPage;
 
 /**
  * This is a wrapper class for a modal window.
@@ -133,8 +137,11 @@ public class ModalWindowContainer
             parameters.add(Opener.OPENER_PARAKEY, opener.getId());
             ((EFapsSession) getSession()).storeOpener(opener);
             opener.setMarked4Remove(true);
-            final CharSequence url = urlFor(clazz, parameters);
+            CharSequence url = urlFor(clazz, parameters);
 
+            final Page page = new EmptyPage();
+            final IRequestHandler handler = new RenderPageRequestHandler(new PageProvider(page));
+            url = getRequestCycle().urlFor(handler).toString();
             if (true) {
                 javascript.append("top.frames[0].location.href = '");
             } else {

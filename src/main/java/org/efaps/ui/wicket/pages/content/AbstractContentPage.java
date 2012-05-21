@@ -22,6 +22,7 @@ package org.efaps.ui.wicket.pages.content;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.IAjaxIndicatorAware;
+import org.apache.wicket.event.IEvent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.ExternalLink;
@@ -229,5 +230,16 @@ public abstract class AbstractContentPage
     public String getAjaxIndicatorMarkupId()
     {
         return "eFapsVeil";
+    }
+
+
+    /* (non-Javadoc)
+     * @see org.apache.wicket.Component#onEvent(org.apache.wicket.event.IEvent)
+     */
+    @Override
+    public void onEvent(final IEvent<?> _event)
+    {
+        // TODO Auto-generated method stub
+        super.onEvent(_event);
     }
 }
