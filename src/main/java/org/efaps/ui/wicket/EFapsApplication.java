@@ -29,6 +29,8 @@ import org.apache.wicket.Session;
 import org.apache.wicket.authorization.Action;
 import org.apache.wicket.authorization.IAuthorizationStrategy;
 import org.apache.wicket.javascript.DefaultJavaScriptCompressor;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.html.IHeaderResponseDecorator;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.Request;
@@ -44,7 +46,8 @@ import org.efaps.ui.wicket.pages.main.MainPage;
  * Sessions for each user a created and basic Settings are set.
  *
  * @author Jan Moxter
- * @version $Id$
+ * @version $Id: EFapsApplication.java 7535 2012-05-19 18:25:05Z jan@moxter.net
+ *          $
  */
 public class EFapsApplication
     extends WebApplication
@@ -66,8 +69,8 @@ public class EFapsApplication
     @Override
     protected void init()
     {
-        final String appKey =  getInitParameter(AbstractFilter.INITPARAM_APP_KEY);
-        final String loginRolesTmp =  getInitParameter(AbstractFilter.INITPARAM_LOGIN_ROLES);
+        final String appKey = getInitParameter(AbstractFilter.INITPARAM_APP_KEY);
+        final String loginRolesTmp = getInitParameter(AbstractFilter.INITPARAM_LOGIN_ROLES);
         final Set<String> temp = new HashSet<String>();
         if (loginRolesTmp != null) {
             final String[] loginRolesAr = loginRolesTmp.split(",");
@@ -83,13 +86,21 @@ public class EFapsApplication
         getMarkupSettings().setCompressWhitespace(true);
         getMarkupSettings().setAutomaticLinking(false);
         getRequestCycleSettings().setGatherExtendedBrowserInfo(true);
-        getDebugSettings().setAjaxDebugModeEnabled(true);
+        getDebugSettings().setAjaxDebugModeEnabled(false);
         getDebugSettings().setDevelopmentUtilitiesEnabled(false);
         getSecuritySettings().setAuthorizationStrategy(new EFapsFormBasedAuthorizationStartegy());
         getApplicationSettings().setPageExpiredErrorPage(LoginPage.class);
         getResourceSettings().setJavaScriptCompressor(new DefaultJavaScriptCompressor());
         getRequestLoggerSettings().setRequestLoggerEnabled(false);
         getRequestCycleListeners().add(new EFapsRequestCycleListener());
+        getResourceSettings().setUseDefaultResourceAggregator(false);
+
+        setHeaderResponseDecorator(new IHeaderResponseDecorator() {
+            public IHeaderResponse decorate(final IHeaderResponse _response)
+            {
+                return new EFapsResourceAggregator(_response);
+            }
+        });
     }
 
     /**

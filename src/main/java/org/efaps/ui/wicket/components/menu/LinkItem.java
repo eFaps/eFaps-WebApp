@@ -202,7 +202,12 @@ public class LinkItem
                                    final ComponentTag _openTag)
     {
         super.onComponentTagBody(_markupStream, _openTag);
-        replaceComponentTagBody(_markupStream, _openTag, super.getModelObject().getLabel());
+
+        final StringBuilder html = new StringBuilder()
+            .append("<img src=\"/..").append(getModelObject().getImage() == null
+                ? MenuBarPanel.IMG_BLANK.getImageUrl() : getModelObject().getImage())
+            .append("\" class=\"eFapsMenuImage\"/>").append(super.getModelObject().getLabel());
+        replaceComponentTagBody(_markupStream, _openTag, html);
     }
 
     /*
@@ -213,14 +218,12 @@ public class LinkItem
     @Override
     protected CharSequence getOnClickScript(final CharSequence _url)
     {
-
         final StringBuilder js = new StringBuilder()
-                        .append("dijit.byId(\"").append("mainPanel")
-                        .append("\").set(\"content\", dojo.create(\"iframe\", {")
-                        .append("\"src\": \"").append(_url)
-                        .append("\",\"style\": \"border: 0; width: 100%; height: 100%\"")
-                        .append("}));");
+            .append("dijit.byId(\"").append("mainPanel")
+            .append("\").set(\"content\", dojo.create(\"iframe\", {")
+            .append("\"src\": \"").append(_url)
+            .append("\",\"style\": \"border: 0; width: 100%; height: 100%\"")
+            .append("}));");
         return js;
     }
-
 }

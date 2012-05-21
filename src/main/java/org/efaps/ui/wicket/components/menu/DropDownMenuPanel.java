@@ -28,14 +28,17 @@ import org.apache.wicket.model.IModel;
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.ui.wicket.behaviors.dojo.DropDownMenuBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.MenuItemBehavior;
+import org.efaps.ui.wicket.components.menu.ajax.OpenModalItem;
 import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
+import org.efaps.ui.wicket.models.objects.UISearchItem;
 
 /**
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
+ * @version $Id: DropDownMenuPanel.java 7544 2012-05-21 05:02:25Z jan@moxter.net
+ *          $
  */
 public class DropDownMenuPanel
     extends Panel
@@ -68,14 +71,20 @@ public class DropDownMenuPanel
                 final Component item;
                 if (childItem.getTarget() != Target.UNKNOWN) {
                     if (childItem.getTarget() == Target.MODAL) {
-                        item = new AjaxOpenModalComponent(itemRepeater.newChildId(),
+                        item = new OpenModalItem(itemRepeater.newChildId(),
                                         new UIModel<UIMenuItem>(childItem),
                                         childItem.getCommand().isSubmit() ? null : null);
                     } else {
                         item = new LinkItem(itemRepeater.newChildId(), new UIModel<UIMenuItem>(childItem));
                     }
                 } else {
-                    item = new WebMarkupContainer(itemRepeater.newChildId());
+                    if (childItem.getCommand().isSubmit()) {
+                        item = new OpenModalItem(itemRepeater.newChildId(),  new UIModel<UIMenuItem>(childItem), null);
+                    } else if (super.getDefaultModelObject() instanceof UISearchItem) {
+                        item = new OpenModalItem(itemRepeater.newChildId(),  new UIModel<UIMenuItem>(childItem), null);
+                    } else {
+                        item = new WebMarkupContainer(itemRepeater.newChildId());
+                    }
                 }
                 item.add(new MenuItemBehavior());
                 itemRepeater.add(item);

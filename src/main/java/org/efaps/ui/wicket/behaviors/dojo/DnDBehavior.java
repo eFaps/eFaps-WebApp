@@ -23,7 +23,6 @@ package org.efaps.ui.wicket.behaviors.dojo;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.head.IHeaderResponse;
-import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 
 /**
  * This class renders the drag and drop ability from the DojoToolKit to a component.<br>
@@ -133,29 +132,29 @@ public class DnDBehavior
     {
         super.onComponentTag(_component, _tag);
 
-        if (this.type == DnDBehavior.BehaviorType.ITEM) {
-            String value = "dojoDndItem ";
-            if (_tag.getAttribute("class") != null) {
-                value += _tag.getAttribute("class");
-            }
-            _tag.put("class", value);
-            _tag.put("dndType", this.dndType);
-        } else if (this.type == DnDBehavior.BehaviorType.HANDLE) {
-            String value = "dojoDndHandle ";
-            if (_tag.getAttribute("class") != null) {
-                value += _tag.getAttribute("class");
-            }
-            _tag.put("class", value);
-        } else if (this.type == DnDBehavior.BehaviorType.SOURCE) {
-            _tag.put("dojoType", "dojo.dnd.Source");
-            if (this.horizontal) {
-                _tag.put("horizontal", "true");
-            }
-            if (this.handles) {
-                _tag.put("withHandles", "true");
-            }
-            _tag.put("accept", this.dndType);
-        }
+//        if (this.type == DnDBehavior.BehaviorType.ITEM) {
+//            String value = "dojoDndItem ";
+//            if (_tag.getAttribute("class") != null) {
+//                value += _tag.getAttribute("class");
+//            }
+//            _tag.put("class", value);
+//            _tag.put("dndType", this.dndType);
+//        } else if (this.type == DnDBehavior.BehaviorType.HANDLE) {
+//            String value = "dojoDndHandle ";
+//            if (_tag.getAttribute("class") != null) {
+//                value += _tag.getAttribute("class");
+//            }
+//            _tag.put("class", value);
+//        } else if (this.type == DnDBehavior.BehaviorType.SOURCE) {
+//            _tag.put("dojoType", "dojo.dnd.Source");
+//            if (this.horizontal) {
+//                _tag.put("horizontal", "true");
+//            }
+//            if (this.handles) {
+//                _tag.put("withHandles", "true");
+//            }
+//            _tag.put("accept", this.dndType);
+//        }
 
     }
 
@@ -233,34 +232,34 @@ public class DnDBehavior
                            final IHeaderResponse _response)
     {
         super.renderHead(_component, _response);
-        if (this.type == DnDBehavior.BehaviorType.SOURCE) {
-
-            final String varName = "subcription" + ((Long) System.currentTimeMillis()).toString();
-            final StringBuilder builder = new StringBuilder();
-            if (this.allowCopy || (this.appendJavaScript != null && this.appendJavaScript.length() > 0)) {
-                builder.append("  var ").append(varName).append(";\n")
-                    .append("  dojo.subscribe(\"/dnd/start\", ")
-                    .append(" function(source,nodes,iscopy){\n");
-
-                if (!this.allowCopy) {
-                    builder.append("    source.copyState = function(keyPressed){").append(" return false};\n");
-                }
-
-                builder.append("    ").append(varName).append(" = dojo.subscribe(\"/dnd/drop\",")
-                    .append(" function(source, nodes, iscopy){\n")
-                    .append("  var jsnode = source.getItem(nodes[0].id);\n")
-                    .append("    var dndType  = jsnode.type;\n")
-                    .append("    if(dndType ==\"").append(this.dndType).append("\" ){\n")
-                    .append(this.appendJavaScript)
-                    .append("      dojo.unsubscribe(").append(varName).append(");\n")
-                    .append("   }\n });\n")
-                    .append("  });\n")
-                    .append("  dojo.subscribe(\"/dnd/cancel\", function(){\n")
-                    .append("    dojo.unsubscribe(").append(varName).append(");\n  });\n");
-
-                _response.render(JavaScriptHeaderItem.forScript(builder.toString(), DnDBehavior.class.toString()));
-            }
-        }
+//        if (this.type == DnDBehavior.BehaviorType.SOURCE) {
+//
+//            final String varName = "subcription" + ((Long) System.currentTimeMillis()).toString();
+//            final StringBuilder builder = new StringBuilder();
+//            if (this.allowCopy || (this.appendJavaScript != null && this.appendJavaScript.length() > 0)) {
+//                builder.append("  var ").append(varName).append(";\n")
+//                    .append("  dojo.subscribe(\"/dnd/start\", ")
+//                    .append(" function(source,nodes,iscopy){\n");
+//
+//                if (!this.allowCopy) {
+//                    builder.append("    source.copyState = function(keyPressed){").append(" return false};\n");
+//                }
+//
+//                builder.append("    ").append(varName).append(" = dojo.subscribe(\"/dnd/drop\",")
+//                    .append(" function(source, nodes, iscopy){\n")
+//                    .append("  var jsnode = source.getItem(nodes[0].id);\n")
+//                    .append("    var dndType  = jsnode.type;\n")
+//                    .append("    if(dndType ==\"").append(this.dndType).append("\" ){\n")
+//                    .append(this.appendJavaScript)
+//                    .append("      dojo.unsubscribe(").append(varName).append(");\n")
+//                    .append("   }\n });\n")
+//                    .append("  });\n")
+//                    .append("  dojo.subscribe(\"/dnd/cancel\", function(){\n")
+//                    .append("    dojo.unsubscribe(").append(varName).append(");\n  });\n");
+//
+//                _response.render(JavaScriptHeaderItem.forScript(builder.toString(), DnDBehavior.class.toString()));
+//            }
+//        }
     }
 
     /**
