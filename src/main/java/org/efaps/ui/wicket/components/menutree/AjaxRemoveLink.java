@@ -21,10 +21,8 @@
 package org.efaps.ui.wicket.components.menutree;
 
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.efaps.ui.wicket.models.objects.UIMenuItem;
 
 /**
  * This Class renders a Link which removes a Child from a MenuTree.
@@ -55,28 +53,28 @@ public class AjaxRemoveLink
     @Override
     public void onClick(final AjaxRequestTarget _target)
     {
-        final MenuTree menutree = findParent(MenuTree.class);
-        final DefaultMutableTreeNode parent =
-                        (DefaultMutableTreeNode) getNode().getParent();
-        final DefaultMutableTreeNode selected =
-                        (DefaultMutableTreeNode) menutree.getTreeState().getSelectedNodes()
-                                        .iterator().next();
-        boolean selectParent = false;
-        if (getNode().isNodeDescendant(selected)) {
-            selectParent = true;
-        }
-        menutree.getTreeState().selectNode(parent, true);
-
-        ((DefaultTreeModel) menutree.getDefaultModelObject())
-                        .removeNodeFromParent(getNode());
-
-        if (selectParent) {
-            menutree.getTreeState().selectNode(parent, true);
-            menutree.changeContent((UIMenuItem) parent.getUserObject(), _target);
-        } else {
-            menutree.getTreeState().selectNode(selected, true);
-            _target.add(menutree.getNodeComponent(parent));
-        }
-        menutree.updateTree(_target);
+//        final MenuTree menutree = findParent(MenuTree.class);
+//        final DefaultMutableTreeNode parent =
+//                        (DefaultMutableTreeNode) getNode().getParent();
+//        final DefaultMutableTreeNode selected =
+//                        (DefaultMutableTreeNode) menutree.getTreeState().getSelectedNodes()
+//                                        .iterator().next();
+//        boolean selectParent = false;
+//        if (getNode().isNodeDescendant(selected)) {
+//            selectParent = true;
+//        }
+//        menutree.getTreeState().selectNode(parent, true);
+//
+//        ((DefaultTreeModel) menutree.getDefaultModelObject())
+//                        .removeNodeFromParent(getNode());
+//
+//        if (selectParent) {
+//            menutree.getTreeState().selectNode(parent, true);
+//            menutree.changeContent((UIMenuItem) parent.getUserObject(), _target);
+//        } else {
+//            menutree.getTreeState().selectNode(selected, true);
+//            _target.add(menutree.getNodeComponent(parent));
+//        }
+//        menutree.updateTree(_target);
     }
 }

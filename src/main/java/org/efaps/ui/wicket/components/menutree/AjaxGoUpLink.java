@@ -21,11 +21,8 @@
 package org.efaps.ui.wicket.components.menutree;
 
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeNode;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.efaps.ui.wicket.models.objects.UIMenuItem;
 
 /**
  * @author The eFaps Team
@@ -54,19 +51,19 @@ public class AjaxGoUpLink
     @Override
     public void onClick(final AjaxRequestTarget _target)
     {
-        final MenuTree menutree = findParent(MenuTree.class);
-        final TreeNode selected =
-                        (TreeNode) menutree.getTreeState().getSelectedNodes().iterator().next();
-
-        final UIMenuItem model = (UIMenuItem) getNode().getUserObject();
-        model.setStepInto(false);
-        final MenuTree newMenuTree =
-                        new MenuTree(menutree.getId(),
-                                        new DefaultTreeModel(model.getAncestor()), menutree.getMenuKey());
-
-        menutree.replaceWith(newMenuTree);
-
-        newMenuTree.getTreeState().selectNode(selected, true);
-        newMenuTree.updateTree(_target);
+//        final MenuTree menutree = findParent(MenuTree.class);
+//        final TreeNode selected =
+//                        (TreeNode) menutree.getTreeState().getSelectedNodes().iterator().next();
+//
+//        final UIMenuItem model = (UIMenuItem) getNode().getUserObject();
+//        model.setStepInto(false);
+//        final MenuTree newMenuTree =
+//                        new MenuTree(menutree.getId(),
+//                                        new DefaultTreeModel(model.getAncestor()), menutree.getMenuKey());
+//
+//        menutree.replaceWith(newMenuTree);
+//
+//        newMenuTree.getTreeState().selectNode(selected, true);
+//        newMenuTree.updateTree(_target);
     }
 }

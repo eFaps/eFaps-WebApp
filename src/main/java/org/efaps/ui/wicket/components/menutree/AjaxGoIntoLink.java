@@ -21,18 +21,8 @@
 package org.efaps.ui.wicket.components.menutree;
 
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.markup.html.link.InlineFrame;
-import org.efaps.admin.ui.AbstractCommand;
-import org.efaps.ui.wicket.EFapsSession;
-import org.efaps.ui.wicket.models.objects.UIMenuItem;
-import org.efaps.ui.wicket.pages.content.form.FormPage;
-import org.efaps.ui.wicket.pages.content.table.TablePage;
-import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
-import org.efaps.ui.wicket.pages.error.ErrorPage;
-import org.efaps.util.EFapsException;
 
 /**
  * @author The eFaps Team
@@ -59,48 +49,58 @@ public class AjaxGoIntoLink
         super(_wicketId, _node);
     }
 
-    /**
+    /* (non-Javadoc)
      * @see org.apache.wicket.ajax.markup.html.AjaxLink#onClick(org.apache.wicket.ajax.AjaxRequestTarget)
-     * @param _target AjaxRequestTarget
      */
     @Override
     public void onClick(final AjaxRequestTarget _target)
     {
-        // update the Content
-        final UIMenuItem model = (UIMenuItem) getNode().getUserObject();
+        // TODO Auto-generated method stub
 
-        final AbstractCommand cmd = model.getCommand();
-
-        InlineFrame frame;
-        try {
-            if (cmd.getTargetTable() != null) {
-                final TablePage page = new TablePage(model.getCommandUUID(), model.getInstanceKey(), true);
-                frame = new InlineFrame(ContentContainerPage.IFRAME_WICKETID, page);
-            } else {
-                final FormPage page = new FormPage(model.getCommandUUID(), model.getInstanceKey(), true);
-                frame = new InlineFrame(ContentContainerPage.IFRAME_WICKETID, page);
-            }
-        } catch (final EFapsException e) {
-
-            frame = new InlineFrame(ContentContainerPage.IFRAME_WICKETID, new ErrorPage(e));
-        }
-        final InlineFrame component = (InlineFrame) getPage().get(((ContentContainerPage) getPage()).getInlinePath());
-        frame.setOutputMarkupId(true);
-
-        component.replaceWith(frame);
-        _target.add(frame.getParent());
-
-        // update MenuTree
-        final MenuTree menutree = findParent(MenuTree.class);
-
-        final MenuTree newMenuTree = new MenuTree(menutree.getId(), new DefaultTreeModel(getNode()), menutree
-                        .getMenuKey());
-        ((EFapsSession) getSession()).putIntoCache(menutree.getMenuKey(), newMenuTree);
-
-        model.setStepInto(true);
-        model.setAncestor((DefaultMutableTreeNode) ((DefaultTreeModel) menutree.getDefaultModelObject()).getRoot());
-        menutree.replaceWith(newMenuTree);
-        newMenuTree.getTreeState().selectNode(getNode(), true);
-        newMenuTree.updateTree(_target);
     }
+
+//    /**
+//     * @see org.apache.wicket.ajax.markup.html.AjaxLink#onClick(org.apache.wicket.ajax.AjaxRequestTarget)
+//     * @param _target AjaxRequestTarget
+//     */
+//    @Override
+//    public void onClick(final AjaxRequestTarget _target)
+//    {
+//        // update the Content
+//        final UIMenuItem model = (UIMenuItem) getNode().getUserObject();
+//
+//        final AbstractCommand cmd = model.getCommand();
+//
+//        InlineFrame frame;
+//        try {
+//            if (cmd.getTargetTable() != null) {
+//                final TablePage page = new TablePage(model.getCommandUUID(), model.getInstanceKey(), true);
+//                frame = new InlineFrame(ContentContainerPage.IFRAME_WICKETID, page);
+//            } else {
+//                final FormPage page = new FormPage(model.getCommandUUID(), model.getInstanceKey(), true);
+//                frame = new InlineFrame(ContentContainerPage.IFRAME_WICKETID, page);
+//            }
+//        } catch (final EFapsException e) {
+//
+//            frame = new InlineFrame(ContentContainerPage.IFRAME_WICKETID, new ErrorPage(e));
+//        }
+//        final InlineFrame component = (InlineFrame) getPage().get(((ContentContainerPage) getPage()).getInlinePath());
+//        frame.setOutputMarkupId(true);
+//
+//        component.replaceWith(frame);
+//        _target.add(frame.getParent());
+//
+//        // update MenuTree
+//        final MenuTree menutree = findParent(MenuTree.class);
+//
+//        final MenuTree newMenuTree = new MenuTree(menutree.getId(), new DefaultTreeModel(getNode()), menutree
+//                        .getMenuKey());
+//        ((EFapsSession) getSession()).putIntoCache(menutree.getMenuKey(), newMenuTree);
+//
+//        model.setStepInto(true);
+//        model.setAncestor((DefaultMutableTreeNode) ((DefaultTreeModel) menutree.getDefaultModelObject()).getRoot());
+//        menutree.replaceWith(newMenuTree);
+//        newMenuTree.getTreeState().selectNode(getNode(), true);
+//        newMenuTree.updateTree(_target);
+//    }
 }

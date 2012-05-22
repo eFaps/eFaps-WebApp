@@ -118,6 +118,19 @@ public class ContentContainerPage
      */
     private boolean webForm;
 
+    private String centerPanelId;
+
+
+    /**
+     * Getter method for the instance variable {@link #centerPanelId}.
+     *
+     * @return value of instance variable {@link #centerPanelId}
+     */
+    public String getCenterPanelId()
+    {
+        return this.centerPanelId;
+    }
+
     /**
      * Constructor called from the client directly by using parameters. Normally
      * it should only contain one parameter Opener.OPENER_PARAKEY to access the
@@ -258,9 +271,9 @@ public class ContentContainerPage
                 return AbstractContentPage.class;
             }
         });
-
         borderPanel.add(centerPanel);
         centerPanel.add(new ContentPaneBehavior(Region.CENTER, false));
+        this.centerPanelId = centerPanel.getMarkupId(true);
 
         // ((EFapsSession) getSession()).getUpdateBehaviors().clear();
         //

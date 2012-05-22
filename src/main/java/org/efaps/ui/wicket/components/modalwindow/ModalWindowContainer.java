@@ -25,21 +25,19 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.core.request.handler.PageProvider;
 import org.apache.wicket.core.request.handler.RenderPageRequestHandler;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.request.IRequestHandler;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.efaps.admin.dbproperty.DBProperties;
-import org.efaps.ui.wicket.EFapsSession;
-import org.efaps.ui.wicket.Opener;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.models.objects.UITable;
-import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.empty.EmptyPage;
+import org.efaps.util.EFapsException;
 
 /**
  * This is a wrapper class for a modal window.
@@ -117,39 +115,39 @@ public class ModalWindowContainer
      * Method creates a JavaScript to reload the parent page.
      *
      * @return JavaScript
+     * @throws EFapsException
      */
     public String getReloadJavaScript()
     {
         final AbstractUIObject model = (AbstractUIObject) getPage().getDefaultModelObject();
         final StringBuilder javascript = new StringBuilder();
         if (model != null) {
-            Class<? extends Page> clazz = null;
-            if (model instanceof UITable) {
-                clazz = TablePage.class;
-            } else if (model instanceof UIForm) {
-                clazz = FormPage.class;
-            } else if (model instanceof UIStructurBrowser) {
-                clazz = StructurBrowserPage.class;
-            }
-            final Opener opener = new Opener(getPage().getDefaultModel());
-            opener.setMenuTreeKey(((AbstractContentPage) getPage()).getMenuTreeKey());
-            final PageParameters parameters = new PageParameters();
-            parameters.add(Opener.OPENER_PARAKEY, opener.getId());
-            ((EFapsSession) getSession()).storeOpener(opener);
-            opener.setMarked4Remove(true);
-            CharSequence url = urlFor(clazz, parameters);
+            try {
+                model.resetModel();
+                final Page page;
+                if (model instanceof UITable) {
+                    page = new TablePage(Model.of((UITable) model), false);
+                } else if (model instanceof UIForm) {
+                    page = new FormPage(Model.of((UIForm) model), false);
+                } else if (model instanceof UIStructurBrowser) {
+                    page = new StructurBrowserPage(Model.of((UIStructurBrowser) model), false);
+                } else {
+                    page = new EmptyPage();
+                }
 
-            final Page page = new EmptyPage();
-            final IRequestHandler handler = new RenderPageRequestHandler(new PageProvider(page));
-            url = getRequestCycle().urlFor(handler).toString();
-            if (true) {
-                javascript.append("top.dijit.byId(\"").append("mainPanel")
-                    .append("\").set(\"content\", dojo.create(\"iframe\", {")
-                    .append("\"src\": \"./wicket/").append(url)
-                    .append("\",\"style\": \"border: 0; width: 100%; height: 100%\"")
-                    .append("}));");
-            } else {
-                javascript.append("top.frames[0].frames[0].location.href = '");
+                final IRequestHandler handler = new RenderPageRequestHandler(new PageProvider(page));
+                final String url = getRequestCycle().urlFor(handler).toString();
+                if (true) {
+                    javascript.append("top.dijit.byId(\"").append("mainPanel")
+                            .append("\").set(\"content\", dojo.create(\"iframe\", {")
+                            .append("\"src\": \"./wicket/").append(url)
+                            .append("\",\"style\": \"border: 0; width: 100%; height: 100%\"")
+                            .append("}));");
+                } else {
+                    javascript.append("top.frames[0].frames[0].location.href = '");
+                }
+            } catch (final EFapsException e) {
+
             }
         }
         return javascript.toString();
@@ -182,7 +180,7 @@ public class ModalWindowContainer
      * This method sets this ModalWindowContainer into the state like it was
      * just created. It uses the default values as they are defined in
      * <code>org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow
-   * </code>
+     * </code>
      */
     public void reset()
     {
@@ -212,8 +210,9 @@ public class ModalWindowContainer
     }
 
     /**
-     * Check it the size of the modal window is not to big and reduces it
-     * if necessary.
+     * Check it the size of the modal window is not to big and reduces it if
+     * necessary.
+     *
      * @see org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow#setInitialHeight(int)
      * @param _initialHeight height
      * @return this Modalwindow
@@ -230,8 +229,9 @@ public class ModalWindowContainer
     }
 
     /**
-     *  Check it the size of the modal window is not to big and reduces it
-     * if necessary.
+     * Check it the size of the modal window is not to big and reduces it if
+     * necessary.
+     *
      * @see org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow#setInitialWidth(int)
      * @param _initialWidth width
      * @return this Modalwindow

@@ -23,7 +23,6 @@ package org.efaps.ui.wicket.components.menutree;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.efaps.ui.wicket.models.objects.UIMenuItem;
 
 /**
  * @author The eFaps Team
@@ -51,12 +50,12 @@ public class AjaxMenuTreeLink
     @Override
     public void onClick(final AjaxRequestTarget _target)
     {
-        final UIMenuItem model = (UIMenuItem) getNode().getUserObject();
-        final MenuTree menutree = this.findParent(MenuTree.class);
-
-        menutree.changeContent(model, _target);
-
-        menutree.getTreeState().selectNode(getNode(), true);
-        menutree.updateTree(_target);
+//        final UIMenuItem model = (UIMenuItem) getNode().getUserObject();
+//        final MenuTree menutree = this.findParent(MenuTree.class);
+//
+//        menutree.changeContent(model, _target);
+//
+//        menutree.getTreeState().selectNode(getNode(), true);
+//        menutree.updateTree(_target);
     }
 }

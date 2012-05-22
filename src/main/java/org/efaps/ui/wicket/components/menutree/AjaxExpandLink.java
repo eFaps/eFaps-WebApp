@@ -21,7 +21,6 @@
 package org.efaps.ui.wicket.components.menutree;
 
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 
@@ -55,15 +54,15 @@ public class AjaxExpandLink
     @Override
     public void onClick(final AjaxRequestTarget _target)
     {
-        final MenuTree menutree = findParent(MenuTree.class);
-        if (menutree.getTreeState().isNodeExpanded(getNode())) {
-            menutree.getTreeState().collapseNode(getNode());
-            menutree.nodeCollapsed(getNode());
-        } else {
-            menutree.getTreeState().expandNode(getNode());
-            menutree.nodeExpanded(getNode());
-        }
-        ((DefaultTreeModel) menutree.getDefaultModelObject()).nodeChanged(getNode());
-        menutree.updateTree(_target);
+//        final MenuTree menutree = findParent(MenuTree.class);
+//        if (menutree.getTreeState().isNodeExpanded(getNode())) {
+//            menutree.getTreeState().collapseNode(getNode());
+//            menutree.nodeCollapsed(getNode());
+//        } else {
+//            menutree.getTreeState().expandNode(getNode());
+//            menutree.nodeExpanded(getNode());
+//        }
+//        ((DefaultTreeModel) menutree.getDefaultModelObject()).nodeChanged(getNode());
+//        menutree.updateTree(_target);
     }
 }
