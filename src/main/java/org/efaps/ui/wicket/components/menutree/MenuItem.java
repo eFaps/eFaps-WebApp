@@ -21,12 +21,15 @@
 package org.efaps.ui.wicket.components.menutree;
 
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.AjaxCallListener;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
+import org.apache.wicket.behavior.Behavior;
+import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.ILinkListener;
@@ -40,6 +43,7 @@ import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +57,10 @@ import org.slf4j.LoggerFactory;
 public class MenuItem
     extends Panel
 {
+    /**
+     * Reference to icon for remove button.
+     */
+    public static final EFapsContentReference ICON_REMOVE = new EFapsContentReference(MenuItem.class, "Remove.gif");
 
     /**
      *
@@ -72,15 +80,17 @@ public class MenuItem
      * @param _model
      */
     public MenuItem(final String _id,
-                    final MenuTree
-                    _tree,
+                    final MenuTree _tree,
                     final IModel<UIMenuItem> _model)
     {
         super(_id, _model);
         this.tree = _tree;
         setOutputMarkupId(true);
+        add(new SelectedAttributeModifier());
+
         final MarkupContainer link = new Item("link", _model);
         add(link);
+        this.tree.getMenuItem2Component().put(_model.getObject(), this);
 
         final Label label = new Label("label", _model.getObject().getLabel());
         link.add(label);
@@ -112,6 +122,15 @@ public class MenuItem
             // WebMarkupContainer("removelink").setVisible(false));
             // _item.add(new WebMarkupContainer("goUplink").setVisible(false));
         }
+
+        if (_model.getObject().getAncestor() == null) {
+            add(new WebMarkupContainer("removeLink").setVisible(false));
+        } else {
+            final AjaxRemoveLink removelink = new AjaxRemoveLink("removeLink", _model);
+            add(removelink);
+            removelink.add(new StaticImageComponent("removeIcon", MenuItem.ICON_REMOVE));
+        }
+
     }
 
     public class Item
@@ -148,9 +167,11 @@ public class MenuItem
                 if (menuItem.getCommand().getTargetTable() != null) {
                     if (menuItem.getCommand().getTargetStructurBrowserField() != null) {
                         page = new StructurBrowserPage(menuItem.getCommandUUID(),
-                                        menuItem.getInstanceKey(), false);
+                                        menuItem.getInstanceKey(), getPage()
+                                        .getPageReference());
                     } else {
-                        page = new TablePage(menuItem.getCommandUUID(), menuItem.getInstanceKey(), true);
+                        page = new TablePage(menuItem.getCommandUUID(), menuItem.getInstanceKey(), getPage()
+                                        .getPageReference());
                     }
                 } else {
                     page = new FormPage(menuItem.getCommandUUID(), menuItem.getInstanceKey(), getPage()
@@ -160,6 +181,32 @@ public class MenuItem
                 page = new ErrorPage(e);
             }
             setResponsePage(page);
+        }
+    }
+
+    public static class SelectedAttributeModifier extends Behavior
+    {
+
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
+
+
+        /* (non-Javadoc)
+         * @see org.apache.wicket.behavior.Behavior#onComponentTag(org.apache.wicket.Component, org.apache.wicket.markup.ComponentTag)
+         */
+        @Override
+        public void onComponentTag(final Component _component,
+                                   final ComponentTag _tag)
+        {
+            super.onComponentTag(_component, _tag);
+            final UIMenuItem menuItem = (UIMenuItem) _component.getDefaultModelObject();
+            if (menuItem.isSelected()) {
+                _tag.put("class", "eFapsMenuTreeItemSelected");
+            } else {
+                _tag.put("class", "eFapsMenuTreeItem");
+            }
         }
     }
 
@@ -178,13 +225,16 @@ public class MenuItem
         protected void onEvent(final AjaxRequestTarget _target)
         {
             if (MenuItem.this.tree.getSelected() != null) {
-                MenuItem.this.tree.getSelected().add(AttributeModifier.replace("class", "eFapsMenuTreeItem"));
                 _target.add(MenuItem.this.tree.getSelected());
+                final UIMenuItem menuItem = (UIMenuItem) MenuItem.this.tree.getSelected().getDefaultModelObject();
+                menuItem.setSelected(true);
             }
-            getComponent().add(AttributeModifier.replace("class", "eFapsMenuTreeItemSelected"));
             _target.add(getComponent());
             MenuItem.this.tree.setSelected(getComponent());
+            final UIMenuItem menuItem = (UIMenuItem) MenuItem.this.tree.getSelected().getDefaultModelObject();
+            menuItem.setSelected(true);
         }
+
 
         /*
          * (non-Javadoc)

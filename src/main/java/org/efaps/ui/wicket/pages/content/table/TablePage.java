@@ -22,6 +22,7 @@ package org.efaps.ui.wicket.pages.content.table;
 
 import java.util.UUID;
 
+import org.apache.wicket.PageReference;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.efaps.ui.wicket.components.FormContainer;
@@ -130,6 +131,21 @@ public class TablePage
         throws EFapsException
     {
         this(new TableModel(new UITable(_uuid, _instanceKey)), _updateMenu);
+    }
+
+    /**
+     * @param _uuid
+     * @param _instanceKey
+     * @param _calledByPageRef
+     * @throws EFapsException
+     */
+    public TablePage(final UUID _commandUUID,
+                     final String _instanceKey,
+                     final PageReference _pageReference)
+        throws EFapsException
+    {
+        super(new TableModel(new UITable(_commandUUID, _instanceKey)), null, _pageReference);
+        this.addComponents();
     }
 
     /**

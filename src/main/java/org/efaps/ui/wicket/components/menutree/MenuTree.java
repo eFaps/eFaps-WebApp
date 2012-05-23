@@ -20,6 +20,8 @@
 
 package org.efaps.ui.wicket.components.menutree;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import org.apache.wicket.Component;
@@ -43,10 +45,6 @@ public class MenuTree
     implements IRemoteUpdateable
 {
 
-    /**
-     * Reference to icon for remove button.
-     */
-    public static final EFapsContentReference ICON_REMOVE = new EFapsContentReference(MenuTree.class, "Remove.gif");
     /**
      * Reference to icon for go into button.
      */
@@ -86,6 +84,8 @@ public class MenuTree
 
     private Component selected = null;
 
+    private final Map<UIMenuItem, MenuItem> menuItem2Component = new HashMap<UIMenuItem, MenuItem>();
+
 
     /**
      * Constructor used for a new MenuTree.
@@ -105,7 +105,7 @@ public class MenuTree
         super(_wicketId, new TreeMenuModel(_commandUUID, _oid));
         add(new HumanTheme());
         add(new MenuUpdateBehavior());
-        expand(getProvider().getRoots().next());
+        expand(getProvider().getRoots().next().setHeader(true));
 
         // this.menuKey = _menukey;
         // final UIMenuItem model = new UIMenuItem(_commandUUID, _oid);
@@ -247,13 +247,52 @@ public class MenuTree
      * @param _instanceKey
      * @param _target
      */
-    public void addChildMenu(final UUID _uuid,
+    public void addChildMenu(final UUID _commandUUID,
                              final String _instanceKey,
                              final AjaxRequestTarget _target)
     {
-        // TODO Auto-generated method stub
-        System.out.println("");
-        _target.add(this.selected);
+        final UIMenuItem menuItem = (UIMenuItem) this.selected.getDefaultModelObject();
+        boolean old = false;
+        for (final UIMenuItem child : menuItem.getChilds()) {
+            if (child.getInstanceKey().equals(_instanceKey)
+                            && child.getCommandUUID().equals(_commandUUID)) {
+                old = true;
+            }
+        }
+
+        if (!old) {
+            final UIMenuItem newMenuItem = new UIMenuItem(_commandUUID, _instanceKey);
+            newMenuItem.setAncestor(menuItem);
+            menuItem.getChilds().add(newMenuItem);
+            expand(menuItem);
+            expand(newMenuItem);
+            _target.add(this.selected);
+        } else {
+
+        }
+    }
+
+    /**
+     * @param _menuItem child to be removed
+     * @param _target Ajaxtarget
+     */
+    public void removeChild(final UIMenuItem _menuItem,
+                            final AjaxRequestTarget _target)
+    {
+        final UIMenuItem ancestor = _menuItem.getAncestor();
+        ancestor.getChilds().remove(_menuItem);
+        expand(ancestor);
+        ancestor.setSelected(true);
+    }
+
+    /**
+     * Getter method for the instance variable {@link #menuItem2Component}.
+     *
+     * @return value of instance variable {@link #menuItem2Component}
+     */
+    public Map<UIMenuItem, MenuItem> getMenuItem2Component()
+    {
+        return this.menuItem2Component;
     }
 
     /**

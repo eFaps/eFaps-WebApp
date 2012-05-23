@@ -45,6 +45,7 @@ import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.models.objects.UISearchItem;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
+import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
 import org.efaps.util.EFapsException;
@@ -229,7 +230,8 @@ public abstract class AbstractContentPage
      */
     public boolean isUpdateMenu()
     {
-        return this.updateMenu;
+        return this.calledByPageReference != null
+                        && this.calledByPageReference.getPage() instanceof ContentContainerPage;
     }
 
     /**

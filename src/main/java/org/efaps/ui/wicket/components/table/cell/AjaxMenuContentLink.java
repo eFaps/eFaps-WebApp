@@ -197,8 +197,7 @@ public class AjaxMenuContentLink
         @Override
         protected void onEvent(final AjaxRequestTarget _target)
         {
-            final UITableCell cellmodel = (UITableCell)
-                            super.getComponent().getDefaultModelObject();
+            final UITableCell cellmodel = (UITableCell) super.getComponent().getDefaultModelObject();
             Instance instance = null;
             if (cellmodel.getInstanceKey() != null) {
                 AbstractCommand menu = null;
@@ -229,15 +228,10 @@ public class AjaxMenuContentLink
                     try {
                         if (menu.getTargetTable() != null) {
                             if (menu.getTargetStructurBrowserField() == null) {
-                                page = new TablePage(menu.getUUID(), cellmodel.getInstanceKey(),
-                                                true)
-                                                .setMenuTreeKey(((AbstractContentPage) getComponent().getPage())
-                                                                .getMenuTreeKey());
+                                page = new TablePage(menu.getUUID(), cellmodel.getInstanceKey(), calledByPageRef);
                             } else {
                                 page = new StructurBrowserPage(menu.getUUID(),
-                                                cellmodel.getInstanceKey(), true)
-                                                .setMenuTreeKey(((AbstractContentPage) getComponent().getPage())
-                                                                .getMenuTreeKey());
+                                                cellmodel.getInstanceKey(), calledByPageRef);
                             }
                         } else {
                             page = new FormPage(menu.getUUID(), cellmodel.getInstanceKey(), calledByPageRef);

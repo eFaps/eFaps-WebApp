@@ -22,6 +22,7 @@ package org.efaps.ui.wicket.pages.content.structurbrowser;
 
 import java.util.UUID;
 
+import org.apache.wicket.PageReference;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.efaps.ui.wicket.components.FormContainer;
@@ -108,6 +109,19 @@ public class StructurBrowserPage
     {
         super(new UIModel<UIStructurBrowser>(new UIStructurBrowser(_commandUUID, _oid)), null, _updateMenu);
         this.addComponents();
+    }
+
+    /**
+     * @param _uuid
+     * @param _instanceKey
+     * @param _calledByPageRef
+     * @throws EFapsException
+     */
+    public StructurBrowserPage(final UUID _commandUUID,
+                               final String _instanceKey,
+                               final PageReference _calledByPageRef) throws EFapsException
+    {
+        super(new UIModel<UIStructurBrowser>(new UIStructurBrowser(_commandUUID, _instanceKey)), null, _calledByPageRef);
     }
 
     /**

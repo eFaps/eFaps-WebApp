@@ -68,7 +68,7 @@ public class UIMenuItem
      *
      * @see #ancestor
      */
-    private DefaultMutableTreeNode ancestor;
+    private UIMenuItem ancestor;
 
     /**
      * in the case that the MenuItem is used for a submit, setting this
@@ -132,6 +132,8 @@ public class UIMenuItem
      * Number of rows that must be selected.
      */
     private int submitSelectedRows;
+
+    private boolean selected = false;
 
     /**
      * Constructor setting the UUID of this MenuItem.
@@ -380,9 +382,10 @@ public class UIMenuItem
      *
      * @param _header the header to set
      */
-    public void setHeader(final boolean _header)
+    public UIMenuItem setHeader(final boolean _header)
     {
         this.header = _header;
+        return this;
     }
 
     /**
@@ -463,7 +466,7 @@ public class UIMenuItem
      *
      * @return value of instance variable {@link #ancestor}
      */
-    public DefaultMutableTreeNode getAncestor()
+    public UIMenuItem getAncestor()
     {
         return this.ancestor;
     }
@@ -473,9 +476,9 @@ public class UIMenuItem
      *
      * @param _node the ancestor to set
      */
-    public void setAncestor(final DefaultMutableTreeNode _node)
+    public void setAncestor(final UIMenuItem _ancestor)
     {
-        this.ancestor = _node;
+        this.ancestor = _ancestor;
     }
 
     /**
@@ -485,6 +488,27 @@ public class UIMenuItem
     public void execute()
     {
         // TODO Auto-generated method stub
+    }
+
+    /**
+     * Getter method for the instance variable {@link #selected}.
+     *
+     * @return value of instance variable {@link #selected}
+     */
+    public boolean isSelected()
+    {
+        return this.selected;
+    }
+
+    /**
+     * Setter method for instance variable {@link #selected}.
+     *
+     * @param selected value for instance variable {@link #selected}
+     */
+
+    public void setSelected(final boolean selected)
+    {
+        this.selected = selected;
     }
 
 }
