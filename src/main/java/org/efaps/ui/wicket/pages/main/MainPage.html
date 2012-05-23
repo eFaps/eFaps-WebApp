@@ -28,7 +28,7 @@
 <head>
     <title wicket:id="pageTitle"></title>
     <style type="text/css">
-    #preloader {
+    .eFapsPreloader {
             padding:0;
             margin:0;
             position:absolute;
@@ -39,7 +39,7 @@
             vertical-align:middle;
 }
 
-#preloaderContent {
+.eFapsPreloaderContent {
             top:50px;
             width:450px;
             background:#224388;
@@ -54,23 +54,6 @@
 }
 
     </style>
-
-    <script type="text/javascript">
-            require(["dojo/ready", "dojo/_base/fx"]);
-            dojo.ready(function() {
-            dojo.byId('preloaderContent').innerHTML += " OK!";
-            setTimeout(function hideLoader(){
-                dojo.fadeOut({
-                    node: 'preloader',
-                    duration:1000,
-                    onEnd: function(n){
-                        n.style.display = "none";
-                    }
-                }).play();
-            }, 250);
-    });
-</script>
-
 </head>
 <body class="tundra">
     <div wicket:id="modal"></div>
@@ -90,13 +73,7 @@
             <div wicket:id="menubar"></div>
         </div>
     </div>
-    <div id="preloader">
-        <div id="preloaderContent">
-        <strong>This is your preloader... </strong>
-        <img width="20px" height="20px" src="http://ajax.googleapis.com/ajax/libs/dojo/1.5/dojox/image/resources/images/loading.gif"><br>
-        Put someting nice here !!!
-    </div>
-</div>
+    <div wicket:id="preloader"></div>
 </body>
 </html>
 

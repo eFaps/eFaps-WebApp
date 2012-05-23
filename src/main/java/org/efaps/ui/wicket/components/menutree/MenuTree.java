@@ -20,19 +20,15 @@
 
 package org.efaps.ui.wicket.components.menutree;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.behavior.AbstractAjaxBehavior;
 import org.apache.wicket.extensions.markup.html.repeater.tree.NestedTree;
 import org.apache.wicket.extensions.markup.html.repeater.tree.theme.HumanTheme;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.protocol.http.WebApplication;
-import org.apache.wicket.request.cycle.RequestCycle;
-import org.apache.wicket.util.string.StringValue;
+import org.efaps.ui.wicket.behaviors.update.IRemoteUpdateListener;
+import org.efaps.ui.wicket.behaviors.update.IRemoteUpdateable;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.slf4j.Logger;
@@ -44,6 +40,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MenuTree
     extends NestedTree<UIMenuItem>
+    implements IRemoteUpdateable
 {
 
     /**
@@ -89,50 +86,6 @@ public class MenuTree
 
     private Component selected = null;
 
-
-
-
-    public final class MenuUpdateBehavior
-        extends AbstractAjaxBehavior
-    {
-
-        private final Map<String, IMenuUpdateListener> key2listener = new HashMap<String,IMenuUpdateListener>();
-
-        /*
-         * (non-Javadoc)
-         * @see org.apache.wicket.behavior.IBehaviorListener#onRequest()
-         */
-        @Override
-        public void onRequest()
-        {
-            final WebApplication app = (WebApplication) getComponent().getApplication();
-            final AjaxRequestTarget target = app.newAjaxRequestTarget(getComponent().getPage());
-
-            final RequestCycle requestCycle = RequestCycle.get();
-            requestCycle.scheduleRequestHandlerAfterCurrent(target);
-            final StringValue key = requestCycle.getRequest().getRequestParameters()
-                            .getParameterValue(IMenuUpdateListener.PARAMETERKEY);
-            if (this.key2listener.containsKey(key.toString())) {
-                this.key2listener.get(key.toString()).onEvent(target);
-            }
-        }
-
-        /**
-         * @param _listener
-         */
-        public void register(final IMenuUpdateListener _listener)
-        {
-            this.key2listener.put(_listener.getKey(), _listener);
-        }
-
-    }
-
-    public CharSequence getUpdateUrl(final IMenuUpdateListener _listener)
-    {
-        final MenuUpdateBehavior behavior = getBehaviors(MenuUpdateBehavior.class).get(0);
-        behavior.register(_listener);
-        return behavior.getCallbackUrl();
-    }
 
     /**
      * Constructor used for a new MenuTree.
@@ -207,19 +160,19 @@ public class MenuTree
     }
 
     @Override
-    public Component newNodeComponent(final String id,
-                                      final IModel<UIMenuItem> model)
+    public Component newNodeComponent(final String _wicketId,
+                                      final IModel<UIMenuItem> _model)
     {
-        return new MenuNode(id, this, model)
+        return new MenuNode(_wicketId, this, _model)
         {
 
             private static final long serialVersionUID = 1L;
 
             @Override
-            protected Component createContent(final String id,
-                                              final IModel<UIMenuItem> model)
+            protected Component createContent(final String _id,
+                                              final IModel<UIMenuItem> _model)
             {
-                return newContentComponent(id, model);
+                return newContentComponent(_id, _model);
             }
         };
     }
@@ -301,6 +254,16 @@ public class MenuTree
         // TODO Auto-generated method stub
         System.out.println("");
         _target.add(this.selected);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void registerListener(final IRemoteUpdateListener _listener)
+    {
+        final MenuUpdateBehavior behavior = getBehaviors(MenuUpdateBehavior.class).get(0);
+        behavior.register(_listener);
     }
 
     // /**

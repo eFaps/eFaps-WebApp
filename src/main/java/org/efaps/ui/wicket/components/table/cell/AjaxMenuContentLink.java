@@ -20,7 +20,6 @@
 
 package org.efaps.ui.wicket.components.table.cell;
 
-import org.apache.commons.lang.RandomStringUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.PageReference;
@@ -29,15 +28,15 @@ import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.AjaxCallListener;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
-import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
-import org.efaps.ui.wicket.components.menutree.IMenuUpdateListener;
+import org.efaps.ui.wicket.behaviors.update.AbstractRemoteUpdateListenerBehavior;
 import org.efaps.ui.wicket.components.menutree.MenuTree;
+import org.efaps.ui.wicket.components.menutree.MenuUpdateBehavior;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
@@ -91,40 +90,30 @@ public class AjaxMenuContentLink
     }
 
     public class UpdateMenuBehavior
-        extends Behavior
-        implements IMenuUpdateListener
-    {
-        private final String key = RandomStringUtils.randomAlphanumeric(8);
+        extends AbstractRemoteUpdateListenerBehavior
 
+    {
         /**
-         * Component this behvaior belongs to.
+         * Needed for serialization.
          */
-        private final Component component;
+        private static final long serialVersionUID = 1L;
 
         /**
          * @param _ajaxMenuContentLink
          */
         public UpdateMenuBehavior(final Component _component)
         {
-            this.component = _component;
+           super(_component);
         }
 
         /**
          * {@inheritDoc}
          */
         @Override
-        public String getKey()
+        public void onEvent(final Component _component,
+                            final AjaxRequestTarget _target)
         {
-            return this.key;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void onEvent(final AjaxRequestTarget _target)
-        {
-            final UITableCell cellmodel = (UITableCell) this.component.getDefaultModelObject();
+            final UITableCell cellmodel = (UITableCell) getComponent().getDefaultModelObject();
             Instance instance = null;
             if (cellmodel.getInstanceKey() != null) {
 
@@ -142,8 +131,7 @@ public class AjaxMenuContentLink
                 }
                 final Page page = getPage();
                 if (page instanceof AbstractContentPage) {
-                    final MenuTree menutree = ((ContentContainerPage) ((AbstractContentPage) page)
-                                    .getCalledByPageReference().getPage()).getMenuTree();
+                    final MenuTree menutree = (MenuTree) _component;
                     menutree.addChildMenu(menu.getUUID(), cellmodel.getInstanceKey(), _target);
                 }
             }
@@ -186,23 +174,16 @@ public class AjaxMenuContentLink
             super.updateAjaxAttributes(_attributes);
 
             final PageReference calledByPageRef = ((AbstractContentPage) getPage()).getCalledByPageReference();
-            CharSequence url;
             if (calledByPageRef != null) {
                 final UpdateMenuBehavior up = getComponent().getBehaviors(UpdateMenuBehavior.class).get(0);
-                url = ((ContentContainerPage) calledByPageRef.getPage()).getMenuTree().getUpdateUrl(up);
-
+                ((ContentContainerPage) calledByPageRef.getPage()).getMenuTree().registerListener(up);
                 final AjaxCallListener listener = new AjaxCallListener();
                 final StringBuilder js = new StringBuilder()
-                    .append("var frameDoc = top.dojo.byId(\"").append(MainPage.IFRAME_ID)
+                    .append("var frameWin = top.dojo.byId(\"").append(MainPage.IFRAME_ID)
                     .append("\").contentWindow;")
-                    .append(" dojo.withDoc(frameDoc, function(){")
-                    .append("Wicket.Ajax.Call.prototype.ajax({\"u\":\"")
-                    .append(url)
-                    .append("\",\"i\":\"eFapsVeil\",")
-                    .append("\"ep\": {'").append(IMenuUpdateListener.PARAMETERKEY).append("': \"").append(up.getKey()).append("\"}")
-                    .append(",\"ch\":\"1|s\"")
-                    .append("});")
-                    .append("});return true;");
+                    .append(" frameWin.")
+                    .append(MenuUpdateBehavior.FUNCTION_NAME).append("(\"").append(up.getKey()).append("\");")
+                    .append("return true;");
                 listener.onPrecondition(js);
                 _attributes.getAjaxCallListeners().add(listener);
             }

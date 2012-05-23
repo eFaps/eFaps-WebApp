@@ -19,8 +19,9 @@
  */
 
 
-package org.efaps.ui.wicket.components.menutree;
+package org.efaps.ui.wicket.behaviors.update;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 
 
@@ -30,9 +31,9 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
  * @author The eFaps Team
  * @version $Id$
  */
-public interface IMenuUpdateListener
+public interface IRemoteUpdateListener
 {
-    final static String PARAMETERKEY = "eFapsMULKey";
+    final static String PARAMETERKEY = "eFapsULKey";
 
     /**
      * @return key that is a unique identifier for this IMenuUpdateListener.
@@ -40,7 +41,9 @@ public interface IMenuUpdateListener
     public String getKey();
 
     /**
+     * @param _component
      * @param _target the AjaxTarget
      */
-    public void onEvent(AjaxRequestTarget _target);
+    public void onEvent(final Component _component,
+                        final AjaxRequestTarget _target);
 }

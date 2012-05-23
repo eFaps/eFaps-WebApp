@@ -55,6 +55,7 @@ import org.efaps.ui.wicket.behaviors.dojo.RequireBehavior;
 import org.efaps.ui.wicket.components.menu.MenuBarPanel;
 import org.efaps.ui.wicket.components.menu.StandardLink;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
+import org.efaps.ui.wicket.components.preloader.PreLoaderPanel;
 import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
@@ -128,6 +129,7 @@ public class MainPage
         ((EFapsSession) getSession()).setFileCallBack(fileCall);
 
         add(new RequireBehavior("dojo/dom", "dojo/_base/window"));
+        add(new PreLoaderPanel("preloader"));
 
         final WebMarkupContainer borderPanel = new WebMarkupContainer("borderPanel");
         this.add(borderPanel);
