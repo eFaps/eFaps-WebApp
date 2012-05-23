@@ -41,7 +41,7 @@ import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.editor.EditorPanel;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
 import org.efaps.ui.wicket.components.picker.AjaxPickerLink;
-import org.efaps.ui.wicket.components.table.cell.AjaxLinkContainer;
+import org.efaps.ui.wicket.components.table.cell.AjaxMenuContentLink;
 import org.efaps.ui.wicket.components.table.cell.ContentContainerLink;
 import org.efaps.ui.wicket.models.cell.UIFormCell;
 import org.efaps.ui.wicket.models.objects.UIForm;
@@ -147,7 +147,7 @@ public class ValueCellPanel
 
             WebMarkupContainer link;
             if (_ajaxLink && uiFormCell.getTarget() != Target.POPUP) {
-                link = new AjaxLinkContainer("link", _model);
+                link = new AjaxMenuContentLink("link", _model);
             } else {
                 link = new ContentContainerLink<UIFormCell>("link", _model);
                 if (uiFormCell.getTarget() == Target.POPUP) {

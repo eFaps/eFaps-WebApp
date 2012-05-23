@@ -66,7 +66,6 @@ public class MenuItem
 
     private final MenuTree tree;
 
-
     /**
      * @param _id
      * @param _tree
@@ -74,11 +73,12 @@ public class MenuItem
      */
     public MenuItem(final String _id,
                     final MenuTree
- _tree,
+                    _tree,
                     final IModel<UIMenuItem> _model)
     {
         super(_id, _model);
         this.tree = _tree;
+        setOutputMarkupId(true);
         final MarkupContainer link = new Item("link", _model);
         add(link);
 
@@ -146,14 +146,15 @@ public class MenuItem
             Page page;
             try {
                 if (menuItem.getCommand().getTargetTable() != null) {
-                    if ( menuItem.getCommand().getTargetStructurBrowserField() != null) {
+                    if (menuItem.getCommand().getTargetStructurBrowserField() != null) {
                         page = new StructurBrowserPage(menuItem.getCommandUUID(),
-                             menuItem.getInstanceKey(), false);
+                                        menuItem.getInstanceKey(), false);
                     } else {
-                        page = new TablePage(menuItem.getCommandUUID(), menuItem.getInstanceKey(),true);
+                        page = new TablePage(menuItem.getCommandUUID(), menuItem.getInstanceKey(), true);
                     }
                 } else {
-                    page = new FormPage(menuItem.getCommandUUID(), menuItem.getInstanceKey(), true);
+                    page = new FormPage(menuItem.getCommandUUID(), menuItem.getInstanceKey(), getPage()
+                                    .getPageReference());
                 }
             } catch (final EFapsException e) {
                 page = new ErrorPage(e);
@@ -176,18 +177,20 @@ public class MenuItem
         @Override
         protected void onEvent(final AjaxRequestTarget _target)
         {
-            if (MenuItem.this.tree.getPreviousSelected() != null) {
-                MenuItem.this.tree.getPreviousSelected().add(AttributeModifier.replace("class", "eFapsMenuTreeItem"));
-                _target.add(MenuItem.this.tree.getPreviousSelected());
+            if (MenuItem.this.tree.getSelected() != null) {
+                MenuItem.this.tree.getSelected().add(AttributeModifier.replace("class", "eFapsMenuTreeItem"));
+                _target.add(MenuItem.this.tree.getSelected());
             }
             getComponent().add(AttributeModifier.replace("class", "eFapsMenuTreeItemSelected"));
             _target.add(getComponent());
-            MenuItem.this.tree.setPreviousSelected(getComponent());
+            MenuItem.this.tree.setSelected(getComponent());
         }
 
-
-        /* (non-Javadoc)
-         * @see org.apache.wicket.ajax.AjaxEventBehavior#updateAjaxAttributes(org.apache.wicket.ajax.attributes.AjaxRequestAttributes)
+        /*
+         * (non-Javadoc)
+         * @see
+         * org.apache.wicket.ajax.AjaxEventBehavior#updateAjaxAttributes(org
+         * .apache.wicket.ajax.attributes.AjaxRequestAttributes)
          */
         @Override
         protected void updateAjaxAttributes(final AjaxRequestAttributes _attributes)

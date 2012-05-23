@@ -21,6 +21,7 @@
 package org.efaps.ui.wicket.pages.content;
 
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.PageReference;
 import org.apache.wicket.ajax.IAjaxIndicatorAware;
 import org.apache.wicket.event.IEvent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -85,7 +86,12 @@ public abstract class AbstractContentPage
      * This instance variable contains the ModalWindow from this Page.
      */
     private final ModalWindowContainer modal = new ModalWindowContainer("modal");
-    private final boolean updateMenu;
+    private boolean updateMenu = false;
+
+    private PageReference calledByPageReference;
+
+
+
 
 
     /**
@@ -112,6 +118,39 @@ public abstract class AbstractContentPage
         super(_model);
         this.modalWindow = _modalWindow;
         this.updateMenu = _updateMenu;
+    }
+
+
+    public AbstractContentPage(final IModel<?> _model,
+                               final ModalWindowContainer _modalWindow,
+                               final PageReference _calledByPageReference)
+    {
+        super(_model);
+        this.modalWindow = _modalWindow;
+        this.calledByPageReference = _calledByPageReference;
+    }
+
+
+    /**
+     * Getter method for the instance variable {@link #calledByPageReference}.
+     *
+     * @return value of instance variable {@link #calledByPageReference}
+     */
+    public PageReference getCalledByPageReference()
+    {
+        return this.calledByPageReference;
+    }
+
+
+    /**
+     * Setter method for instance variable {@link #calledByPageReference}.
+     *
+     * @param _calledByPageReference value for instance variable {@link #calledByPageReference}
+     */
+
+    public void setCalledByPageReference(final PageReference _calledByPageReference)
+    {
+        this.calledByPageReference = _calledByPageReference;
     }
 
     /**

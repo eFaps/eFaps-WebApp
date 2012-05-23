@@ -129,7 +129,7 @@ public class CellPanel
                 celllink.setVisible(false);
             } else {
                 if (_updateListMenu && uiTableCell.getTarget() != Target.POPUP) {
-                    celllink = new AjaxLinkContainer("link", _model);
+                    celllink = new AjaxMenuContentLink("link", _model);
                 } else {
                     if (uiTableCell.isCheckOut()) {
                         celllink = new CheckOutLink("link", _model);

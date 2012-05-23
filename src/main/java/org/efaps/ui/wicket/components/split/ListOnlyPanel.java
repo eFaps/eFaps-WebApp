@@ -31,6 +31,7 @@ import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior.Region;
 import org.efaps.ui.wicket.components.menutree.MenuTree;
 import org.efaps.ui.wicket.components.split.header.SplitHeaderPanel;
 import org.efaps.ui.wicket.components.split.header.SplitHeaderPanel.PositionUserAttribute;
+import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
 import org.efaps.util.EFapsException;
@@ -46,6 +47,7 @@ import org.slf4j.LoggerFactory;
 public class ListOnlyPanel
     extends Panel
 {
+
     /**
      * Reference to the StyleSheet.
      */
@@ -61,14 +63,16 @@ public class ListOnlyPanel
      */
     private static final long serialVersionUID = 1L;
 
+    private final MenuTree menuTree;
+
     /**
      * Constructor.
      *
-     * @param _wicketId         wicket id of this component
-     * @param _commandUUID      UUID of the related command
-     * @param _oid              oid
-     * @param _listMenuKey      key to the list menu
-     * @param _selectCmdUUID    UUID of the selected Command
+     * @param _wicketId wicket id of this component
+     * @param _commandUUID UUID of the related command
+     * @param _oid oid
+     * @param _listMenuKey key to the list menu
+     * @param _selectCmdUUID UUID of the selected Command
      * @throws EFapsException on error
      */
     public ListOnlyPanel(final String _wicketId,
@@ -104,11 +108,24 @@ public class ListOnlyPanel
 
         final WebMarkupContainer overflow = new WebMarkupContainer("overflow");
         overflow.setOutputMarkupId(true);
-        overflow.add(new MenuTree("menu", _commandUUID, _oid, _listMenuKey, _selectCmdUUID).setOutputMarkupId(true));
+        this.menuTree = new MenuTree("menu", _commandUUID, _oid, _listMenuKey, _selectCmdUUID);
+
+        overflow.add(this.menuTree.setOutputMarkupId(true));
         this.add(overflow);
         if (hidden) {
             overflow.add(AttributeModifier.replace("style", "display:none;"));
         }
         header.addHideComponent(overflow);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.wicket.MarkupContainer#onAfterRenderChildren()
+     */
+    @Override
+    protected void onAfterRenderChildren()
+    {
+        super.onAfterRenderChildren();
+        ((ContentContainerPage) getWebPage()).setMenuTree(this.menuTree);
     }
 }

@@ -38,6 +38,7 @@ import org.efaps.ui.wicket.behaviors.dojo.BorderContainerBehavior.Design;
 import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior.Region;
 import org.efaps.ui.wicket.components.LazyIframe;
+import org.efaps.ui.wicket.components.menutree.MenuTree;
 import org.efaps.ui.wicket.components.split.ListOnlyPanel;
 import org.efaps.ui.wicket.components.split.StructBrowsSplitPanel;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
@@ -119,6 +120,8 @@ public class ContentContainerPage
     private boolean webForm;
 
     private String centerPanelId;
+
+    private MenuTree menuTree;
 
 
     /**
@@ -359,5 +362,23 @@ public class ContentContainerPage
             }
         }
         return cmd;
+    }
+
+    /**
+     * @param _menuTree
+     */
+    public void setMenuTree(final MenuTree _menuTree)
+    {
+       this.menuTree = _menuTree;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #menuTree}.
+     *
+     * @return value of instance variable {@link #menuTree}
+     */
+    public MenuTree getMenuTree()
+    {
+        return this.menuTree;
     }
 }

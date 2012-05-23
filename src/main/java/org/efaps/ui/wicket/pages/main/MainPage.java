@@ -51,6 +51,7 @@ import org.efaps.ui.wicket.behaviors.dojo.BorderContainerBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.BorderContainerBehavior.Design;
 import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior.Region;
+import org.efaps.ui.wicket.behaviors.dojo.RequireBehavior;
 import org.efaps.ui.wicket.components.menu.MenuBarPanel;
 import org.efaps.ui.wicket.components.menu.StandardLink;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
@@ -78,6 +79,8 @@ public class MainPage
      * this static variable contains the id for the htmlFrame.
      */
     public static final String IFRAME_WICKETID = "content";
+
+    public static final String IFRAME_ID = "eFapsContentFrame";
 
     /**
      * Needed for serialization.
@@ -123,6 +126,8 @@ public class MainPage
         final ShowFileCallBackBehavior fileCall = new ShowFileCallBackBehavior();
         this.add(fileCall);
         ((EFapsSession) getSession()).setFileCallBack(fileCall);
+
+        add(new RequireBehavior("dojo/dom", "dojo/_base/window"));
 
         final WebMarkupContainer borderPanel = new WebMarkupContainer("borderPanel");
         this.add(borderPanel);

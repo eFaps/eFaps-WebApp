@@ -20,13 +20,19 @@
 
 package org.efaps.ui.wicket.components.menutree;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.behavior.AbstractAjaxBehavior;
 import org.apache.wicket.extensions.markup.html.repeater.tree.NestedTree;
 import org.apache.wicket.extensions.markup.html.repeater.tree.theme.HumanTheme;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.protocol.http.WebApplication;
+import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.util.string.StringValue;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.slf4j.Logger;
@@ -81,11 +87,52 @@ public class MenuTree
      */
     private static final long serialVersionUID = 1L;
 
+    private Component selected = null;
 
 
-    private Component previousSelected = null;
 
 
+    public final class MenuUpdateBehavior
+        extends AbstractAjaxBehavior
+    {
+
+        private final Map<String, IMenuUpdateListener> key2listener = new HashMap<String,IMenuUpdateListener>();
+
+        /*
+         * (non-Javadoc)
+         * @see org.apache.wicket.behavior.IBehaviorListener#onRequest()
+         */
+        @Override
+        public void onRequest()
+        {
+            final WebApplication app = (WebApplication) getComponent().getApplication();
+            final AjaxRequestTarget target = app.newAjaxRequestTarget(getComponent().getPage());
+
+            final RequestCycle requestCycle = RequestCycle.get();
+            requestCycle.scheduleRequestHandlerAfterCurrent(target);
+            final StringValue key = requestCycle.getRequest().getRequestParameters()
+                            .getParameterValue(IMenuUpdateListener.PARAMETERKEY);
+            if (this.key2listener.containsKey(key.toString())) {
+                this.key2listener.get(key.toString()).onEvent(target);
+            }
+        }
+
+        /**
+         * @param _listener
+         */
+        public void register(final IMenuUpdateListener _listener)
+        {
+            this.key2listener.put(_listener.getKey(), _listener);
+        }
+
+    }
+
+    public CharSequence getUpdateUrl(final IMenuUpdateListener _listener)
+    {
+        final MenuUpdateBehavior behavior = getBehaviors(MenuUpdateBehavior.class).get(0);
+        behavior.register(_listener);
+        return behavior.getCallbackUrl();
+    }
 
     /**
      * Constructor used for a new MenuTree.
@@ -104,7 +151,7 @@ public class MenuTree
     {
         super(_wicketId, new TreeMenuModel(_commandUUID, _oid));
         add(new HumanTheme());
-
+        add(new MenuUpdateBehavior());
         expand(getProvider().getRoots().next());
 
         // this.menuKey = _menukey;
@@ -178,27 +225,25 @@ public class MenuTree
     }
 
     /**
-     * Getter method for the instance variable {@link #previousSelected}.
+     * Getter method for the instance variable {@link #selected}.
      *
-     * @return value of instance variable {@link #previousSelected}
+     * @return value of instance variable {@link #selected}
      */
-    public Component getPreviousSelected()
+    public Component getSelected()
     {
-        return this.previousSelected;
+        return this.selected;
     }
-
 
     /**
-     * Setter method for instance variable {@link #previousSelected}.
+     * Setter method for instance variable {@link #selected}.
      *
-     * @param _previousSelected value for instance variable {@link #previousSelected}
+     * @param _selected value for instance variable {@link #selected}
      */
 
-    public void setPreviousSelected(final Component _previousSelected)
+    public void setSelected(final Component _selected)
     {
-        this.previousSelected = _previousSelected;
+        this.selected = _selected;
     }
-
 
     // /**
     // * Constructor used from the ajax links for go into and go up.
@@ -254,7 +299,8 @@ public class MenuTree
                              final AjaxRequestTarget _target)
     {
         // TODO Auto-generated method stub
-
+        System.out.println("");
+        _target.add(this.selected);
     }
 
     // /**
@@ -378,23 +424,23 @@ public class MenuTree
     // _item.add(new WebMarkupContainer("expandLink").setVisible(false));
     // }
     //
-//     if (model.isHeader()) {
-//     label.add(AttributeModifier.append("class", "eFapsMenuTreeHeader"));
-//
-//     String imageUrl = model.getImage();
-//     if (imageUrl == null) {
-//     try {
-//     imageUrl = model.getTypeImage();
-//     } catch (final EFapsException e) {
-//     MenuTree.LOG.error("Error on retrieving the image for a image: {}",
-//     model.getImage());
-//     }
-//     }
-//     if (imageUrl == null) {
-//     link.add(new WebMarkupContainer("icon").setVisible(false));
-//     } else {
-//     link.add(new StaticImageComponent("icon", imageUrl));
-//     }
+    // if (model.isHeader()) {
+    // label.add(AttributeModifier.append("class", "eFapsMenuTreeHeader"));
+    //
+    // String imageUrl = model.getImage();
+    // if (imageUrl == null) {
+    // try {
+    // imageUrl = model.getTypeImage();
+    // } catch (final EFapsException e) {
+    // MenuTree.LOG.error("Error on retrieving the image for a image: {}",
+    // model.getImage());
+    // }
+    // }
+    // if (imageUrl == null) {
+    // link.add(new WebMarkupContainer("icon").setVisible(false));
+    // } else {
+    // link.add(new StaticImageComponent("icon", imageUrl));
+    // }
     //
     // if (node.isRoot()) {
     // _item.add(new WebMarkupContainer("goIntolink").setVisible(false));

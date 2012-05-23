@@ -48,8 +48,8 @@ import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.date.UnnestedDatePickers;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
 import org.efaps.ui.wicket.components.picker.AjaxPickerLink;
-import org.efaps.ui.wicket.components.table.cell.AjaxLinkContainer;
 import org.efaps.ui.wicket.components.table.cell.AjaxLoadInOpenerLink;
+import org.efaps.ui.wicket.components.table.cell.AjaxMenuContentLink;
 import org.efaps.ui.wicket.components.table.cell.CheckOutLink;
 import org.efaps.ui.wicket.components.table.cell.ContentContainerLink;
 import org.efaps.ui.wicket.models.UIModel;
@@ -115,7 +115,7 @@ public class TreeCellPanel
         } else {
 
             if (_updateListMenu && uiCell.getTarget() != Target.POPUP) {
-                link = new AjaxLinkContainer("link", cellModel);
+                link = new AjaxMenuContentLink("link", cellModel);
             } else {
                 if (uiCell.isCheckOut()) {
                     link = new CheckOutLink("link", cellModel);

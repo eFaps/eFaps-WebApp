@@ -27,6 +27,50 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title wicket:id="pageTitle"></title>
+    <style type="text/css">
+    #preloader {
+            padding:0;
+            margin:0;
+            position:absolute;
+            top:0; left:0;
+            width:100%; height:100%;
+            background:#ededed;
+            z-index:999;
+            vertical-align:middle;
+}
+
+#preloaderContent {
+            top:50px;
+            width:450px;
+            background:#224388;
+            color:#fff;
+            margin: auto;
+            border-radius: 20px;
+            padding: 5px;
+            position: relative;
+            text-align: center;
+            width: 450px;
+
+}
+
+    </style>
+
+    <script type="text/javascript">
+            require(["dojo/ready", "dojo/_base/fx"]);
+            dojo.ready(function() {
+            dojo.byId('preloaderContent').innerHTML += " OK!";
+            setTimeout(function hideLoader(){
+                dojo.fadeOut({
+                    node: 'preloader',
+                    duration:1000,
+                    onEnd: function(n){
+                        n.style.display = "none";
+                    }
+                }).play();
+            }, 250);
+    });
+</script>
+
 </head>
 <body class="tundra">
     <div wicket:id="modal"></div>
@@ -46,6 +90,13 @@
             <div wicket:id="menubar"></div>
         </div>
     </div>
+    <div id="preloader">
+        <div id="preloaderContent">
+        <strong>This is your preloader... </strong>
+        <img width="20px" height="20px" src="http://ajax.googleapis.com/ajax/libs/dojo/1.5/dojox/image/resources/images/loading.gif"><br>
+        Put someting nice here !!!
+    </div>
+</div>
 </body>
 </html>
 

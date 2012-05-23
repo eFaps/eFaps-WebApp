@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.apache.wicket.Page;
+import org.apache.wicket.PageReference;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
@@ -62,6 +63,7 @@ import org.efaps.util.EFapsException;
 public class FormPage
     extends AbstractContentPage
 {
+
     /**
      * Reference to the css stylesheet.
      */
@@ -110,7 +112,7 @@ public class FormPage
      * @param _commandUUID UUID of the command
      * @param _oid oid of the instance
      * @param _modalWindow modal window of this page
-     * @throws EFapsException  on error
+     * @throws EFapsException on error
      */
     public FormPage(final UUID _commandUUID,
                     final String _oid,
@@ -153,6 +155,20 @@ public class FormPage
     }
 
     /**
+     * @param _commandUUID
+     * @param _instanceKey
+     * @param _pageReference
+     */
+    public FormPage(final UUID _commandUUID,
+                    final String _instanceKey,
+                    final PageReference _pageReference)
+        throws EFapsException
+    {
+        super(new FormModel(new UIForm(_commandUUID, _instanceKey)), null, _pageReference);
+        this.addComponents();
+    }
+
+    /**
      * Method to add the components to this page.
      *
      * @throws EFapsException on error
@@ -181,9 +197,9 @@ public class FormPage
     /**
      * Method used to update the Form Container.
      *
-     * @param _page     page
-     * @param _form     formcontainer
-     * @param _uiForm   model
+     * @param _page page
+     * @param _form formcontainer
+     * @param _uiForm model
      * @throws EFapsException on error
      */
     public static void updateFormContainer(final Page _page,
@@ -204,7 +220,7 @@ public class FormPage
         // already in the cache of the browser
         // TODO Is there a better way?
         if (_uiForm.isClassified() && (_uiForm.isEditMode() || _uiForm.isCreateMode())) {
-            //EditorPanel.prepare(_page);
+            // EditorPanel.prepare(_page);
         }
         // the hidden cells must be marked as not added yet.
         for (final UIHiddenCell cell : _uiForm.getHiddenCells()) {
@@ -226,7 +242,7 @@ public class FormPage
                 final UIFieldTable fieldTable = (UIFieldTable) element.getElement();
                 fieldTable.setTableId(i);
                 final TablePanel table = new TablePanel(elementRepeater.newChildId(),
-                                                        new TableModel(fieldTable), _page);
+                                new TableModel(fieldTable), _page);
                 final HeaderPanel header = new HeaderPanel(elementRepeater.newChildId(), table);
                 elementRepeater.add(header);
                 elementRepeater.add(table);
@@ -257,7 +273,7 @@ public class FormPage
                         final UIFieldTable fieldTable = (UIFieldTable) subElement.getElement();
                         fieldTable.setTableId(i);
                         final TablePanel table = new TablePanel(elementRepeater.newChildId(),
-                                                                new TableModel(fieldTable), _page);
+                                        new TableModel(fieldTable), _page);
                         final HeaderPanel header = new HeaderPanel(elementRepeater.newChildId(), table);
                         elementRepeater.add(header);
                         elementRepeater.add(table);

@@ -30,6 +30,7 @@ import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.HeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.IReferenceHeaderItem;
+import org.apache.wicket.markup.head.PriorityHeaderItem;
 import org.apache.wicket.request.IRequestHandler;
 import org.apache.wicket.request.Response;
 import org.apache.wicket.request.cycle.RequestCycle;
@@ -81,7 +82,8 @@ public abstract class AbstractDojoBehavior
                            final IHeaderResponse _response)
     {
         super.renderHead(_component, _response);
-        _response.render(new DojoHeaderItem(AbstractDojoBehavior.JS_DOJO, AbstractDojoBehavior.class.getName()));
+        _response.render(new PriorityHeaderItem(new DojoHeaderItem(AbstractDojoBehavior.JS_DOJO,
+                        AbstractDojoBehavior.class.getName())));
         _response.render(CssHeaderItem.forReference(AbstractDojoBehavior.CSS_TUNDRA));
     }
 
