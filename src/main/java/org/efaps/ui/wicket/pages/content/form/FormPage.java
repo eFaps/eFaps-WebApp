@@ -138,6 +138,10 @@ public class FormPage
         this.addComponents();
     }
 
+
+
+
+
     /**
      * @param _pageMap pagemap to be used
      * @param _commandUUID UUID of the command
@@ -155,6 +159,18 @@ public class FormPage
     }
 
     /**
+     * @param _model model for the page
+     * @throws EFapsException on error
+     */
+    public FormPage(final IModel<?> _model,
+                    final PageReference _pageReference)
+        throws EFapsException
+    {
+        this(_model, null, _pageReference);
+    }
+
+
+    /**
      * @param _commandUUID
      * @param _instanceKey
      * @param _pageReference
@@ -164,9 +180,18 @@ public class FormPage
                     final PageReference _pageReference)
         throws EFapsException
     {
-        super(new FormModel(new UIForm(_commandUUID, _instanceKey)), null, _pageReference);
+        this(new FormModel(new UIForm(_commandUUID, _instanceKey)), null, _pageReference);
+    }
+
+    public FormPage(final IModel<?> _model,
+                    final ModalWindowContainer _modalWindow,
+                    final PageReference _pageReference)
+        throws EFapsException
+    {
+        super(_model, _modalWindow, _pageReference);
         this.addComponents();
     }
+
 
     /**
      * Method to add the components to this page.

@@ -44,6 +44,7 @@ import org.efaps.util.EFapsException;
 public class StructurBrowserPage
     extends AbstractContentPage
 {
+
     /**
      * Reference to the style sheet.
      */
@@ -72,7 +73,7 @@ public class StructurBrowserPage
 
     /**
      * @param _model model for this pager
-     * @throws EFapsException  on error
+     * @throws EFapsException on error
      */
     public StructurBrowserPage(final IModel<UIStructurBrowser> _model,
                                final boolean _updateMenu)
@@ -84,7 +85,7 @@ public class StructurBrowserPage
     /**
      * @param _model model for this pager
      * @param _modalWindow modal Winthis page is opened in
-     * @throws EFapsException  on error
+     * @throws EFapsException on error
      */
     public StructurBrowserPage(final IModel<UIStructurBrowser> _model,
                                final ModalWindowContainer _modalWindow,
@@ -94,7 +95,6 @@ public class StructurBrowserPage
         super(_model, _modalWindow, _updateMenu);
         this.addComponents();
     }
-
 
     /**
      * @param _pageMap pagemap
@@ -112,6 +112,18 @@ public class StructurBrowserPage
     }
 
     /**
+     * @param _model model for this pager
+     * @throws EFapsException on error
+     */
+    public StructurBrowserPage(final IModel<UIStructurBrowser> _model,
+                               final PageReference _calledByPageRef)
+        throws EFapsException
+    {
+        this(_model, null, _calledByPageRef);
+    }
+
+
+    /**
      * @param _uuid
      * @param _instanceKey
      * @param _calledByPageRef
@@ -119,14 +131,30 @@ public class StructurBrowserPage
      */
     public StructurBrowserPage(final UUID _commandUUID,
                                final String _instanceKey,
-                               final PageReference _calledByPageRef) throws EFapsException
+                               final PageReference _calledByPageRef)
+        throws EFapsException
     {
-        super(new UIModel<UIStructurBrowser>(new UIStructurBrowser(_commandUUID, _instanceKey)), null, _calledByPageRef);
+        this(new UIModel<UIStructurBrowser>(new UIStructurBrowser(_commandUUID, _instanceKey)), null, _calledByPageRef);
+    }
+
+    /**
+     * @param _model model for this pager
+     * @param _modalWindow modal Winthis page is opened in
+     * @throws EFapsException on error
+     */
+    public StructurBrowserPage(final IModel<UIStructurBrowser> _model,
+                               final ModalWindowContainer _modalWindow,
+                               final PageReference _calledByPageRef)
+        throws EFapsException
+    {
+        super(_model, _modalWindow, _calledByPageRef);
+        this.addComponents();
     }
 
     /**
      * Method to add the components to this page.
-     * @throws EFapsException  on error
+     *
+     * @throws EFapsException on error
      */
     protected void addComponents()
         throws EFapsException
@@ -141,6 +169,7 @@ public class StructurBrowserPage
         final FormContainer form = new FormContainer("form");
         this.add(form);
         super.addComponents(form);
-        form.add(new StructurBrowserTreeTablePanel("structurBrowserTable", new UIModel<UIStructurBrowser>(uiObject), true));
+        form.add(new StructurBrowserTreeTablePanel("structurBrowserTable", new UIModel<UIStructurBrowser>(uiObject),
+                        true));
     }
 }

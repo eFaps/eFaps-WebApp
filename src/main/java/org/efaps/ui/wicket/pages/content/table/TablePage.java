@@ -134,6 +134,17 @@ public class TablePage
     }
 
     /**
+     * @param _model modle for the table
+     * @throws EFapsException on error
+     */
+    public TablePage(final IModel<UITable> _model,
+                     final PageReference _pageReference)
+        throws EFapsException
+    {
+        this(_model, null, _pageReference);
+    }
+
+    /**
      * @param _uuid
      * @param _instanceKey
      * @param _calledByPageRef
@@ -144,7 +155,21 @@ public class TablePage
                      final PageReference _pageReference)
         throws EFapsException
     {
-        super(new TableModel(new UITable(_commandUUID, _instanceKey)), null, _pageReference);
+        this(new TableModel(new UITable(_commandUUID, _instanceKey)), null, _pageReference);
+    }
+
+
+    /**
+     * @param _model model for the page
+     * @param _modalWindow modal window
+     * @throws EFapsException on error
+     */
+    public TablePage(final IModel<?> _model,
+                     final ModalWindowContainer _modalWindow,
+                     final PageReference _pageReference)
+        throws EFapsException
+    {
+        super(_model, _modalWindow, _pageReference);
         this.addComponents();
     }
 

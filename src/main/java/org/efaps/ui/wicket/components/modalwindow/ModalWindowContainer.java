@@ -21,6 +21,7 @@
 package org.efaps.ui.wicket.components.modalwindow;
 
 import org.apache.wicket.Page;
+import org.apache.wicket.PageReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.core.request.handler.PageProvider;
 import org.apache.wicket.core.request.handler.RenderPageRequestHandler;
@@ -33,10 +34,13 @@ import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.models.objects.UITable;
+import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
+import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.empty.EmptyPage;
+import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.util.EFapsException;
 
 /**
@@ -123,28 +127,40 @@ public class ModalWindowContainer
         final StringBuilder javascript = new StringBuilder();
         if (model != null) {
             try {
+                PageReference calledByPageRef = ((AbstractContentPage) getPage()).getCalledByPageReference();
+                if (calledByPageRef != null && calledByPageRef.getPage() instanceof AbstractContentPage) {
+                    calledByPageRef = ((AbstractContentPage) calledByPageRef.getPage()).getCalledByPageReference();
+                }
+
                 model.resetModel();
                 final Page page;
                 if (model instanceof UITable) {
-                    page = new TablePage(Model.of((UITable) model), false);
+                    page = new TablePage(Model.of((UITable) model), calledByPageRef);
                 } else if (model instanceof UIForm) {
-                    page = new FormPage(Model.of((UIForm) model), false);
+                    page = new FormPage(Model.of((UIForm) model), calledByPageRef);
                 } else if (model instanceof UIStructurBrowser) {
-                    page = new StructurBrowserPage(Model.of((UIStructurBrowser) model), false);
+                    page = new StructurBrowserPage(Model.of((UIStructurBrowser) model), calledByPageRef);
                 } else {
                     page = new EmptyPage();
                 }
 
                 final IRequestHandler handler = new RenderPageRequestHandler(new PageProvider(page));
                 final String url = getRequestCycle().urlFor(handler).toString();
-                if (true) {
-                    javascript.append("top.dijit.byId(\"").append("mainPanel")
-                            .append("\").set(\"content\", dojo.create(\"iframe\", {")
-                            .append("\"src\": \"./wicket/").append(url)
-                            .append("\",\"style\": \"border: 0; width: 100%; height: 100%\"")
-                            .append("}));");
+                if (calledByPageRef != null && calledByPageRef.getPage() instanceof ContentContainerPage) {
+                    final String panelId = ((ContentContainerPage) calledByPageRef.getPage()).getCenterPanelId();
+                    javascript.append("var mainFrame = top.dojo.byId(\"").append(MainPage.IFRAME_ID)
+                        .append("\").contentWindow;").append("mainFrame.dijit.byId(\"").append(panelId)
+                        .append("\").set(\"content\", dojo.create(\"iframe\", {")
+                        .append("\"src\": \"").append(url)
+                        .append("\",\"style\": \"border: 0; width: 100%; height: 100%\"")
+                        .append("}));");
                 } else {
-                    javascript.append("top.frames[0].frames[0].location.href = '");
+                    javascript.append("top.dijit.byId(\"").append("mainPanel")
+                        .append("\").set(\"content\", dojo.create(\"iframe\", {")
+                        .append("\"src\": \"./wicket/").append(url)
+                        .append("\",\"style\": \"border: 0; width: 100%; height: 100%\"")
+                        .append("}));");
+
                 }
             } catch (final EFapsException e) {
 
@@ -208,6 +224,14 @@ public class ModalWindowContainer
     {
         return super.getCloseJavacript();
     }
+
+
+    @Override
+    protected CharSequence getShowJavaScript()
+    {
+        return "top.Wicket.Window.create(settings).show();\n";
+    }
+
 
     /**
      * Check it the size of the modal window is not to big and reduces it if
