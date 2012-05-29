@@ -41,7 +41,7 @@ import org.efaps.ui.wicket.components.autocomplete.AutoCompleteField;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
 import org.efaps.ui.wicket.components.picker.AjaxPickerLink;
 import org.efaps.ui.wicket.models.cell.UITableCell;
-import org.efaps.ui.wicket.models.objects.UITable;
+import org.efaps.ui.wicket.models.objects.AbstractUIHeaderObject;
 
 /**
  * Class is used to render a cell inside a table.
@@ -89,7 +89,7 @@ public class CellPanel
     public CellPanel(final String _wicketId,
                      final IModel<UITableCell> _model,
                      final boolean _updateListMenu,
-                     final UITable _uitable,
+                     final AbstractUIHeaderObject _uitable,
                      final int _idx)
     {
         super(_wicketId, _model);

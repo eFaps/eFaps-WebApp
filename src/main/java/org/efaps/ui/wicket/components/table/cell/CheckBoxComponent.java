@@ -24,16 +24,20 @@ import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebComponent;
 
 /**
- * @author jmox
- * @version $Id$
+ * @author The eFaps Team
+ * @version $Id: CheckBoxComponent.java 7532 2012-05-19 06:31:05Z jan@moxter.net$
  *
  */
-public class CheckBoxComponent extends WebComponent {
+public class CheckBoxComponent
+    extends WebComponent
+{
+
     private static final long serialVersionUID = 1L;
 
     private final String oid;
 
-    public CheckBoxComponent(final String _wicketId, final String _oid)
+    public CheckBoxComponent(final String _wicketId,
+                             final String _oid)
     {
         super(_wicketId);
         this.oid = _oid;
@@ -47,5 +51,4 @@ public class CheckBoxComponent extends WebComponent {
         _tag.getAttributes().put("value", this.oid);
         _tag.setName("input");
     }
-
 }

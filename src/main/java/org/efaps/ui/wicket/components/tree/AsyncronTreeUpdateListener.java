@@ -54,7 +54,7 @@ public class AsyncronTreeUpdateListener
         model.setExpanded(true);
 
         if (!node.isLeaf() && (node.getChildAt(0) instanceof BogusNode)) {
-            model.addChildren((DefaultMutableTreeNode) node);
+            //model.addChildren((DefaultMutableTreeNode) node);
         }
     }
 

@@ -253,18 +253,17 @@ public class ContentContainerPage
                 AbstractContentPage page = null;
                 try {
                     if (ContentContainerPage.this.webForm) {
-                        page = new FormPage(uuid4NewPage, _instanceKey, true);
+                        page = new FormPage(uuid4NewPage, _instanceKey, getPageReference());
                     } else {
                         if (getCommand(uuid4NewPage).getTargetStructurBrowserField() == null) {
-                            page = new TablePage(uuid4NewPage, _instanceKey, true);
+                            page = new TablePage(uuid4NewPage, _instanceKey, getPageReference());
                         } else {
-                            page = new StructurBrowserPage(uuid4NewPage, _instanceKey, true);
+                            page = new StructurBrowserPage(uuid4NewPage, _instanceKey, getPageReference());
                         }
                     }
                 } catch (final EFapsException e) {
                     error = new ErrorPage(e);
                 }
-                page.setMenuTreeKey(ContentContainerPage.this.menuTreeKey);
                 return error == null ? page : error;
             }
 

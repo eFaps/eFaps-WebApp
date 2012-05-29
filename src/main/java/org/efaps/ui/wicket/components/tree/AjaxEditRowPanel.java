@@ -211,7 +211,7 @@ public class AjaxEditRowPanel
             final StructurBrowserTreeTable treeTable = findParent(StructurBrowserTreeTable.class);
             final DefaultTreeModel treeModel = (DefaultTreeModel) treeTable.getModelObject();
             treeModel.removeNodeFromParent(this.node);
-            treeTable.updateTree(_target);
+//            treeTable.updateTree(_target);
             _target.appendJavaScript(js);
         }
     }
@@ -266,7 +266,7 @@ public class AjaxEditRowPanel
             final DefaultTreeModel treeModel = (DefaultTreeModel) treeTable.getModelObject();
             treeModel.insertNodeInto(newTreeNode, (DefaultMutableTreeNode) getNode().getParent(),
                             getNode().getParent().getIndex(getNode()));
-            treeTable.updateTree(_target);
+//            treeTable.updateTree(_target);
             _target.appendJavaScript(js);
         }
     }
@@ -323,7 +323,7 @@ public class AjaxEditRowPanel
             final StructurBrowserTreeTable treeTable = findParent(StructurBrowserTreeTable.class);
             final DefaultTreeModel treeModel = (DefaultTreeModel) treeTable.getModelObject();
             treeModel.insertNodeInto(newTreeNode, getNode(), getNode().getChildCount());
-            treeTable.updateTree(_target);
+//            treeTable.updateTree(_target);
             _target.appendJavaScript(js);
         }
     }
@@ -379,7 +379,7 @@ public class AjaxEditRowPanel
 
             final DefaultTreeModel treeModel = (DefaultTreeModel) treeTable.getModelObject();
             treeModel.insertNodeInto(newTreeNode, getNode(), getNode().getChildCount());
-            treeTable.updateTree(_target);
+//            treeTable.updateTree(_target);
             _target.appendJavaScript(js);
         }
     }

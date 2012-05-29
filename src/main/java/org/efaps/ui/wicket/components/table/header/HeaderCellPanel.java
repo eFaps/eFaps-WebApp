@@ -31,7 +31,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.ui.AbstractCommand.SortDirection;
 import org.efaps.ui.wicket.behaviors.dojo.DnDBehavior;
-import org.efaps.ui.wicket.models.objects.UITable;
+import org.efaps.ui.wicket.models.objects.AbstractUIHeaderObject;
 import org.efaps.ui.wicket.models.objects.UITableHeader;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
@@ -114,7 +114,7 @@ public class HeaderCellPanel
      */
     public HeaderCellPanel(final String _wicketId,
                            final IModel<UITableHeader> _model,
-                           final UITable _uitable)
+                           final AbstractUIHeaderObject _uitable)
     {
         super(_wicketId, _model);
 

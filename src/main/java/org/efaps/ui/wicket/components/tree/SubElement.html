@@ -15,24 +15,18 @@
   limitations under the License.
 
   Author:          The eFaps Team
-  Revision:        $Rev$
-  Last Changed:    $Date$
-  Last Changed By: $Author$
+  Revision:        $Rev: 7532 $
+  Last Changed:    $Date: 2012-05-19 01:31:05 -0500 (Sat, 19 May 2012) $
+  Last Changed By: $Author: jan@moxter.net $
 
 -->
 <html xmlns:wicket>
-    <wicket:panel>
-        <span wicket:id="indent"></span>
-        <a wicket:id="link">
-            <span wicket:id="image"></span>
-        </a>
-        <span wicket:id="direction"></span>
-        <a wicket:id="nodeLink" class="node-link">
-            <span class="icon" wicket:id="icon"></span>
-            <span wicket:id="label" class="text"></span>
-        </a>
-        <input wicket:id="rowId"></input>
-        <input wicket:id="level"></input>
-        <input wicket:id="allowChilds"></input>
+  <wicket:panel xmlns:wicket="http://wicket.apache.org">
+        <span wicket:id="branches">
+            <div wicket:id="cellsBeforeRepeater"></div>
+            <div wicket:id="node" class="tree-node">[node]</div>
+            <div wicket:id="cellsAfterRepeater"></div>
+            <span wicket:id="subtree" class="tree-subtree">[subtree]</span>
+        </span>
     </wicket:panel>
 </html>

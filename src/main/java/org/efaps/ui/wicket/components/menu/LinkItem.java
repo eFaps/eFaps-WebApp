@@ -27,7 +27,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
-import org.apache.wicket.markup.html.link.InlineFrame;
+import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.http.handler.RedirectRequestHandler;
@@ -86,12 +86,11 @@ public class LinkItem
         final UIMenuItem model = super.getModelObject();
 
         final AbstractCommand command = model.getCommand();
-        String openerId = null;
         // in case of popup is opened store the Opener in the session
         if (command.getTarget() == Target.POPUP) {
             final Opener opener = new Opener(getPage().getDefaultModel());
             ((EFapsSession) getSession()).storeOpener(opener);
-            openerId = opener.getId();
+            opener.getId();
             opener.setCommandUUID(command.getUUID());
             if (getPage() instanceof AbstractContentPage) {
                 opener.setMenuTreeKey(((AbstractContentPage) getPage()).getMenuTreeKey());
@@ -99,36 +98,18 @@ public class LinkItem
         }
         try {
             if (command.getTargetTable() != null) {
+                WebPage page;
                 if (command.getTargetStructurBrowserField() != null) {
-                    final StructurBrowserPage page = new StructurBrowserPage(model.getCommandUUID(), model
-                                    .getInstanceKey(), false);
-
-                    final InlineFrame iframe = new InlineFrame(MainPage.IFRAME_WICKETID, page);
-                    getPage().addOrReplace(iframe);
+                    page = new StructurBrowserPage(model.getCommandUUID(), model.getInstanceKey(), getPage()
+                                    .getPageReference());
                 } else {
-                    if (getPage() instanceof MainPage) {
-                        final TablePage page = new TablePage(model.getCommandUUID(), model.getInstanceKey(), false);
-                        setResponsePage(page);
-                    } else {
-                        final TablePage table = new TablePage(model.getCommandUUID(), model.getInstanceKey(), openerId);
-                        if (getPage() instanceof AbstractContentPage) {
-                            table.setMenuTreeKey(((AbstractContentPage) getPage()).getMenuTreeKey());
-                        }
-                        setResponsePage(table);
-                    }
+                    page = new TablePage(model.getCommandUUID(), model.getInstanceKey(), getPage().getPageReference());
                 }
+                setResponsePage(page);
             } else if (command.getTargetForm() != null || command.getTargetSearch() != null) {
-                if (getPage() instanceof MainPage && command.getTargetSearch() == null) {
-                    final FormPage page = new FormPage(model.getCommandUUID(), model.getInstanceKey(), false);
-                    final InlineFrame iframe = new InlineFrame(MainPage.IFRAME_WICKETID, page);
-                    getPage().addOrReplace(iframe);
-                } else {
-                    final FormPage formpage = new FormPage(model.getCommandUUID(), model.getInstanceKey(), openerId);
-                    if (getPage() instanceof AbstractContentPage) {
-                        formpage.setMenuTreeKey(((AbstractContentPage) getPage()).getMenuTreeKey());
-                    }
-                    setResponsePage(formpage);
-                }
+                final FormPage page = new FormPage(model.getCommandUUID(), model.getInstanceKey(), getPage()
+                                .getPageReference());
+                setResponsePage(page);
             } else {
                 try {
                     final List<Return> rets = model.executeEvents(ParameterValues.OTHERS, this);
@@ -204,9 +185,9 @@ public class LinkItem
         super.onComponentTagBody(_markupStream, _openTag);
 
         final StringBuilder html = new StringBuilder()
-            .append("<img src=\"/..").append(getModelObject().getImage() == null
-                ? MenuBarPanel.IMG_BLANK.getImageUrl() : getModelObject().getImage())
-            .append("\" class=\"eFapsMenuImage\"/>").append(super.getModelObject().getLabel());
+                        .append("<img src=\"/..").append(getModelObject().getImage() == null
+                                        ? MenuBarPanel.IMG_BLANK.getImageUrl() : getModelObject().getImage())
+                        .append("\" class=\"eFapsMenuImage\"/>").append(super.getModelObject().getLabel());
         replaceComponentTagBody(_markupStream, _openTag, html);
     }
 
@@ -219,12 +200,12 @@ public class LinkItem
     protected CharSequence getOnClickScript(final CharSequence _url)
     {
         final StringBuilder js = new StringBuilder()
-            .append("dijit.byId(\"").append("mainPanel")
-            .append("\").set(\"content\", dojo.create(\"iframe\", {")
-            .append("\"src\": \"").append(_url)
-            .append("\",\"style\": \"border: 0; width: 100%; height: 100%\"")
-            .append(",\"id\": \"").append(MainPage.IFRAME_ID).append("\"")
-            .append("}));");
+                        .append("dijit.byId(\"").append("mainPanel")
+                        .append("\").set(\"content\", dojo.create(\"iframe\", {")
+                        .append("\"src\": \"").append(_url)
+                        .append("\",\"style\": \"border: 0; width: 100%; height: 100%\"")
+                        .append(",\"id\": \"").append(MainPage.IFRAME_ID).append("\"")
+                        .append("}));");
         return js;
     }
 }

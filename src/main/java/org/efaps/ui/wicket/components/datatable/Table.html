@@ -1,0 +1,37 @@
+<!--
+
+  Copyright 2003 - 2012 The eFaps Team
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+  Author:          The eFaps Team
+  Revision:        $Rev: 3742 $
+  Last Changed:    $Date: 2010-02-17 08:33:20 -0500 (Wed, 17 Feb 2010) $
+  Last Changed By: $Author: jan.moxter $
+
+-->
+<wicket:panel xmlns:wicket="http://wicket.apache.org">
+    <caption wicket:id="caption"></caption>
+    <div wicket:id="topToolbars">
+        <wicket:container wicket:id="toolbars"></wicket:container>
+    </div>
+    <div wicket:id="bottomToolbars">
+        <wicket:container wicket:id="toolbars"></wicket:container>
+    </div>
+    <div wicket:id="body">
+        <div wicket:id="rows">
+            <span wicket:id="cells"><wicket:container
+                    wicket:id="cell">[cell]</wicket:container></span>
+        </div>
+    </div>
+</wicket:panel>

@@ -402,7 +402,6 @@ public class StructurBrowserTree
                     if (!(node.getChildAt(0) instanceof BogusNode)) {
                         node.removeAllChildren();
                         model.resetModel();
-                        model.addChildren(node);
                         tree.invalidateAll();
                     }
                 } else {

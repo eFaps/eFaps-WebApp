@@ -71,59 +71,8 @@ import org.slf4j.LoggerFactory;
  * @version $Id$
  */
 public class UITable
-    extends AbstractUIPageObject
+    extends AbstractUIHeaderObject
 {
-
-    /**
-     * This enum holds the Values used as part of the key for the UserAttributes
-     * or SessionAttribute witch belong to a TableModel.
-     */
-    public static enum UserCacheKey {
-        /**
-         * Key for UserAttributes used for the order of Columns.
-         */
-        COLUMNORDER("columnOrder"),
-        /**
-         * Key  for UserAttributes used for the widths of Columns.
-         */
-        COLUMNWIDTH("columnWidths"),
-        /**
-         * Key for UserAttributes used for the sort direction.
-         */
-        SORTDIRECTION("sortDirection"),
-        /**
-         * Key for UserAttributes used for the Column.
-         */
-        SORTKEY("sortKey"),
-        /**
-         * Key for SessionAttribute used for the filter of a table.
-         */
-        FILTER("filter");
-
-        /**
-         * Value of the user attribute.
-         */
-        private final String value;
-
-        /**
-         * Constructor setting the instance variable.
-         *
-         * @param _value Value
-         */
-        private UserCacheKey(final String _value)
-        {
-            this.value = _value;
-        }
-
-        /**
-         * @return the value
-         */
-        public String getValue()
-        {
-            return this.value;
-        }
-    }
-
     /**
      * Logging instance used in this class.
      */
@@ -149,15 +98,6 @@ public class UITable
      * @see #execute4InstanceOld()
      */
     private final Map<String, Filter> filterTempCache = new HashMap<String, Filter>();
-    /**
-     * The instance Array holds the Label for the Columns.
-     */
-    private final List<UITableHeader> headers = new ArrayList<UITableHeader>();
-
-    /**
-     * This instance variable sores if the Table should show CheckBodes.
-     */
-    private boolean showCheckBoxes;
 
     /**
      * The instance variable stores the string of the sort direction.
@@ -176,24 +116,11 @@ public class UITable
     private String sortKey = null;
 
     /**
-     * This instance variable stores the Id of the table. This int is used to
-     * distinguish tables in case that there are more than one table on one
-     * page.
-     */
-    private int tableId = 1;
-
-    /**
      * The instance variable stores the UUID for the table which must be shown.
      *
      * @see #getTable
      */
     private UUID tableUUID;
-
-    /**
-     * This instance variable stores if the Widths of the Columns are set by
-     * UserAttributes.
-     */
-    private boolean userWidths = false;
 
     /**
      * All evaluated rows of this table are stored in this list.
@@ -206,17 +133,6 @@ public class UITable
      * Thie Row is used in case of edit to create new empty rows.
      */
     private UIRow emptyRow;
-
-    /**
-     * This instance variable stores the total weight of the widths of the
-     * Cells. (Sum of all widths)
-     */
-    private int widthWeight;
-
-    /**
-     * The size of the current values list including filtereing etc. Update on filter events etc.
-     */
-    private int size;
 
     /**
      * Constructor setting the parameters.
@@ -274,7 +190,7 @@ public class UITable
 
         final AbstractCommand command = getCommand();
         if (command == null) {
-            this.showCheckBoxes = false;
+            setShowCheckBoxes(false);
         } else {
             // set target table
             if (command.getTargetTable() != null) {
@@ -306,7 +222,7 @@ public class UITable
                 this.sortDirection = command.getTargetTableSortDirection();
             }
 
-            this.showCheckBoxes = command.isTargetShowCheckBoxes();
+            setShowCheckBoxes(command.isTargetShowCheckBoxes());
             // get the User specific Attributes if exist overwrite the defaults
             try {
                 if (Context.getThreadContext().containsUserAttribute(
@@ -451,7 +367,7 @@ public class UITable
                 } else if (uiTableHeader.isFilterRequired()) {
                     this.filters.put(uiTableHeader, new Filter(uiTableHeader));
                 }
-                this.headers.add(uiTableHeader);
+                getHeaders().add(uiTableHeader);
                 if (!field.isFixedWidth()) {
                     if (userWidthList != null && userWidthList.size() > i) {
                         if (isShowCheckBoxes() && userWidthList.size() > i + 1) {
@@ -460,7 +376,7 @@ public class UITable
                             uiTableHeader.setWidth(userWidthList.get(i));
                         }
                     }
-                    this.widthWeight += field.getWidth();
+                    setWidthWeight(getWidthWeight() + field.getWidth());
                 }
                 i++;
             }
@@ -604,7 +520,7 @@ public class UITable
                 final UITableHeader headermodel = new UITableHeader(field, sortdirection, null);
                 headermodel.setSortable(false);
                 headermodel.setFilter(false);
-                this.headers.add(headermodel);
+                getHeaders().add(headermodel);
                 if (!field.isFixedWidth()) {
                     if (userWidthList != null) {
                         if (isShowCheckBoxes()) {
@@ -613,7 +529,7 @@ public class UITable
                             headermodel.setWidth(userWidthList.get(i));
                         }
                     }
-                    this.widthWeight += field.getWidth();
+                    setWidthWeight(getWidthWeight() + field.getWidth());
                 }
                 i++;
             }
@@ -788,17 +704,6 @@ public class UITable
         }
     }
 
-
-    /**
-     * This is the getter method for the instance variable {@link #headers}.
-     *
-     * @return value of instance variable {@link #headers}
-     */
-    public List<UITableHeader> getHeaders()
-    {
-        return this.headers;
-    }
-
     /**
      * This is the getter method for the instance variable
      * {@link #sortDirection}.
@@ -873,39 +778,6 @@ public class UITable
     }
 
     /**
-     * This is the getter method for the instance variable {@link #tableId}.
-     *
-     * @return value of instance variable {@link #tableId}
-     */
-    public int getTableId()
-    {
-        return this.tableId * 100;
-    }
-
-    /**
-     * This is the setter method for the instance variable {@link #tableId}.
-     *
-     * @param _tableId the tableId to set
-     */
-    public void setTableId(final int _tableId)
-    {
-        this.tableId = _tableId;
-    }
-
-    /**
-     * This method generates the Key for a UserAttribute by using the UUID of
-     * the Command and the given UserAttributeKey, so that for every Table a
-     * unique key for sorting etc, is created.
-     *
-     * @param _key UserAttributeKey the Key is wanted
-     * @return String with the key
-     */
-    public String getCacheKey(final UserCacheKey _key)
-    {
-        return super.getCommandUUID() + "-" + _key.getValue();
-    }
-
-    /**
      * This method looks if for this TableModel a UserAttribute for the sorting
      * of the Columns exist. If they exist the Fields will be sorted as defined
      * by the User. If no definition of the User exist the Original default
@@ -950,46 +822,6 @@ public class UITable
         return ret;
     }
 
-    /**
-     * This method retieves the UserAttribute for the ColumnWidths and evaluates
-     * the string.
-     *
-     * @return List with the values of the columns in Pixel
-     */
-    private List<Integer> getUserWidths()
-    {
-        List<Integer> ret = null;
-        try {
-            if (Context.getThreadContext().containsUserAttribute(
-                            getCacheKey(UITable.UserCacheKey.COLUMNWIDTH))) {
-                this.userWidths = true;
-                final String widths = Context.getThreadContext().getUserAttribute(
-                                getCacheKey(UITable.UserCacheKey.COLUMNWIDTH));
-
-                final StringTokenizer tokens = new StringTokenizer(widths, ";");
-
-                ret = new ArrayList<Integer>();
-
-                while (tokens.hasMoreTokens()) {
-                    final String token = tokens.nextToken();
-                    for (int i = 0; i < token.length(); i++) {
-                        if (!Character.isDigit(token.charAt(i))) {
-                            final int width = Integer.parseInt(token.substring(0, i));
-                            ret.add(width);
-                            break;
-                        }
-                    }
-                }
-            }
-        } catch (final NumberFormatException e) {
-            // we don't throw an error because this are only Usersettings
-            UITable.LOG.error("error during the retrieve of UserAttributes in getUserWidths()", e);
-        } catch (final EFapsException e) {
-            // we don't throw an error because this are only Usersettings
-            UITable.LOG.error("error during the retrieve of UserAttributes in getUserWidths()", e);
-        }
-        return ret;
-    }
 
     /**
      * This is the getter method for the instance variable {@link #values}.
@@ -1018,65 +850,21 @@ public class UITable
         } else {
             ret = this.values;
         }
-        this.size = ret.size();
+        setSize(ret.size());
         return ret;
     }
 
-    /**
-     * This is the getter method for the instance variable {@link #widthWeight}.
-     *
-     * @return value of instance variable {@link #widthWeight}
-     */
-    public int getWidthWeight()
-    {
-        return this.widthWeight;
-    }
+
 
     /**
      * Are the values of the Rows filtered or not.
      *
      * @return true if filtered, else false
      */
+    @Override
     public boolean isFiltered()
     {
         return !this.filters.isEmpty();
-    }
-
-    /**
-     * @return <i>true</i> if the check boxes must be shown, other <i>false</i>
-     *         is returned.
-     * @see #showCheckBoxes
-     */
-    public boolean isShowCheckBoxes()
-    {
-        boolean ret;
-        if (super.isSubmit() && !isCreateMode()) {
-            ret = true;
-        } else {
-            ret = this.showCheckBoxes;
-        }
-        return ret;
-    }
-
-    /**
-     * This is the setter method for the instance variable
-     * {@link #showCheckBoxes}.
-     *
-     * @param _showCheckBoxes the showCheckBoxes to set
-     */
-    public void setShowCheckBoxes(final boolean _showCheckBoxes)
-    {
-        this.showCheckBoxes = _showCheckBoxes;
-    }
-
-    /**
-     * This is the getter method for the instance variable {@link #userWidths}.
-     *
-     * @return value of instance variable {@link #userWidths}
-     */
-    public boolean isUserSetWidth()
-    {
-        return this.userWidths;
     }
 
     /**
@@ -1099,18 +887,8 @@ public class UITable
     {
         super.setInitialized(false);
         this.values.clear();
-        this.headers.clear();
+        getHeaders().clear();
         getHiddenCells().clear();
-    }
-
-    /**
-     * In create or edit mode this Table is editable.
-     *
-     * @return is this Table editable.
-     */
-    public boolean isEditable()
-    {
-        return isCreateMode() || isEditMode();
     }
 
     /**
@@ -1124,7 +902,7 @@ public class UITable
         final StringBuilder columnOrder = new StringBuilder();
         while (tokens.hasMoreTokens()) {
             final String markupId = tokens.nextToken();
-            for (final UITableHeader header : this.headers) {
+            for (final UITableHeader header : getHeaders()) {
                 if (markupId.equals(header.getMarkupId())) {
                     columnOrder.append(header.getFieldName()).append(";");
                     break;
@@ -1139,12 +917,6 @@ public class UITable
             UITable.LOG.error("error during the setting of UserAttributes", e);
         }
     }
-
-    public int getSize()
-    {
-        return this.size;
-    }
-
 
     /**
      * This is the setter method for the instance variable {@link #tableUUID}.

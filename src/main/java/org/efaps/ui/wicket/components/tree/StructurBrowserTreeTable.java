@@ -20,56 +20,34 @@
 
 package org.efaps.ui.wicket.components.tree;
 
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeNode;
-
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
-import org.apache.wicket.Page;
-import org.apache.wicket.RestartResponseException;
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.extensions.markup.html.tree.ITreeState;
-import org.apache.wicket.extensions.markup.html.tree.table.IColumn;
-import org.apache.wicket.extensions.markup.html.tree.table.TreeTable;
-import org.apache.wicket.markup.ComponentTag;
-import org.apache.wicket.markup.html.WebComponent;
-import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.extensions.markup.html.repeater.tree.NestedTree;
+import org.apache.wicket.extensions.markup.html.repeater.tree.Node;
+import org.apache.wicket.extensions.markup.html.repeater.tree.theme.HumanTheme;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.request.resource.ResourceReference;
-import org.efaps.admin.dbproperty.DBProperties;
-import org.efaps.admin.ui.AbstractCommand.Target;
-import org.efaps.admin.ui.Menu;
-import org.efaps.admin.ui.field.Field.Display;
-import org.efaps.db.Instance;
-import org.efaps.ui.wicket.EFapsSession;
-import org.efaps.ui.wicket.behaviors.AbstractAjaxCallBackBehavior;
-import org.efaps.ui.wicket.components.LabelComponent;
-import org.efaps.ui.wicket.components.RecentObjectLink;
 import org.efaps.ui.wicket.components.date.UnnestedDatePickers;
+import org.efaps.ui.wicket.components.table.cell.CellPanel;
 import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.cell.UIStructurBrowserTableCell;
-import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
+import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
-import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
-import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
-import org.efaps.ui.wicket.util.EFapsKey;
-import org.efaps.util.EFapsException;
 
 /**
  * This class renders a TreeTable, which loads the children asynchron.<br>
- * The items of the tree consists of junction link, icon and label. An additional arrow showing the direction of the
- * child can be rendered depending on a Tristate. The table shows the columns as defined in the model.
+ * The items of the tree consists of junction link, icon and label. An
+ * additional arrow showing the direction of the child can be rendered depending
+ * on a Tristate. The table shows the columns as defined in the model.
  *
  * @author The eFaps Team
- * @version $Id$
+ * @version $Id: StructurBrowserTreeTable.java 7534 2012-05-19 09:32:04Z
+ *          jan@moxter.net $
  */
 public class StructurBrowserTreeTable
-    extends TreeTable
+    extends NestedTree<UIStructurBrowser>
 {
 
     /**
@@ -104,472 +82,82 @@ public class StructurBrowserTreeTable
      */
     public StructurBrowserTreeTable(final String _wicketId,
                                     final IModel<UIStructurBrowser> _model,
-                                    final IColumn[] _columns,
                                     final boolean _parentLink,
                                     final UnnestedDatePickers _datePickers)
     {
-        super(_wicketId, _model.getObject().getTreeModel(), _columns);
+        super(_wicketId, new StructurBrowserProvider(_model));
+        add(new HumanTheme());
         this.add(StaticHeaderContrBehavior.forCss(StructurBrowserTreeTable.CSS));
         this.parentLink = _parentLink;
-
-        setRootLess(!(_model.getObject().isEditable()));
-
-        final ITreeState treeState = getTreeState();
-
-        treeState.addTreeStateListener(new AsyncronTreeUpdateListener());
-
-        final DefaultMutableTreeNode root = (DefaultMutableTreeNode) getModelObject().getRoot();
-        if (!isRootLess() && _model.getObject().isForceExpanded()) {
-            getTreeState().expandNode(root);
-        }
-        expandChildren(root);
         this.datePickers = _datePickers;
     }
 
-    /**
-     * Recursive method that expands all children that should be expanded.
-     *
-     * @param _parent parent
-     */
-    private void expandChildren(final DefaultMutableTreeNode _parent)
-    {
-        for (int i = 0; i < _parent.getChildCount(); i++) {
-            final DefaultMutableTreeNode child = (DefaultMutableTreeNode) _parent.getChildAt(i);
-            if (!(child instanceof UIStructurBrowser.BogusNode)) {
-                final UIStructurBrowser struturBrowser = (UIStructurBrowser) child.getUserObject();
-                if (struturBrowser.isExpanded()) {
-                    getTreeState().expandNode(child);
-                    expandChildren(child);
-                }
-            }
-        }
-    }
-
-    /**
-     * @return null
-     */
     @Override
-    protected ResourceReference getCSS()
+    protected Component newContentComponent(final String _wicketId,
+                                            final IModel<UIStructurBrowser> _model)
     {
-        // return null here and set a own HeaderContributor, to use eFaps own
-        // CSSResourceReference
-        return null;
+        final UIStructurBrowser strucBrws = _model.getObject();
+        final UIStructurBrowserTableCell uicell = strucBrws.getColumns().get(strucBrws.getBrowserFieldIndex());
+        return  new CellPanel(_wicketId, new UIModel<UITableCell>(uicell),
+                        false, strucBrws, 0);
     }
 
+
+
     /**
-     * Method is called to create a new Icon.
-     *
-     * @param _parent parent node
-     * @param _wicketId wicket id for the new node
-     * @param _node related TreeNode
-     * @return Component
-     */
+    * Create a new component for a node.
+    *
+    * @param _wicketId
+    *            the component id
+    * @param _model
+    *            the model containing the node
+    * @return created component
+    */
     @Override
-    protected Component newNodeIcon(final MarkupContainer _parent,
-                                    final String _wicketId,
-                                    final TreeNode _node)
+    public Component newNodeComponent(final String _wicketId,
+                                      final IModel<UIStructurBrowser> _model)
     {
-        final UIStructurBrowser model = (UIStructurBrowser) ((DefaultMutableTreeNode) _node).getUserObject();
-        Component ret;
-        if (model.getImage() == null) {
-            ret = super.newNodeIcon(_parent, _wicketId, _node);
-        } else {
-            ret = new WebMarkupContainer(_wicketId)
-            {
-
-                private static final long serialVersionUID = 1L;
-
-                @Override
-                protected void onComponentTag(final ComponentTag _tag)
-                {
-                    super.onComponentTag(_tag);
-                    _tag.put("style", "background-image: url('" + model.getImage() + "')");
-                }
-            };
-        }
-        return ret;
-    }
-
-    /**
-     * Method to add a new Fragment.
-     *
-     * @param _parent parent node
-     * @param _wicketId wicket id for the new node
-     * @param _node related TreeNode
-     * @param _level level
-     * @param _nodeCallback callback
-     * @return Component
-     */
-    @Override
-    protected Component newTreePanel(final MarkupContainer _parent,
-                                     final String _wicketId,
-                                     final TreeNode _node,
-                                     final int _level,
-                                     final IRenderNodeCallback _nodeCallback)
-    {
-        try {
-            return new StructurBrowserTreeFragment(_wicketId, _node, _level, _nodeCallback);
-        } catch (final EFapsException e) {
-            throw new RestartResponseException(new ErrorPage(e));
-        }
-    }
-
-    /**
-     * Method creates a new node .
-     *
-     * @param _parent parent node
-     * @param _wicketId wicket id for the new node
-     * @param _node related TreeNode
-     * @return MarkupContainer
-     */
-    @Override
-    protected MarkupContainer newNodeLink(final MarkupContainer _parent,
-                                          final String _wicketId,
-                                          final TreeNode _node)
-    {
-        MarkupContainer ret;
-        if (this.parentLink) {
-            ret = new WebMarkupContainer(_wicketId)
-            {
-
-                private static final long serialVersionUID = 1L;
-
-                @Override
-                protected void onComponentTag(final ComponentTag _tag)
-                {
-                    _tag.setName("a");
-                    _tag.put("class", "node-link");
-                    _tag.put("href", "#");
-                    super.onComponentTag(_tag);
-                }
-
-                @Override
-                protected void onBeforeRender()
-                {
-                    this.add(new AjaxParentCallBackBehavior(_node));
-                    super.onBeforeRender();
-                }
-            };
-        } else {
-            ret = newLink(_parent, _wicketId, new ILinkCallback()
-            {
-
-                private static final long serialVersionUID = 1L;
-
-                public void onClick(final AjaxRequestTarget _target)
-                {
-                    Instance instance = null;
-                    final UIStructurBrowser model = (UIStructurBrowser) ((DefaultMutableTreeNode) _node)
-                                    .getUserObject();
-
-                    if (model.getInstanceKey() != null) {
-                        Menu menu = null;
-                        try {
-                            instance = model.getInstance();
-                            menu = Menu.getTypeTreeMenu(instance.getType());
-                        } catch (final EFapsException e) {
-                            throw new RestartResponseException(new ErrorPage(e));
-                        }
-                        if (menu == null) {
-                            final EFapsException excep = new EFapsException(this.getClass(), "newNodeLink.noTreeMenu",
-                                            instance.getType().getName());
-                            throw new RestartResponseException(new ErrorPage(excep));
-                        }
-                        Page page;
-                        try {
-                            if (model.getTarget() == Target.POPUP) {
-                                page = new ContentContainerPage(menu.getUUID(), model.getInstanceKey());
-                            } else {
-                                page = new ContentContainerPage(menu.getUUID(), model
-                                                .getInstanceKey(),null, true);
-                            }
-                        } catch (final EFapsException e) {
-                            page = new ErrorPage(e);
-                        }
-                        setResponsePage(page);
-                    }
-                }
-            });
-        }
-        return ret;
-    }
-
-    @Override
-    protected ResourceReference getNodeIcon(final TreeNode _node)
-    {
-        final ResourceReference ret;
-        if (!_node.getAllowsChildren()) {
-            ret = getItem();
-        } else {
-            if (isNodeExpanded(_node)) {
-                ret = getFolderOpen();
-            } else {
-                ret = getFolderClosed();
-            }
-        }
-        return ret;
-    }
-
-    /**
-     * This class renders a Fragment of the TreeTable, representing a Node including the junctionlink, the icon etc.
-     *
-     */
-    private class StructurBrowserTreeFragment
-        extends Panel
-    {
-
-        /**
-         * Needed for serialization.
-         */
-        private static final long serialVersionUID = 1L;
-
-        /**
-         * @param _wicketId wicket id for this component
-         * @param _node node
-         * @param _level level
-         * @param _nodeCallback callback
-         * @throws EFapsException on error
-         */
-        public StructurBrowserTreeFragment(final String _wicketId,
-                                           final TreeNode _node,
-                                           final int _level,
-                                           final IRenderNodeCallback _nodeCallback)
-            throws EFapsException
-        {
-            super(_wicketId);
-            final UIStructurBrowser uiStru = (UIStructurBrowser) ((DefaultMutableTreeNode) _node).getUserObject();
-
-            add(newIndentation(this, "indent", _node, _level));
-
-            if (uiStru.isForceExpanded()) {
-                final WebMarkupContainer junctionLink = new WebMarkupContainer("link")
-                {
-
-                    private static final long serialVersionUID = 1L;
-
-                    /**
-                     * @see org.apache.wicket.Component#onComponentTag(org.apache.wicket.markup.ComponentTag )
-                     */
-                    @Override
-                    protected void onComponentTag(final ComponentTag _tag)
-                    {
-                        super.onComponentTag(_tag);
-                        _tag.put("onclick", "return false");
-                    }
-                };
-                add(junctionLink);
-                junctionLink.add(newJunctionImage(junctionLink, "image", _node));
-            } else {
-                add(newJunctionLink(this, "link", "image", _node));
-            }
-            final WebComponent direction = new WebComponent("direction");
-            add(direction);
-
-            if (uiStru == null || uiStru.getDirection() == null) {
-                direction.setVisible(false);
-            } else if (uiStru.getDirection()) {
-                direction.add(AttributeModifier.append("class", "directionDown"));
-            } else {
-                direction.add(AttributeModifier.append("class", "directionUp"));
-            }
-            final MarkupContainer nodeLink;
-            if (uiStru.isRoot()) {
-                nodeLink = new WebMarkupContainer("nodeLink");
-                nodeLink.add(new Label("label", DBProperties.getProperty(uiStru.getCommand().getName()
-                                + ".StructurBrowser.root")));
-                add(new WebComponent("rowId").setVisible(false));
-                add(new WebComponent("level").setVisible(false));
-                add(new WebComponent("allowChilds").setVisible(false));
-            } else {
-                final UIStructurBrowserTableCell uiObject = uiStru.getColumnValue(uiStru.getBrowserFieldIndex());
-
-                if ((uiStru.isEditMode() || uiStru.isCreateMode()) && uiObject.getDisplay().equals(Display.EDITABLE)) {
-                    nodeLink = new WebMarkupContainer("nodeLink");
-                    nodeLink.add(new TreeCellPanel("label", _node, uiStru.getBrowserFieldIndex(),
-                                    StructurBrowserTreeTable.this.parentLink,
-                                    StructurBrowserTreeTable.this.datePickers));
-                } else {
-                    if (uiObject.getReference() == null
-                                    || Target.MODAL.equals(uiObject.getParent().getTarget())) {
-                        nodeLink = new WebMarkupContainer("nodeLink")
-                        {
-
-                            private static final long serialVersionUID = 1L;
-
-                            @Override
-                            protected void onComponentTag(final ComponentTag _tag)
-                            {
-                                _tag.setName("span");
-                                super.onComponentTag(_tag);
-                            }
-
-                        };
-                    } else {
-                        nodeLink = newNodeLink(this, "nodeLink", _node);
-                    }
-                    nodeLink.add(new LabelComponent("label", new UIModel<UIStructurBrowserTableCell>(uiObject)));
-                }
-
-                final WebComponent rowId = new WebComponent("rowId")
-                {
-
-                    /**
-                     * Needed for serialization.
-                     */
-                    private static final long serialVersionUID = 1L;
-
-                    /**
-                     * @see org.apache.wicket.Component#onComponentTag(org.apache.wicket.markup.ComponentTag)
-                     */
-                    @Override
-                    protected void onComponentTag(final ComponentTag _tag)
-                    {
-                        super.onComponentTag(_tag);
-                        if (uiObject.getUserinterfaceId() == null) {
-                            final AbstractUIPageObject uiPageObject = (AbstractUIPageObject) getPage()
-                                            .getDefaultModelObject();
-                            uiObject.setUserinterfaceId(uiPageObject.getNewRandom());
-
-                            try {
-                                uiPageObject.getUiID2Oid()
-                                                .put(uiObject.getUserinterfaceId(),
-                                                                uiObject.getInstance() == null ? null : uiObject
-                                                                                .getInstance().getOid());
-                            } catch (final EFapsException e) {
-                                throw new RestartResponseException(new ErrorPage(e));
-                            }
-                        }
-                        _tag.put("name", EFapsKey.TABLEROW_NAME.getKey());
-                        _tag.put("value", uiObject.getUserinterfaceId());
-                        _tag.put("type", "hidden");
-                    }
-                };
-                this.add(rowId);
-
-                final WebComponent type = new WebComponent("allowChilds")
-                {
-
-                    /**
-                     * Needed for serialization.
-                     */
-                    private static final long serialVersionUID = 1L;
-
-                    /**
-                     * @see org.apache.wicket.Component#onComponentTag(org.apache.wicket.markup.ComponentTag)
-                     */
-                    @Override
-                    protected void onComponentTag(final ComponentTag _tag)
-                    {
-                        super.onComponentTag(_tag);
-
-                        _tag.put("name", EFapsKey.STRUCBRWSR_ALLOWSCHILDS.getKey());
-                        _tag.put("value", _node.getAllowsChildren());
-                        _tag.put("type", "hidden");
-                    }
-                };
-                this.add(type);
-
-                final WebComponent level = new WebComponent("level")
-                {
-
-                    /**
-                     * Needed for serialization.
-                     */
-                    private static final long serialVersionUID = 1L;
-
-                    @Override
-                    protected void onComponentTag(final ComponentTag _tag)
-                    {
-                        super.onComponentTag(_tag);
-
-                        _tag.put("name", EFapsKey.STRUCBRWSR_LEVEL.getKey());
-                        _tag.put("value", _level);
-                        _tag.put("type", "hidden");
-                    }
-                };
-                this.add(level);
-            }
-            add(nodeLink);
-            nodeLink.add(newNodeIcon(nodeLink, "icon", _node));
-        }
-    }
-
-    /**
-     * Class is used to call an event from inside the parent.
-     *
-     */
-    public class AjaxParentCallBackBehavior
-        extends AbstractAjaxCallBackBehavior
-    {
-
-        /**
-         * Needed for serialization.
-         */
-        private static final long serialVersionUID = 1L;
-
-        /**
-         * Node belonging to this call back behavior.
-         */
-        private final TreeNode node;
-
-        /**
-         * Constructor.
-         *
-         * @param _node current node
-         */
-        public AjaxParentCallBackBehavior(final TreeNode _node)
-        {
-            super("onClick", Target.PARENT);
-            this.node = _node;
-        }
-
-        /**
-         * Method is executed on mouseup.
-         *
-         * @param _target AjaxRequestTarget
-         */
-        @Override
-        protected void onEvent(final AjaxRequestTarget _target)
+        return new Node<UIStructurBrowser>(_wicketId, this, _model)
         {
 
-            final UIStructurBrowser uiRootObject = (UIStructurBrowser) ((DefaultMutableTreeNode)
-                            ((DefaultMutableTreeNode) this.node).getRoot()).getUserObject();
-            try {
-                final RecentObjectLink recent = new RecentObjectLink(uiRootObject);
-                ((EFapsSession) getSession()).addRecent(recent);
-            } catch (final EFapsException e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            protected Component createContent(final String _wicketId,
+                                              final IModel<UIStructurBrowser> _model)
+            {
+                return newContentComponent(_wicketId, _model);
             }
 
-            Instance instance = null;
-            final UIStructurBrowser uiObject = (UIStructurBrowser) ((DefaultMutableTreeNode) this.node).getUserObject();
-            if (uiObject.getInstanceKey() != null) {
-                Menu menu = null;
-                try {
-                    instance = uiObject.getInstance();
-                    menu = Menu.getTypeTreeMenu(instance.getType());
-                } catch (final EFapsException e) {
-                    throw new RestartResponseException(new ErrorPage(e));
+            /*
+             * (non-Javadoc)
+             * @see org.apache.wicket.extensions.markup.html.repeater.tree.Node#
+             * createJunctionComponent(java.lang.String)
+             */
+            @Override
+            protected MarkupContainer createJunctionComponent(final String _id)
+            {
+                final MarkupContainer ret = super.createJunctionComponent(_id);
+                final UIStructurBrowser strucBrws = (UIStructurBrowser) getDefaultModelObject();
+                if (strucBrws.getLevel() > 0) {
+                    ret.add(AttributeModifier.append("style", "margin-left:" + 15 * (strucBrws.getLevel() - 1) + "px"));
                 }
-                if (menu == null) {
-                    final EFapsException excep = new EFapsException(this.getClass(), "newNodeLink.noTreeMenu",
-                                    instance.getType().getName());
-                    throw new RestartResponseException(new ErrorPage(excep));
-                }
-                Page page;
-                try {
-                    if (uiObject.getTarget() == org.efaps.admin.ui.AbstractCommand.Target.POPUP) {
-                        page = new ContentContainerPage(menu.getUUID(), uiObject.getInstanceKey());
-                    } else {
-                        page = new ContentContainerPage(menu.getUUID(),
-                                        uiObject.getInstanceKey(),null, true);
-                    }
-                } catch (final EFapsException e) {
-                    page = new ErrorPage(e);
-                }
-                setResponsePage(page);
+                return ret;
             }
-        }
+        };
+    }
+
+    /**
+     * Create a new subtree.
+     *
+     * @param id component id
+     * @param model the model of the new subtree
+     * @return the created component
+     */
+    @Override
+    public Component newSubtree(final String _wicketId,
+                                final IModel<UIStructurBrowser> _model)
+    {
+        return new SubElement(_wicketId, this, _model);
     }
 }

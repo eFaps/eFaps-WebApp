@@ -92,7 +92,7 @@ import org.slf4j.LoggerFactory;
  * @version $Id$
  */
 public class UIStructurBrowser
-    extends AbstractUIPageObject
+    extends AbstractUIHeaderObject
 {
     /**
      * Enum is used to set for this UIStructurBrowser which status of execution
@@ -214,12 +214,6 @@ public class UIStructurBrowser
      */
     private String browserFieldName;
 
-
-    /**
-     * Holds the headers for the Table, in case of a TableTree.
-     */
-    private final List<UITableHeader> headers = new ArrayList<UITableHeader>();
-
     /**
      * Holds the SortDirection for the Headers.
      */
@@ -277,11 +271,29 @@ public class UIStructurBrowser
      */
     private boolean forceExpanded = false;
 
-    /**
-     * Stores if the StructurBrowser should show CheckBoxes.
-     */
-    private boolean showCheckBoxes = false;
+    private int level = 0;
 
+
+    /**
+     * Getter method for the instance variable {@link #level}.
+     *
+     * @return value of instance variable {@link #level}
+     */
+    public int getLevel()
+    {
+        return this.level;
+    }
+
+
+    /**
+     * Setter method for instance variable {@link #level}.
+     *
+     * @param _level value for instance variable {@link #level}
+     */
+    private void setLevel(final int _level)
+    {
+        this.level = _level;
+    }
 
     /**
      * Constructor.
@@ -357,8 +369,10 @@ public class UIStructurBrowser
         } else {
             uuid = _strucBrwsr.getCommandUUID();
         }
-        return new UIStructurBrowser(uuid, _instance == null ? null : _instance.getKey(), false,
+        final UIStructurBrowser ret = new UIStructurBrowser(uuid, _instance == null ? null : _instance.getKey(), false,
                         _strucBrwsr.getSortDirection());
+        ret.setLevel(getLevel() + 1);
+        return ret;
     }
 
     /**
@@ -373,7 +387,7 @@ public class UIStructurBrowser
         if ((command != null) && (command.getTargetTable() != null)) {
             this.tableuuid = command.getTargetTable().getUUID();
             this.browserFieldName = command.getTargetStructurBrowserField();
-            this.showCheckBoxes = command.isTargetShowCheckBoxes();
+            setShowCheckBoxes(command.isTargetShowCheckBoxes());
         } else if (getInstance() != null) {
             final String tmplabel = Menu.getTypeTreeMenu(getInstance().getType()).getLabel();
             this.valueLabel = DBProperties.getProperty(tmplabel);
@@ -424,7 +438,7 @@ public class UIStructurBrowser
      * @param _expand   inside an expand
      */
     protected void executeTree(final Map<Instance, Boolean> _map,
-                             final boolean _expand)
+                               final boolean _expand)
     {
         try {
             final List<Instance> instances = new ArrayList<Instance>();
@@ -476,9 +490,11 @@ public class UIStructurBrowser
             for (final Instance inst : _map.keySet()) {
                 instances.add(inst);
             }
+            final List<Integer> userWidthList = getUserWidths();
             // evaluate for all expressions in the table
             final MultiPrintQuery multi = new MultiPrintQuery(instances);
             Type type = instances.isEmpty() ? null : instances.get(0).getType();
+            int i = 0;
             for (final Field field : getTable().getFields()) {
                 Attribute attr = null;
                 if (field.hasAccess(getMode(), getInstance())
@@ -499,9 +515,21 @@ public class UIStructurBrowser
                         attr = type.getAttribute(field.getAttribute());
                     }
                     if (isRoot()) {
-                        this.headers.add(new UITableHeader(field, this.sortDirection, attr));
+                        final UITableHeader uiTableHeader = new UITableHeader(field, this.sortDirection, attr);
+                        getHeaders().add(uiTableHeader);
+                        if (!field.isFixedWidth()) {
+                            if (userWidthList != null && userWidthList.size() > i) {
+                                if (isShowCheckBoxes() && userWidthList.size() > i + 1) {
+                                    uiTableHeader.setWidth(userWidthList.get(i + 1));
+                                } else {
+                                    uiTableHeader.setWidth(userWidthList.get(i));
+                                }
+                            }
+                            setWidthWeight(getWidthWeight() + field.getWidth());
+                        }
                     }
                 }
+                i++;
             }
             boolean row4Create = false;
             if (!multi.execute()) {
@@ -823,10 +851,9 @@ public class UIStructurBrowser
      *            added
      */
     @SuppressWarnings("unchecked")
-    public void addChildren(final DefaultMutableTreeNode _parent)
+    public void addChildren()
     {
         setExecutionStatus(UIStructurBrowser.ExecutionStatus.ADDCHILDREN);
-        _parent.removeAllChildren();
         List<Return> ret;
         try {
             ret = getObject4Event().executeEvents(EventType.UI_TABLE_EVALUATE, ParameterValues.INSTANCE, getInstance(),
@@ -838,7 +865,6 @@ public class UIStructurBrowser
             } else {
                 executeTreeTable(map, false);
             }
-            addNode(_parent, this.childs);
         } catch (final EFapsException e) {
             throw new RestartResponseException(new ErrorPage(e));
         }
@@ -948,7 +974,7 @@ public class UIStructurBrowser
      *
      * @return value of instance variable {@link #parent}
      */
-    private boolean isParent()
+    public boolean isParent()
     {
         return this.parent;
     }
@@ -1156,17 +1182,6 @@ public class UIStructurBrowser
     public String getBrowserFieldName()
     {
         return this.browserFieldName;
-    }
-
-    /**
-     * This is the getter method for the instance variable {@link #headers}.
-     *
-     * @return value of instance variable {@link #headers}
-     */
-
-    public List<UITableHeader> getHeaders()
-    {
-        return this.headers;
     }
 
     /**
@@ -1383,42 +1398,6 @@ public class UIStructurBrowser
     public boolean isRoot()
     {
         return this.root;
-    }
-
-    /**
-     * @return <i>true</i> if the check boxes must be shown, other <i>false</i>
-     *         is returned.
-     * @see #showCheckBoxes
-     */
-    public boolean isShowCheckBoxes()
-    {
-        boolean ret;
-        if (super.isSubmit() && !isCreateMode()) {
-            ret = true;
-        } else {
-            ret = this.showCheckBoxes;
-        }
-        return ret;
-    }
-
-    /**
-     * Setter method for instance variable {@link #showCheckBoxes}.
-     *
-     * @param _showCheckBoxes value for instance variable {@link #showCheckBoxes}
-     */
-    protected void setShowCheckBoxes(final boolean _showCheckBoxes)
-    {
-        this.showCheckBoxes = _showCheckBoxes;
-    }
-
-    /**
-     * In create or edit mode this StructurBrowser is editable.
-     *
-     * @return is this StructurBrowser editable.
-     */
-    public boolean isEditable()
-    {
-        return isCreateMode() || isEditMode();
     }
 
     /**
