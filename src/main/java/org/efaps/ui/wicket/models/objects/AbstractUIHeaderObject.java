@@ -26,6 +26,7 @@ import java.util.StringTokenizer;
 import java.util.UUID;
 
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.efaps.admin.ui.AbstractCommand.SortDirection;
 import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
@@ -139,6 +140,22 @@ public abstract class AbstractUIHeaderObject
      * The size of the current values list including filtereing etc. Update on filter events etc.
      */
     private int size;
+
+    /**
+     * The instance variable stores the string of the sort direction.
+     *
+     * @see #getSortDirection
+     * @see #setSortDirection
+     */
+    private SortDirection sortDirection = SortDirection.NONE;
+
+    /**
+     * The instance variable stores the string of the sort key.
+     *
+     * @see #getSortKey
+     * @see #setSortKey
+     */
+    private  String sortKey = null;
 
     /**
      * @param _commandUUID
@@ -329,6 +346,38 @@ public abstract class AbstractUIHeaderObject
     }
 
     /**
+     * Getter method for the instance variable {@link #sortDirection}.
+     *
+     * @return value of instance variable {@link #sortDirection}
+     */
+    public SortDirection getSortDirection()
+    {
+        return this.sortDirection;
+    }
+
+    /**
+     * Method to set he sort direction.
+     *
+     * @param _sortdirection sort direction to set
+     */
+    public void setSortDirection(final SortDirection _sortdirection)
+    {
+        this.sortDirection = _sortdirection;
+        try {
+            Context.getThreadContext().setUserAttribute(getCacheKey(UserCacheKey.SORTDIRECTION),
+                            _sortdirection.getValue());
+        } catch (final EFapsException e) {
+            // we don't throw an error because this are only Usersettings
+            AbstractUIHeaderObject.LOG.error("error during the retrieve of UserAttributes", e);
+        }
+    }
+
+    public void setSortDirectionInternal(final SortDirection _sortdirection)
+    {
+        this.sortDirection = _sortdirection;
+    }
+
+    /**
      * This method generates the Key for a UserAttribute by using the UUID of
      * the Command and the given UserAttributeKey, so that for every Table a
      * unique key for sorting etc, is created.
@@ -359,5 +408,38 @@ public abstract class AbstractUIHeaderObject
     protected void setSize(final int _size)
     {
         this.size = _size;
+    }
+
+
+    /**
+     * Getter method for the instance variable {@link #sortKey}.
+     *
+     * @return value of instance variable {@link #sortKey}
+     */
+    public String getSortKey()
+    {
+        return this.sortKey;
+    }
+
+    /**
+     * Setter method for instance variable {@link #sortKey}.
+     *
+     * @param _sortKey value for instance variable {@link #sortKey}
+     */
+    public void setSortKey(final String _sortKey)
+    {
+        setSortKeyInternal(_sortKey);
+        try {
+            Context.getThreadContext().setUserAttribute(getCacheKey(UITable.UserCacheKey.SORTKEY),
+                            _sortKey);
+        } catch (final EFapsException e) {
+            // we don't throw an error because this are only Usersettings
+            AbstractUIHeaderObject.LOG.error("error during the retrieve of UserAttributes", e);
+        }
+    }
+
+    protected void setSortKeyInternal(final String _sortKey)
+    {
+        this.sortKey = _sortKey;
     }
 }

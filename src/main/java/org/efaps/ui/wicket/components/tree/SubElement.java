@@ -24,6 +24,7 @@ import java.util.Iterator;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
+import org.apache.wicket.PageReference;
 import org.apache.wicket.extensions.markup.html.repeater.tree.AbstractTree.State;
 import org.apache.wicket.extensions.markup.html.repeater.tree.NestedTree;
 import org.apache.wicket.extensions.markup.html.repeater.tree.nested.BranchItem;
@@ -40,6 +41,8 @@ import org.efaps.ui.wicket.models.cell.UIStructurBrowserTableCell;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.models.objects.UITable;
+import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
+import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.util.EFapsException;
 
 /**
@@ -157,7 +160,11 @@ public class SubElement
             cellsBeforeRepeater.add(cell);
             i++;
         }
-
+        final PageReference pageRef = ((StructurBrowserPage) getPage()).getCalledByPageReference();
+        boolean updateMenu = false;
+        if (pageRef != null && pageRef.getPage() instanceof ContentContainerPage) {
+            updateMenu = true;
+        }
         boolean firstCell = true;
         boolean before = true;
         for (final UIStructurBrowserTableCell uiCell : strucBrws.getColumns()) {
@@ -174,7 +181,7 @@ public class SubElement
                     repeater = cellsAfterRepeater;
                 }
                 cell = new CellPanel(repeater.newChildId(), new UIModel<UITableCell>(uiCell),
-                                false, new UITable(strucBrws.getCommandUUID(), strucBrws.getInstanceKey()), 0);
+                                updateMenu, new UITable(strucBrws.getCommandUUID(), strucBrws.getInstanceKey()), 0);
                 cell.setOutputMarkupId(true);
                 repeater.add(cell);
             }

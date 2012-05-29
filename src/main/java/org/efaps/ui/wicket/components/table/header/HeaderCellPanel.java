@@ -130,13 +130,13 @@ public class HeaderCellPanel
             final SortLink sortlink = new SortLink("sortlink", _model);
 
             if (uiTableHeader.getSortDirection() == SortDirection.NONE) {
-                sortlink.add( AttributeModifier.append("class", "eFapsHeaderSort"));
+                sortlink.add(AttributeModifier.append("class", "eFapsHeaderSort"));
             } else if (uiTableHeader.getSortDirection() == SortDirection.ASCENDING) {
-                sortlink.add( AttributeModifier.append("class", "eFapsHeaderSortAscending"));
-                sortlink.add( AttributeModifier.replace("style", " background-image: url("
+                sortlink.add(AttributeModifier.append("class", "eFapsHeaderSortAscending"));
+                sortlink.add(AttributeModifier.replace("style", " background-image: url("
                                 + HeaderCellPanel.ICON_SORTASC.getImageUrl() + ");"));
             } else if (uiTableHeader.getSortDirection() == SortDirection.DESCENDING) {
-                sortlink.add( AttributeModifier.append("class", "eFapsHeaderSortDescending"));
+                sortlink.add(AttributeModifier.append("class", "eFapsHeaderSortDescending"));
                 sortlink.add(AttributeModifier.replace("style", " background-image: url("
                                 + HeaderCellPanel.ICON_SORTDESC.getImageUrl() + ");"));
             }

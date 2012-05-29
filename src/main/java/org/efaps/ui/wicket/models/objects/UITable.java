@@ -100,22 +100,6 @@ public class UITable
     private final Map<String, Filter> filterTempCache = new HashMap<String, Filter>();
 
     /**
-     * The instance variable stores the string of the sort direction.
-     *
-     * @see #getSortDirection
-     * @see #setSortDirection
-     */
-    private SortDirection sortDirection = SortDirection.NONE;
-
-    /**
-     * The instance variable stores the string of the sort key.
-     *
-     * @see #getSortKey
-     * @see #setSortKey
-     */
-    private String sortKey = null;
-
-    /**
      * The instance variable stores the UUID for the table which must be shown.
      *
      * @see #getTable
@@ -218,8 +202,8 @@ public class UITable
             }
             // set default sort
             if (command.getTargetTableSortKey() != null) {
-                this.sortKey = command.getTargetTableSortKey();
-                this.sortDirection = command.getTargetTableSortDirection();
+                setSortKeyInternal(command.getTargetTableSortKey());
+                setSortDirection(command.getTargetTableSortDirection());
             }
 
             setShowCheckBoxes(command.isTargetShowCheckBoxes());
@@ -227,13 +211,13 @@ public class UITable
             try {
                 if (Context.getThreadContext().containsUserAttribute(
                                 getCacheKey(UITable.UserCacheKey.SORTKEY))) {
-                    this.sortKey = Context.getThreadContext().getUserAttribute(
-                                    getCacheKey(UITable.UserCacheKey.SORTKEY));
+                    setSortKeyInternal(Context.getThreadContext().getUserAttribute(
+                                    getCacheKey(UITable.UserCacheKey.SORTKEY)));
                 }
                 if (Context.getThreadContext().containsUserAttribute(
                                 getCacheKey(UITable.UserCacheKey.SORTDIRECTION))) {
-                    this.sortDirection = SortDirection.getEnum(Context.getThreadContext()
-                                    .getUserAttribute(getCacheKey(UITable.UserCacheKey.SORTDIRECTION)));
+                    setSortDirection(SortDirection.getEnum(Context.getThreadContext()
+                                    .getUserAttribute(getCacheKey(UITable.UserCacheKey.SORTDIRECTION))));
                 }
             } catch (final EFapsException e) {
                 // we don't throw an error because this are only Usersettings
@@ -341,7 +325,7 @@ public class UITable
                     attr = type.getAttribute(field.getAttribute());
                 }
                 SortDirection sortdirection = SortDirection.NONE;
-                if (field.getName().equals(this.sortKey)) {
+                if (field.getName().equals(getSortKey())) {
                     sortdirection = getSortDirection();
                 }
                 if (field.getFilterAttributes() != null) {
@@ -392,7 +376,7 @@ public class UITable
         }
         executeRowResult(multi, fields);
 
-        if (this.sortKey != null) {
+        if (getSortKey() != null) {
             sort();
         }
     }
@@ -514,7 +498,7 @@ public class UITable
             if (field.hasAccess(getMode(), getInstance(), getCommand())
                             && !field.isNoneDisplay(getMode()) && !field.isHiddenDisplay(getMode())) {
                 SortDirection sortdirection = SortDirection.NONE;
-                if (field.getName().equals(this.sortKey)) {
+                if (field.getName().equals(getSortKey())) {
                     sortdirection = getSortDirection();
                 }
                 final UITableHeader headermodel = new UITableHeader(field, sortdirection, null);
@@ -571,7 +555,7 @@ public class UITable
         }
         this.values.add(row);
 
-        if (this.sortKey != null) {
+        if (getSortKey() != null) {
             sort();
         }
     }
@@ -702,68 +686,6 @@ public class UITable
         } catch (final EFapsException e) {
             UITable.LOG.error("Error storing Filtermap for Table called by Command with UUID: {}", getCommandUUID(), e);
         }
-    }
-
-    /**
-     * This is the getter method for the instance variable
-     * {@link #sortDirection}.
-     *
-     * @return value of instance variable {@link #sortDirection}
-     * @see #sortDirection
-     * @see #setSortDirection
-     */
-    public SortDirection getSortDirection()
-    {
-        return this.sortDirection;
-    }
-
-    /**
-     * Method to set he sort direction.
-     *
-     * @param _sortdirection sort direction to set
-     */
-    public void setSortDirection(final SortDirection _sortdirection)
-    {
-        this.sortDirection = _sortdirection;
-        try {
-            Context.getThreadContext().setUserAttribute(getCacheKey(UITable.UserCacheKey.SORTDIRECTION),
-                            _sortdirection.getValue());
-        } catch (final EFapsException e) {
-            // we don't throw an error because this are only Usersettings
-            UITable.LOG.error("error during the retrieve of UserAttributes", e);
-        }
-    }
-
-    /**
-     * This is the getter method for the instance variable {@link #sortKey}.
-     *
-     * @return value of instance variable {@link #sortKey}
-     * @see #sortKey
-     * @see #setSortKey
-     */
-    public String getSortKey()
-    {
-        return this.sortKey;
-    }
-
-    /**
-     * This is the setter method for the instance variable {@link #sortKey}.
-     *
-     * @param _sortKey new value for instance variable {@link #sortKey}
-     * @see #sortKey
-     * @see #getSortKey
-     */
-    public void setSortKey(final String _sortKey)
-    {
-        this.sortKey = _sortKey;
-        try {
-            Context.getThreadContext().setUserAttribute(getCacheKey(UITable.UserCacheKey.SORTKEY),
-                            _sortKey);
-        } catch (final EFapsException e) {
-            // we don't throw an error because this are only Usersettings
-            UITable.LOG.error("error during the retrieve of UserAttributes", e);
-        }
-
     }
 
     /**

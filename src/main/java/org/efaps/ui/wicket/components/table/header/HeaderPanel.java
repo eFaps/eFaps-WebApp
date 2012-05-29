@@ -251,11 +251,13 @@ public class HeaderPanel
             .append(((AbstractUIHeaderObject) super.getDefaultModelObject()).getTableId()).append(";\n  ")
             .append(this.headerproperties).append(".storeColumnWidths = ")
             .append((this.getBehaviors(AjaxStoreColumnWidthBehavior.class).get(0)).getJavaScript())
-            .append("  ")
+            .append("; ")
             .append(this.headerproperties).append(".storeColumnOrder = ")
             .append((this.getBehaviors(AjaxStoreColumnOrderBehavior.class).get(0)).getJavaScript())
+            .append("; ")
             .append(this.headerproperties + ".reloadTable = ")
             .append((this.getBehaviors(AjaxReloadTableBehavior.class).get(0)).getJavaScript())
+            .append("; ")
             .append("  addOnResizeEvent(function (){positionTableColumns(")
             .append(this.headerproperties)
             .append(");});\n")
@@ -301,14 +303,7 @@ public class HeaderPanel
          */
         public String getJavaScript()
         {
-            final StringBuilder ret = new StringBuilder();
-            // ret.append("function(_widths){\n    ")
-            // .append(generateCallbackScript("wicketAjaxPost('" +
-            // getCallbackUrl(false) + "','"
-            // + HeaderPanel.AjaxStoreColumnWidthBehavior.COLUMNW_PARAMETERNAME
-            // + "=' + _widths"))
-            // .append("\n" + "  }\n");
-            return ret.toString();
+            return getCallbackFunction(HeaderPanel.AjaxStoreColumnWidthBehavior.COLUMNW_PARAMETERNAME).toString();
         }
 
         /**
@@ -354,15 +349,7 @@ public class HeaderPanel
          */
         public String getJavaScript()
         {
-            final StringBuilder ret = new StringBuilder();
-            // ret.append("function(_columnOrder){\n    ")
-            // .append(generateCallbackScript("wicketAjaxPost('" +
-            // getCallbackUrl(false) + "','"
-            // +
-            // HeaderPanel.AjaxStoreColumnOrderBehavior.COLUMNORDER_PARAMETERNAME
-            // + "=' + _columnOrder"))
-            // .append("\n" + "  }\n");
-            return ret.toString();
+           return getCallbackFunction(HeaderPanel.AjaxStoreColumnOrderBehavior.COLUMNORDER_PARAMETERNAME).toString();
         }
 
         /**

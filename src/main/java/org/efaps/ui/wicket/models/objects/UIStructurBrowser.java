@@ -215,11 +215,6 @@ public class UIStructurBrowser
     private String browserFieldName;
 
     /**
-     * Holds the SortDirection for the Headers.
-     */
-    private SortDirection sortDirection = SortDirection.ASCENDING;
-
-    /**
      * This instance variable holds, if this StructurBrowserModel is the Root of
      * a tree.
      */
@@ -346,7 +341,7 @@ public class UIStructurBrowser
         if (isRoot()) {
             this.allowChilds = true;
         }
-        this.sortDirection = _sortdirection;
+        setSortDirectionInternal(_sortdirection);
         initialise();
     }
 
@@ -391,6 +386,29 @@ public class UIStructurBrowser
         } else if (getInstance() != null) {
             final String tmplabel = Menu.getTypeTreeMenu(getInstance().getType()).getLabel();
             this.valueLabel = DBProperties.getProperty(tmplabel);
+        }
+
+        // set default sort
+        if (command.getTargetTableSortKey() != null) {
+            setSortKeyInternal(command.getTargetTableSortKey());
+            setSortDirection(command.getTargetTableSortDirection());
+        }
+
+        // get the User specific Attributes if exist overwrite the defaults
+        try {
+            if (Context.getThreadContext().containsUserAttribute(
+                            getCacheKey(UITable.UserCacheKey.SORTKEY))) {
+                setSortKeyInternal(Context.getThreadContext().getUserAttribute(
+                                getCacheKey(UITable.UserCacheKey.SORTKEY)));
+            }
+            if (Context.getThreadContext().containsUserAttribute(
+                            getCacheKey(UITable.UserCacheKey.SORTDIRECTION))) {
+                setSortDirection(SortDirection.getEnum(Context.getThreadContext()
+                                .getUserAttribute(getCacheKey(UITable.UserCacheKey.SORTDIRECTION))));
+            }
+        } catch (final EFapsException e) {
+            // we don't throw an error because this are only Usersettings
+            UIStructurBrowser.LOG.error("error during the retrieve of UserAttributes", e);
         }
     }
 
@@ -515,7 +533,11 @@ public class UIStructurBrowser
                         attr = type.getAttribute(field.getAttribute());
                     }
                     if (isRoot()) {
-                        final UITableHeader uiTableHeader = new UITableHeader(field, this.sortDirection, attr);
+                        SortDirection sortdirection = SortDirection.NONE;
+                        if (field.getName().equals(getSortKey())) {
+                            sortdirection = getSortDirection();
+                        }
+                        final UITableHeader uiTableHeader = new UITableHeader(field, sortdirection, attr);
                         getHeaders().add(uiTableHeader);
                         if (!field.isFixedWidth()) {
                             if (userWidthList != null && userWidthList.size() > i) {
@@ -1287,15 +1309,7 @@ public class UIStructurBrowser
         return this.label;
     }
 
-    /**
-     * Getter method for instance variable {@link #sortDirection}.
-     *
-     * @return value of instance variable {@link #sortDirection}
-     */
-    public SortDirection getSortDirection()
-    {
-        return this.sortDirection;
-    }
+
 
     /**
      * Setter method for instance variable {@link #sortDirection} and for all
@@ -1303,11 +1317,12 @@ public class UIStructurBrowser
      *
      * @param _sortDirection value for instance variable {@link #sortDirection}
      */
+    @Override
     public void setSortDirection(final SortDirection _sortDirection)
     {
-        this.sortDirection = _sortDirection;
+        super.setSortDirection(_sortDirection);
         for (final UIStructurBrowser child : this.childs) {
-            child.setSortDirection(_sortDirection);
+            child.setSortDirectionInternal(_sortDirection);
         }
     }
 

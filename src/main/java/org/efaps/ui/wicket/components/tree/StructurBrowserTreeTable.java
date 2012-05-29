@@ -23,6 +23,7 @@ package org.efaps.ui.wicket.components.tree;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
+import org.apache.wicket.PageReference;
 import org.apache.wicket.extensions.markup.html.repeater.tree.NestedTree;
 import org.apache.wicket.extensions.markup.html.repeater.tree.Node;
 import org.apache.wicket.extensions.markup.html.repeater.tree.theme.HumanTheme;
@@ -33,6 +34,8 @@ import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.cell.UIStructurBrowserTableCell;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
+import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
+import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
 
@@ -98,8 +101,13 @@ public class StructurBrowserTreeTable
     {
         final UIStructurBrowser strucBrws = _model.getObject();
         final UIStructurBrowserTableCell uicell = strucBrws.getColumns().get(strucBrws.getBrowserFieldIndex());
-        return  new CellPanel(_wicketId, new UIModel<UITableCell>(uicell),
-                        false, strucBrws, 0);
+        final PageReference pageRef = ((StructurBrowserPage) getPage()).getCalledByPageReference();
+        boolean updateMenu = false;
+        if (pageRef != null && pageRef.getPage() instanceof ContentContainerPage) {
+            updateMenu = true;
+        }
+        return new CellPanel(_wicketId, new UIModel<UITableCell>(uicell),
+                        updateMenu, strucBrws, 0);
     }
 
 
