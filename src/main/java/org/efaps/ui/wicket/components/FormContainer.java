@@ -20,7 +20,11 @@
 
 package org.efaps.ui.wicket.components;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.wicket.Component;
@@ -28,9 +32,16 @@ import org.apache.wicket.core.util.string.JavaScriptUtils;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.protocol.http.servlet.MultipartServletWebRequest;
+import org.apache.wicket.request.IRequestParameters;
+import org.apache.wicket.util.string.StringValue;
+import org.apache.wicket.util.upload.FileItem;
+import org.efaps.db.Context;
+import org.efaps.ui.wicket.EFapsSession.FileParameter;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.date.IDateListener;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
+import org.efaps.util.EFapsException;
 
 /**
  * Class for a form. Needed for file upload.
@@ -156,4 +167,39 @@ public class FormContainer
     {
         return this.dateComponents;
     }
+
+    @Override
+    protected boolean handleMultiPart()
+    {
+        final boolean ret = super.handleMultiPart();
+        try {
+            if (isMultiPart() && getRequest() instanceof MultipartServletWebRequest) {
+                for (final Entry<String, List<FileItem>> entry : ((MultipartServletWebRequest) getRequest()).getFiles()
+                                .entrySet()) {
+                    for (final FileItem fileItem : entry.getValue()) {
+                        final FileParameter parameter = new FileParameter(entry.getKey(), fileItem);
+                        Context.getThreadContext().getFileParameters().put(entry.getKey(), parameter);
+                    }
+                }
+
+                final Map<String, String[]> parameters = new HashMap<String, String[]>();
+                final IRequestParameters reqPara = getRequest().getRequestParameters();
+                for (final String name : reqPara.getParameterNames()) {
+                    final List<StringValue> values = reqPara.getParameterValues(name);
+                    final String[] valArray = new String[values.size()];
+                    int i = 0;
+                    for (final StringValue value : values) {
+                        valArray[i] = value.toString();
+                        i++;
+                    }
+                    parameters.put(name, valArray);
+                }
+                Context.getThreadContext().getParameters().putAll(parameters);
+            }
+        } catch (final EFapsException e) {
+
+        }
+        return ret;
+    }
+
 }

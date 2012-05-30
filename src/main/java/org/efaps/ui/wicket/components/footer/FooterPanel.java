@@ -142,10 +142,6 @@ public class FooterPanel
             label = getLabel(uiObject.getCommand().getName(), "Picker");
         }
 
-        if (uiObject instanceof UIForm && ((UIForm) uiObject).isFileUpload()) {
-            _form.add(new UploadBehavior(this.modalWindow));
-        }
-
         if (uiObject.hasTargetCmd()) {
             final Button button = new Button("createeditsearch",
                                              new AjaxSubmitCloseLink(Button.LINKID, uiObject, _form),
