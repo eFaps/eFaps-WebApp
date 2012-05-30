@@ -26,6 +26,7 @@ import java.util.Map;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.attributes.CallbackParameter;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.request.cycle.RequestCycle;
@@ -93,7 +94,8 @@ public class AbstractRemoteUpdateBehavior
     @Override
     protected CharSequence getCallbackScript(final Component _component)
     {
-        return "var " + getFuntionName() + "=" + getCallbackFunction(IRemoteUpdateListener.PARAMETERKEY);
+        return "var " + getFuntionName() + "="
+                        + getCallbackFunction(CallbackParameter.context(IRemoteUpdateListener.PARAMETERKEY));
     }
 
     @Override

@@ -30,6 +30,7 @@ import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes.Method;
+import org.apache.wicket.ajax.attributes.CallbackParameter;
 import org.apache.wicket.ajax.attributes.ThrottlingSettings;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
@@ -244,7 +245,8 @@ public class MainPage
                 .append("window.onresize = function(event) {\n")
                 .append("var ").append(MainPage.WIDTH_PARAMETERNAME).append("=window.innerWidth;\n")
                 .append("var ").append(MainPage.HEIGTH_PARAMETERNAME).append("=window.innerHeight;\n")
-                .append(getCallbackFunctionBody(MainPage.WIDTH_PARAMETERNAME, MainPage.HEIGTH_PARAMETERNAME))
+                .append(getCallbackFunctionBody(CallbackParameter.context(MainPage.WIDTH_PARAMETERNAME),
+                                CallbackParameter.context(MainPage.HEIGTH_PARAMETERNAME)))
                 .append("}\n");
             return js.toString();
         }

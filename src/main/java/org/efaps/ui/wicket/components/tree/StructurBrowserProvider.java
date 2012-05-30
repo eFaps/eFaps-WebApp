@@ -24,7 +24,7 @@ package org.efaps.ui.wicket.components.tree;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.wicket.extensions.markup.html.repeater.util.SortableTreeProvider;
+import org.apache.wicket.extensions.markup.html.repeater.tree.ITreeProvider;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
@@ -37,7 +37,7 @@ import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
  * @version $Id$
  */
 public class StructurBrowserProvider
-extends SortableTreeProvider<UIStructurBrowser>
+    implements ITreeProvider<UIStructurBrowser>
 {
 
     /* (non-Javadoc)
@@ -91,6 +91,16 @@ extends SortableTreeProvider<UIStructurBrowser>
     public IModel<UIStructurBrowser> model(final UIStructurBrowser _object)
     {
         return Model.of(_object);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.wicket.model.IDetachable#detach()
+     */
+    @Override
+    public void detach()
+    {
+        // TODO Auto-generated method stub
+
     }
 
 }

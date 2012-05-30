@@ -201,22 +201,28 @@ public class FormPage
     protected void addComponents()
         throws EFapsException
     {
-        final UIForm model = (UIForm) super.getDefaultModelObject();
+        final UIForm uiForm = (UIForm) super.getDefaultModelObject();
 
-        if (!model.isInitialized()) {
-            model.execute();
+        if (!uiForm.isInitialized()) {
+            uiForm.execute();
         }
 
         add(StaticHeaderContrBehavior.forCss(FormPage.CSS));
 
         final FormContainer form = new FormContainer("form");
         add(form);
+
+        if (uiForm.isFileUpload() && (uiForm.isCreateMode() || uiForm.isEditMode())) {
+            form.setMultiPart(true);
+            form.setMaxSize(getApplication().getApplicationSettings().getDefaultMaximumUploadSize());
+        }
+
         super.addComponents(form);
 
         final WebMarkupContainer script = new WebMarkupContainer("selectscript");
         this.add(script);
-        script.setVisible(model.isCreateMode() || model.isEditMode() || model.isSearchMode());
-        FormPage.updateFormContainer(this, form, model);
+        script.setVisible(uiForm.isCreateMode() || uiForm.isEditMode() || uiForm.isSearchMode());
+        FormPage.updateFormContainer(this, form, uiForm);
     }
 
     /**

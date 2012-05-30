@@ -126,7 +126,6 @@ public class AjaxSubmitCloseBehavior
     @Override
     protected void onSubmit(final AjaxRequestTarget _target)
     {
-
         final Map<String, String[]> others = new HashMap<String, String[]>();
         getComponent().getRequestCycle().getRequest().getPostParameters().getParameterValues("selectedRow");
 

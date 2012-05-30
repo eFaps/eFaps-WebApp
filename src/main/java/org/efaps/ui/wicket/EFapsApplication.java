@@ -85,17 +85,24 @@ public class EFapsApplication
         getMarkupSettings().setStripComments(true);
         getMarkupSettings().setCompressWhitespace(true);
         getMarkupSettings().setAutomaticLinking(false);
+
         getRequestCycleSettings().setGatherExtendedBrowserInfo(true);
         getDebugSettings().setAjaxDebugModeEnabled(true);
         getDebugSettings().setDevelopmentUtilitiesEnabled(false);
         getSecuritySettings().setAuthorizationStrategy(new EFapsFormBasedAuthorizationStartegy());
         getApplicationSettings().setPageExpiredErrorPage(LoginPage.class);
+        getApplicationSettings().setUploadProgressUpdatesEnabled(true);
         getResourceSettings().setJavaScriptCompressor(new DefaultJavaScriptCompressor());
+
+        //getPageSettings().addComponentResolver(resolver)
+
         getRequestLoggerSettings().setRequestLoggerEnabled(false);
         getRequestCycleListeners().add(new EFapsRequestCycleListener());
-        getResourceSettings().setUseDefaultResourceAggregator(false);
 
         setHeaderResponseDecorator(new IHeaderResponseDecorator() {
+
+
+            @Override
             public IHeaderResponse decorate(final IHeaderResponse _response)
             {
                 return new EFapsResourceAggregator(_response);

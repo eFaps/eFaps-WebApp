@@ -21,7 +21,6 @@
 package org.efaps.ui.wicket.components;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.wicket.Component;
@@ -32,7 +31,6 @@ import org.apache.wicket.markup.html.form.Form;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.date.IDateListener;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
-import org.efaps.ui.wicket.models.objects.UIForm;
 
 /**
  * Class for a form. Needed for file upload.
@@ -54,11 +52,6 @@ public class FormContainer
      * Url for the action that must be called.
      */
     private String actionUrl;
-
-    /**
-     * Is this form a used to upload a file.
-     */
-    private boolean fileUpload = false;
 
     /**
      * Set contains the date components of this formpanel.
@@ -86,12 +79,6 @@ public class FormContainer
     @Override
     protected void onComponentTag(final ComponentTag _tag)
     {
-        final Object uiObject = getPage().getDefaultModelObject();
-        if (uiObject instanceof UIForm && ((UIForm) uiObject).isFileUpload()
-                        && (((UIForm) uiObject).isCreateMode() || ((UIForm) uiObject).isEditMode())) {
-            setMultiPart(true);
-            setMaxSize(getApplication().getApplicationSettings().getDefaultMaximumUploadSize());
-        }
         this.actionUrl = urlFor(getRequestCycle().getActiveRequestHandler()).toString();
         super.onComponentTag(_tag);
         if (getPage().getDefaultModelObject() != null) {
@@ -113,56 +100,6 @@ public class FormContainer
     public String getActionUrl()
     {
         return this.actionUrl;
-    }
-
-    /**
-     * On submit it is checked if it is a file upload from and in case that it
-     * is the listeners executed.
-     *
-     * @see org.apache.wicket.markup.html.form.Form#onSubmit()
-     */
-    @Override
-    protected void onSubmit()
-    {
-        super.onSubmit();
-        if (this.fileUpload) {
-            final List<FileUploadBehavior> uploadBehaviors = this.getBehaviors(FileUploadBehavior.class);
-            for (final FileUploadBehavior behavior : uploadBehaviors) {
-
-            }
-        }
-    }
-
-    /**
-     * This is the getter method for the instance variable {@link #fileUpload}.
-     *
-     * @return value of instance variable {@link #fileUpload}
-     */
-    public boolean isFileUpload()
-    {
-        return this.fileUpload;
-    }
-
-    /**
-     * This is the setter method for the instance variable {@link #fileUpload}.
-     *
-     * @param _fileUpload the fileUpload to set
-     */
-    public void setFileUpload(final boolean _fileUpload)
-    {
-        this.fileUpload = _fileUpload;
-    }
-
-    /**
-     * Overwritten due to the reason that the mulitpart is handelt using
-     * the Context.
-     * @see org.apache.wicket.markup.html.form.Form#handleMultiPart()
-     * @return true
-     */
-    @Override
-    protected boolean handleMultiPart()
-    {
-        return true;
     }
 
     /**

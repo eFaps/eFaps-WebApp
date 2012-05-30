@@ -27,6 +27,7 @@ import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.attributes.CallbackParameter;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
@@ -303,7 +304,9 @@ public class HeaderPanel
          */
         public String getJavaScript()
         {
-            return getCallbackFunction(HeaderPanel.AjaxStoreColumnWidthBehavior.COLUMNW_PARAMETERNAME).toString();
+            return getCallbackFunction(
+                            CallbackParameter.context(HeaderPanel.AjaxStoreColumnWidthBehavior.COLUMNW_PARAMETERNAME))
+                            .toString();
         }
 
         /**
@@ -349,7 +352,9 @@ public class HeaderPanel
          */
         public String getJavaScript()
         {
-           return getCallbackFunction(HeaderPanel.AjaxStoreColumnOrderBehavior.COLUMNORDER_PARAMETERNAME).toString();
+            return getCallbackFunction(
+                         CallbackParameter.context(HeaderPanel.AjaxStoreColumnOrderBehavior.COLUMNORDER_PARAMETERNAME))
+                           .toString();
         }
 
         /**

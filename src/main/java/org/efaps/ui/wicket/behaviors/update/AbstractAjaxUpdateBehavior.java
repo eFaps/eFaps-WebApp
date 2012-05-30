@@ -151,7 +151,7 @@ public abstract class AbstractAjaxUpdateBehavior
                         .append("  fen = top;")
                         .append("}")
                         .append("fen.setTimeout(function(){ fen.childCallBack(\"javascript:")
-                        .append(getCallbackFunction("wicketAjaxGet('" + getCallbackUrl() + "'"))
+                        //.append(getCallbackFunction("wicketAjaxGet('" + getCallbackUrl() + "'"))
                         .append("\");},0);");
         // the timeout is needed due to a bug in Firefox, that does not close the
         // nsIXMLHttpRequest and therefore throws an error that disables any
