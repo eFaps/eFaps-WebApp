@@ -20,46 +20,30 @@
 
 package org.efaps.ui.wicket.components.tree;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreeNode;
-
-import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
-import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.Page;
+import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.behavior.Behavior;
-import org.apache.wicket.extensions.markup.html.tree.DefaultAbstractTree;
-import org.apache.wicket.extensions.markup.html.tree.ITreeState;
+import org.apache.wicket.ajax.attributes.AjaxCallListener;
+import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
+import org.apache.wicket.extensions.markup.html.repeater.tree.NestedTree;
+import org.apache.wicket.extensions.markup.html.repeater.tree.content.Folder;
+import org.apache.wicket.extensions.markup.html.repeater.tree.theme.WindowsTheme;
 import org.apache.wicket.markup.ComponentTag;
-import org.apache.wicket.markup.html.WebComponent;
+import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.link.IPageLink;
-import org.apache.wicket.markup.html.link.InlineFrame;
-import org.apache.wicket.model.AbstractReadOnlyModel;
-import org.apache.wicket.request.resource.ResourceReference;
-import org.efaps.admin.ui.AbstractCommand;
-import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
-import org.efaps.admin.ui.Menu;
-import org.efaps.ui.wicket.EFapsSession;
-import org.efaps.ui.wicket.behaviors.update.AbstractAjaxUpdateBehavior;
+import org.apache.wicket.markup.html.link.ILinkListener;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.efaps.ui.wicket.components.menutree.MenuTree;
+import org.efaps.ui.wicket.components.menutree.TreeMenuModel;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
-import org.efaps.ui.wicket.models.objects.UIStructurBrowser.BogusNode;
-import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
+import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
 import org.efaps.util.EFapsException;
 
 /**
@@ -69,11 +53,23 @@ import org.efaps.util.EFapsException;
  * on a Tristate.
  *
  * @author The eFaps Team
- * @version $Id$
+ * @version $Id: StructurBrowserTree.java 7556 2012-05-29 19:51:07Z
+ *          jan@moxter.net $
  */
 public class StructurBrowserTree
-    extends DefaultAbstractTree
+    extends NestedTree<UIStructurBrowser>
 {
+
+    /**
+     * @param _id
+     * @param _provider
+     */
+    public StructurBrowserTree(final String _wicketId,
+                               final IModel<UIStructurBrowser> _model)
+    {
+        super(_wicketId, new StructurBrowserProvider(_model));
+        add(new WindowsTheme());
+    }
 
     /**
      * Needed for serialization.
@@ -86,333 +82,137 @@ public class StructurBrowserTree
     private static final EFapsContentReference CSS = new EFapsContentReference(StructurBrowserTree.class,
                     "StructurTree.css");
 
-    /**
-     * Instance variable holding the Key to the MenuTree (needed to update it).
-     */
-    private final String listMenuKey;
-
-    /**
-     * This instance map contains the relation between an oid and a node. This
-     * is used to update a treenode via the AjaxUpdateBehavior.
-     *
-     */
-    private final Map<String, DefaultMutableTreeNode> instanceKey2Node = new HashMap<String, DefaultMutableTreeNode>();
-
-    /**
-     * Constructor setting the WicketId, the Model and the key of the ListMenu.
-     *
-     * @param _wicketId wicket id of this component
-     * @param _model model for this component
-     * @param _listMenuKey key to the list menu
-     */
-    public StructurBrowserTree(final String _wicketId,
-                               final TreeModel _model,
-                               final String _listMenuKey)
-    {
-        super(_wicketId, _model);
-        this.listMenuKey = _listMenuKey;
-        this.add(StaticHeaderContrBehavior.forCss(StructurBrowserTree.CSS));
-
-        setRootLess(true);
-        // we want a tree that is collapsed and updated asynchron
-        final ITreeState treeState = getTreeState();
-        treeState.collapseAll();
-        treeState.addTreeStateListener(new AsyncronTreeUpdateListener());
-        // add an behavior that allows update of nodes on events
-        final AjaxUpdateBehavior update = new AjaxUpdateBehavior();
-        this.add(update);
-    }
-
-    /**
-     * Overwritten to deactivate.
-     *
-     * @return null
+    /*
+     * (non-Javadoc)
+     * @see org.apache.wicket.extensions.markup.html.repeater.tree.AbstractTree#
+     * newContentComponent(java.lang.String, org.apache.wicket.model.IModel)
      */
     @Override
-    protected ResourceReference getCSS()
+    protected Component newContentComponent(final String _wicketId,
+                                            final IModel<UIStructurBrowser> _model)
     {
-        // return null here and set a own HeaderContributor, to be able to use
-        // eFaps own CSSResourceReference
-        return null;
-    }
-
-    /**
-     * Method is used to get the icon for a node.
-     *
-     * @param _parent parent node
-     * @param _wicketId wicket id for the new node
-     * @param _node related TreeNode
-     * @return Component
-     */
-    @Override
-    protected Component newNodeIcon(final MarkupContainer _parent,
-                                    final String _wicketId,
-                                    final TreeNode _node)
-    {
-        final UIStructurBrowser model = (UIStructurBrowser) ((DefaultMutableTreeNode) _node).getUserObject();
-        // if we have the model contains a icon render it, else just pass it on
-        // to
-        // the superMethod
-        Component ret;
-        if (model.getImage() == null) {
-            ret = super.newNodeIcon(_parent, _wicketId, _node);
-        } else {
-            ret = new WebMarkupContainer(_wicketId) {
-
-                private static final long serialVersionUID = 1L;
-
-                @Override
-                protected void onComponentTag(final ComponentTag _tag)
-                {
-                    super.onComponentTag(_tag);
-                    _tag.put("style", "background-image: url('" + model.getImage() + "')");
-                }
-            };
-        }
-        return ret;
-    }
-
-    /**
-     * Method creates a new node.
-     *
-     * @param _parent parent node
-     * @param _wicketId wicket id for the new node
-     * @param _node related TreeNode
-     * @return MarkupContainer
-     */
-    @Override
-    protected MarkupContainer newNodeLink(final MarkupContainer _parent,
-                                          final String _wicketId,
-                                          final TreeNode _node)
-    {
-        final UIStructurBrowser model = (UIStructurBrowser) ((DefaultMutableTreeNode) _node).getUserObject();
-        // add UpdateBehavior for thi oid to the Session
-        ((EFapsSession) getSession()).addUpdateBehaviors(model.getInstanceKey(), getBehaviors(
-                        AjaxUpdateBehavior.class).get(0));
-        // store the oid to Node Relation
-        this.instanceKey2Node.put(model.getInstanceKey(), (DefaultMutableTreeNode) _node);
-
-        return newLink(_parent, _wicketId, new ILinkCallback() {
-
-            private static final long serialVersionUID = 1L;
-
-            public void onClick(final AjaxRequestTarget _target)
-            {
-                final UIStructurBrowser model = (UIStructurBrowser) ((DefaultMutableTreeNode) _node).getUserObject();
-                // get the standart Command
-                AbstractCommand cmd = model.getCommand();
-
-                // check if one of its childs is default selected
-                if (cmd instanceof Menu) {
-                    for (final AbstractCommand childcmd : ((Menu) cmd).getCommands()) {
-                        if (childcmd.isDefaultSelected()) {
-                            cmd = childcmd;
-                            break;
-                        }
-                    }
-                }
-                final UUID commandUUID = cmd.getUUID();
-
-                IPageLink pageLink;
-                if (cmd.getTargetTable() != null) {
-                    pageLink = new IPageLink()
-                    {
-
-                        private static final long serialVersionUID = 1L;
-
-                        public Page getPage()
-                        {
-                            Page ret;
-                            try {
-                                ret = new TablePage(commandUUID, model.getInstanceKey(), true)
-                                                .setMenuTreeKey(StructurBrowserTree.this.listMenuKey);
-                            } catch (final EFapsException e) {
-                                ret = new ErrorPage(e);
-                            }
-
-                            return ret;
-                        }
-
-                        public Class<TablePage> getPageIdentity()
-                        {
-                            return TablePage.class;
-                        }
-                    };
-
-                } else {
-                    pageLink = new IPageLink()
-                    {
-
-                        private static final long serialVersionUID = 1L;
-
-                        public Page getPage()
-                        {
-                            Page page;
-                            try {
-                                page = new FormPage(commandUUID, model.getInstanceKey(), true);
-                                ((AbstractContentPage) page).setMenuTreeKey(StructurBrowserTree.this.listMenuKey);
-                            } catch (final EFapsException e) {
-                                page = new ErrorPage(e);
-                            }
-                            return page;
-                        }
-
-                        public Class<FormPage> getPageIdentity()
-                        {
-                            return FormPage.class;
-                        }
-                    };
-                }
-                final InlineFrame page = new InlineFrame(ContentContainerPage.IFRAME_WICKETID, pageLink);
-                final InlineFrame component = (InlineFrame) getPage().get(
-                                ((ContentContainerPage) getPage()).getInlinePath());
-                page.setOutputMarkupId(true);
-
-                component.replaceWith(page);
-                _target.add(page.getParent());
-
-                final MenuTree menutree = (MenuTree) ((EFapsSession) getSession())
-                                .getFromCache(StructurBrowserTree.this.listMenuKey);
-
-                final MenuTree newmenutree = new MenuTree(menutree.getId(), model.getCommandUUID(), model
-                                .getInstanceKey(), menutree.getMenuKey(), null);
-
-                menutree.replaceWith(newmenutree);
-                newmenutree.updateTree(_target);
-            }
-        });
-    }
-
-    /**
-     * Populates the tree item. It creates all necessary components for the tree
-     * to work properly.
-     *
-     * @param _item item to populate
-     * @param _level level of the item
-     */
-    @Override
-    protected void populateTreeItem(final WebMarkupContainer _item,
-                                    final int _level)
-    {
-        final DefaultMutableTreeNode node = (DefaultMutableTreeNode) _item.getDefaultModelObject();
-
-        _item.add(newIndentation(_item, "indent", node, _level));
-
-        _item.add(newJunctionLink(_item, "link", "image", node));
-
-        final WebComponent direction = new WebComponent("direction");
-        _item.add(direction);
-
-        final UIStructurBrowser model = (UIStructurBrowser) node.getUserObject();
-        if (model.getDirection() == null) {
-            direction.setVisible(false);
-        } else if (model.getDirection()) {
-            direction.add( AttributeModifier.append("class", "directionDown"));
-        } else {
-            direction.add( AttributeModifier.append("class", "directionUp"));
-        }
-
-        final MarkupContainer nodeLink = newNodeLink(_item, "nodeLink", node);
-        _item.add(nodeLink);
-
-        nodeLink.add(newNodeIcon(nodeLink, "icon", node));
-
-        nodeLink.add(new Label("label", new AbstractReadOnlyModel<String>() {
+        // TODO Auto-generated method stub
+        return new Folder<UIStructurBrowser>(_wicketId, this, _model)
+        {
 
             private static final long serialVersionUID = 1L;
 
             @Override
-            public String getObject()
+            protected Component newLabelComponent(final String _id,
+                                                  final IModel<UIStructurBrowser> _model)
             {
-                return renderNode(node);
+                return new ItemLink(_id, _model);
             }
-        }));
-
-        // do distinguish between selected and unselected rows we add an
-        // behavior
-        // that modifies row css class.
-        _item.add(new Behavior() {
-
-            private static final long serialVersionUID = 1L;
 
             @Override
-            public void onComponentTag(final Component _component,
-                                       final ComponentTag _tag)
+            protected boolean isClickable()
             {
-                super.onComponentTag(_component, _tag);
-                if (getTreeState().isNodeSelected(node)) {
-                    _tag.put("class", "row-selected");
-                } else {
-                    _tag.put("class", "row");
-                }
+                return true;
             }
-        });
+        };
     }
 
-    /**
-     * This method is called for every node to get it's string representation.
-     *
-     * @param _node The tree node to get the string representation for
-     * @return The string representation
-     */
-    protected String renderNode(final TreeNode _node)
-    {
-        return _node.toString();
-    }
-
-    /**
-     * This class is used to add an UpdateBehavior to this tree.
-     *
-     * @author jmox
-     * @version $Id: StructurBrowserTree.java 2760 2009-07-09 19:50:01Z
-     *          jan.moxter $
-     */
-    public class AjaxUpdateBehavior
-        extends AbstractAjaxUpdateBehavior
+    public class ItemLink
+        extends WebMarkupContainer
+        implements ILinkListener
     {
 
         /**
-         * Needed for serialization.
+         *
          */
         private static final long serialVersionUID = 1L;
 
         /**
-         * @param _target AjaxRequestTarget
+         * @param _id
+         * @param _model
+         */
+        public ItemLink(final String _id,
+                        final IModel<UIStructurBrowser> _model)
+        {
+            super(_id, _model);
+            add(new ItemLinkBehavior());
+        }
+
+        @Override
+        public void onComponentTagBody(final MarkupStream _markupStream,
+                                       final ComponentTag _openTag)
+        {
+            final UIStructurBrowser uiStrBrws = (UIStructurBrowser) getDefaultModelObject();
+            super.replaceComponentTagBody(_markupStream, _openTag, uiStrBrws.getLabel());
+        }
+
+        /*
+         * (non-Javadoc)
+         * @see org.apache.wicket.markup.html.link.ILinkListener#onLinkClicked()
          */
         @Override
-        protected void respond(final AjaxRequestTarget _target)
+        public void onLinkClicked()
         {
-
-            final DefaultMutableTreeNode node = StructurBrowserTree.this.instanceKey2Node.get(getInstanceKey());
-            final DefaultTreeModel treemodel = (DefaultTreeModel) getComponent().getDefaultModel().getObject();
-            final UIStructurBrowser model = (UIStructurBrowser) node.getUserObject();
-            final StructurBrowserTree tree = (StructurBrowserTree) getComponent();
-            // in case of edit, we just update the actual node
-            if (getMode() == TargetMode.EDIT) {
-                treemodel.nodeChanged(node);
-                model.requeryLabel();
-            }
-            // in case of create or delete (unknown)
-            if (getMode() == TargetMode.CREATE || getMode() == TargetMode.UNKNOWN) {
-                // in case that we allready had childs
-                if (node.getChildCount() > 0) {
-                    // the parentnode was allready expanded so add a new child
-                    // and update
-                    // the whole tree
-                    if (!(node.getChildAt(0) instanceof BogusNode)) {
-                        node.removeAllChildren();
-                        model.resetModel();
-                        tree.invalidateAll();
+            final UIStructurBrowser uiStrBrws = (UIStructurBrowser) getDefaultModelObject();
+            Page page;
+            try {
+                if (uiStrBrws.getCommand().getTargetTable() != null) {
+                    if (uiStrBrws.getCommand().getTargetStructurBrowserField() != null) {
+                        page = new StructurBrowserPage(uiStrBrws.getCommandUUID(),
+                                        uiStrBrws.getInstanceKey(), getPage()
+                                                  .getPageReference());
+                    } else {
+                        page = new TablePage(uiStrBrws.getCommandUUID(), uiStrBrws.getInstanceKey(), getPage()
+                                        .getPageReference());
                     }
                 } else {
-                    // we had no childs yet, so we add a BogusNode (produces the
-                    // junctionlink)
-                    model.setParent(true);
-                    model.addBogusNode(node);
-                    treemodel.nodeChanged(node);
+                    page = new FormPage(uiStrBrws.getCommandUUID(), uiStrBrws.getInstanceKey(), getPage()
+                                    .getPageReference());
                 }
+            } catch (final EFapsException e) {
+                page = new ErrorPage(e);
             }
-            tree.updateTree(_target);
+            setResponsePage(page);
+        }
+    }
+
+    private final class ItemLinkBehavior
+        extends AjaxEventBehavior
+    {
+
+        private static final long serialVersionUID = 1L;
+
+        public ItemLinkBehavior()
+        {
+            super("onclick");
+        }
+
+        @Override
+        protected void onEvent(final AjaxRequestTarget _target)
+        {
+            final UIStructurBrowser uiStrBrws = (UIStructurBrowser) getComponent().getDefaultModelObject();
+            final MenuTree menutree = ((ContentContainerPage) getPage()).getMenuTree();
+            ((TreeMenuModel) menutree.getProvider()).setModel(uiStrBrws.getCommandUUID(), uiStrBrws.getInstanceKey());
+            menutree.expand(((TreeMenuModel) menutree.getProvider()).getRoots().next().setHeader(true));
+            menutree.setSelected(null);
+            _target.add(menutree);
+        }
+
+        /*
+         * (non-Javadoc)
+         * @see
+         * org.apache.wicket.ajax.AjaxEventBehavior#updateAjaxAttributes(org
+         * .apache.wicket.ajax.attributes.AjaxRequestAttributes)
+         */
+        @Override
+        protected void updateAjaxAttributes(final AjaxRequestAttributes _attributes)
+        {
+            super.updateAjaxAttributes(_attributes);
+            final AjaxCallListener listener = new AjaxCallListener();
+            final StringBuilder js = new StringBuilder();
+            js.append("dijit.byId(\"").append(((ContentContainerPage) getPage()).getCenterPanelId())
+                .append("\").set(\"content\", dojo.create(\"iframe\", {")
+                .append("\"src\": \"")
+                .append(getComponent().urlFor(ILinkListener.INTERFACE, new PageParameters()))
+                .append("\",\"style\": \"border: 0; width: 100%; height: 100%\"")
+                .append("})); ");
+            listener.onAfter(js);
+            _attributes.getAjaxCallListeners().add(listener);
         }
     }
 }

@@ -111,8 +111,8 @@ public class BorderContainerBehavior
     {
         super.onComponentTag(_component, _tag);
         _tag.put("data-dojo-type", "dijit.layout.BorderContainer");
-        _tag.put("data-dojo-props", "design: '" + this.design.key + "'");
-        _tag.put("class", "tundra eFapsBorderContainer");
+        _tag.append("data-dojo-props", "design: '" + this.design.key + "'", ",");
+        _tag.append("class", "tundra eFapsBorderContainer", " ");
     }
 
     /**

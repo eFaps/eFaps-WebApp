@@ -158,13 +158,16 @@ public class ContentPaneBehavior
     {
         super.onComponentTag(_component, _tag);
         _tag.put("data-dojo-type", "dijit.layout.ContentPane");
-        _tag.put("data-dojo-props", "region: '" + this.region.getKey() + "'"
-                        + (this.splitter ? ", splitter: true" : ""));
+        _tag.append("data-dojo-props", "region: '" + this.region.getKey() + "'", ",");
+        if (this.splitter) {
+            _tag.append("data-dojo-props", "splitter: true", ",");
+        }
+
         if (this.width != null) {
-            _tag.put("style", "width: " + this.width);
+            _tag.append("style", "width: " + this.width, ";");
         }
         if (this.height != null) {
-            _tag.put("style", "height: " + this.height);
+            _tag.append("style", "height: " + this.height, ";");
         }
 
     }

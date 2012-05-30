@@ -90,7 +90,6 @@ public class MenuItem
 
         final MarkupContainer link = new Item("link", _model);
         add(link);
-        this.tree.getMenuItem2Component().put(_model.getObject(), this);
 
         final Label label = new Label("label", _model.getObject().getLabel());
         link.add(label);

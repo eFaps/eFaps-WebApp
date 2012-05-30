@@ -57,10 +57,16 @@ public class TreeMenuModel
     public TreeMenuModel(final UUID _commandUUID,
                          final String _oid)
     {
+        setModel(_commandUUID, _oid);
+    }
+
+    public void setModel(final UUID _commandUUID, final String _oid)
+    {
+        this.rootItems.clear();
         final UIMenuItem model = new UIMenuItem(_commandUUID, _oid);
         this.rootItems.add(model);
-
     }
+
 
     /**
      * Setter method for instance variable {@link #roots}.

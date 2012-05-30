@@ -26,11 +26,14 @@ import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.efaps.db.Context;
+import org.efaps.ui.wicket.behaviors.dojo.BorderContainerBehavior;
+import org.efaps.ui.wicket.behaviors.dojo.BorderContainerBehavior.Design;
 import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior.Region;
 import org.efaps.ui.wicket.components.menutree.MenuTree;
 import org.efaps.ui.wicket.components.split.header.SplitHeaderPanel;
 import org.efaps.ui.wicket.components.split.header.SplitHeaderPanel.PositionUserAttribute;
+import org.efaps.ui.wicket.components.tree.StructurBrowserTreePanel;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
@@ -47,7 +50,6 @@ import org.slf4j.LoggerFactory;
 public class ListOnlyPanel
     extends Panel
 {
-
     /**
      * Reference to the StyleSheet.
      */
@@ -63,6 +65,9 @@ public class ListOnlyPanel
      */
     private static final long serialVersionUID = 1L;
 
+    /**
+     * The menutree that lies within this panel.
+     */
     private final MenuTree menuTree;
 
     /**
@@ -71,51 +76,86 @@ public class ListOnlyPanel
      * @param _wicketId wicket id of this component
      * @param _commandUUID UUID of the related command
      * @param _oid oid
-     * @param _listMenuKey key to the list menu
      * @param _selectCmdUUID UUID of the selected Command
+     * @param _showStructurBrowser  show the StructurBrowser
      * @throws EFapsException on error
      */
     public ListOnlyPanel(final String _wicketId,
                          final UUID _commandUUID,
                          final String _oid,
-                         final String _listMenuKey,
-                         final UUID _selectCmdUUID)
+                         final UUID _selectCmdUUID,
+                         final boolean _showStructurBrowser)
         throws EFapsException
     {
         super(_wicketId);
         this.add(StaticHeaderContrBehavior.forCss(ListOnlyPanel.CSS));
-        String position = null;
-        String hiddenStr = null;
+        String positionH = null;
+        String hiddenStrH = null;
+        String positionV = null;
+        String hiddenStrV = null;
         try {
-            position = Context.getThreadContext().getUserAttribute(
-                            PositionUserAttribute.HORIZONTAL.getKey());
-            hiddenStr = Context.getThreadContext().getUserAttribute(
+            positionH = Context.getThreadContext().getUserAttribute(PositionUserAttribute.HORIZONTAL.getKey());
+            hiddenStrH = Context.getThreadContext().getUserAttribute(
                             PositionUserAttribute.HORIZONTAL_COLLAPSED.getKey());
+            positionV = Context.getThreadContext().getUserAttribute(PositionUserAttribute.VERTICAL.getKey());
+            hiddenStrV = Context.getThreadContext().getUserAttribute(PositionUserAttribute.VERTICAL_COLLAPSED.getKey());
         } catch (final EFapsException e) {
-            // error is catch because its only user attributes
-            ListOnlyPanel.LOG.error("catched error with user attributes");
+            ListOnlyPanel.LOG.error("Error reading UserAttributes", e);
         }
-        final boolean hidden = "true".equalsIgnoreCase(hiddenStr);
-        if (hidden) {
-            position = "20";
-        } else if (position == null) {
-            position = "200";
+        final boolean hiddenH = "true".equalsIgnoreCase(hiddenStrH);
+        final boolean hiddenV = "true".equalsIgnoreCase(hiddenStrV);
+        if (hiddenH) {
+            positionH = "20";
+        } else if (positionH == null) {
+            positionH = "200";
         }
-        this.add(new ContentPaneBehavior(Region.LEADING, true, position + "px", null));
+        if (hiddenV) {
+            positionV = "20px";
+        } else if (positionV == null) {
+            positionV = "50%";
+        } else {
+            positionV += "px";
+        }
 
-        final SplitHeaderPanel header = new SplitHeaderPanel("header", false, hidden, false);
+
+        final SplitHeaderPanel header = new SplitHeaderPanel("header", false, hiddenH, hiddenV);
         this.add(header);
 
+        final WebMarkupContainer bottom = new WebMarkupContainer("bottom");
+        this.add(bottom);
+
         final WebMarkupContainer overflow = new WebMarkupContainer("overflow");
+        bottom.add(overflow);
         overflow.setOutputMarkupId(true);
-        this.menuTree = new MenuTree("menu", _commandUUID, _oid, _listMenuKey, _selectCmdUUID);
+
+        final WebMarkupContainer top = new WebMarkupContainer("top");
+        this.add(top);
+        top.setOutputMarkupPlaceholderTag(true).setOutputMarkupId(true);
+
+        this.menuTree = new MenuTree("menu", _commandUUID, _oid, _selectCmdUUID);
 
         overflow.add(this.menuTree.setOutputMarkupId(true));
-        this.add(overflow);
-        if (hidden) {
+
+        if (hiddenH) {
             overflow.add(AttributeModifier.replace("style", "display:none;"));
         }
         header.addHideComponent(overflow);
+
+        final StructurBrowserTreePanel stuctbrows = new StructurBrowserTreePanel("stuctbrows", _commandUUID, _oid);
+        stuctbrows.setOutputMarkupId(true);
+        top.add(stuctbrows);
+        header.addHideComponent(stuctbrows);
+
+        this.add(new ContentPaneBehavior(Region.LEADING, true, positionH + "px", null));
+
+        if (_showStructurBrowser) {
+            this.add(new BorderContainerBehavior(Design.HEADLINE));
+            bottom.add(new ContentPaneBehavior(Region.CENTER, true));
+            top.add(new ContentPaneBehavior(Region.TOP, true, null, positionV));
+        } else {
+
+            top.setVisible(false);
+        }
     }
 
     /*

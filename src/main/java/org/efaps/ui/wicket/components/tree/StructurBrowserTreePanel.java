@@ -53,11 +53,10 @@ public class StructurBrowserTreePanel
      */
     public StructurBrowserTreePanel(final String _wicketId,
                                     final UUID _commandUUID,
-                                    final String _oid,
-                                    final String _listmenukey)
+                                    final String _oid)
         throws EFapsException
     {
-        this(_wicketId, new UIModel<UIStructurBrowser>(new UIStructurBrowser(_commandUUID, _oid)), _listmenukey);
+        this(_wicketId, new UIModel<UIStructurBrowser>(new UIStructurBrowser(_commandUUID, _oid)));
     }
 
     /**
@@ -68,15 +67,14 @@ public class StructurBrowserTreePanel
      * @param _listmenukey key to the list menu
      */
     public StructurBrowserTreePanel(final String _wicketId,
-                                    final IModel<UIStructurBrowser> _model,
-                                    final String _listmenukey)
+                                    final IModel<UIStructurBrowser> _model)
     {
         super(_wicketId, _model);
-        final UIStructurBrowser model = _model.getObject();
-        if (!model.isInitialized()) {
-            model.execute();
+        final UIStructurBrowser uiStrBrws = _model.getObject();
+        if (!uiStrBrws.isInitialized()) {
+            uiStrBrws.execute();
         }
-        final StructurBrowserTree tree = new StructurBrowserTree("tree", model.getTreeModel(), _listmenukey);
+        final StructurBrowserTree tree = new StructurBrowserTree("tree", _model);
         this.add(tree);
     }
 }

@@ -28,6 +28,7 @@ import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.models.cell.AbstractUICell;
+import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
@@ -87,7 +88,8 @@ public class ContentContainerLink<T>
                 if (cellmodel.getTarget() == Target.POPUP) {
                     page = new ContentContainerPage(menu.getUUID(), cellmodel.getInstanceKey());
                 } else {
-                    page = new ContentContainerPage(menu.getUUID(), cellmodel.getInstanceKey());
+                    page = new ContentContainerPage(menu.getUUID(), cellmodel.getInstanceKey(),
+                                    getPage() instanceof StructurBrowserPage);
                 }
             } catch (final EFapsException e) {
                 page = new ErrorPage(e);

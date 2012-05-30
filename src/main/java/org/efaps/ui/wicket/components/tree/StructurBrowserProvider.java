@@ -55,7 +55,6 @@ extends SortableTreeProvider<UIStructurBrowser>
     public StructurBrowserProvider(final IModel<UIStructurBrowser> _model)
     {
        this.roots = _model.getObject().getChilds();
-
     }
 
     @Override

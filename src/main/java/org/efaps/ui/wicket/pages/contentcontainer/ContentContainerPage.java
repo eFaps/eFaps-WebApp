@@ -40,7 +40,6 @@ import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior.Region;
 import org.efaps.ui.wicket.components.LazyIframe;
 import org.efaps.ui.wicket.components.menutree.MenuTree;
 import org.efaps.ui.wicket.components.split.ListOnlyPanel;
-import org.efaps.ui.wicket.components.split.StructBrowsSplitPanel;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
@@ -87,11 +86,6 @@ public class ContentContainerPage
      */
     private static final EFapsContentReference CSS_IE = new EFapsContentReference(ContentContainerPage.class,
                     "ContentContainerPage_IE.css");
-
-    /**
-     * Variable contains the key to the MenuTree.
-     */
-    private String menuTreeKey;
 
     /**
      * Variable contains the Path to the IFrame-Component so that ist can be
@@ -171,6 +165,19 @@ public class ContentContainerPage
         throws EFapsException
     {
         initialise(_uuid, _instanceKey, null);
+    }
+
+    /**
+     * @param _uuid UUID of the command
+     * @param _instanceKey oid
+     * @throws EFapsException on error on error
+     */
+    public ContentContainerPage(final UUID _uuid,
+                                final String _instanceKey,
+                                final boolean _addStructurBrowser)
+        throws EFapsException
+    {
+        this(_uuid, _instanceKey, null, _addStructurBrowser);
     }
 
     /**
@@ -286,30 +293,8 @@ public class ContentContainerPage
         } else {
             add(StaticHeaderContrBehavior.forCss(ContentContainerPage.CSS));
         }
-        if (this.structurbrowser) {
-            borderPanel.add(new StructBrowsSplitPanel("leftPanel", _uuid, _instanceKey, this.menuTreeKey,
-                            _selectCmdUUID));
-        } else {
-            borderPanel.add(new ListOnlyPanel("leftPanel", _uuid, _instanceKey, this.menuTreeKey, _selectCmdUUID));
-        }
-
-        //
-        // final WebMarkupContainer parent = new
-        // WebMarkupContainer("splitrightact");
-        // right.add(parent);
-        // parent.setOutputMarkupId(true);
-        //
-        // // select the defaultCommand
-        //
-        // this.webForm = cmd.getTargetForm() != null;
-        // // set the Path to the IFrame
-        // this.inlinePath =
-        // inline.getPath().substring(inline.getPath().indexOf(":") + 1);
-        // // set the Path to the Split
-        // this.splitPath =
-        // split.getPath().substring(inline.getPath().indexOf(":") + 1);
-        //
-        // this.add(new ChildCallBackHeaderContributer());
+        borderPanel.add(new ListOnlyPanel("leftPanel", _uuid, _instanceKey, _selectCmdUUID,
+                        this.structurbrowser));
     }
 
     /**
@@ -321,17 +306,6 @@ public class ContentContainerPage
     public String getInlinePath()
     {
         return this.inlinePath;
-    }
-
-    /**
-     * This is the getter method for the instance variable {@link #menuTreeKey}.
-     *
-     * @return value of instance variable {@link #menuTreeKey}
-     */
-
-    public String getMenuTreeKey()
-    {
-        return this.menuTreeKey;
     }
 
     /**
