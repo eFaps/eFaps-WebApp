@@ -26,18 +26,24 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.util.string.StringValue;
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
@@ -46,7 +52,6 @@ import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.Opener;
-import org.efaps.ui.wicket.behaviors.ShowFileCallBackBehavior;
 import org.efaps.ui.wicket.behaviors.update.UpdateInterface;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
@@ -54,13 +59,20 @@ import org.efaps.ui.wicket.components.form.FormPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.FormModel;
 import org.efaps.ui.wicket.models.TableModel;
+import org.efaps.ui.wicket.models.cell.UIFormCell;
+import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.models.objects.UIFieldForm;
+import org.efaps.ui.wicket.models.objects.UIFieldTable;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIForm.Element;
 import org.efaps.ui.wicket.models.objects.UIForm.ElementType;
+import org.efaps.ui.wicket.models.objects.UIForm.FormElement;
+import org.efaps.ui.wicket.models.objects.UIForm.FormRow;
+import org.efaps.ui.wicket.models.objects.UIRow;
 import org.efaps.ui.wicket.models.objects.UITable;
+import org.efaps.ui.wicket.models.objects.UITableHeader;
 import org.efaps.ui.wicket.models.objects.UIWizardObject;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
@@ -187,11 +199,6 @@ public class AjaxSubmitCloseBehavior
                         if (this.uiObject.getCommand().getTarget() == Target.MODAL
                                         || (this.uiObject.getCallingCommand() != null
                                                 && this.uiObject.getCallingCommand().getTarget() == Target.MODAL)) {
-                            if (this.uiObject.isTargetShowFile()) {
-                                final ShowFileCallBackBehavior callback
-                                    = ((EFapsSession) footer.getSession()).getFileCallBack();
-                                _target.prependJavaScript(callback.getCallbackScript());
-                            }
                             footer.getModalWindow().setReloadChild(!this.uiObject.getCommand().isNoUpdateAfterCmd());
                             footer.getModalWindow().close(_target);
                         } else {
@@ -255,7 +262,8 @@ public class AjaxSubmitCloseBehavior
     {
         for (final DateTimePanel datepicker : ((FormContainer) getForm()).getDateComponents()) {
             final IRequestParameters parameters = getComponent().getRequestCycle().getRequest().getPostParameters();
-            final Set<String> names = getComponent().getRequestCycle().getRequest().getPostParameters().getParameterNames();
+            final Set<String> names = getComponent().getRequestCycle().getRequest().getPostParameters()
+                            .getParameterNames();
             if (names.contains(datepicker.getDateFieldName())) {
                 parameters.getParameterValues(datepicker.getDateFieldName());
                 parameters.getParameterValues(datepicker.getHourFieldName());
@@ -384,72 +392,75 @@ public class AjaxSubmitCloseBehavior
                                     final UIForm _uiform)
         throws EFapsException
     {
-        final boolean ret = true;
-//        for (final Element element : _uiform.getElements()) {
-//            if (element.getType().equals(ElementType.FORM)) {
-//                final FormElement formElement = (FormElement) element.getElement();
-//                for (final FormRow row : formElement.getRowModels()) {
-//                    for (final UIFormCell cell : row.getValues()) {
-////                        final String[] values = getComponent().getRequestCycle().getRequest().getParameters(
-////                                        cell.getName());
-////                        if (values != null && values.length > 0) {
-////                            final String value = values[0];
-////                            if (value.length() > 0) {
-////                                final UIInterface clazz = cell.getUiClass();
-////                                if (clazz != null) {
-////                                    final String warn = clazz.validateValue(value, cell.getAttribute());
-////                                    if (warn != null) {
-////                                        _html.append("<tr><td>").append(cell.getCellLabel()).append(":</td><td>")
-////                                            .append(warn).append("</td></tr>");
-////                                        ret = false;
-////                                        final WebMarkupContainer comp = cell.getComponent();
-////                                        final Component label = comp.getParent().get(0);
-////                                        label.add(new SimpleAttributeModifier("class", "eFapsFormLabelInvalidValue"));
-////                                        _target.addComponent(label);
-////                                    }
-////                                }
-////                            }
-//                        }
-//                    }
-//                }
-//            } else if (element.getType().equals(ElementType.SUBFORM)) {
-//                final UIFieldForm uiFieldForm = (UIFieldForm) element.getElement();
-//                final boolean tmp = evalFormElement(_target, _html, uiFieldForm);
-//                ret = ret ? tmp : ret;
-//            } else if (element.getType().equals(ElementType.TABLE)) {
-//                final UIFieldTable uiFieldTable = (UIFieldTable) element.getElement();
-//                final List<UITableHeader> headers = uiFieldTable.getHeaders();
-//                for (final UIRow uiRow : uiFieldTable.getValues()) {
-//                    uiRow.getUserinterfaceId();
-//                    final Iterator<UITableHeader> headerIter = headers.iterator();
-//                    for (final UITableCell uiTableCell : uiRow.getValues()) {
-//                        final UITableHeader header = headerIter.next();
-//                        final String[] values = getComponent().getRequestCycle().getRequest()
-//                                                        .getParameters(uiTableCell.getName());
-//                        if (values != null && values.length > 0) {
-//                            for (int i = 0; i < values.length; i++) {
-//                                if (values[i].length() > 0) {
-//                                    final UIInterface clazz = uiTableCell.getUiClass();
-//                                    if (clazz != null) {
-//                                        final String warn = clazz.validateValue(values[i], uiTableCell.getAttribute());
-//                                        if (warn != null) {
-//                                            _html.append("<tr><td>").append(header.getLabel()).append(" ").append(i + 1)
-//                                                .append(":</td><td>").append(warn).append("</td></tr>");
-//                                            ret = false;
-//                                            final StringBuilder js = new StringBuilder();
-//                                            js.append("document.getElementsByName('").append(uiTableCell.getName())
-//                                                .append("')[").append(i)
-//                                                .append("].setAttribute('class', 'eFapsTableCellInvalidValue');");
-//                                            _target.appendJavaScript(js.toString());
-//                                        }
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
+        boolean ret = true;
+        for (final Element element : _uiform.getElements()) {
+            if (element.getType().equals(ElementType.FORM)) {
+                final FormElement formElement = (FormElement) element.getElement();
+                for (final FormRow row : formElement.getRowModels()) {
+                    for (final UIFormCell cell : row.getValues()) {
+                        final StringValue value = getComponent().getRequest().getRequestParameters()
+                                        .getParameterValue(cell.getName());
+                        if (!value.isNull() && !value.isEmpty()) {
+                            final UIInterface clazz = cell.getUiClass();
+                            if (clazz != null) {
+                                final String warn = clazz.validateValue(value.toString(), cell.getAttribute());
+                                if (warn != null) {
+                                    _html.append("<tr><td>").append(cell.getCellLabel()).append(":</td><td>")
+                                        .append(warn).append("</td></tr>");
+                                    ret = false;
+                                    final WebMarkupContainer comp = cell.getComponent();
+                                    final Component label = comp.getParent().get(0);
+                                    label.add(AttributeModifier.append("class", "eFapsFormLabelInvalidValue"));
+                                    _target.add(label);
+                                }
+                            }
+
+                        }
+                    }
+                }
+            } else if (element.getType().equals(ElementType.SUBFORM)) {
+                final UIFieldForm uiFieldForm = (UIFieldForm) element.getElement();
+                final boolean tmp = evalFormElement(_target, _html, uiFieldForm);
+                ret = ret ? tmp : ret;
+            } else if (element.getType().equals(ElementType.TABLE)) {
+                final UIFieldTable uiFieldTable = (UIFieldTable) element.getElement();
+                final List<UITableHeader> headers = uiFieldTable.getHeaders();
+                for (final UIRow uiRow : uiFieldTable.getValues()) {
+                    uiRow.getUserinterfaceId();
+                    final Iterator<UITableHeader> headerIter = headers.iterator();
+                    for (final UITableCell uiTableCell : uiRow.getValues()) {
+                        final UITableHeader header = headerIter.next();
+                        final List<StringValue> values = getComponent().getRequest().getRequestParameters()
+                                        .getParameterValues(uiTableCell.getName());
+
+                        if (values != null && !values.isEmpty()) {
+                            int i = 0;
+                            for (final StringValue value : values) {
+                                if (!value.isNull() && !value.isEmpty()) {
+
+                                    final UIInterface clazz = uiTableCell.getUiClass();
+                                    if (clazz != null) {
+                                        final String warn = clazz.validateValue(value.toString(),
+                                                        uiTableCell.getAttribute());
+                                        if (warn != null) {
+                                            _html.append("<tr><td>").append(header.getLabel()).append(" ").append(i + 1)
+                                                .append(":</td><td>").append(warn).append("</td></tr>");
+                                            ret = false;
+                                            final StringBuilder js = new StringBuilder();
+                                            js.append("document.getElementsByName('").append(uiTableCell.getName())
+                                                .append("')[").append(i)
+                                                .append("].setAttribute('class', 'eFapsTableCellInvalidValue');");
+                                            _target.appendJavaScript(js.toString());
+                                        }
+                                    }
+                                }
+                                i++;
+                            }
+                        }
+                    }
+                }
+            }
+        }
         return ret;
     }
 
@@ -516,29 +527,25 @@ public class AjaxSubmitCloseBehavior
      */
     private boolean checkForRequired(final AjaxRequestTarget _target)
     {
-        final boolean ret = true;
-//        if (!(this.form.getParent().getDefaultModel() instanceof TableModel)) {
-//            final Map<?, ?> map = getComponent().getRequestCycle().getRequest().getParameterMap();
-//            final List<FormPanel> panels = getFormPanels();
-//            for (final FormPanel panel : panels) {
-//                for (final Entry<String, Label> entry : panel.getRequiredComponents().entrySet()) {
-//                    String value = null;
-//                    if (map.get(entry.getKey()) != null) {
-//                        final String[] values = (String[]) map.get(entry.getKey());
-//                        value = values[0];
-//                    }
-//                    if (value == null || value.length() == 0) {
-//                        final Label label = entry.getValue();
-//                        label.add(new SimpleAttributeModifier("class", "eFapsFormLabelRequiredForce"));
-//                        _target.addComponent(label);
-//                        ret = false;
-//                    }
-//                }
-//            }
-//            if (!ret) {
-//                showDialog(_target, "MandatoryDialog", false, false);
-//            }
-//        }
+        boolean ret = true;
+        if (!(getForm().getParent().getDefaultModel() instanceof TableModel)) {
+            final IRequestParameters parameters = getComponent().getRequest().getRequestParameters();
+            final List<FormPanel> panels = getFormPanels();
+            for (final FormPanel panel : panels) {
+                for (final Entry<String, Label> entry : panel.getRequiredComponents().entrySet()) {
+                    final StringValue value = parameters.getParameterValue(entry.getKey());
+                    if (value.isNull() || value.isEmpty()) {
+                        final Label label = entry.getValue();
+                        label.add(AttributeModifier.replace("class", "eFapsFormLabelRequiredForce"));
+                        _target.add(label);
+                        ret = false;
+                    }
+                }
+            }
+            if (!ret) {
+                showDialog(_target, "MandatoryDialog", false, false);
+            }
+        }
         return ret;
     }
 

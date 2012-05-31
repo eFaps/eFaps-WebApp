@@ -45,9 +45,7 @@ import org.apache.wicket.util.time.Duration;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.db.Context;
 import org.efaps.message.MessageStatusHolder;
-import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.behaviors.SetMessageStatusBehavior;
-import org.efaps.ui.wicket.behaviors.ShowFileCallBackBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.BorderContainerBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.BorderContainerBehavior.Design;
 import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior;
@@ -122,12 +120,6 @@ public class MainPage
         // beginning of a session,
         // if an ajax call would be done as first an error occurs
         ((WebClientInfo) Session.get().getClientInfo()).getProperties();
-
-        // add the file call back used to open a file in the session and the
-        // main page
-        final ShowFileCallBackBehavior fileCall = new ShowFileCallBackBehavior();
-        this.add(fileCall);
-        ((EFapsSession) getSession()).setFileCallBack(fileCall);
 
         add(new RequireBehavior("dojo/dom", "dojo/_base/window"));
         add(new PreLoaderPanel("preloader"));

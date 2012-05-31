@@ -30,7 +30,8 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.request.IRequestHandler;
 import org.efaps.admin.dbproperty.DBProperties;
-import org.efaps.ui.wicket.models.objects.AbstractUIObject;
+import org.efaps.ui.wicket.behaviors.AjaxDownloadBehavior;
+import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.models.objects.UITable;
@@ -69,6 +70,11 @@ public class ModalWindowContainer
     private boolean updateParent = false;
 
     /**
+     * The DownloadBehavior used for downloading files.
+     */
+    private final AjaxDownloadBehavior download  = new AjaxDownloadBehavior();
+
+    /**
      * Constructor.
      *
      * @param _wicketId wicket id of this component
@@ -78,6 +84,7 @@ public class ModalWindowContainer
         super(_wicketId);
         super.setCssClassName(ModalWindow.CSS_CLASS_GRAY);
         setTitle(DBProperties.getProperty("Logo.Version.Label"));
+        add(this.download);
     }
 
     /**
@@ -113,6 +120,10 @@ public class ModalWindowContainer
         if (this.reloadChild) {
             _target.prependJavaScript(getReloadJavaScript());
         }
+        final AbstractUIPageObject uiObject = (AbstractUIPageObject) getPage().getDefaultModelObject();
+        if (uiObject.isTargetShowFile()) {
+            this.download.initiate(_target);
+        }
     }
 
     /**
@@ -123,23 +134,23 @@ public class ModalWindowContainer
      */
     public String getReloadJavaScript()
     {
-        final AbstractUIObject model = (AbstractUIObject) getPage().getDefaultModelObject();
+        final AbstractUIPageObject uiObject = (AbstractUIPageObject) getPage().getDefaultModelObject();
         final StringBuilder javascript = new StringBuilder();
-        if (model != null) {
+        if (uiObject != null) {
             try {
                 PageReference calledByPageRef = ((AbstractContentPage) getPage()).getCalledByPageReference();
                 if (calledByPageRef != null && calledByPageRef.getPage() instanceof AbstractContentPage) {
                     calledByPageRef = ((AbstractContentPage) calledByPageRef.getPage()).getCalledByPageReference();
                 }
 
-                model.resetModel();
+                uiObject.resetModel();
                 final Page page;
-                if (model instanceof UITable) {
-                    page = new TablePage(Model.of((UITable) model), calledByPageRef);
-                } else if (model instanceof UIForm) {
-                    page = new FormPage(Model.of((UIForm) model), calledByPageRef);
-                } else if (model instanceof UIStructurBrowser) {
-                    page = new StructurBrowserPage(Model.of((UIStructurBrowser) model), calledByPageRef);
+                if (uiObject instanceof UITable) {
+                    page = new TablePage(Model.of((UITable) uiObject), calledByPageRef);
+                } else if (uiObject instanceof UIForm) {
+                    page = new FormPage(Model.of((UIForm) uiObject), calledByPageRef);
+                } else if (uiObject instanceof UIStructurBrowser) {
+                    page = new StructurBrowserPage(Model.of((UIStructurBrowser) uiObject), calledByPageRef);
                 } else {
                     page = new EmptyPage();
                 }
@@ -160,7 +171,6 @@ public class ModalWindowContainer
                         .append("\"src\": \"./wicket/").append(url)
                         .append("\",\"style\": \"border: 0; width: 100%; height: 100%\"")
                         .append("}));");
-
                 }
             } catch (final EFapsException e) {
 

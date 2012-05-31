@@ -46,7 +46,6 @@ import org.efaps.admin.user.Person;
 import org.efaps.admin.user.UserAttributesSet;
 import org.efaps.db.Context;
 import org.efaps.jaas.LoginHandler;
-import org.efaps.ui.wicket.behaviors.ShowFileCallBackBehavior;
 import org.efaps.ui.wicket.behaviors.update.UpdateInterface;
 import org.efaps.ui.wicket.components.IRecent;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
@@ -125,11 +124,6 @@ public class EFapsSession
      * @see #getUpdateBehaviors()
      */
     private final Map<String, List<UpdateInterface>> updateBehaviors = new HashMap<String, List<UpdateInterface>>();
-
-    /**
-     * Behvaior used to show a file.
-     */
-    private ShowFileCallBackBehavior fileCallBack;
 
     /**
      * File to be shown by the ShowFileCallBackBehavior.
@@ -517,26 +511,6 @@ public class EFapsSession
                 throw new RestartResponseException(new ErrorPage(e));
             }
         }
-    }
-
-    /**
-     * Getter method for instance variable {@link #fileCallBack}.
-     *
-     * @return value of instance variable {@link #fileCallBack}
-     */
-    public ShowFileCallBackBehavior getFileCallBack()
-    {
-        return this.fileCallBack;
-    }
-
-    /**
-     * Setter method for instance variable {@link #fileCallBack}.
-     *
-     * @param _fileCallBack value for instance variable {@link #fileCallBack}
-     */
-    public void setFileCallBack(final ShowFileCallBackBehavior _fileCallBack)
-    {
-        this.fileCallBack = _fileCallBack;
     }
 
     /**
