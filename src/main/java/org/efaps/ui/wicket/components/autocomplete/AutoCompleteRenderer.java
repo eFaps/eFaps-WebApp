@@ -108,7 +108,7 @@ public class AutoCompleteRenderer
                         : _map.get(EFapsKey.AUTOCOMPLETE_VALUE.getKey());
         final boolean escape = escape(_map);
         final StringBuilder js = new StringBuilder();
-        js.append("wicketGet('").append(this.autoCompleteField.getMarkupId()).append("_hidden').value ='")
+        js.append("Wicket.$('").append(this.autoCompleteField.getMarkupId()).append("_hidden').value ='")
                         .append(escape ? StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(key))
                                         : key).append("';");
         for (final String keyString : _map.keySet()) {

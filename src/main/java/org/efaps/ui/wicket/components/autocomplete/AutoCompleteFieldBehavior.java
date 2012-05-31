@@ -24,9 +24,17 @@ package org.efaps.ui.wicket.components.autocomplete;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteBehavior;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteSettings;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.IAutoCompleteRenderer;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptHeaderItem;
+import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
+import org.apache.wicket.request.resource.JavaScriptResourceReference;
+import org.apache.wicket.request.resource.ResourceReference;
+import org.apache.wicket.resource.CoreLibrariesContributor;
+import org.apache.wicket.util.string.Strings;
 
 
 /**
@@ -38,7 +46,8 @@ import org.apache.wicket.extensions.ajax.markup.html.autocomplete.IAutoCompleteR
 public class AutoCompleteFieldBehavior
     extends AutoCompleteBehavior<Map<String, String>>
 {
-
+    private static final ResourceReference AUTOCOMPLETE_JS = new JavaScriptResourceReference(
+                    AutoCompleteFieldBehavior.class, "wicket-autocomplete.js");
     /**
      * Needed for serialization.
      */
@@ -84,5 +93,39 @@ public class AutoCompleteFieldBehavior
         final String initJS = String.format("new Wicket.AutoComplete('%s','%s',%s,%s);", id,
                                                   getCallbackUrl(), constructSettingsJS(), "null");
         return initJS;
+    }
+
+
+    @Override
+    public void renderHead(final Component component, final IHeaderResponse response)
+    {
+        super.renderHead(component, response);
+        CoreLibrariesContributor.contributeAjax(component.getApplication(), response);
+        renderAutocompleteHead(response);
+    }
+
+    /**
+     * Render autocomplete init javascript and other head contributions
+     *
+     * @param response
+     */
+    private void renderAutocompleteHead(final IHeaderResponse response)
+    {
+        response.render(JavaScriptHeaderItem.forReference(AutoCompleteFieldBehavior.AUTOCOMPLETE_JS));
+        final String id = getComponent().getMarkupId();
+
+        String indicatorId = findIndicatorId();
+        if (Strings.isEmpty(indicatorId))
+        {
+            indicatorId = "null";
+        }
+        else
+        {
+            indicatorId = "'" + indicatorId + "'";
+        }
+
+        final String initJS = String.format("new Wicket.AutoComplete('%s','%s',%s,%s);", id,
+            getCallbackUrl(), constructSettingsJS(), indicatorId);
+        response.render(OnDomReadyHeaderItem.forScript(initJS));
     }
 }
