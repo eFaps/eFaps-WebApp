@@ -51,7 +51,7 @@ public class MenuBarPanel
     /**
      * Content reference to the an image.
      */
-    public static final EFapsContentReference IMG_BLANK = new EFapsContentReference(MenuContainer.class, "blank.gif");
+    public static final EFapsContentReference IMG_BLANK = new EFapsContentReference(MenuBarPanel.class, "blank.gif");
 
     /**
      * @param _wicketId wicketId of this Panel

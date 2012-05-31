@@ -20,10 +20,8 @@
 
 package org.efaps.ui.wicket.pages.dialog;
 
-import java.util.List;
-import java.util.Map;
-
 import org.apache.wicket.Component;
+import org.apache.wicket.PageReference;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -35,8 +33,6 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.Parameter.ParameterValues;
-import org.efaps.ui.wicket.EFapsSession;
-import org.efaps.ui.wicket.behaviors.update.UpdateInterface;
 import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.components.footer.AjaxSubmitCloseBehavior;
@@ -44,6 +40,7 @@ import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.modalwindow.UpdateParentCallback;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
+import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
@@ -61,14 +58,14 @@ public class DialogPage
 {
 
     /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * Reference to the StyleSheet of this Page stored in the eFaps-DataBase.
      */
     private static final EFapsContentReference CSS = new EFapsContentReference(DialogPage.class, "DialogPage.css");
-
-    /**
-     * This instance variable stores the ModalWindow this Page is opened in.
-     */
-    private final ModalWindowContainer modal;
 
     /**
      * This instance variable stores the Compoment wich called this DialogPage,
@@ -77,22 +74,27 @@ public class DialogPage
     private Component parent;
 
     /**
+     * Reference to the page that opened this dialog.
+     */
+    private final PageReference pageReference;
+
+    /**
      * Constructor used for a DialogPage that renders a Question like: "Are you
      * sure that??" with a Cancel and a SubmitButton.
      *
-     * @param _modal ModalWindow this Page is opend in
+     * @param _pageReference Reference to the page that opened this dialog
      * @param _model the MenuItem that called this DialogPage
-     * @param _parameters Parameters wich must be past on, in case of submit
+     * @param _oids oids which must be past on, in case of submit
      * @param _parent the ParentComponent
      */
-    public DialogPage(final ModalWindowContainer _modal,
+    public DialogPage(final PageReference _pageReference,
                       final IModel<UIMenuItem> _model,
-                      final Map<?, ?> _parameters,
+                      final String[] _oids,
                       final Component _parent)
     {
         super(_model);
         this.parent = _parent;
-        this.modal = _modal;
+        this.pageReference = _pageReference;
         final UIMenuItem menuItem = _model.getObject();
 
         final String cmdName = menuItem.getCommand().getName();
@@ -101,7 +103,7 @@ public class DialogPage
 
         this.add(new Label("textLabel", DBProperties.getProperty(cmdName + ".Question")));
 
-        this.add(new Button("submitButton", new AjaxSubmitLink(Button.LINKID, _model, _parameters),
+        this.add(new Button("submitButton", new AjaxSubmitLink(Button.LINKID, _model, _oids),
                         DialogPage.getLabel(cmdName, "Submit"), Button.ICON.ACCEPT.getReference()));
 
         this.add(new Button("closeButton", new AjaxCloseLink(Button.LINKID), DialogPage.getLabel(cmdName, "Cancel"),
@@ -111,19 +113,19 @@ public class DialogPage
     /**
      * Constructor setting the ModalWindow.
      *
-     * @param _modal modal window
+     * @param _pageReference Reference to the page that opened this dialog
      * @param _value value is depending on parameter "_isSniplett" the key to a
      *            DBProperty or a snipplet
      * @param _isSniplett is it a snipplet or not
      * @param _behavior if a _behavior is given a button will be rendered to
      *            execute it
      */
-    public DialogPage(final ModalWindowContainer _modal,
+    public DialogPage(final PageReference _pageReference,
                       final String _value,
                       final boolean _isSniplett,
                       final AjaxSubmitCloseBehavior _behavior)
     {
-        this.modal = _modal;
+        this.pageReference = _pageReference;
         this.add(StaticHeaderContrBehavior.forCss(DialogPage.CSS));
 
         if (_isSniplett) {
@@ -196,7 +198,9 @@ public class DialogPage
         public void onClick(final AjaxRequestTarget _target)
         {
             this.behavior.setValidated(true);
-            DialogPage.this.modal.close(_target);
+            final ModalWindowContainer modal = ((AbstractContentPage) DialogPage.this.pageReference.getPage())
+                            .getModal();
+            modal.close(_target);
             final StringBuilder js = new StringBuilder();
             // js.append("var wind = parent.frames[parent.frames.length - 2];")
             // .append("function cllIt(){")
@@ -234,7 +238,10 @@ public class DialogPage
         @Override
         public void onClick(final AjaxRequestTarget _target)
         {
-            DialogPage.this.modal.close(_target);
+            final ModalWindowContainer modal = ((AbstractContentPage) DialogPage.this.pageReference.getPage())
+                            .getModal();
+
+            modal.close(_target);
 
             final StringBuilder bldr = new StringBuilder();
             bldr.append("var inp = top.frames[0].document").append(".getElementById('eFapsContentDiv')").append(
@@ -255,21 +262,21 @@ public class DialogPage
         private static final long serialVersionUID = 1L;
 
         /**
-         * the Parameters that will be submitted.
+         * the Oids that will be submitted.
          */
-        private final Map<?, ?> parameters;
+        private final String[] oids;
 
         /**
          * @param _wicketId wicket id of this component
          * @param _model model for this component
-         * @param _parameters parameters
+         * @param _para parameters
          */
         public AjaxSubmitLink(final String _wicketId,
                               final IModel<UIMenuItem> _model,
-                              final Map<?, ?> _parameters)
+                              final String[] _oids)
         {
             super(_wicketId, _model);
-            this.parameters = _parameters;
+            this.oids = _oids;
         }
 
         /**
@@ -279,30 +286,17 @@ public class DialogPage
         @Override
         public void onClick(final AjaxRequestTarget _target)
         {
-
             final UIMenuItem model = getModelObject();
-
             try {
-                model.executeEvents(ParameterValues.OTHERS, this.parameters.get("selectedRow"));
+                model.executeEvents(ParameterValues.OTHERS, this.oids);
             } catch (final EFapsException e) {
                 throw new RestartResponseException(new ErrorPage(e));
             }
-
-            final List<UpdateInterface> updates = ((EFapsSession) getSession()).getUpdateBehavior(model
-                            .getInstanceKey());
-            if (updates != null) {
-                for (final UpdateInterface update : updates) {
-                    if (update.isAjaxCallback()) {
-                        update.setInstanceKey(model.getInstanceKey());
-                        update.setMode(model.getMode());
-                        _target.prependJavaScript(update.getAjaxCallback());
-                    }
-                }
-            }
-            DialogPage.this.modal.setWindowClosedCallback(new UpdateParentCallback(DialogPage.this.parent,
-                            DialogPage.this.modal));
-            DialogPage.this.modal.setUpdateParent(true);
-            DialogPage.this.modal.close(_target);
+            final ModalWindowContainer modal = ((AbstractContentPage) DialogPage.this.pageReference.getPage())
+                            .getModal();
+            modal.setWindowClosedCallback(new UpdateParentCallback(DialogPage.this.parent, modal));
+            modal.setUpdateParent(true);
+            modal.close(_target);
         }
     }
 

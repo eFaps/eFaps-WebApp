@@ -23,7 +23,6 @@ package org.efaps.ui.wicket.pages.content;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.ajax.IAjaxIndicatorAware;
-import org.apache.wicket.event.IEvent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.ExternalLink;
@@ -87,7 +86,9 @@ public abstract class AbstractContentPage
      * This instance variable contains the ModalWindow from this Page.
      */
     private final ModalWindowContainer modal = new ModalWindowContainer("modal");
-    private boolean updateMenu = false;
+
+
+    private FormContainer form;
 
     private PageReference calledByPageReference;
 
@@ -118,7 +119,6 @@ public abstract class AbstractContentPage
     {
         super(_model);
         this.modalWindow = _modalWindow;
-        this.updateMenu = _updateMenu;
     }
 
 
@@ -163,6 +163,7 @@ public abstract class AbstractContentPage
     protected void addComponents(final FormContainer _form)
         throws EFapsException
     {
+        this.form = _form;
         // set the title for the Page
         add(new Label("pageTitle", DBProperties.getProperty("Logo.Version.Label")));
 
@@ -211,6 +212,17 @@ public abstract class AbstractContentPage
             footerpanel.setVisible(false);
         }
         add(footerpanel);
+    }
+
+
+    /**
+     * Getter method for the instance variable {@link #form}.
+     *
+     * @return value of instance variable {@link #form}
+     */
+    public FormContainer getForm()
+    {
+        return this.form;
     }
 
     /**
@@ -287,13 +299,5 @@ public abstract class AbstractContentPage
     }
 
 
-    /* (non-Javadoc)
-     * @see org.apache.wicket.Component#onEvent(org.apache.wicket.event.IEvent)
-     */
-    @Override
-    public void onEvent(final IEvent<?> _event)
-    {
-        // TODO Auto-generated method stub
-        super.onEvent(_event);
-    }
+
 }

@@ -600,7 +600,8 @@ public class AjaxSubmitCloseBehavior
 
             public Page createPage()
             {
-                return new DialogPage(modal, _key, _isSniplett, _goOnButton ? AjaxSubmitCloseBehavior.this : null);
+                return new DialogPage(((AbstractContentPage) getComponent().getPage()).getPageReference(),
+                                _key, _isSniplett, _goOnButton ? AjaxSubmitCloseBehavior.this : null);
             }
         });
         modal.show(_target);

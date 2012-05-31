@@ -29,12 +29,11 @@ import org.apache.wicket.model.IModel;
 import org.efaps.ui.wicket.components.menu.AbstractMenuItemAjaxComponent;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
-import org.efaps.ui.wicket.pages.company.CompanyPage;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
 
 /**
- * Class is used as a link inside the JSCookMenu that opens a modal window.
+ * Class is used as a link to set the company.
  *
  * @author The eFasp Team
  * @version $Id:AjaxOpenModalComponent.java 1510 2007-10-18 14:35:40Z jmox $
@@ -158,7 +157,7 @@ public class SetCompanyItem
 
                 public Page createPage()
                 {
-                    return new CompanyPage(modal, null);
+                    return null;//new CompanyPage(modal, null);
                 }
             };
             modal.setPageCreator(pageCreator);

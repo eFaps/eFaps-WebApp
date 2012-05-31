@@ -18,21 +18,25 @@
  * Last Changed By: $Author:jmox $
  */
 
-package org.efaps.ui.wicket.components.menu;
+package org.efaps.ui.wicket.components.menu.ajax;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.request.IRequestParameters;
+import org.apache.wicket.util.string.StringValue;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.ui.AbstractCommand;
+import org.efaps.ui.wicket.behaviors.dojo.OnDojoReadyHeaderItem;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.FormModel;
 import org.efaps.ui.wicket.models.TableModel;
@@ -56,8 +60,8 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class AjaxSubmitComponent
-    extends AbstractMenuItemAjaxComponent
+public class SubmitItem
+    extends AbstractItem
 {
     /**
      * Needed for serialization.
@@ -67,25 +71,12 @@ public class AjaxSubmitComponent
     /**
      * @param _wicketId     wicketid
      * @param _menuItem     menuitem
-     * @param _form         form this component will commit
      */
-    public AjaxSubmitComponent(final String _wicketId,
-                               final IModel<UIMenuItem> _menuItem,
-                               final Form<?> _form)
+    public SubmitItem(final String _wicketId,
+                      final IModel<UIMenuItem> _menuItem)
     {
         super(_wicketId, _menuItem);
-        add(new SubmitAndUpdateBehavior(_form));
-    }
-
-    /**
-     * Set the javascript from the behavior.
-     * @see org.efaps.ui.wicket.components.menu.AbstractMenuItemAjaxComponent#getJavaScript()
-     * @return the javascript
-     */
-    @Override
-    public String getJavaScript()
-    {
-        return ((SubmitAndUpdateBehavior) super.getBehaviors().get(0)).getJavaScript();
+        add(new SubmitAndUpdateBehavior());
     }
 
     /**
@@ -100,41 +91,38 @@ public class AjaxSubmitComponent
         private static final long serialVersionUID = 1L;
 
         /**
-         * Form which is comitted with this behavior.
-         */
-        private final Form<?> form;
-
-        /**
          * Constructor.
-         * @param _form form which is comitted with this event.
          */
-        public SubmitAndUpdateBehavior(final Form<?> _form)
+        public SubmitAndUpdateBehavior()
         {
-            super(_form, "onClick");
-            this.form = _form;
+            super("onClick");
+        }
+
+        @Override
+        public void renderHead(final Component _component,
+                               final IHeaderResponse _response)
+        {
+            if (_component.isEnabledInHierarchy()) {
+                final CharSequence js = getCallbackScript(_component);
+
+                final AjaxRequestTarget target = _component.getRequestCycle().find(AjaxRequestTarget.class);
+                if (target == null) {
+                    _response.render(OnDojoReadyHeaderItem.forScript(js.toString()));
+                } else {
+                    target.appendJavaScript(js);
+                }
+            }
         }
 
         /**
-         * Method to access the javascript.
-         * @return javascript
-         */
-        public String getJavaScript()
-        {
-            final String script = super.getCallbackScript().toString();
-            return "javascript:" + script.replace("'", "\"");
-        }
-
-        /**
-         * (non-Javadoc).
-         * @see org.apache.wicket.ajax.form.AjaxFormSubmitBehavior#getPreconditionScript()
-         * @return null
+         * Finds form that will be submitted.
+         *
+         * @return form to submit or {@code null} if none found
          */
         @Override
-        protected CharSequence getPreconditionScript()
+        protected Form<?> findForm()
         {
-            // we have to override the original Script, because it breaks the
-            // eval in the eFapsScript
-            return null;
+            return ((AbstractContentPage) getPage()).getForm();
         }
 
         /**
@@ -146,15 +134,25 @@ public class AjaxSubmitComponent
         {
             final UIMenuItem uiMenuItem = (UIMenuItem) super.getComponent().getDefaultModelObject();
 
-            final Map<?, ?> para = new HashMap();// this.form.getRequest().getParameterMap();
-
+            final IRequestParameters para = getRequest().getRequestParameters();
+            final List<StringValue> oidValues = para.getParameterValues("selectedRow");
+            final String[] oids;
+            if (oidValues != null) {
+                oids  = new String[oidValues.size()];
+                int i = 0;
+                for (final StringValue oidValue : oidValues) {
+                    oids[i] = oidValue.toString();
+                    i++;
+                }
+            } else {
+                oids = new String[0];
+            }
             boolean check = false;
             if (uiMenuItem.getSubmitSelectedRows() > -1) {
-                final String[] oids = (String[]) para.get("selectedRow");
                 if (uiMenuItem.getSubmitSelectedRows() > 0) {
-                    check = oids == null ? false : oids.length == uiMenuItem.getSubmitSelectedRows();
+                    check = oidValues == null ? false : oidValues.size() == uiMenuItem.getSubmitSelectedRows();
                 } else {
-                    check = oids == null ? false : oids.length > 0;
+                    check = oidValues == null ? false : !oidValues.isEmpty();
                 }
             } else {
                 check = true;
@@ -174,8 +172,8 @@ public class AjaxSubmitComponent
 
                         public Page createPage()
                         {
-                            return new DialogPage(modal, new UIModel<UIMenuItem>(uiMenuItem),
-                                            para, AjaxSubmitComponent.this);
+                            return new DialogPage(getPage().getPageReference(), new UIModel<UIMenuItem>(uiMenuItem),
+                                            oids, SubmitItem.this);
                         }
                     });
                     modal.setInitialHeight(150);
@@ -187,8 +185,7 @@ public class AjaxSubmitComponent
 
                     if (command.hasEvents(EventType.UI_COMMAND_EXECUTE)) {
                         try {
-                            final String[] oids = (String[]) para.get("selectedRow");
-                            if (oids != null) {
+                            if (oidValues != null) {
                                 command.executeEvents(EventType.UI_COMMAND_EXECUTE, ParameterValues.OTHERS, oids);
                             } else {
                                 command.executeEvents(EventType.UI_COMMAND_EXECUTE);
@@ -197,20 +194,22 @@ public class AjaxSubmitComponent
                             throw new RestartResponseException(new ErrorPage(e));
                         }
                     }
-                    final AbstractUIObject uiObject = (AbstractUIObject) this.form.getPage().getDefaultModelObject();
+                    final AbstractUIObject uiObject = (AbstractUIObject) getPage().getDefaultModelObject();
                     uiObject.resetModel();
 
                     Page page = null;
                     try {
                         if (uiObject instanceof UITable) {
-                            page = new TablePage(new TableModel((UITable) uiObject), false);
+                            page = new TablePage(new TableModel((UITable) uiObject),
+                                            ((AbstractContentPage) getPage()).getCalledByPageReference());
                         } else if (uiObject instanceof UIForm) {
-                            page = new FormPage(new FormModel((UIForm) uiObject), false);
+                            page = new FormPage(new FormModel((UIForm) uiObject),
+                                            ((AbstractContentPage) getPage()).getCalledByPageReference());
                         }
                     } catch (final EFapsException e) {
                         page = new ErrorPage(e);
                     }
-                    this.form.setResponsePage(page);
+                    setResponsePage(page);
                 }
             } else {
                 final ModalWindowContainer modal;
@@ -225,7 +224,8 @@ public class AjaxSubmitComponent
 
                     public Page createPage()
                     {
-                        return new DialogPage(modal, "SubmitSelectedRows.fail" + uiMenuItem.getSubmitSelectedRows(),
+                        return new DialogPage(getPage().getPageReference(), "SubmitSelectedRows.fail"
+                                        + uiMenuItem.getSubmitSelectedRows(),
                                         false, null);
                     }
                 });

@@ -117,14 +117,15 @@ public class UpdateParentCallback
             AbstractContentPage page = null;
             try {
                 if (uiObject instanceof UITable) {
-                    page = new TablePage(new TableModel((UITable) uiObject), false);
+                    page = new TablePage(new TableModel((UITable) uiObject),
+                                    ((AbstractContentPage) this.panel.getPage()).getCalledByPageReference());
                 } else if (uiObject instanceof UIForm) {
-                    page = new FormPage(new FormModel((UIForm) uiObject), false);
+                    page = new FormPage(new FormModel((UIForm) uiObject),
+                                    ((AbstractContentPage) this.panel.getPage()).getCalledByPageReference());
                 } else if (uiObject instanceof UIStructurBrowser) {
-                    page = new StructurBrowserPage(new UIModel<UIStructurBrowser>((UIStructurBrowser) uiObject), false);
+                    page = new StructurBrowserPage(new UIModel<UIStructurBrowser>((UIStructurBrowser) uiObject),
+                                    ((AbstractContentPage) this.panel.getPage()).getCalledByPageReference());
                 }
-                // copy the MenuKey to the new page
-                page.setMenuTreeKey(((AbstractContentPage) this.panel.getPage()).getMenuTreeKey());
                 this.panel.setResponsePage(page);
             } catch (final EFapsException e) {
                 this.panel.setResponsePage(new ErrorPage(e));

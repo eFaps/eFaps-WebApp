@@ -48,7 +48,6 @@ import org.efaps.admin.user.Company;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.button.Button;
-import org.efaps.ui.wicket.components.menu.AjaxSetCompanyLink;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
@@ -77,10 +76,6 @@ public class CompanyPage
      */
     private final ModalWindowContainer modal;
 
-    /**
-     * Link that opened this page.
-     */
-    private final AjaxSetCompanyLink link;
 
     /**
      * Constructor adding all Components to this Page.
@@ -88,12 +83,10 @@ public class CompanyPage
      * @param _modal modal window
      * @param _link AjaxSetCompanyLink
      */
-    public CompanyPage(final ModalWindowContainer _modal,
-                       final AjaxSetCompanyLink _link)
+    public CompanyPage(final ModalWindowContainer _modal)
     {
         super();
         this.modal = _modal;
-        this.link = _link;
 
         // set the title for the Page
         add(new Label("pageTitle", DBProperties.getProperty("Logo.Version.Label")));
@@ -261,7 +254,7 @@ public class CompanyPage
                 @Override
                 protected void onSubmit(final AjaxRequestTarget _target)
                 {
-                    CompanyPage.this.link.setReload(true);
+
                     final Iterator<? extends Component> iter = _form.iterator();
                     final Component comp = iter.next();
                     final CompanyObject obj = (CompanyObject) comp.getDefaultModelObject();
@@ -304,7 +297,7 @@ public class CompanyPage
         @Override
         public void onClick(final AjaxRequestTarget _target)
         {
-            CompanyPage.this.link.setReload(false);
+           // CompanyPage.this.link.setReload(false);
             CompanyPage.this.modal.close(_target);
         }
     }

@@ -34,6 +34,7 @@ import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UITable;
+import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.dialog.DialogPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
@@ -114,7 +115,8 @@ public class FooterPanel
 
                             public Page createPage()
                             {
-                                return new DialogPage(FooterPanel.this.modalWindow, uiObject.getCommand().getName()
+                                return new DialogPage(((AbstractContentPage) getPage()).getPageReference(),
+                                                uiObject.getCommand().getName()
                                                 + ".Success", false, null);
                             }
                         });
