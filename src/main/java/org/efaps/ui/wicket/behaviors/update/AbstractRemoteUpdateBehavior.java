@@ -95,7 +95,7 @@ public class AbstractRemoteUpdateBehavior
     protected CharSequence getCallbackScript(final Component _component)
     {
         return "var " + getFuntionName() + "="
-                        + getCallbackFunction(CallbackParameter.context(IRemoteUpdateListener.PARAMETERKEY));
+                        + getCallbackFunction(CallbackParameter.explicit(IRemoteUpdateListener.PARAMETERKEY));
     }
 
     @Override

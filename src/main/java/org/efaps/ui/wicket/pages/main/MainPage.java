@@ -237,7 +237,7 @@ public class MainPage
                 .append("window.onresize = function(event) {\n")
                 .append("var ").append(MainPage.WIDTH_PARAMETERNAME).append("=window.innerWidth;\n")
                 .append("var ").append(MainPage.HEIGTH_PARAMETERNAME).append("=window.innerHeight;\n")
-                .append(getCallbackFunctionBody(CallbackParameter.context(MainPage.WIDTH_PARAMETERNAME),
+                .append(getCallbackFunctionBody(CallbackParameter.explicit(MainPage.WIDTH_PARAMETERNAME),
                                 CallbackParameter.context(MainPage.HEIGTH_PARAMETERNAME)))
                 .append("}\n");
             return js.toString();

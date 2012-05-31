@@ -305,7 +305,7 @@ public class HeaderPanel
         public String getJavaScript()
         {
             return getCallbackFunction(
-                            CallbackParameter.context(HeaderPanel.AjaxStoreColumnWidthBehavior.COLUMNW_PARAMETERNAME))
+                            CallbackParameter.explicit(HeaderPanel.AjaxStoreColumnWidthBehavior.COLUMNW_PARAMETERNAME))
                             .toString();
         }
 
@@ -353,7 +353,7 @@ public class HeaderPanel
         public String getJavaScript()
         {
             return getCallbackFunction(
-                         CallbackParameter.context(HeaderPanel.AjaxStoreColumnOrderBehavior.COLUMNORDER_PARAMETERNAME))
+                         CallbackParameter.explicit(HeaderPanel.AjaxStoreColumnOrderBehavior.COLUMNORDER_PARAMETERNAME))
                            .toString();
         }
 
