@@ -73,8 +73,7 @@ public class DropDownMenuPanel
                 if (childItem.getTarget() != Target.UNKNOWN) {
                     if (childItem.getTarget() == Target.MODAL) {
                         item = new OpenModalItem(itemRepeater.newChildId(),
-                                        new UIModel<UIMenuItem>(childItem),
-                                        childItem.getCommand().isSubmit() ? null : null);
+                                        new UIModel<UIMenuItem>(childItem));
                     } else {
                         item = new LinkItem(itemRepeater.newChildId(), new UIModel<UIMenuItem>(childItem));
                     }
@@ -82,7 +81,7 @@ public class DropDownMenuPanel
                     if (childItem.getCommand().isSubmit()) {
                         item = new SubmitItem(itemRepeater.newChildId(),  new UIModel<UIMenuItem>(childItem));
                     } else if (super.getDefaultModelObject() instanceof UISearchItem) {
-                        item = new OpenModalItem(itemRepeater.newChildId(),  new UIModel<UIMenuItem>(childItem), null);
+                        item = new OpenModalItem(itemRepeater.newChildId(),  new UIModel<UIMenuItem>(childItem));
                     } else {
                         item = new WebMarkupContainer(itemRepeater.newChildId());
                     }

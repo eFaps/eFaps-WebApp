@@ -22,21 +22,16 @@ package org.efaps.ui.wicket.components.menu.ajax;
 
 import java.util.List;
 
-import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
-import org.apache.wicket.markup.head.IHeaderResponse;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.util.string.StringValue;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.ui.AbstractCommand;
-import org.efaps.ui.wicket.behaviors.dojo.OnDojoReadyHeaderItem;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.FormModel;
 import org.efaps.ui.wicket.models.TableModel;
@@ -51,6 +46,7 @@ import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.dialog.DialogPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
+import org.efaps.ui.wicket.util.ParameterUtil;
 import org.efaps.util.EFapsException;
 
 
@@ -83,7 +79,7 @@ public class SubmitItem
      * Behavior called on submit.
      */
     public class SubmitAndUpdateBehavior
-        extends AjaxFormSubmitBehavior
+        extends AbstractSubmitBehavior
     {
         /**
          * Needed for serialization.
@@ -98,33 +94,6 @@ public class SubmitItem
             super("onClick");
         }
 
-        @Override
-        public void renderHead(final Component _component,
-                               final IHeaderResponse _response)
-        {
-            if (_component.isEnabledInHierarchy()) {
-                final CharSequence js = getCallbackScript(_component);
-
-                final AjaxRequestTarget target = _component.getRequestCycle().find(AjaxRequestTarget.class);
-                if (target == null) {
-                    _response.render(OnDojoReadyHeaderItem.forScript(js.toString()));
-                } else {
-                    target.appendJavaScript(js);
-                }
-            }
-        }
-
-        /**
-         * Finds form that will be submitted.
-         *
-         * @return form to submit or {@code null} if none found
-         */
-        @Override
-        protected Form<?> findForm()
-        {
-            return ((AbstractContentPage) getPage()).getForm();
-        }
-
         /**
          * On submit a page is returned or the action directly executed.
          * @param _target AjaxRequestTarget
@@ -136,17 +105,7 @@ public class SubmitItem
 
             final IRequestParameters para = getRequest().getRequestParameters();
             final List<StringValue> oidValues = para.getParameterValues("selectedRow");
-            final String[] oids;
-            if (oidValues != null) {
-                oids  = new String[oidValues.size()];
-                int i = 0;
-                for (final StringValue oidValue : oidValues) {
-                    oids[i] = oidValue.toString();
-                    i++;
-                }
-            } else {
-                oids = new String[0];
-            }
+            final String[] oids = ParameterUtil.parameter2Array(para, "selectedRow");
             boolean check = false;
             if (uiMenuItem.getSubmitSelectedRows() > -1) {
                 if (uiMenuItem.getSubmitSelectedRows() > 0) {
@@ -233,16 +192,6 @@ public class SubmitItem
                 modal.setInitialWidth(350);
                 modal.show(_target);
             }
-        }
-
-        /**
-         * On error nothing is done.
-         * @param _target AjaxRequestTarget
-         */
-        @Override
-        protected void onError(final AjaxRequestTarget _target)
-        {
-            // nothing
         }
     }
 }
