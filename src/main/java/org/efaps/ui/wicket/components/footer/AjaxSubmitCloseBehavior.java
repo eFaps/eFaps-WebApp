@@ -50,6 +50,7 @@ import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.db.Context;
+import org.efaps.ui.wicket.EFapsRequestParametersAdapter;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.Opener;
 import org.efaps.ui.wicket.behaviors.update.UpdateInterface;
@@ -260,15 +261,17 @@ public class AjaxSubmitCloseBehavior
     private void convertDateFieldValues()
         throws EFapsException
     {
+        final EFapsRequestParametersAdapter parameters = (EFapsRequestParametersAdapter) getComponent()
+                        .getRequest().getRequestParameters();
+        final Set<String> names = parameters.getParameterNames();
         for (final DateTimePanel datepicker : ((FormContainer) getForm()).getDateComponents()) {
-            final IRequestParameters parameters = getComponent().getRequestCycle().getRequest().getPostParameters();
-            final Set<String> names = getComponent().getRequestCycle().getRequest().getPostParameters()
-                            .getParameterNames();
             if (names.contains(datepicker.getDateFieldName())) {
-                parameters.getParameterValues(datepicker.getDateFieldName());
-                parameters.getParameterValues(datepicker.getHourFieldName());
-                parameters.getParameterValues(datepicker.getMinuteFieldName());
-                parameters.getParameterValues(datepicker.getAmPmFieldName());
+                final List<StringValue> date = parameters.getParameterValues(datepicker.getDateFieldName());
+                final List<StringValue> hour = parameters.getParameterValues(datepicker.getHourFieldName());
+                final List<StringValue> minute = parameters.getParameterValues(datepicker.getMinuteFieldName());
+                final List<StringValue> ampm = parameters.getParameterValues(datepicker.getAmPmFieldName());
+                parameters.setParameterValues(datepicker.getFieldName(),
+                                datepicker.getDateAsString(date, hour, minute, ampm));
             }
         }
     }

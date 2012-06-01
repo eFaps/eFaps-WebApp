@@ -23,6 +23,8 @@ package org.efaps.ui.wicket;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.Session;
@@ -35,6 +37,7 @@ import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.Response;
+import org.apache.wicket.request.http.WebRequest;
 import org.efaps.jaas.AppAccessHandler;
 import org.efaps.ui.filter.AbstractFilter;
 import org.efaps.ui.wicket.pages.login.LoginPage;
@@ -122,7 +125,16 @@ public class EFapsApplication
                               final Response _response)
     {
         return new EFapsSession(_request);
+    }
 
+    /* (non-Javadoc)
+     * @see org.apache.wicket.protocol.http.WebApplication#newWebRequest(javax.servlet.http.HttpServletRequest, java.lang.String)
+     */
+    @Override
+    public WebRequest newWebRequest(final HttpServletRequest _servletRequest,
+                                    final String _filterPath)
+    {
+        return new EFapsRequest(_servletRequest, _filterPath);
     }
 
     /**

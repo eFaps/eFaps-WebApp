@@ -18,18 +18,21 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.ui.wicket.pages.login;
+package org.efaps.ui.wicket.pages.info;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.WebComponent;
-import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.pages.BrowserInfoForm;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.cycle.RequestCycle;
+import org.efaps.admin.dbproperty.DBProperties;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
 
 /**
  * TODO comment!
@@ -46,9 +49,18 @@ public class GatherInfoPage
     private static final long serialVersionUID = 1L;
 
     /**
+     * Reference to the StyleSheet for this Page.
+     */
+    private static final EFapsContentReference CSS = new EFapsContentReference(GatherInfoPage.class,
+                    "GatherInfoPage.css");
+
+
+    /**
      * Constructor.
      */
-    public GatherInfoPage() {
+    public GatherInfoPage()
+    {
+        this.add(StaticHeaderContrBehavior.forCss(GatherInfoPage.CSS));
 
         final WebComponent meta = new WebComponent("meta");
 
@@ -76,9 +88,11 @@ public class GatherInfoPage
 
         }));
         add(meta);
-        final WebMarkupContainer link = new WebMarkupContainer("link");
-        link.add(AttributeModifier.replace("href", urlModel));
-        add(link);
+
+        add(new Label("pageTitle", DBProperties.getProperty("Logo.Version.Label")));
+
+        add(new Label("label", DBProperties.getProperty("gatherInfoPage.message")).setEscapeModelStrings(false));
+
         add(new BrowserInfoForm("postback")
         {
             private static final long serialVersionUID = 1L;

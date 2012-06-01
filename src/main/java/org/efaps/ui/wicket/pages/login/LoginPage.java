@@ -35,6 +35,7 @@ import org.apache.wicket.request.resource.CssResourceReference;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.EFapsNoAuthorizationNeededInterface;
 import org.efaps.ui.wicket.EFapsSession;
+import org.efaps.ui.wicket.pages.info.GatherInfoPage;
 
 /**
  * This class renders the LoginPage for the eFaps-WebApplication.<br>

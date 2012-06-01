@@ -26,6 +26,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.core.request.handler.PageProvider;
 import org.apache.wicket.core.request.handler.RenderPageRequestHandler;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.mock.MockHomePage;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.request.IRequestHandler;
@@ -40,7 +41,6 @@ import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
-import org.efaps.ui.wicket.pages.empty.EmptyPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.util.EFapsException;
 
@@ -82,7 +82,8 @@ public class ModalWindowContainer
     public ModalWindowContainer(final String _wicketId)
     {
         super(_wicketId);
-        super.setCssClassName(ModalWindow.CSS_CLASS_GRAY);
+        setCssClassName(ModalWindow.CSS_CLASS_GRAY);
+        showUnloadConfirmation(false);
         setTitle(DBProperties.getProperty("Logo.Version.Label"));
         add(this.download);
     }
@@ -152,7 +153,7 @@ public class ModalWindowContainer
                 } else if (uiObject instanceof UIStructurBrowser) {
                     page = new StructurBrowserPage(Model.of((UIStructurBrowser) uiObject), calledByPageRef);
                 } else {
-                    page = new EmptyPage();
+                    page = new MockHomePage();
                 }
 
                 final IRequestHandler handler = new RenderPageRequestHandler(new PageProvider(page));
