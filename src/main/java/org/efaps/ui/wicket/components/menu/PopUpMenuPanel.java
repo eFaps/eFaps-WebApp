@@ -21,9 +21,12 @@
 
 package org.efaps.ui.wicket.components.menu;
 
-import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.MarkupStream;
+import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.behaviors.dojo.PopupMenuBarItemBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.PopupMenuItemBehavior;
 import org.efaps.ui.wicket.models.UIModel;
@@ -68,7 +71,19 @@ public class PopUpMenuPanel
         } else {
             add(new PopupMenuItemBehavior());
         }
-        add(new Label("label", menuItem.getLabel()));
+        add(new WebComponent("label", Model.of(menuItem.getLabel())) {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void onComponentTagBody(final MarkupStream _markupStream,
+                                           final ComponentTag _openTag)
+            {
+                super.onComponentTagBody(_markupStream, _openTag);
+                final StringBuilder html = new StringBuilder()
+                    .append("<span>").append(getDefaultModelObjectAsString()).append("</span>");
+                replaceComponentTagBody(_markupStream, _openTag, html);
+            }
+        });
         add(new DropDownMenuPanel("menu", new UIModel<UIMenuItem>(menuItem)));
     }
 }

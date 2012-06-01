@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.PageReference;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -34,18 +35,19 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.string.StringValue;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
+import org.efaps.ui.wicket.components.modalwindow.UpdateParentCallback;
 import org.efaps.ui.wicket.components.table.filter.FreeTextPanel;
 import org.efaps.ui.wicket.components.table.filter.PickerPanel;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.models.objects.UITableHeader;
 import org.efaps.ui.wicket.models.objects.UITableHeader.FilterType;
+import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
@@ -69,28 +71,30 @@ public class FilterPage
      */
     private static final EFapsContentReference CSS = new EFapsContentReference(FilterPage.class, "FilterPage.css");
 
+    private final PageReference pageReference;
+
     /**
      * @param _model tablemodel
-     * @param _modalwindow modalwindow this page is in
+     * @param _pageReference reference to the page opneing this filterpage
      * @param _uitableHeader uitablehaeder this FilterPage belongs to
      * @throws EFapsException on error
      */
-    public FilterPage(final IModel<UITable> _model,
-                      final ModalWindowContainer _modalwindow,
+    public FilterPage(final PageReference _pageReference,
                       final UITableHeader _uitableHeader)
         throws EFapsException
     {
-        super(_model);
+        super(_pageReference.getPage().getDefaultModel());
+        this.pageReference = _pageReference;
         final UITable uiTable = (UITable) super.getDefaultModelObject();
         add(StaticHeaderContrBehavior.forCss(FilterPage.CSS));
-        _modalwindow.setTitle(DBProperties.getProperty("FilterPage.Title") + _uitableHeader.getLabel());
+
         final FormContainer form = new FormContainer("eFapsForm");
         this.add(form);
         final Panel panel;
         if (_uitableHeader.isFilterPickList()) {
-            panel = new PickerPanel("filterPanel", _model, _uitableHeader);
+            panel = new PickerPanel("filterPanel", getDefaultModel(), _uitableHeader);
         } else {
-            panel = new FreeTextPanel("filterPanel", _model, _uitableHeader);
+            panel = new FreeTextPanel("filterPanel", getDefaultModel(), _uitableHeader);
         }
         form.add(panel);
         final AjaxButton ajaxbutton = new AjaxButton(Button.LINKID, form)
@@ -103,28 +107,32 @@ public class FilterPage
                                     final Form<?> _form)
             {
                 try {
+                    final AbstractContentPage page = ((AbstractContentPage) FilterPage.this.pageReference.getPage());
+                    final ModalWindowContainer modal = page.getModal();
+                    final UITable uiTable = (UITable) _pageReference.getPage().getDefaultModelObject();
+                    modal.setTitle(DBProperties.getProperty("FilterPage.Title") + _uitableHeader.getLabel());
                     if (_uitableHeader.isFilterPickList()) {
-                        final List<StringValue> selection = getRequest().getRequestParameters().getParameterValues(PickerPanel.CHECKBOXNAME);
+                        final List<StringValue> selection = getRequest().getRequestParameters()
+                                        .getParameterValues(PickerPanel.CHECKBOXNAME);
 
                         if (selection != null) {
                             final List<?> picklist = ((PickerPanel) panel).getPickList();
-                            // all value are selected, meaning that nothing must be
-                            // filtered
+                            // all value are selected, meaning that nothing must be filtered
                             if (selection.size() == picklist.size()) {
                                 uiTable.removeFilter(_uitableHeader);
                             } else {
                                 final Set<Object> filterList = new HashSet<Object>();
-                                for (final StringValue value :  selection) {
+                                for (final StringValue value : selection) {
                                     final Integer intpos = Integer.valueOf(value.toString());
                                     filterList.add(picklist.get(intpos));
                                 }
                                 uiTable.addFilterList(_uitableHeader, filterList);
                             }
-                            _modalwindow.setUpdateParent(true);
+                            modal.setUpdateParent(true);
                         } else {
-                            _modalwindow.setUpdateParent(false);
+                            modal.setUpdateParent(false);
                         }
-                        _modalwindow.close(_target);
+                        modal.close(_target);
                     } else if (_uitableHeader.getFilterType().equals(FilterType.DATE)) {
                         final FreeTextPanel freeTextPanel = (FreeTextPanel) panel;
                         final Iterator<? extends Component> iter = freeTextPanel.iterator();
@@ -134,36 +142,38 @@ public class FilterPage
                             final Component comp = iter.next();
                             if (comp instanceof DateTimePanel) {
                                 final DateTimePanel datePanel = (DateTimePanel) comp;
-//                                if (datePanel.getId().equals(freeTextPanel.getFromFieldName())) {
-//                                    final List<StringValue> selection = getRequest().getRequestParameters().getParameterValues(PickerPanel.CHECKBOXNAME);
-//
-//
-//                                    final String[] tmp = getRequestCycle().getRequest().getParameters(
-//                                                    datePanel.getDateFieldName());
-//                                    if (tmp.length > 0) {
-//                                        final String[] fromTmp = datePanel.getDateAsString(tmp, null, null, null);
-//                                        if (fromTmp != null) {
-//                                            from = fromTmp[0];
-//                                        }
-//                                    }
-//                                } else {
-//                                    final String[] tmp = getRequestCycle().getRequest().getParameters(
-//                                                    datePanel.getDateFieldName());
-//                                    if (tmp.length > 0) {
-//                                        final String[] toTmp = datePanel.getDateAsString(tmp, null, null, null);
-//                                        if (toTmp != null) {
-//                                            to = toTmp[0];
-//                                        }
-//                                    }
-//                                }
+                                if (datePanel.getId().equals(freeTextPanel.getFromFieldName())) {
+                                    final List<StringValue> tmp = getRequest().getRequestParameters()
+                                                    .getParameterValues(
+                                                                    datePanel.getDateFieldName());
+                                    if (!tmp.isEmpty()) {
+                                        final List<StringValue> fromTmp = datePanel.getDateAsString(tmp, null, null,
+                                                        null);
+                                        if (fromTmp != null) {
+                                            from = fromTmp.get(0).toString();
+                                        }
+                                    }
+                                } else {
+                                    final List<StringValue> tmp = getRequest().getRequestParameters()
+                                                    .getParameterValues(datePanel.getDateFieldName());
+                                    if (!tmp.isEmpty()) {
+                                        final List<StringValue> toTmp = datePanel
+                                                        .getDateAsString(tmp, null, null, null);
+                                        if (toTmp != null) {
+                                            to = toTmp.get(0).toString();
+                                        }
+                                    }
+                                }
                             }
                         }
                         uiTable.addFilterRange(_uitableHeader, from, to);
+                        modal.setWindowClosedCallback(new UpdateParentCallback(FilterPage.this.pageReference,
+                                        modal, false));
                         if (!_uitableHeader.isFilterMemoryBased()) {
                             uiTable.resetModel();
                         }
-                        _modalwindow.setUpdateParent(true);
-                        _modalwindow.close(_target);
+                        modal.setUpdateParent(true);
+                        modal.close(_target);
                     }
                 } catch (final EFapsException e) {
                     throw new RestartResponseException(new ErrorPage(e));
@@ -174,8 +184,7 @@ public class FilterPage
             protected void onError(final AjaxRequestTarget _target,
                                    final Form<?> _form)
             {
-                // TODO Auto-generated method stub
-
+                // Nothing done here
             }
         };
 
@@ -194,8 +203,10 @@ public class FilterPage
                 public void onClick(final AjaxRequestTarget _target)
                 {
                     uiTable.removeFilter(_uitableHeader);
-                    _modalwindow.setUpdateParent(true);
-                    _modalwindow.close(_target);
+                    final ModalWindowContainer modal = ((AbstractContentPage) FilterPage.this.pageReference.getPage())
+                                    .getModal();
+                    modal.setUpdateParent(true);
+                    modal.close(_target);
                 }
             };
 
@@ -210,8 +221,10 @@ public class FilterPage
             @Override
             public void onClick(final AjaxRequestTarget _target)
             {
-                _modalwindow.setUpdateParent(false);
-                _modalwindow.close(_target);
+                final ModalWindowContainer modal = ((AbstractContentPage) FilterPage.this.pageReference.getPage())
+                                .getModal();
+                modal.setUpdateParent(false);
+                modal.close(_target);
             }
         };
         form.add(new Button("closeButton", ajaxcancel, DBProperties.getProperty("FilterPage.Button.cancel"),

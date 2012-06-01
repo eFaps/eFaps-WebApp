@@ -21,8 +21,10 @@
 package org.efaps.ui.wicket.components.modalwindow;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.PageReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.request.cycle.RequestCycle;
 import org.efaps.ui.wicket.models.FormModel;
 import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.UIModel;
@@ -54,9 +56,9 @@ public class UpdateParentCallback
     private static final long serialVersionUID = 1L;
 
     /**
-     * Panel this call back belongs to.
+     * Reference to the Page this call back belongs to.
      */
-    private final Component panel;
+    private final PageReference pageReference;
 
     /**
      * Modal window this call back belongs to.
@@ -73,14 +75,14 @@ public class UpdateParentCallback
      *
      * @see #UpdateParentCallback(Component, ModalWindowContainer, boolean)
      *
-     * @param _panel Panel belonging to this call back
+     * @param _pageReference Reference to the Page this call back belongs to
      * @param _modalwindow modal window belonging to this call back
      *
      */
-    public UpdateParentCallback(final Component _panel,
+    public UpdateParentCallback(final PageReference _pageReference,
                                 final ModalWindowContainer _modalwindow)
     {
-        this(_panel, _modalwindow, true);
+        this(_pageReference, _modalwindow, true);
     }
 
     /**
@@ -88,15 +90,15 @@ public class UpdateParentCallback
      *
      *
      *
-     * @param _panel Panel belonging to this call back
+     * @param _pageReference Reference to the Page this call back belongs to
      * @param _modalwindow modal window belonging to this call back
      * @param _clearmodel must the model of the page be updated
      */
-    public UpdateParentCallback(final Component _panel,
+    public UpdateParentCallback(final PageReference _pageReference,
                                 final ModalWindowContainer _modalwindow,
                                 final boolean _clearmodel)
     {
-        this.panel = _panel;
+        this.pageReference = _pageReference;
         this.modalwindow = _modalwindow;
         this.clearmodel = _clearmodel;
     }
@@ -110,7 +112,7 @@ public class UpdateParentCallback
     {
         if (this.modalwindow.isUpdateParent()) {
 
-            final AbstractUIObject uiObject = (AbstractUIObject) this.panel.getPage().getDefaultModelObject();
+            final AbstractUIObject uiObject = (AbstractUIObject) this.pageReference.getPage().getDefaultModelObject();
             if (this.clearmodel) {
                 uiObject.resetModel();
             }
@@ -118,17 +120,17 @@ public class UpdateParentCallback
             try {
                 if (uiObject instanceof UITable) {
                     page = new TablePage(new TableModel((UITable) uiObject),
-                                    ((AbstractContentPage) this.panel.getPage()).getCalledByPageReference());
+                                    ((AbstractContentPage) this.pageReference.getPage()).getCalledByPageReference());
                 } else if (uiObject instanceof UIForm) {
                     page = new FormPage(new FormModel((UIForm) uiObject),
-                                    ((AbstractContentPage) this.panel.getPage()).getCalledByPageReference());
+                                    ((AbstractContentPage) this.pageReference.getPage()).getCalledByPageReference());
                 } else if (uiObject instanceof UIStructurBrowser) {
                     page = new StructurBrowserPage(new UIModel<UIStructurBrowser>((UIStructurBrowser) uiObject),
-                                    ((AbstractContentPage) this.panel.getPage()).getCalledByPageReference());
+                                    ((AbstractContentPage) this.pageReference.getPage()).getCalledByPageReference());
                 }
-                this.panel.setResponsePage(page);
+                RequestCycle.get().setResponsePage(page);
             } catch (final EFapsException e) {
-                this.panel.setResponsePage(new ErrorPage(e));
+                RequestCycle.get().setResponsePage(new ErrorPage(e));
             }
         }
     }

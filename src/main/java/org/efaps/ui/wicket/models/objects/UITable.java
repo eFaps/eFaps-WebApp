@@ -86,7 +86,7 @@ public class UITable
     /**
      * Map contains the applied filters to this table.
      */
-    private final Map<UITableHeader, Filter> filters = new HashMap<UITableHeader, Filter>();
+    private final Map<String, Filter> filters = new HashMap<String, Filter>();
 
     /**
      * Map is used to store the filters in relation to a field name. It is used
@@ -186,8 +186,7 @@ public class UITable
                         .getSessionAttribute(getCacheKey(UITable.UserCacheKey.FILTER));
                     for (final Field field : command.getTargetTable().getFields()) {
                         if (sessfilter.containsKey(field.getName())) {
-                            this.filters.put(new UITableHeader(field, SortDirection.NONE, null),
-                                            sessfilter.get(field.getName()));
+                            this.filters.put(field.getName(), sessfilter.get(field.getName()));
                         }
                     }
                 } else {
@@ -195,7 +194,7 @@ public class UITable
                     // applied against the database
                     for (final Field field : command.getTargetTable().getFields()) {
                         if (field.isFilterRequired() && !field.isFilterMemoryBased()) {
-                            this.filters.put(new UITableHeader(field, SortDirection.NONE, null), new Filter());
+                            this.filters.put(field.getName(), new Filter());
                         }
                     }
                 }
@@ -238,15 +237,17 @@ public class UITable
     {
         // get the filters that must be applied against the database
         final Map<String, Map<String, String>> dataBasefilters = new HashMap<String, Map<String, String>>();
-        final Iterator<Entry<UITableHeader, Filter>> iter = this.filters.entrySet().iterator();
+        final Iterator<Entry<String, Filter>> iter = this.filters.entrySet().iterator();
         this.filterTempCache.clear();
         while (iter.hasNext()) {
-            final Entry<UITableHeader, Filter> entry = iter.next();
-            if (!entry.getKey().isFilterMemoryBased()) {
+            final Entry<String, Filter> entry = iter.next();
+            if (entry.getValue().getUiTableHeader() == null ||
+                            (entry.getValue().getUiTableHeader() != null
+                            && !entry.getValue().getUiTableHeader().isFilterMemoryBased())) {
                 final Map<String, String> map = entry.getValue().getMap4esjp();
-                dataBasefilters.put(entry.getKey().getFieldName(), map);
+                dataBasefilters.put(entry.getKey(), map);
             }
-            this.filterTempCache.put(entry.getKey().getFieldName(), entry.getValue());
+            this.filterTempCache.put(entry.getKey(), entry.getValue());
             iter.remove();
         }
 
@@ -346,10 +347,11 @@ public class UITable
                 final UITableHeader uiTableHeader = new UITableHeader(field, sortdirection, attr);
                 if (this.filterTempCache.containsKey(uiTableHeader.getFieldName())
                                 && this.filterTempCache.get(uiTableHeader.getFieldName()).getUiTableHeader() != null) {
-                    this.filters.put(uiTableHeader, this.filterTempCache.get(uiTableHeader.getFieldName()));
+                    this.filters.put(uiTableHeader.getFieldName(),
+                                    this.filterTempCache.get(uiTableHeader.getFieldName()));
                     uiTableHeader.setFilterApplied(true);
                 } else if (uiTableHeader.isFilterRequired()) {
-                    this.filters.put(uiTableHeader, new Filter(uiTableHeader));
+                    this.filters.put(uiTableHeader.getFieldName(), new Filter(uiTableHeader));
                 }
                 getHeaders().add(uiTableHeader);
                 if (!field.isFixedWidth()) {
@@ -610,7 +612,7 @@ public class UITable
                               final Set<?> _list)
     {
         final Filter filter = new Filter(_uitableHeader, _list);
-        this.filters.put(_uitableHeader, filter);
+        this.filters.put(_uitableHeader.getFieldName(), filter);
         _uitableHeader.setFilterApplied(true);
         storeFilters();
     }
@@ -630,7 +632,7 @@ public class UITable
         throws EFapsException
     {
         final Filter filter = new Filter(_uitableHeader, _from, _to);
-        this.filters.put(_uitableHeader, filter);
+        this.filters.put(_uitableHeader.getFieldName(), filter);
         _uitableHeader.setFilterApplied(true);
         storeFilters();
     }
@@ -641,10 +643,17 @@ public class UITable
      *
      * @param _uitableHeader UitableHeader this filter belongs to
      * @return filter
+     * @throws EFapsException on error
      */
     public Filter getFilter(final UITableHeader _uitableHeader)
+        throws EFapsException
     {
-        return this.filters.get(_uitableHeader);
+        Filter ret = this.filters.get(_uitableHeader.getFieldName());
+        if (ret != null && ret.getUiTableHeader() == null) {
+            ret = new Filter(_uitableHeader);
+            this.filters.put(_uitableHeader.getFieldName(), ret);
+        }
+        return ret;
     }
 
     /**
@@ -678,8 +687,8 @@ public class UITable
     private void storeFilters()
     {
         final Map<String, Filter> sessFilter = new HashMap<String, Filter>();
-        for (final Entry<UITableHeader, Filter> entry : this.filters.entrySet()) {
-            sessFilter.put(entry.getKey().getFieldName(), entry.getValue());
+        for (final Entry<String, Filter> entry : this.filters.entrySet()) {
+            sessFilter.put(entry.getKey(), entry.getValue());
         }
         try {
             Context.getThreadContext().setSessionAttribute(getCacheKey(UITable.UserCacheKey.FILTER), sessFilter);
@@ -796,7 +805,7 @@ public class UITable
      */
     public void removeFilter(final UITableHeader _uiTableHeader)
     {
-        this.filters.remove(_uiTableHeader);
+        this.filters.remove(_uiTableHeader.getFieldName());
         _uiTableHeader.setFilterApplied(false);
         storeFilters();
     }

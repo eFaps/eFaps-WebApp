@@ -39,8 +39,6 @@ import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.util.string.StringValue;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.behaviors.dojo.DnDBehavior;
-import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
-import org.efaps.ui.wicket.components.modalwindow.UpdateParentCallback;
 import org.efaps.ui.wicket.models.FormModel;
 import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.UIModel;
@@ -75,11 +73,6 @@ public class HeaderPanel
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
-
-    /**
-     * Modal used in this header for filter etc.
-     */
-    private final ModalWindowContainer modal = new ModalWindowContainer("eFapsModal");
 
     /**
      * Properties for this header.
@@ -204,11 +197,7 @@ public class HeaderPanel
             }
             i++;
         }
-
-        add(this.modal);
-        this.modal.setWindowClosedCallback(new UpdateParentCallback(this, this.modal, false));
         this.css = getWidthStyle(widthsTmp);
-
         this.add(StaticHeaderContrBehavior.forJavaScript(HeaderPanel.JAVASCRIPT));
     }
 
@@ -228,14 +217,6 @@ public class HeaderPanel
         _response.render(CssHeaderItem.forCSS(this.css, HeaderPanel.class.getName() + "_css_" + uitable.getTableId()));
         _response.render(JavaScriptHeaderItem.forScript(getScript(),
                         HeaderPanel.class.getName() + "_js_" + uitable.getTableId()));
-    }
-
-    /**
-     * @return the modal window
-     */
-    public final ModalWindowContainer getModal()
-    {
-        return this.modal;
     }
 
     /**

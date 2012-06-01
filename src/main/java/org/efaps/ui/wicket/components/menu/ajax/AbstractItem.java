@@ -78,7 +78,7 @@ public abstract class AbstractItem
         final StringBuilder html = new StringBuilder()
             .append("<img src=\"/..").append(getModelObject().getImage() == null
                             ? MenuBarPanel.IMG_BLANK.getImageUrl() : getModelObject().getImage())
-            .append("\" class=\"eFapsMenuImage\"/>").append(getModelObject().getLabel());
+            .append("\" class=\"eFapsMenuImage\"/><span>").append(getModelObject().getLabel()).append("</span>");
         replaceComponentTagBody(_markupStream, _openTag, html);
     }
 }

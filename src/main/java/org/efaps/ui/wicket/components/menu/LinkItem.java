@@ -185,9 +185,9 @@ public class LinkItem
         super.onComponentTagBody(_markupStream, _openTag);
 
         final StringBuilder html = new StringBuilder()
-                        .append("<img src=\"/..").append(getModelObject().getImage() == null
-                                        ? MenuBarPanel.IMG_BLANK.getImageUrl() : getModelObject().getImage())
-                        .append("\" class=\"eFapsMenuImage\"/>").append(super.getModelObject().getLabel());
+            .append("<img src=\"/..").append(getModelObject().getImage() == null
+                            ? MenuBarPanel.IMG_BLANK.getImageUrl() : getModelObject().getImage())
+            .append("\" class=\"eFapsMenuImage\"/><span>").append(super.getModelObject().getLabel()).append("</span>");
         replaceComponentTagBody(_markupStream, _openTag, html);
     }
 

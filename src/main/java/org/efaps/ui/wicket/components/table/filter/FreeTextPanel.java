@@ -67,7 +67,7 @@ public class FreeTextPanel
      * @throws EFapsException on error
      */
     public FreeTextPanel(final String _wicketId,
-                         final IModel<UITable> _model,
+                         final IModel<?> _model,
                          final UITableHeader _uitableHeader)
         throws EFapsException
     {

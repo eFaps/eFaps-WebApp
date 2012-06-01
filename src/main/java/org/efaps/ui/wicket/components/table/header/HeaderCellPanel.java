@@ -165,12 +165,12 @@ public class HeaderCellPanel
             final AjaxFilterLink filterlink = new AjaxFilterLink("filterlink", _model);
 
             if (uiTableHeader.isFilterApplied() && _uitable.isFiltered()) {
-                filterlink.add( AttributeModifier.append("class", "eFapsHeaderFilterActive"));
-                filterlink.add( AttributeModifier.append("style", " background-image: url("
+                filterlink.add(AttributeModifier.append("class", "eFapsHeaderFilterActive"));
+                filterlink.add(AttributeModifier.append("style", " background-image: url("
                                 + HeaderCellPanel.ICON_FILTERACTIVE.getImageUrl() + ");"));
             } else {
-                filterlink.add( AttributeModifier.append("class", "eFapsHeaderFilter"));
-                filterlink.add( AttributeModifier.append("style", " background-image: url("
+                filterlink.add(AttributeModifier.append("class", "eFapsHeaderFilter"));
+                filterlink.add(AttributeModifier.append("style", " background-image: url("
                                 + HeaderCellPanel.ICON_FILTER.getImageUrl() + ");"));
             }
             this.add(filterlink);

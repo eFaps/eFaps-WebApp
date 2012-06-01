@@ -29,7 +29,6 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.behaviors.dojo.AbstractDojoBehavior;
-import org.efaps.ui.wicket.components.split.ListOnlyPanel;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
 
@@ -62,7 +61,7 @@ public class PreLoaderPanel
     public PreLoaderPanel(final String _wicketId)
     {
         super(_wicketId);
-        this.add(StaticHeaderContrBehavior.forCss(ListOnlyPanel.CSS));
+        this.add(StaticHeaderContrBehavior.forCss(PreLoaderPanel.CSS));
 
         add(AttributeModifier.append("class", PreLoaderPanel.PRELOADER_CLASSNAME));
         setOutputMarkupId(true);

@@ -294,7 +294,7 @@ public class DialogPage
             }
             final ModalWindowContainer modal = ((AbstractContentPage) DialogPage.this.pageReference.getPage())
                             .getModal();
-            modal.setWindowClosedCallback(new UpdateParentCallback(DialogPage.this.parent, modal));
+            modal.setWindowClosedCallback(new UpdateParentCallback(DialogPage.this.pageReference, modal));
             modal.setUpdateParent(true);
             modal.close(_target);
         }
