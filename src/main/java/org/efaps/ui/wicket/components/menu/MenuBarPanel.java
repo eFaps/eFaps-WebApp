@@ -77,7 +77,7 @@ public class MenuBarPanel
 
             for (final UIMenuItem childItem : menuItem.getChilds()) {
                 if (childItem.hasChilds()) {
-                    itemRepeater.add(new PopUpMenuPanel(itemRepeater.newChildId(), new UIModel<UIMenuItem>(childItem)));
+                    itemRepeater.add(new PopupMenuPanel(itemRepeater.newChildId(), new UIModel<UIMenuItem>(childItem)));
                 } else {
                     if (childItem.getReference() != null) {
                         childItem.setURL(childItem.getReference());

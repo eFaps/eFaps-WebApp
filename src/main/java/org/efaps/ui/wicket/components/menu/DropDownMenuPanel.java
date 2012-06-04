@@ -21,7 +21,6 @@
 package org.efaps.ui.wicket.components.menu;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
@@ -67,7 +66,7 @@ public class DropDownMenuPanel
 
         for (final UIMenuItem childItem : menuItem.getChilds()) {
             if (childItem.hasChilds()) {
-                itemRepeater.add(new PopUpMenuPanel(itemRepeater.newChildId(), new UIModel<UIMenuItem>(childItem),
+                itemRepeater.add(new PopupMenuPanel(itemRepeater.newChildId(), new UIModel<UIMenuItem>(childItem),
                                 false));
             } else {
                 final Component item;
@@ -75,16 +74,18 @@ public class DropDownMenuPanel
                     if (childItem.getTarget() == Target.MODAL) {
                         item = new OpenModalItem(itemRepeater.newChildId(),
                                         new UIModel<UIMenuItem>(childItem));
+                    } else if (childItem.getTarget() == Target.POPUP){
+                        item = new PopupItem(itemRepeater.newChildId(), new UIModel<UIMenuItem>(childItem));
                     } else {
                         item = new LinkItem(itemRepeater.newChildId(), new UIModel<UIMenuItem>(childItem));
                     }
                 } else {
                     if (childItem.getCommand().isSubmit()) {
-                        item = new SubmitItem(itemRepeater.newChildId(),  new UIModel<UIMenuItem>(childItem));
+                        item = new SubmitItem(itemRepeater.newChildId(), new UIModel<UIMenuItem>(childItem));
                     } else if (super.getDefaultModelObject() instanceof UISearchItem) {
-                        item = new SearchItem(itemRepeater.newChildId(),  new UIModel<UIMenuItem>(childItem));
+                        item = new SearchItem(itemRepeater.newChildId(), new UIModel<UIMenuItem>(childItem));
                     } else {
-                        item = new WebMarkupContainer(itemRepeater.newChildId());
+                        item = new PopupItem(itemRepeater.newChildId(), new UIModel<UIMenuItem>(childItem));
                     }
                 }
                 item.add(new MenuItemBehavior());

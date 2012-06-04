@@ -23,16 +23,16 @@ package org.efaps.ui.wicket.components.table.cell;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.core.request.handler.PageProvider;
+import org.apache.wicket.core.request.handler.RenderPageRequestHandler;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
-import org.efaps.ui.wicket.EFapsSession;
-import org.efaps.ui.wicket.Opener;
 import org.efaps.ui.wicket.models.cell.UITableCell;
-import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.ui.wicket.pages.main.MainPage;
+import org.efaps.util.EFapsException;
 
 /**
  * Class is used as link to load a page from an popup window inside the opener window.
@@ -78,34 +78,31 @@ public class AjaxLoadInOpenerLink<T>
             try {
                 instance = cellmodel.getInstance();
                 menu = Menu.getTypeTreeMenu(instance.getType());
+
             //CHECKSTYLE:OFF
             } catch (final Exception e) {
                 throw new RestartResponseException(new ErrorPage(e));
             }
             //CHECKSTYLE:ON
             if (menu == null) {
-                final Exception ex =
-                                new Exception("no tree menu defined for type "
-                                                + instance.getType().getName());
+                final Exception ex = new Exception("no tree menu defined for type " + instance.getType().getName());
                 throw new RestartResponseException(new ErrorPage(ex));
             }
-            final String openerId = ((UITable) getPage().getDefaultModelObject()).getOpenerId();
-            // check if the model exist, because if it was opened from the main window
-            // there is no model an the uuid and oid are set manually
-            final Opener opener = ((EFapsSession) getSession()).getOpener(openerId);
-            if (opener.getModel() == null) {
-                opener.setInstanceKey(cellmodel.getInstanceKey());
-                opener.setCommandUUID(menu.getUUID());
+            try {
+                final ContentContainerPage page = new ContentContainerPage(menu.getUUID(), cellmodel.getInstanceKey());
+                final CharSequence url = urlFor(new RenderPageRequestHandler(new PageProvider(page)));
+
+                final StringBuilder js = new StringBuilder()
+                    .append("opener.dijit.byId(\"").append("mainPanel")
+                    .append("\").set(\"content\", dojo.create(\"iframe\", {")
+                    .append("\"src\": \"./wicket/").append(url)
+                    .append("\",\"style\": \"border: 0; width: 100%; height: 100%\"")
+                    .append(",\"id\": \"").append(MainPage.IFRAME_ID).append("\"")
+                    .append("}));");
+                _target.prependJavaScript(js);
+            } catch (final EFapsException e) {
+                throw new RestartResponseException(new ErrorPage(e));
             }
-            final PageParameters parameters = new PageParameters();
-            parameters.add(Opener.OPENER_PARAKEY,
-                            openerId);
-
-            final String url = (String) urlFor( ContentContainerPage.class, parameters);
-
-            _target.prependJavaScript(new StringBuilder()
-                            .append("opener.eFapsFrameContent.location.href = '")
-                            .append(url).append("'").toString());
         }
     }
 }
