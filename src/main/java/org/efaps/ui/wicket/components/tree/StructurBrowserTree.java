@@ -34,6 +34,7 @@ import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.link.ILinkListener;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.util.SetModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.efaps.ui.wicket.components.menutree.MenuTree;
 import org.efaps.ui.wicket.components.menutree.TreeMenuModel;
@@ -44,6 +45,7 @@ import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
 import org.efaps.util.EFapsException;
 
 /**
@@ -61,17 +63,6 @@ public class StructurBrowserTree
 {
 
     /**
-     * @param _id
-     * @param _provider
-     */
-    public StructurBrowserTree(final String _wicketId,
-                               final IModel<UIStructurBrowser> _model)
-    {
-        super(_wicketId, new StructurBrowserProvider(_model));
-        add(new WindowsTheme());
-    }
-
-    /**
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
@@ -81,6 +72,19 @@ public class StructurBrowserTree
      */
     private static final EFapsContentReference CSS = new EFapsContentReference(StructurBrowserTree.class,
                     "StructurTree.css");
+
+    /**
+     * @param _wicketId WicketId of the Tree
+     * @param _model    Model for this Tree
+     */
+    public StructurBrowserTree(final String _wicketId,
+                               final IModel<UIStructurBrowser> _model)
+    {
+        super(_wicketId, new StructurBrowserProvider(_model),
+                        new SetModel<UIStructurBrowser>(_model.getObject().getExpandedBrowsers()));
+        add(new WindowsTheme());
+        add(StaticHeaderContrBehavior.forCss(StructurBrowserTree.CSS));
+    }
 
     /*
      * (non-Javadoc)

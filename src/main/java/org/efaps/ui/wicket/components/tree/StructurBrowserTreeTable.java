@@ -28,6 +28,7 @@ import org.apache.wicket.extensions.markup.html.repeater.tree.NestedTree;
 import org.apache.wicket.extensions.markup.html.repeater.tree.Node;
 import org.apache.wicket.extensions.markup.html.repeater.tree.theme.HumanTheme;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.util.SetModel;
 import org.efaps.ui.wicket.components.date.UnnestedDatePickers;
 import org.efaps.ui.wicket.components.table.cell.CellPanel;
 import org.efaps.ui.wicket.models.UIModel;
@@ -41,13 +42,11 @@ import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
 
 /**
  * This class renders a TreeTable, which loads the children asynchron.<br>
- * The items of the tree consists of junction link, icon and label. An
- * additional arrow showing the direction of the child can be rendered depending
- * on a Tristate. The table shows the columns as defined in the model.
+ * The items of the tree consists of junction link, icon and label.
+ * The table shows the columns as defined in the model.
  *
  * @author The eFaps Team
- * @version $Id: StructurBrowserTreeTable.java 7534 2012-05-19 09:32:04Z
- *          jan@moxter.net $
+ * @version $Id$
  */
 public class StructurBrowserTreeTable
     extends NestedTree<UIStructurBrowser>
@@ -88,7 +87,8 @@ public class StructurBrowserTreeTable
                                     final boolean _parentLink,
                                     final UnnestedDatePickers _datePickers)
     {
-        super(_wicketId, new StructurBrowserProvider(_model));
+        super(_wicketId, new StructurBrowserProvider(_model),
+                        new SetModel<UIStructurBrowser>(_model.getObject().getExpandedBrowsers()));
         add(new HumanTheme());
         this.add(StaticHeaderContrBehavior.forCss(StructurBrowserTreeTable.CSS));
         this.parentLink = _parentLink;
@@ -110,7 +110,19 @@ public class StructurBrowserTreeTable
                         updateMenu, strucBrws, 0);
     }
 
+    @Override
+    public void expand(final UIStructurBrowser _uiStrBrws)
+    {
+        super.expand(_uiStrBrws);
+        _uiStrBrws.setExpanded(true);
+    }
 
+    @Override
+    public void collapse(final UIStructurBrowser _uiStrBrws)
+    {
+        super.collapse(_uiStrBrws);
+        _uiStrBrws.setExpanded(false);
+    }
 
     /**
     * Create a new component for a node.

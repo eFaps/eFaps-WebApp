@@ -25,14 +25,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeModel;
 
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
@@ -170,7 +170,7 @@ public class UIStructurBrowser
      *  This instance variable holds if this StructurBrowserModel can have
      *  children at all.
      */
-    private boolean allowChilds;
+    private boolean allowChildren;
 
     /**
      *  This instance variable holds if this StructurBrowserModel can have
@@ -181,7 +181,7 @@ public class UIStructurBrowser
     /**
      * This instance variable holds if this StructurBrowserModel is a
      * parent, this is needed because, first it will be only determined if a
-     * node is a potential parent, and later on the childs will be retrieved
+     * node is a potential parent, and later on the children will be retrieved
      * from the eFaps-DataBase.
      *
      * @see #isParent()
@@ -189,9 +189,9 @@ public class UIStructurBrowser
     private boolean parent;
 
     /**
-     * This instance variable holds the childs of this StructurBrowserModel.
+     * This instance variable holds the children of this StructurBrowserModel.
      */
-    private final List<UIStructurBrowser> childs = new ArrayList<UIStructurBrowser>();
+    private final List<UIStructurBrowser> children = new ArrayList<UIStructurBrowser>();
 
     /**
      * Holds the columns in case of a TableTree.
@@ -266,29 +266,21 @@ public class UIStructurBrowser
      */
     private boolean forceExpanded = false;
 
+    /**
+     * Level of the current instance.
+     */
     private int level = 0;
 
+    /**
+     * The parent UIStructurBrowser. Used to be able to climb up in the hirachy.
+     */
+    private UIStructurBrowser parentBrws = null;
 
     /**
-     * Getter method for the instance variable {@link #level}.
-     *
-     * @return value of instance variable {@link #level}
+     * Set of expanded UIStructurBrowser. Used on ly for the root node to be able
+     * to initialize correctly the Tree for the UserInterface.
      */
-    public int getLevel()
-    {
-        return this.level;
-    }
-
-
-    /**
-     * Setter method for instance variable {@link #level}.
-     *
-     * @param _level value for instance variable {@link #level}
-     */
-    private void setLevel(final int _level)
-    {
-        this.level = _level;
-    }
+    private final Set<UIStructurBrowser> expandedBrowsers = new HashSet<UIStructurBrowser>();
 
     /**
      * Constructor.
@@ -339,7 +331,7 @@ public class UIStructurBrowser
         super(_commandUUID, _instanceKey);
         this.root = _root;
         if (isRoot()) {
-            this.allowChilds = true;
+            this.allowChildren = true;
         }
         setSortDirectionInternal(_sortdirection);
         initialise();
@@ -366,6 +358,7 @@ public class UIStructurBrowser
         }
         final UIStructurBrowser ret = new UIStructurBrowser(uuid, _instance == null ? null : _instance.getKey(), false,
                         _strucBrwsr.getSortDirection());
+        ret.setParentBrws(this);
         ret.setLevel(getLevel() + 1);
         return ret;
     }
@@ -473,11 +466,11 @@ public class UIStructurBrowser
                 final Instance instance = print.getCurrentInstance();
                 value = valuelist.makeString(getInstance(), print, getMode());
                 final UIStructurBrowser child = getNewStructurBrowser(instance, this);
-                this.childs.add(child);
+                this.children.add(child);
                 child.setDirection(_map.get(instance));
                 child.setLabel(value.toString());
-                child.setAllowChilds(checkForAllowChilds(instance));
-                if (isAllowChilds()) {
+                child.setAllowChildren(checkForAllowChildren(instance));
+                if (isAllowChildren()) {
                     child.setParent(checkForChildren(instance));
                 }
                 child.setImage(Image.getTypeIcon(instance.getType()) != null ? Image.getTypeIcon(instance.getType())
@@ -621,8 +614,8 @@ public class UIStructurBrowser
 
                         if (field.getName().equals(this.browserFieldName)) {
                             child.setLabel(strValue);
-                            child.setAllowChilds(checkForAllowChilds(instance));
-                            if (child.isAllowChilds()) {
+                            child.setAllowChildren(checkForAllowChildren(instance));
+                            if (child.isAllowChildren()) {
                                 child.setAllowItems(checkForAllowItems(instance));
                                 child.setParent(checkForChildren(instance));
                             }
@@ -643,9 +636,9 @@ public class UIStructurBrowser
                     this.emptyRow = child;
                 } else if (this.root && isEditMode() && this.emptyRow == null) {
                     this.emptyRow = child;
-                    this.childs.add(child);
+                    this.children.add(child);
                 } else {
-                    this.childs.add(child);
+                    this.children.add(child);
                 }
                 row4Create = false;
                 child.checkHideColumn4Row();
@@ -671,7 +664,7 @@ public class UIStructurBrowser
                        && (Context.getThreadContext().containsSessionAttribute(getCacheKey()) || this.forceExpanded)) {
                 final Map<String, Boolean> sessMap = (Map<String, Boolean>) Context
                                 .getThreadContext().getSessionAttribute(getCacheKey());
-                for (final UIStructurBrowser uiChild : this.childs) {
+                for (final UIStructurBrowser uiChild : this.children) {
                     if (isForceExpanded() || sessMap == null || sessMap.containsKey(uiChild.getInstanceKey())) {
                         final Boolean expandedTmp = sessMap == null || isForceExpanded()
                                                 ? true : sessMap.get(uiChild.getInstanceKey());
@@ -683,6 +676,7 @@ public class UIStructurBrowser
                             final Map<Instance, Boolean> map = (Map<Instance, Boolean>) ret.get(0).get(
                                             ReturnValues.VALUES);
                             uiChild.setExpanded(true);
+                            uiChild.add2ExpandedBrowsers(uiChild);
                             if (uiChild.tableuuid == null) {
                                 uiChild.executeTree(map, true);
                             } else {
@@ -698,6 +692,25 @@ public class UIStructurBrowser
         }
     }
 
+    public Set<UIStructurBrowser> getExpandedBrowsers()
+    {
+        final Set<UIStructurBrowser> ret;
+        if (isRoot()) {
+            ret = this.expandedBrowsers;
+        } else {
+            ret = getParentBrws().getExpandedBrowsers();
+        }
+        return ret;
+    }
+
+    protected void add2ExpandedBrowsers(final UIStructurBrowser _structBrowser) {
+        if (isRoot()) {
+            this.expandedBrowsers.add(_structBrowser);
+        } else {
+            getParentBrws().add2ExpandedBrowsers(_structBrowser);
+        }
+    }
+
     /**
      * Method to sort the data of this model. It calls an esjp for sorting.
      */
@@ -708,7 +721,7 @@ public class UIStructurBrowser
             getObject4Event().executeEvents(EventType.UI_TABLE_EVALUATE, ParameterValues.CLASS, this);
 
             if (getSortDirection() == SortDirection.DESCENDING) {
-                Collections.reverse(this.childs);
+                Collections.reverse(this.children);
             }
         } catch (final EFapsException e) {
             throw new RestartResponseException(new ErrorPage(e));
@@ -721,7 +734,7 @@ public class UIStructurBrowser
     public void sort()
     {
         sortModel();
-        for (final UIStructurBrowser child : this.childs) {
+        for (final UIStructurBrowser child : this.children) {
             child.sort();
         }
     }
@@ -775,32 +788,51 @@ public class UIStructurBrowser
      *
      * @param _forceExpanded value for instance variable {@link #forceExpanded}
      */
-
     protected void setForceExpanded(final boolean _forceExpanded)
     {
         this.forceExpanded = _forceExpanded;
     }
 
     /**
-     * Getter method for the instance variable {@link #allowChilds}.
+     * Getter method for the instance variable {@link #allowChildren}.
      *
-     * @return value of instance variable {@link #allowChilds}
+     * @return value of instance variable {@link #allowChildren}
      */
-    public boolean isAllowChilds()
+    public boolean isAllowChildren()
     {
-        return this.allowChilds;
+        return this.allowChildren;
     }
 
 
     /**
-     * Setter method for instance variable {@link #allowChilds}.
+     * Setter method for instance variable {@link #allowChildren}.
      *
-     * @param _allowChilds value for instance variable {@link #allowChilds}
+     * @param _allowChildren value for instance variable {@link #allowChildren}
      */
 
-    public void setAllowChilds(final boolean _allowChilds)
+    public void setAllowChildren(final boolean _allowChildren)
     {
-        this.allowChilds = _allowChilds;
+        this.allowChildren = _allowChildren;
+    }
+
+    /**
+     * Has this StructurBrowserModel childs.
+     *
+     * @return true if has children, else false
+     */
+    public boolean hasChildren()
+    {
+        return !this.children.isEmpty();
+    }
+
+    /**
+     * Getter method for instance variable {@link #children}.
+     *
+     * @return value of instance variable {@link #children}
+     */
+    public List<UIStructurBrowser> getChildren()
+    {
+        return this.children;
     }
 
     /**
@@ -868,9 +900,6 @@ public class UIStructurBrowser
      * e.g. in a standard implementation the children would be added to the Tree
      * on the expand-Event of the tree. The children a retrieved from an esjp
      * with the EventType UI_TABLE_EVALUATE.
-     *
-     * @param _parent the DefaultMutableTreeNode the new children should be
-     *            added
      */
     @SuppressWarnings("unchecked")
     public void addChildren()
@@ -898,7 +927,7 @@ public class UIStructurBrowser
      * @param _instance Instance of a Node to be checked
      * @return true if this Node has children, else false
      */
-    protected boolean checkForAllowChilds(final Instance _instance)
+    protected boolean checkForAllowChildren(final Instance _instance)
     {
         setExecutionStatus(UIStructurBrowser.ExecutionStatus.ALLOWSCHILDREN);
         try {
@@ -1019,7 +1048,7 @@ public class UIStructurBrowser
     @Override
     public void resetModel()
     {
-        this.childs.clear();
+        this.children.clear();
     }
 
     /**
@@ -1031,58 +1060,6 @@ public class UIStructurBrowser
     public Table getTable()
     {
         return Table.get(this.tableuuid);
-    }
-
-    /**
-     * Has this StructurBrowserModel childs.
-     *
-     * @return true if has children, else false
-     */
-    public boolean hasChilds()
-    {
-        return !this.childs.isEmpty();
-    }
-
-    /**
-     * Get the TreeModel used in the Component to construct the actual tree.
-     *
-     * @see #addNode(DefaultMutableTreeNode, List)
-     * @return TreeModel of this StructurBrowseModel
-     */
-    public TreeModel getTreeModel()
-    {
-        DefaultTreeModel model = null;
-        final DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(this);
-        rootNode.setAllowsChildren(true);
-        if (this.childs.size() > 0) {
-            addNode(rootNode, this.childs);
-        }
-        model = new DefaultTreeModel(rootNode);
-        model.setAsksAllowsChildren(true);
-        return model;
-    }
-
-    /**
-     * Recursive method used to fill the TreeModel.
-     *
-     * @see #getTreeModel()
-     * @param _parent ParentNode children should be added
-     * @param _childs to be added as childs
-     */
-    private void addNode(final DefaultMutableTreeNode _parent,
-                         final List<UIStructurBrowser> _childs)
-    {
-        for (final UIStructurBrowser child : _childs) {
-            final DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(child);
-            _parent.add(childNode);
-            if (child.hasChilds()) {
-                addNode(childNode, child.getChilds());
-            } else if (child.isParent()) {
-                childNode.setAllowsChildren(true);
-                childNode.add(new BogusNode());
-            }
-            childNode.setAllowsChildren(child.isAllowChilds());
-        }
     }
 
     /**
@@ -1280,26 +1257,6 @@ public class UIStructurBrowser
     }
 
     /**
-     * Method to add a new BogusNode to the given Node.
-     *
-     * @param _parent Parent a BogusNode should be added
-     */
-    public void addBogusNode(final DefaultMutableTreeNode _parent)
-    {
-        _parent.add(new BogusNode());
-    }
-
-    /**
-     * Getter method for instance variable {@link #childs}.
-     *
-     * @return value of instance variable {@link #childs}
-     */
-    public List<UIStructurBrowser> getChilds()
-    {
-        return this.childs;
-    }
-
-    /**
      * Getter method for instance variable {@link #label}.
      *
      * @return value of instance variable {@link #label}
@@ -1321,7 +1278,7 @@ public class UIStructurBrowser
     public void setSortDirection(final SortDirection _sortDirection)
     {
         super.setSortDirection(_sortDirection);
-        for (final UIStructurBrowser child : this.childs) {
+        for (final UIStructurBrowser child : this.children) {
             child.setSortDirectionInternal(_sortDirection);
         }
     }
@@ -1416,6 +1373,50 @@ public class UIStructurBrowser
     }
 
     /**
+     * Getter method for the instance variable {@link #parentBrws}.
+     *
+     * @return value of instance variable {@link #parentBrws}
+     */
+    protected UIStructurBrowser getParentBrws()
+    {
+        return this.parentBrws;
+    }
+
+    /**
+     * Setter method for instance variable {@link #parentBrws}.
+     *
+     * @param _parentBrws value for instance variable {@link #parentBrws}
+     */
+
+    protected void setParentBrws(final UIStructurBrowser _parentBrws)
+    {
+        this.parentBrws = _parentBrws;
+    }
+
+
+    /**
+     * Getter method for the instance variable {@link #level}.
+     *
+     * @return value of instance variable {@link #level}
+     */
+    public int getLevel()
+    {
+        return this.level;
+    }
+
+
+    /**
+     * Setter method for instance variable {@link #level}.
+     *
+     * @param _level value for instance variable {@link #level}
+     */
+    private void setLevel(final int _level)
+    {
+        this.level = _level;
+    }
+
+
+    /**
      * (non-Javadoc).
      *
      * @see org.apache.wicket.model.Model#toString()
@@ -1425,21 +1426,5 @@ public class UIStructurBrowser
     public String toString()
     {
         return this.label;
-    }
-
-    /**
-     * This class is used to add a ChildNode under a ParentNode, if the
-     * ParentNode actually has some children. By using this class it then can
-     * very easy be distinguished between Nodes which where expanded and Nodes
-     * which still need to be expanded.
-     *
-     */
-    public class BogusNode
-        extends DefaultMutableTreeNode
-    {
-        /**
-         * Needed for serialization.
-         */
-        private static final long serialVersionUID = 1L;
     }
 }

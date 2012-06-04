@@ -39,22 +39,22 @@ import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 public class StructurBrowserProvider
     implements ITreeProvider<UIStructurBrowser>
 {
-
-    /* (non-Javadoc)
-     * @see org.apache.wicket.extensions.markup.html.repeater.tree.ITreeProvider#getRoots()
-     */
     /**
      *
      */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * List of root nodes.
+     */
     private final List<UIStructurBrowser> roots;
 
     /**
-     * @param _model
+     * @param _model model
      */
     public StructurBrowserProvider(final IModel<UIStructurBrowser> _model)
     {
-       this.roots = _model.getObject().getChilds();
+        this.roots = _model.getObject().getChildren();
     }
 
     @Override
@@ -63,29 +63,45 @@ public class StructurBrowserProvider
         return this.roots.iterator();
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.wicket.extensions.markup.html.repeater.tree.ITreeProvider#hasChildren(java.lang.Object)
+    /**
+     * Does the given object have children - note that this method may
+     * return <code>true</code> even if {@link #getChildren(Object)}
+     * returns an empty iterator.
+     *
+     * @param _node the node to check for children
+     * @return {@code true} if node has children
      */
     @Override
     public boolean hasChildren(final UIStructurBrowser _node)
     {
-        return _node.isParent() || _node.hasChilds();
+        return _node.isParent() || _node.hasChildren();
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.wicket.extensions.markup.html.repeater.tree.ITreeProvider#getChildren(java.lang.Object)
+    /**
+     * Get the children of the given node.
+     *
+     * @param _node node to get children for
+     * @return children of node
      */
     @Override
     public Iterator<? extends UIStructurBrowser> getChildren(final UIStructurBrowser _node)
     {
-        if (_node.isParent() && !_node.hasChilds()) {
+        if (_node.isParent() && !_node.hasChildren()) {
             _node.addChildren();
         }
-        return _node.getChilds().iterator();
+        return _node.getChildren().iterator();
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.wicket.extensions.markup.html.repeater.tree.ITreeProvider#model(java.lang.Object)
+    /**
+     * Callback used by the consumer of this tree provider to wrap objects retrieved from
+     * {@link #getRoots()} or {@link #getChildren(Object)} with a model (usually a detachable one).
+     * <p>
+     * Important note: The model must implement {@link Object#equals(Object)} and
+     * {@link Object#hashCode()} !
+     *
+     * @param _object the object that needs to be wrapped
+     *
+     * @return the model representation of the object
      */
     @Override
     public IModel<UIStructurBrowser> model(final UIStructurBrowser _object)
@@ -93,14 +109,13 @@ public class StructurBrowserProvider
         return Model.of(_object);
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.wicket.model.IDetachable#detach()
+    /**
+     * Detaches model after use. This is generally used to null out transient references that can be
+     * re-attached later.
      */
     @Override
     public void detach()
     {
-        // TODO Auto-generated method stub
-
+        // not implemented
     }
-
 }

@@ -48,7 +48,6 @@ public class StructurBrowserTreePanel
      * @param _wicketId wicket id of this component
      * @param _commandUUID UUID of the related command
      * @param _oid oid
-     * @param _listmenukey key to the list menu
      * @throws EFapsException on error
      */
     public StructurBrowserTreePanel(final String _wicketId,
@@ -64,7 +63,6 @@ public class StructurBrowserTreePanel
      *
      * @param _wicketId wicket id of this component
      * @param _model model for this component
-     * @param _listmenukey key to the list menu
      */
     public StructurBrowserTreePanel(final String _wicketId,
                                     final IModel<UIStructurBrowser> _model)

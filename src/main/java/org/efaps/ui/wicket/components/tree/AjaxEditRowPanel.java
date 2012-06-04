@@ -98,7 +98,7 @@ public class AjaxEditRowPanel
             delImage.setReference(AjaxEditRowPanel.ICON_DELETE);
             delLink.add(delImage);
         }
-        if (uiStru.isAllowChilds()) {
+        if (uiStru.isAllowChildren()) {
             final InsertChildFolder insertFolderlink = new InsertChildFolder("addFolderLink", _model, _node);
             this.add(insertFolderlink);
             final StaticImageComponent insertFolderImage = new StaticImageComponent("addFolderIcon");
@@ -258,7 +258,7 @@ public class AjaxEditRowPanel
             } catch (final EFapsException e) {
                 throw new RestartResponseException(new ErrorPage(e));
             }
-            newStruBrws.setAllowChilds(false);
+            newStruBrws.setAllowChildren(false);
             newStruBrws.checkHideColumn4Row();
             final DefaultMutableTreeNode newTreeNode = new DefaultMutableTreeNode(newStruBrws);
             newTreeNode.setAllowsChildren(false);
@@ -314,8 +314,8 @@ public class AjaxEditRowPanel
             } catch (final EFapsException e) {
                 throw new RestartResponseException(new ErrorPage(e));
             }
-            strucBr.getChilds().add(newStruBrws);
-            newStruBrws.setAllowChilds(true);
+            strucBr.getChildren().add(newStruBrws);
+            newStruBrws.setAllowChildren(true);
             newStruBrws.setAllowItems(newStruBrws.checkForAllowItems(newStruBrws.getInstance()));
             newStruBrws.checkHideColumn4Row();
             final DefaultMutableTreeNode newTreeNode = new DefaultMutableTreeNode(newStruBrws);
@@ -371,7 +371,7 @@ public class AjaxEditRowPanel
             } catch (final EFapsException e) {
                 throw new RestartResponseException(new ErrorPage(e));
             }
-            newStruBrws.setAllowChilds(false);
+            newStruBrws.setAllowChildren(false);
             newStruBrws.checkHideColumn4Row();
             final DefaultMutableTreeNode newTreeNode = new DefaultMutableTreeNode(newStruBrws);
             newTreeNode.setAllowsChildren(false);
