@@ -82,7 +82,7 @@ public class DropDownMenuPanel
                 } else {
                     if (childItem.getCommand().isSubmit()) {
                         item = new SubmitItem(itemRepeater.newChildId(), new UIModel<UIMenuItem>(childItem));
-                    } else if (super.getDefaultModelObject() instanceof UISearchItem) {
+                    } else if (childItem instanceof UISearchItem) {
                         item = new SearchItem(itemRepeater.newChildId(), new UIModel<UIMenuItem>(childItem));
                     } else {
                         item = new PopupItem(itemRepeater.newChildId(), new UIModel<UIMenuItem>(childItem));

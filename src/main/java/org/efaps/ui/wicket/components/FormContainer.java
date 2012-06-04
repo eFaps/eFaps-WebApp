@@ -92,7 +92,9 @@ public class FormContainer
     @Override
     protected void onComponentTag(final ComponentTag _tag)
     {
-        this.actionUrl = urlFor(getRequestCycle().getActiveRequestHandler()).toString();
+        if (this.actionUrl == null) {
+            this.actionUrl = urlFor(getRequestCycle().getActiveRequestHandler()).toString();
+        }
         super.onComponentTag(_tag);
         if (getPage().getDefaultModelObject() != null) {
             // only on SearchMode we want normal submit, in any other case we

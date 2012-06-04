@@ -58,6 +58,7 @@ public class SearchItem
                       final IModel<UIMenuItem> _model)
     {
         super(_id, _model);
+        add(new SearchSubmitBehavior());
     }
 
     /**

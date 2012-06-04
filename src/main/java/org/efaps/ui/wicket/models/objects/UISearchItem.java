@@ -47,7 +47,16 @@ public class UISearchItem
      */
     public UISearchItem(final UUID _uuid)
     {
-        super(_uuid, null);
+        this(_uuid, null);
+    }
+
+    /**
+     * @param _uuid UUID
+     */
+    public UISearchItem(final UUID _uuid,
+                        final String _instanceKey)
+    {
+        super(_uuid, _instanceKey);
         this.searchuuid = _uuid;
     }
 

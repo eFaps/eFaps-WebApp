@@ -25,14 +25,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeModel;
-
 import org.apache.wicket.RestartResponseException;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractMenu;
+import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.Image;
 import org.efaps.beans.ValueList;
 import org.efaps.beans.valueparser.ParseException;
@@ -133,6 +130,9 @@ public class UIMenuItem
      */
     private int submitSelectedRows;
 
+    /**
+     * This menuitem is selected.
+     */
     private boolean selected = false;
 
     /**
@@ -311,7 +311,11 @@ public class UIMenuItem
             if (command instanceof AbstractMenu) {
                 for (final AbstractCommand subCmd : ((AbstractMenu) command).getCommands()) {
                     if (subCmd != null && subCmd.hasAccess(getMode(), getInstance())) {
-                        this.childs.add(new UIMenuItem(subCmd.getUUID(), getInstanceKey()));
+                        if (subCmd.getTargetMode().equals(TargetMode.SEARCH)) {
+                            this.childs.add(new UISearchItem(subCmd.getUUID(), getInstanceKey()));
+                        } else {
+                            this.childs.add(new UIMenuItem(subCmd.getUUID(), getInstanceKey()));
+                        }
                     }
                 }
             }
@@ -381,6 +385,7 @@ public class UIMenuItem
      * This is the setter method for the instance variable {@link #header}.
      *
      * @param _header the header to set
+     * @return this Menuitem for chaining
      */
     public UIMenuItem setHeader(final boolean _header)
     {
@@ -418,50 +423,6 @@ public class UIMenuItem
     }
 
     /**
-     * get a TreeModel which used in the Components to construct the actuall tree.
-     *
-     * @see #getNode()
-     * @return TreeModel of this MenuItemModel including the ChildNodes
-     */
-    public TreeModel getTreeModel()
-    {
-        return new DefaultTreeModel(getNode());
-    }
-
-    /**
-     * get a Node of this MenuItemModel including the Childs.
-     *
-     * @see #addNode(DefaultMutableTreeNode, List)
-     * @return DefaultMutableTreeNode of this MenuItemModel including the ChildNodes
-     */
-    public DefaultMutableTreeNode getNode()
-    {
-        final DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(this);
-        setHeader(true);
-        addNode(rootNode, this.childs);
-        return rootNode;
-    }
-
-    /**
-     * recursive method used to fill the TreeModel.
-     *
-     * @see #getTreeModel()
-     * @param _parent ParentNode children schould be added
-     * @param _childs List<StructurBrowserModel>to be added as childs
-     */
-    private void addNode(final DefaultMutableTreeNode _parent,
-                         final List<UIMenuItem> _childs)
-    {
-        for (int i = 0; i < _childs.size(); i++) {
-            final DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(_childs.get(i));
-            _parent.add(childNode);
-            if (_childs.get(i).hasChilds()) {
-                addNode(childNode, _childs.get(i).childs);
-            }
-        }
-    }
-
-    /**
      * This is the getter method for the instance variable {@link #ancestor}.
      *
      * @return value of instance variable {@link #ancestor}
@@ -474,7 +435,7 @@ public class UIMenuItem
     /**
      * This is the setter method for the instance variable {@link #ancestor}.
      *
-     * @param _node the ancestor to set
+     * @param _ancestor the ancestor to set
      */
     public void setAncestor(final UIMenuItem _ancestor)
     {
@@ -503,12 +464,11 @@ public class UIMenuItem
     /**
      * Setter method for instance variable {@link #selected}.
      *
-     * @param selected value for instance variable {@link #selected}
+     * @param _selected value for instance variable {@link #selected}
      */
 
-    public void setSelected(final boolean selected)
+    public void setSelected(final boolean _selected)
     {
-        this.selected = selected;
+        this.selected = _selected;
     }
-
 }
