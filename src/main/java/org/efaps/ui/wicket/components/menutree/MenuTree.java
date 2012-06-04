@@ -22,6 +22,7 @@ package org.efaps.ui.wicket.components.menutree;
 
 import java.util.UUID;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.markup.html.repeater.tree.NestedTree;
@@ -97,6 +98,7 @@ public class MenuTree
     {
         super(_wicketId, new TreeMenuModel(_commandUUID, _oid));
         add(new HumanTheme());
+        add(AttributeModifier.append("class", "eFapsTreeMenu"));
         add(new MenuUpdateBehavior());
         expand(getProvider().getRoots().next().setHeader(true));
     }

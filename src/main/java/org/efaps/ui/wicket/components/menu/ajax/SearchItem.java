@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2012 The eFaps Team
+ * Copyright 2003 - 2011 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev:1510 $
- * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
- * Last Changed By: $Author:jmox $
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
-package org.efaps.ui.wicket.components.menu;
+
+package org.efaps.ui.wicket.components.menu.ajax;
 
 import java.util.Iterator;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.RestartResponseException;
-import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
 import org.efaps.ui.wicket.components.FormContainer;
@@ -35,53 +35,36 @@ import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 
+
 /**
- * Class is used to render a link o page containing a search.
- * The link is used to change the type and the form to search
- * for by using ajax.
+ * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id:SearchLink.java 1510 2007-10-18 14:35:40Z jmox $
- *
+ * @version $Id$
  */
-public class AjaxSearchComponent
-    extends AbstractMenuItemAjaxComponent
+public class SearchItem
+    extends AbstractItem
 {
     /**
-     * Needed for serialization.
-     */
-    private static final long serialVersionUID = 1L;
+    *
+    */
+   private static final long serialVersionUID = 1L;
 
     /**
-     * Constructor.
-     *
-     * @param _wicketId wicket id of this component
-     * @param _model model for this component
+     * @param _id
+     * @param _model
      */
-    public AjaxSearchComponent(final String _wicketId,
-                               final IModel<UIMenuItem> _model)
+    public SearchItem(final String _id,
+                      final IModel<UIMenuItem> _model)
     {
-        super(_wicketId, _model);
-        add(new AjaxReloadSearchFormBehavior());
+        super(_id, _model);
     }
 
     /**
-     * This Method returns the JavaScript which is executed by the JSCooKMenu.
-     *
-     * @return String with the JavaScript
+     * Open a modal window and submit the values.
      */
-    @Override
-    public String getJavaScript()
-    {
-        return ((AjaxReloadSearchFormBehavior) super.getBehaviors().get(0)).getJavaScript();
-    }
-
-    /**
-     * Class is used to execute the reload of the page for search.
-     *
-     */
-    public class AjaxReloadSearchFormBehavior
-        extends AjaxEventBehavior
+    public class SearchSubmitBehavior
+        extends AbstractSubmitBehavior
     {
 
         /**
@@ -90,31 +73,21 @@ public class AjaxSearchComponent
         private static final long serialVersionUID = 1L;
 
         /**
-         * Constructor.
+         *
          */
-        public AjaxReloadSearchFormBehavior()
+        public SearchSubmitBehavior()
         {
-            super("onclick");
+            super("onClick");
         }
 
         /**
-         * This Method returns the JavaScript which is executed by the JSCooKMenu.
+         * Open the modal window.
          *
-         * @return String with the JavaScript
-         */
-        public String getJavaScript()
-        {
-            final String script = super.getCallbackScript().toString();
-            return "javascript:" + script.replace("'", "\"");
-        }
-
-        /**
-         * Method is executed by ajax to change the content of a form for search.
-         *
+         * @see org.apache.wicket.ajax.form.AjaxFormSubmitBehavior#onSubmit(org.apache.wicket.ajax.AjaxRequestTarget)
          * @param _target AjaxRequestTarget
          */
         @Override
-        protected void onEvent(final AjaxRequestTarget _target)
+        protected void onSubmit(final AjaxRequestTarget _target)
         {
             try {
                 FormContainer form = null;
@@ -154,17 +127,6 @@ public class AjaxSearchComponent
             } catch (final EFapsException e) {
                 throw new RestartResponseException(new ErrorPage(e));
             }
-        }
-
-        /**
-         * Method must be overwritten, otherwise the default would break the execution of the JavaScript.
-         *
-         * @return null
-         */
-        @Override
-        protected CharSequence getPreconditionScript()
-        {
-            return null;
         }
     }
 }

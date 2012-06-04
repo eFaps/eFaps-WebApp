@@ -124,11 +124,11 @@ public class OpenModalItem
         private static final long serialVersionUID = 1L;
 
         /**
-         * @param _form form
+         *
          */
         public SubmitAndOpenModalBehavior()
         {
-            super( "onClick");
+            super("onClick");
         }
 
         /**

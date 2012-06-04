@@ -24,7 +24,6 @@ import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
-import org.efaps.ui.wicket.components.menu.MenuBarPanel;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 
 /**
@@ -74,11 +73,13 @@ public abstract class AbstractItem
                                    final ComponentTag _openTag)
     {
         super.onComponentTagBody(_markupStream, _openTag);
-
-        final StringBuilder html = new StringBuilder()
-            .append("<img src=\"/..").append(getModelObject().getImage() == null
-                            ? MenuBarPanel.IMG_BLANK.getImageUrl() : getModelObject().getImage())
-            .append("\" class=\"eFapsMenuImage\"/><span>").append(getModelObject().getLabel()).append("</span>");
+        final StringBuilder html = new StringBuilder();
+        if (getModelObject().getImage() == null) {
+            html.append("<span class=\"eFapsMenuImagePlaceHolder\">").append("&nbsp;</span>");
+        } else {
+            html.append("<img src=\"/..").append(getModelObject().getImage()).append("\" class=\"eFapsMenuImage\"/>");
+        }
+        html.append("<span class=\"eFapsMenuLabel\">").append(getModelObject().getLabel()).append("</span>");
         replaceComponentTagBody(_markupStream, _openTag, html);
     }
 }

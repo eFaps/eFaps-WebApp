@@ -80,6 +80,7 @@ import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.dialog.DialogPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.ui.wicket.util.ParameterUtil;
 import org.efaps.util.EFapsException;
 
 /**
@@ -139,11 +140,12 @@ public class AjaxSubmitCloseBehavior
     @Override
     protected void onSubmit(final AjaxRequestTarget _target)
     {
+        final String[] oids = ParameterUtil.parameter2Array(
+                        getComponent().getRequest().getRequestParameters(), "selectedRow");
         final Map<String, String[]> others = new HashMap<String, String[]>();
-        getComponent().getRequestCycle().getRequest().getPostParameters().getParameterValues("selectedRow");
+        others.put("selectedRow", oids);
 
         final List<Classification> classifications = new ArrayList<Classification>();
-        //others.put("selectedRow", other);
         try {
             convertDateFieldValues();
             if (this.uiObject instanceof UIForm) {

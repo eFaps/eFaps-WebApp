@@ -70,7 +70,7 @@ public class PreLoaderPanel
         final WebMarkupContainer content = new WebMarkupContainer("content");
         content.add(AttributeModifier.append("class", PreLoaderPanel.CONTENT_CLASSNAME));
         add(content);
-        content.add(new Label("label", DBProperties.getProperty("preloader.message")).setEscapeModelStrings(false));
+        content.add(new Label("label", DBProperties.getProperty("PreLoader.message")).setEscapeModelStrings(false));
     }
 
     public final class PreloaderBehavior

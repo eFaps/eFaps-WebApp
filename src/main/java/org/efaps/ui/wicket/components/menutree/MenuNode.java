@@ -21,6 +21,7 @@
 
 package org.efaps.ui.wicket.components.menutree;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -53,6 +54,7 @@ public abstract class MenuNode
     {
         super(_id, _tree, _model);
         this.tree = _tree;
+        add(AttributeModifier.append("class", "eFapsMenuTreeNode"));
     }
 
 
@@ -78,7 +80,7 @@ public abstract class MenuNode
             {
                 super.onComponentTag(_tag);
                 if (!((UIMenuItem) MenuNode.this.getDefaultModelObject()).hasChilds()) {
-                    _tag.append("style","display:none", ";");
+                    _tag.append("style", "display:none", ";");
                 }
             }
         };

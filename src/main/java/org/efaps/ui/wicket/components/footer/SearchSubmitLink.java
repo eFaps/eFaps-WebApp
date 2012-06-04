@@ -20,8 +20,9 @@
 
 package org.efaps.ui.wicket.components.footer;
 
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.model.IModel;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
@@ -41,7 +42,7 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  */
 public class SearchSubmitLink
-    extends SubmitLink
+    extends AjaxSubmitLink
 {
     /**
      * Needed for serialization.
@@ -67,7 +68,8 @@ public class SearchSubmitLink
      * This method is executed when the form is submitted.
      */
     @Override
-    public void onSubmit()
+    protected void onSubmit(final AjaxRequestTarget target,
+                            final Form<?> form)
     {
         super.onSubmit();
         final AbstractUIPageObject uiObject = (AbstractUIPageObject) getDefaultModelObject();
@@ -94,5 +96,15 @@ public class SearchSubmitLink
         } catch (final EFapsException e) {
             getRequestCycle().setResponsePage(new ErrorPage(e));
         }
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink#onError(org.apache.wicket.ajax.AjaxRequestTarget, org.apache.wicket.markup.html.form.Form)
+     */
+    @Override
+    protected void onError(final AjaxRequestTarget _target,
+                           final Form<?> _form)
+    {
+        // TODO Auto-generated method stub
     }
 }

@@ -113,7 +113,7 @@ public class MenuItem
             }
 
         } else {
-            label.add(AttributeModifier.append("class", "eFapsMenuTreeItem"));
+            label.add(AttributeModifier.append("class", "eFapsMenuTreeSubItem"));
             link.add(new WebMarkupContainer("icon").setVisible(false));
             // _item.add(new
             // WebMarkupContainer("goIntolink").setVisible(false));

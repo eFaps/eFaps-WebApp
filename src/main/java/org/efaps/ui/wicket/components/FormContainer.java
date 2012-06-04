@@ -28,6 +28,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.core.util.string.JavaScriptUtils;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
@@ -41,6 +42,7 @@ import org.efaps.ui.wicket.EFapsSession.FileParameter;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.date.IDateListener;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
+import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 
 /**
@@ -168,6 +170,10 @@ public class FormContainer
         return this.dateComponents;
     }
 
+    /**
+     * Handle the multipart to store the files and parameters in the context also.
+     * @return true if multipart
+     */
     @Override
     protected boolean handleMultiPart()
     {
@@ -197,9 +203,8 @@ public class FormContainer
                 Context.getThreadContext().getParameters().putAll(parameters);
             }
         } catch (final EFapsException e) {
-
+            throw new RestartResponseAtInterceptPageException(new ErrorPage(e));
         }
         return ret;
     }
-
 }

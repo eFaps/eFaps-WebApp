@@ -49,6 +49,11 @@ public class PopUpMenuPanel
     private static final long serialVersionUID = 1L;
 
     /**
+     * Panel inside a menubar.
+     */
+    private final boolean menuBarItem;
+
+    /**
      * @param _wicketId wicketId of this Panel
      * @param _model    model for this Panel
      */
@@ -63,7 +68,7 @@ public class PopUpMenuPanel
                           final boolean _isMenuBarItem)
     {
         super(_wicketId, _model);
-
+        this.menuBarItem = _isMenuBarItem;
         final UIMenuItem menuItem = (UIMenuItem) super.getDefaultModelObject();
 
         if (_isMenuBarItem) {
@@ -71,7 +76,7 @@ public class PopUpMenuPanel
         } else {
             add(new PopupMenuItemBehavior());
         }
-        add(new WebComponent("label", Model.of(menuItem.getLabel())) {
+        add(new WebComponent("label", Model.of(menuItem)) {
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -79,8 +84,16 @@ public class PopUpMenuPanel
                                            final ComponentTag _openTag)
             {
                 super.onComponentTagBody(_markupStream, _openTag);
-                final StringBuilder html = new StringBuilder()
-                    .append("<span>").append(getDefaultModelObjectAsString()).append("</span>");
+                final UIMenuItem uiItem = (UIMenuItem) getDefaultModelObject();
+                final StringBuilder html = new StringBuilder();
+                if (PopUpMenuPanel.this.menuBarItem) {
+                    if (uiItem.getImage() == null) {
+                        html.append("<span class=\"eFapsMenuImagePlaceHolder\">").append("&nbsp;</span>");
+                    } else {
+                        html.append("<img src=\"/..").append(uiItem.getImage()).append("\" class=\"eFapsMenuImage\"/>");
+                    }
+                }
+                html.append("<span class=\"eFapsMenuLabel\">").append(uiItem.getLabel()).append("</span>");
                 replaceComponentTagBody(_markupStream, _openTag, html);
             }
         });
