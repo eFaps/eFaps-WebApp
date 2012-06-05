@@ -30,7 +30,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.wicket.RestartResponseException;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.io.IClusterable;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeSet;
@@ -124,22 +123,6 @@ public class UIForm
      * Is this form classified by classification.
      */
     private boolean classified = false;
-
-    /**
-     * Constructor using PageParameters.
-     *
-     * @param _parameters PageParameters from wicket
-     */
-    public UIForm(final PageParameters _parameters)
-    {
-        super(_parameters);
-        final AbstractCommand command = super.getCommand();
-        if (command == null) {
-            this.formUUID = null;
-        } else if (command.getTargetForm() != null) {
-            this.formUUID = command.getTargetForm().getUUID();
-        }
-    }
 
     /**
      * Constructor.

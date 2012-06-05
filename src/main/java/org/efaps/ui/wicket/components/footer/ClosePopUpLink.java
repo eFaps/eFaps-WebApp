@@ -22,7 +22,6 @@ package org.efaps.ui.wicket.components.footer;
 
 import org.apache.wicket.markup.html.link.PopupCloseLink;
 import org.apache.wicket.model.Model;
-import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 
 /**
@@ -50,16 +49,4 @@ public class ClosePopUpLink
     {
         super(_wicketId, Model.of(_uiObject));
     }
-
-    /**
-     * Action is done on click.
-     */
-    @Override
-    public void onClick()
-    {
-        super.onClick();
-        final AbstractUIObject uiObject = (AbstractUIObject) getDefaultModelObject();
-        ((EFapsSession) getSession()).removeOpener(uiObject.getOpenerId());
-    }
-
 }

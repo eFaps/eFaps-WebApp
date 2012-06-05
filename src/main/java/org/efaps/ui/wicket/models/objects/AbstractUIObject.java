@@ -26,8 +26,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.apache.wicket.RestartResponseException;
-import org.apache.wicket.Session;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.EventType;
@@ -48,8 +46,6 @@ import org.efaps.beans.valueparser.ValueParser;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.PrintQuery;
-import org.efaps.ui.wicket.EFapsSession;
-import org.efaps.ui.wicket.Opener;
 import org.efaps.ui.wicket.models.AbstractInstanceObject;
 import org.efaps.ui.wicket.models.cell.UIPicker;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
@@ -126,11 +122,6 @@ public abstract class AbstractUIObject
     private String openerId;
 
     /**
-     * In case of a form or table the key to the menu tree is stored.
-     */
-    private String menuTreeKey;
-
-    /**
      * UIObjects which events will be executed also.
      */
     private final List<IEventUIObject> eventObjects = new ArrayList<IEventUIObject>();
@@ -139,22 +130,6 @@ public abstract class AbstractUIObject
      * Is this Model used inside a Page called from a picker.
      */
     private boolean picker;
-
-    /**
-     * Constructor evaluating the UUID for the command and the oid from an
-     * Opener instance.
-     *
-     * @param _parameters PageParameters for this Model
-     */
-    public AbstractUIObject(final PageParameters _parameters)
-    {
-        this.openerId = _parameters.get(Opener.OPENER_PARAKEY).toString();
-        final Opener opener = ((EFapsSession) Session.get()).getOpener(this.openerId);
-        final AbstractUIObject uiObject = (AbstractUIObject) opener.getModel().getObject();
-        initialize(uiObject.getCommandUUID(), this.openerId);
-        this.menuTreeKey = opener.getMenuTreeKey();
-        setInstanceKey(uiObject.getInstanceKey());
-    }
 
     /**
      * Constructor.
@@ -614,16 +589,6 @@ public abstract class AbstractUIObject
         throws EFapsException
     {
         return executeEvents(EventType.UI_VALIDATE, _objectTuples);
-    }
-
-    /**
-     * Getter method for instance variable {@link #menuTreeKey}.
-     *
-     * @return value of instance variable {@link #menuTreeKey}
-     */
-    public String getMenuTreeKey()
-    {
-        return this.menuTreeKey;
     }
 
     /**

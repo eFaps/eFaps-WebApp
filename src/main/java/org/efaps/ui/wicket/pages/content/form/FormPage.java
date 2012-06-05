@@ -28,7 +28,6 @@ import org.apache.wicket.PageReference;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.classification.ClassificationPathPanel;
 import org.efaps.ui.wicket.components.form.FormPanel;
@@ -68,21 +67,6 @@ public class FormPage
      * Reference to the css stylesheet.
      */
     private static final EFapsContentReference CSS = new EFapsContentReference(FormPage.class, "FormPage.css");
-
-    /**
-     * Constructor called from the client directly by using parameters. Normally
-     * it should only contain one parameter Opener.OPENER_PARAKEY to access the
-     * opener.
-     *
-     * @param _parameters PageParameters
-     * @throws EFapsException on error
-     */
-    public FormPage(final PageParameters _parameters,
-                    final boolean _updateMenu)
-        throws EFapsException
-    {
-        this(new FormModel(new UIForm(_parameters)), _updateMenu);
-    }
 
     /**
      * @param _model model for the page

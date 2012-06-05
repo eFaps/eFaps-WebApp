@@ -51,8 +51,8 @@ import org.efaps.ui.wicket.behaviors.dojo.BorderContainerBehavior.Design;
 import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior.Region;
 import org.efaps.ui.wicket.behaviors.dojo.RequireBehavior;
+import org.efaps.ui.wicket.components.menu.LinkItem;
 import org.efaps.ui.wicket.components.menu.MenuBarPanel;
-import org.efaps.ui.wicket.components.menu.StandardLink;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.preloader.PreLoaderPanel;
 import org.efaps.ui.wicket.models.UIModel;
@@ -103,7 +103,6 @@ public class MainPage
      * window.
      */
     private static String WIDTH_PARAMETERNAME = "eFapsWindowWidth";
-
 
     /**
      * The MainPage has a ModalWindow that can be called from the childPages.
@@ -162,7 +161,7 @@ public class MainPage
                             new Model<String>("eFapsLogo " + companyName.replaceAll("\\W", ""))));
             final long usrId = context.getPersonId();
             // Admin_Common_SystemMessageAlert
-            final StandardLink alert = new StandardLink("useralert",
+            final LinkItem alert = new LinkItem("useralert",
                             new UIModel<UIMenuItem>(new UIMenuItem(SetMessageStatusBehavior.getCmdUUD())))
             {
 

@@ -91,12 +91,6 @@ public class EFapsSession
     private final Map<String, Component> componentcache = new HashMap<String, Component>();
 
     /**
-     * Map caches the opener instances which are used to pass information from
-     * on page to anotheer in the case that the browser is involved.
-     */
-    private final Map<String, Opener> openerCache = new HashMap<String, Opener>();
-
-    /**
      * This instance variable holds the Name of the logged in user. It is also
      * used to check if a user is logged in, by returning that a user is logged
      * in, if this variable is not null.
@@ -295,37 +289,6 @@ public class EFapsSession
     }
 
     /**
-     * Method to remove a opener from the opener cache.
-     *
-     * @param _openerId id of the opener to be removed
-     */
-    public void removeOpener(final String _openerId)
-    {
-        this.openerCache.remove(_openerId);
-    }
-
-    /**
-     * Method to store an opener in this session.
-     *
-     * @param _opener opener to be stored
-     */
-    public void storeOpener(final Opener _opener)
-    {
-        this.openerCache.put(_opener.getId(), _opener);
-    }
-
-    /**
-     * Method to get an opener from the opener cache.
-     *
-     * @param _openerId if of the opener to get
-     * @return an opener instance
-     */
-    public Opener getOpener(final String _openerId)
-    {
-        return this.openerCache.get(_openerId);
-    }
-
-    /**
      * Method to check if a user is checked in.
      *
      * @return true if a user is checked in, else false
@@ -348,7 +311,7 @@ public class EFapsSession
      */
     public final void login()
     {
-        final IRequestParameters paras = RequestCycle.get().getRequest().getRequestParameters() ;
+        final IRequestParameters paras = RequestCycle.get().getRequest().getRequestParameters();
         final StringValue name = paras.getParameterValue("name");
         final StringValue pwd = paras.getParameterValue("password");
         if (checkLogin(name.toString(), pwd.toString())) {

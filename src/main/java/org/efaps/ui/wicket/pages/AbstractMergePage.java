@@ -33,9 +33,9 @@ import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.efaps.admin.program.bundle.BundleMaker;
 import org.efaps.admin.program.bundle.TempFileBundle;
+import org.efaps.ui.wicket.behaviors.AjaxDownloadBehavior;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
@@ -66,11 +66,16 @@ public abstract class AbstractMergePage
     private boolean mergeStatics = true;
 
     /**
-     * Constructor that passes to the SuperConstructor.
+     * The DownloadBehavior used for downloading files.
+     */
+    private final AjaxDownloadBehavior downloadBehavior  = new AjaxDownloadBehavior();
+
+    /**
+     * Constructor.
      */
     public AbstractMergePage()
     {
-        super();
+        this(null);
     }
 
     /**
@@ -80,15 +85,7 @@ public abstract class AbstractMergePage
     public AbstractMergePage(final IModel<?> _model)
     {
         super(_model);
-    }
-
-    /**
-     * Constructor that passes to the SuperConstructor.
-     * @param _parameters   parameters for this page
-     */
-    public AbstractMergePage(final PageParameters _parameters)
-    {
-        super(_parameters);
+        add(this.downloadBehavior);
     }
 
     /**
@@ -233,5 +230,15 @@ public abstract class AbstractMergePage
     public void setMergeStatics(final boolean _mergeStatics)
     {
         this.mergeStatics = _mergeStatics;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #downloadBehavior}.
+     *
+     * @return value of instance variable {@link #downloadBehavior}
+     */
+    public AjaxDownloadBehavior getDownloadBehavior()
+    {
+        return this.downloadBehavior;
     }
 }

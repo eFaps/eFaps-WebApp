@@ -24,7 +24,6 @@ import java.util.UUID;
 
 import org.apache.wicket.PageReference;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.tree.StructurBrowserTreeTablePanel;
@@ -55,21 +54,6 @@ public class StructurBrowserPage
      * Needed for serialization.
      */
     private static final long serialVersionUID = 7564911406648729094L;
-
-    /**
-     * Constructor called from the client directly by using parameters. Normally
-     * it should only contain one parameter Opener.OPENER_PARAKEY to access the
-     * opener.
-     *
-     * @param _parameters PageParameters
-     * @throws EFapsException on error
-     */
-    public StructurBrowserPage(final PageParameters _parameters,
-                               final boolean _updateMenu)
-        throws EFapsException
-    {
-        this(new UIModel<UIStructurBrowser>(new UIStructurBrowser(_parameters)), _updateMenu);
-    }
 
     /**
      * @param _model model for this pager

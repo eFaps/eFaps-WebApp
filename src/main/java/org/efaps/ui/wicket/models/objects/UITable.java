@@ -34,7 +34,6 @@ import java.util.StringTokenizer;
 import java.util.UUID;
 
 import org.apache.wicket.RestartResponseException;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.io.IClusterable;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
@@ -117,19 +116,6 @@ public class UITable
      * Thie Row is used in case of edit to create new empty rows.
      */
     private UIRow emptyRow;
-
-    /**
-     * Constructor setting the parameters.
-     *
-     * @param _parameters PageParameters
-     * @throws EFapsException on error
-     */
-    public UITable(final PageParameters _parameters)
-        throws EFapsException
-    {
-        super(_parameters);
-        initialise();
-    }
 
     /**
      * Constructor setting the uuid and Key of the instance.

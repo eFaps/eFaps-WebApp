@@ -30,7 +30,6 @@ import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.models.objects.UIWizardObject;
-import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
@@ -90,8 +89,6 @@ public class SearchSubmitLink
             final FooterPanel footer = findParent(FooterPanel.class);
             final ModalWindowContainer modal = footer.getModalWindow();
             final TablePage page = new TablePage(new TableModel(newTable), modal, false);
-
-            page.setMenuTreeKey(((AbstractContentPage) getPage()).getMenuTreeKey());
             getRequestCycle().setResponsePage(page);
         } catch (final EFapsException e) {
             getRequestCycle().setResponsePage(new ErrorPage(e));

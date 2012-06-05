@@ -26,13 +26,10 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.link.IPageLink;
 import org.apache.wicket.protocol.http.ClientProperties;
 import org.apache.wicket.protocol.http.request.WebClientInfo;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Command;
 import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.Search;
-import org.efaps.ui.wicket.EFapsSession;
-import org.efaps.ui.wicket.Opener;
 import org.efaps.ui.wicket.behaviors.dojo.BorderContainerBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.BorderContainerBehavior.Design;
 import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior;
@@ -40,7 +37,6 @@ import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior.Region;
 import org.efaps.ui.wicket.components.LazyIframe;
 import org.efaps.ui.wicket.components.menutree.MenuTree;
 import org.efaps.ui.wicket.components.split.ListOnlyPanel;
-import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
@@ -106,7 +102,7 @@ public class ContentContainerPage
     /**
      * Does this Page contain a StucturBrowser.
      */
-    private boolean structurbrowser;
+    private final boolean structurbrowser;
 
     /**
      * Is the content a WebForm or a Table?
@@ -129,33 +125,6 @@ public class ContentContainerPage
     }
 
     /**
-     * Constructor called from the client directly by using parameters. Normally
-     * it should only contain one parameter Opener.OPENER_PARAKEY to access the
-     * opener.
-     *
-     * @param _parameters PageParameters
-     * @throws EFapsException on error
-     */
-    public ContentContainerPage(final PageParameters _parameters)
-        throws EFapsException
-    {
-        super();
-        final Opener opener = ((EFapsSession) getSession())
-                        .getOpener(_parameters.get(Opener.OPENER_PARAKEY).toString());
-        final UUID commandUUID;
-        final String instanceKey;
-        if (opener.getModel() != null) {
-            final AbstractUIObject uiObject = (AbstractUIObject) opener.getModel().getObject();
-            commandUUID = uiObject.getCommandUUID();
-            instanceKey = uiObject.getInstanceKey();
-        } else {
-            commandUUID = opener.getCommandUUID();
-            instanceKey = opener.getInstanceKey();
-        }
-        initialise(commandUUID, instanceKey, null);
-    }
-
-    /**
      * @param _uuid UUID of the command
      * @param _instanceKey oid
      * @throws EFapsException on error on error
@@ -164,7 +133,7 @@ public class ContentContainerPage
                                 final String _instanceKey)
         throws EFapsException
     {
-        initialise(_uuid, _instanceKey, null);
+        this(_uuid, _instanceKey, false);
     }
 
     /**

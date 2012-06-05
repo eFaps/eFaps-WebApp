@@ -21,14 +21,13 @@
 package org.efaps.ui.wicket.components.menu.ajax;
 
 import org.apache.wicket.Page;
-import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow.PageCreator;
 import org.apache.wicket.model.IModel;
-import org.efaps.ui.wicket.components.menu.AbstractMenuItemAjaxComponent;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
+import org.efaps.ui.wicket.pages.company.CompanyPage;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
 
@@ -39,7 +38,7 @@ import org.efaps.ui.wicket.pages.main.MainPage;
  * @version $Id:AjaxOpenModalComponent.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class SetCompanyItem
-    extends AbstractMenuItemAjaxComponent
+    extends AbstractItem
 {
     /**
      * Needed for serialization.
@@ -65,17 +64,6 @@ public class SetCompanyItem
     }
 
     /**
-     * This Method returns the JavaScript which is executed by the JSCooKMenu.
-     *
-     * @return String with the JavaScript
-     */
-    @Override
-    public String getJavaScript()
-    {
-        return ((OpenSetCompanyPageBehavior) super.getBehaviors().get(0)).getJavaScript();
-    }
-
-    /**
      * Setter method for instance variable {@link #reload}.
      *
      * @param _reload value for instance variable {@link #reload}
@@ -91,7 +79,7 @@ public class SetCompanyItem
      *
      */
     public class OpenSetCompanyPageBehavior
-        extends AjaxEventBehavior
+        extends AbstractItemBehavior
     {
 
         /**
@@ -105,17 +93,6 @@ public class SetCompanyItem
         public OpenSetCompanyPageBehavior()
         {
             super("onclick");
-        }
-
-        /**
-         * This Method returns the JavaScript which is executed by the JSCooKMenu.
-         *
-         * @return String with the JavaScript
-         */
-        public String getJavaScript()
-        {
-            final String script = super.getCallbackScript().toString();
-            return "javascript:" + script.replace("'", "\"");
         }
 
         /**
@@ -157,23 +134,11 @@ public class SetCompanyItem
 
                 public Page createPage()
                 {
-                    return null;//new CompanyPage(modal, null);
+                    return new CompanyPage(modal);
                 }
             };
             modal.setPageCreator(pageCreator);
-
             modal.show(_target);
-        }
-
-        /**
-         * Method must be overwritten, otherwise the default would break the execution of the JavaScript.
-         *
-         * @return null
-         */
-        @Override
-        protected CharSequence getPreconditionScript()
-        {
-            return null;
         }
     }
 }

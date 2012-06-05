@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.UUID;
 
-import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.efaps.admin.ui.AbstractCommand.SortDirection;
 import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
@@ -167,14 +166,6 @@ public abstract class AbstractUIHeaderObject
                                   final String _openerId)
     {
         super(_commandUUID, _instanceKey, _openerId);
-    }
-
-    /**
-     * @param _parameters
-     */
-    public AbstractUIHeaderObject(final PageParameters _parameters)
-    {
-        super(_parameters);
     }
 
     /**

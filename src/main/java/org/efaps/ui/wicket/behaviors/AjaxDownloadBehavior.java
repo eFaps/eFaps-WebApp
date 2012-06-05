@@ -22,6 +22,7 @@ package org.efaps.ui.wicket.behaviors;
 
 import java.io.File;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.behavior.AbstractAjaxBehavior;
 import org.apache.wicket.request.handler.resource.ResourceStreamRequestHandler;
@@ -50,11 +51,6 @@ public class AjaxDownloadBehavior
     private final boolean addAntiCache;
 
     /**
-     * The file that will be downloaded.
-     */
-    private File file;
-
-    /**
      * Constructor using antichache.
      */
     public AjaxDownloadBehavior()
@@ -73,11 +69,12 @@ public class AjaxDownloadBehavior
 
     /**
      * Call this method to initiate the download.
+     * @param _target Ajaxtarget
      */
     public void initiate(final AjaxRequestTarget _target)
     {
-        this.file = ((EFapsSession) getComponent().getSession()).getFile();
-        if (this.file != null && this.file.exists()) {
+        final File file = ((EFapsSession) getComponent().getSession()).getFile();
+        if (file != null && file.exists()) {
 
             String url = getCallbackUrl().toString();
 
@@ -85,9 +82,7 @@ public class AjaxDownloadBehavior
                 url = url + (url.contains("?") ? "&" : "?");
                 url = url + "antiCache=" + System.currentTimeMillis();
             }
-
-            // the timeout is needed to let Wicket release the channel
-            _target.appendJavaScript("setTimeout(\"window.location.href='" + url + "'\", 100);");
+            _target.appendJavaScript("top.window.location.href='" + url + "';");
         }
     }
 
@@ -111,7 +106,8 @@ public class AjaxDownloadBehavior
      */
     protected String getFileName()
     {
-        return this.file.getName();
+        final File file = ((EFapsSession) getComponent().getSession()).getFile();
+        return file.getName();
     }
 
     /**
@@ -120,6 +116,17 @@ public class AjaxDownloadBehavior
      */
     protected IResourceStream getResourceStream()
     {
-        return new FileResourceStream(this.file);
+        final File file = ((EFapsSession) getComponent().getSession()).getFile();
+        return new FileResourceStream(file);
+    }
+
+
+    /* (non-Javadoc)
+     * @see org.apache.wicket.behavior.Behavior#getStatelessHint(org.apache.wicket.Component)
+     */
+    @Override
+    public boolean getStatelessHint(final Component _component)
+    {
+        return true;
     }
 }

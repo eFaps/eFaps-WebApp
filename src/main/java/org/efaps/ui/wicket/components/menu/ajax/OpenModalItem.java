@@ -52,7 +52,6 @@ public class OpenModalItem
      *
      * @param _wicketId wicket id of this component
      * @param _model model for this component
-     * @param _form form in case of a submit
      */
     public OpenModalItem(final String _wicketId,
                          final IModel<UIMenuItem> _model)

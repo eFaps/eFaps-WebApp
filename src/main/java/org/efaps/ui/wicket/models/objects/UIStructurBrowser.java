@@ -35,7 +35,6 @@ import java.util.UUID;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.apache.wicket.RestartResponseException;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.efaps.admin.AbstractAdminObject;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
@@ -281,20 +280,6 @@ public class UIStructurBrowser
      * to initialize correctly the Tree for the UserInterface.
      */
     private final Set<UIStructurBrowser> expandedBrowsers = new HashSet<UIStructurBrowser>();
-
-    /**
-     * Constructor.
-     *
-     * @param _parameters Page parameters
-     * @throws EFapsException on error
-     */
-    public UIStructurBrowser(final PageParameters _parameters)
-        throws EFapsException
-    {
-        super(_parameters);
-        this.root = true;
-        initialise();
-    }
 
     /**
      * Standard constructor, if called this StructurBrowserModel will be defined

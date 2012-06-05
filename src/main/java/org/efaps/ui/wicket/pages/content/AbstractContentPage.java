@@ -30,8 +30,6 @@ import org.apache.wicket.markup.html.link.PopupSettings;
 import org.apache.wicket.model.IModel;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
-import org.efaps.ui.wicket.EFapsSession;
-import org.efaps.ui.wicket.Opener;
 import org.efaps.ui.wicket.behaviors.SetMessageStatusBehavior;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.footer.FooterPanel;
@@ -70,11 +68,6 @@ public abstract class AbstractContentPage
      * Needed for serialization.
      */
     private static final long serialVersionUID = -2374207555009145191L;
-
-    /**
-     * Variable contains the key to the MenuTree.
-     */
-    private String menuTreeKey;
 
     /**
      * This instance variable contains a ModalWindow passed on by the
@@ -247,57 +240,10 @@ public abstract class AbstractContentPage
     }
 
     /**
-     * This is the getter method for the instance variable {@link #menuTreeKey}.
-     *
-     * @return value of instance variable {@link #menuTreeKey}
-     */
-
-    public String getMenuTreeKey()
-    {
-        if (this.menuTreeKey == null) {
-            this.menuTreeKey = ((AbstractUIObject) getDefaultModelObject()).getMenuTreeKey();
-        }
-        return this.menuTreeKey;
-    }
-
-    /**
-     * This is the setter method for the instance variable {@link #menuTreeKey}.
-     *
-     * @param _menuTreeKey the listMenuName to set
-     * @return this
-     */
-    public AbstractContentPage setMenuTreeKey(final String _menuTreeKey)
-    {
-        this.menuTreeKey = _menuTreeKey;
-        return this;
-    }
-
-    /**
-     * After the page is rendered, it is checked if the a opener exists, If it
-     * exists and it is marked for remove it is removed from the session.
-     *
-     */
-    @Override
-    protected void onAfterRender()
-    {
-        super.onAfterRender();
-        if (((AbstractUIObject) getDefaultModelObject()).getOpenerId() != null) {
-            final String openerId = ((AbstractUIObject) getDefaultModelObject()).getOpenerId();
-            final Opener opener = ((EFapsSession) getSession()).getOpener(openerId);
-            if (opener != null && opener.isMarked4Remove()) {
-                ((EFapsSession) getSession()).removeOpener(openerId);
-            }
-        }
-    }
-
-    /**
      * @return the value of the markup id attribute of the indicating element
      */
     public String getAjaxIndicatorMarkupId()
     {
         return "eFapsVeil";
     }
-
-
-
 }

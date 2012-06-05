@@ -28,6 +28,7 @@ import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.efaps.ui.wicket.behaviors.dojo.MenuBarBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.MenuBarItemBehavior;
+import org.efaps.ui.wicket.components.menu.ajax.ExecItem;
 import org.efaps.ui.wicket.components.menu.ajax.SetCompanyItem;
 import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
@@ -93,6 +94,15 @@ public class MenuBarPanel
                             item.add(new MenuBarItemBehavior());
                             itemRepeater.add(item);
                         }
+                    } else {
+                        Component item;
+                        if (childItem.getCommand().isNoUpdateAfterCmd()) {
+                            item = new ExecItem(itemRepeater.newChildId(), new UIModel<UIMenuItem>(childItem));
+                        } else {
+                            item = new LinkItem(itemRepeater.newChildId(), new UIModel<UIMenuItem>(childItem));
+                        }
+                        item.add(new MenuBarItemBehavior());
+                        itemRepeater.add(item);
                     }
                 }
             }

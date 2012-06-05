@@ -35,12 +35,9 @@ import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractCommand;
-import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.ui.wicket.EFapsSession;
-import org.efaps.ui.wicket.Opener;
 import org.efaps.ui.wicket.components.IRecent;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
-import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
@@ -86,16 +83,6 @@ public class LinkItem
         final UIMenuItem model = super.getModelObject();
 
         final AbstractCommand command = model.getCommand();
-        // in case of popup is opened store the Opener in the session
-        if (command.getTarget() == Target.POPUP) {
-            final Opener opener = new Opener(getPage().getDefaultModel());
-            ((EFapsSession) getSession()).storeOpener(opener);
-            opener.getId();
-            opener.setCommandUUID(command.getUUID());
-            if (getPage() instanceof AbstractContentPage) {
-                opener.setMenuTreeKey(((AbstractContentPage) getPage()).getMenuTreeKey());
-            }
-        }
         try {
             if (command.getTargetTable() != null) {
                 WebPage page;
@@ -118,14 +105,10 @@ public class LinkItem
                         if (object instanceof File) {
                             getRequestCycle().scheduleRequestHandlerAfterCurrent(
                                             new RedirectRequestHandler("/usage.html"));
-
                         }
                     }
                 } catch (final EFapsException e) {
                     throw new RestartResponseException(new ErrorPage(e));
-                }
-                if ("true".equals(command.getProperty("NoUpdateAfterCOMMAND"))) {
-                    getRequestCycle().setRequest(null);
                 }
             }
         } catch (final EFapsException e) {

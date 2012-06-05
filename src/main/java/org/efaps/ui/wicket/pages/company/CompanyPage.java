@@ -81,11 +81,9 @@ public class CompanyPage
      * Constructor adding all Components to this Page.
      *
      * @param _modal modal window
-     * @param _link AjaxSetCompanyLink
      */
     public CompanyPage(final ModalWindowContainer _modal)
     {
-        super();
         this.modal = _modal;
 
         // set the title for the Page

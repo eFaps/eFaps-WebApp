@@ -31,11 +31,11 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.request.IRequestHandler;
 import org.efaps.admin.dbproperty.DBProperties;
-import org.efaps.ui.wicket.behaviors.AjaxDownloadBehavior;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.models.objects.UITable;
+import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
@@ -70,9 +70,9 @@ public class ModalWindowContainer
     private boolean updateParent = false;
 
     /**
-     * The DownloadBehavior used for downloading files.
+     * Show a file on close.
      */
-    private final AjaxDownloadBehavior download  = new AjaxDownloadBehavior();
+    private boolean targetShowFile = false;
 
     /**
      * Constructor.
@@ -85,7 +85,6 @@ public class ModalWindowContainer
         setCssClassName(ModalWindow.CSS_CLASS_GRAY);
         showUnloadConfirmation(false);
         setTitle(DBProperties.getProperty("Logo.Version.Label"));
-        add(this.download);
     }
 
     /**
@@ -121,9 +120,8 @@ public class ModalWindowContainer
         if (this.reloadChild) {
             _target.prependJavaScript(getReloadJavaScript());
         }
-        final AbstractUIPageObject uiObject = (AbstractUIPageObject) getPage().getDefaultModelObject();
-        if (uiObject.isTargetShowFile()) {
-            this.download.initiate(_target);
+        if (this.targetShowFile) {
+            ((AbstractMergePage) getPage()).getDownloadBehavior().initiate(_target);
         }
     }
 
@@ -280,5 +278,13 @@ public class ModalWindowContainer
             width = wcInfo.getProperties().getBrowserWidth();
         }
         return super.setInitialWidth(width);
+    }
+
+    /**
+     * @param _targetShowFile show a file
+     */
+    public void setTargetShowFile(final boolean _targetShowFile)
+    {
+        this.targetShowFile = _targetShowFile;
     }
 }

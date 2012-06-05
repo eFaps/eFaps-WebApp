@@ -82,7 +82,6 @@ public class SortLink
             uiTableHeader.setSortDirection(SortDirection.DESCENDING);
         }
 
-        final String menuTreeKey = ((AbstractContentPage) getPage()).getMenuTreeKey();
         try {
             uiTable.setSortDirection(uiTableHeader.getSortDirection());
             uiTable.sort();
@@ -93,7 +92,6 @@ public class SortLink
             } else {
                 page = new FormPage(new FormModel((UIForm) getPage().getDefaultModelObject()), true);
             }
-            page.setMenuTreeKey(menuTreeKey);
             getRequestCycle().setResponsePage(page);
         } catch (final EFapsException e) {
             getRequestCycle().setResponsePage(new ErrorPage(e));

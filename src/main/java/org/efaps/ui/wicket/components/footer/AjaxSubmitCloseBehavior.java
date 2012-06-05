@@ -32,14 +32,12 @@ import java.util.Set;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
-import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.request.IRequestParameters;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.StringValue;
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
@@ -52,7 +50,6 @@ import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.EFapsRequestParametersAdapter;
 import org.efaps.ui.wicket.EFapsSession;
-import org.efaps.ui.wicket.Opener;
 import org.efaps.ui.wicket.behaviors.update.UpdateInterface;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
@@ -194,7 +191,6 @@ public class AjaxSubmitCloseBehavior
                         } else {
                             page = new FormPage(new FormModel((UIForm) newUIObject), modal, true);
                         }
-                        page.setMenuTreeKey(((AbstractContentPage) getComponent().getPage()).getMenuTreeKey());
                         getComponent().getPage().getRequestCycle().setResponsePage(page);
                     } else {
                         final FooterPanel footer = getComponent().findParent(FooterPanel.class);
@@ -203,25 +199,10 @@ public class AjaxSubmitCloseBehavior
                                         || (this.uiObject.getCallingCommand() != null
                                                 && this.uiObject.getCallingCommand().getTarget() == Target.MODAL)) {
                             footer.getModalWindow().setReloadChild(!this.uiObject.getCommand().isNoUpdateAfterCmd());
+                            footer.getModalWindow().setTargetShowFile(this.uiObject.getCommand().isTargetShowFile());
                             footer.getModalWindow().close(_target);
                         } else {
-                            final Opener opener = ((EFapsSession) Session.get()).getOpener(this.uiObject.getOpenerId());
-                            // mark the opener that it can be removed
-                            opener.setMarked4Remove(true);
-
-                            Class<? extends Page> clazz;
-                            if (opener.getModel() instanceof TableModel) {
-                                clazz = TablePage.class;
-                            } else {
-                                clazz = FormPage.class;
-                            }
-
-                            final PageParameters parameters = new PageParameters();
-                            parameters.add(Opener.OPENER_PARAKEY, this.uiObject.getOpenerId());
-
-                            final CharSequence url = getForm().urlFor(clazz, parameters);
-
-                            _target.appendJavaScript("opener.location.href = '" + url + "'; self.close();");
+                            //TODO
                         }
                         footer.setSuccess(true);
 
