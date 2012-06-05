@@ -41,8 +41,8 @@ public class PopupItem
     private static final long serialVersionUID = 1L;
 
     /**
-     * @param _wicketId
-     * @param _model
+     * @param _wicketId Wicket id for this component
+     * @param _model    model for this component
      */
     public PopupItem(final String _wicketId,
                      final IModel<UIMenuItem> _model)
@@ -58,6 +58,7 @@ public class PopupItem
     /**
      * The original behavior is wanted therefore return null.
      * @param _url url for the script
+     * @return null to deactivate
      */
     @Override
     protected CharSequence getOnClickScript(final CharSequence _url)

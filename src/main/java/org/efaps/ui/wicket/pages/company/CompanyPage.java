@@ -84,6 +84,7 @@ public class CompanyPage
      */
     public CompanyPage(final ModalWindowContainer _modal)
     {
+        super();
         this.modal = _modal;
 
         // set the title for the Page

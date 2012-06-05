@@ -114,7 +114,7 @@ public class MainPage
      */
     public MainPage()
     {
-
+        super();
         // call the client info to force the reload script to be executed on the
         // beginning of a session,
         // if an ajax call would be done as first an error occurs

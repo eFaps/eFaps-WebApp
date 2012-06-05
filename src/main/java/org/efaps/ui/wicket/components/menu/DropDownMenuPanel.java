@@ -27,6 +27,7 @@ import org.apache.wicket.model.IModel;
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.ui.wicket.behaviors.dojo.DropDownMenuBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.MenuItemBehavior;
+import org.efaps.ui.wicket.components.menu.ajax.ExecItem;
 import org.efaps.ui.wicket.components.menu.ajax.OpenModalItem;
 import org.efaps.ui.wicket.components.menu.ajax.SearchItem;
 import org.efaps.ui.wicket.components.menu.ajax.SubmitItem;
@@ -74,8 +75,10 @@ public class DropDownMenuPanel
                     if (childItem.getTarget() == Target.MODAL) {
                         item = new OpenModalItem(itemRepeater.newChildId(),
                                         new UIModel<UIMenuItem>(childItem));
-                    } else if (childItem.getTarget() == Target.POPUP){
+                    } else if (childItem.getTarget() == Target.POPUP) {
                         item = new PopupItem(itemRepeater.newChildId(), new UIModel<UIMenuItem>(childItem));
+                    } else if (childItem.getTarget() == Target.HIDDEN) {
+                        item = new ExecItem(itemRepeater.newChildId(), new UIModel<UIMenuItem>(childItem));
                     } else {
                         item = new LinkItem(itemRepeater.newChildId(), new UIModel<UIMenuItem>(childItem));
                     }

@@ -24,6 +24,7 @@ package org.efaps.ui.wicket.components.menu.ajax;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.IAjaxIndicatorAware;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.efaps.ui.wicket.behaviors.dojo.OnDojoReadyHeaderItem;
 
@@ -36,6 +37,7 @@ import org.efaps.ui.wicket.behaviors.dojo.OnDojoReadyHeaderItem;
  */
 public abstract class AbstractItemBehavior
     extends AjaxEventBehavior
+    implements IAjaxIndicatorAware
 {
 
     /**
@@ -65,5 +67,11 @@ public abstract class AbstractItemBehavior
                 target.appendJavaScript(js);
             }
         }
+    }
+
+    @Override
+    public String getAjaxIndicatorMarkupId()
+    {
+        return "eFapsVeil";
     }
 }

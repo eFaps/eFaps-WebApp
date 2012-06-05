@@ -178,6 +178,7 @@ public class ContentContainerPage
                                 final boolean _addStructurBrowser)
         throws EFapsException
     {
+        super();
         this.structurbrowser = _addStructurBrowser;
         initialise(_uuid, _instanceKey, _selectedCmdUUID);
     }

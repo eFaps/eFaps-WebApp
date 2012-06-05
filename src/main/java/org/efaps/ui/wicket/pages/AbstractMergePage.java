@@ -71,6 +71,12 @@ public abstract class AbstractMergePage
     private final AjaxDownloadBehavior downloadBehavior  = new AjaxDownloadBehavior();
 
     /**
+     * Reference to the StyleSheet for this Page.
+     */
+    private static final EFapsContentReference CSS = new EFapsContentReference(AbstractMergePage.class,
+                    "AbstractMergePage.css");
+
+    /**
      * Constructor.
      */
     public AbstractMergePage()
@@ -86,6 +92,7 @@ public abstract class AbstractMergePage
     {
         super(_model);
         add(this.downloadBehavior);
+        this.add(StaticHeaderContrBehavior.forCss(AbstractMergePage.CSS));
     }
 
     /**
@@ -103,7 +110,7 @@ public abstract class AbstractMergePage
                 = new HashMap<StaticHeaderContrBehavior.HeaderType, List<StaticHeaderContrBehavior>>();
 
             // get all StaticHeaderContributor from all childs
-            addStaticBehaviors(resources, this.getBehaviors());
+            addStaticBehaviors(resources, getBehaviors(StaticHeaderContrBehavior.class));
             addChildStatics(resources, this);
 
             for (final Entry<StaticHeaderContrBehavior.HeaderType, List<StaticHeaderContrBehavior>> entry : resources
@@ -197,7 +204,7 @@ public abstract class AbstractMergePage
             if (component instanceof MarkupContainer) {
                 addChildStatics(_resources, (MarkupContainer) component);
             }
-            addStaticBehaviors(_resources, component.getBehaviors());
+            addStaticBehaviors(_resources, component.getBehaviors(StaticHeaderContrBehavior.class));
         }
     }
 
