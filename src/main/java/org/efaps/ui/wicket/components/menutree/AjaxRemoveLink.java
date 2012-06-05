@@ -53,9 +53,10 @@ public class AjaxRemoveLink
     private static final long serialVersionUID = 1L;
 
     /**
-     * Construtor setting the ID and the Node of this Component.
+     * Constructor setting the ID and the Node of this Component.
      *
      * @param _wicketId wicketid for this component
+     * @param _model    model for this component
      */
     public AjaxRemoveLink(final String _wicketId,
                           final IModel<UIMenuItem> _model)
@@ -70,7 +71,6 @@ public class AjaxRemoveLink
         menutree.removeChild(getModelObject(), _target);
     }
 
-
     /*
      * (non-Javadoc)
      * @see
@@ -81,16 +81,16 @@ public class AjaxRemoveLink
     protected void updateAjaxAttributes(final AjaxRequestAttributes _attributes)
     {
         super.updateAjaxAttributes(_attributes);
-            final AjaxCallListener listener = new AjaxCallListener();
-            final StringBuilder js = new StringBuilder();
-            js.append("dijit.byId(\"").append(((ContentContainerPage) getPage()).getCenterPanelId())
-                .append("\").set(\"content\", dojo.create(\"iframe\", {")
-                .append("\"src\": \"")
-                .append(AjaxRemoveLink.this.urlFor(ILinkListener.INTERFACE, new PageParameters()))
-                .append("\",\"style\": \"border: 0; width: 100%; height: 100%\"")
-                .append("})); ");
-            listener.onBefore(js);
-            _attributes.getAjaxCallListeners().add(listener);
+        final AjaxCallListener listener = new AjaxCallListener();
+        final StringBuilder js = new StringBuilder();
+        js.append("dijit.byId(\"").append(((ContentContainerPage) getPage()).getCenterPanelId())
+            .append("\").set(\"content\", dojo.create(\"iframe\", {")
+            .append("\"src\": \"")
+            .append(AjaxRemoveLink.this.urlFor(ILinkListener.INTERFACE, new PageParameters()))
+            .append("\",\"style\": \"border: 0; width: 100%; height: 100%\"")
+            .append("})); ");
+        listener.onBefore(js);
+        _attributes.getAjaxCallListeners().add(listener);
     }
 
     /* (non-Javadoc)
@@ -99,14 +99,21 @@ public class AjaxRemoveLink
     @Override
     public void onLinkClicked()
     {
-        final UIMenuItem menuItem = getModelObject().getAncestor();
+        final MenuTree menutree = findParent(MenuTree.class);
+        final UIMenuItem currentItem = getModelObject();
+
+        UIMenuItem menuItem = (UIMenuItem) menutree.getSelected().getDefaultModelObject();
+
+        if (menuItem.isChild(currentItem) || menuItem.equals(currentItem)) {
+            menuItem =  currentItem.getAncestor();
+        }
+
         Page page;
         try {
             if (menuItem.getCommand().getTargetTable() != null) {
                 if (menuItem.getCommand().getTargetStructurBrowserField() != null) {
                     page = new StructurBrowserPage(menuItem.getCommandUUID(),
-                                    menuItem.getInstanceKey(), getPage()
-                                    .getPageReference());
+                                    menuItem.getInstanceKey(), getPage().getPageReference());
                 } else {
                     page = new TablePage(menuItem.getCommandUUID(), menuItem.getInstanceKey(), getPage()
                                     .getPageReference());
@@ -119,6 +126,5 @@ public class AjaxRemoveLink
             page = new ErrorPage(e);
         }
         setResponsePage(page);
-
     }
 }

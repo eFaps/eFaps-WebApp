@@ -28,6 +28,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.markup.html.repeater.tree.NestedTree;
 import org.apache.wicket.extensions.markup.html.repeater.tree.theme.HumanTheme;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.util.iterator.ComponentHierarchyIterator;
 import org.efaps.ui.wicket.behaviors.update.IRemoteUpdateListener;
 import org.efaps.ui.wicket.behaviors.update.IRemoteUpdateable;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
@@ -101,11 +102,26 @@ public class MenuTree
                     final UUID _selectCmdUUID)
     {
         super(_wicketId, new TreeMenuModel(_commandUUID, _oid));
+
+        add(StaticHeaderContrBehavior.forCss(MenuTree.CSS));
         add(new HumanTheme());
         add(AttributeModifier.append("class", "eFapsTreeMenu"));
         add(new MenuUpdateBehavior());
-        expand(getProvider().getRoots().next().setHeader(true));
-        add(StaticHeaderContrBehavior.forCss(MenuTree.CSS));
+
+        final UIMenuItem menuItem = getProvider().getRoots().next();
+        menuItem.setHeader(true);
+        boolean hasDefault = false;
+        for (final UIMenuItem childItem : menuItem.getChildren()) {
+            if (childItem.isDefaultSelected()) {
+                hasDefault = true;
+                childItem.setSelected(true);
+            }
+        }
+        if (!hasDefault) {
+            menuItem.setSelected(true);
+        }
+        expand(menuItem);
+
     }
 
     /*
@@ -118,7 +134,7 @@ public class MenuTree
                                             final IModel<UIMenuItem> _model)
     {
         final MenuItem menuitem = new MenuItem(_id, this, _model);
-        if (this.selected == null && _model.getObject().isHeader()) {
+        if (_model.getObject().isSelected()) {
             this.selected = menuitem;
         }
         return menuitem;
@@ -164,7 +180,7 @@ public class MenuTree
     }
 
     /**
-     * @param _uuid         UUID of the command
+     * @param _commandUUID  UUID of the command
      * @param _instanceKey  instance key
      * @param _target       the ajax target to use
      */
@@ -172,9 +188,9 @@ public class MenuTree
                              final String _instanceKey,
                              final AjaxRequestTarget _target)
     {
-        final UIMenuItem menuItem = (UIMenuItem) this.selected.getDefaultModelObject();
+        final UIMenuItem menuItem = (UIMenuItem) getSelected().getDefaultModelObject();
         boolean old = false;
-        for (final UIMenuItem child : menuItem.getChilds()) {
+        for (final UIMenuItem child : menuItem.getChildren()) {
             if (child.getInstanceKey().equals(_instanceKey)
                             && child.getCommandUUID().equals(_commandUUID)) {
                 old = true;
@@ -183,11 +199,13 @@ public class MenuTree
 
         if (!old) {
             final UIMenuItem newMenuItem = new UIMenuItem(_commandUUID, _instanceKey);
+            newMenuItem.setSelected(true);
             newMenuItem.setAncestor(menuItem);
-            menuItem.getChilds().add(newMenuItem);
+            menuItem.getChildren().add(newMenuItem);
             expand(menuItem);
             expand(newMenuItem);
-            _target.add(this.selected);
+            menuItem.setSelected(false);
+            _target.add(getSelected());
         } else {
 
         }
@@ -200,10 +218,28 @@ public class MenuTree
     public void removeChild(final UIMenuItem _menuItem,
                             final AjaxRequestTarget _target)
     {
+        final UIMenuItem selected = (UIMenuItem) getSelected().getDefaultModelObject();
+
         final UIMenuItem ancestor = _menuItem.getAncestor();
-        ancestor.getChilds().remove(_menuItem);
-        expand(ancestor);
-        ancestor.setSelected(true);
+        boolean nested = false;
+        if (selected.isChild(_menuItem) || selected.equals(_menuItem)) {
+            nested = true;
+        }
+        ancestor.getChildren().remove(_menuItem);
+        if (nested) {
+            expand(ancestor);
+            ancestor.setSelected(true);
+            final ComponentHierarchyIterator visitor = visitChildren(MenuItem.class);
+            while (visitor.hasNext()) {
+                final Component component = visitor.next();
+                if (component.getDefaultModelObject().equals(ancestor)) {
+                    setSelected(component);
+                    break;
+                }
+            }
+        } else {
+            expand(ancestor);
+        }
     }
 
     /**

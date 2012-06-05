@@ -77,13 +77,13 @@ public class UIMenuItem
     /**
      * All childs of this menu item.
      */
-    private final List<UIMenuItem> childs = new ArrayList<UIMenuItem>();
+    private final List<UIMenuItem> children = new ArrayList<UIMenuItem>();
 
     /**
      * this instance variable stores in the case that this MenuItem is
      * part of a {@link #org.efaps.ui.wicket.components.menutree.MenuTree}
-     *  if it is selected by default and therefore the Form or Tabel
-     *  connected to this MenuItem must be opened.
+     * if it is selected by default and therefore the Form or Table
+     * connected to this MenuItem must be opened.
      */
     private boolean defaultSelected = false;
 
@@ -136,6 +136,12 @@ public class UIMenuItem
     private boolean selected = false;
 
     /**
+     * The parent for this item.
+     */
+    private UIMenuItem parent;
+
+
+    /**
      * Constructor setting the UUID of this MenuItem.
      *
      * @param _uuid UUID
@@ -161,23 +167,23 @@ public class UIMenuItem
     /**
      * this method returns, if this MenuItem has childs.
      *
-     * @see #childs
-     * @see #getChilds()
+     * @see #children
+     * @see #getChildren()
      * @return true if this MenuItem has childs, else false
      */
-    public boolean hasChilds()
+    public boolean hasChildren()
     {
-        return !this.childs.isEmpty();
+        return !this.children.isEmpty();
     }
 
     /**
-     * This is the getter method for the instance variable {@link #childs}.
+     * This is the getter method for the instance variable {@link #children}.
      *
-     * @return value of instance variable {@link #childs}
+     * @return value of instance variable {@link #children}
      */
-    public List<UIMenuItem> getChilds()
+    public List<UIMenuItem> getChildren()
     {
-        return this.childs;
+        return this.children;
     }
 
     /**
@@ -312,9 +318,13 @@ public class UIMenuItem
                 for (final AbstractCommand subCmd : ((AbstractMenu) command).getCommands()) {
                     if (subCmd != null && subCmd.hasAccess(getMode(), getInstance())) {
                         if (subCmd.getTargetMode().equals(TargetMode.SEARCH)) {
-                            this.childs.add(new UISearchItem(subCmd.getUUID(), getInstanceKey()));
+                            final UISearchItem child = new UISearchItem(subCmd.getUUID(), getInstanceKey());
+                            child.setParent(this);
+                            this.children.add(child);
                         } else {
-                            this.childs.add(new UIMenuItem(subCmd.getUUID(), getInstanceKey()));
+                            final UIMenuItem child = new UIMenuItem(subCmd.getUUID(), getInstanceKey());
+                            child.setParent(this);
+                            this.children.add(child);
                         }
                     }
                 }
@@ -470,5 +480,59 @@ public class UIMenuItem
     public void setSelected(final boolean _selected)
     {
         this.selected = _selected;
+    }
+
+
+    /**
+     * Getter method for the instance variable {@link #parent}.
+     *
+     * @return value of instance variable {@link #parent}
+     */
+    public UIMenuItem getParent()
+    {
+        return this.parent;
+    }
+
+    /**
+     * Setter method for instance variable {@link #parent}.
+     *
+     * @param _parent value for instance variable {@link #parent}
+     */
+
+    public void setParent(final UIMenuItem _parent)
+    {
+        this.parent = _parent;
+    }
+
+    /**
+     * @param _parentItem parentitem to check
+     * @return true if this UIMenuItem is child/grandchild of the given UIMenuItem
+     */
+    public boolean isChild(final UIMenuItem _parentItem)
+    {
+        return isChild(this, _parentItem);
+    }
+
+    /**
+     * Is the Childitem a child/grandchild of the Parentitem.
+     * @param _childItem    ChildItem
+     * @param _parentItem   ParentItem
+     * @return true if child or grandchild etc.
+     */
+    public boolean isChild(final UIMenuItem _childItem,
+                           final UIMenuItem _parentItem)
+    {
+        boolean ret = _parentItem.getChildren().contains(_childItem);
+        if (!ret) {
+            for (final UIMenuItem child : _parentItem.getChildren()) {
+                if (child.hasChildren()) {
+                    ret = isChild(_childItem, child);
+                }
+                if (ret) {
+                    break;
+                }
+            }
+        }
+        return ret;
     }
 }

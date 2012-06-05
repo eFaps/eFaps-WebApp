@@ -113,7 +113,7 @@ public class TreeMenuModel
     @Override
     public boolean hasChildren(final UIMenuItem _menuItem)
     {
-        return _menuItem.hasChilds();
+        return _menuItem.hasChildren();
     }
 
     /* (non-Javadoc)
@@ -122,7 +122,7 @@ public class TreeMenuModel
     @Override
     public Iterator<? extends UIMenuItem> getChildren(final UIMenuItem _node)
     {
-        return _node.getChilds().iterator();
+        return _node.getChildren().iterator();
     }
 
     /* (non-Javadoc)

@@ -79,7 +79,7 @@ public abstract class MenuNode
             protected void onComponentTag(final ComponentTag _tag)
             {
                 super.onComponentTag(_tag);
-                if (!((UIMenuItem) MenuNode.this.getDefaultModelObject()).hasChilds()) {
+                if (!((UIMenuItem) MenuNode.this.getDefaultModelObject()).hasChildren()) {
                     _tag.append("style", "display:none", ";");
                 }
             }

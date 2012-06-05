@@ -65,8 +65,8 @@ public class DropDownMenuPanel
         final RepeatingView itemRepeater = new RepeatingView("itemRepeater");
         add(itemRepeater);
 
-        for (final UIMenuItem childItem : menuItem.getChilds()) {
-            if (childItem.hasChilds()) {
+        for (final UIMenuItem childItem : menuItem.getChildren()) {
+            if (childItem.hasChildren()) {
                 itemRepeater.add(new PopupMenuPanel(itemRepeater.newChildId(), new UIModel<UIMenuItem>(childItem),
                                 false));
             } else {
