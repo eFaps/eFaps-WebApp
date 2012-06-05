@@ -32,6 +32,7 @@ import org.efaps.ui.wicket.behaviors.update.IRemoteUpdateListener;
 import org.efaps.ui.wicket.behaviors.update.IRemoteUpdateable;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,6 +82,9 @@ public class MenuTree
      */
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Selected Component.
+     */
     private Component selected = null;
 
     /**
@@ -101,6 +105,7 @@ public class MenuTree
         add(AttributeModifier.append("class", "eFapsTreeMenu"));
         add(new MenuUpdateBehavior());
         expand(getProvider().getRoots().next().setHeader(true));
+        add(StaticHeaderContrBehavior.forCss(MenuTree.CSS));
     }
 
     /*
@@ -159,9 +164,9 @@ public class MenuTree
     }
 
     /**
-     * @param _uuid
-     * @param _instanceKey
-     * @param _target
+     * @param _uuid         UUID of the command
+     * @param _instanceKey  instance key
+     * @param _target       the ajax target to use
      */
     public void addChildMenu(final UUID _commandUUID,
                              final String _instanceKey,

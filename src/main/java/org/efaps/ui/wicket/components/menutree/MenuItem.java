@@ -72,6 +72,9 @@ public class MenuItem
      */
     private static final Logger LOG = LoggerFactory.getLogger(MenuItem.class);
 
+    /**
+     * The tree the menuitem belongs to.
+     */
     private final MenuTree tree;
 
     /**
@@ -143,13 +146,13 @@ public class MenuItem
         private static final long serialVersionUID = 1L;
 
         /**
-         * @param _id
-         * @param _model
+         * @param _wicketId wicketid of this component
+         * @param _model    model for this component
          */
-        public Item(final String _id,
+        public Item(final String _wicketId,
                     final IModel<UIMenuItem> _model)
         {
-            super(_id, _model);
+            super(_wicketId, _model);
             add(new ItemBehavior());
         }
 
@@ -166,8 +169,7 @@ public class MenuItem
                 if (menuItem.getCommand().getTargetTable() != null) {
                     if (menuItem.getCommand().getTargetStructurBrowserField() != null) {
                         page = new StructurBrowserPage(menuItem.getCommandUUID(),
-                                        menuItem.getInstanceKey(), getPage()
-                                        .getPageReference());
+                                        menuItem.getInstanceKey(), getPage().getPageReference());
                     } else {
                         page = new TablePage(menuItem.getCommandUUID(), menuItem.getInstanceKey(), getPage()
                                         .getPageReference());
@@ -183,7 +185,8 @@ public class MenuItem
         }
     }
 
-    public static class SelectedAttributeModifier extends Behavior
+    public static class SelectedAttributeModifier
+        extends Behavior
     {
 
         /**
@@ -191,10 +194,6 @@ public class MenuItem
          */
         private static final long serialVersionUID = 1L;
 
-
-        /* (non-Javadoc)
-         * @see org.apache.wicket.behavior.Behavior#onComponentTag(org.apache.wicket.Component, org.apache.wicket.markup.ComponentTag)
-         */
         @Override
         public void onComponentTag(final Component _component,
                                    final ComponentTag _tag)
@@ -226,20 +225,18 @@ public class MenuItem
             if (MenuItem.this.tree.getSelected() != null) {
                 _target.add(MenuItem.this.tree.getSelected());
                 final UIMenuItem menuItem = (UIMenuItem) MenuItem.this.tree.getSelected().getDefaultModelObject();
-                menuItem.setSelected(true);
+                menuItem.setSelected(false);
             }
-            _target.add(getComponent());
-            MenuItem.this.tree.setSelected(getComponent());
+            _target.add(getComponent().findParent(MenuItem.class));
+            MenuItem.this.tree.setSelected(getComponent().findParent(MenuItem.class));
             final UIMenuItem menuItem = (UIMenuItem) MenuItem.this.tree.getSelected().getDefaultModelObject();
             menuItem.setSelected(true);
         }
 
 
-        /*
-         * (non-Javadoc)
-         * @see
-         * org.apache.wicket.ajax.AjaxEventBehavior#updateAjaxAttributes(org
-         * .apache.wicket.ajax.attributes.AjaxRequestAttributes)
+        /**
+         * Add a script that sets the content of the iframe of the ContentContainer.
+         * @param _attributes the attribute to be updated
          */
         @Override
         protected void updateAjaxAttributes(final AjaxRequestAttributes _attributes)
