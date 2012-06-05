@@ -877,28 +877,33 @@ public class UITable
                     sortKeyTmp++;
                 }
             }
-            final int index = sortKeyTmp;
-            Collections.sort(this.values, new Comparator<UIRow>() {
-
-                public int compare(final UIRow _rowModel1,
-                                   final UIRow _rowModel2)
+            if (sortKeyTmp < getTable().getFields().size()) {
+                final int index = sortKeyTmp;
+                Collections.sort(this.values, new Comparator<UIRow>()
                 {
 
-                    final UITableCell cellModel1 = _rowModel1.getValues().get(index);
-                    final FieldValue fValue1 = new FieldValue(getTable().getFields().get(index), cellModel1
-                                    .getUiClass(), cellModel1.getCompareValue() != null ? cellModel1.getCompareValue()
-                                    : cellModel1.getCellValue());
+                    public int compare(final UIRow _rowModel1,
+                                       final UIRow _rowModel2)
+                    {
 
-                    final UITableCell cellModel2 = _rowModel2.getValues().get(index);
-                    final FieldValue fValue2 = new FieldValue(getTable().getFields().get(index), cellModel2
-                                    .getUiClass(), cellModel2.getCompareValue() != null ? cellModel2.getCompareValue()
-                                    : cellModel2.getCellValue());
+                        final UITableCell cellModel1 = _rowModel1.getValues().get(index);
+                        final FieldValue fValue1 = new FieldValue(getTable().getFields().get(index), cellModel1
+                                        .getUiClass(), cellModel1.getCompareValue() != null ? cellModel1
+                                        .getCompareValue()
+                                        : cellModel1.getCellValue());
 
-                    return fValue1.compareTo(fValue2);
+                        final UITableCell cellModel2 = _rowModel2.getValues().get(index);
+                        final FieldValue fValue2 = new FieldValue(getTable().getFields().get(index), cellModel2
+                                        .getUiClass(), cellModel2.getCompareValue() != null ? cellModel2
+                                        .getCompareValue()
+                                        : cellModel2.getCellValue());
+
+                        return fValue1.compareTo(fValue2);
+                    }
+                });
+                if (getSortDirection() == SortDirection.DESCENDING) {
+                    Collections.reverse(this.values);
                 }
-            });
-            if (getSortDirection() == SortDirection.DESCENDING) {
-                Collections.reverse(this.values);
             }
         }
     }
