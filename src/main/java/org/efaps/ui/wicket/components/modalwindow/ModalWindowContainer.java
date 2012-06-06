@@ -42,6 +42,8 @@ import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
+import org.efaps.ui.wicket.util.Configuration;
+import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 import org.efaps.util.EFapsException;
 
 /**
@@ -82,7 +84,11 @@ public class ModalWindowContainer
     public ModalWindowContainer(final String _wicketId)
     {
         super(_wicketId);
-        setCssClassName(ModalWindow.CSS_CLASS_GRAY);
+        if ("w_silver".equals(Configuration.getAttribute(ConfigAttribute.DOJO_MODALCLASS))) {
+            setCssClassName(ModalWindow.CSS_CLASS_GRAY);
+        } else if ("w_blue".equals(Configuration.getAttribute(ConfigAttribute.DOJO_MODALCLASS))) {
+            setCssClassName(ModalWindow.CSS_CLASS_BLUE);
+        }
         showUnloadConfirmation(false);
         setTitle(DBProperties.getProperty("Logo.Version.Label"));
     }

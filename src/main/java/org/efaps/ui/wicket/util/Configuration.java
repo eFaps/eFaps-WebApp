@@ -40,8 +40,10 @@ public class Configuration
         /**  */
         RECENTCACHESIZE(false, true, "RecentCacheSize", "5"),
 
-        /** Name of the main stylesheet for dojo. */
+        /** Name of the main stylesheet for dojo. (tundra,claro,nihilo,soria)*/
         DOJO_CLASS(true, true, "DojoMainStylesheet", "tundra"),
+        /** Name of the main stylesheet for dojo modal window. (w_blue,w_silver) */
+        DOJO_MODALCLASS(true, true, "DojoModalStylesheet", "w_silver"),
         /** position of the horizontal splitter. */
         SPLITTERPOSHORIZONTAL(true, true, "PositionOfHorizontalSplitter", "200"),
         /** position of the vertical splitter. */
