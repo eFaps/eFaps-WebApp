@@ -28,6 +28,7 @@ import org.apache.wicket.core.request.handler.RenderPageRequestHandler;
 import org.apache.wicket.model.IModel;
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
+import org.efaps.ui.wicket.models.cell.UIStructurBrowserTableCell;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
@@ -41,7 +42,7 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  * @param <T>
  */
-public class AjaxLoadInOpenerLink<T>
+public class AjaxLoadInTargetLink<T>
     extends AjaxLink<T>
 {
 
@@ -51,15 +52,44 @@ public class AjaxLoadInOpenerLink<T>
     private static final long serialVersionUID = 1L;
 
     /**
+     * target used for the script.
+     */
+    public static enum ScriptTarget
+    {
+        /** top. */
+        TOP("top"),
+        /** opener. */
+        OPENER("opener");
+
+        /***/
+        private String key;
+        /**
+         * @param _key key
+         */
+        ScriptTarget(final String _key)
+        {
+            this.key = _key;
+        }
+    }
+
+    /**
+     * target for this link.
+     */
+    private final ScriptTarget target;
+
+    /**
      * Constructor.
      *
      * @param _wicketId wicket id for this component
-     * @param _model model for this component
+     * @param _model    model for this component
+     * @param _target   target for this link.
      */
-    public AjaxLoadInOpenerLink(final String _wicketId,
-                                final IModel<T> _model)
+    public AjaxLoadInTargetLink(final String _wicketId,
+                                final IModel<T> _model,
+                                final ScriptTarget _target)
     {
         super(_wicketId, _model);
+        this.target = _target;
     }
 
     /**
@@ -89,11 +119,12 @@ public class AjaxLoadInOpenerLink<T>
                 throw new RestartResponseException(new ErrorPage(ex));
             }
             try {
-                final ContentContainerPage page = new ContentContainerPage(menu.getUUID(), cellmodel.getInstanceKey());
+                final ContentContainerPage page = new ContentContainerPage(menu.getUUID(), cellmodel.getInstanceKey(),
+                                cellmodel instanceof UIStructurBrowserTableCell);
                 final CharSequence url = urlFor(new RenderPageRequestHandler(new PageProvider(page)));
 
                 final StringBuilder js = new StringBuilder()
-                    .append("opener.dijit.byId(\"").append("mainPanel")
+                    .append(this.target.key).append(".dijit.byId(\"").append("mainPanel")
                     .append("\").set(\"content\", dojo.create(\"iframe\", {")
                     .append("\"src\": \"./wicket/").append(url)
                     .append("\",\"style\": \"border: 0; width: 100%; height: 100%\"")

@@ -108,6 +108,14 @@ public class MenuTree
         add(AttributeModifier.append("class", "eFapsTreeMenu"));
         add(new MenuUpdateBehavior());
 
+        setDefault();
+    }
+
+    /**
+     * Set the default selected item.
+     */
+    public void setDefault()
+    {
         final UIMenuItem menuItem = getProvider().getRoots().next();
         menuItem.setHeader(true);
         boolean hasDefault = false;
@@ -121,7 +129,6 @@ public class MenuTree
             menuItem.setSelected(true);
         }
         expand(menuItem);
-
     }
 
     /*

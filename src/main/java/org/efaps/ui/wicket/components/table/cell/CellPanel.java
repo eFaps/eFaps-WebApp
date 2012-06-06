@@ -40,8 +40,10 @@ import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.autocomplete.AutoCompleteField;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
 import org.efaps.ui.wicket.components.picker.AjaxPickerLink;
+import org.efaps.ui.wicket.components.table.cell.AjaxLoadInTargetLink.ScriptTarget;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.models.objects.AbstractUIHeaderObject;
+import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 
 /**
  * Class is used to render a cell inside a table.
@@ -129,7 +131,11 @@ public class CellPanel
                 celllink.setVisible(false);
             } else {
                 if (_updateListMenu && uiTableCell.getTarget() != Target.POPUP) {
-                    celllink = new AjaxMenuContentLink("link", _model);
+                    if (_uitable instanceof UIStructurBrowser) {
+                        celllink = new AjaxLoadInTargetLink<UITableCell>("link", _model, ScriptTarget.TOP);
+                    } else {
+                        celllink = new AjaxMenuContentLink("link", _model);
+                    }
                 } else {
                     if (uiTableCell.isCheckOut()) {
                         celllink = new CheckOutLink("link", _model);
@@ -141,7 +147,7 @@ public class CellPanel
                                 celllink = new WebMarkupContainer("link");
                                 celllink.setVisible(false);
                             } else {
-                                celllink = new AjaxLoadInOpenerLink<UITableCell>("link", _model);
+                                celllink = new AjaxLoadInTargetLink<UITableCell>("link", _model, ScriptTarget.OPENER);
                             }
                         } else {
                             celllink = new ContentContainerLink<UITableCell>("link", _model);

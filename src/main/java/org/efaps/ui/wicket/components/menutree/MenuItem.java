@@ -118,15 +118,21 @@ public class MenuItem
         } else {
             label.add(AttributeModifier.append("class", "eFapsMenuTreeSubItem"));
             link.add(new WebMarkupContainer("icon").setVisible(false));
-            // _item.add(new
-            // WebMarkupContainer("goIntolink").setVisible(false));
-            // _item.add(new
-            // WebMarkupContainer("removelink").setVisible(false));
-            // _item.add(new WebMarkupContainer("goUplink").setVisible(false));
         }
 
         if (_model.getObject().getAncestor() == null) {
-            add(new WebMarkupContainer("removeLink").setVisible(false));
+            final WebMarkupContainer remove = new WebMarkupContainer("removeLink"){
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                protected void onComponentTag(final ComponentTag _tag)
+                {
+                    _tag.setName("span");
+                    super.onComponentTag(_tag);
+                }
+            };
+            add(remove);
+            remove.add(new WebMarkupContainer("removeIcon").setVisible(false));
         } else {
             final AjaxRemoveLink removelink = new AjaxRemoveLink("removeLink", _model);
             add(removelink);

@@ -117,9 +117,8 @@ public class ListOnlyPanel
             positionV += "px";
         }
 
-
-        final SplitHeaderPanel header = new SplitHeaderPanel("header", false, hiddenH, hiddenV);
-        this.add(header);
+        final SplitHeaderPanel header = new SplitHeaderPanel(_showStructurBrowser ? "headerTop" : "header",
+                        false, hiddenH, hiddenV);
 
         final WebMarkupContainer bottom = new WebMarkupContainer("bottom");
         this.add(bottom);
@@ -149,12 +148,16 @@ public class ListOnlyPanel
         this.add(new ContentPaneBehavior(Region.LEADING, true, positionH + "px", null));
 
         if (_showStructurBrowser) {
-            this.add(new BorderContainerBehavior(Design.HEADLINE));
+            add(new WebMarkupContainer("header").setVisible(false));
+            add(new BorderContainerBehavior(Design.HEADLINE));
             bottom.add(new ContentPaneBehavior(Region.CENTER, true));
             top.add(new ContentPaneBehavior(Region.TOP, true, null, positionV));
+            top.add(header);
+            overflow.add(AttributeModifier.replace("class", "eFapsSplit eFapsListMenuOverflow"));
         } else {
-
+            add(header);
             top.setVisible(false);
+            overflow.add(AttributeModifier.replace("class", "eFapsListMenuOverflow"));
         }
     }
 

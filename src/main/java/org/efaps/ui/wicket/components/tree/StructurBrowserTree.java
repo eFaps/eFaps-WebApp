@@ -191,8 +191,10 @@ public class StructurBrowserTree
         {
             final UIStructurBrowser uiStrBrws = (UIStructurBrowser) getComponent().getDefaultModelObject();
             final MenuTree menutree = ((ContentContainerPage) getPage()).getMenuTree();
-            ((TreeMenuModel) menutree.getProvider()).setModel(uiStrBrws.getCommandUUID(), uiStrBrws.getInstanceKey());
-            menutree.expand(((TreeMenuModel) menutree.getProvider()).getRoots().next().setHeader(true));
+            final TreeMenuModel treeProvider = ((TreeMenuModel) menutree.getProvider());
+            treeProvider.setModel(uiStrBrws.getCommandUUID(), uiStrBrws.getInstanceKey());
+            treeProvider.getRoots().next().setHeader(true);
+            menutree.setDefault();
             menutree.setSelected(null);
             _target.add(menutree);
         }
