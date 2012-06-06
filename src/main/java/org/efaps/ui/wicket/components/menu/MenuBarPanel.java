@@ -86,7 +86,7 @@ public class MenuBarPanel
                         if (childItem.getReference().equals(
                                         "/" + getSession().getApplication().getApplicationKey() + "/logout?")) {
                             item = new LogOutItem(itemRepeater.newChildId(), new UIModel<UIMenuItem>(childItem));
-                        } else if (menuItem.getReference().equals(
+                        } else if (childItem.getReference().equals(
                                         "/" + getSession().getApplication().getApplicationKey() + "/setcompany?")) {
                             item = new SetCompanyItem(itemRepeater.newChildId(), new UIModel<UIMenuItem>(childItem));
                         }

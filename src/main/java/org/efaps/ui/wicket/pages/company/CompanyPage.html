@@ -25,9 +25,9 @@
 -->
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-        <title wicket:id="pageTitle"></title>
-    </head>
-<body>
+    <title wicket:id="pageTitle"></title>
+</head>
+<body wicket:id="body">
     <table class="companyPagePosTable">
         <tr>
             <td><span wicket:id="title"></span></td>
@@ -38,17 +38,17 @@
                     <select wicket:id="choices" size="1">
                         <span wicket:id="manychoices">
                             <option wicket:id="option"></option>
-                        </span>
+                    </span>
                     </select>
                 </form>
             </td>
         </tr>
     </table>
-<div class="eFapsFooter">
-    <div class="eFapsFooterButtons">
-        <div class="eFapsFooterButton1" wicket:id="submitButton"></div>
-        <div class="eFapsFooterButton2" wicket:id="closeButton"></div>
+    <div class="eFapsFooter">
+        <div class="eFapsFooterButtons">
+            <div class="eFapsFooterButton1" wicket:id="submitButton"></div>
+            <div class="eFapsFooterButton2" wicket:id="closeButton"></div>
+        </div>
     </div>
-</div>
 </body>
 </html>

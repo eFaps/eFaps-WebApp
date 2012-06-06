@@ -134,7 +134,7 @@ public class SetCompanyItem
 
                 public Page createPage()
                 {
-                    return new CompanyPage(modal);
+                    return new CompanyPage(getPage().getPageReference());
                 }
             };
             modal.setPageCreator(pageCreator);
