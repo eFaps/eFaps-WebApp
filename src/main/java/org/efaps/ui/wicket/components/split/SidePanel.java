@@ -36,7 +36,7 @@ import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
 import org.efaps.ui.wicket.util.Configuration;
-import org.efaps.ui.wicket.util.Configuration.UserAttribute;
+import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 import org.efaps.util.EFapsException;
 
 /**
@@ -98,19 +98,17 @@ public class SidePanel
         super(_wicketId);
         this.add(new AjaxStorePositionBehavior(_showStructurBrowser));
         this.add(StaticHeaderContrBehavior.forCss(SidePanel.CSS));
-        String positionH = Configuration.getUserAttribute(UserAttribute.SPLITTERPOSHORIZONTAL);
-        String positionV = Configuration.getUserAttribute(UserAttribute.SPLITTERPOSVERTICAL);
+        String positionH = Configuration.getAttribute(ConfigAttribute.SPLITTERPOSHORIZONTAL);
+        String positionV = Configuration.getAttribute(ConfigAttribute.SPLITTERPOSVERTICAL);
 
-        String splitterState = positionH.equals("0")  ? splitterState = "closed" : null;
+        final String splitterState = positionH.equals("0")  ? "closed" : null;
 
-        if (positionH == null || positionH.equals("0")) {
+        if (positionH.equals("0")) {
             positionH = "200px";
         } else {
             positionH += "px";
         }
-        if (positionV == null) {
-            positionV = "50%";
-        } else {
+        if (positionV != null) {
             positionV += "px";
         }
 

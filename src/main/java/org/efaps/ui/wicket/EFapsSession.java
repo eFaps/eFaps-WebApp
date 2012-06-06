@@ -29,7 +29,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
-import java.util.UUID;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.RestartResponseException;
@@ -41,7 +40,6 @@ import org.apache.wicket.request.Request;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.util.string.StringValue;
 import org.apache.wicket.util.upload.FileItem;
-import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.admin.user.Person;
 import org.efaps.admin.user.UserAttributesSet;
 import org.efaps.db.Context;
@@ -49,6 +47,8 @@ import org.efaps.jaas.LoginHandler;
 import org.efaps.ui.wicket.behaviors.update.UpdateInterface;
 import org.efaps.ui.wicket.components.IRecent;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.ui.wicket.util.Configuration;
+import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -132,7 +132,7 @@ public class EFapsSession
     /**
      * Size of the Stack for the recent objects.
      */
-    private int stackSize;
+    private final int stackSize;
 
     /**
      * Standard Constructor from Wicket.
@@ -143,17 +143,7 @@ public class EFapsSession
     public EFapsSession(final Request _request)
     {
         super(_request);
-        //WebApp-Configuration
-        final SystemConfiguration config = SystemConfiguration.get(
-                        UUID.fromString("50a65460-2d08-4ea8-b801-37594e93dad5"));
-        this.stackSize = 5;
-        if (config != null) {
-            try {
-                this.stackSize = config.getAttributeValueAsInteger("RecentCacheSize");
-            } catch (final EFapsException e) {
-                EFapsSession.LOG.error("error on reading Sytem,Configuration", e);
-            }
-        }
+        this.stackSize = Configuration.getAttributeAsInteger(ConfigAttribute.RECENTCACHESIZE);
     }
 
     /**

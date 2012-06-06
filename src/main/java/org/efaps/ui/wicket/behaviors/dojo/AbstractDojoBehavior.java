@@ -40,6 +40,8 @@ import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.util.string.Strings;
+import org.efaps.ui.wicket.util.Configuration;
+import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 
 /**
  * This class renders the Links for the JavaScripts in the Head for Behaviors
@@ -57,6 +59,24 @@ public abstract class AbstractDojoBehavior
      */
     public static final ResourceReference CSS_TUNDRA = new CssResourceReference(AbstractDojoBehavior.class,
                     "dijit/themes/tundra/tundra.css");
+
+    /**
+     * Reference to the stylesheet.
+     */
+    public static final ResourceReference CSS_CLARO = new CssResourceReference(AbstractDojoBehavior.class,
+                    "dijit/themes/claro/claro.css");
+
+    /**
+     * Reference to the stylesheet.
+     */
+    public static final ResourceReference CSS_NIHILO = new CssResourceReference(AbstractDojoBehavior.class,
+                    "dijit/themes/nihilo/nihilo.css");
+
+    /**
+     * Reference to the stylesheet.
+     */
+    public static final ResourceReference CSS_SORIA = new CssResourceReference(AbstractDojoBehavior.class,
+                    "dijit/themes/soria/soria.css");
 
     /**
      * Reference to the JavaScript.
@@ -84,7 +104,21 @@ public abstract class AbstractDojoBehavior
         super.renderHead(_component, _response);
         _response.render(new PriorityHeaderItem(new DojoHeaderItem(AbstractDojoBehavior.JS_DOJO,
                         AbstractDojoBehavior.class.getName())));
-        _response.render(CssHeaderItem.forReference(AbstractDojoBehavior.CSS_TUNDRA));
+        final String clazz = Configuration.getAttribute(ConfigAttribute.DOJO_CLASS);
+
+        ResourceReference reference = null;
+        if (clazz.equals("tundra")) {
+            reference = AbstractDojoBehavior.CSS_TUNDRA;
+        } else if (clazz.equals("claro")) {
+            reference = AbstractDojoBehavior.CSS_CLARO;
+        } else if (clazz.equals("nihilo")) {
+            reference = AbstractDojoBehavior.CSS_NIHILO;
+        } else if (clazz.equals("soria")) {
+            reference = AbstractDojoBehavior.CSS_TUNDRA;
+        }
+        if (reference != null) {
+            _response.render(CssHeaderItem.forReference(reference));
+        }
     }
 
     /**

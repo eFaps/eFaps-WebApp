@@ -27,10 +27,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.behavior.Behavior;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.model.IModel;
 import org.efaps.admin.program.bundle.BundleMaker;
@@ -39,6 +41,8 @@ import org.efaps.ui.wicket.behaviors.AjaxDownloadBehavior;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
+import org.efaps.ui.wicket.util.Configuration;
+import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 import org.efaps.util.EFapsException;
 
 /**
@@ -61,6 +65,12 @@ public abstract class AbstractMergePage
     private static final long serialVersionUID = 1L;
 
     /**
+     * Reference to the StyleSheet for this Page.
+     */
+    private static final EFapsContentReference CSS = new EFapsContentReference(AbstractMergePage.class,
+                    "AbstractMergePage.css");
+
+    /**
      * this instance variable is used to define if the merging is done or not.
      */
     private boolean mergeStatics = true;
@@ -71,10 +81,9 @@ public abstract class AbstractMergePage
     private final AjaxDownloadBehavior downloadBehavior  = new AjaxDownloadBehavior();
 
     /**
-     * Reference to the StyleSheet for this Page.
+     * Base Container for the body.
      */
-    private static final EFapsContentReference CSS = new EFapsContentReference(AbstractMergePage.class,
-                    "AbstractMergePage.css");
+    private final WebMarkupContainer body;
 
     /**
      * Constructor.
@@ -93,6 +102,9 @@ public abstract class AbstractMergePage
         super(_model);
         add(this.downloadBehavior);
         this.add(StaticHeaderContrBehavior.forCss(AbstractMergePage.CSS));
+        this.body = new WebMarkupContainer("body");
+        this.body.add(AttributeModifier.append("class", Configuration.getAttribute(ConfigAttribute.DOJO_CLASS)));
+        super.add(this.body);
     }
 
     /**
@@ -247,5 +259,14 @@ public abstract class AbstractMergePage
     public AjaxDownloadBehavior getDownloadBehavior()
     {
         return this.downloadBehavior;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.wicket.MarkupContainer#add(org.apache.wicket.Component[])
+     */
+    @Override
+    public MarkupContainer add(final Component... _childs)
+    {
+        return this.body.add(_childs);
     }
 }

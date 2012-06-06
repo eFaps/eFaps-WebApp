@@ -32,6 +32,7 @@ import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes.Method;
 import org.apache.wicket.ajax.attributes.CallbackParameter;
 import org.apache.wicket.ajax.attributes.ThrottlingSettings;
+import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.head.IHeaderResponse;
@@ -80,6 +81,9 @@ public class MainPage
      */
     public static final String IFRAME_WICKETID = "content";
 
+    /**
+     * Id of the Iframe.
+     */
     public static final String IFRAME_ID = "eFapsContentFrame";
 
     /**
@@ -196,6 +200,15 @@ public class MainPage
 //        headerPanel.add(new Label("version", DBProperties.getProperty("Logo.Version.Label")));
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.wicket.Component#add(org.apache.wicket.behavior.Behavior[])
+     */
+    @Override
+    public Component add(final Behavior... _behaviors)
+    {
+        // TODO Auto-generated method stub
+        return super.add(_behaviors);
+    }
     /**
      * Method to get the ModalWindow of this Page.
      *

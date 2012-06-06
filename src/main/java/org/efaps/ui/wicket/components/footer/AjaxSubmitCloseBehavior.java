@@ -305,7 +305,7 @@ public class AjaxSubmitCloseBehavior
     {
         boolean ret = true;
         final List<Return> returns;
-        final AbstractUIPageObject uiPageObject = (AbstractUIPageObject) getForm().getParent().getDefaultModelObject();
+        final AbstractUIPageObject uiPageObject = (AbstractUIPageObject) getForm().getPage().getDefaultModelObject();
         if (_classifications.size() > 0) {
             returns = uiPageObject.executeEvents(ParameterValues.OTHERS, _other,
                             ParameterValues.CLASSIFICATIONS, _classifications,
@@ -470,13 +470,13 @@ public class AjaxSubmitCloseBehavior
         if (!this.validated) {
             final List<Return> returns;
             if (_classifications.size() > 0) {
-                returns = ((AbstractUIObject) getForm().getParent().getDefaultModelObject()).validate(
+                returns = ((AbstractUIObject) getForm().getPage().getDefaultModelObject()).validate(
                                 ParameterValues.OTHERS, _other,
                                 ParameterValues.CLASSIFICATIONS, _classifications,
                                 ParameterValues.OIDMAP4UI,
                                     ((AbstractUIPageObject) getForm().getPage().getDefaultModelObject()).getUiID2Oid());
             } else {
-                returns = ((AbstractUIObject) getForm().getParent().getDefaultModelObject()).validate(
+                returns = ((AbstractUIObject) getForm().getPage().getDefaultModelObject()).validate(
                                 ParameterValues.OTHERS, _other,
                                 ParameterValues.OIDMAP4UI,
                                 ((AbstractUIPageObject) getForm().getPage().getDefaultModelObject()).getUiID2Oid());

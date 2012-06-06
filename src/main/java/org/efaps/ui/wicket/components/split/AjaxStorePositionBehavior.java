@@ -33,7 +33,7 @@ import org.apache.wicket.util.string.StringValue;
 import org.apache.wicket.util.time.Duration;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.util.Configuration;
-import org.efaps.ui.wicket.util.Configuration.UserAttribute;
+import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 
 /**
  * Class renders an ajax post link which is used to store the position of the
@@ -84,13 +84,13 @@ public class AjaxStorePositionBehavior
     {
         final StringValue horizontal = getComponent().getRequest().getRequestParameters().getParameterValue(
                         AjaxStorePositionBehavior.PARAMETER_HORIZONTALPOSITION);
-        final StringValue vertical = getComponent().getRequest().getRequestParameters().getParameterValue(
+        final StringValue verticalTmp = getComponent().getRequest().getRequestParameters().getParameterValue(
                         AjaxStorePositionBehavior.PARAMETER_VERTICALPOSITION);
         if (!horizontal.isNull()) {
-            Configuration.setUserAttribute(UserAttribute.SPLITTERPOSHORIZONTAL, horizontal.toString());
+            Configuration.setAttribute(ConfigAttribute.SPLITTERPOSHORIZONTAL, horizontal.toString());
         }
-        if (!vertical.isNull()) {
-            Configuration.setUserAttribute(UserAttribute.SPLITTERPOSVERTICAL, vertical.toString());
+        if (!verticalTmp.isNull()) {
+            Configuration.setAttribute(ConfigAttribute.SPLITTERPOSVERTICAL, verticalTmp.toString());
         }
     }
 
@@ -112,7 +112,7 @@ public class AjaxStorePositionBehavior
     {
         final String borderPanelId = ((ContentContainerPage) _component.getPage()).getBorderPanelId();
         final String leftPanelId = _component.getMarkupId(true);
-        final String topPanelId = ((SidePanel)_component).getTopPanelId();
+        final String topPanelId = ((SidePanel) _component).getTopPanelId();
 
         final StringBuilder js = new StringBuilder()
             .append("require([\"dojo/ready\"]);\n");
