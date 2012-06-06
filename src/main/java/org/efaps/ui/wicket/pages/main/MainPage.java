@@ -125,7 +125,7 @@ public class MainPage
 
         final WebMarkupContainer borderPanel = new WebMarkupContainer("borderPanel");
         this.add(borderPanel);
-        borderPanel.add(new BorderContainerBehavior(Design.HEADLINE));
+        borderPanel.add(new BorderContainerBehavior(Design.HEADLINE, false));
 
         final WebMarkupContainer mainPanel = new WebMarkupContainer("mainPanel");
         borderPanel.add(mainPanel);

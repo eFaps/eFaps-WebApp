@@ -22,8 +22,11 @@ package org.efaps.ui.wicket.behaviors.dojo;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
+import org.apache.wicket.request.resource.CssResourceReference;
+import org.apache.wicket.request.resource.ResourceReference;
 
 /**
  * Class renders a dojo border. It can be used to render a slipt between the
@@ -46,6 +49,13 @@ public class BorderContainerBehavior
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * Reference to the stylesheet.
+     */
+    public static final ResourceReference CSS_SPLITTER = new CssResourceReference(BorderContainerBehavior.class,
+                    "dojox/layout/resources/ToggleSplitter.css");
+
 
     /**
      * Enum for the different Designs of a dojo BorderContainer.
@@ -89,13 +99,21 @@ public class BorderContainerBehavior
     private final Design design;
 
     /**
+     * Will the Container use a toggle splitter.
+     */
+    private final boolean toggleSplitter;
+
+    /**
      * Constructor.
      *
-     * @param _design Design for this BorderBehavior.
+     * @param _design           Design for this BorderBehavior.
+     * @param _toggleSplitter   Will the Container use a toggle splitter.
      */
-    public BorderContainerBehavior(final Design _design)
+    public BorderContainerBehavior(final Design _design,
+                                   final boolean _toggleSplitter)
     {
         this.design = _design;
+        this.toggleSplitter = _toggleSplitter;
     }
 
     /**
@@ -126,8 +144,14 @@ public class BorderContainerBehavior
                            final IHeaderResponse _response)
     {
         super.renderHead(_component, _response);
-        _response.render(JavaScriptHeaderItem.forScript(
-                        "require([\"dijit/layout/BorderContainer\", \"dojo/parser\"]);",
-                        BorderContainerBehavior.class.getName()));
+        final StringBuilder js = new StringBuilder()
+            .append("require([\"dijit/layout/BorderContainer\", \"dojo/parser\"");
+        if (this.toggleSplitter) {
+            js.append(",\"dojox/layout/ToggleSplitter\"");
+            _response.render(CssHeaderItem.forReference(BorderContainerBehavior.CSS_SPLITTER));
+        }
+        js.append("]);");
+
+        _response.render(JavaScriptHeaderItem.forScript(js, BorderContainerBehavior.class.getName()));
     }
 }

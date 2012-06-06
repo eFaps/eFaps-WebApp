@@ -20,27 +20,17 @@
 
 package org.efaps.ui.wicket.components.split.header;
 
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import org.apache.wicket.AttributeModifier;
-import org.apache.wicket.Component;
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.markup.head.IHeaderResponse;
-import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.admin.dbproperty.DBProperties;
-import org.efaps.db.Context;
 import org.efaps.ui.wicket.EFapsSession;
-import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior;
 import org.efaps.ui.wicket.components.IRecent;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
@@ -65,68 +55,14 @@ public class SplitHeaderPanel
                     new EFapsContentReference(SplitHeaderPanel.class, "SplitHeaderPanel.css");
 
     /**
-     * Enum holds the keys used to store the different Positions as UserAttrbiutes in eFaps.
-     */
-    public enum PositionUserAttribute
-    {
-        /** position of the horizontal splitter. */
-        HORIZONTAL("positionOfHorizontalSplitter"),
-        /** is the horizontal splitter collapsed. */
-        HORIZONTAL_COLLAPSED("horizontalSplitterIsCollapsed"),
-        /** position of the vertical splitter. */
-        VERTICAL("positionOfVerticalSplitter"),
-        /** is the vertical splitter collapsed. */
-        VERTICAL_COLLAPSED("verticalSplitterIsCollapsed");
-
-        /**
-         * Stores the key of the Region.
-         */
-        private final String key;
-
-        /**
-         * Private Constructor.
-         *
-         * @param _key Key
-         */
-        private PositionUserAttribute(final String _key)
-        {
-            this.key = _key;
-        }
-
-        /**
-         * Getter method for instance variable {@link #key}.
-         *
-         * @return value of instance variable {@link #key}
-         */
-        public String getKey()
-        {
-            return this.key;
-        }
-    }
-
-    /**
      * Enum for the StyleSheets which are used in this Component.
      */
     public enum Css
     {
-        /** style sheet for the open header. */
-        HEADER_OPEN("eFapsSplitHeader"),
-        /** style sheet for the closed header. */
-        HEADER_CLOSED("eFapsSplitHeaderClosed"),
-        /** style sheet for image. */
-        IMAGE_CONTRACT_VERTICAL("eFapsSplitImageContractVertical"),
-        /** style sheet for image. */
-        IMAGE_EXPAND_VERTICAL("eFapsSplitImageExpandVertical"),
-        /** style sheet image. */
-        IMAGE_EXPAND("eFapsSplitImageExpand"),
-        /** style sheet image. */
-        IMAGE_CONTRACT("eFapsSplitImageContract"),
         /**style sheet for the recetn links. */
         RECENT("eFapsRecent"),
         /** style sheet for the open title. */
-        TITEL("eFapsSplitTitel"),
-        /** style sheet for the hidden title. */
-        TITEL_HIDE("eFapsSplitTitelHide");
+        TITEL("eFapsSplitTitel");
 
         /**
          * Stores the key of the Region.
@@ -160,53 +96,24 @@ public class SplitHeaderPanel
     private static final long serialVersionUID = 1L;
 
     /**
-     * This instance variable stores if the Split needs to have the link
-     * to hide the panel vertically.
-     */
-    private final boolean showVertical;
-
-    /**
-     * this instance set contains the components which must be hidden in the
-     * case of collapsing the panel. This is done through a javascript which
-     * sets the style "display" to "none". This is necessary because Firefox
-     * is is showing the scrollbars of a div even if it is behind another
-     * div (z-index).
-     */
-    private final Set<Component> hideComponents = new HashSet<Component>();
-
-    /**
-     * Is it horizontal hidden.
-     */
-    private final boolean hiddenH;
-
-    /**
      * @param _wicketId wicket id of this component
-     * @param _showVertical show the vertical collapse/expand button
-     * @param _horizontalCollapsed is horizontal collapsed
-     * @param _verticalCollapsed is vertical collapsed
      * @throws EFapsException on error
      */
-    public SplitHeaderPanel(final String _wicketId,
-                            final boolean _showVertical,
-                            final boolean _horizontalCollapsed,
-                            final boolean _verticalCollapsed)
+    public SplitHeaderPanel(final String _wicketId)
         throws EFapsException
     {
         super(_wicketId);
-        this.showVertical = _showVertical;
-        this.hiddenH = _horizontalCollapsed;
         setOutputMarkupId(true);
         this.add(StaticHeaderContrBehavior.forCss(SplitHeaderPanel.CSS));
-
-        this.add(new AjaxStoreHorizontalPositionBehavior());
+        add(AttributeModifier.append("class", "eFapsSplitHeader"));
         final Label titel = new Label("titel", DBProperties.getProperty("Split.Titel"));
         this.add(titel);
+        titel.add(AttributeModifier.append("class", SplitHeaderPanel.Css.TITEL.value));
 
         // the recent link part
         final WebMarkupContainer recent = new WebMarkupContainer("recent");
         this.add(recent);
-        recent.add(AttributeModifier.append("class",
-                        SplitHeaderPanel.Css.RECENT.value));
+        recent.add(AttributeModifier.append("class", SplitHeaderPanel.Css.RECENT.value));
         final List<IRecent> allRecents = ((EFapsSession) getSession()).getAllRecents();
         if (allRecents.isEmpty()) {
             recent.setVisible(false);
@@ -224,283 +131,5 @@ public class SplitHeaderPanel
                 repeater.add(new RecentLink(repeater.newChildId(), rec, maxLength));
             }
         }
-        if (this.showVertical) {
-            this.add(new AjaxStoreVerticalPositionBehavior());
-            final AjaxLink<?> linkvertical = new AjaxLink<Object>("expandContractV")
-            {
-
-                private static final long serialVersionUID = 1L;
-
-                @Override
-                public void onClick(final AjaxRequestTarget _target)
-                {
-                    String position = null;
-                    String hidden = "false";
-                    try {
-                        position = Context.getThreadContext().getUserAttribute(
-                                        SplitHeaderPanel.PositionUserAttribute.VERTICAL.getKey());
-                        hidden = Context.getThreadContext().getUserAttribute(
-                                        SplitHeaderPanel.PositionUserAttribute.VERTICAL_COLLAPSED.getKey());
-                        // store the value
-                        Context.getThreadContext().setUserAttribute(
-                                        SplitHeaderPanel.PositionUserAttribute.VERTICAL_COLLAPSED.getKey(),
-                                        ((Boolean) "false".equalsIgnoreCase(hidden)).toString());
-                    } catch (final EFapsException e) {
-                        // catch because only User attributes
-                        e.printStackTrace();
-                    }
-                    if (position == null) {
-                        position = "0";
-                    }
-                    final StringBuilder ret = new StringBuilder();
-                    ret.append("togglePaneVertical(").append(position)
-                                    .append(",").append("false".equalsIgnoreCase(hidden)).append(");");
-                    _target.appendJavaScript(ret.toString());
-                    _target.focusComponent(getParent());
-                }
-            };
-            this.add(linkvertical);
-            final WebMarkupContainer linkDiv = new WebMarkupContainer("expandContractVDiv");
-            linkvertical.add(linkDiv);
-            if (_verticalCollapsed) {
-                linkDiv.add(AttributeModifier.append("class", SplitHeaderPanel.Css.IMAGE_EXPAND_VERTICAL.value));
-            } else {
-                linkDiv.add(AttributeModifier.append("class", SplitHeaderPanel.Css.IMAGE_CONTRACT_VERTICAL.value));
-            }
-        } else {
-            this.add(new WebMarkupContainer("expandContractV").setVisible(false));
-        }
-
-        final AjaxLink<?> link = new AjaxLink<Object>("expandContractH")
-        {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public void onClick(final AjaxRequestTarget _target)
-            {
-
-                String position = null;
-                String hidden = "false";
-                try {
-                    position = Context.getThreadContext().getUserAttribute(
-                                    SplitHeaderPanel.PositionUserAttribute.HORIZONTAL.getKey());
-                    hidden = Context.getThreadContext().getUserAttribute(
-                                    SplitHeaderPanel.PositionUserAttribute.HORIZONTAL_COLLAPSED.getKey());
-                    Context.getThreadContext().setUserAttribute(
-                                    SplitHeaderPanel.PositionUserAttribute.HORIZONTAL_COLLAPSED.getKey(),
-                                    ((Boolean) "false".equalsIgnoreCase(hidden)).toString());
-                } catch (final EFapsException e) {
-                    // catch because only User attributes
-                    e.printStackTrace();
-                }
-                if (position == null) {
-                    position = "200";
-                }
-
-                final StringBuilder ret = new StringBuilder();
-                ret.append("togglePaneHorizontal(").append(position)
-                                .append(",").append("false".equalsIgnoreCase(hidden)).append(");");
-                _target.appendJavaScript(ret.toString());
-                _target.focusComponent(getParent());
-            }
-        };
-
-        this.add(link);
-        final WebMarkupContainer linkDiv = new WebMarkupContainer("expandContractHDiv");
-        link.add(linkDiv);
-
-        if (_horizontalCollapsed) {
-            linkDiv.add(AttributeModifier.append("class", SplitHeaderPanel.Css.IMAGE_EXPAND.value));
-            this.add(AttributeModifier.append("class", SplitHeaderPanel.Css.HEADER_CLOSED.value));
-            titel.add(AttributeModifier.append("class", SplitHeaderPanel.Css.TITEL_HIDE.value));
-        } else {
-            linkDiv.add(AttributeModifier.append("class", SplitHeaderPanel.Css.IMAGE_CONTRACT.value));
-            this.add(AttributeModifier.append("class", SplitHeaderPanel.Css.HEADER_OPEN.value));
-            titel.add(AttributeModifier.append("class", SplitHeaderPanel.Css.TITEL.value));
-        }
-    }
-
-    /**
-     * Add a component which will be hidden by setting the style "display" to "none".
-     *
-     * @param _component Component which must be hidden
-     */
-    public void addHideComponent(final Component _component)
-    {
-        this.hideComponents.add(_component);
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.wicket.Component#renderHead(org.apache.wicket.markup.head.IHeaderResponse)
-     */
-    @Override
-    public void renderHead(final IHeaderResponse _response)
-    {
-        super.renderHead(_response);
-        _response.render(JavaScriptHeaderItem.forScript(getJavaScript(), SplitHeaderPanel.class.getName()));
-    }
-    /**
-     * Get the JavaScript which actually toggles the Split.
-     *
-     * @param string
-     *
-     * @return String with the JavaScript
-     */
-    private String getJavaScript()
-    {
-        final StringBuilder ret = new StringBuilder();
-
-        final String headerId = getMarkupId();
-
-        final String borderId = "changethis";
-
-        final String paneId = getParent().getMarkupId();
-        String innerPane = null;
-        if (this.showVertical) {
-            final Iterator<?> iter = getParent().iterator();
-            boolean found = false;
-            while (iter.hasNext()) {
-                final Object child = iter.next();
-                if (child instanceof WebMarkupContainer) {
-                    final List<?> behaviors = ((WebMarkupContainer) child).getBehaviors();
-                    for (final Object behavior : behaviors) {
-                        if (behavior instanceof ContentPaneBehavior) {
-                            innerPane = ((WebMarkupContainer) child).getMarkupId();
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (found) {
-                        break;
-                    }
-                }
-            }
-        }
-
-        boolean addComma = false;
-        final StringBuilder hideIds = new StringBuilder().append("new Array(");
-        for (final Component component : SplitHeaderPanel.this.hideComponents) {
-            if (addComma) {
-                hideIds.append(",");
-            }
-            hideIds.append("\"").append(component.getMarkupId()).append("\"");
-            addComma = true;
-        }
-        hideIds.append(")");
-
-        ret.append("  var connections = [];\n")
-            .append("  function togglePaneHorizontal(_width, _hide) {\n")
-            .append("    var header = dojo.byId('").append(headerId).append("');\n")
-            .append("    var hideIds = ").append(hideIds).append(";\n")
-            .append("    var border = dijit.byId('").append(borderId).append("');\n")
-            .append("    var pane = dijit.byId('").append(paneId).append("');\n")
-            .append("    if(_hide) {\n")
-            .append("      pane.resize({w: 20});\n")
-            .append("      border.layout();\n")
-            .append("      dojo.forEach(hideIds, function(id){\n")
-            .append("          dojo.byId(id).style.display = \"none\"\n")
-            .append("      });\n")
-            .append("      header.className=\"").append(SplitHeaderPanel.Css.HEADER_CLOSED.value)
-            .append("\";\n")
-            .append("      header.getElementsByTagName(\"div\")[")
-            .append(this.showVertical ? "1" : "0")
-            .append("].className=\"").append(SplitHeaderPanel.Css.IMAGE_EXPAND.value).append("\";\n")
-            .append("      header.getElementsByTagName(\"span\")[0].className=\"")
-            .append(SplitHeaderPanel.Css.TITEL_HIDE.value).append("\";\n")
-            .append("      var splitter = border.getSplitter(\"left\");\n")
-            .append("      connections[0] = dojo.connect(splitter,\"_startDrag\","
-                            + " this, \"toggleHeaderHorizontal\" );\n")
-            .append("    } else {\n")
-            .append("      toggleHeaderHorizontal();\n")
-            .append("      pane.resize({w: _width});\n")
-            .append("      border.layout();\n")
-            .append("    }\n")
-            .append("  }\n");
-
-        if (this.showVertical) {
-            ret.append("  function togglePaneVertical(_height, _hide){\n")
-                .append("    var header = dojo.byId('").append(headerId).append("');\n")
-                .append("    var border = dijit.byId('").append(paneId).append("');\n")
-                .append("    var pane = dijit.byId('").append(innerPane).append("');\n")
-                .append("    if(_hide) {\n")
-                .append("      pane.resize({h: 20});\n")
-                .append("      border.layout();\n")
-                .append("      var splitter = border.getSplitter(\"top\");\n")
-                .append("      connections[1] = dojo.connect(splitter,\"_startDrag\","
-                                + "this, \"toggleHeaderVertical\" );\n")
-                .append("      header.getElementsByTagName(\"div\")[0].className=\"")
-                .append(SplitHeaderPanel.Css.IMAGE_EXPAND_VERTICAL.value).append("\";\n")
-                .append("    } else {\n")
-                .append("      toggleHeaderVertical();\n")
-                .append("      if (_height == 0) {\n")
-                .append("        _height = border._borderBox.h / 2;")
-                .append("      }\n")
-                .append("      pane.resize({h: _height});\n")
-                .append("      border.layout();\n")
-                .append("    }\n")
-                .append("  }\n");
-        }
-
-        ret.append("  function toggleHeaderHorizontal(){\n")
-            .append("    var header = dojo.byId('").append(headerId).append("');\n")
-            .append("    var hideIds = ").append(hideIds).append(";\n")
-            .append("    dojo.forEach(hideIds, function(id){\n")
-            .append("      dojo.byId(id).style.display = \"inline\"\n")
-            .append("    });\n")
-            .append("    header.className=\"").append(SplitHeaderPanel.Css.HEADER_OPEN.value)
-            .append("\";\n")
-            .append("    header.getElementsByTagName(\"div\")[");
-
-        if (this.showVertical) {
-            ret.append("1");
-        } else {
-            ret.append("0");
-        }
-
-        ret.append("].className=\"").append(SplitHeaderPanel.Css.IMAGE_CONTRACT.value)
-            .append("\";\n")
-            .append("    header.getElementsByTagName(\"span\")[0].className=\"")
-            .append(SplitHeaderPanel.Css.TITEL.value).append("\";\n")
-            .append("    dojo.disconnect(connections[0]);\n")
-            .append("  }\n");
-
-        if (this.showVertical) {
-            ret.append("  function toggleHeaderVertical(){\n")
-                .append("    var header = dojo.byId('").append(headerId).append("');\n")
-                .append("    header.getElementsByTagName(\"div\")[0].className=\"")
-                .append(SplitHeaderPanel.Css.IMAGE_CONTRACT_VERTICAL.value).append("\";\n")
-                .append("    dojo.disconnect(connections[1]);\n")
-                .append("  }\n");
-        }
-
-        // render a script that stores the positions
-        ret.append("dojo.addOnLoad(initialiseSplitter);")
-            .append("  function initialiseSplitter(){\n")
-            .append("    var borderH = dijit.byId(\"").append(borderId)
-            .append("\");\n")
-            .append("      var splitterH = borderH.getSplitter(\"left\");\n")
-            .append("      dojo.connect(splitterH,\"_stopDrag\",\"storePositionH\" );\n");
-
-        if (this.showVertical) {
-            ret.append("    var borderV = dijit.byId(\"").append(paneId)
-                .append("\");\n")
-                .append("      var splitterV = borderV.getSplitter(\"top\");\n")
-                .append("      dojo.connect(splitterV,\"_stopDrag\",\"storePositionV\" );\n");
-            if (this.hiddenH) {
-                ret.append("    var hideIds = ").append(hideIds).append(";\n")
-                    .append("    dojo.forEach(hideIds, function(id){\n")
-                    .append("      dojo.byId(id).style.display = \"none\"\n")
-                    .append("    });\n");
-            }
-        }
-        ret.append("  }\n").append((this.getBehaviors(AjaxStoreHorizontalPositionBehavior.class).get(0))
-                                        .getJavaScript(paneId));
-
-        if (this.showVertical) {
-            ret.append((this.getBehaviors(AjaxStoreVerticalPositionBehavior.class).get(0))
-                            .getJavaScript(innerPane));
-        }
-        return ret.toString();
     }
 }

@@ -26,8 +26,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <body>
     <div wicket:id="borderPanel" class="eFapsBorderContainer">
-      <div wicket:id="centerPanel">asdad</div>
-      <div wicket:id="leftPanel"></div>
+        <script type="dojo/method">
+            this._splitterClass = "dojox.layout.ToggleSplitter";
+        </script>
+        <div wicket:id="centerPanel">asdad</div>
+        <div wicket:id="leftPanel"></div>
     </div>
 </body>
 </html>

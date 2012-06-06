@@ -111,6 +111,8 @@ public class ContentPaneBehavior
      */
     private final Boolean splitter;
 
+    private final String splitterState;
+
     /**
      * Constructor.
      *
@@ -121,7 +123,7 @@ public class ContentPaneBehavior
     public ContentPaneBehavior(final Region _region,
                                final boolean _splitter)
     {
-        this(_region, _splitter, null, null);
+        this(_region, _splitter, null, null, null);
     }
 
     /**
@@ -136,13 +138,15 @@ public class ContentPaneBehavior
     public ContentPaneBehavior(final Region _region,
                                final boolean _splitter,
                                final String _width,
-                               final String _height)
+                               final String _height,
+                               final String _splitterState)
     {
         super();
         this.region = _region;
         this.width = _width;
         this.height = _height;
         this.splitter = _splitter;
+        this.splitterState = _splitterState;
     }
 
     /**
@@ -161,6 +165,9 @@ public class ContentPaneBehavior
         _tag.append("data-dojo-props", "region: '" + this.region.getKey() + "'", ",");
         if (this.splitter) {
             _tag.append("data-dojo-props", "splitter: true", ",");
+        }
+        if (this.splitterState != null) {
+            _tag.append("data-dojo-props", "toggleSplitterState: \"" + this.splitterState + "\"", ",");
         }
 
         if (this.width != null) {

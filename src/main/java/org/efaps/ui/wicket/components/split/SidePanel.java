@@ -25,21 +25,19 @@ import java.util.UUID;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.efaps.db.Context;
 import org.efaps.ui.wicket.behaviors.dojo.BorderContainerBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.BorderContainerBehavior.Design;
 import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior.Region;
 import org.efaps.ui.wicket.components.menutree.MenuTree;
 import org.efaps.ui.wicket.components.split.header.SplitHeaderPanel;
-import org.efaps.ui.wicket.components.split.header.SplitHeaderPanel.PositionUserAttribute;
 import org.efaps.ui.wicket.components.tree.StructurBrowserTreePanel;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
+import org.efaps.ui.wicket.util.Configuration;
+import org.efaps.ui.wicket.util.Configuration.UserAttribute;
 import org.efaps.util.EFapsException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Class is used to render a Panel which contains a ListMenu.
@@ -53,12 +51,7 @@ public class SidePanel
     /**
      * Reference to the StyleSheet.
      */
-    public static final EFapsContentReference CSS = new EFapsContentReference(SidePanel.class, "ListOnlyPanel.css");
-
-    /**
-     * Logger.
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(SidePanel.class);
+    public static final EFapsContentReference CSS = new EFapsContentReference(SidePanel.class, "SidePanel.css");
 
     /**
      * Needed for serialization.
@@ -69,6 +62,21 @@ public class SidePanel
      * The menutree that lies within this panel.
      */
     private final MenuTree menuTree;
+
+    /**
+     * Id of the top panel.
+     */
+    private final String topPanelId;
+
+    /**
+     * Getter method for the instance variable {@link #topPanelId}.
+     *
+     * @return value of instance variable {@link #topPanelId}
+     */
+    public String getTopPanelId()
+    {
+        return this.topPanelId;
+    }
 
     /**
      * Constructor.
@@ -88,37 +96,25 @@ public class SidePanel
         throws EFapsException
     {
         super(_wicketId);
+        this.add(new AjaxStorePositionBehavior(_showStructurBrowser));
         this.add(StaticHeaderContrBehavior.forCss(SidePanel.CSS));
-        String positionH = null;
-        String hiddenStrH = null;
-        String positionV = null;
-        String hiddenStrV = null;
-        try {
-            positionH = Context.getThreadContext().getUserAttribute(PositionUserAttribute.HORIZONTAL.getKey());
-            hiddenStrH = Context.getThreadContext().getUserAttribute(
-                            PositionUserAttribute.HORIZONTAL_COLLAPSED.getKey());
-            positionV = Context.getThreadContext().getUserAttribute(PositionUserAttribute.VERTICAL.getKey());
-            hiddenStrV = Context.getThreadContext().getUserAttribute(PositionUserAttribute.VERTICAL_COLLAPSED.getKey());
-        } catch (final EFapsException e) {
-            SidePanel.LOG.error("Error reading UserAttributes", e);
+        String positionH = Configuration.getUserAttribute(UserAttribute.SPLITTERPOSHORIZONTAL);
+        String positionV = Configuration.getUserAttribute(UserAttribute.SPLITTERPOSVERTICAL);
+
+        String splitterState = positionH.equals("0")  ? splitterState = "closed" : null;
+
+        if (positionH == null || positionH.equals("0")) {
+            positionH = "200px";
+        } else {
+            positionH += "px";
         }
-        final boolean hiddenH = "true".equalsIgnoreCase(hiddenStrH);
-        final boolean hiddenV = "true".equalsIgnoreCase(hiddenStrV);
-        if (hiddenH) {
-            positionH = "20";
-        } else if (positionH == null) {
-            positionH = "200";
-        }
-        if (hiddenV) {
-            positionV = "20px";
-        } else if (positionV == null) {
+        if (positionV == null) {
             positionV = "50%";
         } else {
             positionV += "px";
         }
 
-        final SplitHeaderPanel header = new SplitHeaderPanel(_showStructurBrowser ? "headerTop" : "header",
-                        false, hiddenH, hiddenV);
+        final SplitHeaderPanel header = new SplitHeaderPanel(_showStructurBrowser ? "headerTop" : "header");
 
         final WebMarkupContainer bottom = new WebMarkupContainer("bottom");
         this.add(bottom);
@@ -130,28 +126,22 @@ public class SidePanel
         final WebMarkupContainer top = new WebMarkupContainer("top");
         this.add(top);
         top.setOutputMarkupPlaceholderTag(true).setOutputMarkupId(true);
-
+        this.topPanelId = top.getMarkupId(true);
         this.menuTree = new MenuTree("menu", _commandUUID, _oid, _selectCmdUUID);
 
         overflow.add(this.menuTree.setOutputMarkupId(true));
 
-        if (hiddenH) {
-            overflow.add(AttributeModifier.replace("style", "display:none;"));
-        }
-        header.addHideComponent(overflow);
-
         final StructurBrowserTreePanel stuctbrows = new StructurBrowserTreePanel("stuctbrows", _commandUUID, _oid);
         stuctbrows.setOutputMarkupId(true);
         top.add(stuctbrows);
-        header.addHideComponent(stuctbrows);
 
-        this.add(new ContentPaneBehavior(Region.LEADING, true, positionH + "px", null));
+        this.add(new ContentPaneBehavior(Region.LEADING, true, positionH , null, splitterState));
 
         if (_showStructurBrowser) {
             add(new WebMarkupContainer("header").setVisible(false));
-            add(new BorderContainerBehavior(Design.HEADLINE));
+            add(new BorderContainerBehavior(Design.HEADLINE, true));
             bottom.add(new ContentPaneBehavior(Region.CENTER, true));
-            top.add(new ContentPaneBehavior(Region.TOP, true, null, positionV));
+            top.add(new ContentPaneBehavior(Region.TOP, true, null, positionV, null));
             top.add(header);
             overflow.add(AttributeModifier.replace("class", "eFapsSplit eFapsListMenuOverflow"));
         } else {

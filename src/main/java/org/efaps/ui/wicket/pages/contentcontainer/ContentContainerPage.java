@@ -90,6 +90,21 @@ public class ContentContainerPage
     /**
      * Id of the center panel.
      */
+    private String borderPanelId;
+
+    /**
+     * Getter method for the instance variable {@link #borderPanelId}.
+     *
+     * @return value of instance variable {@link #borderPanelId}
+     */
+    public String getBorderPanelId()
+    {
+        return this.borderPanelId;
+    }
+
+    /**
+     * Id of the center panel.
+     */
     private String centerPanelId;
 
     /**
@@ -171,7 +186,8 @@ public class ContentContainerPage
     {
         final WebMarkupContainer borderPanel = new WebMarkupContainer("borderPanel");
         this.add(borderPanel);
-        borderPanel.add(new BorderContainerBehavior(Design.SIDEBAR));
+        borderPanel.add(new BorderContainerBehavior(Design.SIDEBAR, true));
+        this.borderPanelId = borderPanel.getMarkupId(true);
 
         final AbstractCommand cmd = getCommand(_uuid);
         UUID tmpUUID = _uuid;
