@@ -42,7 +42,6 @@ import org.efaps.db.Context;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior;
 import org.efaps.ui.wicket.components.IRecent;
-import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
 import org.efaps.util.EFapsException;
@@ -354,8 +353,7 @@ public class SplitHeaderPanel
 
         final String headerId = getMarkupId();
 
-        final String borderId = getPage().get(((ContentContainerPage) getPage())
-                                  .getSplitPath()).getMarkupId();
+        final String borderId = "changethis";
 
         final String paneId = getParent().getMarkupId();
         String innerPane = null;

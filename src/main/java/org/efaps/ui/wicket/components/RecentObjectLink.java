@@ -37,7 +37,7 @@ import org.efaps.beans.valueparser.ParseException;
 import org.efaps.beans.valueparser.ValueParser;
 import org.efaps.db.Instance;
 import org.efaps.db.PrintQuery;
-import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
+import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
@@ -80,7 +80,7 @@ public class RecentObjectLink
      * @param _uiObject     uiObject this Link belongs to
      * @throws EFapsException on error
      */
-    public RecentObjectLink(final AbstractUIPageObject _uiObject)
+    public RecentObjectLink(final AbstractUIObject _uiObject)
         throws EFapsException
     {
         this.instance = _uiObject.getInstance();

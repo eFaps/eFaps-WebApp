@@ -36,7 +36,7 @@ import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior.Region;
 import org.efaps.ui.wicket.components.LazyIframe;
 import org.efaps.ui.wicket.components.menutree.MenuTree;
-import org.efaps.ui.wicket.components.split.ListOnlyPanel;
+import org.efaps.ui.wicket.components.split.SidePanel;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
@@ -49,7 +49,7 @@ import org.efaps.util.EFapsException;
 
 /**
  * This class renders a Page with is used as a Container for the Content. <br/>
- * This is necessary to be able to have a spilt in the page, abd be able to
+ * This is necessary to be able to have a split in the page and be able to
  * reuse the same classes for the ContentPages. The Split contains on the left a
  * menu or tree and on the right an iframe for the content.
  *
@@ -59,12 +59,6 @@ import org.efaps.util.EFapsException;
 public class ContentContainerPage
     extends AbstractMergePage
 {
-
-    /**
-     * this static variable is used as the wicketid for the IFrame.
-     */
-    public static final String IFRAME_WICKETID = "splitrightactiframe";
-
     /**
      * Needed for serialization.
      */
@@ -84,22 +78,6 @@ public class ContentContainerPage
                     "ContentContainerPage_IE.css");
 
     /**
-     * Variable contains the Path to the IFrame-Component so that ist can be
-     * accessed by other classes.
-     *
-     * @see #getInlinePath()
-     */
-    private String inlinePath;
-
-    /**
-     * Variable contains the Path to the Split-Component so that ist can be
-     * accessed by other classes.
-     *
-     * @see #getSplitPath()
-     */
-    private String splitPath;
-
-    /**
      * Does this Page contain a StucturBrowser.
      */
     private final boolean structurbrowser;
@@ -109,20 +87,15 @@ public class ContentContainerPage
      */
     private boolean webForm;
 
+    /**
+     * Id of the center panel.
+     */
     private String centerPanelId;
 
-    private MenuTree menuTree;
-
-
     /**
-     * Getter method for the instance variable {@link #centerPanelId}.
-     *
-     * @return value of instance variable {@link #centerPanelId}
+     * The MenuTree for this page.
      */
-    public String getCenterPanelId()
-    {
-        return this.centerPanelId;
-    }
+    private MenuTree menuTree;
 
     /**
      * @param _uuid UUID of the command
@@ -137,8 +110,9 @@ public class ContentContainerPage
     }
 
     /**
-     * @param _uuid UUID of the command
-     * @param _instanceKey oid
+     * @param _uuid                 UUID of the command
+     * @param _instanceKey          oid
+     * @param _addStructurBrowser   add a StructurBrowser to this page
      * @throws EFapsException on error on error
      */
     public ContentContainerPage(final UUID _uuid,
@@ -150,10 +124,9 @@ public class ContentContainerPage
     }
 
     /**
-     * @param _pageMap page map
-     * @param _uuid UUID of the calling command
-     * @param _instanceKey instance key
-     * @param _selectedCmdUUID UUID of the selected command
+     * @param _uuid             UUID of the calling command
+     * @param _instanceKey      instance key
+     * @param _selectedCmdUUID  UUID of the selected command
      * @throws EFapsException on error
      */
     public ContentContainerPage(final UUID _uuid,
@@ -166,10 +139,10 @@ public class ContentContainerPage
     }
 
     /**
-     * @param _pageMap page map
-     * @param _uuid UUID of the command
-     * @param _instanceKey oid
-     * @param _addStructurBrowser add a structor browser
+     * @param _uuid                 UUID of the command
+     * @param _instanceKey          oid
+     * @param _selectedCmdUUID      UUID of the selected command
+     * @param _addStructurBrowser   add a StructurBrowser to this page
      * @throws EFapsException on error
      */
     public ContentContainerPage(final UUID _uuid,
@@ -263,30 +236,8 @@ public class ContentContainerPage
         } else {
             add(StaticHeaderContrBehavior.forCss(ContentContainerPage.CSS));
         }
-        borderPanel.add(new ListOnlyPanel("leftPanel", _uuid, _instanceKey, _selectCmdUUID,
+        borderPanel.add(new SidePanel("leftPanel", _uuid, _instanceKey, _selectCmdUUID,
                         this.structurbrowser));
-    }
-
-    /**
-     * This is the getter method for the instance variable {@link #inlinePath}.
-     *
-     * @return value of instance variable {@link #inlinePath}
-     */
-
-    public String getInlinePath()
-    {
-        return this.inlinePath;
-    }
-
-    /**
-     * This is the getter method for the instance variable {@link #splitPath}.
-     *
-     * @return value of instance variable {@link #splitPath}
-     */
-
-    public String getSplitPath()
-    {
-        return this.splitPath;
     }
 
     /**
@@ -308,11 +259,11 @@ public class ContentContainerPage
     }
 
     /**
-     * @param _menuTree
+     * @param _menuTree the menuTree for this page
      */
     public void setMenuTree(final MenuTree _menuTree)
     {
-       this.menuTree = _menuTree;
+        this.menuTree = _menuTree;
     }
 
     /**
@@ -323,5 +274,15 @@ public class ContentContainerPage
     public MenuTree getMenuTree()
     {
         return this.menuTree;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #centerPanelId}.
+     *
+     * @return value of instance variable {@link #centerPanelId}
+     */
+    public String getCenterPanelId()
+    {
+        return this.centerPanelId;
     }
 }

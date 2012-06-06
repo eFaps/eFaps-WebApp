@@ -177,7 +177,7 @@ public class EFapsSession
             final RequestCycle requestCycle = RequestCycle.get();
             this.clientInfo = new WebClientInfo(requestCycle);
         }
-        return (WebClientInfo)this.clientInfo;
+        return (WebClientInfo) this.clientInfo;
     }
 
     /**

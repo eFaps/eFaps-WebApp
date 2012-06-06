@@ -47,18 +47,18 @@ import org.slf4j.LoggerFactory;
  * @author The eFaps Team
  * @version $Id$
  */
-public class ListOnlyPanel
+public class SidePanel
     extends Panel
 {
     /**
      * Reference to the StyleSheet.
      */
-    public static final EFapsContentReference CSS = new EFapsContentReference(ListOnlyPanel.class, "ListOnlyPanel.css");
+    public static final EFapsContentReference CSS = new EFapsContentReference(SidePanel.class, "ListOnlyPanel.css");
 
     /**
      * Logger.
      */
-    private static final Logger LOG = LoggerFactory.getLogger(ListOnlyPanel.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SidePanel.class);
 
     /**
      * Needed for serialization.
@@ -73,14 +73,14 @@ public class ListOnlyPanel
     /**
      * Constructor.
      *
-     * @param _wicketId wicket id of this component
-     * @param _commandUUID UUID of the related command
-     * @param _oid oid
-     * @param _selectCmdUUID UUID of the selected Command
+     * @param _wicketId             wicket id of this component
+     * @param _commandUUID          UUID of the related command
+     * @param _oid                  oid
+     * @param _selectCmdUUID        UUID of the selected Command
      * @param _showStructurBrowser  show the StructurBrowser
      * @throws EFapsException on error
      */
-    public ListOnlyPanel(final String _wicketId,
+    public SidePanel(final String _wicketId,
                          final UUID _commandUUID,
                          final String _oid,
                          final UUID _selectCmdUUID,
@@ -88,7 +88,7 @@ public class ListOnlyPanel
         throws EFapsException
     {
         super(_wicketId);
-        this.add(StaticHeaderContrBehavior.forCss(ListOnlyPanel.CSS));
+        this.add(StaticHeaderContrBehavior.forCss(SidePanel.CSS));
         String positionH = null;
         String hiddenStrH = null;
         String positionV = null;
@@ -100,7 +100,7 @@ public class ListOnlyPanel
             positionV = Context.getThreadContext().getUserAttribute(PositionUserAttribute.VERTICAL.getKey());
             hiddenStrV = Context.getThreadContext().getUserAttribute(PositionUserAttribute.VERTICAL_COLLAPSED.getKey());
         } catch (final EFapsException e) {
-            ListOnlyPanel.LOG.error("Error reading UserAttributes", e);
+            SidePanel.LOG.error("Error reading UserAttributes", e);
         }
         final boolean hiddenH = "true".equalsIgnoreCase(hiddenStrH);
         final boolean hiddenV = "true".equalsIgnoreCase(hiddenStrV);

@@ -91,10 +91,10 @@ public class MenuTree
     /**
      * Constructor used for a new MenuTree.
      *
-     * @param _wicketId wicket id of the component
-     * @param _commandUUID uuid of the command
-     * @param _oid oid
-     * @param _selectCmdUUID UUID of the selected Command
+     * @param _wicketId         wicket id of the component
+     * @param _commandUUID      uuid of the command
+     * @param _oid              oid
+     * @param _selectCmdUUID    UUID of the selected Command
      */
     public MenuTree(final String _wicketId,
                     final UUID _commandUUID,
@@ -108,19 +108,21 @@ public class MenuTree
         add(AttributeModifier.append("class", "eFapsTreeMenu"));
         add(new MenuUpdateBehavior());
 
-        setDefault();
+        setDefault(_selectCmdUUID);
     }
 
     /**
      * Set the default selected item.
+     * @param _selectCmdUUID UUID of the selected Command
      */
-    public void setDefault()
+    public void setDefault(final UUID _selectCmdUUID)
     {
         final UIMenuItem menuItem = getProvider().getRoots().next();
         menuItem.setHeader(true);
         boolean hasDefault = false;
         for (final UIMenuItem childItem : menuItem.getChildren()) {
-            if (childItem.isDefaultSelected()) {
+            if ((_selectCmdUUID == null && childItem.isDefaultSelected())
+                            || (_selectCmdUUID != null && _selectCmdUUID.equals(childItem.getCommandUUID()))) {
                 hasDefault = true;
                 childItem.setSelected(true);
             }
@@ -225,11 +227,11 @@ public class MenuTree
     public void removeChild(final UIMenuItem _menuItem,
                             final AjaxRequestTarget _target)
     {
-        final UIMenuItem selected = (UIMenuItem) getSelected().getDefaultModelObject();
+        final UIMenuItem selectedItem = (UIMenuItem) getSelected().getDefaultModelObject();
 
         final UIMenuItem ancestor = _menuItem.getAncestor();
         boolean nested = false;
-        if (selected.isChild(_menuItem) || selected.equals(_menuItem)) {
+        if (selectedItem.isChild(_menuItem) || selectedItem.equals(_menuItem)) {
             nested = true;
         }
         ancestor.getChildren().remove(_menuItem);

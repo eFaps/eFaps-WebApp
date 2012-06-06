@@ -20,6 +20,7 @@
 
 package org.efaps.ui.wicket.components.table.cell;
 
+import org.apache.wicket.PageReference;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -28,8 +29,12 @@ import org.apache.wicket.core.request.handler.RenderPageRequestHandler;
 import org.apache.wicket.model.IModel;
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
+import org.efaps.ui.wicket.EFapsSession;
+import org.efaps.ui.wicket.components.RecentObjectLink;
 import org.efaps.ui.wicket.models.cell.UIStructurBrowserTableCell;
 import org.efaps.ui.wicket.models.cell.UITableCell;
+import org.efaps.ui.wicket.models.objects.UIMenuItem;
+import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
@@ -101,7 +106,23 @@ public class AjaxLoadInTargetLink<T>
     public void onClick(final AjaxRequestTarget _target)
     {
         Instance instance = null;
-
+        if (this.target.equals(ScriptTarget.TOP)) {
+            final PageReference reference = ((AbstractContentPage) getPage()).getCalledByPageReference();
+            if (reference != null) {
+                final UIMenuItem menuItem = (UIMenuItem) ((ContentContainerPage) reference.getPage()).getMenuTree()
+                                .getSelected().getDefaultModelObject();
+                RecentObjectLink link = null;
+                try {
+                    link = new RecentObjectLink(menuItem);
+                } catch (final EFapsException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                if (link != null) {
+                    ((EFapsSession) getSession()).addRecent(link);
+                }
+            }
+        }
         final UITableCell cellmodel = (UITableCell) super.getModelObject();
         if (cellmodel.getInstanceKey() != null) {
             Menu menu = null;
