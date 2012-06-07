@@ -22,16 +22,10 @@
 -->
 <html xmlns:wicket>
   <wicket:panel>
-    <div class="tableDiv">
-        <table wicket:id="i" class="wicket-tree-content">
-            <tr>
-                <a wicket:id="junctionLink"></a>
-                <td wicket:id="nodeComponent"></td>
-            </tr>
-        </table>
+    <div class="eFapsClassTree" wicket:id="tree">
     </div>
-    <div class="classFooter">
-      <div wicket:id="submitClose"></div>
+    <div class="eFapsClassTreeFooter">
+        <div wicket:id="submitClose" class="eFapsClassTreeFooterInner"></div>
     </div>
   </wicket:panel>
 </html>

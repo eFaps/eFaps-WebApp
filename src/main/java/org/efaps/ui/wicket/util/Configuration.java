@@ -20,6 +20,9 @@
 
 package org.efaps.ui.wicket.util;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.Properties;
 import java.util.UUID;
 
 import org.efaps.admin.common.SystemConfiguration;
@@ -40,7 +43,11 @@ public class Configuration
         /**  */
         RECENTCACHESIZE(false, true, "RecentCacheSize", "5"),
 
-        /** Name of the main stylesheet for dojo. (tundra,claro,nihilo,soria)*/
+        /** StyelSheet for the Classification Tree. (human, windows) */
+        CLASSTREE_CLASS(true, true, "ClassificationTreeStyleSheet", "human"),
+        /** Expand state for the Tree. */
+        CLASSTREE_EXPAND(false, true, "ClassificationTreeExpandState", ""),
+        /** Name of the main stylesheet for dojo. (tundra,claro,nihilo,soria) */
         DOJO_CLASS(true, true, "DojoMainStylesheet", "tundra"),
         /** Name of the main stylesheet for dojo modal window. (w_blue,w_silver) */
         DOJO_MODALCLASS(true, true, "DojoModalStylesheet", "w_silver"),
@@ -70,10 +77,10 @@ public class Configuration
         private final boolean user;
 
         /**
-         * @param _user             Can be read from UserAttributes
-         * @param _system           Can be read form the SystemConfiguration
-         * @param _key              the key for this Attribute
-         * @param _devaultValue     The default Value
+         * @param _user Can be read from UserAttributes
+         * @param _system Can be read form the SystemConfiguration
+         * @param _key the key for this Attribute
+         * @param _devaultValue The default Value
          */
         private ConfigAttribute(final boolean _user,
                                 final boolean _system,
@@ -124,7 +131,7 @@ public class Configuration
 
     /**
      * @param _attribute attribute the value must be set
-     * @param _value     value to set
+     * @param _value value to set
      */
     public static void setAttribute(final ConfigAttribute _attribute,
                                     final String _value)
@@ -135,6 +142,7 @@ public class Configuration
             e.printStackTrace();
         }
     }
+
     /**
      * @param _attribute the attribute the value is search for
      * @return the value for the configuraion
@@ -169,4 +177,21 @@ public class Configuration
         return Integer.valueOf(Configuration.getAttribute(_attribute));
     }
 
+    /**
+     * @param _attribute the attribute the value is search for
+     * @return the value for the configuraion
+     */
+    public static Properties getAttributeAsProperties(final ConfigAttribute _attribute)
+    {
+        final Properties ret = new Properties();
+        final String value = Configuration.getAttribute(_attribute);
+        if (value != null) {
+            try {
+                ret.load(new StringReader(value));
+            } catch (final IOException e) {
+
+            }
+        }
+        return ret;
+    }
 }

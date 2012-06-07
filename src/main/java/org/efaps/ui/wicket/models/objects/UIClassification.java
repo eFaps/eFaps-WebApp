@@ -31,8 +31,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeModel;
 
 import org.apache.wicket.util.io.IClusterable;
 import org.efaps.admin.datamodel.Classification;
@@ -163,22 +161,6 @@ public class UIClassification
     public long getFieldId()
     {
         return this.fieldId;
-    }
-
-    /**
-     * Method to get the tree for the classification.
-     *
-     * @return a TreeModel containing the classification hirachy
-     */
-    public TreeModel getTreeModel()
-    {
-        if (!this.initialized) {
-            execute();
-        }
-        final DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(this);
-        addNodes(rootNode, this.children);
-        final TreeModel model = new DefaultTreeModel(rootNode);
-        return model;
     }
 
     /**
@@ -405,5 +387,12 @@ public class UIClassification
     public void addSelectedUUID(final UUID _uuid)
     {
         this.selectedUUID.add(_uuid);
+    }
+
+
+    @Override
+    public String toString()
+    {
+        return getLabel();
     }
 }

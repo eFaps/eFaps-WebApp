@@ -20,39 +20,20 @@
 
 package org.efaps.ui.wicket.components.classification;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.UUID;
-
-import org.apache.wicket.Component;
-import org.apache.wicket.Page;
-import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
-import org.efaps.ui.wicket.components.FormContainer;
-import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.picker.AjaxPickerLink;
-import org.efaps.ui.wicket.models.objects.IFormElement;
 import org.efaps.ui.wicket.models.objects.UIClassification;
-import org.efaps.ui.wicket.models.objects.UIFieldForm;
-import org.efaps.ui.wicket.models.objects.UIForm;
-import org.efaps.ui.wicket.models.objects.UIForm.Element;
-import org.efaps.ui.wicket.models.objects.UIForm.ElementType;
-import org.efaps.ui.wicket.pages.classification.ClassificationPage;
-import org.efaps.ui.wicket.pages.content.form.FormPage;
-import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
-import org.efaps.util.EFapsException;
 
 /**
  * TODO comment!
@@ -78,15 +59,7 @@ public class ClassificationPathPanel
     /** Needed for serialization. */
     private static final long serialVersionUID = 1L;
 
-    /**
-     * Modal window used to display the page containing the classification tree.
-     */
-    private final ModalWindowContainer modal;
-
-    /**
-     * Must the form be updated after closing the modal window containing the classification tree.
-     */
-    private boolean updateForm = false;
+    private final ClassificationTreePanel clazzPanel;
 
     /**
      * @param _wicketId wicket id of this component
@@ -97,6 +70,8 @@ public class ClassificationPathPanel
     {
         super(_wicketId, _model);
         add(StaticHeaderContrBehavior.forCss(ClassificationPathPanel.CSS));
+        setOutputMarkupId(true);
+
         this.add(new ClassificationPath("path", _model));
         if (_model.getObject().getMode().equals(TargetMode.EDIT)
                         || _model.getObject().getMode().equals(TargetMode.CREATE)) {
@@ -105,59 +80,9 @@ public class ClassificationPathPanel
             this.add(new WebMarkupContainer("button").setVisible(false));
         }
 
-        this.modal = new ModalWindowContainer("modal");
-        add(this.modal);
-        this.modal.reset();
-        this.modal.setWindowClosedCallback(new UpdateCallback());
-        // it must be used a Page Creator, because only a modal window using a
-        // page creator can be moved over the whole srceen
-        this.modal.setPageCreator(new ModalWindowContainer.PageCreator()
-        {
-
-            /** Needed for serialization */
-            private static final long serialVersionUID = 1L;
-
-            public Page createPage()
-            {
-                Page ret;
-                try {
-                    ret = new ClassificationPage(_model, ClassificationPathPanel.this);
-                } catch (final EFapsException e) {
-                    ret = new ErrorPage(e);
-                }
-                return ret;
-            }
-        });
-    }
-
-    /**
-     * Getter method for instance variable {@link #modal}.
-     *
-     * @return value of instance variable {@link #modal}
-     */
-    public ModalWindowContainer getModal()
-    {
-        return this.modal;
-    }
-
-    /**
-     * Getter method for instance variable {@link #updateForm}.
-     *
-     * @return value of instance variable {@link #updateForm}
-     */
-    public boolean isUpdateForm()
-    {
-        return this.updateForm;
-    }
-
-    /**
-     * Setter method for instance variable {@link #updateForm}.
-     *
-     * @param _updateForm value for instance variable {@link #updateForm}
-     */
-    public void setUpdateForm(final boolean _updateForm)
-    {
-        this.updateForm = _updateForm;
+        this.clazzPanel = new ClassificationTreePanel("tree", Model.of((UIClassification) getDefaultModelObject()));
+        add(this.clazzPanel);
+        this.clazzPanel.setVisible(false).setOutputMarkupPlaceholderTag(true).setOutputMarkupId(true);
     }
 
     /**
@@ -221,17 +146,6 @@ public class ClassificationPathPanel
         }
 
         /**
-         * This Method returns the JavaScript which is executed by the JSCooKMenu.
-         *
-         * @return String with the JavaScript
-         */
-        public String getJavaScript()
-        {
-            final String script = super.getCallbackScript().toString();
-            return "javascript:" + script.replace("'", "\"");
-        }
-
-        /**
          * Show the modal window.
          *
          * @param _target AjaxRequestTarget
@@ -239,111 +153,8 @@ public class ClassificationPathPanel
         @Override
         protected void onEvent(final AjaxRequestTarget _target)
         {
-            ClassificationPathPanel.this.updateForm = false;
-            ClassificationPathPanel.this.modal.show(_target);
-        }
-
-        /**
-         * Method must be overwritten, otherwise the default would break the execution of the JavaScript.
-         *
-         * @return null
-         */
-        @Override
-        protected CharSequence getPreconditionScript()
-        {
-            return null;
-        }
-    }
-
-    /**
-     * Ajax callback that is called on closing the modal window.
-     */
-    public class UpdateCallback
-        implements ModalWindow.WindowClosedCallback
-    {
-
-        /**
-         * Needed for serialization.
-         */
-        private static final long serialVersionUID = 1L;
-
-        /**
-         * @see org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow.WindowClosedCallback#onClose(
-         *  org.apache.wicket.ajax.AjaxRequestTarget)
-         * @param _target ajax target
-         */
-        public void onClose(final AjaxRequestTarget _target)
-        {
-            if (ClassificationPathPanel.this.updateForm) {
-                final Page page = getPage();
-                final UIForm uiform = (UIForm) page.getDefaultModelObject();
-                final Iterator<? extends Component> iter = page.iterator();
-                FormContainer form = null;
-                while (iter.hasNext()) {
-                    final Component comp = iter.next();
-                    if (comp instanceof FormContainer) {
-                        form = (FormContainer) comp;
-                        break;
-                    }
-                }
-                form.removeAll();
-                // remove previous added classification forms
-                final Iterator<Element> iter2 = uiform.getElements().iterator();
-                final Map<UUID, String> uuid2InstanceKey = new HashMap<UUID, String>();
-                while (iter2.hasNext()) {
-                    final IFormElement element = iter2.next().getElement();
-                    if (element instanceof UIFieldForm) {
-                        final String instanceKey = ((UIFieldForm) element).getInstanceKey();
-                        if (instanceKey != null) {
-                            final UUID classUUID = ((UIFieldForm) element).getClassificationUUID();
-                            uuid2InstanceKey.put(classUUID, instanceKey);
-                        }
-                        iter2.remove();
-                    }
-                }
-                try {
-                    add2Elements(uiform, (UIClassification) getDefaultModelObject(), uuid2InstanceKey);
-                    FormPage.updateFormContainer(page, form, uiform);
-                } catch (final EFapsException e) {
-                    throw new RestartResponseException(new ErrorPage(e));
-                }
-                _target.add(form);
-                // TODO this should not be done always, needed for the editor so that it is loaded correctly
-                _target.appendJavaScript("dojo.parser.parse(document.body)");
-            }
-        }
-
-        /**
-         * Recursive method that adds the classification forms as elements to the form by walking down the tree.
-         *
-         * @param _uiForm uiForm the elements must be added to
-         * @param _parentClass the classification to be added
-         * @param _uuid2InstanceKey map from uuid to instance keys
-         * @throws EFapsException on error
-         */
-        private void add2Elements(final UIForm _uiForm,
-                                  final UIClassification _parentClass,
-                                  final Map<UUID, String> _uuid2InstanceKey)
-            throws EFapsException
-        {
-            if (_parentClass.isSelected()) {
-                final UIFieldForm fieldform;
-                if (_uiForm.isEditMode()) {
-                    if (_uuid2InstanceKey.containsKey(_parentClass.getClassificationUUID())) {
-                        fieldform = new UIFieldForm(_uiForm.getCommandUUID(),
-                                                    _uuid2InstanceKey.get(_parentClass.getClassificationUUID()));
-                    } else {
-                        fieldform = new UIFieldForm(_uiForm.getCommandUUID(), _parentClass);
-                        fieldform.setMode(TargetMode.CREATE);
-                    }
-                } else {
-                    fieldform = new UIFieldForm(_uiForm.getCommandUUID(), _parentClass);
-                }
-                _uiForm.getElements().add(_uiForm.new Element(ElementType.SUBFORM, fieldform));
-            }
-            for (final UIClassification child : _parentClass.getChildren()) {
-                add2Elements(_uiForm, child, _uuid2InstanceKey);
-            }
+            ClassificationPathPanel.this.clazzPanel.setVisible(true);
+            _target.add(ClassificationPathPanel.this.clazzPanel);
         }
     }
 }

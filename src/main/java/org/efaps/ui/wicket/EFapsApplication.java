@@ -90,7 +90,9 @@ public class EFapsApplication
         getMarkupSettings().setAutomaticLinking(false);
 
         getRequestCycleSettings().setGatherExtendedBrowserInfo(true);
-        getDebugSettings().setAjaxDebugModeEnabled(true);
+
+        getDebugSettings().setAjaxDebugModeEnabled(false);
+
         getDebugSettings().setDevelopmentUtilitiesEnabled(false);
         getSecuritySettings().setAuthorizationStrategy(new EFapsFormBasedAuthorizationStartegy());
         getApplicationSettings().setPageExpiredErrorPage(LoginPage.class);

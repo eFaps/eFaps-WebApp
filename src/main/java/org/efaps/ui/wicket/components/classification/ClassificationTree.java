@@ -20,186 +20,131 @@
 
 package org.efaps.ui.wicket.components.classification;
 
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
-import java.util.UUID;
-
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeModel;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.extensions.markup.html.tree.BaseTree;
-import org.apache.wicket.extensions.markup.html.tree.WicketTreeModel;
+import org.apache.wicket.extensions.markup.html.repeater.tree.NestedTree;
+import org.apache.wicket.extensions.markup.html.repeater.tree.content.CheckedFolder;
+import org.apache.wicket.extensions.markup.html.repeater.tree.theme.HumanTheme;
+import org.apache.wicket.extensions.markup.html.repeater.tree.theme.WindowsTheme;
 import org.apache.wicket.model.IModel;
-import org.efaps.admin.common.SystemConfiguration;
+import org.apache.wicket.model.Model;
 import org.efaps.admin.datamodel.Type;
-import org.efaps.admin.dbproperty.DBProperties;
-import org.efaps.ui.wicket.components.button.Button;
-import org.efaps.ui.wicket.components.tree.StructurBrowserTree;
 import org.efaps.ui.wicket.models.objects.UIClassification;
-import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
-import org.efaps.util.EFapsException;
+import org.efaps.ui.wicket.util.Configuration;
+import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 
 /**
  * Renders the tree for selecting a clqssification.
  *
  * @author The eFaps Team
- * @version $Id$
+ * @version $Id: ClassificationTree.java 7534 2012-05-19 09:32:04Z
+ *          jan@moxter.net $
  */
 public class ClassificationTree
-    extends BaseTree
+    extends NestedTree<UIClassification>
 {
-    /**
-     * Key use as Attribute in the WebApp SystemConfiguration.
-     */
-    public static final String CONFIG_EXPAND = "ClassificationTreeExpandState";
 
     /**
-     * ResourceReference to the StyleSheet used for this Tree.
-     */
-    private static final EFapsContentReference CSS =
-                    new EFapsContentReference(StructurBrowserTree.class, "StructurTree.css");
-
-    /**
-     * Reference to the style sheet.
-     */
-    private static final EFapsContentReference TCSS = new EFapsContentReference(ClassificationPath.class,
-                                                                               "ClassificationTree.css");
-
-    /**
-     * Needed for serialization.
+     * /** Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
 
     /**
-     * Mapping between the node from the swing tree and the child components.
-     */
-    private final Map<DefaultMutableTreeNode, Component> node2Component = new HashMap<DefaultMutableTreeNode,
-                                                                                                    Component>();
-
-    /**
      * @param _wicketId wicketId of this component
      * @param _model model for this component
-     * @param _panel panel this tree is called from
-     * @throws EFapsException on error
      */
     public ClassificationTree(final String _wicketId,
-                              final IModel<UIClassification> _model,
-                              final ClassificationPathPanel _panel)
-        throws EFapsException
+                              final IModel<UIClassification> _model)
     {
-        super(_wicketId, new WicketTreeModel());
-        this.add(StaticHeaderContrBehavior.forCss(ClassificationTree.CSS));
-        this.add(StaticHeaderContrBehavior.forCss(ClassificationTree.TCSS));
-        final UIClassification classification = _model.getObject();
-        final TreeModel model = classification.getTreeModel();
-        setModelObject(model);
+        super(_wicketId, new ClassificationTreeProvider(_model));
+        if ("human".equals(Configuration.getAttribute(ConfigAttribute.CLASSTREE_CLASS))) {
+            add(new HumanTheme());
+        } else if ("windows".equals(Configuration.getAttribute(ConfigAttribute.CLASSTREE_CLASS))) {
+            add(new WindowsTheme());
+        }
 
-        //WebApp-Configuration
-        final SystemConfiguration config = SystemConfiguration.get(
-                            UUID.fromString("50a65460-2d08-4ea8-b801-37594e93dad5"));
-        String expand = "true";
-        if (config != null) {
-            final Properties props = config.getAttributeValueAsProperties(ClassificationTree.CONFIG_EXPAND);
-            expand = props.getProperty(Type.get(classification.getClassificationUUID()).getName(), "true");
+        final Properties properties = Configuration.getAttributeAsProperties(ConfigAttribute.CLASSTREE_EXPAND);
+
+        final String expand = properties.getProperty(Type.get(_model.getObject().getClassificationUUID()).getName(),
+                        "true");
+        if ("true".equalsIgnoreCase(expand)) {
+            addAll(getProvider().getRoots().next());
         }
-        if ("false".equalsIgnoreCase(expand)) {
-            getTreeState().expandNode(model.getRoot());
-            if (classification.isSelected()) {
-                final Enumeration<?> nodes = ((DefaultMutableTreeNode) model.getRoot()).breadthFirstEnumeration();
-                while (nodes.hasMoreElements()) {
-                    final DefaultMutableTreeNode node = (DefaultMutableTreeNode) nodes.nextElement();
-                    final UIClassification nodeClass = (UIClassification) node.getUserObject();
-                    if (nodeClass.isSelected()) {
-                        getTreeState().expandNode(node);
-                    }
-                }
-            }
-        } else {
-            getTreeState().expandAll();
-        }
-        final String label;
-        if (DBProperties.hasProperty(classification.getCommandName() + ".Button.ClassTreeUpdate")) {
-            label = DBProperties.getProperty(classification.getCommandName() + ".Button.ClassTreeUpdate");
-        } else {
-            label = DBProperties.getProperty("default.Button.ClassTreeUpdate");
-        }
-        add(new Button("submitClose", new AjaxSubmitCloseLink(Button.LINKID, _model, _panel),
-                        label, Button.ICON.ACCEPT.getReference()));
     }
 
-    /**
-     * @see org.apache.wicket.markup.html.tree.BaseTree#newNodeComponent(java.lang.String,
-     *      org.apache.wicket.model.IModel)
-     * @param _wicketId wicket id for the new component
-     * @param _model model for the new component
-     * @return new ClassificationTreeLabelPanel
+    private void addAll(final UIClassification _uiClass)
+    {
+        getModelObject().add(_uiClass);
+        for (final UIClassification child : _uiClass.getChildren()) {
+            addAll(child);
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.wicket.extensions.markup.html.repeater.tree.AbstractTree#
+     * newContentComponent(java.lang.String, org.apache.wicket.model.IModel)
      */
     @Override
-    protected Component newNodeComponent(final String _wicketId,
-                                         final IModel<Object> _model)
+    protected Component newContentComponent(final String _id,
+                                            final IModel<UIClassification> _model)
     {
-        final ClassificationTreeLabelPanel comp = new ClassificationTreeLabelPanel(_wicketId, _model);
-        this.node2Component.put((DefaultMutableTreeNode) _model.getObject(), comp);
-        return comp;
-    }
-
-    /**
-     * Get the component related to a node from the treemodel.
-     *
-     * @param _node node the component is wanted for
-     * @return component related to the given node
-     */
-    protected Component getComponent(final DefaultMutableTreeNode _node)
-    {
-        return this.node2Component.get(_node);
-    }
-
-    /**
-     * Render a link that submits an closes the form.
-     */
-    public class AjaxSubmitCloseLink
-        extends AjaxLink<UIClassification>
-    {
-
-        /**
-         * Needed for serialization.
-         */
-        private static final long serialVersionUID = 1L;
-
-        /**
-         * The panel this tree sits in.
-         */
-        private final ClassificationPathPanel classPathPanel;
-
-        /**
-         * @param _wicketId wicket id for this component
-         * @param _model model for tihs component
-         * @param _panel classifcation panel this link belongs to
-         * @param page
-         */
-        public AjaxSubmitCloseLink(final String _wicketId,
-                                   final IModel<UIClassification> _model,
-                                   final ClassificationPathPanel _panel)
+        return new CheckedFolder<UIClassification>(_id, this, _model)
         {
-            super(_wicketId, _model);
-            this.classPathPanel = _panel;
-        }
 
-        /**
-         * @see org.apache.wicket.ajax.markup.html.AjaxLink#onClick(org.apache.wicket.ajax.AjaxRequestTarget)
-         * @param _target ajax request target
-         */
-        @Override
-        public void onClick(final AjaxRequestTarget _target)
-        {
-            this.classPathPanel.setUpdateForm(true);
-            this.classPathPanel.getModal().close(_target);
-        }
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            protected void onUpdate(final AjaxRequestTarget _target)
+            {
+                final boolean selected = getModelObject().isSelected();
+
+                if (!getModelObject().isMultipleSelect() && !selected) {
+                    // select event ensure that there are no other objects selected by cleaning it totally
+                    UIClassification uiClass = getModelObject();
+                    while (!uiClass.isRoot()) {
+                        uiClass = uiClass.getParent();
+                    }
+                    toggleDown(uiClass, false);
+                }
+
+                // unselect event ensure that no children are selected
+                if (selected) {
+                    toggleDown(getModelObject(), false);
+                } else {
+                    toggleUp(getModelObject(), true);
+                }
+                _target.add(ClassificationTree.this);
+                findParent(ClassificationTreePanel.class).modelChanged();
+            }
+
+            private void toggleUp(final UIClassification _uiClass,
+                                  final boolean _selected)
+            {
+                UIClassification uiClass = _uiClass;
+                uiClass.setSelected(_selected);
+                while (!uiClass.isRoot()) {
+                    uiClass = uiClass.getParent();
+                    uiClass.setSelected(_selected);
+                }
+            }
+
+            private void toggleDown(final UIClassification _uiClass,
+                                    final boolean _selected)
+            {
+                _uiClass.setSelected(_selected);
+                for (final UIClassification child : _uiClass.getChildren()) {
+                    toggleDown(child, _selected);
+                }
+            }
+
+            @Override
+            protected IModel<Boolean> newCheckBoxModel(final IModel<UIClassification> _model)
+            {
+                return Model.of(_model.getObject().isSelected());
+            }
+        };
     }
 }
