@@ -18,7 +18,6 @@
  * Last Changed By: $Author$
  */
 
-
 package org.efaps.ui.wicket.components.values;
 
 import java.util.ArrayList;
@@ -34,9 +33,8 @@ import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.models.cell.FieldConfiguration;
 import org.efaps.ui.wicket.models.objects.DropDownOption;
 
-
 /**
- * TODO comment!
+ * Render a DropDown Field.
  *
  * @author The eFaps Team
  * @version $Id$
@@ -46,28 +44,35 @@ public class DropDownField
 {
 
     /**
-    *
-    */
-   private static final long serialVersionUID = 1L;
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
+     *  Configurationobject for this component.
+     */
     private final FieldConfiguration config;
 
     /**
-     * @param _wicketId
-     * @param _ofMap
-     * @param _fieldConfiguration
+     * @param _wicketId     wicket id for this component
+      *@param _value        value for this component
+     * @param _choices    Choices for the dropdowns
+     * @param _fieldConfiguration    Configurationobject for this component.
      */
     public DropDownField(final String _wicketId,
                          final Object _value,
-                         final IModel<Map<Object, Object>> _model,
+                         final IModel<Map<Object, Object>> _choices,
                          final FieldConfiguration _fieldConfiguration)
     {
-       super(_wicketId);
-       if (_value != null) {
-           setDefaultModel(Model.of(new DropDownOption(String.valueOf(_value), null)));
-       }
-       this.config = _fieldConfiguration;
-       setChoices(DropDownField.getSelectChoices(_model.getObject()));
-       setChoiceRenderer(new ChoiceRenderer());
+        super(_wicketId);
+        if (_value != null) {
+            setDefaultModel(Model.of(new DropDownOption(String.valueOf(_value), null)));
+        } else {
+            setDefaultModel(new Model<String>());
+        }
+        this.config = _fieldConfiguration;
+        setChoices(DropDownField.getSelectChoices(_choices.getObject()));
+        setChoiceRenderer(new ChoiceRenderer());
     }
 
     @Override
@@ -81,11 +86,11 @@ public class DropDownField
     @Override
     public String getInputName()
     {
-        return  this.config.getName();
+        return this.config.getName();
     }
 
-
-    private static List<DropDownOption> getSelectChoices(final Map<Object, Object> _values) {
+    private static List<DropDownOption> getSelectChoices(final Map<Object, Object> _values)
+    {
         final List<DropDownOption> list = new ArrayList<DropDownOption>();
         for (final Entry<Object, Object> entry : _values.entrySet()) {
             list.add(new DropDownOption(String.valueOf(entry.getKey()),
@@ -94,9 +99,9 @@ public class DropDownField
         return list;
     }
 
-
-    public final class ChoiceRenderer implements IChoiceRenderer<DropDownOption> {
-
+    public final class ChoiceRenderer
+        implements IChoiceRenderer<DropDownOption>
+    {
 
         private static final long serialVersionUID = 1L;
 

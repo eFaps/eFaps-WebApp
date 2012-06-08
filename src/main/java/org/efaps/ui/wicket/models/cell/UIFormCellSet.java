@@ -25,7 +25,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.ui.FieldValue;
+import org.efaps.admin.datamodel.ui.UIValue;
+import org.efaps.admin.ui.field.Field;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.util.EFapsException;
@@ -60,16 +63,15 @@ public class UIFormCellSet
 
     private final List<CellSetRow> rows = new ArrayList<CellSetRow>();
 
-
     /**
-     * @param _parent       parent object
-     * @param _fieldValue   FieldValue
-     * @param _instance     instance
-     * @param _value        value
-     * @param _icon         icon
-     * @param _label        Label
-     * @param _edit         edit mode or not
-     * @throws EFapsException   on error
+     * @param _parent parent object
+     * @param _fieldValue FieldValue
+     * @param _instance instance
+     * @param _value value
+     * @param _icon icon
+     * @param _label Label
+     * @param _edit edit mode or not
+     * @throws EFapsException on error
      */
     public UIFormCellSet(final AbstractUIObject _parent,
                          final FieldValue _fieldValue,
@@ -93,8 +95,8 @@ public class UIFormCellSet
     }
 
     /**
-     * @param _column       x-coordinate
-     * @param _uiFormCell   UIFormCell used as definition
+     * @param _column x-coordinate
+     * @param _uiFormCell UIFormCell used as definition
      * @throws CacheReloadException on error
      */
     public void addHeader(final UISetColumnHeader _uiHeader)
@@ -108,7 +110,7 @@ public class UIFormCellSet
      */
     public void addRow(final Instance _rowInstance)
     {
-        final CellSetRow row = new CellSetRow(_rowInstance);
+        final CellSetRow row = new CellSetRow(_rowInstance, this);
         this.rows.add(row);
         this.instKey2row.put(_rowInstance.getKey(), row);
     }
@@ -139,5 +141,18 @@ public class UIFormCellSet
     public List<UISetColumnHeader> getHeaders()
     {
         return this.headers;
+    }
+
+    public void addNewRow()
+        throws CacheReloadException
+    {
+        final CellSetRow row = new CellSetRow(this);
+        this.rows.add(row);
+        for (final UISetColumnHeader header : this.headers) {
+            final UIValue uiValue = UIValue
+                            .get(Field.get(header.getFieldId()), Attribute.get(header.getAttrId()), null);
+            final CellSetValue cellSetValue = new CellSetValue(null, getParent(), this, uiValue);
+            row.add(cellSetValue);
+        }
     }
 }

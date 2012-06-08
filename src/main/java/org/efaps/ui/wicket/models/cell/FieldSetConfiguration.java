@@ -18,13 +18,10 @@
  * Last Changed By: $Author$
  */
 
-
 package org.efaps.ui.wicket.models.cell;
 
-import java.io.Serializable;
-
-import org.efaps.admin.ui.field.Field;
-
+import org.efaps.admin.datamodel.Attribute;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * TODO comment!
@@ -32,8 +29,8 @@ import org.efaps.admin.ui.field.Field;
  * @author The eFaps Team
  * @version $Id$
  */
-public class FieldConfiguration
-    implements Serializable
+public class FieldSetConfiguration
+    extends FieldConfiguration
 {
 
     /**
@@ -41,35 +38,27 @@ public class FieldConfiguration
      */
     private static final long serialVersionUID = 1L;
 
-    private final long fieldId;
+    private final long attrId;
 
     /**
      * @param _field
      */
-    public FieldConfiguration(final long _fieldId)
+    public FieldSetConfiguration(final long _fieldId,
+                                 final long _attrId)
     {
-        this.fieldId = _fieldId;
+        super(_fieldId);
+        this.attrId = _attrId;
     }
-
+    @Override
     public String getName()
     {
-        return getField().getName();
+        String ret = null;
+        try {
+            ret = super.getName() + "_" + Attribute.get(this.attrId).getName();
+        } catch (final CacheReloadException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return ret;
     }
-
-    protected Field getField()
-    {
-        return Field.get(this.fieldId);
-    }
-
-
-    public String getAlign()
-    {
-        return getField().getAlign();
-    }
-
-    public int getSize()
-    {
-        return getField().getCols();
-    }
-
 }

@@ -22,6 +22,7 @@ package org.efaps.ui.wicket.models.cell;
 
 import org.efaps.admin.datamodel.ui.UIValue;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * TODO comment!
@@ -53,6 +54,19 @@ public class CellSetValue
         super(_instanceKey, _parent, _value);
         this.set = _set;
     }
-
-
+    /* (non-Javadoc)
+     * @see org.efaps.ui.wicket.models.cell.AbstractUICellValue#getNewFieldConfiguration()
+     */
+    @Override
+    protected FieldConfiguration getNewFieldConfiguration()
+    {
+        FieldSetConfiguration ret = null;
+        try {
+            ret =  new FieldSetConfiguration(getValue().getField().getId(), getValue().getAttribute().getId());
+        } catch (final CacheReloadException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return ret;
+    }
 }

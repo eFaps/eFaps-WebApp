@@ -28,6 +28,7 @@ import java.util.Map.Entry;
 import java.util.Random;
 import java.util.UUID;
 
+import org.apache.commons.lang.RandomStringUtils;
 import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.ui.AbstractCommand;
@@ -381,5 +382,15 @@ public abstract class AbstractUIPageObject
     public Map<Instance, Boolean> getAccessMap()
     {
         return this.accessMap;
+    }
+
+    /**
+     *
+     */
+    public String registerOID(final String _oid)
+    {
+        final String ret = RandomStringUtils.randomAlphanumeric(8);
+        getUiID2Oid().put(ret, _oid);
+        return ret;
     }
 }

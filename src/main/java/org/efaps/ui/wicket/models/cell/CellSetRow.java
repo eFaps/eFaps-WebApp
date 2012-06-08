@@ -36,16 +36,32 @@ public class CellSetRow
     implements Serializable
 {
 
-    private final Instance instanceKey;
+    private final String oid;
 
     private final List<CellSetValue> values = new ArrayList<CellSetValue>();
 
+    private final UIFormCellSet parent;
+
     /**
      * @param _rowInstance
+     * @param _uiFormCellSet
      */
-    public CellSetRow(final Instance _rowInstance)
+    public CellSetRow(final UIFormCellSet _parent)
     {
-        this.instanceKey = _rowInstance;
+        this(null, _parent);
+    }
+
+
+
+    /**
+     *
+     * @param _uiFormCellSet
+     */
+    public CellSetRow(final Instance _rowInstance,
+                      final UIFormCellSet _parent)
+    {
+        this.oid = _rowInstance == null ? null : _rowInstance.getOid();
+        this.parent = _parent;
     }
 
     /**
@@ -68,5 +84,25 @@ public class CellSetRow
     public List<CellSetValue> getValues()
     {
         return this.values;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #parent}.
+     *
+     * @return value of instance variable {@link #parent}
+     */
+    public UIFormCellSet getParent()
+    {
+        return this.parent;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #oid}.
+     *
+     * @return value of instance variable {@link #oid}
+     */
+    public String getOid()
+    {
+        return this.oid;
     }
 }

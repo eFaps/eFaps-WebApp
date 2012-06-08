@@ -75,7 +75,7 @@ public class AbstractUICellValue
 
     protected FieldConfiguration getNewFieldConfiguration()
     {
-        return new FieldConfiguration(getValue().getField());
+        return new FieldConfiguration(getValue().getField().getId());
     }
 
     /**

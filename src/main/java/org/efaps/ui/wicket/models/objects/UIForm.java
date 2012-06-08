@@ -466,7 +466,7 @@ public class UIForm
 
         for (final String attrName : ((FieldSet) _field).getOrder()) {
             final Attribute child = set.getAttribute(attrName);
-            final UISetColumnHeader column = new UISetColumnHeader(_field.getLabel(), child);
+            final UISetColumnHeader column = new UISetColumnHeader(_field.getLabel(), child, _field);
             cellset.addHeader(column);
         }
 
@@ -627,7 +627,7 @@ public class UIForm
                             final AttributeSet set = AttributeSet.find(type.getName(), fieldAttrName);
                             for (final String attrName : ((FieldSet) field).getOrder()) {
                                 final Attribute child = set.getAttribute(attrName);
-                                final UISetColumnHeader column = new UISetColumnHeader(field.getLabel(), child);
+                                final UISetColumnHeader column = new UISetColumnHeader(field.getLabel(), child, field);
                                 ((UIFormCellSet) cell).addHeader(column);
                             }
                         } else if (field instanceof FieldCommand) {

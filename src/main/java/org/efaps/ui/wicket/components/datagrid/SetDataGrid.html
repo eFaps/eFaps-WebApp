@@ -22,17 +22,25 @@
 -->
 <html xmlns:wicket>
     <wicket:panel>
-        <table>
-            <thead>
+        <table class="eFapsSetDataGrid">
+            <thead class="eFapsSetDataGridHead">
                 <tr>
+                    <th wicket:id="editHeader"></th>
                     <th wicket:id="headerRepeater">
                         <span wicket:id="header"></span>
                     </th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="eFapsSetDataGridBody">
                 <tr wicket:id="rowRepeater">
+                    <td wicket:id="remove">
+                        <a wicket:id="removeLink"><img wicket:id="removeIcon"/></a>
+                        <input wicket:id="oid" type="hidden"></input>
+                    </td>
                     <td wicket:id="columnRepeater"><span wicket:id="value"></span></td>
+                </tr>
+                <tr wicket:id="addRow">
+                    <td wicket:id="addCol"><a wicket:id="addLink"><img wicket:id="addIcon"/></a></td>
                 </tr>
             </tbody>
         </table>

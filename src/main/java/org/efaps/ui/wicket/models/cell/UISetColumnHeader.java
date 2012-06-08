@@ -25,6 +25,7 @@ import java.io.Serializable;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.dbproperty.DBProperties;
+import org.efaps.admin.ui.field.Field;
 
 
 /**
@@ -41,6 +42,9 @@ public class UISetColumnHeader
 
     private final long attrId;
 
+    private final long fieldId;
+
+
 
     /**
      * @param _label
@@ -48,10 +52,12 @@ public class UISetColumnHeader
      * @param _object4Compare
      */
     public UISetColumnHeader(final String _label,
-                             final Attribute _child)
+                             final Attribute _child,
+                             final Field _field)
     {
         this.label = DBProperties.getProperty(_label + "/" + _child.getName());
         this.attrId = _child.getId();
+        this.fieldId = _field.getId();
     }
 
 
@@ -63,6 +69,30 @@ public class UISetColumnHeader
     public String getLabel()
     {
         return this.label;
+    }
+
+
+
+    /**
+     * Getter method for the instance variable {@link #attrId}.
+     *
+     * @return value of instance variable {@link #attrId}
+     */
+    public long getAttrId()
+    {
+        return this.attrId;
+    }
+
+
+
+    /**
+     * Getter method for the instance variable {@link #fieldId}.
+     *
+     * @return value of instance variable {@link #fieldId}
+     */
+    public long getFieldId()
+    {
+        return this.fieldId;
     }
 
 }
