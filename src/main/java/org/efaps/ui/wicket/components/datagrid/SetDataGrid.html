@@ -15,21 +15,26 @@
   limitations under the License.
 
   Author:          The eFaps Team
-  Revision:        $Rev$
-  Last Changed:    $Date$
-  Last Changed By: $Author$
+  Revision:        $Rev: 7532 $
+  Last Changed:    $Date: 2012-05-19 01:31:05 -0500 (Sat, 19 May 2012) $
+  Last Changed By: $Author: jan@moxter.net $
 
 -->
 <html xmlns:wicket>
-  <wicket:panel>
-    <table class="eFapsFieldSet" wicket:id="setTable">
-      <tr>
-        <td wicket:id="removeTD">
-          <a href="#" wicket:id="remove"><img wicket:id="removeIcon"/></a>
-          <input type="hidden" wicket:id="oid"></input>
-        </td>
-        <td wicket:id="repeater"></td>
-      </tr>
-    </table>
-  </wicket:panel>
+    <wicket:panel>
+        <table>
+            <thead>
+                <tr>
+                    <th wicket:id="headerRepeater">
+                        <span wicket:id="header"></span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr wicket:id="rowRepeater">
+                    <td wicket:id="columnRepeater"><span wicket:id="value"></span></td>
+                </tr>
+            </tbody>
+        </table>
+    </wicket:panel>
 </html>

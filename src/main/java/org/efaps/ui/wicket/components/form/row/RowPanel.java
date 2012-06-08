@@ -21,6 +21,7 @@
 package org.efaps.ui.wicket.components.form.row;
 
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.basic.Label;
@@ -29,11 +30,11 @@ import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.components.FormContainer;
+import org.efaps.ui.wicket.components.datagrid.SetDataGrid;
 import org.efaps.ui.wicket.components.form.FormPanel;
 import org.efaps.ui.wicket.components.form.cell.ValueCellPanel;
 import org.efaps.ui.wicket.components.form.chart.ChartPanel;
 import org.efaps.ui.wicket.components.form.command.CommandCellPanel;
-import org.efaps.ui.wicket.components.form.set.YPanel;
 import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.cell.UIFormCell;
 import org.efaps.ui.wicket.models.cell.UIFormCellChart;
@@ -102,10 +103,9 @@ public class RowPanel
                     labelCell.add(AttributeModifier.replace("rowspan", ((Integer) cell.getRowSpan()).toString()));
                 }
             }
-            Panel valueCell;
+            Component valueCell;
             if (cell instanceof UIFormCellSet) {
-                valueCell = new YPanel(cellRepeater.newChildId(), new UIModel<UIFormCellSet>((UIFormCellSet) cell),
-                                _formmodel);
+                valueCell = new SetDataGrid(cellRepeater.newChildId(), Model.of((UIFormCellSet) cell));
             } else if (cell instanceof UIFormCellCmd) {
                 valueCell = new CommandCellPanel(cellRepeater.newChildId(), new UIModel<UIFormCellCmd>(
                                 (UIFormCellCmd) cell),

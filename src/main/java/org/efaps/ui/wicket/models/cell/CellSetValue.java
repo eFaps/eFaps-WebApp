@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2012 The eFaps Team
+ * Copyright 2003 - 2011 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,37 +20,39 @@
 
 package org.efaps.ui.wicket.models.cell;
 
-import org.apache.wicket.model.Model;
+import org.efaps.admin.datamodel.ui.UIValue;
+import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 
 /**
- * TODO comment
+ * TODO comment!
  *
  * @author The eFaps Team
  * @version $Id$
  */
-public class XYModel
-    extends Model<XYValue>
+public class CellSetValue
+    extends AbstractUICellValue
 {
 
+    /**
+     *
+     */
     private static final long serialVersionUID = 1L;
+    private final UIFormCellSet set;
 
-    private XYValue xymodel;
-
-    public XYModel(final XYValue _xymodel)
+    /**
+     * @param _instanceKey
+     * @param _parent
+     * @param _object
+     * @param _child
+     */
+    public CellSetValue(final String _instanceKey,
+                        final AbstractUIObject _parent,
+                        final UIFormCellSet _set,
+                        final UIValue _value)
     {
-        this.xymodel = _xymodel;
+        super(_instanceKey, _parent, _value);
+        this.set = _set;
     }
 
-    @Override
-    public XYValue getObject()
-    {
-        return this.xymodel;
-    }
-
-    @Override
-    public void setObject(final XYValue _xymodel)
-    {
-        this.xymodel = _xymodel;
-    }
 
 }

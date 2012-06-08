@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2012 The eFaps Team
+ * Copyright 2003 - 2011 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,54 +18,51 @@
  * Last Changed By: $Author$
  */
 
+
 package org.efaps.ui.wicket.models.cell;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.Serializable;
 
-import org.apache.wicket.util.io.IClusterable;
+import org.efaps.admin.datamodel.Attribute;
+import org.efaps.admin.dbproperty.DBProperties;
+
 
 /**
- * TODO comment
+ * TODO comment!
  *
  * @author The eFaps Team
  * @version $Id$
  */
-public class XYValue
-    implements IClusterable
+public class UISetColumnHeader
+    implements Serializable
 {
 
-    private static final long serialVersionUID = 1L;
-    private final int y;
+    private final String label;
 
-    public int getY()
-    {
-        return this.y;
-    }
+    private final long attrId;
 
-    public int getX()
-    {
-        return this.xrow.size();
-    }
-
-    public List<Integer> getXrow()
-    {
-        return this.xrow;
-    }
-
-    private final List<Integer> xrow = new ArrayList<Integer>();
-
-    public XYValue(final int _y)
-    {
-        this.y = _y;
-    }
 
     /**
-     * @param value
+     * @param _label
+     * @param _child
+     * @param _object4Compare
      */
-    public void addX(final int _x)
+    public UISetColumnHeader(final String _label,
+                             final Attribute _child)
     {
-        this.xrow.add(_x);
+        this.label = DBProperties.getProperty(_label + "/" + _child.getName());
+        this.attrId = _child.getId();
+    }
+
+
+    /**
+     * Getter method for the instance variable {@link #label}.
+     *
+     * @return value of instance variable {@link #label}
+     */
+    public String getLabel()
+    {
+        return this.label;
     }
 
 }

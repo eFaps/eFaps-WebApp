@@ -36,6 +36,7 @@ import org.efaps.admin.datamodel.AttributeSet;
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.FieldValue;
+import org.efaps.admin.datamodel.ui.UIValue;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.ui.AbstractCommand;
@@ -52,11 +53,13 @@ import org.efaps.admin.ui.field.FieldSet;
 import org.efaps.admin.ui.field.FieldTable;
 import org.efaps.db.Instance;
 import org.efaps.db.PrintQuery;
+import org.efaps.ui.wicket.models.cell.CellSetValue;
 import org.efaps.ui.wicket.models.cell.UIFormCell;
 import org.efaps.ui.wicket.models.cell.UIFormCellChart;
 import org.efaps.ui.wicket.models.cell.UIFormCellCmd;
 import org.efaps.ui.wicket.models.cell.UIFormCellSet;
 import org.efaps.ui.wicket.models.cell.UIHiddenCell;
+import org.efaps.ui.wicket.models.cell.UISetColumnHeader;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 /**
@@ -458,55 +461,34 @@ public class UIForm
             fieldins.addAll(_query.getInstances4Attribute(_field.getAttribute()));
         }
 
-        boolean add = true;
         final FieldValue fieldValue = new FieldValue(_field, null, "", _fieldInstance, getInstance());
         final UIFormCellSet cellset = new UIFormCellSet(this, fieldValue, _fieldInstance, "", "", _label, isEditMode());
 
+        for (final String attrName : ((FieldSet) _field).getOrder()) {
+            final Attribute child = set.getAttribute(attrName);
+            final UISetColumnHeader column = new UISetColumnHeader(_field.getLabel(), child);
+            cellset.addHeader(column);
+        }
+
         final Iterator<Instance> iter = fieldins.iterator();
-        int idy = 0;
-        while (add) {
-            int idx = 0;
-            if (iter.hasNext()) {
-                cellset.addInstance(idy, iter.next());
-            }
+        final Map<String, Iterator<?>> values = new HashMap<String, Iterator<?>>();
+        while (iter.hasNext()) {
+            final Instance rowInstance = iter.next();
+            cellset.addRow(rowInstance);
             for (final String attrName : ((FieldSet) _field).getOrder()) {
                 final Attribute child = set.getAttribute(attrName);
-                if (isEditMode()) {
-                    final FieldValue fValue = new FieldValue(_field, child, "", getInstance(), null);
-                    final String fattrTypeName = child != null ? child.getAttributeType().getName() : null;
-                    final UIFormCell fcell = new UIFormCell(this, fValue, fValue.getEditHtml(getMode()),
-                                                                null, null, fattrTypeName);
-                    cellset.addDefiniton(idx, fcell);
+                Iterator<?> valIter = values.get(attrName);
+                if (valIter == null) {
+                    final List<?> tmplist = (List<?>) tmp.get(attrName);
+                    valIter = tmplist.iterator();
+                    values.put(attrName, valIter);
                 }
-                if (tmp == null) {
-                    add = false;
-                } else {
-                    final List<?> tmplist = (List<?>) tmp.get(child.getName());
-                    if (idy < tmplist.size()) {
-                        final Object value = tmplist.get(idy);
-                        final FieldValue fieldvalue = new FieldValue(_field, child, value, getInstance(), null);
-                        String tmpStr = null;
-                        if (_field.isEditableDisplay(getMode())) {
-                            tmpStr = fieldvalue.getEditHtml(getMode());
-                        } else if (_field.isReadonlyDisplay(getMode())) {
-                            tmpStr = fieldvalue.getReadOnlyHtml(getMode());
-                        }
-                        final String fattrTypeName = child != null ? child.getAttributeType().getName() : null;
-                        final UIFormCell fcell = new UIFormCell(this, fieldvalue, tmpStr, null, null, fattrTypeName);
-                        cellset.add(idy, idx, fcell);
-                    } else {
-                        add = false;
-                    }
-                }
-                idx++;
+                final UIValue uiValue = UIValue.get(_field, child, valIter.next());
+                cellset.addValue(rowInstance,
+                                new CellSetValue(rowInstance.getKey(), this, cellset, uiValue));
             }
-            idy++;
         }
-        // we only add multiline if we have a value or we are in
-        // editmodus
-        if (tmp != null || isEditMode()) {
-            _row.add(cellset);
-        }
+        _row.add(cellset);
     }
 
     /**
@@ -643,18 +625,10 @@ public class UIForm
                         if (field instanceof FieldSet) {
                             cell = new UIFormCellSet(this, fieldvalue, null, "", "", label, isCreateMode());
                             final AttributeSet set = AttributeSet.find(type.getName(), fieldAttrName);
-                            int idx = 0;
                             for (final String attrName : ((FieldSet) field).getOrder()) {
                                 final Attribute child = set.getAttribute(attrName);
-                                if (isCreateMode()) {
-                                    final FieldValue fValue = new FieldValue(field, child, "", getInstance(), null);
-                                    final String fattrTypeName = child != null
-                                                                ? child.getAttributeType().getName() : null;
-                                    final UIFormCell fcell = new UIFormCell(this, fValue, fValue.getEditHtml(getMode()),
-                                                    "", null, fattrTypeName);
-                                    ((UIFormCellSet) cell).addDefiniton(idx, fcell);
-                                }
-                                idx++;
+                                final UISetColumnHeader column = new UISetColumnHeader(field.getLabel(), child);
+                                ((UIFormCellSet) cell).addHeader(column);
                             }
                         } else if (field instanceof FieldCommand) {
                             cell = new UIFormCellCmd(this, (FieldCommand) field, null, label);
