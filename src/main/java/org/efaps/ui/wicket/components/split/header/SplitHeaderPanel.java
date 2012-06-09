@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -33,7 +34,7 @@ import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.components.IRecent;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
+import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.util.EFapsException;
 
 /**
@@ -104,7 +105,6 @@ public class SplitHeaderPanel
     {
         super(_wicketId);
         setOutputMarkupId(true);
-        this.add(StaticHeaderContrBehavior.forCss(SplitHeaderPanel.CSS));
         add(AttributeModifier.append("class", "eFapsSplitHeader"));
         final Label titel = new Label("titel", DBProperties.getProperty("Split.Titel"));
         this.add(titel);
@@ -131,5 +131,16 @@ public class SplitHeaderPanel
                 repeater.add(new RecentLink(repeater.newChildId(), rec, maxLength));
             }
         }
+    }
+
+    /**
+     * Render to the web response the eFapsContentReference.
+     *
+     * @param _response Response object
+     */@Override
+    public void renderHead(final IHeaderResponse _response)
+    {
+        super.renderHead(_response);
+        _response.render(AbstractEFapsHeaderItem.forCss(SplitHeaderPanel.CSS));
     }
 }

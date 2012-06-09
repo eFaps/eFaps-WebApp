@@ -38,6 +38,9 @@ import org.efaps.util.EFapsException;
 public class Configuration
 {
 
+    /**
+     * Attribute enum.
+     */
     public enum ConfigAttribute
     {
         /**  */
@@ -54,7 +57,9 @@ public class Configuration
         /** position of the horizontal splitter. */
         SPLITTERPOSHORIZONTAL(true, true, "PositionOfHorizontalSplitter", "200"),
         /** position of the vertical splitter. */
-        SPLITTERPOSVERTICAL(true, true, "PositionOfVerticalSplitter", "50%");
+        SPLITTERPOSVERTICAL(true, true, "PositionOfVerticalSplitter", "50%"),
+        /** StyelSheet for the Structur Browser Tree. (human, windows) */
+        STRUCTREE_CLASS(true, true, "StructurTreeStyleSheet", "windows");
 
         /**
          * Stores the key for this Attribute..

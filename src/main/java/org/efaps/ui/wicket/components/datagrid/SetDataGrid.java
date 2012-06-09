@@ -27,6 +27,7 @@ import java.util.List;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -37,14 +38,13 @@ import org.apache.wicket.markup.repeater.RefreshingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
-import org.efaps.ui.wicket.components.form.FormPanel;
 import org.efaps.ui.wicket.models.cell.CellSetRow;
 import org.efaps.ui.wicket.models.cell.CellSetValue;
 import org.efaps.ui.wicket.models.cell.UIFormCellSet;
 import org.efaps.ui.wicket.models.cell.UISetColumnHeader;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
+import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 
@@ -93,7 +93,6 @@ public class SetDataGrid
     {
         super(_wicketId, _model);
         setOutputMarkupId(true);
-        add(StaticHeaderContrBehavior.forCss(FormPanel.CSS));
         if (_model.getObject().isEditMode() || _model.getObject().getParent().isCreateMode()) {
             add(new WebComponent("editHeader"));
 
@@ -202,6 +201,17 @@ public class SetDataGrid
             }
         };
         add(rowRepeater);
+    }
+
+    /**
+     * Render to the web response the eFapsContentReference.
+     *
+     * @param _response Response object
+     */@Override
+    public void renderHead(final IHeaderResponse _response)
+    {
+        super.renderHead(_response);
+        _response.render(AbstractEFapsHeaderItem.forCss(SetDataGrid.CSS).setSortWeight(10));
     }
 
     public final class RowRepeater

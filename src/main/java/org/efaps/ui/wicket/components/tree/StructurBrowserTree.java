@@ -28,9 +28,11 @@ import org.apache.wicket.ajax.attributes.AjaxCallListener;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.extensions.markup.html.repeater.tree.NestedTree;
 import org.apache.wicket.extensions.markup.html.repeater.tree.content.Folder;
+import org.apache.wicket.extensions.markup.html.repeater.tree.theme.HumanTheme;
 import org.apache.wicket.extensions.markup.html.repeater.tree.theme.WindowsTheme;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.link.ILinkListener;
 import org.apache.wicket.model.IModel;
@@ -45,7 +47,9 @@ import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
+import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
+import org.efaps.ui.wicket.util.Configuration;
+import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 import org.efaps.util.EFapsException;
 
 /**
@@ -82,8 +86,11 @@ public class StructurBrowserTree
     {
         super(_wicketId, new StructurBrowserProvider(_model),
                         new SetModel<UIStructurBrowser>(_model.getObject().getExpandedBrowsers()));
-        add(new WindowsTheme());
-        add(StaticHeaderContrBehavior.forCss(StructurBrowserTree.CSS));
+        if ("windows".equals(Configuration.getAttribute(ConfigAttribute.STRUCTREE_CLASS))) {
+            add(new HumanTheme());
+        } else if ("windows".equals(Configuration.getAttribute(ConfigAttribute.STRUCTREE_CLASS))) {
+            add(new WindowsTheme());
+        }
     }
 
     /*
@@ -114,6 +121,13 @@ public class StructurBrowserTree
                 return true;
             }
         };
+    }
+
+    @Override
+    public void renderHead(final IHeaderResponse _response)
+    {
+        super.renderHead(_response);
+        _response.render(AbstractEFapsHeaderItem.forCss(StructurBrowserTree.CSS));
     }
 
     public class ItemLink

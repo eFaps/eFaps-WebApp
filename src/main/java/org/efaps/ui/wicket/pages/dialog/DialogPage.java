@@ -43,7 +43,7 @@ import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
+import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.util.EFapsException;
 
 /**
@@ -99,8 +99,6 @@ public class DialogPage
 
         final String cmdName = menuItem.getCommand().getName();
 
-        this.add(StaticHeaderContrBehavior.forCss(DialogPage.CSS));
-
         this.add(new Label("textLabel", DBProperties.getProperty(cmdName + ".Question")));
 
         this.add(new Button("submitButton", new AjaxSubmitLink(Button.LINKID, _model, _oids),
@@ -126,7 +124,6 @@ public class DialogPage
                       final AjaxSubmitCloseBehavior _behavior)
     {
         this.pageReference = _pageReference;
-        this.add(StaticHeaderContrBehavior.forCss(DialogPage.CSS));
 
         if (_isSniplett) {
             this.add(new LabelComponent("textLabel", _value));
@@ -146,6 +143,13 @@ public class DialogPage
                         Button.ICON.CANCEL.getReference()));
 
         ajaxCloseLink.add(new KeyListenerBehavior());
+    }
+
+    @Override
+    public void renderHead(final IHeaderResponse _response)
+    {
+        super.renderHead(_response);
+        _response.render(AbstractEFapsHeaderItem.forCss(DialogPage.CSS));
     }
 
     /**

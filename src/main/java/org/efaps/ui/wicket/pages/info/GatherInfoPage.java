@@ -21,6 +21,7 @@
 package org.efaps.ui.wicket.pages.info;
 
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
@@ -32,7 +33,7 @@ import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
+import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 
 /**
  * TODO comment!
@@ -60,8 +61,6 @@ public class GatherInfoPage
      */
     public GatherInfoPage()
     {
-        this.add(StaticHeaderContrBehavior.forCss(GatherInfoPage.CSS));
-
         final WebComponent meta = new WebComponent("meta");
 
         final IModel<String> urlModel = new LoadableDetachableModel<String>()
@@ -107,4 +106,12 @@ public class GatherInfoPage
             }
         });
     }
+
+    @Override
+    public void renderHead(final IHeaderResponse _response)
+    {
+        super.renderHead(_response);
+        _response.render(AbstractEFapsHeaderItem.forCss(GatherInfoPage.CSS));
+    }
+
 }

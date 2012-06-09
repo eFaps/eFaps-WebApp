@@ -24,6 +24,7 @@ import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -33,7 +34,7 @@ import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.ui.wicket.components.picker.AjaxPickerLink;
 import org.efaps.ui.wicket.models.objects.UIClassification;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
+import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 
 /**
  * TODO comment!
@@ -69,7 +70,6 @@ public class ClassificationPathPanel
                                    final IModel<UIClassification> _model)
     {
         super(_wicketId, _model);
-        add(StaticHeaderContrBehavior.forCss(ClassificationPathPanel.CSS));
         setOutputMarkupId(true);
 
         this.add(new ClassificationPath("path", _model));
@@ -83,6 +83,17 @@ public class ClassificationPathPanel
         this.clazzPanel = new ClassificationTreePanel("tree", Model.of((UIClassification) getDefaultModelObject()));
         add(this.clazzPanel);
         this.clazzPanel.setVisible(false).setOutputMarkupPlaceholderTag(true).setOutputMarkupId(true);
+    }
+
+    /**
+     * Render to the web response the eFapsContentReference.
+     *
+     * @param _response Response object
+     */@Override
+    public void renderHead(final IHeaderResponse _response)
+    {
+        super.renderHead(_response);
+        _response.render(AbstractEFapsHeaderItem.forCss(ClassificationPathPanel.CSS));
     }
 
     /**

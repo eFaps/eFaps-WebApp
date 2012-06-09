@@ -30,7 +30,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.behaviors.dojo.AbstractDojoBehavior;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
+import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 
 /**
  * TODO comment!
@@ -61,8 +61,6 @@ public class PreLoaderPanel
     public PreLoaderPanel(final String _wicketId)
     {
         super(_wicketId);
-        this.add(StaticHeaderContrBehavior.forCss(PreLoaderPanel.CSS));
-
         add(AttributeModifier.append("class", PreLoaderPanel.PRELOADER_CLASSNAME));
         setOutputMarkupId(true);
         add(new PreloaderBehavior());
@@ -106,5 +104,16 @@ public class PreLoaderPanel
             _response.render(JavaScriptHeaderItem.forScript(js,
                             _component.getClass().getName() + "_" + _component.getMarkupId(true)));
         }
+    }
+
+    /**
+     * Render to the web response the eFapsContentReference.
+     *
+     * @param _response Response object
+     */@Override
+    public void renderHead(final IHeaderResponse _response)
+    {
+        super.renderHead(_response);
+        _response.render(AbstractEFapsHeaderItem.forCss(PreLoaderPanel.CSS));
     }
 }

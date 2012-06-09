@@ -32,7 +32,6 @@ import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes.Method;
 import org.apache.wicket.ajax.attributes.CallbackParameter;
 import org.apache.wicket.ajax.attributes.ThrottlingSettings;
-import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.head.IHeaderResponse;
@@ -61,7 +60,7 @@ import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
+import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.util.EFapsException;
 
 /**
@@ -145,15 +144,12 @@ public class MainPage
         // set the title for the Page
         add(new Label("pageTitle", DBProperties.getProperty("Logo.Version.Label")));
         add(this.modal);
-
-        this.add(StaticHeaderContrBehavior.forCss(MainPage.CSS));
-
         add(new ResizeEventBehavior());
+
         final WebMarkupContainer logo = new WebMarkupContainer("logo");
         headerPanel.add(logo);
         final Label welcome = new Label("welcome", DBProperties.getProperty("Logo.Welcome.Label"));
         logo.add(welcome);
-
 
         try {
             final Context context = Context.getThreadContext();
@@ -197,18 +193,15 @@ public class MainPage
         } catch (final EFapsException e) {
             throw new RestartResponseException(new ErrorPage(e));
         }
-//        headerPanel.add(new Label("version", DBProperties.getProperty("Logo.Version.Label")));
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.wicket.Component#add(org.apache.wicket.behavior.Behavior[])
-     */
     @Override
-    public Component add(final Behavior... _behaviors)
+    public void renderHead(final IHeaderResponse _response)
     {
-        // TODO Auto-generated method stub
-        return super.add(_behaviors);
+        super.renderHead(_response);
+        _response.render(AbstractEFapsHeaderItem.forCss(MainPage.CSS));
     }
+
     /**
      * Method to get the ModalWindow of this Page.
      *

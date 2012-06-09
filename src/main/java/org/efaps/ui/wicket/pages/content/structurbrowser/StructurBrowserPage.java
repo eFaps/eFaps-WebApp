@@ -23,6 +23,7 @@ package org.efaps.ui.wicket.pages.content.structurbrowser;
 import java.util.UUID;
 
 import org.apache.wicket.PageReference;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.model.IModel;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
@@ -31,7 +32,7 @@ import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
+import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.util.EFapsException;
 
 /**
@@ -143,8 +144,6 @@ public class StructurBrowserPage
     protected void addComponents()
         throws EFapsException
     {
-        add(StaticHeaderContrBehavior.forCss(StructurBrowserPage.CSS));
-
         final UIStructurBrowser uiObject = (UIStructurBrowser) super.getDefaultModelObject();
         if (!uiObject.isInitialized()) {
             uiObject.execute();
@@ -155,5 +154,12 @@ public class StructurBrowserPage
         super.addComponents(form);
         form.add(new StructurBrowserTreeTablePanel("structurBrowserTable", new UIModel<UIStructurBrowser>(uiObject),
                         true));
+    }
+
+    @Override
+    public void renderHead(final IHeaderResponse _response)
+    {
+        super.renderHead(_response);
+        _response.render(AbstractEFapsHeaderItem.forCss(StructurBrowserPage.CSS));
     }
 }

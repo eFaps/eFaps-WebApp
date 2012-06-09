@@ -25,8 +25,6 @@ import java.util.Map;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AbstractAutoCompleteTextRenderer;
 import org.apache.wicket.request.Response;
-import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
-import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
 import org.efaps.ui.wicket.util.EFapsKey;
 
 /**
@@ -55,7 +53,6 @@ public class AutoCompleteRenderer
     public AutoCompleteRenderer(final AutoCompleteField _autoCompleteField)
     {
         this.autoCompleteField = _autoCompleteField;
-        this.autoCompleteField.add(StaticHeaderContrBehavior.forJavaScript(AjaxFieldUpdateBehavior.JS));
     }
 
     /**

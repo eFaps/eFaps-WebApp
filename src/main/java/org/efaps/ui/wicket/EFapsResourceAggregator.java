@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2011 The eFaps Team
+ * Copyright 2003 - 2012 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,12 +21,24 @@
 package org.efaps.ui.wicket;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
+import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.HeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.html.DecoratingHeaderResponse;
+import org.efaps.admin.program.bundle.BundleMaker;
+import org.efaps.admin.program.bundle.TempFileBundle;
 import org.efaps.ui.wicket.behaviors.dojo.OnDojoReadyHeaderItem;
+import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.ui.wicket.resources.EFapsJavaScriptHeaderItem;
+import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO comment!
@@ -37,35 +49,102 @@ import org.efaps.ui.wicket.behaviors.dojo.OnDojoReadyHeaderItem;
 public class EFapsResourceAggregator
     extends DecoratingHeaderResponse
 {
-    private final List<OnDojoReadyHeaderItem> dojoReadyItemsToBeRendered = new ArrayList<OnDojoReadyHeaderItem>();
 
     /**
-     * @param _real
+     * Logger for this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(EFapsResourceAggregator.class);
+
+    /**
+     * List of HeaderItems that will be rendered in on dojo ready script.
+     */
+    private final List<OnDojoReadyHeaderItem> dojoReadyItems = new ArrayList<OnDojoReadyHeaderItem>();
+
+    /**
+     * List of HeaderItems that will be rendered file using the eFaps kernel.
+     */
+    private final List<AbstractEFapsHeaderItem> eFapsHeaderItems = new ArrayList<AbstractEFapsHeaderItem>();
+
+    /**
+     * @param _real orginial Response
      */
     public EFapsResourceAggregator(final IHeaderResponse _real)
     {
         super(_real);
     }
 
+    /**
+     * Renders the given {@link HeaderItem} to the response if none of the
+     * {@linkplain HeaderItem#getRenderTokens() tokens} of the item has been rendered before.
+     *
+     * @param _item  The item to render.
+     */
     @Override
     public void render(final HeaderItem _item)
     {
-         if (_item instanceof OnDojoReadyHeaderItem) {
-            this.dojoReadyItemsToBeRendered.add((OnDojoReadyHeaderItem) _item);
+        if (_item instanceof OnDojoReadyHeaderItem) {
+            this.dojoReadyItems.add((OnDojoReadyHeaderItem) _item);
+        } else if (_item instanceof AbstractEFapsHeaderItem) {
+            this.eFapsHeaderItems.add((AbstractEFapsHeaderItem) _item);
         } else {
             getRealResponse().render(_item);
         }
     }
-    /* (non-Javadoc)
-     * @see org.apache.wicket.markup.html.DecoratingHeaderResponse#close()
+
+    /**
+     * Before closing the combined Script and EFapsHeaderItems are added.
      */
     @Override
     public void close()
     {
         renderCombinedEventScripts();
+        renderEFapsHeaderItems();
         super.close();
     }
 
+    /**
+     * render the eFaps Resource items.
+     */
+    private void renderEFapsHeaderItems()
+    {
+        Collections.sort(this.eFapsHeaderItems, new Comparator<AbstractEFapsHeaderItem>()
+        {
+
+            @Override
+            public int compare(final AbstractEFapsHeaderItem _item0,
+                               final AbstractEFapsHeaderItem _item1)
+            {
+                return _item0.getSortWeight().compareTo(_item1.getSortWeight());
+            }
+        });
+
+        final List<String> css = new ArrayList<String>();
+        final List<String> js = new ArrayList<String>();
+        for (final AbstractEFapsHeaderItem item : this.eFapsHeaderItems) {
+            if (item instanceof EFapsJavaScriptHeaderItem) {
+                js.add(item.getReference().getName());
+            } else {
+                css.add(item.getReference().getName());
+            }
+        }
+        try {
+            if (!css.isEmpty()) {
+                final String key = BundleMaker.getBundleKey(css, TempFileBundle.class);
+                final TempFileBundle bundle = (TempFileBundle) BundleMaker.getBundle(key);
+                bundle.setContentType("text/css");
+                getRealResponse().render(CssHeaderItem.forUrl(new EFapsContentReference(key).getStaticContentUrl()));
+            }
+            if (!js.isEmpty()) {
+                final String key = BundleMaker.getBundleKey(js, TempFileBundle.class);
+                final TempFileBundle bundle = (TempFileBundle) BundleMaker.getBundle(key);
+                bundle.setContentType("text/javascript");
+                getRealResponse().render(
+                                JavaScriptHeaderItem.forUrl(new EFapsContentReference(key).getStaticContentUrl()));
+            }
+        } catch (final EFapsException e) {
+            EFapsResourceAggregator.LOG.error("Error on rendering eFaps Header items: ", e);
+        }
+    }
 
     /**
      * Combines all DOM ready and onLoad scripts and renders them as 2 script
@@ -75,7 +154,7 @@ public class EFapsResourceAggregator
     {
         final StringBuilder combinedScript = new StringBuilder();
 
-        for (final OnDojoReadyHeaderItem curItem : this.dojoReadyItemsToBeRendered) {
+        for (final OnDojoReadyHeaderItem curItem : this.dojoReadyItems) {
             combinedScript.append("\n");
             combinedScript.append(curItem.getJavaScript());
             combinedScript.append(";");

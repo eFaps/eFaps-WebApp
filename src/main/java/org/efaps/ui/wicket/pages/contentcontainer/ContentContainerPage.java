@@ -22,6 +22,7 @@ package org.efaps.ui.wicket.pages.contentcontainer;
 import java.util.UUID;
 
 import org.apache.wicket.Page;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.link.IPageLink;
 import org.apache.wicket.protocol.http.ClientProperties;
@@ -44,7 +45,7 @@ import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
+import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.util.EFapsException;
 
 /**
@@ -243,17 +244,21 @@ public class ContentContainerPage
         centerPanel.add(new ContentPaneBehavior(Region.CENTER, false));
         this.centerPanelId = centerPanel.getMarkupId(true);
 
-        // ((EFapsSession) getSession()).getUpdateBehaviors().clear();
-        //
+        borderPanel.add(new SidePanel("leftPanel", _uuid, _instanceKey, _selectCmdUUID,
+                        this.structurbrowser));
+    }
+
+    @Override
+    public void renderHead(final IHeaderResponse _response)
+    {
+        super.renderHead(_response);
         final ClientProperties properties = ((WebClientInfo) getSession().getClientInfo()).getProperties();
         // we use different StyleSheets for different Browsers
         if (properties.isBrowserInternetExplorer()) {
-            add(StaticHeaderContrBehavior.forCss(ContentContainerPage.CSS_IE));
+            _response.render(AbstractEFapsHeaderItem.forCss(ContentContainerPage.CSS_IE));
         } else {
-            add(StaticHeaderContrBehavior.forCss(ContentContainerPage.CSS));
+            _response.render(AbstractEFapsHeaderItem.forCss(ContentContainerPage.CSS));
         }
-        borderPanel.add(new SidePanel("leftPanel", _uuid, _instanceKey, _selectCmdUUID,
-                        this.structurbrowser));
     }
 
     /**

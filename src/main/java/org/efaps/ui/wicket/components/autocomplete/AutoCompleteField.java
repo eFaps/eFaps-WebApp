@@ -33,6 +33,7 @@ import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTe
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.IAutoCompleteRenderer;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.event.Return;
@@ -45,7 +46,7 @@ import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
+import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -121,7 +122,6 @@ public class AutoCompleteField
         if (field != null) {
             this.cols = field.getCols();
         }
-        add(StaticHeaderContrBehavior.forCss(AutoCompleteField.CSS));
 
         if (_selectRow) {
             this.add(new SetSelectedRowBehavior(this.fieldName));
@@ -140,6 +140,18 @@ public class AutoCompleteField
                 }
             });
         }
+    }
+
+    /**
+     * Render to the web response the eFapsContentReference.
+     *
+     * @param _response Response object
+     */@Override
+    public void renderHead(final IHeaderResponse _response)
+    {
+        super.renderHead(_response);
+        _response.render(AbstractEFapsHeaderItem.forCss(AutoCompleteField.CSS));
+        _response.render(AbstractEFapsHeaderItem.forJavaScript(AjaxFieldUpdateBehavior.JS));
     }
 
     /**

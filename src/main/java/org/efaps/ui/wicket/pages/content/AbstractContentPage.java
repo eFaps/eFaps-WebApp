@@ -23,6 +23,7 @@ package org.efaps.ui.wicket.pages.content;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.ajax.IAjaxIndicatorAware;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.ExternalLink;
@@ -44,7 +45,7 @@ import org.efaps.ui.wicket.models.objects.UISearchItem;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
+import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.util.EFapsException;
 
 /**
@@ -160,7 +161,6 @@ public abstract class AbstractContentPage
         // set the title for the Page
         add(new Label("pageTitle", DBProperties.getProperty("Logo.Version.Label")));
 
-        add(StaticHeaderContrBehavior.forCss(AbstractContentPage.CSS));
         add(new SetMessageStatusBehavior());
 
         add(this.modal);
@@ -246,4 +246,12 @@ public abstract class AbstractContentPage
     {
         return "eFapsVeil";
     }
+
+    @Override
+    public void renderHead(final IHeaderResponse _response)
+    {
+        super.renderHead(_response);
+        _response.render(AbstractEFapsHeaderItem.forCss(AbstractContentPage.CSS));
+    }
+
 }

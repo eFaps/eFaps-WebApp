@@ -27,6 +27,7 @@ import org.apache.wicket.PageReference;
 import org.apache.wicket.extensions.markup.html.repeater.tree.NestedTree;
 import org.apache.wicket.extensions.markup.html.repeater.tree.Node;
 import org.apache.wicket.extensions.markup.html.repeater.tree.theme.HumanTheme;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.util.SetModel;
 import org.efaps.ui.wicket.components.date.UnnestedDatePickers;
@@ -38,7 +39,7 @@ import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
+import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 
 /**
  * This class renders a TreeTable, which loads the children asynchron.<br>
@@ -90,9 +91,15 @@ public class StructurBrowserTreeTable
         super(_wicketId, new StructurBrowserProvider(_model),
                         new SetModel<UIStructurBrowser>(_model.getObject().getExpandedBrowsers()));
         add(new HumanTheme());
-        this.add(StaticHeaderContrBehavior.forCss(StructurBrowserTreeTable.CSS));
         this.parentLink = _parentLink;
         this.datePickers = _datePickers;
+    }
+
+    @Override
+    public void renderHead(final IHeaderResponse _response)
+    {
+        super.renderHead(_response);
+        _response.render(AbstractEFapsHeaderItem.forCss(StructurBrowserTreeTable.CSS));
     }
 
     @Override

@@ -31,6 +31,7 @@ import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -50,7 +51,7 @@ import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
+import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.util.EFapsException;
 
 /**
@@ -86,7 +87,6 @@ public class FilterPage
         super(_pageReference.getPage().getDefaultModel());
         this.pageReference = _pageReference;
         final UITable uiTable = (UITable) super.getDefaultModelObject();
-        add(StaticHeaderContrBehavior.forCss(FilterPage.CSS));
 
         final FormContainer form = new FormContainer("eFapsForm");
         this.add(form);
@@ -107,7 +107,7 @@ public class FilterPage
                                     final Form<?> _form)
             {
                 try {
-                    final AbstractContentPage page = ((AbstractContentPage) FilterPage.this.pageReference.getPage());
+                    final AbstractContentPage page = (AbstractContentPage) FilterPage.this.pageReference.getPage();
                     final ModalWindowContainer modal = page.getModal();
                     final UITable uiTable = (UITable) _pageReference.getPage().getDefaultModelObject();
                     modal.setTitle(DBProperties.getProperty("FilterPage.Title") + _uitableHeader.getLabel());
@@ -229,5 +229,12 @@ public class FilterPage
         };
         form.add(new Button("closeButton", ajaxcancel, DBProperties.getProperty("FilterPage.Button.cancel"),
                             Button.ICON.CANCEL.getReference()));
+    }
+
+    @Override
+    public void renderHead(final IHeaderResponse _response)
+    {
+        super.renderHead(_response);
+        _response.render(AbstractEFapsHeaderItem.forCss(FilterPage.CSS));
     }
 }

@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.wicket.Page;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
@@ -37,7 +38,7 @@ import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIForm.FormElement;
 import org.efaps.ui.wicket.models.objects.UIForm.FormRow;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
+import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.util.EFapsException;
 
 /**
@@ -54,12 +55,6 @@ public class FormPanel
      * Reference to the style sheet.
      */
     public static final EFapsContentReference CSS = new EFapsContentReference(FormPanel.class, "FormPanel.css");
-
-    /**
-     * Reference to the javascript for file input.
-     */
-    public static final EFapsContentReference FILEINPUT = new EFapsContentReference(FormPanel.class,
-                    "EFapsFileInput.js");
 
     /**
      * Needed for serialization.
@@ -92,10 +87,6 @@ public class FormPanel
             uiForm.execute();
         }
 
-        add(StaticHeaderContrBehavior.forCss(FormPanel.CSS));
-        if (uiForm.isFileUpload()) {
-            add(StaticHeaderContrBehavior.forJavaScript(FormPanel.FILEINPUT));
-        }
         final RepeatingView rowRepeater = new RepeatingView("rowRepeater");
         this.add(rowRepeater);
 
@@ -113,6 +104,17 @@ public class FormPanel
                 cell.setAdded(true);
             }
         }
+    }
+
+    /**
+     * Render to the web response the eFapsContentReference.
+     *
+     * @param _response Response object
+     */@Override
+    public void renderHead(final IHeaderResponse _response)
+    {
+        super.renderHead(_response);
+        _response.render(AbstractEFapsHeaderItem.forCss(FormPanel.CSS));
     }
 
     /**

@@ -39,6 +39,7 @@ import org.apache.wicket.extensions.markup.html.form.select.IOptionRenderer;
 import org.apache.wicket.extensions.markup.html.form.select.Select;
 import org.apache.wicket.extensions.markup.html.form.select.SelectOptions;
 import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
@@ -55,7 +56,7 @@ import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
+import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.util.EFapsException;
 
 /**
@@ -97,8 +98,6 @@ public class CompanyPage
 
         // set the title for the Page
         add(new Label("pageTitle", DBProperties.getProperty("Logo.Version.Label")));
-
-        add(StaticHeaderContrBehavior.forCss(CompanyPage.CSS));
 
         add(new LabelComponent("title",
                         DBProperties.getProperty("org.efaps.ui.wicket.pages.company.title.Label")));
@@ -175,8 +174,8 @@ public class CompanyPage
             }
 
         });
-        @SuppressWarnings({ "rawtypes", "unchecked" }) final IModel<Collection<? extends CompanyObject>> model = new Model(
-                        (Serializable) companies);
+        @SuppressWarnings({ "rawtypes", "unchecked" })
+        final IModel<Collection<? extends CompanyObject>> model = new Model((Serializable) companies);
         final SelectOptions<CompanyObject> options = new SelectOptions<CompanyObject>("manychoices", model, renderer);
 
         final Select<CompanyObject> choices = new Select<CompanyObject>("choices", Model.of(selected));
@@ -193,6 +192,13 @@ public class CompanyPage
         this.add(new Button("closeButton", ajaxCloseLink,
                         DBProperties.getProperty("org.efaps.ui.wicket.pages.company.cancel.Label"),
                         Button.ICON.CANCEL.getReference()));
+    }
+
+    @Override
+    public void renderHead(final IHeaderResponse _response)
+    {
+        super.renderHead(_response);
+        _response.render(AbstractEFapsHeaderItem.forCss(CompanyPage.CSS));
     }
 
     /**

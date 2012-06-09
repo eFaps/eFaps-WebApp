@@ -27,13 +27,14 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.markup.html.repeater.tree.NestedTree;
 import org.apache.wicket.extensions.markup.html.repeater.tree.theme.HumanTheme;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.iterator.ComponentHierarchyIterator;
 import org.efaps.ui.wicket.behaviors.update.IRemoteUpdateListener;
 import org.efaps.ui.wicket.behaviors.update.IRemoteUpdateable;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
+import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -103,12 +104,22 @@ public class MenuTree
     {
         super(_wicketId, new TreeMenuModel(_commandUUID, _oid));
 
-        add(StaticHeaderContrBehavior.forCss(MenuTree.CSS));
         add(new HumanTheme());
         add(AttributeModifier.append("class", "eFapsTreeMenu"));
         add(new MenuUpdateBehavior());
 
         setDefault(_selectCmdUUID);
+    }
+
+    /**
+     * Render to the web response the eFapsContentReference.
+     *
+     * @param _response Response object
+     */@Override
+    public void renderHead(final IHeaderResponse _response)
+    {
+        super.renderHead(_response);
+        _response.render(AbstractEFapsHeaderItem.forCss(MenuTree.CSS));
     }
 
     /**

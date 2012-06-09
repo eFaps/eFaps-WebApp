@@ -310,7 +310,6 @@ public class EFapsSession
             // session attributes that depend on the user are set correctly before any
             // further requests are made (e.g. setting the current company
             openContext();
-            closeContext();
             setAttribute(EFapsSession.LOGIN_ATTRIBUTE_NAME, this.userName);
         } else {
             this.userName = null;

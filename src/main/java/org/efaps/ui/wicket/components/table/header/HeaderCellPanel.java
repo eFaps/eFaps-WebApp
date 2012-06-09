@@ -23,6 +23,7 @@ package org.efaps.ui.wicket.components.table.header;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -34,7 +35,7 @@ import org.efaps.ui.wicket.behaviors.dojo.DnDBehavior;
 import org.efaps.ui.wicket.models.objects.AbstractUIHeaderObject;
 import org.efaps.ui.wicket.models.objects.UITableHeader;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
+import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 
 /**
  * This class renders the Cells inside a Header, providing all necessary Links.
@@ -120,8 +121,6 @@ public class HeaderCellPanel
 
         final UITableHeader uiTableHeader = (UITableHeader) super.getDefaultModelObject();
 
-        add(StaticHeaderContrBehavior.forCss(HeaderCellPanel.CSS));
-
         this.add(AttributeModifier.replace("title", uiTableHeader.getLabel()));
 
         this.add(new WebComponent("checkBox").setVisible(false));
@@ -177,6 +176,13 @@ public class HeaderCellPanel
         } else {
             this.add(new WebComponent("filterlink").setVisible(false));
         }
+    }
+
+    @Override
+    public void renderHead(final IHeaderResponse _response)
+    {
+        super.renderHead(_response);
+        _response.render(AbstractEFapsHeaderItem.forCss(HeaderCellPanel.CSS));
     }
 
     /**

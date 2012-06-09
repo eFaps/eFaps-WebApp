@@ -20,6 +20,7 @@
 
 package org.efaps.ui.wicket.components.tree;
 
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.efaps.ui.wicket.behaviors.RowSelectedInput;
@@ -27,7 +28,7 @@ import org.efaps.ui.wicket.components.date.UnnestedDatePickers;
 import org.efaps.ui.wicket.components.table.TablePanel;
 import org.efaps.ui.wicket.components.table.header.HeaderPanel;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
-import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
+import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 
 /**
  * @author The eFaps Team
@@ -62,7 +63,6 @@ public class StructurBrowserTreeTablePanel
                                          final boolean _parentLink)
     {
         super(_wicketId, _model);
-        add(StaticHeaderContrBehavior.forCss(TablePanel.CSS));
         this.parentLink = _parentLink;
         final UIStructurBrowser uiObject = (UIStructurBrowser) super.getDefaultModelObject();
 
@@ -78,5 +78,12 @@ public class StructurBrowserTreeTablePanel
         final HeaderPanel header = new HeaderPanel("header", tree, _model);
         add(tree);
         add(header);
+    }
+
+    @Override
+    public void renderHead(final IHeaderResponse _response)
+    {
+        super.renderHead(_response);
+        _response.render(AbstractEFapsHeaderItem.forCss(TablePanel.CSS));
     }
 }

@@ -24,6 +24,7 @@ import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow.WindowClosedCallback;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
@@ -37,7 +38,7 @@ import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.dialog.DialogPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
+import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 
 /**
  * This class renders the Footer under a WebForm or WebTable.<br>
@@ -88,8 +89,6 @@ public class FooterPanel
     {
         super(_wicketId, _model);
         this.modalWindow = _modalWindow;
-
-        add(StaticHeaderContrBehavior.forCss(FooterPanel.CSS));
 
         final AbstractUIPageObject uiObject = (AbstractUIPageObject) super.getDefaultModelObject();
 
@@ -182,6 +181,17 @@ public class FooterPanel
         } else {
             add(new WebMarkupContainer("prev").setVisible(false));
         }
+    }
+
+    /**
+     * Render to the web response the eFapsContentReference.
+     *
+     * @param _response Response object
+     */@Override
+    public void renderHead(final IHeaderResponse _response)
+    {
+        super.renderHead(_response);
+        _response.render(AbstractEFapsHeaderItem.forCss(FooterPanel.CSS));
     }
 
     /**

@@ -29,6 +29,7 @@ import org.apache.wicket.Page;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.iterator.ComponentHierarchyIterator;
@@ -45,7 +46,7 @@ import org.efaps.ui.wicket.models.objects.UIForm.ElementType;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
+import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.util.EFapsException;
 
 /**
@@ -79,7 +80,6 @@ public class ClassificationTreePanel
                                    final IModel<UIClassification> _model)
     {
         super(_wicketId, _model);
-        this.add(StaticHeaderContrBehavior.forCss(ClassificationTreePanel.CSS));
         setOutputMarkupId(true);
 
         add(new ClassificationTree("tree", _model));
@@ -92,6 +92,17 @@ public class ClassificationTreePanel
         }
         add(new Button("submitClose", new AjaxSubmitCloseLink(Button.LINKID, _model),
                         label, Button.ICON.ACCEPT.getReference()));
+    }
+
+    /**
+     * Render to the web response the eFapsContentReference.
+     *
+     * @param _response Response object
+     */@Override
+    public void renderHead(final IHeaderResponse _response)
+    {
+        super.renderHead(_response);
+        _response.render(AbstractEFapsHeaderItem.forCss(ClassificationTreePanel.CSS));
     }
 
     @Override

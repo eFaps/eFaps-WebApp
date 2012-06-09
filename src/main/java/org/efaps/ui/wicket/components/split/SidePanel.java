@@ -23,6 +23,7 @@ package org.efaps.ui.wicket.components.split;
 import java.util.UUID;
 
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.efaps.ui.wicket.behaviors.dojo.BorderContainerBehavior;
@@ -34,7 +35,7 @@ import org.efaps.ui.wicket.components.split.header.SplitHeaderPanel;
 import org.efaps.ui.wicket.components.tree.StructurBrowserTreePanel;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
+import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 import org.efaps.util.EFapsException;
@@ -97,7 +98,6 @@ public class SidePanel
     {
         super(_wicketId);
         this.add(new AjaxStorePositionBehavior(_showStructurBrowser));
-        this.add(StaticHeaderContrBehavior.forCss(SidePanel.CSS));
         String positionH = Configuration.getAttribute(ConfigAttribute.SPLITTERPOSHORIZONTAL);
         String positionV = Configuration.getAttribute(ConfigAttribute.SPLITTERPOSVERTICAL);
 
@@ -147,6 +147,17 @@ public class SidePanel
             top.setVisible(false);
             overflow.add(AttributeModifier.replace("class", "eFapsListMenuOverflow"));
         }
+    }
+
+    /**
+     * Render to the web response the eFapsContentReference.
+     *
+     * @param _response Response object
+     */@Override
+    public void renderHead(final IHeaderResponse _response)
+    {
+        super.renderHead(_response);
+        _response.render(AbstractEFapsHeaderItem.forCss(SidePanel.CSS));
     }
 
     /*

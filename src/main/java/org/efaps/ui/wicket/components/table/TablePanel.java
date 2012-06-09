@@ -24,6 +24,7 @@ import java.util.Iterator;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Page;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -38,7 +39,7 @@ import org.efaps.ui.wicket.models.objects.UIRow;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
+import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,8 +90,6 @@ public class TablePanel
         setOutputMarkupId(true);
         this.add(AttributeModifier.append("class", "eFapsTableBody"));
 
-        add(StaticHeaderContrBehavior.forCss(TablePanel.CSS));
-
         final RepeatingView rowsRepeater = new RepeatingView("rowRepeater");
         add(rowsRepeater);
 
@@ -134,5 +133,12 @@ public class TablePanel
         } else {
             this.add(new WebComponent("selected").setVisible(false));
         }
+    }
+
+    @Override
+    public void renderHead(final IHeaderResponse _response)
+    {
+        super.renderHead(_response);
+        _response.render(AbstractEFapsHeaderItem.forCss(TablePanel.CSS));
     }
 }

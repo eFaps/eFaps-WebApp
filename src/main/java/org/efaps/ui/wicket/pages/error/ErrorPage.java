@@ -24,13 +24,14 @@ import java.text.MessageFormat;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
+import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,7 +71,6 @@ public class ErrorPage
     public ErrorPage(final Exception _exception)
     {
         super();
-        this.add(StaticHeaderContrBehavior.forCss(ErrorPage.CSS));
 
         ErrorPage.LOG.error("ErrorPage was called", _exception);
 
@@ -81,8 +81,6 @@ public class ErrorPage
         String errorAdvanced = "";
 
         if (_exception instanceof EFapsException) {
-            this.add(StaticHeaderContrBehavior.forCss(ErrorPage.CSS));
-
             final EFapsException eFapsException = (EFapsException) _exception;
             errorKey = eFapsException.getClassName().getName() + "." + eFapsException.getId();
             errorId = DBProperties.getProperty(errorKey + ".Id");
@@ -183,5 +181,13 @@ public class ErrorPage
     {
         return false;
     }
+
+    @Override
+    public void renderHead(final IHeaderResponse _response)
+    {
+        super.renderHead(_response);
+        _response.render(AbstractEFapsHeaderItem.forCss(ErrorPage.CSS));
+    }
+
 
 }

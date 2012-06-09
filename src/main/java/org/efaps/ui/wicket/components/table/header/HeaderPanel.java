@@ -50,7 +50,7 @@ import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.resources.StaticHeaderContrBehavior;
+import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.util.EFapsException;
 
 /**
@@ -198,7 +198,6 @@ public class HeaderPanel
             i++;
         }
         this.css = getWidthStyle(widthsTmp);
-        this.add(StaticHeaderContrBehavior.forJavaScript(HeaderPanel.JAVASCRIPT));
     }
 
     /*
@@ -217,7 +216,9 @@ public class HeaderPanel
         _response.render(CssHeaderItem.forCSS(this.css, HeaderPanel.class.getName() + "_css_" + uitable.getTableId()));
         _response.render(JavaScriptHeaderItem.forScript(getScript(),
                         HeaderPanel.class.getName() + "_js_" + uitable.getTableId()));
+        _response.render(AbstractEFapsHeaderItem.forJavaScript(HeaderPanel.JAVASCRIPT));
     }
+
 
     /**
      * @return the javascript
