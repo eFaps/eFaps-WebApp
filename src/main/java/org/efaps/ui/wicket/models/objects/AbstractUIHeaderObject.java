@@ -248,6 +248,18 @@ public abstract class AbstractUIHeaderObject
     }
 
 
+    public UITableHeader getHeader4Id(final long _fieldId)
+    {
+        UITableHeader ret = null;
+        for (final UITableHeader header : this.headers) {
+            if (header.getFieldId() == _fieldId) {
+                ret = header;
+                break;
+            }
+        }
+        return ret;
+    }
+
     /**
      * Are the values of the Rows filtered or not.
      *

@@ -50,8 +50,8 @@ import org.efaps.ui.wicket.models.objects.UITableHeader.FilterType;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
-import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
 
 /**
@@ -72,11 +72,13 @@ public class FilterPage
      */
     private static final EFapsContentReference CSS = new EFapsContentReference(FilterPage.class, "FilterPage.css");
 
+    /**
+     * Refernce top the page.
+     */
     private final PageReference pageReference;
 
     /**
-     * @param _model tablemodel
-     * @param _pageReference reference to the page opneing this filterpage
+     * @param _pageReference reference to the page opening this filterpage
      * @param _uitableHeader uitablehaeder this FilterPage belongs to
      * @throws EFapsException on error
      */
@@ -86,8 +88,6 @@ public class FilterPage
     {
         super(_pageReference.getPage().getDefaultModel());
         this.pageReference = _pageReference;
-        final UITable uiTable = (UITable) super.getDefaultModelObject();
-
         final FormContainer form = new FormContainer("eFapsForm");
         this.add(form);
         final Panel panel;
@@ -110,7 +110,6 @@ public class FilterPage
                     final AbstractContentPage page = (AbstractContentPage) FilterPage.this.pageReference.getPage();
                     final ModalWindowContainer modal = page.getModal();
                     final UITable uiTable = (UITable) _pageReference.getPage().getDefaultModelObject();
-                    modal.setTitle(DBProperties.getProperty("FilterPage.Title") + _uitableHeader.getLabel());
                     if (_uitableHeader.isFilterPickList()) {
                         final List<StringValue> selection = getRequest().getRequestParameters()
                                         .getParameterValues(PickerPanel.CHECKBOXNAME);
@@ -128,6 +127,8 @@ public class FilterPage
                                 }
                                 uiTable.addFilterList(_uitableHeader, filterList);
                             }
+                            modal.setWindowClosedCallback(new UpdateParentCallback(FilterPage.this.pageReference,
+                                            modal, false));
                             modal.setUpdateParent(true);
                         } else {
                             modal.setUpdateParent(false);
@@ -202,10 +203,14 @@ public class FilterPage
                 @Override
                 public void onClick(final AjaxRequestTarget _target)
                 {
+                    final UITable uiTable = (UITable) _pageReference.getPage().getDefaultModelObject();
                     uiTable.removeFilter(_uitableHeader);
+                    _uitableHeader.setFilterApplied(false);
                     final ModalWindowContainer modal = ((AbstractContentPage) FilterPage.this.pageReference.getPage())
                                     .getModal();
                     modal.setUpdateParent(true);
+                    modal.setWindowClosedCallback(new UpdateParentCallback(FilterPage.this.pageReference,
+                                    modal, false));
                     modal.close(_target);
                 }
             };

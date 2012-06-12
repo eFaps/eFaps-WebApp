@@ -599,7 +599,10 @@ public class UITable
     {
         final Filter filter = new Filter(_uitableHeader, _list);
         this.filters.put(_uitableHeader.getFieldName(), filter);
-        _uitableHeader.setFilterApplied(true);
+        final UITableHeader orig = getHeader4Id(_uitableHeader.getFieldId());
+        if (orig != null) {
+            orig.setFilterApplied(true);
+        }
         storeFilters();
     }
 
@@ -619,7 +622,10 @@ public class UITable
     {
         final Filter filter = new Filter(_uitableHeader, _from, _to);
         this.filters.put(_uitableHeader.getFieldName(), filter);
-        _uitableHeader.setFilterApplied(true);
+        final UITableHeader orig = getHeader4Id(_uitableHeader.getFieldId());
+        if (orig != null) {
+            orig.setFilterApplied(true);
+        }
         storeFilters();
     }
 
@@ -792,7 +798,10 @@ public class UITable
     public void removeFilter(final UITableHeader _uiTableHeader)
     {
         this.filters.remove(_uiTableHeader.getFieldName());
-        _uiTableHeader.setFilterApplied(false);
+        final UITableHeader orig = getHeader4Id(_uiTableHeader.getFieldId());
+        if (orig != null) {
+            orig.setFilterApplied(false);
+        }
         storeFilters();
     }
 
@@ -931,11 +940,6 @@ public class UITable
         private static final long serialVersionUID = 1L;
 
         /**
-         * UITableHeader this filter belohngs to.
-         */
-        private final UITableHeader uiTableHeader;
-
-        /**
          * Set of value for the filter. Only used for filter using a PICKERLIST.
          */
         private Set<?> filterList;
@@ -963,13 +967,27 @@ public class UITable
         private DateTime dateTo;
 
         /**
+         * Id of the field this header belonog sto.
+         */
+        private final long headerFieldId;
+
+
+        private final boolean memoryBased;
+
+        private final FilterType filterType;
+
+        /**
          * Constructor is used for a database based filter in case that it is
          * required.
          */
         public Filter()
         {
-            this.uiTableHeader = null;
+            this.headerFieldId = 0;
+            this.memoryBased = false;
+            this.filterType = null;
         }
+
+
 
         /**
          * Constructor is used in case that a filter is required, during loading
@@ -981,7 +999,9 @@ public class UITable
         public Filter(final UITableHeader _uitableHeader)
             throws EFapsException
         {
-            this.uiTableHeader = _uitableHeader;
+            this.headerFieldId = _uitableHeader.getFieldId();
+            this.memoryBased = _uitableHeader.isFilterMemoryBased();
+            this.filterType =  _uitableHeader.getFilterType();
             if (_uitableHeader.getFilterDefault() != null) {
                 if (_uitableHeader.getFilterType().equals(FilterType.DATE)) {
                     final String filter = _uitableHeader.getFilterDefault();
@@ -1024,7 +1044,9 @@ public class UITable
                       final String _from,
                       final String _to) throws EFapsException
         {
-            this.uiTableHeader = _uitableHeader;
+            this.headerFieldId = _uitableHeader.getFieldId();
+            this.memoryBased = _uitableHeader.isFilterMemoryBased();
+            this.filterType =  _uitableHeader.getFilterType();
             this.from = _from;
             this.to = _to;
             if (_uitableHeader.getFilterType().equals(FilterType.DATE)) {
@@ -1043,7 +1065,9 @@ public class UITable
         public Filter(final UITableHeader _uitableHeader,
                       final Set<?> _filterList)
         {
-            this.uiTableHeader = _uitableHeader;
+            this.headerFieldId = _uitableHeader.getFieldId();
+            this.memoryBased = _uitableHeader.isFilterMemoryBased();
+            this.filterType =  _uitableHeader.getFilterType();
             this.filterList = _filterList;
         }
 
@@ -1054,7 +1078,7 @@ public class UITable
          */
         public UITableHeader getUiTableHeader()
         {
-            return this.uiTableHeader;
+            return getHeader4Id(this.headerFieldId);
         }
 
         /**
@@ -1069,7 +1093,6 @@ public class UITable
             if (this.filterList == null) {
                 ret.put(UITable.Filter.FROM, this.from);
                 ret.put(UITable.Filter.TO, this.to);
-
             }
             return ret;
         }
@@ -1084,16 +1107,16 @@ public class UITable
         public boolean filterRow(final UIRow _uiRow)
         {
             boolean ret = false;
-            if (this.uiTableHeader.isFilterMemoryBased()) {
+            if (this.memoryBased) {
                 final List<UITableCell> cells = _uiRow.getValues();
                 for (final UITableCell cell : cells) {
-                    if (cell.getFieldId() == this.uiTableHeader.getFieldId()) {
+                    if (cell.getFieldId() == this.headerFieldId) {
                         if (this.filterList != null) {
                             final String value = cell.getCellTitle();
                             if (!this.filterList.contains(value)) {
                                 ret = true;
                             }
-                        } else if (this.uiTableHeader.getFilterType().equals(FilterType.DATE)) {
+                        } else if (this.filterType.equals(FilterType.DATE)) {
                             if (this.dateFrom == null || this.dateTo == null) {
                                 ret = true;
                             } else {
