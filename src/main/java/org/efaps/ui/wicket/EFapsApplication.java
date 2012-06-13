@@ -33,6 +33,8 @@ import org.apache.wicket.authorization.IAuthorizationStrategy;
 import org.apache.wicket.javascript.DefaultJavaScriptCompressor;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.IHeaderResponseDecorator;
+import org.apache.wicket.markup.html.IPackageResourceGuard;
+import org.apache.wicket.markup.html.SecurePackageResourceGuard;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.Request;
@@ -84,28 +86,33 @@ public class EFapsApplication
         AppAccessHandler.init(appKey, temp);
 
         super.init();
+        getApplicationSettings().setPageExpiredErrorPage(LoginPage.class);
+        getApplicationSettings().setUploadProgressUpdatesEnabled(true);
+
+        getDebugSettings().setAjaxDebugModeEnabled(false);
+        getDebugSettings().setDevelopmentUtilitiesEnabled(false);
+
         getMarkupSettings().setStripWicketTags(true);
         getMarkupSettings().setStripComments(true);
         getMarkupSettings().setCompressWhitespace(true);
         getMarkupSettings().setAutomaticLinking(false);
 
         getRequestCycleSettings().setGatherExtendedBrowserInfo(true);
+        getRequestCycleListeners().add(new EFapsRequestCycleListener());
+        getRequestLoggerSettings().setRequestLoggerEnabled(false);
 
-        getDebugSettings().setAjaxDebugModeEnabled(false);
-
-        getDebugSettings().setDevelopmentUtilitiesEnabled(false);
         getSecuritySettings().setAuthorizationStrategy(new EFapsFormBasedAuthorizationStartegy());
-        getApplicationSettings().setPageExpiredErrorPage(LoginPage.class);
-        getApplicationSettings().setUploadProgressUpdatesEnabled(true);
+
         getResourceSettings().setJavaScriptCompressor(new DefaultJavaScriptCompressor());
 
-        //getPageSettings().addComponentResolver(resolver)
+        // allow svg resources
+        final IPackageResourceGuard guard = getResourceSettings().getPackageResourceGuard();
+        if (guard instanceof SecurePackageResourceGuard) {
+            ((SecurePackageResourceGuard) guard).addPattern("+*.svg");
+        }
 
-        getRequestLoggerSettings().setRequestLoggerEnabled(false);
-        getRequestCycleListeners().add(new EFapsRequestCycleListener());
-
-        setHeaderResponseDecorator(new IHeaderResponseDecorator() {
-
+        setHeaderResponseDecorator(new IHeaderResponseDecorator()
+        {
 
             @Override
             public IHeaderResponse decorate(final IHeaderResponse _response)

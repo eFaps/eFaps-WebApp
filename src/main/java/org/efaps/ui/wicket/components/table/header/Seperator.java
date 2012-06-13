@@ -58,6 +58,7 @@ public class Seperator
         add(AttributeModifier.append("class", "eFapsTableHeaderSeperator"));
         add(AttributeModifier.replace("onmousedown", "beginColumnSize(this,event)"));
         add(AttributeModifier.replace("onmouseup", "endColumnSize(this,event," + _propId + ")"));
+        setMarkupId(this.outputId + "eFapsHeaderSeperator");
     }
 
     /*
@@ -68,7 +69,6 @@ public class Seperator
     protected void onComponentTag(final ComponentTag _tag)
     {
         super.onComponentTag(_tag);
-        _tag.put("id", this.outputId + "eFapsHeaderSeperator");
         _tag.setName("span");
     }
 }

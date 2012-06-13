@@ -237,8 +237,30 @@ public class ModalWindowContainer
     @Override
     public String getCloseJavacript()
     {
-        return super.getCloseJavacript();
+        return ModalWindowContainer.getCloseJavacriptInternal();
     }
+
+
+    private static String getCloseJavacriptInternal()
+    {
+        return "var win;\n" //
+            + "try {\n"
+            + " win = top.window.parent.Wicket.Window;\n"
+            + "} catch (ignore) {\n"
+            + "}\n"
+            + "if (typeof(win) == \"undefined\" || typeof(win.current) == \"undefined\") {\n"
+            + "  try {\n"
+            + "     win = window.Wicket.Window;\n"
+            + "  } catch (ignore) {\n"
+            + "  }\n"
+            + "}\n"
+            + "if (typeof(win) != \"undefined\" && typeof(win.current) != \"undefined\") {\n"
+            + " var close = function(w) { w.setTimeout(function() {\n"
+            + "     win.current.close();\n"
+            + " }, 0);  } \n"
+            + " try { close(window.parent); } catch (ignore) { close(window); };\n" + "}";
+    }
+
 
 
     @Override

@@ -21,12 +21,10 @@
 
 package org.efaps.ui.wicket.components.menu.ajax;
 
-import java.util.Iterator;
-
-import org.apache.wicket.Component;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.util.iterator.ComponentHierarchyIterator;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.heading.HeadingPanel;
 import org.efaps.ui.wicket.models.objects.UIForm;
@@ -93,26 +91,14 @@ public class SearchItem
             try {
                 FormContainer form = null;
                 HeadingPanel heading = null;
-                boolean break1 = false;
-                boolean break2 = false;
+                final ComponentHierarchyIterator formVisitor = getPage().visitChildren(FormContainer.class);
+                form = (FormContainer) formVisitor.next();
+                _target.add(form);
 
-                final Iterator<? extends Component> iter = getPage().iterator();
-                while (iter.hasNext()) {
-                    final Component comp = iter.next();
-                    if (comp instanceof FormContainer) {
-                        _target.add(comp);
-                        form = (FormContainer) comp;
-                        break1 = true;
-                    }
-                    if (comp instanceof HeadingPanel) {
-                        _target.add(comp);
-                        heading = (HeadingPanel) comp;
-                        break2 = true;
-                    }
-                    if (break1 && break2) {
-                        break;
-                    }
-                }
+                final ComponentHierarchyIterator headingVisitor = getPage().visitChildren(HeadingPanel.class);
+                heading = (HeadingPanel) headingVisitor.next();
+                _target.add(heading);
+
                 heading.removeAll();
                 form.removeAll();
 
