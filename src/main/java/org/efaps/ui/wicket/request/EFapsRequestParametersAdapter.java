@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.ui.wicket;
+package org.efaps.ui.wicket.request;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -66,27 +66,27 @@ public class EFapsRequestParametersAdapter
     }
 
     @Override
-    public StringValue getParameterValue(final String name)
+    public StringValue getParameterValue(final String _name)
     {
-        final List<StringValue> values = this.parameters.get(name);
+        final List<StringValue> values = this.parameters.get(_name);
         return (values != null && !values.isEmpty()) ? values.get(0)
                         : StringValue.valueOf((String) null);
     }
 
     @Override
-    public List<StringValue> getParameterValues(final String name)
+    public List<StringValue> getParameterValues(final String _name)
     {
-        final List<StringValue> values = this.parameters.get(name);
+        final List<StringValue> values = this.parameters.get(_name);
         return values != null ? Collections.unmodifiableList(values) : null;
     }
 
     @Override
-    public void setParameterValues(final String name,
-                                   final List<StringValue> values)
+    public void setParameterValues(final String _name,
+                                   final List<StringValue> _value)
     {
-        this.parameters.put(name, values);
+        this.parameters.put(_name, _value);
         try {
-            Context.getThreadContext().getParameters().put(name, ParameterUtil.stringValues2Array(values));
+            Context.getThreadContext().getParameters().put(_name, ParameterUtil.stringValues2Array(_value));
         } catch (final EFapsException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

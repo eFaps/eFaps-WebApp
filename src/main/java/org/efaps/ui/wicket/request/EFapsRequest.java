@@ -18,14 +18,16 @@
  * Last Changed By: $Author$
  */
 
-
-package org.efaps.ui.wicket;
+package org.efaps.ui.wicket.request;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.wicket.protocol.http.servlet.MultipartServletWebRequest;
 import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
 import org.apache.wicket.request.IRequestParameters;
-
+import org.apache.wicket.util.lang.Bytes;
+import org.apache.wicket.util.upload.FileItemFactory;
+import org.apache.wicket.util.upload.FileUploadException;
 
 /**
  * TODO comment!
@@ -36,18 +38,21 @@ import org.apache.wicket.request.IRequestParameters;
 public class EFapsRequest
     extends ServletWebRequest
 {
+
+    /**
+     * Parameters of this request.
+     */
     private EFapsRequestParametersAdapter parameters;
 
     /**
-     * @param _httpServletRequest
-     * @param _filterPrefix
+     * @param _httpServletRequest original request
+     * @param _filterPrefix filter prefix
      */
     public EFapsRequest(final HttpServletRequest _httpServletRequest,
                         final String _filterPrefix)
     {
         super(_httpServletRequest, _filterPrefix);
     }
-
 
     @Override
     public IRequestParameters getRequestParameters()
@@ -56,5 +61,22 @@ public class EFapsRequest
             this.parameters = new EFapsRequestParametersAdapter(getQueryParameters(), getPostParameters());
         }
         return this.parameters;
+    }
+
+    @Override
+    public MultipartServletWebRequest newMultipartWebRequest(final Bytes _maxSize,
+                                                             final String _upload)
+        throws FileUploadException
+    {
+        return new EFapsMultipartRequest(getContainerRequest(), getFilterPrefix(), _maxSize, _upload);
+    }
+
+    @Override
+    public MultipartServletWebRequest newMultipartWebRequest(final Bytes _maxSize,
+                                                             final String _upload,
+                                                             final FileItemFactory _factory)
+        throws FileUploadException
+    {
+        return new EFapsMultipartRequest(getContainerRequest(), getFilterPrefix(), _maxSize, _upload, _factory);
     }
 }

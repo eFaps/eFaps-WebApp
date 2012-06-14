@@ -44,6 +44,9 @@ import org.efaps.jaas.AppAccessHandler;
 import org.efaps.ui.filter.AbstractFilter;
 import org.efaps.ui.wicket.pages.login.LoginPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
+import org.efaps.ui.wicket.request.EFapsRequest;
+import org.efaps.ui.wicket.request.EFapsRequestCycleListener;
+import org.efaps.ui.wicket.request.EFapsResourceAggregator;
 
 /**
  * This Class presents the WebApplication for eFaps using the Wicket-Framework. <br/>

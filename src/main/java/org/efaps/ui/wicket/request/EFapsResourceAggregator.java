@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.ui.wicket;
+package org.efaps.ui.wicket.request;
 
 import java.util.ArrayList;
 import java.util.Collections;
