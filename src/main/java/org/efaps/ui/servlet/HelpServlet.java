@@ -142,11 +142,17 @@ public class HelpServlet
 
                 final StringBuilder html = new StringBuilder();
                 html.append("<html><head>")
-                    .append("<script type=\"text/javascript\" src=\"../../resources/")
+                    .append("<script type=\"text/javascript\" src=\"../../wicket/resource/")
                     .append(AbstractDojoBehavior.JS_DOJO.getScope().getName()).append("/")
                     .append(AbstractDojoBehavior.JS_DOJO.getName())
-                    .append("\" data-dojo-config=\"async: true\"></script>\n")
-                    .append("<link rel=\"stylesheet\" type=\"text/css\" href=\"../../resources/")
+                    .append("\" data-dojo-config=\"async: true,parseOnLoad: true\"></script>\n")
+                    .append("<script type=\"text/javascript\" >")
+                    .append("/*<![CDATA[*/\n")
+                    .append("require([\"dijit/layout/BorderContainer\",\"dijit/layout/ContentPane\",")
+                    .append(" \"dojo/parser\"]);\n")
+                    .append("/*]]>*/")
+                    .append("</script>\n")
+                    .append("<link rel=\"stylesheet\" type=\"text/css\" href=\"../../wicket/resource/")
                     .append(AbstractDojoBehavior.CSS_TUNDRA.getScope().getName()).append("/")
                     .append(AbstractDojoBehavior.CSS_TUNDRA.getName())
                     .append("\" />")
@@ -154,16 +160,19 @@ public class HelpServlet
                     .append(" href=\"../../servlet/static/org.efaps.help.Help.css?")
                     .append("\" />")
                     .append("</head><body>")
-                    .append("<div dojoType=\"dijit.layout.BorderContainer\" design=\"sidebar\"")
-                    .append(" liveSplitters=\"true\" gutters=\"false\" persist=\"true\" class=\"tundra\" ")
-                    .append("style=\"width: 100%; height: 100%;\">")
-                    .append("<div dojoType=\"dijit.layout.ContentPane\" region=\"leading\" ")
-                    .append("style=\"width: 200px\" splitter=\"true\">")
+                    .append("<div data-dojo-type=\"dijit.layout.BorderContainer\" ")
+                    .append("data-dojo-props=\"design: &#039;sidebar&#039;\"")
+                    .append(" class=\"tundra\" ")
+                    .append("style=\"width: 100%; height: 99%;\">")
+                    .append("<div data-dojo-type=\"dijit.layout.ContentPane\" ")
+                    .append("data-dojo-props=\"region: &#039;leading&#039;,splitter: true\" ")
+                    .append("style=\"width: 200px\">")
                     .append("<div class=\"eFapsHelpMenu\">")
                     .append(menuStr)
                     .append("</div></div>")
-                    .append("<div dojoType=\"dijit.layout.ContentPane\" region=\"center\" ")
-                    .append("splitter=\"false\"><div class=\"eFapsWikiPage\">");
+                    .append("<div data-dojo-type=\"dijit.layout.ContentPane\" ")
+                    .append("data-dojo-props=\"region: &#039;center&#039;\" ")
+                    .append("><div class=\"eFapsWikiPage\">");
 
                 for (final String wiki : wikis) {
                     final QueryBuilder queryBldr = new QueryBuilder(CIAdminProgram.WikiCompiled);
