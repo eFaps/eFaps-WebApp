@@ -27,12 +27,13 @@ import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.handler.EmptyRequestHandler;
-import org.apache.wicket.request.http.handler.RedirectRequestHandler;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractCommand;
+import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
+import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 
@@ -97,9 +98,8 @@ public class ExecItem
                 if (command.isTargetShowFile()) {
                     final Object object = rets.get(0).get(ReturnValues.VALUES);
                     if (object instanceof File) {
-                        getRequestCycle().scheduleRequestHandlerAfterCurrent(
-                                        new RedirectRequestHandler("/usage.html"));
-
+                        ((EFapsSession) getComponent().getSession()).setFile((File) object);
+                        ((AbstractMergePage) getPage()).getDownloadBehavior().initiate(_target);
                     }
                 }
             } catch (final EFapsException e) {

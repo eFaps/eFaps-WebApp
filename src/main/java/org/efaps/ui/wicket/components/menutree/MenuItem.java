@@ -254,7 +254,7 @@ public class MenuItem
                 .append("\").set(\"content\", dojo.create(\"iframe\", {")
                 .append("\"src\": \"")
                 .append(getComponent().urlFor(ILinkListener.INTERFACE, new PageParameters()))
-                .append("\",\"style\": \"border: 0; width: 100%; height: 100%\"")
+                .append("\",\"style\": \"border: 0; width: 100%; height: 99%\"")
                 .append("})); ");
             listener.onAfter(js);
             _attributes.getAjaxCallListeners().add(listener);

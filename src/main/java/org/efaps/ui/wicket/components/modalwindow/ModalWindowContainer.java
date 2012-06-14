@@ -169,14 +169,14 @@ public class ModalWindowContainer
                         .append("\").contentWindow;").append("mainFrame.dijit.byId(\"").append(panelId)
                         .append("\").set(\"content\", dojo.create(\"iframe\", {")
                         .append("\"src\": \"").append(url)
-                        .append("\",\"style\": \"border: 0; width: 100%; height: 100%\"")
+                        .append("\",\"style\": \"border: 0; width: 100%; height: 99%\"")
                         .append("}));");
                 } else {
                     javascript.append("top.dijit.byId(\"").append("mainPanel")
                         .append("\").set(\"content\", dojo.create(\"iframe\", {")
                         .append("\"id\": \"").append(MainPage.IFRAME_ID)
                         .append("\",\"src\": \"./wicket/").append(url)
-                        .append("\",\"style\": \"border: 0; width: 100%; height: 100%\"")
+                        .append("\",\"style\": \"border: 0; width: 100%; height: 99%\"")
                         .append("}));");
                 }
             } catch (final EFapsException e) {

@@ -41,6 +41,7 @@ import org.efaps.ui.wicket.components.autocomplete.AutoCompleteField;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
 import org.efaps.ui.wicket.components.picker.AjaxPickerLink;
 import org.efaps.ui.wicket.components.table.cell.AjaxLoadInTargetLink.ScriptTarget;
+import org.efaps.ui.wicket.models.cell.UIStructurBrowserTableCell;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.models.objects.AbstractUIHeaderObject;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
@@ -100,7 +101,15 @@ public class CellPanel
         add(AttributeModifier.replace("title", uiTableCell.getCellTitle()));
         add(new AttributeAppender("style", new Model<String>("text-align:" + uiTableCell.getAlign()), ";"));
 
-        if (uiTableCell.isAutoComplete() && (_uitable.isCreateMode() || _uitable.isEditMode())
+        if (uiTableCell instanceof UIStructurBrowserTableCell
+                        && ((UIStructurBrowserTableCell) uiTableCell).isHide()) {
+            add(new WebMarkupContainer("checkbox").setVisible(false));
+            add(new WebMarkupContainer("link").setVisible(false));
+            add(new WebMarkupContainer("icon").setVisible(false));
+            add(new WebComponent("numbering").setVisible(false));
+            add(new WebComponent("label").setVisible(false));
+            add(new WebMarkupContainer("valuePicker").setVisible(false));
+        } else if (uiTableCell.isAutoComplete() && (_uitable.isCreateMode() || _uitable.isEditMode())
                         && uiTableCell.getDisplay().equals(Display.EDITABLE)) {
             add(new WebMarkupContainer("checkbox").setVisible(false));
             add(new WebMarkupContainer("link").setVisible(false));

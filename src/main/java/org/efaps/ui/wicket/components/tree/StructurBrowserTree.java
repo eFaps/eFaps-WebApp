@@ -46,8 +46,8 @@ import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
-import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 import org.efaps.util.EFapsException;
@@ -229,7 +229,7 @@ public class StructurBrowserTree
                 .append("\").set(\"content\", dojo.create(\"iframe\", {")
                 .append("\"src\": \"")
                 .append(getComponent().urlFor(ILinkListener.INTERFACE, new PageParameters()))
-                .append("\",\"style\": \"border: 0; width: 100%; height: 100%\"")
+                .append("\",\"style\": \"border: 0; width: 100%; height: 99%\"")
                 .append("})); ");
             listener.onAfter(js);
             _attributes.getAjaxCallListeners().add(listener);

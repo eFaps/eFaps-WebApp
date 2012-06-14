@@ -60,7 +60,7 @@ public class LazyIframeBehavior
             .append("dijit.byId(\"").append(_component.getMarkupId())
             .append("\").set(\"content\", dojo.create(\"iframe\", {")
             .append("\"src\": \"").append(_component.urlFor(ILinkListener.INTERFACE, new PageParameters()))
-            .append("\",\"style\": \"border: 0; width: 100%; height: 100%\", \"nodeId\": \"jan\"")
+            .append("\",\"style\": \"border: 0; width: 100%; height: 99%\", \"nodeId\": \"jan\"")
             .append("}));")
             .append("});");
         _response.render(JavaScriptHeaderItem.forScript(js, _component.getMarkupId()));

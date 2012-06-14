@@ -87,7 +87,7 @@ public class AjaxRemoveLink
             .append("\").set(\"content\", dojo.create(\"iframe\", {")
             .append("\"src\": \"")
             .append(AjaxRemoveLink.this.urlFor(ILinkListener.INTERFACE, new PageParameters()))
-            .append("\",\"style\": \"border: 0; width: 100%; height: 100%\"")
+            .append("\",\"style\": \"border: 0; width: 100%; height: 99%\"")
             .append("})); ");
         listener.onBefore(js);
         _attributes.getAjaxCallListeners().add(listener);
