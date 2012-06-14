@@ -1033,6 +1033,8 @@ public class UIStructurBrowser
     @Override
     public void resetModel()
     {
+        super.setInitialized(false);
+        getHeaders().clear();
         this.children.clear();
     }
 

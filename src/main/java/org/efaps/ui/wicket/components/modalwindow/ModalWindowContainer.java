@@ -22,6 +22,7 @@ package org.efaps.ui.wicket.components.modalwindow;
 
 import org.apache.wicket.Page;
 import org.apache.wicket.PageReference;
+import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.core.request.handler.PageProvider;
 import org.apache.wicket.core.request.handler.RenderPageRequestHandler;
@@ -41,6 +42,7 @@ import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
+import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
@@ -55,7 +57,6 @@ import org.efaps.util.EFapsException;
 public class ModalWindowContainer
     extends ModalWindow
 {
-
     /**
      * Needed for serialization.
      */
@@ -173,12 +174,13 @@ public class ModalWindowContainer
                 } else {
                     javascript.append("top.dijit.byId(\"").append("mainPanel")
                         .append("\").set(\"content\", dojo.create(\"iframe\", {")
-                        .append("\"src\": \"./wicket/").append(url)
+                        .append("\"id\": \"").append(MainPage.IFRAME_ID)
+                        .append("\",\"src\": \"./wicket/").append(url)
                         .append("\",\"style\": \"border: 0; width: 100%; height: 100%\"")
                         .append("}));");
                 }
             } catch (final EFapsException e) {
-
+                throw new RestartResponseException(new ErrorPage(e));
             }
         }
         return javascript.toString();
@@ -240,7 +242,10 @@ public class ModalWindowContainer
         return ModalWindowContainer.getCloseJavacriptInternal();
     }
 
-
+    /**
+     * Just a copy to be able to add the "top" .
+     * @return the close script
+     */
     private static String getCloseJavacriptInternal()
     {
         return "var win;\n" //
@@ -261,14 +266,11 @@ public class ModalWindowContainer
             + " try { close(window.parent); } catch (ignore) { close(window); };\n" + "}";
     }
 
-
-
     @Override
     protected CharSequence getShowJavaScript()
     {
         return "top.Wicket.Window.create(settings).show();\n";
     }
-
 
     /**
      * Check it the size of the modal window is not to big and reduces it if
