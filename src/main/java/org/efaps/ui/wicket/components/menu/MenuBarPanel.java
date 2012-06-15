@@ -27,14 +27,19 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
+import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.ui.wicket.behaviors.dojo.MenuBarBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.MenuBarItemBehavior;
 import org.efaps.ui.wicket.components.menu.ajax.ExecItem;
+import org.efaps.ui.wicket.components.menu.ajax.OpenModalItem;
+import org.efaps.ui.wicket.components.menu.ajax.SearchItem;
 import org.efaps.ui.wicket.components.menu.ajax.SetCompanyItem;
+import org.efaps.ui.wicket.components.menu.ajax.SubmitItem;
 import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
-import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.ui.wicket.models.objects.UISearchItem;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
 
 /**
@@ -96,10 +101,28 @@ public class MenuBarPanel
                         }
                     } else {
                         Component item;
-                        if (childItem.getCommand().isNoUpdateAfterCmd()) {
-                            item = new ExecItem(itemRepeater.newChildId(), new UIModel<UIMenuItem>(childItem));
+                        if (childItem.getTarget() != Target.UNKNOWN) {
+                            if (childItem.getTarget() == Target.MODAL) {
+                                item = new OpenModalItem(itemRepeater.newChildId(),
+                                                new UIModel<UIMenuItem>(childItem));
+                            } else if (childItem.getTarget() == Target.POPUP) {
+                                item = new PopupItem(itemRepeater.newChildId(), new UIModel<UIMenuItem>(childItem));
+                            } else if (childItem.getTarget() == Target.HIDDEN) {
+                                item = new ExecItem(itemRepeater.newChildId(), new UIModel<UIMenuItem>(childItem));
+                            } else {
+                                item = new LinkItem(itemRepeater.newChildId(), new UIModel<UIMenuItem>(childItem));
+                            }
                         } else {
-                            item = new LinkItem(itemRepeater.newChildId(), new UIModel<UIMenuItem>(childItem));
+                            if (childItem instanceof UISearchItem) {
+                                item = new SearchItem(itemRepeater.newChildId(), new UIModel<UIMenuItem>(childItem));
+                            } else if (childItem.getCommand().getTargetForm() != null
+                                            || childItem.getCommand().getTargetTable() != null) {
+                                item = new LinkItem(itemRepeater.newChildId(), new UIModel<UIMenuItem>(childItem));
+                            } else if (childItem.getCommand().isSubmit()) {
+                                item = new SubmitItem(itemRepeater.newChildId(), new UIModel<UIMenuItem>(childItem));
+                            } else {
+                                item = new ExecItem(itemRepeater.newChildId(), new UIModel<UIMenuItem>(childItem));
+                            }
                         }
                         item.add(new MenuBarItemBehavior());
                         itemRepeater.add(item);
