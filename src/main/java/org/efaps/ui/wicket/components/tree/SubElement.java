@@ -41,7 +41,7 @@ import org.efaps.ui.wicket.models.cell.UIStructurBrowserTableCell;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.models.objects.UITable;
-import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
+import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.util.EFapsException;
 
@@ -160,7 +160,7 @@ public class SubElement
             cellsBeforeRepeater.add(cell);
             i++;
         }
-        final PageReference pageRef = ((StructurBrowserPage) getPage()).getCalledByPageReference();
+        final PageReference pageRef = ((AbstractContentPage) getPage()).getCalledByPageReference();
         boolean updateMenu = false;
         if (pageRef != null && pageRef.getPage() instanceof ContentContainerPage) {
             updateMenu = true;

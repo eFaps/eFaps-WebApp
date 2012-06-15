@@ -1397,7 +1397,7 @@ public class UIStructurBrowser
      *
      * @param _level value for instance variable {@link #level}
      */
-    private void setLevel(final int _level)
+    protected void setLevel(final int _level)
     {
         this.level = _level;
     }

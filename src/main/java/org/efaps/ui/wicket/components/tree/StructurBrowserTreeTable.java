@@ -36,10 +36,10 @@ import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.cell.UIStructurBrowserTableCell;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
-import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
+import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
-import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
 
 /**
  * This class renders a TreeTable, which loads the children asynchron.<br>
@@ -108,7 +108,7 @@ public class StructurBrowserTreeTable
     {
         final UIStructurBrowser strucBrws = _model.getObject();
         final UIStructurBrowserTableCell uicell = strucBrws.getColumns().get(strucBrws.getBrowserFieldIndex());
-        final PageReference pageRef = ((StructurBrowserPage) getPage()).getCalledByPageReference();
+        final PageReference pageRef = ((AbstractContentPage) getPage()).getCalledByPageReference();
         boolean updateMenu = false;
         if (pageRef != null && pageRef.getPage() instanceof ContentContainerPage) {
             updateMenu = true;
