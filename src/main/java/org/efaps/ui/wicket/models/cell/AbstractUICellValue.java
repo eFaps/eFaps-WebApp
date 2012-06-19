@@ -22,10 +22,12 @@ package org.efaps.ui.wicket.models.cell;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.Model;
+import org.efaps.admin.datamodel.ui.BooleanUI;
 import org.efaps.admin.datamodel.ui.LinkWithRangesUI;
 import org.efaps.admin.datamodel.ui.StringUI;
 import org.efaps.admin.datamodel.ui.UIValue;
@@ -36,6 +38,7 @@ import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
+import org.efaps.ui.wicket.components.values.BooleanField;
 import org.efaps.ui.wicket.components.values.DropDownField;
 import org.efaps.ui.wicket.components.values.StringField;
 import org.efaps.ui.wicket.models.AbstractInstanceObject;
@@ -156,6 +159,11 @@ public class AbstractUICellValue
                                 Model.ofMap((Map<Object, Object>) getValue().getEditValue(
                                 getParent().getMode())),
                                 getFieldConfiguration());
+            } else  if (getValue().getUIProvider() instanceof BooleanUI) {
+                ret = new BooleanField(_wicketId, getValue().getDbValue(),
+                                Model.ofMap((Map<Object, Object>) getValue().getEditValue(
+                                getParent().getMode())),
+                                getFieldConfiguration());
             } else {
                 ret = new Label(_wicketId, (String) getValue().getEditValue(getParent().getMode()));
             }
@@ -165,7 +173,20 @@ public class AbstractUICellValue
                 if (getValue().getDbValue() != null) {
                     final Map<Object, Object> map = (Map<Object, Object>) getValue()
                                 .getReadOnlyValue(getParent().getMode());
-                    label =String.valueOf(map.get(getValue().getDbValue()));
+                    label = String.valueOf(map.get(getValue().getDbValue()));
+                }
+                ret = new Label(_wicketId, label);
+            } else  if (getValue().getUIProvider() instanceof BooleanUI) {
+                String label = "";
+                if (getValue().getDbValue() != null) {
+                    final Map<Object, Object> map = (Map<Object, Object>) getValue()
+                                    .getReadOnlyValue(getParent().getMode());
+                    for (final Entry<Object, Object> entry : map.entrySet()) {
+                        if (entry.getValue().equals(getValue().getDbValue())) {
+                            label = (String) entry.getKey();
+                            break;
+                        }
+                    }
                 }
                 ret = new Label(_wicketId, label);
             } else {

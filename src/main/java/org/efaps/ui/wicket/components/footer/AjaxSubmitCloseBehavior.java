@@ -37,7 +37,9 @@ import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.RadioGroup;
 import org.apache.wicket.request.IRequestParameters;
+import org.apache.wicket.util.iterator.ComponentHierarchyIterator;
 import org.apache.wicket.util.string.StringValue;
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
@@ -54,6 +56,7 @@ import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.form.FormPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
+import org.efaps.ui.wicket.components.values.BooleanField;
 import org.efaps.ui.wicket.models.FormModel;
 import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.cell.UIFormCell;
@@ -145,6 +148,7 @@ public class AjaxSubmitCloseBehavior
         final List<Classification> classifications = new ArrayList<Classification>();
         try {
             convertDateFieldValues();
+            convertFieldValues();
             if (this.uiObject instanceof UIForm) {
                 final UIForm uiform = (UIForm) this.uiObject;
                 others.putAll(uiform.getNewValues());
@@ -255,6 +259,28 @@ public class AjaxSubmitCloseBehavior
                 final List<StringValue> ampm = parameters.getParameterValues(datepicker.getAmPmFieldName());
                 parameters.setParameterValues(datepicker.getFieldName(),
                                 datepicker.getDateAsString(date, hour, minute, ampm));
+            }
+        }
+    }
+
+    /**
+     * Method used to convert the values from the ui in values for
+     * eFaps.
+     * @throws EFapsException on error
+     */
+    private void convertFieldValues()
+                    throws EFapsException
+    {
+        final EFapsRequestParametersAdapter parameters = (EFapsRequestParametersAdapter) getComponent()
+                        .getRequest().getRequestParameters();
+        final ComponentHierarchyIterator vistor = ((FormContainer) getForm()).visitChildren(BooleanField.class);
+        while (vistor.hasNext()) {
+            final BooleanField booleanField = (BooleanField) vistor.next();
+            final RadioGroup<?> group = (RadioGroup<?>) booleanField.visitChildren(RadioGroup.class).next();
+            if (group.getDefaultModelObject() == Boolean.TRUE) {
+                parameters.addParameterValue(booleanField.getFieldConfiguration().getName(), "true");
+            } else {
+                parameters.addParameterValue(booleanField.getFieldConfiguration().getName(), "false");
             }
         }
     }
