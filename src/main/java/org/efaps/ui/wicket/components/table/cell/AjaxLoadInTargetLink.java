@@ -146,13 +146,12 @@ public class AjaxLoadInTargetLink<T>
 
                 final StringBuilder js = new StringBuilder()
                     .append(this.target.key).append(".dijit.byId(\"").append("mainPanel")
-                    .append("\").set(\"content\", dojo.create(\"iframe\", {")
+                    .append("\").set(\"content\", dojo.create(\"iframe\",{")
                     .append("\"id\": \"").append(MainPage.IFRAME_ID)
                     .append("\",\"src\": \"./wicket/").append(url)
                     .append("\",\"style\": \"border: 0; width: 100%; height: 99%\"")
-                    .append(",\"id\": \"").append(MainPage.IFRAME_ID).append("\"")
                     .append("}));");
-                _target.prependJavaScript(js);
+                _target.appendJavaScript(js);
             } catch (final EFapsException e) {
                 throw new RestartResponseException(new ErrorPage(e));
             }
