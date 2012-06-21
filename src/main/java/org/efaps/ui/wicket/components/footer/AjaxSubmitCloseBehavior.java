@@ -35,6 +35,7 @@ import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow.WindowClosedCallback;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.RadioGroup;
@@ -613,9 +614,34 @@ public class AjaxSubmitCloseBehavior
             public Page createPage()
             {
                 return new DialogPage(((AbstractContentPage) getComponent().getPage()).getPageReference(),
-                                _key, _isSniplett, _goOnButton ? AjaxSubmitCloseBehavior.this : null);
+                                _key, _isSniplett, _goOnButton);
             }
         });
+
+        if (_goOnButton) {
+            modal.setWindowClosedCallback(new WindowClosedCallback()
+            {
+
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                public void onClose(final AjaxRequestTarget _target)
+                {
+                    if (AjaxSubmitCloseBehavior.this.validated) {
+                        _target.appendJavaScript(getExecuteScript());
+                    }
+                }
+            });
+        }
         modal.show(_target);
+    }
+
+    /**
+     * @return script that can be used to execute this Ajax behavior.
+     */
+    protected CharSequence getExecuteScript()
+    {
+        final CharSequence ajaxAttributes = renderAjaxAttributes(getComponent());
+        return "new Wicket.Ajax.Call().ajax(" + ajaxAttributes + ");";
     }
 }

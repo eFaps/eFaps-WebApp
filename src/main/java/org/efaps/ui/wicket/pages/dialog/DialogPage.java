@@ -20,6 +20,8 @@
 
 package org.efaps.ui.wicket.pages.dialog;
 
+import java.util.List;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.RestartResponseException;
@@ -31,6 +33,8 @@ import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.util.visit.IVisit;
+import org.apache.wicket.util.visit.IVisitor;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.ui.wicket.components.LabelComponent;
@@ -42,8 +46,8 @@ import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
-import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
 
 /**
@@ -56,7 +60,6 @@ import org.efaps.util.EFapsException;
 public class DialogPage
     extends AbstractMergePage
 {
-
     /**
      *
      */
@@ -66,12 +69,6 @@ public class DialogPage
      * Reference to the StyleSheet of this Page stored in the eFaps-DataBase.
      */
     private static final EFapsContentReference CSS = new EFapsContentReference(DialogPage.class, "DialogPage.css");
-
-    /**
-     * This instance variable stores the Compoment wich called this DialogPage,
-     * so that it can be accessed.
-     */
-    private Component parent;
 
     /**
      * Reference to the page that opened this dialog.
@@ -85,15 +82,12 @@ public class DialogPage
      * @param _pageReference Reference to the page that opened this dialog
      * @param _model the MenuItem that called this DialogPage
      * @param _oids oids which must be past on, in case of submit
-     * @param _parent the ParentComponent
      */
     public DialogPage(final PageReference _pageReference,
                       final IModel<UIMenuItem> _model,
-                      final String[] _oids,
-                      final Component _parent)
+                      final String[] _oids)
     {
         super(_model);
-        this.parent = _parent;
         this.pageReference = _pageReference;
         final UIMenuItem menuItem = _model.getObject();
 
@@ -112,16 +106,15 @@ public class DialogPage
      * Constructor setting the ModalWindow.
      *
      * @param _pageReference Reference to the page that opened this dialog
-     * @param _value value is depending on parameter "_isSniplett" the key to a
+     * @param _value        value is depending on parameter "_isSniplett" the key to a
      *            DBProperty or a snipplet
-     * @param _isSniplett is it a snipplet or not
-     * @param _behavior if a _behavior is given a button will be rendered to
-     *            execute it
+     * @param _isSniplett   is it a snipplet or not
+     * @param _goOn         go on?
      */
     public DialogPage(final PageReference _pageReference,
                       final String _value,
                       final boolean _isSniplett,
-                      final AjaxSubmitCloseBehavior _behavior)
+                      final boolean _goOn)
     {
         this.pageReference = _pageReference;
 
@@ -130,8 +123,8 @@ public class DialogPage
         } else {
             this.add(new Label("textLabel", DBProperties.getProperty(_value + ".Message")));
         }
-        if (_behavior != null) {
-            final AjaxGoOnLink ajaxGoOnLink = new AjaxGoOnLink(Button.LINKID, _behavior);
+        if (_goOn) {
+            final AjaxGoOnLink ajaxGoOnLink = new AjaxGoOnLink(Button.LINKID);
             this.add(new Button("submitButton", ajaxGoOnLink, DialogPage.getLabel(_value, "Create"),
                             Button.ICON.ACCEPT.getReference()));
         } else {
@@ -178,42 +171,45 @@ public class DialogPage
     public class AjaxGoOnLink
         extends AjaxLink<Object>
     {
-
         /** Needed for serialization. */
         private static final long serialVersionUID = 1L;
-        private final AjaxSubmitCloseBehavior behavior;
 
         /**
          * @param _wicketId wicket id of this component
-         * @param onClickScript
+         *
          */
-        public AjaxGoOnLink(final String _wicketId,
-                            final AjaxSubmitCloseBehavior _behavior)
+        public AjaxGoOnLink(final String _wicketId)
         {
             super(_wicketId);
-            this.behavior = _behavior;
         }
 
         /**
          * @see org.apache.wicket.ajax.markup.html.AjaxLink#onClick(org.apache.wicket.ajax.AjaxRequestTarget)
-         * @param target
+         * @param _target AjaxRequestTarget
          */
         @Override
         public void onClick(final AjaxRequestTarget _target)
         {
-            this.behavior.setValidated(true);
-            final ModalWindowContainer modal = ((AbstractContentPage) DialogPage.this.pageReference.getPage())
-                            .getModal();
+            final AbstractContentPage page = (AbstractContentPage) DialogPage.this.pageReference.getPage();
+
+            final AjaxSubmitCloseBehavior beh = page.visitChildren(new IVisitor<Component, AjaxSubmitCloseBehavior>()
+            {
+
+                @Override
+                public void component(final Component _component,
+                                      final IVisit<AjaxSubmitCloseBehavior> _visit)
+                {
+                    final List<AjaxSubmitCloseBehavior> behaviors = _component
+                                    .getBehaviors(AjaxSubmitCloseBehavior.class);
+                    if (!behaviors.isEmpty()) {
+                        _visit.stop(behaviors.get(0));
+                    }
+                }
+            });
+
+            beh.setValidated(true);
+            final ModalWindowContainer modal = page.getModal();
             modal.close(_target);
-            final StringBuilder js = new StringBuilder();
-            // js.append("var wind = parent.frames[parent.frames.length - 2];")
-            // .append("function cllIt(){")
-            // .append(this.behavior.getEventHandler().toString()
-            // .replace("var wcall=wicketSubmitFormById",
-            // "wind.wicketSubmitFormById"))
-            // .append("};")
-            // .append("wind.setTimeout(cllIt(),1);");
-            _target.appendJavaScript(js.toString());
         }
     }
 
@@ -272,8 +268,8 @@ public class DialogPage
 
         /**
          * @param _wicketId wicket id of this component
-         * @param _model model for this component
-         * @param _para parameters
+         * @param _model    model for this component
+         * @param _oids     oids
          */
         public AjaxSubmitLink(final String _wicketId,
                               final IModel<UIMenuItem> _model,

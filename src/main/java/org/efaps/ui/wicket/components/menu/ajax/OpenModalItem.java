@@ -175,8 +175,7 @@ public class OpenModalItem
                     public Page createPage()
                     {
                         return new DialogPage(modal.getPage().getPageReference(),
-                                        "SubmitSelectedRows.fail" + uiMenuItem.getSubmitSelectedRows(),
-                                        false, null);
+                                        "SubmitSelectedRows.fail" + uiMenuItem.getSubmitSelectedRows(), false, false);
                     }
                 });
                 modal.setInitialHeight(150);

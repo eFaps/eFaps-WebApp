@@ -37,8 +37,8 @@ import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.dialog.DialogPage;
-import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
 
 /**
  * This class renders the Footer under a WebForm or WebTable.<br>
@@ -116,7 +116,7 @@ public class FooterPanel
                             {
                                 return new DialogPage(((AbstractContentPage) getPage()).getPageReference(),
                                                 uiObject.getCommand().getName()
-                                                + ".Success", false, null);
+                                                + ".Success", false, false);
                             }
                         });
 

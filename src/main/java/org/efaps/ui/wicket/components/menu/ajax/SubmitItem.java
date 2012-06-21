@@ -132,7 +132,7 @@ public class SubmitItem
                         public Page createPage()
                         {
                             return new DialogPage(getPage().getPageReference(), new UIModel<UIMenuItem>(uiMenuItem),
-                                            oids, SubmitItem.this);
+                                            oids);
                         }
                     });
                     modal.setInitialHeight(150);
@@ -184,8 +184,7 @@ public class SubmitItem
                     public Page createPage()
                     {
                         return new DialogPage(getPage().getPageReference(), "SubmitSelectedRows.fail"
-                                        + uiMenuItem.getSubmitSelectedRows(),
-                                        false, null);
+                                        + uiMenuItem.getSubmitSelectedRows(), false, false);
                     }
                 });
                 modal.setInitialHeight(150);
