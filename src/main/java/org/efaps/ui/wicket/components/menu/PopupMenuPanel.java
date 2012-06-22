@@ -88,7 +88,7 @@ public class PopupMenuPanel
                 final StringBuilder html = new StringBuilder();
                 if (!PopupMenuPanel.this.menuBarItem) {
                     if (uiItem.getImage() == null) {
-                        html.append("<span class=\"eFapsMenuImagePlaceHolder\">").append("&nbsp;</span>");
+                        html.append("<div class=\"eFapsMenuImagePlaceHolder\">").append("&nbsp;</div>");
                     } else {
                         html.append("<img src=\"/..").append(uiItem.getImage()).append("\" class=\"eFapsMenuImage\"/>");
                     }
