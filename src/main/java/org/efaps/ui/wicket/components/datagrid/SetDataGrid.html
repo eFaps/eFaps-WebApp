@@ -25,15 +25,15 @@
         <table class="eFapsSetDataGrid">
             <thead class="eFapsSetDataGridHead">
                 <tr>
-                    <th wicket:id="editHeader"></th>
+                    <th wicket:id="editHeader" class="editHeader"></th>
                     <th wicket:id="headerRepeater">
                         <span wicket:id="header"></span>
                     </th>
                 </tr>
             </thead>
             <tbody class="eFapsSetDataGridBody">
-                <tr wicket:id="rowRepeater">
-                    <td wicket:id="remove">
+                <tr wicket:id="rowRepeater" >
+                    <td wicket:id="remove" class="editColumn">
                         <a wicket:id="removeLink"><img wicket:id="removeIcon"/></a>
                         <input wicket:id="oid" type="hidden"></input>
                     </td>
