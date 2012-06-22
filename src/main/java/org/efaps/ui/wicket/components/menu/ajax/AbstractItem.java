@@ -75,7 +75,7 @@ public abstract class AbstractItem
         super.onComponentTagBody(_markupStream, _openTag);
         final StringBuilder html = new StringBuilder();
         if (getModelObject().getImage() == null) {
-            html.append("<span class=\"eFapsMenuImagePlaceHolder\">").append("&nbsp;</span>");
+            html.append("<div class=\"eFapsMenuImagePlaceHolder\">").append("&nbsp;</div>");
         } else {
             html.append("<img src=\"/..").append(getModelObject().getImage()).append("\" class=\"eFapsMenuImage\"/>");
         }
