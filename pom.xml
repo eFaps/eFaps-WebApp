@@ -128,7 +128,7 @@
                         <id>prepare</id>
                         <phase>validate</phase>
                         <configuration>
-                            <skip>true</skip>
+                            <skip>false</skip>
                             <target>
                                 <echo message="prepare phase" />
                                 <exec executable="tar">
