@@ -39,6 +39,7 @@ import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.Response;
+import org.apache.wicket.request.component.IRequestableComponent;
 import org.apache.wicket.request.http.WebRequest;
 import org.efaps.jaas.AppAccessHandler;
 import org.efaps.ui.filter.AbstractFilter;
@@ -139,8 +140,11 @@ public class EFapsApplication
         return new EFapsSession(_request);
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.wicket.protocol.http.WebApplication#newWebRequest(javax.servlet.http.HttpServletRequest, java.lang.String)
+    /**
+     * @param _servletRequest   request
+     * @param _filterPath       path
+     *
+     * @return a new WebRequest
      */
     @Override
     public WebRequest newWebRequest(final HttpServletRequest _servletRequest,
@@ -180,10 +184,11 @@ public class EFapsApplication
          * will redirect to the LoginPage.
          *
          * @param _componentClass class to be checked
-         *
+         * @param <T> IRequestableComponent to be checked
          * @return true, if checks if is instantiation authorized
          */
-        public boolean isInstantiationAuthorized(final Class _componentClass)
+        @Override
+        public <T extends IRequestableComponent> boolean isInstantiationAuthorized(final Class<T> _componentClass)
         {
             boolean ret = true;
             if (WebPage.class.isAssignableFrom(_componentClass)) {
