@@ -227,8 +227,8 @@ public class UITable
         this.filterTempCache.clear();
         while (iter.hasNext()) {
             final Entry<String, Filter> entry = iter.next();
-            if (entry.getValue().getUiTableHeader() == null ||
-                            (entry.getValue().getUiTableHeader() != null
+            if (entry.getValue().getUiTableHeader() == null
+                            || (entry.getValue().getUiTableHeader() != null
                             && !entry.getValue().getUiTableHeader().isFilterMemoryBased())) {
                 final Map<String, String> map = entry.getValue().getMap4esjp();
                 dataBasefilters.put(entry.getKey(), map);
@@ -331,8 +331,7 @@ public class UITable
                     }
                 }
                 final UITableHeader uiTableHeader = new UITableHeader(field, sortdirection, attr);
-                if (this.filterTempCache.containsKey(uiTableHeader.getFieldName())
-                                && this.filterTempCache.get(uiTableHeader.getFieldName()).getUiTableHeader() != null) {
+                if (this.filterTempCache.containsKey(uiTableHeader.getFieldName())) {
                     this.filters.put(uiTableHeader.getFieldName(),
                                     this.filterTempCache.get(uiTableHeader.getFieldName()));
                     uiTableHeader.setFilterApplied(true);
