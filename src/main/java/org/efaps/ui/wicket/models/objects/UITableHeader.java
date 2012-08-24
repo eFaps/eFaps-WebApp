@@ -24,6 +24,12 @@ import java.util.UUID;
 
 import org.apache.wicket.util.io.IClusterable;
 import org.efaps.admin.datamodel.Attribute;
+import org.efaps.admin.datamodel.ui.DateTimeUI;
+import org.efaps.admin.datamodel.ui.DateUI;
+import org.efaps.admin.datamodel.ui.DecimalUI;
+import org.efaps.admin.datamodel.ui.NumberUI;
+import org.efaps.admin.datamodel.ui.StringUI;
+import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.AbstractCommand.SortDirection;
 import org.efaps.admin.ui.field.Field;
@@ -163,20 +169,26 @@ public class UITableHeader
         this.fieldId = _field.getId();
         this.attrId = _attr != null ? _attr.getId() : 0;
 
-        if (!this.filterPickList && _attr != null) {
-            final UUID attrTypeUUId = _attr.getAttributeType().getUUID();
+        if (!this.filterPickList) {
+            final UIInterface uiInterface = _field.getClassUI();
+            final UUID attrTypeUUId = _attr == null ? null : _attr.getAttributeType().getUUID();
             // String
-            if (UUID.fromString("72221a59-df5d-4c56-9bec-c9167de80f2b").equals(attrTypeUUId)) {
+            if (UUID.fromString("72221a59-df5d-4c56-9bec-c9167de80f2b").equals(attrTypeUUId)
+                            || (uiInterface != null && uiInterface instanceof StringUI)) {
                 this.filterType = UITableHeader.FilterType.TEXT;
                 // Integer
-            } else if (UUID.fromString("41451b64-cb24-4e77-8d9e-5b6eb58df56f").equals(attrTypeUUId)) {
+            } else if (UUID.fromString("41451b64-cb24-4e77-8d9e-5b6eb58df56f").equals(attrTypeUUId)
+                            || (uiInterface != null && uiInterface instanceof NumberUI)) {
                 this.filterType = UITableHeader.FilterType.INTEGER;
                 // Decimal
-            } else if (UUID.fromString("358d1f0e-43ae-425d-a4a0-8d5bad6f40d7").equals(attrTypeUUId)) {
+            } else if (UUID.fromString("358d1f0e-43ae-425d-a4a0-8d5bad6f40d7").equals(attrTypeUUId)
+                            || (uiInterface != null && uiInterface instanceof DecimalUI)) {
                 this.filterType = UITableHeader.FilterType.DECIMAL;
                 // Date or DateTime
             } else if (UUID.fromString("68ce3aa6-e3e8-40bb-b48f-2a67948c2e7e").equals(attrTypeUUId)
-                            || UUID.fromString("e764db0f-70f2-4cd4-b2fe-d23d3da72f78").equals(attrTypeUUId)) {
+                            || UUID.fromString("e764db0f-70f2-4cd4-b2fe-d23d3da72f78").equals(attrTypeUUId)
+                            || (uiInterface != null
+                                && (uiInterface instanceof DateUI || uiInterface instanceof DateTimeUI))) {
                 this.filterType = UITableHeader.FilterType.DATE;
             }
         }
