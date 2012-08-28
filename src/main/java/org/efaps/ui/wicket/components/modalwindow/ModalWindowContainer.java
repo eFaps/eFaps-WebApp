@@ -166,13 +166,13 @@ public class ModalWindowContainer
                 if (calledByPageRef != null && calledByPageRef.getPage() instanceof ContentContainerPage) {
                     final String panelId = ((ContentContainerPage) calledByPageRef.getPage()).getCenterPanelId();
                     javascript.append("var mainFrame = top.dojo.byId(\"").append(MainPage.IFRAME_ID)
-                        .append("\").contentWindow;").append("mainFrame.dijit.byId(\"").append(panelId)
+                        .append("\").contentWindow;").append("mainFrame.dijit.registry.byId(\"").append(panelId)
                         .append("\").set(\"content\", dojo.create(\"iframe\", {")
                         .append("\"src\": \"").append(url)
                         .append("\",\"style\": \"border: 0; width: 100%; height: 99%\"")
                         .append("}));");
                 } else {
-                    javascript.append("top.dijit.byId(\"").append("mainPanel")
+                    javascript.append("top.dijit.registry.byId(\"").append("mainPanel")
                         .append("\").set(\"content\", dojo.create(\"iframe\", {")
                         .append("\"id\": \"").append(MainPage.IFRAME_ID)
                         .append("\",\"src\": \"./wicket/").append(url)

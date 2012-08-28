@@ -53,7 +53,7 @@ public class PopupMenuBarItemBehavior
                                final ComponentTag _tag)
     {
         super.onComponentTag(_component, _tag);
-        _tag.put("data-dojo-type", "dijit.PopupMenuBarItem");
+        _tag.put("data-dojo-type", "dijit/PopupMenuBarItem");
     }
 
     /**

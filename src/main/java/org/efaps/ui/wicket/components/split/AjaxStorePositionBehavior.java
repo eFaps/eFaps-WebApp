@@ -115,7 +115,7 @@ public class AjaxStorePositionBehavior
         final String topPanelId = ((SidePanel) _component).getTopPanelId();
 
         final StringBuilder js = new StringBuilder()
-            .append("require([\"dojo/ready\"]);\n");
+            .append("require([\"dojo/ready\", \"dijit/registry\"]);\n");
         if (this.vertical) {
             js.append("var storePosV = ")
                 .append(getCallbackFunction(
@@ -125,12 +125,12 @@ public class AjaxStorePositionBehavior
                 append(getCallbackFunction(
                             CallbackParameter.explicit(AjaxStorePositionBehavior.PARAMETER_HORIZONTALPOSITION)))
             .append("dojo.ready(function() {\n")
-            .append("var bp = dijit.byId(\"").append(borderPanelId).append("\");\n")
-            .append("var lp = dijit.byId(\"").append(leftPanelId).append("\");\n")
+            .append("var bp = dijit.registry.byId(\"").append(borderPanelId).append("\");\n")
+            .append("var lp = dijit.registry.byId(\"").append(leftPanelId).append("\");\n")
             .append("var hs = bp.getSplitter(\"left\");\n");
 
         if (this.vertical) {
-            js.append("var tp = dijit.byId(\"").append(topPanelId).append("\");\n")
+            js.append("var tp = dijit.registry.byId(\"").append(topPanelId).append("\");\n")
                 .append("var vs = lp.getSplitter(\"top\");\n");
         }
 
@@ -147,14 +147,14 @@ public class AjaxStorePositionBehavior
 
         if (this.vertical) {
             js.append(" dojo.connect(vs, \"onOpen\",function(pane){\n")
-            .append("storePosV(pane.domNode.clientHeight);")
-            .append("});\n")
-            .append(" dojo.connect(vs, \"onClosed\",function(pane){\n")
-            .append("storePosV(pane.domNode.clientHeight);")
-            .append("});\n")
-            .append(" dojo.connect(vs, \"_stopDrag\",function(e){\n")
-            .append("storePosV(tp.domNode.clientHeight);")
-            .append("});\n");
+                .append("storePosV(pane.domNode.clientHeight);")
+                .append("});\n")
+                .append(" dojo.connect(vs, \"onClosed\",function(pane){\n")
+                .append("storePosV(pane.domNode.clientHeight);")
+                .append("});\n")
+                .append(" dojo.connect(vs, \"_stopDrag\",function(e){\n")
+                .append("storePosV(tp.domNode.clientHeight);")
+                .append("});\n");
         }
         js.append("});");
         return js.toString();

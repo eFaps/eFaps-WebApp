@@ -161,7 +161,7 @@ public class ContentPaneBehavior
                                final ComponentTag _tag)
     {
         super.onComponentTag(_component, _tag);
-        _tag.put("data-dojo-type", "dijit.layout.ContentPane");
+        _tag.put("data-dojo-type", "dijit/layout/ContentPane");
         _tag.append("data-dojo-props", "region: '" + this.region.getKey() + "'", ",");
         if (this.splitter) {
             _tag.append("data-dojo-props", "splitter: true", ",");

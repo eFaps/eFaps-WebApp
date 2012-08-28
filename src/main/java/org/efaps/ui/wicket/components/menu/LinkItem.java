@@ -185,13 +185,14 @@ public class LinkItem
     protected CharSequence getOnClickScript(final CharSequence _url)
     {
         final StringBuilder js = new StringBuilder()
-            .append("dijit.byId(\"").append("mainPanel")
+            .append("require([\"dijit/registry\"], function(registry){ ")
+            .append("registry.byId(\"").append("mainPanel")
             .append("\").set(\"content\", dojo.create(\"iframe\", {")
             .append("\"id\": \"").append(MainPage.IFRAME_ID)
             .append("\",\"src\": \"").append(_url)
             .append("\",\"style\": \"border: 0; width: 100%; height: 99%\"")
             .append(",\"id\": \"").append(MainPage.IFRAME_ID).append("\"")
-            .append("}));");
+            .append("}));});");
         return js;
     }
 }

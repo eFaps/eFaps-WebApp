@@ -145,7 +145,7 @@ public class AjaxLoadInTargetLink<T>
                 final CharSequence url = urlFor(new RenderPageRequestHandler(new PageProvider(page)));
 
                 final StringBuilder js = new StringBuilder()
-                    .append(this.target.key).append(".dijit.byId(\"").append("mainPanel")
+                    .append(this.target.key).append(".dijit.registry.byId(\"").append("mainPanel")
                     .append("\").set(\"content\", dojo.create(\"iframe\",{")
                     .append("\"id\": \"").append(MainPage.IFRAME_ID)
                     .append("\",\"src\": \"./wicket/").append(url)

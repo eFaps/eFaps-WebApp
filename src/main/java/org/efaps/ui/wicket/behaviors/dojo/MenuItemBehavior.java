@@ -53,7 +53,7 @@ public class MenuItemBehavior
                                final ComponentTag _tag)
     {
         super.onComponentTag(_component, _tag);
-        _tag.put("data-dojo-type", "dijit.MenuItem");
+        _tag.put("data-dojo-type", "dijit/MenuItem");
         _tag.put("data-dojo-props", "class:\"eFapsMenuItem\"");
     }
 

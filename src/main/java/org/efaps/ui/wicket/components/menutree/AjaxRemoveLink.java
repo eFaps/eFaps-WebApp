@@ -83,12 +83,14 @@ public class AjaxRemoveLink
         super.updateAjaxAttributes(_attributes);
         final AjaxCallListener listener = new AjaxCallListener();
         final StringBuilder js = new StringBuilder();
-        js.append("dijit.byId(\"").append(((ContentContainerPage) getPage()).getCenterPanelId())
+        js.append("require([\"dijit/registry\"], function(registry){ ")
+            .append("registry.byId(\"").append(((ContentContainerPage) getPage()).getCenterPanelId())
             .append("\").set(\"content\", dojo.create(\"iframe\", {")
             .append("\"src\": \"")
             .append(AjaxRemoveLink.this.urlFor(ILinkListener.INTERFACE, new PageParameters()))
             .append("\",\"style\": \"border: 0; width: 100%; height: 99%\"")
-            .append("})); ");
+            .append("})); ")
+            .append("});");
         listener.onBefore(js);
         _attributes.getAjaxCallListeners().add(listener);
     }

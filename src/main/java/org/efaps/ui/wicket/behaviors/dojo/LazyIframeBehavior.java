@@ -55,14 +55,14 @@ public class LazyIframeBehavior
     {
         super.renderHead(_component, _response);
         final StringBuilder js = new StringBuilder()
-            .append("require([\"dojo/ready\"]);")
-            .append("dojo.ready(function() {")
-            .append("dijit.byId(\"").append(_component.getMarkupId())
+            .append("require([\"dojo/ready\",\"dijit/registry\"], function(ready, registry) {")
+            .append("ready(function() {")
+            .append("registry.byId(\"").append(_component.getMarkupId())
             .append("\").set(\"content\", dojo.create(\"iframe\", {")
             .append("\"src\": \"").append(_component.urlFor(ILinkListener.INTERFACE, new PageParameters()))
             .append("\",\"style\": \"border: 0; width: 100%; height: 99%\", \"nodeId\": \"jan\"")
             .append("}));")
-            .append("});");
+            .append("});});");
         _response.render(JavaScriptHeaderItem.forScript(js, _component.getMarkupId()));
     }
 }

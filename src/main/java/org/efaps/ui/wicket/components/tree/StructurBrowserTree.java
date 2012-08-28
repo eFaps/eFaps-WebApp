@@ -225,7 +225,7 @@ public class StructurBrowserTree
             super.updateAjaxAttributes(_attributes);
             final AjaxCallListener listener = new AjaxCallListener();
             final StringBuilder js = new StringBuilder();
-            js.append("dijit.byId(\"").append(((ContentContainerPage) getPage()).getCenterPanelId())
+            js.append("dijit.registry.byId(\"").append(((ContentContainerPage) getPage()).getCenterPanelId())
                 .append("\").set(\"content\", dojo.create(\"iframe\", {")
                 .append("\"src\": \"")
                 .append(getComponent().urlFor(ILinkListener.INTERFACE, new PageParameters()))
