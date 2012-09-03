@@ -33,8 +33,8 @@ import org.apache.wicket.util.iterator.ComponentHierarchyIterator;
 import org.efaps.ui.wicket.behaviors.update.IRemoteUpdateListener;
 import org.efaps.ui.wicket.behaviors.update.IRemoteUpdateable;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
-import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -214,6 +214,22 @@ public class MenuTree
             if (child.getInstanceKey().equals(_instanceKey)
                             && child.getCommandUUID().equals(_commandUUID)) {
                 old = true;
+                child.setSelected(true);
+                menuItem.setSelected(false);
+                final ComponentHierarchyIterator iterator = visitChildren(MenuItem.class);
+                while (iterator.hasNext()) {
+                    final Component comp = iterator.next();
+                    final Object object = comp.getDefaultModelObject();
+                    if (object != null && object instanceof UIMenuItem) {
+                        if (((UIMenuItem) object).isSelected()) {
+                            _target.add(getSelected());
+                            setSelected(comp);
+                            _target.add(getSelected());
+                            break;
+                        }
+                    }
+                }
+                break;
             }
         }
 
@@ -226,8 +242,6 @@ public class MenuTree
             expand(newMenuItem);
             menuItem.setSelected(false);
             _target.add(getSelected());
-        } else {
-
         }
     }
 

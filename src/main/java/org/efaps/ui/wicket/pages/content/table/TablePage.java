@@ -32,8 +32,8 @@ import org.efaps.ui.wicket.components.table.header.HeaderPanel;
 import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
-import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
 
 /**
@@ -120,7 +120,8 @@ public class TablePage
     }
 
     /**
-     * @param _model modle for the table
+     * @param _model            modle for the table
+     * @param _pageReference    reference top the page referenced
      * @throws EFapsException on error
      */
     public TablePage(final IModel<UITable> _model,
@@ -131,10 +132,10 @@ public class TablePage
     }
 
     /**
-     * @param _uuid
-     * @param _instanceKey
-     * @param _calledByPageRef
-     * @throws EFapsException
+     * @param _uuid             UUID of the calling command
+     * @param _instanceKey      key to the instance
+     * @param _pageReference    reference top the page referenced
+     * @throws EFapsException on error
      */
     public TablePage(final UUID _commandUUID,
                      final String _instanceKey,

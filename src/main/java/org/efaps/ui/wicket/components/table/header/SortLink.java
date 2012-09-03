@@ -88,9 +88,11 @@ public class SortLink
 
             AbstractContentPage page;
             if (getPage() instanceof TablePage) {
-                page = new TablePage(new TableModel(uiTable), true);
+                page = new TablePage(new TableModel(uiTable),
+                                ((AbstractContentPage) getPage()).getCalledByPageReference());
             } else {
-                page = new FormPage(new FormModel((UIForm) getPage().getDefaultModelObject()), true);
+                page = new FormPage(new FormModel((UIForm) getPage().getDefaultModelObject()),
+                                ((AbstractContentPage) getPage()).getCalledByPageReference());
             }
             getRequestCycle().setResponsePage(page);
         } catch (final EFapsException e) {
