@@ -24,7 +24,6 @@ import java.util.List;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.ComponentTag;
-import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -99,11 +98,6 @@ public class PickerPanel
         private static final long serialVersionUID = 1L;
 
         /**
-         * To be added.
-         */
-        private boolean odd = true;
-
-        /**
          * @param _wicketId wixcket id of the component
          * @param _list     list to be used
          */
@@ -115,20 +109,23 @@ public class PickerPanel
         }
 
         @Override
+        protected ListItem<String> newItem(final int _index,
+                                           final IModel<String> _itemModel)
+        {
+            final ListItem<String> ret = super.newItem(_index, _itemModel);
+            if (_index % 2 == 0) {
+                ret.add(AttributeModifier.append("class", "eFapsTableRowOdd"));
+            } else {
+                ret.add(AttributeModifier.append("class", "eFapsTableRowEven"));
+            }
+            return ret;
+        }
+
+        @Override
         protected void populateItem(final ListItem<String> _item)
         {
-            final WebMarkupContainer tr = new WebMarkupContainer("listview_tr");
-            _item.add(tr);
-
-            if (this.odd) {
-                tr.add(AttributeModifier.append("class", "eFapsTableRowOdd"));
-            } else {
-                tr.add(AttributeModifier.append("class", "eFapsTableRowEven"));
-            }
-
-            this.odd = !this.odd;
-            tr.add(new ValueCheckBox<Integer>("listview_tr_check", new Model<Integer>(_item.getIndex())));
-            tr.add(new Label("listview_tr_label", _item.getDefaultModelObjectAsString()));
+            _item.add(new ValueCheckBox<Integer>("listview_tr_check", new Model<Integer>(_item.getIndex())));
+            _item.add(new Label("listview_tr_label", _item.getDefaultModelObjectAsString()));
         }
     }
 
