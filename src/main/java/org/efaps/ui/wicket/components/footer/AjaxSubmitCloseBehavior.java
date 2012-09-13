@@ -298,21 +298,6 @@ public class AjaxSubmitCloseBehavior
     }
 
     /**
-     * In case of a file upload a precondition is needed.
-     *
-     * @return precondition JavaScript
-     */
-    @Override
-    protected CharSequence getPreconditionScript()
-    {
-        String ret = null;
-        if (this.uiObject instanceof UIForm && ((UIForm) this.uiObject).isFileUpload()) {
-            ret = "return eFapsFileInput()";
-        }
-        return ret;
-    }
-
-    /**
      * Execute the events which are related to CommandAbstract calling the Form.
      *
      * @param _target   AjaxRequestTarget to be used in the case a ModalPage
