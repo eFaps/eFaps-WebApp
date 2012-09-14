@@ -155,6 +155,7 @@ public class SubElement
 
         if (strucBrws.isShowCheckBoxes()) {
             final CellPanel cell = new CellPanel(cellsBeforeRepeater.newChildId(), strucBrws.getInstanceKey());
+            cell.add(AttributeModifier.append("class", "eFapsTableCellClear"));
             cell.add(AttributeModifier.append("class", "eFapsTableCheckBoxCell eFapsCellFixedWidth" + i));
             cell.setOutputMarkupId(true);
             cellsBeforeRepeater.add(cell);
@@ -184,6 +185,9 @@ public class SubElement
                                 updateMenu, new UITable(strucBrws.getCommandUUID(), strucBrws.getInstanceKey()), 0);
                 cell.setOutputMarkupId(true);
                 repeater.add(cell);
+            }
+            if (i == strucBrws.getTableId()) {
+                cell.add(AttributeModifier.append("class", "eFapsTableCellClear"));
             }
             if (uiCell.isFixedWidth()) {
                 if (firstCell) {

@@ -93,7 +93,7 @@ public class RowPanel
         if (uiTable.isShowCheckBoxes()) {
             final CellPanel cellpanel = new CellPanel(cellRepeater.newChildId(), uirow.getInstanceKey());
             cellpanel.setOutputMarkupId(true);
-            cellpanel.add(AttributeModifier.append("class", "eFapsTableCheckBoxCell"));
+            cellpanel.add(AttributeModifier.append("class", "eFapsTableCheckBoxCell eFapsTableCellClear"));
             cellRepeater.add(cellpanel);
             i++;
             firstCell = true;
@@ -102,7 +102,7 @@ public class RowPanel
             final AjaxAddRemoveRowPanel remove = new AjaxAddRemoveRowPanel(cellRepeater.newChildId(),
                                                                            new TableModel(uiTable), this);
             remove.setOutputMarkupId(true);
-            remove.add(AttributeModifier.append("class", "eFapsTableRemoveRowCell"));
+            remove.add(AttributeModifier.append("class", "eFapsTableRemoveRowCell eFapsTableCellClear"));
             cellRepeater.add(remove);
             i++;
             firstCell = true;
@@ -137,6 +137,9 @@ public class RowPanel
                 } else {
                     cell.add(AttributeModifier.append("class",  "eFapsTableCell eFapsCellWidth" + i));
                 }
+            }
+            if (cellRepeater.size() < 1) {
+                cell.add(AttributeModifier.append("class", "eFapsTableCellClear"));
             }
             cellRepeater.add(cell);
             i++;
