@@ -59,6 +59,7 @@ public class ClassificationTree
                               final IModel<UIClassification> _model)
     {
         super(_wicketId, new ClassificationTreeProvider(_model));
+        setOutputMarkupId(true);
         if ("human".equals(Configuration.getAttribute(ConfigAttribute.CLASSTREE_CLASS))) {
             add(new HumanTheme());
         } else if ("windows".equals(Configuration.getAttribute(ConfigAttribute.CLASSTREE_CLASS))) {
