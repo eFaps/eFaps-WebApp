@@ -82,7 +82,7 @@ public class AjaxDownloadBehavior
                 url = url + (url.contains("?") ? "&" : "?");
                 url = url + "antiCache=" + System.currentTimeMillis();
             }
-            _target.appendJavaScript("top.window.location.href='" + url + "';");
+            _target.prependJavaScript("top.window.location.href='" + url + "';");
         }
     }
 

@@ -124,12 +124,13 @@ public class ModalWindowContainer
     public void close(final AjaxRequestTarget _target)
     {
         super.close(_target);
-        if (this.reloadChild) {
-            _target.prependJavaScript(getReloadJavaScript());
-        }
         if (this.targetShowFile) {
             ((AbstractMergePage) getPage()).getDownloadBehavior().initiate(_target);
         }
+        if (this.reloadChild) {
+            _target.prependJavaScript(getReloadJavaScript());
+        }
+
     }
 
     /**
