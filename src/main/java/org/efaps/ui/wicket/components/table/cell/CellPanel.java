@@ -134,8 +134,10 @@ public class CellPanel
                 add(new WebComponent("numbering").setVisible(false));
             }
 
+            // make the links
             WebMarkupContainer celllink;
-            if (uiTableCell.getReference() == null) {
+            // no link if edit or create or there is no definition
+            if (uiTableCell.getReference() == null || (_uitable.isCreateMode() || _uitable.isEditMode())) {
                 celllink = new WebMarkupContainer("link");
                 celllink.setVisible(false);
             } else {
