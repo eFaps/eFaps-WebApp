@@ -40,7 +40,6 @@ import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.models.objects.UISearchItem;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.util.EFapsException;
 
 /**
  * TODO comment!
@@ -73,6 +72,7 @@ public class MenuBarPanel
         super(_wicketId, _model);
         add(new MenuBarBehavior());
         add(AttributeModifier.append("class", "eFapsMenuBarPanel"));
+        add(AttributeModifier.append("style", "display:none"));
         if (_model == null) {
             add(new WebMarkupContainer("itemRepeater"));
         } else {

@@ -70,6 +70,10 @@ public class MenuBarBehavior
         _response.render(JavaScriptHeaderItem.forScript(
                         "require([\"dijit/MenuBar\", \"dojo/parser\"]);",
                         MenuBarBehavior.class.getName()));
+        _response.render(OnDojoReadyHeaderItem.forScript(
+                        "require([\"dojo/dom-style\"], function(domStyle){\n" +
+                        "  domStyle.set(\"" + _component.getMarkupId(true) + "\",\"display\",\"block\");" +
+                        "});"));
     }
 
 }
