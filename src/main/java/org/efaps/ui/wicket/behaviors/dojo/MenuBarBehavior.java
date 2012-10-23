@@ -72,7 +72,7 @@ public class MenuBarBehavior
                         MenuBarBehavior.class.getName()));
         _response.render(OnDojoReadyHeaderItem.forScript(
                         "require([\"dojo/dom-style\"], function(domStyle){\n" +
-                        "  domStyle.set(\"" + _component.getMarkupId(true) + "\",\"display\",\"block\");" +
+                        "  domStyle.set(\"" + _component.getMarkupId(true) + "\",\"visibility\",\"visible\");" +
                         "});"));
     }
 
