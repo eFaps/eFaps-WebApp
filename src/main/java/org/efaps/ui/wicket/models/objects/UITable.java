@@ -493,7 +493,9 @@ public class UITable
                 headermodel.setFilter(false);
                 getHeaders().add(headermodel);
                 if (!field.isFixedWidth()) {
-                    if (userWidthList != null) {
+                    if (userWidthList != null
+                                    && ((isShowCheckBoxes() && (i + 1) < userWidthList.size())
+                                                    || (!isShowCheckBoxes() && i < userWidthList.size()))) {
                         if (isShowCheckBoxes()) {
                             headermodel.setWidth(userWidthList.get(i + 1));
                         } else {
