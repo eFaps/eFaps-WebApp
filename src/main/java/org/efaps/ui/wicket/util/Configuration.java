@@ -35,7 +35,7 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class Configuration
+public final class Configuration
 {
 
     /**
@@ -59,7 +59,9 @@ public class Configuration
         /** position of the vertical splitter. */
         SPLITTERPOSVERTICAL(true, true, "PositionOfVerticalSplitter", "50%"),
         /** StyelSheet for the Structur Browser Tree. (human, windows) */
-        STRUCTREE_CLASS(true, true, "StructurTreeStyleSheet", "windows");
+        STRUCTREE_CLASS(true, true, "StructurTreeStyleSheet", "windows"),
+        /** StyelSheet for the Structur Browser Tree. (human, windows) */
+        STRUCBRWSRTREE_CLASS(true, true, "StructurBrowserTreeStyleSheet", "human");
 
         /**
          * Stores the key for this Attribute..
@@ -107,6 +109,13 @@ public class Configuration
         {
             return this.key;
         }
+    }
+
+    /**
+     * Private Constructor to provide Singleton.
+     */
+    private Configuration()
+    {
     }
 
     /**
@@ -184,9 +193,11 @@ public class Configuration
 
     /**
      * @param _attribute the attribute the value is search for
-     * @return the value for the configuraion
+     * @return the value for the configuration
+     * @throws EFapsException on error
      */
     public static Properties getAttributeAsProperties(final ConfigAttribute _attribute)
+        throws EFapsException
     {
         final Properties ret = new Properties();
         final String value = Configuration.getAttribute(_attribute);
@@ -194,7 +205,7 @@ public class Configuration
             try {
                 ret.load(new StringReader(value));
             } catch (final IOException e) {
-
+                throw new EFapsException("IOException", e);
             }
         }
         return ret;

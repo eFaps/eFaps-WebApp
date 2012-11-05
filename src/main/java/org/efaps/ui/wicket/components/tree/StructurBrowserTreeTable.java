@@ -27,6 +27,7 @@ import org.apache.wicket.PageReference;
 import org.apache.wicket.extensions.markup.html.repeater.tree.NestedTree;
 import org.apache.wicket.extensions.markup.html.repeater.tree.Node;
 import org.apache.wicket.extensions.markup.html.repeater.tree.theme.HumanTheme;
+import org.apache.wicket.extensions.markup.html.repeater.tree.theme.WindowsTheme;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.util.SetModel;
@@ -40,6 +41,8 @@ import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.ui.wicket.util.Configuration;
+import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 
 /**
  * This class renders a TreeTable, which loads the children asynchron.<br>
@@ -79,7 +82,6 @@ public class StructurBrowserTreeTable
      *
      * @param _wicketId wicket id for this component
      * @param _model model
-     * @param _columns columns
      * @param _parentLink must the link be done over the parent
      * @param _datePickers DatePicker
      */
@@ -90,7 +92,11 @@ public class StructurBrowserTreeTable
     {
         super(_wicketId, new StructurBrowserProvider(_model),
                         new SetModel<UIStructurBrowser>(_model.getObject().getExpandedBrowsers()));
-        add(new HumanTheme());
+        if ("human".equals(Configuration.getAttribute(ConfigAttribute.STRUCBRWSRTREE_CLASS))) {
+            add(new HumanTheme());
+        } else if ("windows".equals(Configuration.getAttribute(ConfigAttribute.STRUCBRWSRTREE_CLASS))) {
+            add(new WindowsTheme());
+        }
         this.parentLink = _parentLink;
         this.datePickers = _datePickers;
     }
@@ -113,8 +119,7 @@ public class StructurBrowserTreeTable
         if (pageRef != null && pageRef.getPage() instanceof ContentContainerPage) {
             updateMenu = true;
         }
-        return new CellPanel(_wicketId, new UIModel<UITableCell>(uicell),
-                        updateMenu, strucBrws, 0);
+        return new CellPanel(_wicketId, new UIModel<UITableCell>(uicell), updateMenu, strucBrws, 0);
     }
 
     @Override
@@ -124,6 +129,12 @@ public class StructurBrowserTreeTable
         _uiStrBrws.setExpanded(true);
     }
 
+    /**
+     * Collapse the given node, tries to update the affected branch if the
+     * change happens on an {@link AjaxRequestTarget}.
+     *
+     * @param _uiStrBrws    the object to collapse
+     */
     @Override
     public void collapse(final UIStructurBrowser _uiStrBrws)
     {
@@ -132,14 +143,12 @@ public class StructurBrowserTreeTable
     }
 
     /**
-    * Create a new component for a node.
-    *
-    * @param _wicketId
-    *            the component id
-    * @param _model
-    *            the model containing the node
-    * @return created component
-    */
+     * Create a new component for a node.
+     *
+     * @param _wicketId  the component id
+     * @param _model     the model containing the node
+     * @return created component
+     */
     @Override
     public Component newNodeComponent(final String _wicketId,
                                       final IModel<UIStructurBrowser> _model)
@@ -156,11 +165,6 @@ public class StructurBrowserTreeTable
                 return newContentComponent(_wicketId, _model);
             }
 
-            /*
-             * (non-Javadoc)
-             * @see org.apache.wicket.extensions.markup.html.repeater.tree.Node#
-             * createJunctionComponent(java.lang.String)
-             */
             @Override
             protected MarkupContainer createJunctionComponent(final String _id)
             {
@@ -177,8 +181,8 @@ public class StructurBrowserTreeTable
     /**
      * Create a new subtree.
      *
-     * @param id component id
-     * @param model the model of the new subtree
+     * @param _wicketId     wicket id for this component
+     * @param _model        the model of the new subtree
      * @return the created component
      */
     @Override

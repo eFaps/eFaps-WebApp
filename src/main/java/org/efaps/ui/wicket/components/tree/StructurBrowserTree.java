@@ -86,7 +86,7 @@ public class StructurBrowserTree
     {
         super(_wicketId, new StructurBrowserProvider(_model),
                         new SetModel<UIStructurBrowser>(_model.getObject().getExpandedBrowsers()));
-        if ("windows".equals(Configuration.getAttribute(ConfigAttribute.STRUCTREE_CLASS))) {
+        if ("human".equals(Configuration.getAttribute(ConfigAttribute.STRUCTREE_CLASS))) {
             add(new HumanTheme());
         } else if ("windows".equals(Configuration.getAttribute(ConfigAttribute.STRUCTREE_CLASS))) {
             add(new WindowsTheme());

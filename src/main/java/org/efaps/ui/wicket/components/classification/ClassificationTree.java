@@ -34,13 +34,15 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.ui.wicket.models.objects.UIClassification;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
+import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Renders the tree for selecting a clqssification.
  *
  * @author The eFaps Team
- * @version $Id: ClassificationTree.java 7534 2012-05-19 09:32:04Z
- *          jan@moxter.net $
+ * @version $Id$
  */
 public class ClassificationTree
     extends NestedTree<UIClassification>
@@ -50,6 +52,11 @@ public class ClassificationTree
      * /** Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(ClassificationTree.class);
 
     /**
      * @param _wicketId wicketId of this component
@@ -66,7 +73,13 @@ public class ClassificationTree
             add(new WindowsTheme());
         }
 
-        final Properties properties = Configuration.getAttributeAsProperties(ConfigAttribute.CLASSTREE_EXPAND);
+        Properties properties;
+        try {
+            properties = Configuration.getAttributeAsProperties(ConfigAttribute.CLASSTREE_EXPAND);
+        } catch (final EFapsException e) {
+            ClassificationTree.LOG.error("cannot read Properties from Configuration.");
+            properties = new Properties();
+        }
 
         final String expand = properties.getProperty(Type.get(_model.getObject().getClassificationUUID()).getName(),
                         "true");
@@ -75,6 +88,11 @@ public class ClassificationTree
         }
     }
 
+    /**
+     * Recursive method to add child classifcations.
+     *
+     * @param _uiClass classification to add
+     */
     private void addAll(final UIClassification _uiClass)
     {
         getModelObject().add(_uiClass);
