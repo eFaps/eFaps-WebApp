@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2011 The eFaps Team
+ * Copyright 2003 - 2012 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ import org.apache.wicket.util.string.StringValue;
  * @author The eFaps Team
  * @version $Id$
  */
-public class AbstractRemoteUpdateBehavior
+public abstract class AbstractRemoteUpdateBehavior
     extends AbstractDefaultAjaxBehavior
 {
 
@@ -47,17 +47,26 @@ public class AbstractRemoteUpdateBehavior
      */
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Mapping from key to listener.
+     */
     private final Map<String, IRemoteUpdateListener> key2listener = new HashMap<String, IRemoteUpdateListener>();
 
+    /**
+     * Name of the function.
+     */
     private final String funtionName;
 
+    /**
+     * @param _funtionName name of the function
+     */
     public AbstractRemoteUpdateBehavior(final String _funtionName)
     {
         this.funtionName = _funtionName;
     }
 
     /**
-     * @param _listener
+     * @param _listener listener that will be registered
      */
     public void register(final IRemoteUpdateListener _listener)
     {
