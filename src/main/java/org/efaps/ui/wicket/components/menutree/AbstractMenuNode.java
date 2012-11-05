@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2011 The eFaps Team
+ * Copyright 2003 - 2012 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,28 +40,46 @@ import org.efaps.ui.wicket.models.objects.UIMenuItem;
 public abstract class AbstractMenuNode
     extends Node<UIMenuItem>
 {
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
+    /**
+     * Tree this Node belongs to.
+     */
     private final AbstractTree<UIMenuItem> tree;
 
     /**
-     * @param _id
-     * @param _tree
-     * @param _model
+     * @param _wicketId     wicket id for this component
+     * @param _tree         tree this node belongs to
+     * @param _model        model for this component
      */
-    public AbstractMenuNode(final String _id,
-                    final AbstractTree<UIMenuItem> _tree,
-                    final IModel<UIMenuItem> _model)
+    public AbstractMenuNode(final String _wicketId,
+                            final AbstractTree<UIMenuItem> _tree,
+                            final IModel<UIMenuItem> _model)
     {
-        super(_id, _tree, _model);
+        super(_wicketId, _tree, _model);
         this.tree = _tree;
         add(AttributeModifier.append("class", "eFapsMenuTreeNode"));
     }
 
 
-    @Override
-    protected MarkupContainer createJunctionComponent(final String id)
+    /**
+     * Getter method for the instance variable {@link #tree}.
+     *
+     * @return value of instance variable {@link #tree}
+     */
+    public AbstractTree<UIMenuItem> getTree()
     {
-        return new AjaxLink<UIMenuItem>(id)
+        return this.tree;
+    }
+
+
+    @Override
+    protected MarkupContainer createJunctionComponent(final String _wicketId)
+    {
+        return new AjaxLink<UIMenuItem>(_wicketId)
         {
 
             private static final long serialVersionUID = 1L;
