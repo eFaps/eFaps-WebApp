@@ -29,8 +29,10 @@ import org.efaps.ui.wicket.models.objects.AbstractUIObject;
  * @author The eFaps Team
  * @version $Id$
  */
-public class UIHiddenCell extends AbstractUICell
+public class UIHiddenCell
+    extends AbstractUICell
 {
+
     /**
      * Needed for serialization.
      */
@@ -42,12 +44,14 @@ public class UIHiddenCell extends AbstractUICell
     private boolean added = false;
 
     /**
-     * @param _parent       parent
-     * @param _fieldValue   field value
-     * @param _instanceKey  instance key
-     * @param _cellvalue    value of the cell
+     * @param _parent parent
+     * @param _fieldValue field value
+     * @param _instanceKey instance key
+     * @param _cellvalue value of the cell
      */
-    public UIHiddenCell(final AbstractUIObject _parent, final FieldValue _fieldValue, final String _instanceKey,
+    public UIHiddenCell(final AbstractUIObject _parent,
+                        final FieldValue _fieldValue,
+                        final String _instanceKey,
                         final String _cellvalue)
     {
         super(_parent, _fieldValue, _instanceKey, _cellvalue);

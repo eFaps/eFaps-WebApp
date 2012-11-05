@@ -25,12 +25,10 @@ import java.util.Map;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
-import org.apache.wicket.RestartResponseException;
-import org.apache.wicket.markup.ComponentTag;
-import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.efaps.admin.datamodel.ui.DateTimeUI;
 import org.efaps.admin.datamodel.ui.DateUI;
 import org.efaps.admin.ui.field.Field.Display;
@@ -39,15 +37,13 @@ import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.table.AjaxAddRemoveRowPanel;
 import org.efaps.ui.wicket.components.table.TablePanel;
 import org.efaps.ui.wicket.components.table.cell.CellPanel;
+import org.efaps.ui.wicket.models.AbstractInstanceObject;
 import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.cell.UIHiddenCell;
 import org.efaps.ui.wicket.models.cell.UITableCell;
-import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.models.objects.UIRow;
 import org.efaps.ui.wicket.models.objects.UITable;
-import org.efaps.ui.wicket.pages.error.ErrorPage;
-import org.efaps.ui.wicket.util.EFapsKey;
 import org.efaps.util.EFapsException;
 
 /**
@@ -151,35 +147,6 @@ public class RowPanel
         for (final UIHiddenCell cell : uirow.getHidden()) {
             hiddenRepeater.add(new LabelComponent(hiddenRepeater.newChildId(), cell.getCellValue()));
         }
-
-        final WebComponent rowId = new WebComponent("rowId") {
-
-            /**
-             * Needed for serialization.
-             */
-            private static final long serialVersionUID = 1L;
-
-            /**
-             * @see org.apache.wicket.Component#onComponentTag(org.apache.wicket.markup.ComponentTag)
-             */
-            @Override
-            protected void onComponentTag(final ComponentTag _tag)
-            {
-                super.onComponentTag(_tag);
-                final AbstractUIPageObject uiObject = (AbstractUIPageObject) getPage().getDefaultModelObject();
-                uirow.setUserinterfaceId(uiObject.getNewRandom());
-
-                try {
-                    uiObject.getUiID2Oid().put(uirow.getUserinterfaceId(), uirow.getInstance() == null
-                                                                            ? null : uirow.getInstance().getOid());
-                } catch (final EFapsException e) {
-                    throw new RestartResponseException(new ErrorPage(e));
-                }
-                _tag.put("name", EFapsKey.TABLEROW_NAME.getKey());
-                _tag.put("value", uirow.getUserinterfaceId());
-                _tag.put("type" , "hidden");
-            }
-        };
-        this.add(rowId);
+        this.add(new RowId("rowId", Model.of((AbstractInstanceObject) uirow)));
     }
 }

@@ -39,6 +39,7 @@ import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.util.string.StringValue;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.behaviors.dojo.DnDBehavior;
+import org.efaps.ui.wicket.components.tree.StructurBrowserTreeTable;
 import org.efaps.ui.wicket.models.FormModel;
 import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.UIModel;
@@ -49,8 +50,8 @@ import org.efaps.ui.wicket.models.objects.UITableHeader;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
-import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
 
 /**
@@ -84,12 +85,14 @@ public class HeaderPanel
      */
     private final String css;
 
+    /**
+     * The Panel the table resides in.
+     */
     private final Panel tablepanel;
 
     /**
-     * @param _string
-     * @param _tree
-     * @param _model
+     * @param _wicketId wicket id for this component
+     * @param _panel    the Panel the table resides in
      */
     public HeaderPanel(final String _wicketId,
                        final Panel _panel)
@@ -98,8 +101,9 @@ public class HeaderPanel
     }
 
     /**
-     * @param _wicketId wicketId fo rhtis component
-     * @param _tablePanel the table panel this header panel belongs to
+     * @param _wicketId wicket id for this component
+     * @param _panel    the Panel the table resides in
+     * @param _model    model for this panel
      */
     public HeaderPanel(final String _wicketId,
                        final Panel _panel,
@@ -136,7 +140,8 @@ public class HeaderPanel
             i++;
             firstcell = true;
         }
-        if (uitable.isEditable()) {
+        // add the add/remove buttons in edit mode for normal tables
+        if (uitable.isEditable() && !(this.tablepanel instanceof StructurBrowserTreeTable)) {
             final HeaderCellPanel cell = new HeaderCellPanel(cellRepeater.newChildId(), false,
                             "eFapsTableRemoveRowCell", i);
             cell.setOutputMarkupId(true);
@@ -371,8 +376,7 @@ public class HeaderPanel
         public String getJavaScript()
         {
             final StringBuilder ret = new StringBuilder();
-            ret.append("  function(){\n    ")
-                            .append(getCallbackScript()).append("\n  }\n");
+            ret.append("  function(){\n    ").append(getCallbackScript()).append("\n  }\n");
             return ret.toString();
         }
 

@@ -57,7 +57,7 @@ public enum EFapsKey {
     STRUCBRWSR_ALLOWSCHILDS("eFapsStructurBrowserNodeAllowsChilds"),
 
     /** Key used as name for the hidden field that makes a row unique. */
-    TABLEROW_NAME("eFapsTableRowID"),
+    TABLEROW_NAME("eFapsTRID"),
     /** key used to store instances in a request. */
     INSTANCE_CACHEKEY("eFapsInstancesInRequest");
 

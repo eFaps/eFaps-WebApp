@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2011 The eFaps Team
+ * Copyright 2003 - 2012 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,8 +35,13 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.RefreshingView;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
+import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.table.cell.CellPanel;
+import org.efaps.ui.wicket.components.table.row.RowId;
+import org.efaps.ui.wicket.models.AbstractInstanceObject;
 import org.efaps.ui.wicket.models.UIModel;
+import org.efaps.ui.wicket.models.cell.UIHiddenCell;
 import org.efaps.ui.wicket.models.cell.UIStructurBrowserTableCell;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
@@ -44,6 +49,8 @@ import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO comment!
@@ -56,24 +63,32 @@ public class SubElement
 {
 
     /**
-     *
+     * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(SubElement.class);
+
+    /**
+     * SubTree element.
+     */
     private NestedTree<UIStructurBrowser> tree;
 
     /**
-     * @param _id
-     * @param _tree
-     * @param _model
+     * @param _wicketId wicket id for this component
+     * @param _tree Nested tree element
+     * @param _model model for this component
      */
-    public SubElement(final String _id,
+    public SubElement(final String _wicketId,
                       final NestedTree<UIStructurBrowser> _tree,
                       final IModel<UIStructurBrowser> _model)
     {
-        super(_id, _model);
+        super(_wicketId, _model);
 
-        if (_tree == null)
-        {
+        if (_tree == null) {
             throw new IllegalArgumentException("argument [tree] cannot be null");
         }
         this.tree = _tree;
@@ -90,21 +105,20 @@ public class SubElement
             }
 
             @Override
-            protected Item<UIStructurBrowser> newItem(final String id,
-                                                      final int index,
-                                                      final IModel<UIStructurBrowser> model)
+            protected Item<UIStructurBrowser> newItem(final String _wicketId,
+                                                      final int _index,
+                                                      final IModel<UIStructurBrowser> _model)
             {
-                return newBranchItem(id, index, model);
+                return newBranchItem(_wicketId, _index, _model);
             }
 
             @Override
-            protected void populateItem(final Item<UIStructurBrowser> item)
+            protected void populateItem(final Item<UIStructurBrowser> _item)
             {
                 try {
-                    populateBranch(item);
+                    populateBranch(_item);
                 } catch (final EFapsException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    SubElement.LOG.error("EFapsException", e);
                 }
             }
         };
@@ -113,34 +127,50 @@ public class SubElement
 
             private static final long serialVersionUID = 1L;
 
-            public <S> Iterator<Item<S>> getItems(final IItemFactory<S> factory,
-                                                  final Iterator<IModel<S>> newModels,
-                                                  final Iterator<Item<S>> existingItems)
+            public <S> Iterator<Item<S>> getItems(final IItemFactory<S> _factory,
+                                                  final Iterator<IModel<S>> _newModels,
+                                                  final Iterator<Item<S>> _existingItems)
             {
-                return SubElement.this.tree.getItemReuseStrategy().getItems(factory, newModels, existingItems);
+                return SubElement.this.tree.getItemReuseStrategy().getItems(_factory, _newModels, _existingItems);
             }
         });
         add(branches);
     }
 
+    /**
+     * @return the model for this element
+     */
     @SuppressWarnings("unchecked")
     public IModel<UIStructurBrowser> getModel()
     {
         return (IModel<UIStructurBrowser>) getDefaultModel();
     }
 
+    /**
+     * @return the model object of this element
+     */
     public UIStructurBrowser getModelObject()
     {
         return getModel().getObject();
     }
 
-    protected BranchItem<UIStructurBrowser> newBranchItem(final String id,
-                                                          final int index,
-                                                          final IModel<UIStructurBrowser> model)
+    /**
+     * @param _wicketId wicket id for the branch item
+     * @param _index    index for the item
+     * @param _model    model for the item
+     * @return new BrancheItem
+     */
+    protected BranchItem<UIStructurBrowser> newBranchItem(final String _wicketId,
+                                                          final int _index,
+                                                          final IModel<UIStructurBrowser> _model)
     {
-        return new BranchItem<UIStructurBrowser>(id, index, model);
+        return new BranchItem<UIStructurBrowser>(_wicketId, _index, _model);
     }
 
+    /**
+     * @param _item item to be used for population
+     * @throws EFapsException on error
+     */
     protected void populateBranch(final Item<UIStructurBrowser> _item)
         throws EFapsException
     {
@@ -209,6 +239,14 @@ public class SubElement
             i++;
         }
         _item.add(SubElement.this.tree.newSubtree("subtree", model));
+
+        final RepeatingView hiddenRepeater = new RepeatingView("hiddenRepeater");
+        _item.add(hiddenRepeater);
+        for (final UIHiddenCell cell : strucBrws.getHidden()) {
+            hiddenRepeater.add(new LabelComponent(hiddenRepeater.newChildId(), cell.getCellValue()));
+        }
+
+        _item.add(new RowId("rowId", Model.of((AbstractInstanceObject) strucBrws)));
     }
 
     @Override
@@ -223,12 +261,20 @@ public class SubElement
         return ret;
     }
 
+    /**
+     * Iterator implementation for the SubElement.
+     */
     private final class ModelIterator
         implements Iterator<IModel<UIStructurBrowser>>
     {
-
+        /**
+         * children.
+         */
         private Iterator<? extends UIStructurBrowser> children;
 
+        /**
+         * Constructor.
+         */
         public ModelIterator()
         {
             final UIStructurBrowser t = getModel().getObject();
@@ -239,16 +285,27 @@ public class SubElement
             }
         }
 
+        /**
+         * not implemented.
+         */
         public void remove()
         {
             throw new UnsupportedOperationException();
         }
 
+        /**
+         * has this iterator a further element.
+         * @return true if next element
+         */
         public boolean hasNext()
         {
             return this.children.hasNext();
         }
 
+        /**
+         * Get the next element.
+         * @return Model
+         */
         public IModel<UIStructurBrowser> next()
         {
             return SubElement.this.tree.getProvider().model(this.children.next());

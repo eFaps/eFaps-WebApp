@@ -44,11 +44,6 @@ public class UIRow
     private static final long serialVersionUID = 1L;
 
     /**
-     * The id this row got for presentation in the userinterface.
-     */
-    private String userinterfaceId;
-
-    /**
      * The instance variable stores the values for the table.
      *
      * @see #getValues
@@ -140,26 +135,6 @@ public class UIRow
         return this.values;
     }
 
-    /**
-     * Getter method for the instance variable {@link #userinterfaceId}.
-     *
-     * @return value of instance variable {@link #userinterfaceId}
-     */
-    public String getUserinterfaceId()
-    {
-        return this.userinterfaceId;
-    }
-
-    /**
-     * Setter method for instance variable {@link #userinterfaceId}.
-     *
-     * @param _userinterfaceId value for instance variable {@link #userinterfaceId}
-     */
-
-    public void setUserinterfaceId(final String _userinterfaceId)
-    {
-        this.userinterfaceId = _userinterfaceId;
-    }
 
     /**
      * Getter method for the instance variable {@link #parent}.

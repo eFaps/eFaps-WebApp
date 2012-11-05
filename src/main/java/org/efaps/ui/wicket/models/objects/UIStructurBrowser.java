@@ -52,7 +52,6 @@ import org.efaps.admin.ui.Image;
 import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.Table;
 import org.efaps.admin.ui.field.Field;
-import org.efaps.admin.ui.field.Field.Display;
 import org.efaps.beans.ValueList;
 import org.efaps.beans.valueparser.ParseException;
 import org.efaps.beans.valueparser.ValueParser;
@@ -60,6 +59,7 @@ import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.PrintQuery;
+import org.efaps.ui.wicket.models.cell.UIHiddenCell;
 import org.efaps.ui.wicket.models.cell.UIStructurBrowserTableCell;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
@@ -198,6 +198,11 @@ public class UIStructurBrowser
     private final List<UIStructurBrowserTableCell> columns = new ArrayList<UIStructurBrowserTableCell>();
 
     /**
+     * Holds the hidden columns in case of a TableTree.
+     */
+    private final List<UIHiddenCell> hidden = new ArrayList<UIHiddenCell>();
+
+    /**
      * Holds the label of the Node which will be presented in the GUI.
      *
      * @see #toString()
@@ -253,11 +258,6 @@ public class UIStructurBrowser
      * The index of the column containing the browser.
      */
     private int browserFieldIndex;
-
-    /**
-     * This Row is used in case of edit to create new empty rows for the root.
-     */
-    private UIStructurBrowser emptyRow;
 
     /**
      * If true the tree is always expanded and the inks for expand and
@@ -531,52 +531,45 @@ public class UIStructurBrowser
                 }
                 i++;
             }
-            boolean row4Create = false;
             if (!multi.execute()) {
-                row4Create = isCreateMode();
                 type = getTypeFromEvent();
             }
             Attribute attr = null;
-            while (multi.next() || row4Create) {
+            while (multi.next()) {
                 Instance instance = multi.getCurrentInstance();
                 final UIStructurBrowser child = getNewStructurBrowser(instance, this);
                 child.setDirection(_map.get(instance));
                 for (final Field field : getTable().getFields()) {
-                    if (field.hasAccess(getMode(), getInstance())
-                                    && !field.isNoneDisplay(getMode()) && !field.isHiddenDisplay(getMode())) {
+                    if (field.hasAccess(getMode(), getInstance()) && !field.isNoneDisplay(getMode())) {
                         Object value = null;
                         attr = null;
-                        if (row4Create) {
-                            if (field.getAttribute() != null && type != null) {
-                                attr = type.getAttribute(field.getAttribute());
-                            }
+                        //the previous field might have set the different instance
+                        if (field.getSelectAlternateOID() == null) {
+                            instance = multi.getCurrentInstance();
                         } else {
-                            //the previous field might have set the different instance
-                            if (field.getSelectAlternateOID() == null) {
-                                instance = multi.getCurrentInstance();
-                            } else {
-                                instance = Instance.get(multi.<String>getSelect(field.getSelectAlternateOID()));
-                            }
-                            if (field.getSelect() != null) {
-                                value = multi.getSelect(field.getSelect());
-                                attr = multi.getAttribute4Select(field.getSelect());
-                            } else if (field.getAttribute() != null) {
-                                value = multi.getAttribute(field.getAttribute());
-                                attr = multi.getAttribute4Attribute(field.getAttribute());
-                            } else if (field.getPhrase() != null) {
-                                value = multi.getPhrase(field.getName());
-                            }
+                            instance = Instance.get(multi.<String>getSelect(field.getSelectAlternateOID()));
+                        }
+                        if (field.getSelect() != null) {
+                            value = multi.getSelect(field.getSelect());
+                            attr = multi.getAttribute4Select(field.getSelect());
+                        } else if (field.getAttribute() != null) {
+                            value = multi.getAttribute(field.getAttribute());
+                            attr = multi.getAttribute4Attribute(field.getAttribute());
+                        } else if (field.getPhrase() != null) {
+                            value = multi.getPhrase(field.getName());
                         }
                         final FieldValue fieldvalue = new FieldValue(field, attr, value, instance, getInstance(),
                                         new ArrayList<Instance>(multi.getInstanceList()));
                         String strValue;
                         String htmlTitle;
+                        boolean isHidden = false;
                         if ((isCreateMode() || isEditMode()) && field.isEditableDisplay(getMode())) {
                             strValue = fieldvalue.getEditHtml(getMode());
                             htmlTitle = fieldvalue.getStringValue(getMode());
                         } else if (field.isHiddenDisplay(getMode())) {
                             strValue = fieldvalue.getHiddenHtml(getMode());
                             htmlTitle = "";
+                            isHidden = true;
                         } else {
                             strValue = fieldvalue.getReadOnlyHtml(getMode());
                             htmlTitle = fieldvalue.getStringValue(getMode());
@@ -594,38 +587,29 @@ public class UIStructurBrowser
                                 icon = cellIcon.getUrl();
                             }
                         }
-                        final UIStructurBrowserTableCell cell = new UIStructurBrowserTableCell(child, fieldvalue,
-                                        instance, strValue, htmlTitle, icon);
+                        if (isHidden) {
+                            child.getHidden().add(new UIHiddenCell(this, fieldvalue, null, strValue));
+                        } else {
+                            final UIStructurBrowserTableCell cell = new UIStructurBrowserTableCell(child, fieldvalue,
+                                            instance, strValue, htmlTitle, icon);
 
-                        if (field.getName().equals(this.browserFieldName)) {
-                            child.setLabel(strValue);
-                            child.setAllowChildren(checkForAllowChildren(instance));
-                            if (child.isAllowChildren()) {
-                                child.setAllowItems(checkForAllowItems(instance));
-                                child.setParent(checkForChildren(instance));
-                            }
-                            if (row4Create) {
-                                child.setImage(Image.getTypeIcon(type) != null
-                                                ? Image.getTypeIcon(type).getUrl() : null);
-                            } else {
+                            if (field.getName().equals(this.browserFieldName)) {
+                                child.setLabel(strValue);
+                                child.setAllowChildren(checkForAllowChildren(instance));
+                                if (child.isAllowChildren()) {
+                                    child.setAllowItems(checkForAllowItems(instance));
+                                    child.setParent(checkForChildren(instance));
+                                }
                                 child.setImage(Image.getTypeIcon(instance.getType()) != null ? Image.getTypeIcon(
-                                            instance.getType()).getUrl() : null);
+                                                instance.getType()).getUrl() : null);
+                                cell.setBrowserField(true);
+                                child.browserFieldIndex = child.getColumns().size();
                             }
-                            cell.setBrowserField(true);
-                            child.browserFieldIndex = child.getColumns().size();
+                            child.getColumns().add(cell);
                         }
-                        child.getColumns().add(cell);
                     }
                 }
-                if (this.root && row4Create) {
-                    this.emptyRow = child;
-                } else if (this.root && isEditMode() && this.emptyRow == null) {
-                    this.emptyRow = child;
-                    this.children.add(child);
-                } else {
-                    this.children.add(child);
-                }
-                row4Create = false;
+                this.children.add(child);
                 child.checkHideColumn4Row();
             }
         } catch (final EFapsException e) {
@@ -634,6 +618,17 @@ public class UIStructurBrowser
         sortModel();
         expand(_expand);
         super.setInitialized(true);
+    }
+
+
+    /**
+     * Getter method for the instance variable {@link #hidden}.
+     *
+     * @return value of instance variable {@link #hidden}
+     */
+    public List<UIHiddenCell> getHidden()
+    {
+        return this.hidden;
     }
 
     /**
@@ -677,6 +672,9 @@ public class UIStructurBrowser
         }
     }
 
+    /**
+     * @return set of expanded browsers
+     */
     public Set<UIStructurBrowser> getExpandedBrowsers()
     {
         final Set<UIStructurBrowser> ret;
@@ -688,7 +686,11 @@ public class UIStructurBrowser
         return ret;
     }
 
-    protected void add2ExpandedBrowsers(final UIStructurBrowser _structBrowser) {
+    /**
+     * @param _structBrowser structurbrowser to be added to the expanded
+     */
+    protected void add2ExpandedBrowsers(final UIStructurBrowser _structBrowser)
+    {
         if (isRoot()) {
             this.expandedBrowsers.add(_structBrowser);
         } else {
@@ -722,40 +724,6 @@ public class UIStructurBrowser
         for (final UIStructurBrowser child : this.children) {
             child.sort();
         }
-    }
-
-    /**
-     * @return UIStructurBrowser
-     * @throws EFapsException on error
-     */
-    public UIStructurBrowser getClone4New()
-        throws EFapsException
-    {
-        final UIStructurBrowser parentTmp;
-        if (this.root) {
-            parentTmp = this.emptyRow;
-        } else {
-            parentTmp = this;
-        }
-        final UIStructurBrowser ret = getNewStructurBrowser(null, parentTmp);
-        ret.initialise();
-        for (final UIStructurBrowserTableCell col : parentTmp.columns) {
-            final FieldValue fieldValue = new FieldValue(col.getField(), col.getAttribute());
-            final String htmlValue;
-            if (col.getDisplay().equals(Display.EDITABLE)) {
-                htmlValue = fieldValue.getEditHtml(getMode());
-            } else {
-                htmlValue = fieldValue.getReadOnlyHtml(getMode());
-            }
-            final String htmlTitle = fieldValue.getStringValue(getMode());
-            final UIStructurBrowserTableCell newCol = new UIStructurBrowserTableCell(ret, fieldValue, null,
-                            htmlValue, htmlTitle, "");
-
-            newCol.setBrowserField(col.isBrowserField());
-            ret.setBrowserFieldIndex(parentTmp.getBrowserFieldIndex());
-            ret.getColumns().add(newCol);
-        }
-        return ret;
     }
 
     /**

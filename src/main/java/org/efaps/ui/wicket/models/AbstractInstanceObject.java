@@ -50,6 +50,11 @@ public abstract class AbstractInstanceObject
      */
     private String instanceKey;
 
+    /**
+     * The id this row got for presentation in the userinterface.
+     */
+    private String userinterfaceId;
+
     public AbstractInstanceObject()
     {
     }
@@ -112,4 +117,27 @@ public abstract class AbstractInstanceObject
         throws EFapsException;
 
     public abstract boolean hasInstanceManager();
+
+
+    /**
+     * Getter method for the instance variable {@link #userinterfaceId}.
+     *
+     * @return value of instance variable {@link #userinterfaceId}
+     */
+    public String getUserinterfaceId()
+    {
+        return this.userinterfaceId;
+    }
+
+    /**
+     * Setter method for instance variable {@link #userinterfaceId}.
+     *
+     * @param _userinterfaceId value for instance variable {@link #userinterfaceId}
+     */
+
+    public void setUserinterfaceId(final String _userinterfaceId)
+    {
+        this.userinterfaceId = _userinterfaceId;
+    }
+
 }
