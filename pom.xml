@@ -37,7 +37,7 @@
     </parent>
     <packaging>jar</packaging>
     <artifactId>efaps-webapp</artifactId>
-  <version>2.1.2-SNAPSHOT</version>
+    <version>2.1.2-SNAPSHOT</version>
     <name>eFaps WebApp</name>
     <description>
         eFaps WebApp provides a web interface as the User Interface for eFaps
@@ -101,7 +101,7 @@
         <site>
             <id>efaps.googlecode.com</id>
             <name>eFaps WebApp Site</name>
-            <url>svn:https://efaps.googlecode.com/svn/site/eFaps-WebApp</url>
+            <url>scm:svn:https://efaps.googlecode.com/svn/site/eFaps-WebApp</url>
         </site>
         <snapshotRepository>
             <id>sonatype-nexus-snapshots</id>
