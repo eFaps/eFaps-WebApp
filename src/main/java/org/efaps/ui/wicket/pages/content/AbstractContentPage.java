@@ -44,8 +44,8 @@ import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.models.objects.UISearchItem;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
-import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
 
 /**
@@ -81,19 +81,21 @@ public abstract class AbstractContentPage
      */
     private final ModalWindowContainer modal = new ModalWindowContainer("modal");
 
-
+    /**
+     * Form used in this page.
+     */
     private FormContainer form;
 
+    /**
+     * Reference to the page that opened this page.
+     */
     private PageReference calledByPageReference;
-
-
-
-
 
     /**
      * Constructor.
      *
-     * @param _model model for this page
+     * @param _model        model for this page
+     * @param _updateMenu   update the menu
      */
     public AbstractContentPage(final IModel<?> _model,
                                final boolean _updateMenu)
@@ -104,8 +106,9 @@ public abstract class AbstractContentPage
     /**
      * Constructor.
      *
-     * @param _model model for this page
-     * @param _modalWindow modal window
+     * @param _model        model for this page
+     * @param _modalWindow  modal window
+     * @param _updateMenu   update the menu
      */
     public AbstractContentPage(final IModel<?> _model,
                                final ModalWindowContainer _modalWindow,
@@ -115,7 +118,13 @@ public abstract class AbstractContentPage
         this.modalWindow = _modalWindow;
     }
 
-
+    /**
+     * Constructor.
+     *
+     * @param _model                    model for this page
+     * @param _modalWindow              modal window
+     * @param _calledByPageReference    Refernce to the Page opening this StructurBrowserPage
+     */
     public AbstractContentPage(final IModel<?> _model,
                                final ModalWindowContainer _modalWindow,
                                final PageReference _calledByPageReference)

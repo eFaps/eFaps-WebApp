@@ -31,8 +31,8 @@ import org.efaps.ui.wicket.components.tree.StructurBrowserTreeTablePanel;
 import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
-import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
 
 /**
@@ -57,7 +57,8 @@ public class StructurBrowserPage
     private static final long serialVersionUID = 7564911406648729094L;
 
     /**
-     * @param _model model for this pager
+     * @param _model        model for this pager
+     * @param _updateMenu   update the menu
      * @throws EFapsException on error
      */
     public StructurBrowserPage(final IModel<UIStructurBrowser> _model,
@@ -68,8 +69,9 @@ public class StructurBrowserPage
     }
 
     /**
-     * @param _model model for this pager
-     * @param _modalWindow modal Winthis page is opened in
+     * @param _model model  for this pager
+     * @param _modalWindow  modal Window this page is opened in
+     * @param _updateMenu   update the menu
      * @throws EFapsException on error
      */
     public StructurBrowserPage(final IModel<UIStructurBrowser> _model,
@@ -82,22 +84,23 @@ public class StructurBrowserPage
     }
 
     /**
-     * @param _pageMap pagemap
-     * @param _commandUUID UUID of the calling command
-     * @param _oid oid
+     * @param _commandUUID  UUID of the calling command
+     * @param _instanceKey  key to the instance
+     * @param _updateMenu   update the menu
      * @throws EFapsException on error
      */
     public StructurBrowserPage(final UUID _commandUUID,
-                               final String _oid,
+                               final String _instanceKey,
                                final boolean _updateMenu)
         throws EFapsException
     {
-        super(new UIModel<UIStructurBrowser>(new UIStructurBrowser(_commandUUID, _oid)), null, _updateMenu);
+        super(new UIModel<UIStructurBrowser>(new UIStructurBrowser(_commandUUID, _instanceKey)), null, _updateMenu);
         this.addComponents();
     }
 
     /**
-     * @param _model model for this pager
+     * @param _model            model for this pager
+     * @param _calledByPageRef  Reference to the Page opening this StructurBrowserPage
      * @throws EFapsException on error
      */
     public StructurBrowserPage(final IModel<UIStructurBrowser> _model,
@@ -109,10 +112,10 @@ public class StructurBrowserPage
 
 
     /**
-     * @param _uuid
-     * @param _instanceKey
-     * @param _calledByPageRef
-     * @throws EFapsException
+     * @param _commandUUID      UUID of the command opening the StructurBrowserPage
+     * @param _instanceKey      key to the instance opening the StructurBrowserPage
+     * @param _calledByPageRef  Reference to the Page opening this StructurBrowserPage
+     * @throws EFapsException on error
      */
     public StructurBrowserPage(final UUID _commandUUID,
                                final String _instanceKey,
@@ -123,8 +126,9 @@ public class StructurBrowserPage
     }
 
     /**
-     * @param _model model for this pager
-     * @param _modalWindow modal Winthis page is opened in
+     * @param _model            model for this pager
+     * @param _modalWindow      modal Window this page is opened in
+     * @param _calledByPageRef  Refernce to the Page opening this StructurBrowserPage
      * @throws EFapsException on error
      */
     public StructurBrowserPage(final IModel<UIStructurBrowser> _model,
