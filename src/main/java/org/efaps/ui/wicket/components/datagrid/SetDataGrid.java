@@ -59,10 +59,6 @@ public class SetDataGrid
 {
 
     /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
-    /**
      * Reference to the style sheet.
      */
     public static final EFapsContentReference CSS = new EFapsContentReference(SetDataGrid.class, "DataGrid.css");
@@ -82,7 +78,13 @@ public class SetDataGrid
      */
     public static final String STYLE_CLASS = "eFapsFieldSet";
 
-    protected static final String AbstractUIPageObject = null;
+    protected static final String ABSTRACTUIPAGEOBJECT = null;
+
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
 
     /**
      * @param _id

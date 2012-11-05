@@ -164,7 +164,7 @@ public class MenuTree
     public Component newNodeComponent(final String _wicketId,
                                       final IModel<UIMenuItem> _model)
     {
-        return new MenuNode(_wicketId, this, _model)
+        return new AbstractMenuNode(_wicketId, this, _model)
         {
 
             private static final long serialVersionUID = 1L;

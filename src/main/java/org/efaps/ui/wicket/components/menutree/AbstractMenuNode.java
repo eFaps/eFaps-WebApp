@@ -37,7 +37,7 @@ import org.efaps.ui.wicket.models.objects.UIMenuItem;
  * @author The eFaps Team
  * @version $Id$
  */
-public abstract class MenuNode
+public abstract class AbstractMenuNode
     extends Node<UIMenuItem>
 {
 
@@ -48,7 +48,7 @@ public abstract class MenuNode
      * @param _tree
      * @param _model
      */
-    public MenuNode(final String _id,
+    public AbstractMenuNode(final String _id,
                     final AbstractTree<UIMenuItem> _tree,
                     final IModel<UIMenuItem> _model)
     {
@@ -79,7 +79,7 @@ public abstract class MenuNode
             protected void onComponentTag(final ComponentTag _tag)
             {
                 super.onComponentTag(_tag);
-                if (!((UIMenuItem) MenuNode.this.getDefaultModelObject()).hasChildren()) {
+                if (!((UIMenuItem) AbstractMenuNode.this.getDefaultModelObject()).hasChildren()) {
                     _tag.append("style", "display:none", ";");
                 }
             }

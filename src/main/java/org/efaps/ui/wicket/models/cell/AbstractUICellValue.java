@@ -51,7 +51,7 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class AbstractUICellValue
+public abstract class AbstractUICellValue
     extends AbstractInstanceObject
 {
 
