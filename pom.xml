@@ -37,7 +37,7 @@
     </parent>
     <packaging>jar</packaging>
     <artifactId>efaps-webapp</artifactId>
-    <version>2.1.2-SNAPSHOT</version>
+    <version>2.1.2</version>
     <name>eFaps WebApp</name>
     <description>
         eFaps WebApp provides a web interface as the User Interface for eFaps
@@ -91,9 +91,9 @@
 
     <!-- SubVersion Repository -->
     <scm>
-        <connection>scm:svn:http://efaps.googlecode.com/svn/eFaps-WebApp/trunk</connection>
-        <developerConnection>scm:svn:https://efaps.googlecode.com/svn/eFaps-WebApp/trunk</developerConnection>
-        <url>http://efaps.googlecode.com/svn/eFaps-WebApp</url>
+        <connection>scm:svn:http://efaps.googlecode.com/svn/eFaps-WebApp/tags/V2.1.2</connection>
+        <developerConnection>scm:svn:https://efaps.googlecode.com/svn/eFaps-WebApp/tags/V2.1.2</developerConnection>
+        <url>http://efaps.googlecode.com/svn/eFaps-WebApp/tags/V2.1.2</url>
     </scm>
 
     <!-- Distribution Repository -->
