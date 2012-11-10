@@ -34,8 +34,8 @@ import org.efaps.admin.ui.AbstractCommand.SortDirection;
 import org.efaps.ui.wicket.behaviors.dojo.DnDBehavior;
 import org.efaps.ui.wicket.models.objects.AbstractUIHeaderObject;
 import org.efaps.ui.wicket.models.objects.UITableHeader;
-import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
 
 /**
  * This class renders the Cells inside a Header, providing all necessary Links.
@@ -95,7 +95,8 @@ public class HeaderCellPanel
                            final int _columnNumber)
     {
         super(_wicketId);
-        this.add(AttributeModifier.append("class", _styleClass + " eFapsCellFixedWidth" + _columnNumber));
+        this.add(AttributeModifier.append("class", _styleClass
+                        + (_columnNumber > 0 ? " eFapsCellFixedWidth" + _columnNumber : "")));
         if (_checkbox) {
             this.add(new Checkbox("checkBox"));
         } else {

@@ -132,6 +132,14 @@ public class HeaderPanel
         add(cellRepeater);
         boolean firstcell = false;
         int i = uitable.getTableId();
+        // in case of structurbrowser and edit mode add the column for the edit symbol
+        if (isStructurBrowser() && uitable.isEditMode()) {
+            final HeaderCellPanel cell = new HeaderCellPanel(cellRepeater.newChildId(), false,
+                            "eFapsTableHeaderCell eFapsTableCellEdit", i);
+            cell.setOutputMarkupId(true);
+            cellRepeater.add(cell);
+            i++;
+        }
         if (uitable.isShowCheckBoxes()) {
             final HeaderCellPanel cell = new HeaderCellPanel(cellRepeater.newChildId(), true,
                             "eFapsTableCheckBoxCell", i);
@@ -141,7 +149,7 @@ public class HeaderPanel
             firstcell = true;
         }
         // add the add/remove buttons in edit mode for normal tables
-        if (uitable.isEditable() && !(this.tablepanel instanceof StructurBrowserTreeTable)) {
+        if (uitable.isEditable() && !(isStructurBrowser())) {
             final HeaderCellPanel cell = new HeaderCellPanel(cellRepeater.newChildId(), false,
                             "eFapsTableRemoveRowCell", i);
             cell.setOutputMarkupId(true);
@@ -204,6 +212,12 @@ public class HeaderPanel
         }
         this.css = getWidthStyle(widthsTmp);
     }
+
+    private boolean isStructurBrowser()
+    {
+        return this.tablepanel instanceof StructurBrowserTreeTable;
+    }
+
 
     /*
      * (non-Javadoc)

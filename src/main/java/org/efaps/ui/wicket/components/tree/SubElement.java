@@ -28,6 +28,7 @@ import org.apache.wicket.PageReference;
 import org.apache.wicket.extensions.markup.html.repeater.tree.AbstractTree.State;
 import org.apache.wicket.extensions.markup.html.repeater.tree.NestedTree;
 import org.apache.wicket.extensions.markup.html.repeater.tree.nested.BranchItem;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.IItemFactory;
 import org.apache.wicket.markup.repeater.IItemReuseStrategy;
@@ -182,10 +183,19 @@ public class SubElement
         _item.add(cellsAfterRepeater);
 
         int i = strucBrws.getTableId();
-
+        if (strucBrws.isEditMode()) {
+            final Label cell = new Label(cellsBeforeRepeater.newChildId(), "");
+            cell.add(AttributeModifier.append("class", "eFapsTableCellClear"));
+            cell.add(AttributeModifier.append("class", "eFapsTableCell eFapsTableCellEdit eFapsCellFixedWidth" + i));
+            cell.setOutputMarkupId(true);
+            cellsBeforeRepeater.add(cell);
+            i++;
+        }
         if (strucBrws.isShowCheckBoxes()) {
             final CellPanel cell = new CellPanel(cellsBeforeRepeater.newChildId(), strucBrws.getInstanceKey());
-            cell.add(AttributeModifier.append("class", "eFapsTableCellClear"));
+            if (i == strucBrws.getTableId()) {
+                cell.add(AttributeModifier.append("class", "eFapsTableCellClear"));
+            }
             cell.add(AttributeModifier.append("class", "eFapsTableCheckBoxCell eFapsCellFixedWidth" + i));
             cell.setOutputMarkupId(true);
             cellsBeforeRepeater.add(cell);

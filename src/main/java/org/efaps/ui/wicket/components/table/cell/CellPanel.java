@@ -23,6 +23,7 @@ package org.efaps.ui.wicket.components.table.cell;
 import java.text.NumberFormat;
 
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Component;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -99,7 +100,7 @@ public class CellPanel
         final UITableCell uiTableCell = (UITableCell) super.getDefaultModelObject();
         // set the title of the cell
         add(AttributeModifier.replace("title", uiTableCell.getCellTitle()));
-        add(new AttributeAppender("style", new Model<String>("text-align:" + uiTableCell.getAlign()), ";"));
+        add(new AttributeAppender("style", Model.of("text-align:" + uiTableCell.getAlign()), ";"));
 
         if (uiTableCell instanceof UIStructurBrowserTableCell
                         && ((UIStructurBrowserTableCell) uiTableCell).isHide()) {
@@ -107,8 +108,16 @@ public class CellPanel
             add(new WebMarkupContainer("link").setVisible(false));
             add(new WebMarkupContainer("icon").setVisible(false));
             add(new WebComponent("numbering").setVisible(false));
-            add(new WebComponent("label").setVisible(false));
             add(new WebMarkupContainer("valuePicker").setVisible(false));
+            // the label must be added to have in all columns the same number of rows
+            Component label;
+            if (uiTableCell.isAutoComplete()) {
+                 label = new AutoCompleteField("label", _model, false);
+            } else {
+                 label = new LabelComponent("label", uiTableCell.getCellValue());
+            }
+            add(label);
+            label.add(new AttributeAppender("style", Model.of("display:none"), ";"));
         } else if (uiTableCell.isAutoComplete() && (_uitable.isCreateMode() || _uitable.isEditMode())
                         && uiTableCell.getDisplay().equals(Display.EDITABLE)) {
             add(new WebMarkupContainer("checkbox").setVisible(false));
