@@ -42,6 +42,7 @@ import org.efaps.ui.wicket.components.autocomplete.AutoCompleteField;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
 import org.efaps.ui.wicket.components.picker.AjaxPickerLink;
 import org.efaps.ui.wicket.components.table.cell.AjaxLoadInTargetLink.ScriptTarget;
+import org.efaps.ui.wicket.components.tree.SetEditedBehavior;
 import org.efaps.ui.wicket.models.cell.UIStructurBrowserTableCell;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.models.objects.AbstractUIHeaderObject;
@@ -197,6 +198,9 @@ public class CellPanel
                 if ((_uitable.isCreateMode() || _uitable.isEditMode())
                                 && uiTableCell.getDisplay().equals(Display.EDITABLE)) {
                     label.add(new SetSelectedRowBehavior(uiTableCell.getName()));
+                    if (uiTableCell instanceof UIStructurBrowserTableCell) {
+                        label.add(new SetEditedBehavior());
+                    }
                     if (uiTableCell.isFieldUpdate()) {
                         label.add(new AjaxFieldUpdateBehavior(uiTableCell.getFieldUpdateEvent(), _model));
                     }

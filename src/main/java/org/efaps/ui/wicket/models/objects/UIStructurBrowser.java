@@ -1332,7 +1332,7 @@ public class UIStructurBrowser
      *
      * @return value of instance variable {@link #parentBrws}
      */
-    protected UIStructurBrowser getParentBrws()
+    public UIStructurBrowser getParentBrws()
     {
         return this.parentBrws;
     }
