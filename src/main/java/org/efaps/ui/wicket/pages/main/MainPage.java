@@ -32,6 +32,7 @@ import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes.Method;
 import org.apache.wicket.ajax.attributes.CallbackParameter;
 import org.apache.wicket.ajax.attributes.ThrottlingSettings;
+import org.apache.wicket.devutils.debugbar.DebugBar;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.head.IHeaderResponse;
@@ -59,8 +60,8 @@ import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
-import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
 
 /**
@@ -118,6 +119,7 @@ public class MainPage
     public MainPage()
     {
         super();
+        add(new DebugBar("debug"));
         // call the client info to force the reload script to be executed on the
         // beginning of a session,
         // if an ajax call would be done as first an error occurs
@@ -200,6 +202,13 @@ public class MainPage
     {
         super.renderHead(_response);
         _response.render(AbstractEFapsHeaderItem.forCss(MainPage.CSS));
+        final StringBuilder js = new StringBuilder();
+        js.append("function test4top() {\n")
+            .append("  if(top!=self) {\n")
+            .append("    top.location = self.location;\n")
+            .append("  }\n")
+            .append("}\n");
+        _response.render(JavaScriptHeaderItem.forScript(js, MainPage.class.getName()));
     }
 
     /**
@@ -243,7 +252,7 @@ public class MainPage
                 .append("var ").append(MainPage.WIDTH_PARAMETERNAME).append("=window.innerWidth;\n")
                 .append("var ").append(MainPage.HEIGTH_PARAMETERNAME).append("=window.innerHeight;\n")
                 .append(getCallbackFunctionBody(CallbackParameter.explicit(MainPage.WIDTH_PARAMETERNAME),
-                                CallbackParameter.context(MainPage.HEIGTH_PARAMETERNAME)))
+                                CallbackParameter.explicit(MainPage.HEIGTH_PARAMETERNAME)))
                 .append("}\n");
             return js.toString();
         }
@@ -277,14 +286,11 @@ public class MainPage
             }
         }
 
-        /* (non-Javadoc)
-         * @see org.apache.wicket.ajax.AjaxEventBehavior#renderHead(org.apache.wicket.Component, org.apache.wicket.markup.head.IHeaderResponse)
-         */
         @Override
         public void renderHead(final Component _component,
                                final IHeaderResponse _response)
         {
-            _response.render(JavaScriptHeaderItem.forScript(getCallbackScript(), MainPage.class.getName()));
+            _response.render(JavaScriptHeaderItem.forScript(getCallbackScript(), ResizeEventBehavior.class.getName()));
             super.renderHead(_component, _response);
         }
     }
