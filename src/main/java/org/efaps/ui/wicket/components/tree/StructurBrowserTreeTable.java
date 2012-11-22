@@ -29,6 +29,7 @@ import org.apache.wicket.extensions.markup.html.repeater.tree.Node;
 import org.apache.wicket.extensions.markup.html.repeater.tree.theme.HumanTheme;
 import org.apache.wicket.extensions.markup.html.repeater.tree.theme.WindowsTheme;
 import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.util.SetModel;
 import org.efaps.ui.wicket.components.date.UnnestedDatePickers;
@@ -168,8 +169,15 @@ public class StructurBrowserTreeTable
             @Override
             protected MarkupContainer createJunctionComponent(final String _id)
             {
-                final MarkupContainer ret = super.createJunctionComponent(_id);
                 final UIStructurBrowser strucBrws = (UIStructurBrowser) getDefaultModelObject();
+                final MarkupContainer ret;
+                if (strucBrws.hasChildren() && strucBrws.isForceExpanded()) {
+                    ret = new WebMarkupContainer(_id);
+
+                } else {
+                    ret = super.createJunctionComponent(_id);
+                }
+
                 if (strucBrws.getLevel() > 0) {
                     ret.add(AttributeModifier.append("style", "margin-left:" + 15 * (strucBrws.getLevel() - 1) + "px"));
                 }
