@@ -22,6 +22,7 @@ package org.efaps.ui.wicket.pages.content.structurbrowser;
 
 import java.util.UUID;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.model.IModel;
@@ -156,6 +157,7 @@ public class StructurBrowserPage
         final FormContainer form = new FormContainer("form");
         this.add(form);
         super.addComponents(form);
+        form.add(AttributeModifier.append("class", uiObject.getMode().toString()));
         form.add(new StructurBrowserTreeTablePanel("structurBrowserTable", new UIModel<UIStructurBrowser>(uiObject),
                         true));
     }

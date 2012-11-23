@@ -23,6 +23,7 @@ package org.efaps.ui.wicket.pages.content.form;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Page;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.markup.head.IHeaderResponse;
@@ -52,8 +53,8 @@ import org.efaps.ui.wicket.models.objects.UIForm.FormElement;
 import org.efaps.ui.wicket.models.objects.UIHeading;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
-import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
 
 /**
@@ -194,7 +195,7 @@ public class FormPage
 
         final FormContainer form = new FormContainer("form");
         add(form);
-
+        form.add(AttributeModifier.append("class", uiForm.getMode().toString()));
         if (uiForm.isFileUpload() && (uiForm.isCreateMode() || uiForm.isEditMode())) {
             form.setMultiPart(true);
             form.setMaxSize(getApplication().getApplicationSettings().getDefaultMaximumUploadSize());

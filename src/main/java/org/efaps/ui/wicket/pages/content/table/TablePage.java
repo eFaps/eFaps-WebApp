@@ -22,6 +22,7 @@ package org.efaps.ui.wicket.pages.content.table;
 
 import java.util.UUID;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.model.IModel;
@@ -167,17 +168,17 @@ public class TablePage
     protected void addComponents()
         throws EFapsException
     {
-        final UITable table = (UITable) super.getDefaultModelObject();
-        if (!table.isInitialized()) {
-            table.execute();
+        final UITable uiTable = (UITable) super.getDefaultModelObject();
+        if (!uiTable.isInitialized()) {
+            uiTable.execute();
         }
-        final TablePanel tablebody = new TablePanel("tablebody", new TableModel(table), this);
+        final TablePanel tablebody = new TablePanel("tablebody", new TableModel(uiTable), this);
         this.add(new HeaderPanel("header", tablebody));
 
         final FormContainer form = new FormContainer("form");
         this.add(form);
         super.addComponents(form);
-
+        form.add(AttributeModifier.append("class", uiTable.getMode().toString()));
         form.add(tablebody);
     }
 
