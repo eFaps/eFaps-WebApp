@@ -82,11 +82,6 @@ public class MainPage
     extends AbstractMergePage
 {
     /**
-     * Logging instance used in this class.
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(MainPage.class);
-
-    /**
      * this static variable contains the id for the htmlFrame.
      */
     public static final String IFRAME_WICKETID = "content";
@@ -96,10 +91,16 @@ public class MainPage
      */
     public static final String IFRAME_ID = "eFapsContentFrame";
 
+
     /**
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(MainPage.class);
 
     /**
      * Reference to the StyleSheet for this Page.
@@ -133,8 +134,8 @@ public class MainPage
         Component debug = null;
         try {
          // Administration
-            if (Context.getThreadContext().getPerson()
-                            .isAssigned(Role.get(UUID.fromString("1d89358d-165a-4689-8c78-fc625d37aacd")))) {
+            final Role role = Role.get(UUID.fromString("1d89358d-165a-4689-8c78-fc625d37aacd"));
+            if (role != null && Context.getThreadContext().getPerson().isAssigned(role)) {
                 debug = new DebugBar("debug");
             }
         } catch (final CacheReloadException e) {
