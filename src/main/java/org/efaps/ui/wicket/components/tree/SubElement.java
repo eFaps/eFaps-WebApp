@@ -186,6 +186,7 @@ public class SubElement
         if (strucBrws.isEditMode()) {
             final Label cell = new Label(cellsBeforeRepeater.newChildId(), "");
             cell.add(AttributeModifier.append("class", "eFapsTableCellClear"));
+            cell.add(AttributeModifier.append("class", "eFapsSTBRWtmp"));
             cell.add(AttributeModifier.append("class", "eFapsTableCell eFapsTableCellEdit eFapsCellFixedWidth" + i));
             cell.setOutputMarkupId(true);
             cellsBeforeRepeater.add(cell);
@@ -196,6 +197,7 @@ public class SubElement
             if (i == strucBrws.getTableId()) {
                 cell.add(AttributeModifier.append("class", "eFapsTableCellClear"));
             }
+            cell.add(AttributeModifier.append("class", "eFapsSTBRWtmp"));
             cell.add(AttributeModifier.append("class", "eFapsTableCheckBoxCell eFapsCellFixedWidth" + i));
             cell.setOutputMarkupId(true);
             cellsBeforeRepeater.add(cell);
@@ -247,7 +249,10 @@ public class SubElement
                 }
             }
             i++;
+            cell.add(AttributeModifier.append("class", "eFapsSTBRWtmp"));
         }
+
+
         _item.add(SubElement.this.tree.newSubtree("subtree", model));
 
         final RepeatingView hiddenRepeater = new RepeatingView("hiddenRepeater");

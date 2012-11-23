@@ -113,9 +113,9 @@ public class CellPanel
             // the label must be added to have in all columns the same number of rows
             Component label;
             if (uiTableCell.isAutoComplete()) {
-                 label = new AutoCompleteField("label", _model, false);
+                label = new AutoCompleteField("label", _model, false);
             } else {
-                 label = new LabelComponent("label", uiTableCell.getCellValue());
+                label = new LabelComponent("label", uiTableCell.getCellValue());
             }
             add(label);
             label.add(new AttributeAppender("style", Model.of("display:none"), ";"));

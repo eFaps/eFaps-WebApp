@@ -21,9 +21,11 @@
 package org.efaps.ui.wicket.components.tree;
 
 import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.efaps.ui.wicket.behaviors.RowSelectedInput;
+import org.efaps.ui.wicket.behaviors.dojo.OnDojoReadyHeaderItem;
 import org.efaps.ui.wicket.components.date.UnnestedDatePickers;
 import org.efaps.ui.wicket.components.table.TablePanel;
 import org.efaps.ui.wicket.components.table.header.HeaderPanel;
@@ -85,5 +87,32 @@ public class StructurBrowserTreeTablePanel
     {
         super.renderHead(_response);
         _response.render(AbstractEFapsHeaderItem.forCss(TablePanel.CSS));
+        final StringBuilder js = new StringBuilder();
+        js.append("function highlight() {")
+            .append("require([\"dojo/on\", \"dojo/dom\", \"dojo/dom-class\", \"dojo/mouse\",")
+            .append("\"dojo/query\",\"dojo/NodeList-traverse\", \"dojo/domReady!\"],")
+            .append("function(on, dom, domClass, mouse, query) {\n")
+            .append("var list =query(\".eFapsSTBRWtmp\");\n")
+            .append("list.forEach(function(node){\n")
+            .append("on(node, mouse.enter, function(){\n")
+            .append("var sibl = query(node).siblings(\".eFapsTableCell,.eFapsTableCheckBoxCell\");\n")
+            .append("sibl.forEach(function(sib){\n")
+            .append("domClass.add(sib, \"highlight\");\n")
+            .append("});\n")
+            .append("domClass.add(node, \"highlight\");\n")
+            .append(" });\n")
+            .append("on(node, mouse.leave, function(){\n")
+            .append("var sibl = query(node).siblings(\".eFapsTableCell,.eFapsTableCheckBoxCell\");\n")
+            .append("sibl.forEach(function(sib){\n")
+            .append("domClass.remove(sib, \"highlight\");\n")
+            .append("});\n")
+            .append("domClass.remove(node, \"highlight\");\n")
+            .append("});\n")
+            .append("domClass.remove(node, \"eFapsSTBRWtmp\");\n")
+            .append("});\n")
+            .append("});\n")
+            .append("}\n");
+        _response.render(JavaScriptHeaderItem.forScript(js, StructurBrowserTreeTablePanel.class.getName()));
+        _response.render(OnDojoReadyHeaderItem.forScript("highlight();"));
     }
 }

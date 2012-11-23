@@ -24,6 +24,7 @@ import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.PageReference;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.markup.html.repeater.tree.NestedTree;
 import org.apache.wicket.extensions.markup.html.repeater.tree.Node;
 import org.apache.wicket.extensions.markup.html.repeater.tree.theme.HumanTheme;
@@ -128,6 +129,8 @@ public class StructurBrowserTreeTable
     {
         super.expand(_uiStrBrws);
         _uiStrBrws.setExpanded(true);
+        final AjaxRequestTarget target = getRequestCycle().find(AjaxRequestTarget.class);
+        target.appendJavaScript("highlight();");
     }
 
     /**
