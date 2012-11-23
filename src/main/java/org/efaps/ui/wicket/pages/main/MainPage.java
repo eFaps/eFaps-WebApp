@@ -37,6 +37,7 @@ import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
+import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.Model;
@@ -44,6 +45,7 @@ import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.util.string.StringValue;
 import org.apache.wicket.util.time.Duration;
 import org.efaps.admin.dbproperty.DBProperties;
+import org.efaps.admin.user.Role;
 import org.efaps.db.Context;
 import org.efaps.message.MessageStatusHolder;
 import org.efaps.ui.wicket.behaviors.SetMessageStatusBehavior;
@@ -63,6 +65,9 @@ import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This Page is the MainPage for eFaps and also the Homepage as set in
@@ -76,6 +81,11 @@ import org.efaps.util.EFapsException;
 public class MainPage
     extends AbstractMergePage
 {
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(MainPage.class);
+
     /**
      * this static variable contains the id for the htmlFrame.
      */
@@ -119,7 +129,25 @@ public class MainPage
     public MainPage()
     {
         super();
-        add(new DebugBar("debug"));
+        // add the debug bar for administration role, in case of an erro only log it
+        Component debug = null;
+        try {
+         // Administration
+            if (Context.getThreadContext().getPerson()
+                            .isAssigned(Role.get(UUID.fromString("1d89358d-165a-4689-8c78-fc625d37aacd")))) {
+                debug = new DebugBar("debug");
+            }
+        } catch (final CacheReloadException e) {
+            MainPage.LOG.error("Error on retrieving Role assignment.", e);
+        } catch (final EFapsException e) {
+            MainPage.LOG.error("Error on retrieving Role assignment.", e);
+        } finally {
+            if (debug == null) {
+                debug = new WebComponent("debug").setVisible(false);
+            }
+            add(debug);
+        }
+
         // call the client info to force the reload script to be executed on the
         // beginning of a session,
         // if an ajax call would be done as first an error occurs

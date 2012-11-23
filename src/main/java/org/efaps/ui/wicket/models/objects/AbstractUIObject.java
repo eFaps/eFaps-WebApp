@@ -395,8 +395,10 @@ public abstract class AbstractUIObject
                 // WebApp-Configuration
                 final SystemConfiguration config = SystemConfiguration.get(
                                 UUID.fromString("50a65460-2d08-4ea8-b801-37594e93dad5"));
+                //Administration
                 if (config != null && config.getAttributeValueAsBoolean("ShowOID")
-                                && Context.getThreadContext().getPerson().isAssigned(Role.get("Administration"))) {
+                                && Context.getThreadContext().getPerson()
+                                .isAssigned(Role.get(UUID.fromString("1d89358d-165a-4689-8c78-fc625d37aacd")))) {
                     title = title + " " +  getInstance().getOid();
                 }
             }
