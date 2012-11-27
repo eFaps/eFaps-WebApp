@@ -36,8 +36,7 @@ import org.efaps.util.EFapsException;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id: SetMessageStatusContributor.java 7505 2012-05-11 18:14:52Z
- *          jan@moxter.net $
+ * @version $Id$
  */
 public class SetMessageStatusBehavior
     extends Behavior
@@ -79,21 +78,13 @@ public class SetMessageStatusBehavior
         final StringBuilder js = new StringBuilder();
         final long usrId = Context.getThreadContext().getPersonId();
         if (MessageStatusHolder.hasUnreadMsg(usrId) || MessageStatusHolder.hasReadMsg(usrId)) {
-            js.append("var ma = top.document.getElementById('eFapsUserMsg');")
-                .append("ma.style.display = 'table-cell';")
-                .append("ma.getElementsByTagName('A')[0].firstChild.nodeValue= '")
-                .append(StringEscapeUtils.escapeJavaScript(
+            js.append("top.postMessage('").append(StringEscapeUtils.escapeJavaScript(
                                 SetMessageStatusBehavior.getLabel(
                                                 MessageStatusHolder.getUnReadCount(usrId),
                                                 MessageStatusHolder.getReadCount(usrId))))
-                .append("';");
-            if (MessageStatusHolder.hasUnreadMsg(usrId)) {
-                js.append("ma.className = 'unread';");
-            } else {
-                js.append("ma.className = '';");
-            }
+                .append("', '*');");
         } else {
-            js.append("top.document.getElementById('eFapsUserMsg').style.display = 'none';");
+            js.append("top.postMessage('").append("', '*');");
         }
         return js.toString();
     }
@@ -115,7 +106,10 @@ public class SetMessageStatusBehavior
     public static String getLabel(final int _unread,
                                   final int _read)
     {
-        return String.format(Command.get(SetMessageStatusBehavior.getCmdUUD()).getLabelProperty(), _unread, _read);
+        final StringBuilder ret = new StringBuilder()
+            .append("<span").append(_unread > 0 ? "class=\"unread\"": "").append(">")
+            .append(String.format(Command.get(SetMessageStatusBehavior.getCmdUUD()).getLabelProperty(), _unread, _read))
+            .append("</span>");
+        return ret.toString();
     }
-
 }

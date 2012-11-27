@@ -53,6 +53,7 @@ import org.efaps.ui.wicket.behaviors.dojo.BorderContainerBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.BorderContainerBehavior.Design;
 import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior.Region;
+import org.efaps.ui.wicket.behaviors.dojo.MessageListenerBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.RequireBehavior;
 import org.efaps.ui.wicket.components.menu.LinkItem;
 import org.efaps.ui.wicket.components.menu.MenuBarPanel;
@@ -199,25 +200,18 @@ public class MainPage
                 private static final long serialVersionUID = 1L;
 
                 @Override
-                protected void onComponentTag(final ComponentTag _tag)
-                {
-                    super.onComponentTag(_tag);
-                }
-
-                @Override
                 public void onComponentTagBody(final MarkupStream _markupStream,
                                                   final ComponentTag _openTag)
                 {
-                    super.onComponentTagBody(_markupStream, _openTag);
                     replaceComponentTagBody(_markupStream, _openTag,
                                     SetMessageStatusBehavior.getLabel(MessageStatusHolder.getUnReadCount(usrId),
                                                     MessageStatusHolder.getReadCount(usrId)));
                 }
             };
-            //headerPanel.add(alert);
-            if (MessageStatusHolder.hasUnreadMsg(usrId)) {
-                alert.add(new AttributeModifier("class", new Model<String>("unread")));
-            } else if (!MessageStatusHolder.hasReadMsg(usrId)) {
+            add(alert);
+            alert.add(new MessageListenerBehavior());
+            alert.add(new AttributeModifier("class", new Model<String>("eFapsUserMsg")));
+            if (!MessageStatusHolder.hasReadMsg(usrId)) {
                 alert.add(new AttributeModifier("style", new Model<String>("display:none")));
             }
 
@@ -232,11 +226,9 @@ public class MainPage
         super.renderHead(_response);
         _response.render(AbstractEFapsHeaderItem.forCss(MainPage.CSS));
         final StringBuilder js = new StringBuilder();
-        js.append("function test4top() {\n")
-            .append("  if(top!=self) {\n")
+        js.append("  if(top!=self) {\n")
             .append("    top.location = self.location;\n")
-            .append("  }\n")
-            .append("}\n");
+            .append("  }\n");
         _response.render(JavaScriptHeaderItem.forScript(js, MainPage.class.getName()));
     }
 
