@@ -120,8 +120,6 @@ public class HeaderPanel
         this.add(AttributeModifier.append("class", "eFapsTableHeader"));
 
         final DnDBehavior dndBehavior = DnDBehavior.getSourceBehavior(this.headerproperties);
-        dndBehavior.setHorizontal(true);
-        dndBehavior.setHandles(true);
         dndBehavior.setAppendJavaScript(this.headerproperties + ".storeColumnOrder(getColumnOrder("
                         + this.headerproperties + "));\n" + this.headerproperties + ".reloadTable()\n");
         this.add(dndBehavior);

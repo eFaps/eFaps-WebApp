@@ -31,7 +31,6 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.ui.AbstractCommand.SortDirection;
-import org.efaps.ui.wicket.behaviors.dojo.DnDBehavior;
 import org.efaps.ui.wicket.models.objects.AbstractUIHeaderObject;
 import org.efaps.ui.wicket.models.objects.UITableHeader;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
@@ -146,17 +145,11 @@ public class HeaderCellPanel
             }
             this.add(sortlink);
             final Label sortlabel = new Label("sortlabel", uiTableHeader.getLabel());
-            if (!(_uitable.isCreateMode() || _uitable.isEditMode())) {
-                sortlabel.add(DnDBehavior.getHandleBehavior());
-            }
             sortlink.add(sortlabel);
             this.add(new WebComponent("label").setVisible(false));
         } else {
             this.add(new WebMarkupContainer("sortlink").setVisible(false));
             final Label label = new Label("label", uiTableHeader.getLabel());
-            if (!(_uitable.isCreateMode() || _uitable.isEditMode())) {
-                label.add(DnDBehavior.getHandleBehavior());
-            }
             this.add(label);
         }
 

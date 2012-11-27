@@ -23,6 +23,7 @@ package org.efaps.ui.wicket.behaviors.dojo;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 
 /**
  * This class renders the drag and drop ability from the DojoToolKit to a component.<br>
@@ -45,8 +46,6 @@ public class DnDBehavior
      */
     public enum BehaviorType
     {
-        /** Render a handel. */
-        HANDLE,
         /** Render a item. */
         ITEM,
         /** Render a source. */
@@ -57,27 +56,6 @@ public class DnDBehavior
      * This instance variable stores what kind should be rendered.
      */
     private final BehaviorType type;
-
-    /**
-     * this instance variable stores if the orientation for drag and
-     * drop is horizontal or vertical. It is only used in
-     * case of BehaviorType.SOURCE
-     */
-    private boolean horizontal = false;
-
-    /**
-     * this instance variable stores if the items inside the source
-     * can only by draged by an handle. It is only used in
-     * case of BehaviorType.SOURCE
-     */
-    private boolean handles = false;
-
-    /**
-     * this instance variable stores if it is allowed to copy items
-     * instead of drag and drop. It is only used in case of
-     * BehaviorType.SOURCE
-     */
-    private boolean allowCopy = false;
 
     /**
      * this instance variable stores a javascript which will be
@@ -132,90 +110,14 @@ public class DnDBehavior
     {
         super.onComponentTag(_component, _tag);
 
-//        if (this.type == DnDBehavior.BehaviorType.ITEM) {
-//            String value = "dojoDndItem ";
-//            if (_tag.getAttribute("class") != null) {
-//                value += _tag.getAttribute("class");
-//            }
-//            _tag.put("class", value);
-//            _tag.put("dndType", this.dndType);
-//        } else if (this.type == DnDBehavior.BehaviorType.HANDLE) {
-//            String value = "dojoDndHandle ";
-//            if (_tag.getAttribute("class") != null) {
-//                value += _tag.getAttribute("class");
-//            }
-//            _tag.put("class", value);
-//        } else if (this.type == DnDBehavior.BehaviorType.SOURCE) {
-//            _tag.put("dojoType", "dojo.dnd.Source");
-//            if (this.horizontal) {
-//                _tag.put("horizontal", "true");
-//            }
-//            if (this.handles) {
-//                _tag.put("withHandles", "true");
-//            }
-//            _tag.put("accept", this.dndType);
-//        }
-
-    }
-
-    /**
-     * This is the getter method for the instance variable {@link #horizontal}.
-     *
-     * @return value of instance variable {@link #horizontal}
-     */
-    public boolean isHorizontal()
-    {
-        return this.horizontal;
-    }
-
-    /**
-     * This is the setter method for the instance variable {@link #horizontal}.
-     *
-     * @param _horizontal the horizontal to set
-     */
-    public void setHorizontal(final boolean _horizontal)
-    {
-        this.horizontal = _horizontal;
-    }
-
-    /**
-     * This is the getter method for the instance variable {@link #handles}.
-     *
-     * @return value of instance variable {@link #handles}
-     */
-    public boolean isHandles()
-    {
-        return this.handles;
-    }
-
-    /**
-     * This is the setter method for the instance variable {@link #handles}.
-     *
-     * @param _handles the widthHandles to set
-     */
-    public void setHandles(final boolean _handles)
-    {
-        this.handles = _handles;
-    }
-
-    /**
-     * This is the getter method for the instance variable {@link #allowCopy}.
-     *
-     * @return value of instance variable {@link #allowCopy}
-     */
-    public boolean isAllowCopy()
-    {
-        return this.allowCopy;
-    }
-
-    /**
-     * This is the setter method for the instance variable {@link #allowCopy}.
-     *
-     * @param _allowCopy the allowCopy to set
-     */
-    public void setAllowCopy(final boolean _allowCopy)
-    {
-        this.allowCopy = _allowCopy;
+        if (this.type == DnDBehavior.BehaviorType.ITEM) {
+            String value = "dojoDndItem ";
+            if (_tag.getAttribute("class") != null) {
+                value += _tag.getAttribute("class");
+            }
+            _tag.put("dndType", this.dndType);
+            _tag.put("class", value);
+        }
     }
 
     /**
@@ -232,34 +134,20 @@ public class DnDBehavior
                            final IHeaderResponse _response)
     {
         super.renderHead(_component, _response);
-//        if (this.type == DnDBehavior.BehaviorType.SOURCE) {
-//
-//            final String varName = "subcription" + ((Long) System.currentTimeMillis()).toString();
-//            final StringBuilder builder = new StringBuilder();
-//            if (this.allowCopy || (this.appendJavaScript != null && this.appendJavaScript.length() > 0)) {
-//                builder.append("  var ").append(varName).append(";\n")
-//                    .append("  dojo.subscribe(\"/dnd/start\", ")
-//                    .append(" function(source,nodes,iscopy){\n");
-//
-//                if (!this.allowCopy) {
-//                    builder.append("    source.copyState = function(keyPressed){").append(" return false};\n");
-//                }
-//
-//                builder.append("    ").append(varName).append(" = dojo.subscribe(\"/dnd/drop\",")
-//                    .append(" function(source, nodes, iscopy){\n")
-//                    .append("  var jsnode = source.getItem(nodes[0].id);\n")
-//                    .append("    var dndType  = jsnode.type;\n")
-//                    .append("    if(dndType ==\"").append(this.dndType).append("\" ){\n")
-//                    .append(this.appendJavaScript)
-//                    .append("      dojo.unsubscribe(").append(varName).append(");\n")
-//                    .append("   }\n });\n")
-//                    .append("  });\n")
-//                    .append("  dojo.subscribe(\"/dnd/cancel\", function(){\n")
-//                    .append("    dojo.unsubscribe(").append(varName).append(");\n  });\n");
-//
-//                _response.render(JavaScriptHeaderItem.forScript(builder.toString(), DnDBehavior.class.toString()));
-//            }
-//        }
+        _response.render(JavaScriptHeaderItem.forScript("require([\"dojo/dnd/Source\",\"dojo/parser\"]);",
+                        DnDBehavior.class.toString()));
+       if (this.type == DnDBehavior.BehaviorType.SOURCE) {
+            final StringBuilder js = new StringBuilder()
+                .append("require([\"dojo/aspect\",\"dojo/dom\",\"dojo/dnd/Source\"], ")
+                .append("function(aspect,dom){\n")
+                .append("var nSrc = new dojo.dnd.Source(dom.byId('").append(_component.getMarkupId(true)).append("'),")
+                .append("{ accept: ['" + this.dndType + "']});")
+                .append(" aspect.after(nSrc,\"onDrop\", function(){\n")
+                .append(this.appendJavaScript)
+                .append("\n});")
+                .append("});");
+            _response.render(OnDojoReadyHeaderItem.forScript(js.toString()));
+        }
     }
 
     /**
@@ -342,15 +230,5 @@ public class DnDBehavior
     public static DnDBehavior getItemBehavior()
     {
         return new DnDBehavior(DnDBehavior.BehaviorType.ITEM);
-    }
-
-    /**
-     * Static Method to get DnDBehavior with handle behavior.
-     *
-     * @return DnDBehavior with handle behavior.
-     */
-    public static DnDBehavior getHandleBehavior()
-    {
-        return new DnDBehavior(DnDBehavior.BehaviorType.HANDLE);
     }
 }
