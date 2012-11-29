@@ -72,7 +72,6 @@ public class MenuBarPanel
         super(_wicketId, _model);
         add(new MenuBarBehavior());
         add(AttributeModifier.append("class", "eFapsMenuBarPanel"));
-        add(AttributeModifier.append("style", "visibility: hidden"));
         if (_model == null) {
             add(new WebMarkupContainer("itemRepeater"));
         } else {
