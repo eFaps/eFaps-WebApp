@@ -282,7 +282,7 @@ public class MainPage
         protected void updateAjaxAttributes(final AjaxRequestAttributes _attributes)
         {
             super.updateAjaxAttributes(_attributes);
-            _attributes.setThrottlingSettings(new ThrottlingSettings("mainThrottel", Duration.seconds(2)));
+            _attributes.setThrottlingSettings(new ThrottlingSettings("mainThrottel", Duration.seconds(2), true));
             _attributes.setMethod(Method.POST);
         }
 
@@ -312,7 +312,6 @@ public class MainPage
                                final IHeaderResponse _response)
         {
             _response.render(JavaScriptHeaderItem.forScript(getCallbackScript(), ResizeEventBehavior.class.getName()));
-            super.renderHead(_component, _response);
         }
     }
 }
