@@ -130,7 +130,7 @@ public class StructurBrowserTreeTable
         super.expand(_uiStrBrws);
         _uiStrBrws.setExpanded(true);
         final AjaxRequestTarget target = getRequestCycle().find(AjaxRequestTarget.class);
-        target.appendJavaScript("highlight();");
+        target.appendJavaScript("highlight();positionTableColumns(eFapsTable" + _uiStrBrws.getTableId() + ");");
     }
 
     /**
@@ -144,6 +144,8 @@ public class StructurBrowserTreeTable
     {
         super.collapse(_uiStrBrws);
         _uiStrBrws.setExpanded(false);
+        final AjaxRequestTarget target = getRequestCycle().find(AjaxRequestTarget.class);
+        target.appendJavaScript("positionTableColumns(eFapsTable" + _uiStrBrws.getTableId() + ");");
     }
 
     /**
