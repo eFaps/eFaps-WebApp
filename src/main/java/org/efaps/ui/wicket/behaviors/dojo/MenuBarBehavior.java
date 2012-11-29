@@ -54,7 +54,7 @@ public class MenuBarBehavior
     {
         super.onComponentTag(_component, _tag);
         _tag.put("data-dojo-type", "dijit/MenuBar");
-        _tag.append("style", "visibility: hidden; position: absolute;", ";");
+        _tag.append("style", "visibility: hidden; position: relative; left: -99999px;", ";");
     }
 
     /**
@@ -74,6 +74,7 @@ public class MenuBarBehavior
                         "require([\"dojo/dom-style\"], function(domStyle){\n"
                             + "  domStyle.set(\"" + _component.getMarkupId(true) + "\",\"visibility\",\"visible\");\n"
                             + "  domStyle.set(\"" + _component.getMarkupId(true) + "\",\"position\",\"\");\n"
+                            + "  domStyle.set(\"" + _component.getMarkupId(true) + "\",\"left\",\"\");\n"
                             + "});"));
     }
 }
