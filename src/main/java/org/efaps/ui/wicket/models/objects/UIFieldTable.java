@@ -89,6 +89,7 @@ public class UIFieldTable
         setTableUUID(_fieldTable.getTargetTable().getUUID());
         this.fieldId = _fieldTable.getId();
         this.name = _fieldTable.getName();
+        setShowCheckBoxes(_fieldTable.isTargetShowCheckBoxes());
         try {
             if (Context.getThreadContext().containsUserAttribute(getCacheKey(UserCacheKey.SORTKEY))) {
                 setSortKey(Context.getThreadContext().getUserAttribute(getCacheKey(UserCacheKey.SORTKEY)));
