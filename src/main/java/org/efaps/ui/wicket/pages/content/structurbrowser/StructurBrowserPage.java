@@ -73,7 +73,7 @@ public class StructurBrowserPage
      * @param _model        model for this pager
      * @throws EFapsException on error
      */
-    public StructurBrowserPage(final IModel<UIStructurBrowser> _model)
+    public StructurBrowserPage(final IModel<?> _model)
         throws EFapsException
     {
         this(_model, (ModalWindowContainer) null);
@@ -84,7 +84,7 @@ public class StructurBrowserPage
      * @param _modalWindow  modal Window this page is opened in
      * @throws EFapsException on error
      */
-    public StructurBrowserPage(final IModel<UIStructurBrowser> _model,
+    public StructurBrowserPage(final IModel<?> _model,
                                final ModalWindowContainer _modalWindow)
         throws EFapsException
     {
@@ -96,7 +96,7 @@ public class StructurBrowserPage
      * @param _calledByPageRef  Reference to the Page opening this StructurBrowserPage
      * @throws EFapsException on error
      */
-    public StructurBrowserPage(final IModel<UIStructurBrowser> _model,
+    public StructurBrowserPage(final IModel<?> _model,
                                final PageReference _calledByPageRef)
         throws EFapsException
     {
@@ -124,7 +124,7 @@ public class StructurBrowserPage
      * @param _calledByPageRef  Refernce to the Page opening this StructurBrowserPage
      * @throws EFapsException on error
      */
-    public StructurBrowserPage(final IModel<UIStructurBrowser> _model,
+    public StructurBrowserPage(final IModel<?> _model,
                                final ModalWindowContainer _modalWindow,
                                final PageReference _calledByPageRef)
         throws EFapsException

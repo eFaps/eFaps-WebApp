@@ -41,13 +41,12 @@ import org.apache.wicket.util.string.StringValue;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.behaviors.dojo.DnDBehavior;
 import org.efaps.ui.wicket.components.tree.StructurBrowserTreeTable;
-import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.AbstractUIHeaderObject;
-import org.efaps.ui.wicket.models.objects.UIForm;
-import org.efaps.ui.wicket.models.objects.UITable;
+import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.UITableHeader;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
+import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
@@ -211,6 +210,9 @@ public class HeaderPanel
         this.css = getWidthStyle(widthsTmp);
     }
 
+    /**
+     * @return true it it is a structur browser
+     */
     private boolean isStructurBrowser()
     {
         return this.tablepanel instanceof StructurBrowserTreeTable;
@@ -366,7 +368,7 @@ public class HeaderPanel
         {
             final String order = getComponent().getRequest().getRequestParameters().getParameterValue(
                             HeaderPanel.AjaxStoreColumnOrderBehavior.COLUMNORDER_PARAMETERNAME).toString();
-            ((UITable) getComponent().getDefaultModelObject()).setColumnOrder(order);
+            ((AbstractUIHeaderObject) getComponent().getDefaultModelObject()).setColumnOrder(order);
         }
     }
 
@@ -400,14 +402,15 @@ public class HeaderPanel
         @Override
         protected void respond(final AjaxRequestTarget _target)
         {
-            final TableModel model = (TableModel) getComponent().getDefaultModel();
-            model.getObject().resetModel();
+            final AbstractUIObject modelObject = (AbstractUIObject) getComponent().getDefaultModelObject();
+            modelObject.resetModel();
             try {
                 if (getComponent().getPage() instanceof TablePage) {
-                    getComponent().setResponsePage(new TablePage(model));
+                    getComponent().setResponsePage(new TablePage(Model.of(modelObject)));
+                } else if (getComponent().getPage() instanceof StructurBrowserPage) {
+                    getComponent().setResponsePage(new StructurBrowserPage(Model.of(modelObject)));
                 } else {
-                    final UIForm uiform = (UIForm) getComponent().getPage().getDefaultModelObject();
-                    getComponent().setResponsePage(new FormPage(Model.of(uiform)));
+                    getComponent().setResponsePage(new FormPage(Model.of(modelObject)));
                 }
             } catch (final EFapsException e) {
                 getComponent().setResponsePage(new ErrorPage(e));

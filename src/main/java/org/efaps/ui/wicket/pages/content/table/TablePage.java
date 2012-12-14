@@ -60,7 +60,7 @@ public class TablePage
      * @param _model modle for the table
      * @throws EFapsException on error
      */
-    public TablePage(final IModel<UITable> _model)
+    public TablePage(final IModel<?> _model)
         throws EFapsException
     {
         this(_model, (ModalWindowContainer) null);

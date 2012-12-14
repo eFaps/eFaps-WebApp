@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.StringTokenizer;
 import java.util.UUID;
 
 import org.apache.wicket.RestartResponseException;
@@ -46,7 +45,6 @@ import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractCommand.SortDirection;
 import org.efaps.admin.ui.Image;
-import org.efaps.admin.ui.Table;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
@@ -97,13 +95,6 @@ public class UITable
      * @see #execute4InstanceOld()
      */
     private final Map<String, Filter> filterTempCache = new HashMap<String, Filter>();
-
-    /**
-     * The instance variable stores the UUID for the table which must be shown.
-     *
-     * @see #getTable
-     */
-    private UUID tableUUID;
 
     /**
      * All evaluated rows of this table are stored in this list.
@@ -164,8 +155,7 @@ public class UITable
         } else {
             // set target table
             if (command.getTargetTable() != null) {
-                this.tableUUID = command.getTargetTable().getUUID();
-
+                setTableUUID(command.getTargetTable().getUUID());
                 if (Context.getThreadContext().containsSessionAttribute(getCacheKey(UITable.UserCacheKey.FILTER))) {
                     @SuppressWarnings("unchecked")
                     final Map<String, Filter> sessfilter = (Map<String, Filter>) Context.getThreadContext()
@@ -691,63 +681,6 @@ public class UITable
     }
 
     /**
-     * This is the getter method for the instance variable {@link #table}.
-     *
-     * @return value of instance variable {@link #table}
-     * @see #table
-     */
-    public Table getTable()
-    {
-        return Table.get(this.tableUUID);
-    }
-
-    /**
-     * This method looks if for this TableModel a UserAttribute for the sorting
-     * of the Columns exist. If they exist the Fields will be sorted as defined
-     * by the User. If no definition of the User exist the Original default
-     * sorting of the columns will be used. In the Case that the Definition of
-     * the Table was altered Field which are not sorted yet will be sorted in at
-     * the last position.
-     *
-     * @return List of fields
-     */
-    private List<Field> getUserSortedColumns()
-    {
-        final List<Field> fields = getTable().getFields();
-        List<Field> ret = new ArrayList<Field>();
-        try {
-            if (Context.getThreadContext().containsUserAttribute(
-                            getCacheKey(UITable.UserCacheKey.COLUMNORDER))) {
-
-                final String columnOrder = Context.getThreadContext().getUserAttribute(
-                                getCacheKey(UITable.UserCacheKey.COLUMNORDER));
-
-                final StringTokenizer tokens = new StringTokenizer(columnOrder, ";");
-                while (tokens.hasMoreTokens()) {
-                    final String fieldname = tokens.nextToken();
-                    for (int i = 0; i < fields.size(); i++) {
-                        if (fieldname.equals(fields.get(i).getName())) {
-                            ret.add(fields.get(i));
-                            fields.remove(i);
-                        }
-                    }
-                }
-                if (!fields.isEmpty()) {
-                    for (final Field field : fields) {
-                        ret.add(field);
-                    }
-                }
-            } else {
-                ret = fields;
-            }
-        } catch (final EFapsException e) {
-            UITable.LOG.debug("Error on sorting columns");
-        }
-        return ret;
-    }
-
-
-    /**
      * This is the getter method for the instance variable {@link #values}.
      *
      * @return value of instance variable {@link #values}
@@ -777,8 +710,6 @@ public class UITable
         setSize(ret.size());
         return ret;
     }
-
-
 
     /**
      * Are the values of the Rows filtered or not.
@@ -816,43 +747,6 @@ public class UITable
         this.values.clear();
         getHeaders().clear();
         getHiddenCells().clear();
-    }
-
-    /**
-     * Method to set the order of the columns.
-     *
-     * @param _markupsIds ids of the columns as a string with ; separated
-     */
-    public void setColumnOrder(final String _markupsIds)
-    {
-        final StringTokenizer tokens = new StringTokenizer(_markupsIds, ";");
-        final StringBuilder columnOrder = new StringBuilder();
-        while (tokens.hasMoreTokens()) {
-            final String markupId = tokens.nextToken();
-            for (final UITableHeader header : getHeaders()) {
-                if (markupId.equals(header.getMarkupId())) {
-                    columnOrder.append(header.getFieldName()).append(";");
-                    break;
-                }
-            }
-        }
-        try {
-            Context.getThreadContext().setUserAttribute(getCacheKey(UITable.UserCacheKey.COLUMNORDER),
-                            columnOrder.toString());
-        } catch (final EFapsException e) {
-            // we don't throw an error because this are only Usersettings
-            UITable.LOG.error("error during the setting of UserAttributes", e);
-        }
-    }
-
-    /**
-     * This is the setter method for the instance variable {@link #tableUUID}.
-     *
-     * @param _tableUUID the tableUUID to set
-     */
-    protected void setTableUUID(final UUID _tableUUID)
-    {
-        this.tableUUID = _tableUUID;
     }
 
     /**
@@ -972,9 +866,14 @@ public class UITable
          */
         private final long headerFieldId;
 
-
+        /**
+         * is the filter memoryBased.
+         */
         private final boolean memoryBased;
 
+        /**
+         * Type of the Filter.
+         */
         private final FilterType filterType;
 
         /**
@@ -987,8 +886,6 @@ public class UITable
             this.memoryBased = false;
             this.filterType = null;
         }
-
-
 
         /**
          * Constructor is used in case that a filter is required, during loading

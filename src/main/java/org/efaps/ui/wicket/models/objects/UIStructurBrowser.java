@@ -50,7 +50,6 @@ import org.efaps.admin.ui.AbstractCommand.SortDirection;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.Image;
 import org.efaps.admin.ui.Menu;
-import org.efaps.admin.ui.Table;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.beans.ValueList;
 import org.efaps.beans.valueparser.ParseException;
@@ -157,13 +156,6 @@ public class UIStructurBrowser
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
-
-    /**
-     * The instance variable stores the UUID for the table which must be shown.
-     *
-     * @see #getTable
-     */
-    private UUID tableuuid;
 
     /**
      *  This instance variable holds if this StructurBrowserModel can have
@@ -358,7 +350,7 @@ public class UIStructurBrowser
     {
         final AbstractCommand command = getCommand();
         if ((command != null) && (command.getTargetTable() != null)) {
-            this.tableuuid = command.getTargetTable().getUUID();
+            setTableUUID(command.getTargetTable().getUUID());
             this.browserFieldName = command.getTargetStructurBrowserField();
             setShowCheckBoxes(command.isTargetShowCheckBoxes());
         } else if (getInstance() != null) {
@@ -390,7 +382,6 @@ public class UIStructurBrowser
         }
     }
 
-
     /**
      * This method should be called to actually execute this
      * StructurBrowserModel, that means to retrieve the values from the
@@ -408,7 +399,7 @@ public class UIStructurBrowser
         setExecutionStatus(UIStructurBrowser.ExecutionStatus.EXECUTE);
         List<Return> ret;
         try {
-            if (this.tableuuid == null) {
+            if (getTableUUID() == null) {
                 final Map<Instance, Boolean> map = new LinkedHashMap<Instance, Boolean>();
                 map.put(getInstance(), null);
                 executeTree(map, false);
@@ -491,7 +482,7 @@ public class UIStructurBrowser
             final MultiPrintQuery multi = new MultiPrintQuery(instances);
             Type type = instances.isEmpty() ? null : instances.get(0).getType();
             int i = 0;
-            for (final Field field : getTable().getFields()) {
+            for (final Field field : getUserSortedColumns()) {
                 Attribute attr = null;
                 if (field.hasAccess(getMode(), getInstance())
                                 && !field.isNoneDisplay(getMode()) && !field.isHiddenDisplay(getMode())) {
@@ -539,7 +530,7 @@ public class UIStructurBrowser
                 Instance instance = multi.getCurrentInstance();
                 final UIStructurBrowser child = getNewStructurBrowser(instance, this);
                 child.setDirection(_map.get(instance));
-                for (final Field field : getTable().getFields()) {
+                for (final Field field : getUserSortedColumns()) {
                     if (field.hasAccess(getMode(), getInstance()) && !field.isNoneDisplay(getMode())) {
                         Object value = null;
                         attr = null;
@@ -620,7 +611,6 @@ public class UIStructurBrowser
         super.setInitialized(true);
     }
 
-
     /**
      * Getter method for the instance variable {@link #hidden}.
      *
@@ -657,7 +647,7 @@ public class UIStructurBrowser
                                             ReturnValues.VALUES);
                             uiChild.setExpanded(true);
                             uiChild.add2ExpandedBrowsers(uiChild);
-                            if (uiChild.tableuuid == null) {
+                            if (uiChild.getTableUUID() == null) {
                                 uiChild.executeTree(map, true);
                             } else {
                                 uiChild.executeTreeTable(map, true);
@@ -864,7 +854,7 @@ public class UIStructurBrowser
                             ParameterValues.CLASS, this);
             final Map<Instance, Boolean> map = (Map<Instance, Boolean>) ret.get(0).get(ReturnValues.VALUES);
 
-            if (this.tableuuid == null) {
+            if (getTableUUID() == null) {
                 executeTree(map, false);
             } else {
                 executeTreeTable(map, false);
@@ -1007,17 +997,6 @@ public class UIStructurBrowser
     }
 
     /**
-     * This is the getter method for the instance variable {@link #table}.
-     *
-     * @return value of instance variable {@link #table}
-     * @see #table
-     */
-    public Table getTable()
-    {
-        return Table.get(this.tableuuid);
-    }
-
-    /**
      * @param _parameters   Parameter as send from the UserInterface
      * @param _node         Node the _parameters were send from
      * @throws EFapsException on error
@@ -1093,17 +1072,6 @@ public class UIStructurBrowser
     protected void setBrowserFieldName(final String _browserFieldName)
     {
         this.browserFieldName = _browserFieldName;
-    }
-
-    /**
-     * Setter method for instance variable {@link #tableuuid}.
-     *
-     * @param _tableuuid value for instance variable {@link #tableuuid}
-     */
-
-    protected void setTableuuid(final UUID _tableuuid)
-    {
-        this.tableuuid = _tableuuid;
     }
 
     /**
@@ -1259,7 +1227,6 @@ public class UIStructurBrowser
         storeInSession();
     }
 
-
     /**
      * This method generates the Key for a UserAttribute by using the UUID of
      * the Command and the given static part, so that for every StruturBrowser a
@@ -1271,7 +1238,6 @@ public class UIStructurBrowser
     {
         return super.getCommandUUID() + "-" + UIStructurBrowser.USERSESSIONKEY;
     }
-
 
     /**
      * Store the Information in the Session.
@@ -1305,7 +1271,6 @@ public class UIStructurBrowser
     {
         this.executionStatus = _executionStatus;
     }
-
 
     /**
      * Get the Admin Object that contains the events that must be executed.
@@ -1342,12 +1307,10 @@ public class UIStructurBrowser
      *
      * @param _parentBrws value for instance variable {@link #parentBrws}
      */
-
     protected void setParentBrws(final UIStructurBrowser _parentBrws)
     {
         this.parentBrws = _parentBrws;
     }
-
 
     /**
      * Getter method for the instance variable {@link #level}.
@@ -1359,7 +1322,6 @@ public class UIStructurBrowser
         return this.level;
     }
 
-
     /**
      * Setter method for instance variable {@link #level}.
      *
@@ -1369,7 +1331,6 @@ public class UIStructurBrowser
     {
         this.level = _level;
     }
-
 
     /**
      * (non-Javadoc).

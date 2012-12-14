@@ -26,6 +26,8 @@ import java.util.StringTokenizer;
 import java.util.UUID;
 
 import org.efaps.admin.ui.AbstractCommand.SortDirection;
+import org.efaps.admin.ui.Table;
+import org.efaps.admin.ui.field.Field;
 import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
@@ -91,8 +93,6 @@ public abstract class AbstractUIHeaderObject
         }
     }
 
-
-
     /**
      *
      */
@@ -116,12 +116,18 @@ public abstract class AbstractUIHeaderObject
      */
     private int tableId = 1;
 
+    /**
+     * The instance variable stores the UUID for the table which must be shown.
+     *
+     * @see #getTable
+     */
+    private UUID tableUUID;
+
 
     /**
      * This instance variable sores if the Table should show CheckBodes.
      */
     private boolean showCheckBoxes = false;
-
 
     /**
      * This instance variable stores if the Widths of the Columns are set by
@@ -157,9 +163,9 @@ public abstract class AbstractUIHeaderObject
     private  String sortKey = null;
 
     /**
-     * @param _commandUUID
-     * @param _instanceKey
-     * @param _openerId
+     * @param _commandUUID  UUID of the Command
+     * @param _instanceKey  key to the instance
+     * @param _openerId     id of the opener
      */
     public AbstractUIHeaderObject(final UUID _commandUUID,
                                   final String _instanceKey,
@@ -169,8 +175,8 @@ public abstract class AbstractUIHeaderObject
     }
 
     /**
-     * @param _commandUUID
-     * @param _instanceKey
+     * @param _commandUUID  UUID of the Command
+     * @param _instanceKey  key to the instance
      */
     public AbstractUIHeaderObject(final UUID _commandUUID,
                                   final String _instanceKey)
@@ -198,6 +204,37 @@ public abstract class AbstractUIHeaderObject
         this.tableId = _tableId;
     }
 
+    /**
+     * Getter method for the instance variable {@link #tableUUID}.
+     *
+     * @return value of instance variable {@link #tableUUID}
+     */
+    protected UUID getTableUUID()
+    {
+        return this.tableUUID;
+    }
+
+    /**
+     * Setter method for instance variable {@link #tableUUID}.
+     *
+     * @param _tableUUID value for instance variable {@link #tableUUID}
+     */
+
+    protected void setTableUUID(final UUID _tableUUID)
+    {
+        this.tableUUID = _tableUUID;
+    }
+
+    /**
+     * This is the getter method for the instance variable {@link #table}.
+     *
+     * @return value of instance variable {@link #table}
+     * @see #table
+     */
+    public Table getTable()
+    {
+        return Table.get(getTableUUID());
+    }
 
     /**
      * @return <i>true</i> if the check boxes must be shown, other <i>false</i>
@@ -226,7 +263,6 @@ public abstract class AbstractUIHeaderObject
         this.showCheckBoxes = _showCheckBoxes;
     }
 
-
     /**
      * In create or edit mode this Table is editable.
      *
@@ -247,7 +283,10 @@ public abstract class AbstractUIHeaderObject
         return this.headers;
     }
 
-
+    /**
+     * @param _fieldId  id of the
+     * @return UITableHeader header
+     */
     public UITableHeader getHeader4Id(final long _fieldId)
     {
         UITableHeader ret = null;
@@ -280,11 +319,13 @@ public abstract class AbstractUIHeaderObject
         return this.userWidths;
     }
 
+    /**
+     * @param _userWidth must the user with be set
+     */
     protected void setUserWidth(final boolean _userWidth)
     {
         this.userWidths = _userWidth;
     }
-
 
     /**
      * This is the getter method for the instance variable {@link #widthWeight}.
@@ -305,7 +346,6 @@ public abstract class AbstractUIHeaderObject
     {
         this.widthWeight = _widthWeight;
     }
-
 
     /**
      * This method retieves the UserAttribute for the ColumnWidths and evaluates
@@ -375,6 +415,9 @@ public abstract class AbstractUIHeaderObject
         }
     }
 
+    /**
+     * @param _sortdirection sortdirection
+     */
     public void setSortDirectionInternal(final SortDirection _sortdirection)
     {
         this.sortDirection = _sortdirection;
@@ -441,8 +484,83 @@ public abstract class AbstractUIHeaderObject
         }
     }
 
+    /**
+     * @param _sortKey sort key
+     */
     protected void setSortKeyInternal(final String _sortKey)
     {
         this.sortKey = _sortKey;
+    }
+
+    /**
+     * Method to set the order of the columns.
+     *
+     * @param _markupsIds ids of the columns as a string with ; separated
+     */
+    public void setColumnOrder(final String _markupsIds)
+    {
+        final StringTokenizer tokens = new StringTokenizer(_markupsIds, ";");
+        final StringBuilder columnOrder = new StringBuilder();
+        while (tokens.hasMoreTokens()) {
+            final String markupId = tokens.nextToken();
+            for (final UITableHeader header : getHeaders()) {
+                if (markupId.equals(header.getMarkupId())) {
+                    columnOrder.append(header.getFieldName()).append(";");
+                    break;
+                }
+            }
+        }
+        try {
+            Context.getThreadContext().setUserAttribute(getCacheKey(UITable.UserCacheKey.COLUMNORDER),
+                            columnOrder.toString());
+        } catch (final EFapsException e) {
+            // we don't throw an error because this are only Usersettings
+            AbstractUIHeaderObject.LOG.error("error during the setting of UserAttributes", e);
+        }
+    }
+
+    /**
+     * This method looks if for this TableModel a UserAttribute for the sorting
+     * of the Columns exist. If they exist the Fields will be sorted as defined
+     * by the User. If no definition of the User exist the Original default
+     * sorting of the columns will be used. In the Case that the Definition of
+     * the Table was altered Field which are not sorted yet will be sorted in at
+     * the last position.
+     *
+     * @return List of fields
+     */
+    protected List<Field> getUserSortedColumns()
+    {
+        final List<Field> fields = getTable().getFields();
+        List<Field> ret = new ArrayList<Field>();
+        try {
+            if (Context.getThreadContext().containsUserAttribute(
+                            getCacheKey(UITable.UserCacheKey.COLUMNORDER))) {
+
+                final String columnOrder = Context.getThreadContext().getUserAttribute(
+                                getCacheKey(UITable.UserCacheKey.COLUMNORDER));
+
+                final StringTokenizer tokens = new StringTokenizer(columnOrder, ";");
+                while (tokens.hasMoreTokens()) {
+                    final String fieldname = tokens.nextToken();
+                    for (int i = 0; i < fields.size(); i++) {
+                        if (fieldname.equals(fields.get(i).getName())) {
+                            ret.add(fields.get(i));
+                            fields.remove(i);
+                        }
+                    }
+                }
+                if (!fields.isEmpty()) {
+                    for (final Field field : fields) {
+                        ret.add(field);
+                    }
+                }
+            } else {
+                ret = fields;
+            }
+        } catch (final EFapsException e) {
+            AbstractUIHeaderObject.LOG.debug("Error on sorting columns");
+        }
+        return ret;
     }
 }

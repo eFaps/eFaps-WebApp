@@ -63,7 +63,7 @@ public class UIFieldStructurBrowser
         throws EFapsException
     {
         super(_commandUUID, _instanceKey);
-        setTableuuid(_field.getTargetTable().getUUID());
+        setTableUUID(_field.getTargetTable().getUUID());
         setBrowserFieldName(_field.getTargetStructurBrowserField());
         this.fieldTabelId = _field.getId();
         setShowCheckBoxes(_field.isTargetShowCheckBoxes());
@@ -84,7 +84,7 @@ public class UIFieldStructurBrowser
         throws EFapsException
     {
         super(_commandUUID, _instanceKey, false, _sortdirection);
-        setTableuuid(_field.getTargetTable().getUUID());
+        setTableUUID(_field.getTargetTable().getUUID());
         setBrowserFieldName(_field.getTargetStructurBrowserField());
         this.fieldTabelId = _field.getId();
         setShowCheckBoxes(_field.isTargetShowCheckBoxes());
