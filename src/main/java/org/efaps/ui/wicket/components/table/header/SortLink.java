@@ -89,9 +89,11 @@ public class SortLink
             AbstractContentPage page;
             if (getPage() instanceof TablePage) {
                 page = new TablePage(new TableModel(uiTable),
+                                ((AbstractContentPage) getPage()).getModalWindow(),
                                 ((AbstractContentPage) getPage()).getCalledByPageReference());
             } else {
                 page = new FormPage(new FormModel((UIForm) getPage().getDefaultModelObject()),
+                                ((AbstractContentPage) getPage()).getModalWindow(),
                                 ((AbstractContentPage) getPage()).getCalledByPageReference());
             }
             getRequestCycle().setResponsePage(page);

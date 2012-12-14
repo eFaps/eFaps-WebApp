@@ -88,7 +88,7 @@ public class SearchSubmitLink
             }
             final FooterPanel footer = findParent(FooterPanel.class);
             final ModalWindowContainer modal = footer.getModalWindow();
-            final TablePage page = new TablePage(new TableModel(newTable), modal, false);
+            final TablePage page = new TablePage(new TableModel(newTable), modal);
             getRequestCycle().setResponsePage(page);
         } catch (final EFapsException e) {
             getRequestCycle().setResponsePage(new ErrorPage(e));

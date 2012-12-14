@@ -95,13 +95,12 @@ public abstract class AbstractContentPage
      * Constructor.
      *
      * @param _model        model for this page
-     * @param _updateMenu   update the menu
      */
-    public AbstractContentPage(final IModel<?> _model,
-                               final boolean _updateMenu)
+    public AbstractContentPage(final IModel<?> _model)
     {
-        this(_model, null, _updateMenu);
+        this(_model, null);
     }
+
 
     /**
      * Constructor.
@@ -111,8 +110,7 @@ public abstract class AbstractContentPage
      * @param _updateMenu   update the menu
      */
     public AbstractContentPage(final IModel<?> _model,
-                               final ModalWindowContainer _modalWindow,
-                               final boolean _updateMenu)
+                               final ModalWindowContainer _modalWindow)
     {
         super(_model);
         this.modalWindow = _modalWindow;
@@ -133,7 +131,6 @@ public abstract class AbstractContentPage
         this.modalWindow = _modalWindow;
         this.calledByPageReference = _calledByPageReference;
     }
-
 
     /**
      * Getter method for the instance variable {@link #calledByPageReference}.
@@ -236,6 +233,17 @@ public abstract class AbstractContentPage
     {
         return this.modal;
     }
+
+    /**
+     * Getter method for the instance variable {@link #modalWindow}.
+     *
+     * @return value of instance variable {@link #modalWindow}
+     */
+    public ModalWindowContainer getModalWindow()
+    {
+        return this.modalWindow;
+    }
+
 
     /**
      * Getter method for the instance variable {@link #updateMenu}.

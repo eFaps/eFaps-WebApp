@@ -35,12 +35,12 @@ import org.apache.wicket.markup.head.PriorityHeaderItem;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.util.string.StringValue;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.behaviors.dojo.DnDBehavior;
 import org.efaps.ui.wicket.components.tree.StructurBrowserTreeTable;
-import org.efaps.ui.wicket.models.FormModel;
 import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.AbstractUIHeaderObject;
@@ -404,10 +404,10 @@ public class HeaderPanel
             model.getObject().resetModel();
             try {
                 if (getComponent().getPage() instanceof TablePage) {
-                    getComponent().setResponsePage(new TablePage(model, true));
+                    getComponent().setResponsePage(new TablePage(model));
                 } else {
                     final UIForm uiform = (UIForm) getComponent().getPage().getDefaultModelObject();
-                    getComponent().setResponsePage(new FormPage(new FormModel(uiform), true));
+                    getComponent().setResponsePage(new FormPage(Model.of(uiform)));
                 }
             } catch (final EFapsException e) {
                 getComponent().setResponsePage(new ErrorPage(e));

@@ -58,45 +58,37 @@ public class StructurBrowserPage
     private static final long serialVersionUID = 7564911406648729094L;
 
     /**
-     * @param _model        model for this pager
-     * @param _updateMenu   update the menu
+     * @param _commandUUID  UUID of the calling command
+     * @param _instanceKey  key to the instance
      * @throws EFapsException on error
      */
-    public StructurBrowserPage(final IModel<UIStructurBrowser> _model,
-                               final boolean _updateMenu)
+    public StructurBrowserPage(final UUID _commandUUID,
+                               final String _instanceKey)
         throws EFapsException
     {
-        this(_model, null, _updateMenu);
+        this(new UIModel<UIStructurBrowser>(new UIStructurBrowser(_commandUUID, _instanceKey)));
+    }
+
+    /**
+     * @param _model        model for this pager
+     * @throws EFapsException on error
+     */
+    public StructurBrowserPage(final IModel<UIStructurBrowser> _model)
+        throws EFapsException
+    {
+        this(_model, (ModalWindowContainer) null);
     }
 
     /**
      * @param _model model  for this pager
      * @param _modalWindow  modal Window this page is opened in
-     * @param _updateMenu   update the menu
      * @throws EFapsException on error
      */
     public StructurBrowserPage(final IModel<UIStructurBrowser> _model,
-                               final ModalWindowContainer _modalWindow,
-                               final boolean _updateMenu)
+                               final ModalWindowContainer _modalWindow)
         throws EFapsException
     {
-        super(_model, _modalWindow, _updateMenu);
-        this.addComponents();
-    }
-
-    /**
-     * @param _commandUUID  UUID of the calling command
-     * @param _instanceKey  key to the instance
-     * @param _updateMenu   update the menu
-     * @throws EFapsException on error
-     */
-    public StructurBrowserPage(final UUID _commandUUID,
-                               final String _instanceKey,
-                               final boolean _updateMenu)
-        throws EFapsException
-    {
-        super(new UIModel<UIStructurBrowser>(new UIStructurBrowser(_commandUUID, _instanceKey)), null, _updateMenu);
-        this.addComponents();
+        this(_model, _modalWindow, null);
     }
 
     /**

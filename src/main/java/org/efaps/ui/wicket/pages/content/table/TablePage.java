@@ -60,11 +60,10 @@ public class TablePage
      * @param _model modle for the table
      * @throws EFapsException on error
      */
-    public TablePage(final IModel<UITable> _model,
-                     final boolean _updateMenu)
+    public TablePage(final IModel<UITable> _model)
         throws EFapsException
     {
-        this(_model, null, _updateMenu);
+        this(_model, (ModalWindowContainer) null);
     }
 
     /**
@@ -73,11 +72,10 @@ public class TablePage
      * @throws EFapsException on error
      */
     public TablePage(final IModel<?> _model,
-                     final ModalWindowContainer _modalWindow,
-                     final boolean _updateMenu)
+                     final ModalWindowContainer _modalWindow)
         throws EFapsException
     {
-        super(_model, _modalWindow, _updateMenu);
+        super(_model, _modalWindow);
         this.addComponents();
     }
 
@@ -92,19 +90,7 @@ public class TablePage
                      final String _openerId)
         throws EFapsException
     {
-        this(new TableModel(new UITable(_uuid, _instanceKey, _openerId)), false);
-    }
-
-    /**
-     * @param _model modle for the table
-     * @throws EFapsException on error
-     */
-    public TablePage(final TableModel _model,
-                     final boolean _updateMenu)
-        throws EFapsException
-    {
-        super(_model, null, _updateMenu);
-        this.addComponents();
+        this(new TableModel(new UITable(_uuid, _instanceKey, _openerId)));
     }
 
     /**
@@ -113,11 +99,10 @@ public class TablePage
      * @throws EFapsException on error
      */
     public TablePage(final UUID _uuid,
-                     final String _instanceKey,
-                     final boolean _updateMenu)
+                     final String _instanceKey)
         throws EFapsException
     {
-        this(new TableModel(new UITable(_uuid, _instanceKey)), _updateMenu);
+        this(new TableModel(new UITable(_uuid, _instanceKey)));
     }
 
     /**
@@ -133,7 +118,7 @@ public class TablePage
     }
 
     /**
-     * @param _uuid             UUID of the calling command
+     * @param _commandUUID             UUID of the calling command
      * @param _instanceKey      key to the instance
      * @param _pageReference    reference top the page referenced
      * @throws EFapsException on error
@@ -148,8 +133,9 @@ public class TablePage
 
 
     /**
-     * @param _model model for the page
-     * @param _modalWindow modal window
+     * @param _model            model for the page
+     * @param _modalWindow      modal window
+     * @param _pageReference    reference to the page
      * @throws EFapsException on error
      */
     public TablePage(final IModel<?> _model,
@@ -163,7 +149,6 @@ public class TablePage
 
     /**
      * @throws EFapsException on error
-     *
      */
     protected void addComponents()
         throws EFapsException

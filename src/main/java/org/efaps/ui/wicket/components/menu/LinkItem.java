@@ -130,10 +130,10 @@ public class LinkItem
         if (command.getTargetTable() != null) {
             if (command.getTargetStructurBrowserField() != null) {
                 final StructurBrowserPage page = new StructurBrowserPage(model.getCommandUUID(), model
-                                .getInstanceKey(), false);
+                                .getInstanceKey());
                 setResponsePage(page);
             } else {
-                final TablePage page = new TablePage(model.getCommandUUID(), model.getInstanceKey(), false);
+                final TablePage page = new TablePage(model.getCommandUUID(), model.getInstanceKey());
                 setResponsePage(page);
             }
         }

@@ -30,6 +30,7 @@ import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.classification.ClassificationPathPanel;
 import org.efaps.ui.wicket.components.form.FormPanel;
@@ -71,27 +72,30 @@ public class FormPage
     private static final EFapsContentReference CSS = new EFapsContentReference(FormPage.class, "FormPage.css");
 
     /**
-     * @param _model model for the page
-     * @throws EFapsException on error
+     * Needed for serialization.
      */
-    public FormPage(final IModel<?> _model,
-                    final boolean _updateMenu)
-        throws EFapsException
-    {
-        this(_model, null, _updateMenu);
-    }
+    private static final long serialVersionUID = 8884911406648729094L;
 
     /**
      * @param _commandUUID UUID of the command
-     * @param _oid oid of the instance
+     * @param _instanceKey oid of the instance
      * @throws EFapsException on error
      */
     public FormPage(final UUID _commandUUID,
-                    final String _oid,
-                    final boolean _updateMenu)
+                    final String _instanceKey)
         throws EFapsException
     {
-        this(_commandUUID, _oid, (ModalWindowContainer) null, _updateMenu);
+        this(Model.of(new UIForm(_commandUUID, _instanceKey)));
+    }
+
+    /**
+     * @param _model model for the page
+     * @throws EFapsException on error
+     */
+    public FormPage(final IModel<?> _model)
+        throws EFapsException
+    {
+        this(_model, (ModalWindowContainer) null);
     }
 
     /**
@@ -102,12 +106,10 @@ public class FormPage
      */
     public FormPage(final UUID _commandUUID,
                     final String _oid,
-                    final ModalWindowContainer _modalWindow,
-                    final boolean _updateMenu)
+                    final ModalWindowContainer _modalWindow)
         throws EFapsException
     {
-        super(new FormModel(new UIForm(_commandUUID, _oid)), _modalWindow, _updateMenu);
-        this.addComponents();
+        this(Model.of(new UIForm(_commandUUID, _oid)), _modalWindow);
     }
 
     /**
@@ -116,20 +118,14 @@ public class FormPage
      * @throws EFapsException on error
      */
     public FormPage(final IModel<?> _model,
-                    final ModalWindowContainer _modalWindow,
-                    final boolean _updateMenu)
+                    final ModalWindowContainer _modalWindow)
         throws EFapsException
     {
-        super(_model, _modalWindow, _updateMenu);
+        super(_model, _modalWindow);
         this.addComponents();
     }
 
-
-
-
-
     /**
-     * @param _pageMap pagemap to be used
      * @param _commandUUID UUID of the command
      * @param _oid oid of the instance
      * @param _openerId id of the opener
@@ -140,21 +136,9 @@ public class FormPage
                     final String _openerId)
         throws EFapsException
     {
-        super(new FormModel(new UIForm(_commandUUID, _oid, _openerId)), null, false);
+        super(Model.of(new UIForm(_commandUUID, _oid, _openerId)), null);
         this.addComponents();
     }
-
-    /**
-     * @param _model model for the page
-     * @throws EFapsException on error
-     */
-    public FormPage(final IModel<?> _model,
-                    final PageReference _pageReference)
-        throws EFapsException
-    {
-        this(_model, null, _pageReference);
-    }
-
 
     /**
      * @param _commandUUID
@@ -166,9 +150,28 @@ public class FormPage
                     final PageReference _pageReference)
         throws EFapsException
     {
-        this(new FormModel(new UIForm(_commandUUID, _instanceKey)), null, _pageReference);
+        this(Model.of(new UIForm(_commandUUID, _instanceKey)), _pageReference);
     }
 
+    /**
+     * @param _model            model for the page
+     * @param _pageReference    PageReference
+     * @throws EFapsException on error
+     */
+    public FormPage(final IModel<?> _model,
+                    final PageReference _pageReference)
+        throws EFapsException
+    {
+        this(_model, null, _pageReference);
+    }
+
+
+    /**
+     * @param _model            model
+     * @param _modalWindow      window
+     * @param _pageReference    reference
+     * @throws EFapsException
+     */
     public FormPage(final IModel<?> _model,
                     final ModalWindowContainer _modalWindow,
                     final PageReference _pageReference)

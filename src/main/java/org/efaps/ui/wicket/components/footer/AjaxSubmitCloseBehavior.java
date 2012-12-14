@@ -192,9 +192,9 @@ public class AjaxSubmitCloseBehavior
                         final ModalWindowContainer modal = footer.getModalWindow();
                         final AbstractContentPage page;
                         if (targetCmd.getTargetTable() != null) {
-                            page = new TablePage(new TableModel((UITable) newUIObject), modal, true);
+                            page = new TablePage(new TableModel((UITable) newUIObject), modal);
                         } else {
-                            page = new FormPage(new FormModel((UIForm) newUIObject), modal, true);
+                            page = new FormPage(new FormModel((UIForm) newUIObject), modal);
                         }
                         getComponent().getPage().getRequestCycle().setResponsePage(page);
                     } else {
