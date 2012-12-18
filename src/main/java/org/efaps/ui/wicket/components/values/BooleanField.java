@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2011 The eFaps Team
+ * Copyright 2003 - 2012 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,9 @@ import org.apache.wicket.markup.html.form.RadioGroup;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.models.cell.FieldConfiguration;
+import org.efaps.ui.wicket.request.EFapsRequestParametersAdapter;
 
 
 /**
@@ -42,24 +44,17 @@ import org.efaps.ui.wicket.models.cell.FieldConfiguration;
  */
 public class BooleanField
     extends Panel
+    implements IValueConverter
 {
-
     /**
-     *
+     * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
-    private final FieldConfiguration fieldConfiguration;
-
 
     /**
-     * Getter method for the instance variable {@link #fieldConfiguration}.
-     *
-     * @return value of instance variable {@link #fieldConfiguration}
+     * Configuration for this field.
      */
-    public FieldConfiguration getFieldConfiguration()
-    {
-        return this.fieldConfiguration;
-    }
+    private final FieldConfiguration fieldConfiguration;
 
     /**
      * @param _wicketId     wicket id for this component
@@ -94,5 +89,39 @@ public class BooleanField
         radio2.setLabel(Model.of((String) second.getKey()));
         radioGroup.add(radio2);
         radioGroup.add(new Label("label2", Model.of((String) second.getKey())));
+    }
+
+    /**
+     * Getter method for the instance variable {@link #fieldConfiguration}.
+     *
+     * @return value of instance variable {@link #fieldConfiguration}
+     */
+    public FieldConfiguration getFieldConfiguration()
+    {
+        return this.fieldConfiguration;
+    }
+
+    @Override
+    protected void onAfterRender()
+    {
+        super.onAfterRender();
+        final FormContainer frmContainer = findParent(FormContainer.class);
+        if (frmContainer != null) {
+            frmContainer.addValueConverter(this);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void convertValue(final EFapsRequestParametersAdapter _parameters)
+    {
+        final RadioGroup<?> group = (RadioGroup<?>) visitChildren(RadioGroup.class).next();
+        if (group.getDefaultModelObject() == Boolean.TRUE) {
+            _parameters.addParameterValue(getFieldConfiguration().getName(), "true");
+        } else {
+            _parameters.addParameterValue(getFieldConfiguration().getName(), "false");
+        }
     }
 }

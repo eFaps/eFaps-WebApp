@@ -22,6 +22,7 @@ package org.efaps.ui.wicket.components;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -41,6 +42,7 @@ import org.efaps.db.Context;
 import org.efaps.ui.wicket.EFapsSession.FileParameter;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.date.IDateListener;
+import org.efaps.ui.wicket.components.values.IValueConverter;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
@@ -70,6 +72,11 @@ public class FormContainer
      * Set contains the date components of this formpanel.
      */
     private final Set<DateTimePanel> dateComponents = new HashSet<DateTimePanel>();
+
+    /**
+     * Set contains value Converters.
+     */
+    private final Set<IValueConverter> valueConverters = new LinkedHashSet<IValueConverter>();
 
     /**
      * Constructor setting the wicket id of this component.
@@ -170,6 +177,32 @@ public class FormContainer
     public Set<DateTimePanel> getDateComponents()
     {
         return this.dateComponents;
+    }
+
+    /**
+     * @param _valueConverter value Converter to be added
+     */
+    public void addValueConverter(final IValueConverter _valueConverter)
+    {
+        this.valueConverters.add(_valueConverter);
+    }
+
+    /**
+     * Getter method for the instance variable {@link #valueConverters}.
+     *
+     * @return value of instance variable {@link #valueConverters}
+     */
+    public Set<IValueConverter> getValueConverters()
+    {
+        return this.valueConverters;
+    }
+
+    /**
+     * @param _valueConverter valueConverter to be removed
+     */
+    public void removeValueConverter(final IValueConverter _valueConverter)
+    {
+        this.valueConverters.remove(_valueConverter);
     }
 
     /**

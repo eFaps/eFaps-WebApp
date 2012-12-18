@@ -38,9 +38,7 @@ import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow.WindowClosedCallback;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.RadioGroup;
 import org.apache.wicket.request.IRequestParameters;
-import org.apache.wicket.util.iterator.ComponentHierarchyIterator;
 import org.apache.wicket.util.string.StringValue;
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
@@ -57,7 +55,7 @@ import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.form.FormPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
-import org.efaps.ui.wicket.components.values.BooleanField;
+import org.efaps.ui.wicket.components.values.IValueConverter;
 import org.efaps.ui.wicket.models.FormModel;
 import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.cell.UIFormCell;
@@ -83,6 +81,8 @@ import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.request.EFapsRequestParametersAdapter;
 import org.efaps.ui.wicket.util.ParameterUtil;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class renders the footer in a form. It is responsible for performing the
@@ -94,6 +94,11 @@ import org.efaps.util.EFapsException;
 public class AjaxSubmitCloseBehavior
     extends AjaxFormSubmitBehavior
 {
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(AjaxSubmitCloseBehavior.class);
+
     /**
      * Needed for serialization.
      */
@@ -141,6 +146,7 @@ public class AjaxSubmitCloseBehavior
     @Override
     protected void onSubmit(final AjaxRequestTarget _target)
     {
+        AjaxSubmitCloseBehavior.LOG.debug("entering onSubmit");
         final String[] oids = ParameterUtil.parameter2Array(
                         getComponent().getRequest().getRequestParameters(), "selectedRow");
         final Map<String, String[]> others = new HashMap<String, String[]>();
@@ -249,6 +255,7 @@ public class AjaxSubmitCloseBehavior
     private void convertDateFieldValues()
         throws EFapsException
     {
+        AjaxSubmitCloseBehavior.LOG.trace("entering convertDateFieldValues");
         final EFapsRequestParametersAdapter parameters = (EFapsRequestParametersAdapter) getComponent()
                         .getRequest().getRequestParameters();
         final Set<String> names = parameters.getParameterNames();
@@ -270,19 +277,15 @@ public class AjaxSubmitCloseBehavior
      * @throws EFapsException on error
      */
     private void convertFieldValues()
-                    throws EFapsException
+        throws EFapsException
     {
+        AjaxSubmitCloseBehavior.LOG.trace("entering convertFieldValues");
         final EFapsRequestParametersAdapter parameters = (EFapsRequestParametersAdapter) getComponent()
                         .getRequest().getRequestParameters();
-        final ComponentHierarchyIterator vistor = ((FormContainer) getForm()).visitChildren(BooleanField.class);
-        while (vistor.hasNext()) {
-            final BooleanField booleanField = (BooleanField) vistor.next();
-            final RadioGroup<?> group = (RadioGroup<?>) booleanField.visitChildren(RadioGroup.class).next();
-            if (group.getDefaultModelObject() == Boolean.TRUE) {
-                parameters.addParameterValue(booleanField.getFieldConfiguration().getName(), "true");
-            } else {
-                parameters.addParameterValue(booleanField.getFieldConfiguration().getName(), "false");
-            }
+        final FormContainer frmContainer = (FormContainer) getForm();
+
+        for (final IValueConverter converter : frmContainer.getValueConverters()) {
+            converter.convertValue(parameters);
         }
     }
 
@@ -315,6 +318,7 @@ public class AjaxSubmitCloseBehavior
                                   final List<Classification> _classifications)
         throws EFapsException
     {
+        AjaxSubmitCloseBehavior.LOG.trace("entering executeEvents");
         boolean ret = true;
         final List<Return> returns;
         final AbstractUIPageObject uiPageObject = (AbstractUIPageObject) getForm().getPage().getDefaultModelObject();
@@ -362,6 +366,7 @@ public class AjaxSubmitCloseBehavior
     private boolean validateFieldValues(final AjaxRequestTarget _target)
         throws EFapsException
     {
+        AjaxSubmitCloseBehavior.LOG.trace("entering validateFieldValues");
         boolean ret = true;
         final AbstractUIObject uiobject = (AbstractUIObject) getForm().getParent().getDefaultModelObject();
         final StringBuilder html = new StringBuilder();
@@ -390,6 +395,7 @@ public class AjaxSubmitCloseBehavior
                                     final UIForm _uiform)
         throws EFapsException
     {
+        AjaxSubmitCloseBehavior.LOG.trace("entering evalFormElement");
         boolean ret = true;
         for (final Element element : _uiform.getElements()) {
             if (element.getType().equals(ElementType.FORM)) {
@@ -478,6 +484,7 @@ public class AjaxSubmitCloseBehavior
                                  final List<Classification> _classifications)
         throws EFapsException
     {
+        AjaxSubmitCloseBehavior.LOG.trace("entering validateForm");
         boolean ret = true;
         if (!this.validated) {
             final List<Return> returns;
@@ -525,6 +532,7 @@ public class AjaxSubmitCloseBehavior
      */
     private boolean checkForRequired(final AjaxRequestTarget _target)
     {
+        AjaxSubmitCloseBehavior.LOG.trace("entering checkForRequired");
         boolean ret = true;
         if (!(getForm().getParent().getDefaultModel() instanceof TableModel)) {
             final IRequestParameters parameters = getComponent().getRequest().getRequestParameters();
@@ -554,6 +562,7 @@ public class AjaxSubmitCloseBehavior
      */
     private List<FormPanel> getFormPanels()
     {
+        AjaxSubmitCloseBehavior.LOG.trace("entering getFormPanels");
         final List<FormPanel> ret = new ArrayList<FormPanel>();
         final Iterator<?> iterator = getForm().iterator();
         while (iterator.hasNext()) {

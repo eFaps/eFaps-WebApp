@@ -96,35 +96,35 @@ public class EFapsRequestParametersAdapter
     /**
      * Sets value for given key.
      *
-     * @param _name
-     * @param _value
+     * @param _key      key for the value
+     * @param _value    value
      */
-    public void setParameterValue(final String _name,
+    public void setParameterValue(final String _key,
                                   final String _value)
     {
         final List<StringValue> list = new ArrayList<StringValue>(1);
         list.add(StringValue.valueOf(_value));
-        setParameterValues(_name, list);
+        setParameterValues(_key, list);
     }
 
     /**
-     * Adds value for given key.
+     * Adds a value for given key.
      *
-     * @param _name
-     * @param _value
+     * @param _key      key for the value
+     * @param _value    value
      */
-    public void addParameterValue(final String _name,
+    public void addParameterValue(final String _key,
                                   final String _value)
     {
-        List<StringValue> list = this.parameters.get(_name);
+        List<StringValue> list = this.parameters.get(_key);
         if (list == null)
         {
             list = new ArrayList<StringValue>(1);
-            this.parameters.put(_name, list);
+            this.parameters.put(_key, list);
         }
         list.add(StringValue.valueOf(_value));
         try {
-            Context.getThreadContext().getParameters().put(_name, ParameterUtil.stringValues2Array(list));
+            Context.getThreadContext().getParameters().put(_key, ParameterUtil.stringValues2Array(list));
         } catch (final EFapsException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

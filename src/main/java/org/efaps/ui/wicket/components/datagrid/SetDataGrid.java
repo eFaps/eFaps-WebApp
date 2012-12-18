@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2011 The eFaps Team
+ * Copyright 2003 - 2012 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.ComponentTag;
@@ -37,7 +38,10 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.RefreshingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.util.iterator.ComponentHierarchyIterator;
+import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
+import org.efaps.ui.wicket.components.values.IValueConverter;
 import org.efaps.ui.wicket.models.cell.CellSetRow;
 import org.efaps.ui.wicket.models.cell.CellSetValue;
 import org.efaps.ui.wicket.models.cell.UIFormCellSet;
@@ -47,6 +51,8 @@ import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO comment!
@@ -57,7 +63,6 @@ import org.efaps.util.cache.CacheReloadException;
 public class SetDataGrid
     extends Panel
 {
-
     /**
      * Reference to the style sheet.
      */
@@ -78,17 +83,19 @@ public class SetDataGrid
      */
     public static final String STYLE_CLASS = "eFapsFieldSet";
 
-    protected static final String ABSTRACTUIPAGEOBJECT = null;
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(SetDataGrid.class);
 
     /**
-     *
+     * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
 
-
     /**
-     * @param _id
-     * @param _model
+     * @param _wicketId wicket id for this component
+     * @param _model    model for this component
      */
     public SetDataGrid(final String _wicketId,
                        final IModel<UIFormCellSet> _model)
@@ -102,6 +109,8 @@ public class SetDataGrid
             add(addRow);
             final WebMarkupContainer addCol = new WebMarkupContainer("addCol")
             {
+
+                private static final long serialVersionUID = 1L;
 
                 @Override
                 protected void onComponentTag(final ComponentTag _tag)
@@ -216,6 +225,9 @@ public class SetDataGrid
         _response.render(AbstractEFapsHeaderItem.forCss(SetDataGrid.CSS).setSortWeight(10));
     }
 
+    /**
+     * Repeater fo ra Row.
+     */
     public final class RowRepeater
         extends RefreshingView<CellSetValue>
     {
@@ -226,19 +238,15 @@ public class SetDataGrid
         private static final long serialVersionUID = 1L;
 
         /**
-         * @param _id
-         * @param _model
+         * @param _wicketId wicket id
+         * @param _model    model
          */
-        public RowRepeater(final String _id,
+        public RowRepeater(final String _wicketId,
                            final IModel<?> _model)
         {
-            super(_id, _model);
+            super(_wicketId, _model);
         }
 
-        /*
-         * (non-Javadoc)
-         * @see org.apache.wicket.markup.repeater.RefreshingView#getItemModels()
-         */
         @Override
         protected Iterator<IModel<CellSetValue>> getItemModels()
         {
@@ -250,12 +258,6 @@ public class SetDataGrid
             return ret.iterator();
         }
 
-        /*
-         * (non-Javadoc)
-         * @see
-         * org.apache.wicket.markup.repeater.RefreshingView#populateItem(org
-         * .apache.wicket.markup.repeater.Item)
-         */
         @Override
         protected void populateItem(final Item<CellSetValue> _item)
         {
@@ -269,16 +271,24 @@ public class SetDataGrid
         }
     }
 
+    /**
+     * Link to add a row.
+     */
     public final class AddLink
-        extends AjaxLink
+        extends AjaxLink<Void>
     {
 
         /**
-         * @param _id
+         * Needed for serialization.
          */
-        public AddLink(final String _id)
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * @param _wicketId wicket id
+         */
+        public AddLink(final String _wicketId)
         {
-            super(_id);
+            super(_wicketId);
         }
 
         @Override
@@ -286,37 +296,60 @@ public class SetDataGrid
         {
             final SetDataGrid grid = findParent(SetDataGrid.class);
             final UIFormCellSet cellSet = (UIFormCellSet) grid.getDefaultModelObject();
+            final ComponentHierarchyIterator iter = grid.visitChildren();
+            while (iter.hasNext()) {
+                final Component component = iter.next();
+                if (component instanceof IValueConverter) {
+                    final FormContainer frmContainer = findParent(FormContainer.class);
+                    frmContainer.removeValueConverter((IValueConverter) component);
+                }
+            }
             try {
                 cellSet.addNewRow();
             } catch (final CacheReloadException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                SetDataGrid.LOG.error("CacheReloadException", e);
             }
             _target.add(grid);
         }
     }
 
+    /**
+     * Linkt to remove a row.
+     */
     public final class RemoveLink
         extends AjaxLink<CellSetRow>
     {
 
+        /**
+         * Needed for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
         /**
-         * @param _id
-         * @param _model
+         * @param _wicketId wicket id
+         * @param _model    model
          */
-        public RemoveLink(final String _id,
+        public RemoveLink(final String _wicketId,
                           final Model<CellSetRow> _model)
         {
-            super(_id, _model);
+            super(_wicketId, _model);
         }
 
         @Override
         public void onClick(final AjaxRequestTarget _target)
         {
             final SetDataGrid grid = findParent(SetDataGrid.class);
+            final RefreshingView<?> repeater = findParent(RefreshingView.class);
+
             final UIFormCellSet cellSet = (UIFormCellSet) grid.getDefaultModelObject();
+            final ComponentHierarchyIterator iter = repeater.visitChildren();
+            while (iter.hasNext()) {
+                final Component component = iter.next();
+                if (component instanceof IValueConverter) {
+                    final FormContainer frmContainer = findParent(FormContainer.class);
+                    frmContainer.removeValueConverter((IValueConverter) component);
+                }
+            }
             cellSet.getRows().remove(getDefaultModelObject());
             _target.add(grid);
         }
