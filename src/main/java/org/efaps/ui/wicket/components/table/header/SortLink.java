@@ -22,14 +22,14 @@ package org.efaps.ui.wicket.components.table.header;
 
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.efaps.admin.ui.AbstractCommand.SortDirection;
-import org.efaps.ui.wicket.models.FormModel;
-import org.efaps.ui.wicket.models.TableModel;
+import org.efaps.ui.wicket.models.objects.AbstractUIHeaderObject;
 import org.efaps.ui.wicket.models.objects.UIForm;
-import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.models.objects.UITableHeader;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
+import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
@@ -65,11 +65,12 @@ public class SortLink
     @Override
     public void onClick()
     {
-        final UITable uiTable = (UITable) (this.findParent(HeaderPanel.class)).getDefaultModelObject();
+        final AbstractUIHeaderObject uiHeaderObject = (AbstractUIHeaderObject) (this.findParent(HeaderPanel.class))
+                        .getDefaultModelObject();
         final UITableHeader uiTableHeader = super.getModelObject();
-        uiTable.setSortKey(uiTableHeader.getFieldName());
+        uiHeaderObject.setSortKey(uiTableHeader.getFieldName());
 
-        for (final UITableHeader headermodel : uiTable.getHeaders()) {
+        for (final UITableHeader headermodel : uiHeaderObject.getHeaders()) {
             if (!headermodel.equals(uiTableHeader)) {
                 headermodel.setSortDirection(SortDirection.NONE);
             }
@@ -83,16 +84,20 @@ public class SortLink
         }
 
         try {
-            uiTable.setSortDirection(uiTableHeader.getSortDirection());
-            uiTable.sort();
+            uiHeaderObject.setSortDirection(uiTableHeader.getSortDirection());
+            uiHeaderObject.sort();
 
             AbstractContentPage page;
             if (getPage() instanceof TablePage) {
-                page = new TablePage(new TableModel(uiTable),
+                page = new TablePage(Model.of(uiHeaderObject),
+                                ((AbstractContentPage) getPage()).getModalWindow(),
+                                ((AbstractContentPage) getPage()).getCalledByPageReference());
+            } else if (getPage() instanceof StructurBrowserPage) {
+                page = new StructurBrowserPage(Model.of(uiHeaderObject),
                                 ((AbstractContentPage) getPage()).getModalWindow(),
                                 ((AbstractContentPage) getPage()).getCalledByPageReference());
             } else {
-                page = new FormPage(new FormModel((UIForm) getPage().getDefaultModelObject()),
+                page = new FormPage(Model.of((UIForm) getPage().getDefaultModelObject()),
                                 ((AbstractContentPage) getPage()).getModalWindow(),
                                 ((AbstractContentPage) getPage()).getCalledByPageReference());
             }

@@ -563,4 +563,11 @@ public abstract class AbstractUIHeaderObject
         }
         return ret;
     }
+
+    /**
+     * Sort the UIObject;
+     * @throws EFapsException on error
+     */
+    public abstract void sort()
+        throws EFapsException;
 }
