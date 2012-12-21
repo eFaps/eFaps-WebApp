@@ -146,8 +146,7 @@ public class StaticContentServlet
                 int bytesRead;
                 final byte[] buffer = new byte[2048];
 
-                final InputStream in =
-                                bundle.getInputStream(supportsCompression(_req));
+                final InputStream in = bundle.getInputStream(supportsCompression(_req));
                 while ((bytesRead = in.read(buffer)) != -1) {
                     _res.getOutputStream().write(buffer, 0, bytesRead);
                 }
