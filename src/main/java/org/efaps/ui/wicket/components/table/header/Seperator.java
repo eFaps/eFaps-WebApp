@@ -56,8 +56,6 @@ public class Seperator
         super(_wicketId);
         this.outputId = _outputid;
         add(AttributeModifier.append("class", "eFapsTableHeaderSeperator"));
-        add(AttributeModifier.replace("onmousedown", "beginColumnSize(this,event)"));
-        add(AttributeModifier.replace("onmouseup", "endColumnSize(this,event," + _propId + ")"));
         setMarkupId(this.outputId + "eFapsHeaderSeperator");
     }
 

@@ -80,6 +80,11 @@ public class HeaderPanel
     private final String headerproperties;
 
     /**
+     * StringBuilder used to add javascript.
+     */
+    private final StringBuilder js = new StringBuilder();
+
+    /**
      * StyleSheet information.
      */
     private final String css;
@@ -202,7 +207,10 @@ public class HeaderPanel
                     }
                 }
                 if (add) {
-                    cellRepeater.add(new Seperator(cellRepeater.newChildId(), i, this.headerproperties));
+                    final Seperator seperator = new Seperator(cellRepeater.newChildId(), i, this.headerproperties);
+                    cellRepeater.add(seperator);
+                    this.js.append("addMoveable(\"").append(seperator.getMarkupId())
+                            .append("\", ").append(this.headerproperties).append(");");
                 }
             }
             i++;
@@ -244,7 +252,7 @@ public class HeaderPanel
      */
     private String getScript()
     {
-        final StringBuilder js = new StringBuilder()
+        final StringBuilder jsTmp = new StringBuilder()
             .append("require([\"dojo/ready\"]);\n")
             .append("  var ").append(this.headerproperties).append(" = new headerProperties();\n  ")
             .append(this.headerproperties).append(".headerID = \"").append(this.getMarkupId()).append("\";\n  ")
@@ -264,8 +272,9 @@ public class HeaderPanel
             .append(this.headerproperties)
             .append(");});\n")
             .append("  dojo.ready(function (){positionTableColumns(")
-            .append(this.headerproperties).append(");});\n");
-        return js.toString();
+            .append(this.headerproperties).append(");});\n")
+            .append(this.js);
+        return jsTmp.toString();
     }
 
     /**
