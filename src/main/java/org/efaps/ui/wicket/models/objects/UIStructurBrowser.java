@@ -519,8 +519,8 @@ public class UIStructurBrowser
                             setWidthWeight(getWidthWeight() + field.getWidth());
                         }
                     }
+                    i++;
                 }
-                i++;
             }
             if (!multi.execute()) {
                 type = getTypeFromEvent();
@@ -708,6 +708,7 @@ public class UIStructurBrowser
     /**
      * Method to sort this model and all child models.
      */
+    @Override
     public void sort()
     {
         sortModel();
