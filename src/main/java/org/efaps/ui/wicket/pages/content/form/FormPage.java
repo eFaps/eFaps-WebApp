@@ -141,9 +141,10 @@ public class FormPage
     }
 
     /**
-     * @param _commandUUID
-     * @param _instanceKey
-     * @param _pageReference
+     * @param _commandUUID      UUID of the command
+     * @param _instanceKey      oid of the instance
+     * @param _pageReference    Refercne to the page that opened
+     * @throws EFapsException on error
      */
     public FormPage(final UUID _commandUUID,
                     final String _instanceKey,
@@ -170,7 +171,7 @@ public class FormPage
      * @param _model            model
      * @param _modalWindow      window
      * @param _pageReference    reference
-     * @throws EFapsException
+     * @throws EFapsException on error
      */
     public FormPage(final IModel<?> _model,
                     final ModalWindowContainer _modalWindow,

@@ -44,7 +44,9 @@ import org.efaps.ui.wicket.components.tree.StructurBrowserTreeTable;
 import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.AbstractUIHeaderObject;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
+import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UITableHeader;
+import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
@@ -414,13 +416,22 @@ public class HeaderPanel
             final AbstractUIObject modelObject = (AbstractUIObject) getComponent().getDefaultModelObject();
             modelObject.resetModel();
             try {
-                if (getComponent().getPage() instanceof TablePage) {
-                    getComponent().setResponsePage(new TablePage(Model.of(modelObject)));
-                } else if (getComponent().getPage() instanceof StructurBrowserPage) {
-                    getComponent().setResponsePage(new StructurBrowserPage(Model.of(modelObject)));
+                AbstractContentPage page;
+                if (getPage() instanceof TablePage) {
+                    page = new TablePage(Model.of(modelObject),
+                                    ((AbstractContentPage) getPage()).getModalWindow(),
+                                    ((AbstractContentPage) getPage()).getCalledByPageReference());
+                } else if (getPage() instanceof StructurBrowserPage) {
+                    page = new StructurBrowserPage(Model.of(modelObject),
+                                    ((AbstractContentPage) getPage()).getModalWindow(),
+                                    ((AbstractContentPage) getPage()).getCalledByPageReference());
                 } else {
-                    getComponent().setResponsePage(new FormPage(Model.of(modelObject)));
+                    page = new FormPage(Model.of((UIForm) getPage().getDefaultModelObject()),
+                                    ((AbstractContentPage) getPage()).getModalWindow(),
+                                    ((AbstractContentPage) getPage()).getCalledByPageReference());
                 }
+                getComponent().setResponsePage(page);
+
             } catch (final EFapsException e) {
                 getComponent().setResponsePage(new ErrorPage(e));
             }
