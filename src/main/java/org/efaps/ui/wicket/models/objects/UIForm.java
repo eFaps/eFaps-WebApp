@@ -624,11 +624,16 @@ public class UIForm
                         final UIFormCell cell;
                         if (field instanceof FieldSet) {
                             cell = new UIFormCellSet(this, fieldvalue, null, "", "", label, isCreateMode());
-                            final AttributeSet set = AttributeSet.find(type.getName(), fieldAttrName);
-                            for (final String attrName : ((FieldSet) field).getOrder()) {
-                                final Attribute child = set.getAttribute(attrName);
-                                final UISetColumnHeader column = new UISetColumnHeader(field.getLabel(), child, field);
-                                ((UIFormCellSet) cell).addHeader(column);
+                            if (type == null) {
+                                ((UIFormCellSet) cell).addHeader(new UISetColumnHeader(field.getLabel(), null, field));
+                            } else {
+                                final AttributeSet set = AttributeSet.find(type.getName(), fieldAttrName);
+                                for (final String attrName : ((FieldSet) field).getOrder()) {
+                                    final Attribute child = set.getAttribute(attrName);
+                                    final UISetColumnHeader column = new UISetColumnHeader(field.getLabel(), child,
+                                                    field);
+                                    ((UIFormCellSet) cell).addHeader(column);
+                                }
                             }
                         } else if (field instanceof FieldCommand) {
                             cell = new UIFormCellCmd(this, (FieldCommand) field, null, label);

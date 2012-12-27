@@ -32,6 +32,9 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.models.cell.FieldConfiguration;
 import org.efaps.ui.wicket.models.objects.DropDownOption;
+import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Render a DropDown Field.
@@ -47,6 +50,11 @@ public class DropDownField
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(DropDownField.class);
 
     /**
      *  Configurationobject for this component.
@@ -86,7 +94,13 @@ public class DropDownField
     @Override
     public String getInputName()
     {
-        return this.config.getName();
+        String ret = "";
+        try {
+            ret = this.config.getName();
+        } catch (final EFapsException e) {
+            DropDownField.LOG.error("EFapsException", e);
+        }
+        return ret;
     }
 
     private static List<DropDownOption> getSelectChoices(final Map<Object, Object> _values)

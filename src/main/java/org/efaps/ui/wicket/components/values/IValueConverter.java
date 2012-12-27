@@ -22,6 +22,7 @@
 package org.efaps.ui.wicket.components.values;
 
 import org.efaps.ui.wicket.request.EFapsRequestParametersAdapter;
+import org.efaps.util.EFapsException;
 
 
 /**
@@ -33,8 +34,10 @@ import org.efaps.ui.wicket.request.EFapsRequestParametersAdapter;
 public interface IValueConverter
 {
     /**
-     * @param _parameters parameters the valeu will be set in
+     * @param _parameters parameters the value will be set in
+     * @throws EFapsException on error
      */
-    void convertValue(EFapsRequestParametersAdapter _parameters);
+    void convertValue(EFapsRequestParametersAdapter _parameters)
+                    throws EFapsException;
 
 }

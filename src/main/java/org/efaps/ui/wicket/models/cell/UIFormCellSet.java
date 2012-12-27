@@ -50,10 +50,13 @@ public class UIFormCellSet
     private static final long serialVersionUID = 1L;
 
     /**
-     * IS this UIFormCellSet inedit mode.
+     * IS this UIFormCellSet in edit mode.
      */
     private final boolean editMode;
 
+    /**
+     * Headers for this set of cells.
+     */
     private final List<UISetColumnHeader> headers = new ArrayList<UISetColumnHeader>();
 
     /**
@@ -61,6 +64,9 @@ public class UIFormCellSet
      */
     private final Map<String, CellSetRow> instKey2row = new HashMap<String, CellSetRow>();
 
+    /**
+     * Rows fot this set.
+     */
     private final List<CellSetRow> rows = new ArrayList<CellSetRow>();
 
     /**
@@ -95,8 +101,7 @@ public class UIFormCellSet
     }
 
     /**
-     * @param _column x-coordinate
-     * @param _uiFormCell UIFormCell used as definition
+     * @param _uiHeader Header to be added
      * @throws CacheReloadException on error
      */
     public void addHeader(final UISetColumnHeader _uiHeader)
@@ -106,7 +111,7 @@ public class UIFormCellSet
     }
 
     /**
-     * @param _next
+     * @param _rowInstance instance for the row to be added
      */
     public void addRow(final Instance _rowInstance)
     {
@@ -116,8 +121,8 @@ public class UIFormCellSet
     }
 
     /**
-     * @param _rowInstance
-     * @param _cellSetValue
+     * @param _rowInstance instance for the row to be added
+     * @param _cellSetValue value for the row
      */
     public void addValue(final Instance _rowInstance,
                          final CellSetValue _cellSetValue)
@@ -126,8 +131,9 @@ public class UIFormCellSet
     }
 
     /**
-     * @return
+     * Getter method for the instance variable {@link #rows}.
      *
+     * @return value of instance variable {@link #rows}
      */
     public List<CellSetRow> getRows()
     {
@@ -135,16 +141,22 @@ public class UIFormCellSet
     }
 
     /**
-     * @return
-     * @return
+     * Getter method for the instance variable {@link #headers}.
+     *
+     * @return value of instance variable {@link #headers}
      */
     public List<UISetColumnHeader> getHeaders()
     {
         return this.headers;
     }
 
+    /**
+     * Add a new Row.
+     *
+     * @throws EFapsException on error
+     */
     public void addNewRow()
-        throws CacheReloadException
+        throws EFapsException
     {
         final CellSetRow row = new CellSetRow(this);
         this.rows.add(row);

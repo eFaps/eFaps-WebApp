@@ -50,7 +50,6 @@ import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -306,7 +305,7 @@ public class SetDataGrid
             }
             try {
                 cellSet.addNewRow();
-            } catch (final CacheReloadException e) {
+            } catch (final EFapsException e) {
                 SetDataGrid.LOG.error("CacheReloadException", e);
             }
             _target.add(grid);

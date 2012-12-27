@@ -66,9 +66,15 @@ public abstract class AbstractUICellValue
 
     private final FieldConfiguration fieldConfiguration;
 
+    /**
+     * @param _instanceKey
+     * @param _parent
+     * @param _value
+     * @throws EFapsException on error
+     */
     public AbstractUICellValue(final String _instanceKey,
                                final AbstractUIObject _parent,
-                               final UIValue _value)
+                               final UIValue _value) throws EFapsException
     {
         super(_instanceKey);
         this.parent = _parent;
@@ -76,7 +82,12 @@ public abstract class AbstractUICellValue
         this.fieldConfiguration = getNewFieldConfiguration();
     }
 
+    /**
+     * @return a new FieldConfiguration
+     * @throws EFapsException on error
+     */
     protected FieldConfiguration getNewFieldConfiguration()
+        throws EFapsException
     {
         return new FieldConfiguration(getValue().getField().getId());
     }

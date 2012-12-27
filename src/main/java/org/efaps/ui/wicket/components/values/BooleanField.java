@@ -18,7 +18,6 @@
  * Last Changed By: $Author$
  */
 
-
 package org.efaps.ui.wicket.components.values;
 
 import java.util.Iterator;
@@ -34,7 +33,7 @@ import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.models.cell.FieldConfiguration;
 import org.efaps.ui.wicket.request.EFapsRequestParametersAdapter;
-
+import org.efaps.util.EFapsException;
 
 /**
  * TODO comment!
@@ -46,6 +45,7 @@ public class BooleanField
     extends Panel
     implements IValueConverter
 {
+
     /**
      * Needed for serialization.
      */
@@ -57,10 +57,10 @@ public class BooleanField
     private final FieldConfiguration fieldConfiguration;
 
     /**
-     * @param _wicketId     wicket id for this component
-     * @param _value        value of this component
-     * @param _choices      choices
-     * @param _fieldConfiguration   configuration for this field
+     * @param _wicketId wicket id for this component
+     * @param _value value of this component
+     * @param _choices choices
+     * @param _fieldConfiguration configuration for this field
      */
     public BooleanField(final String _wicketId,
                         final Object _value,
@@ -116,6 +116,7 @@ public class BooleanField
      */
     @Override
     public void convertValue(final EFapsRequestParametersAdapter _parameters)
+        throws EFapsException
     {
         final RadioGroup<?> group = (RadioGroup<?>) visitChildren(RadioGroup.class).next();
         if (group.getDefaultModelObject() == Boolean.TRUE) {

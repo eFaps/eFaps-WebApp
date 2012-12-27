@@ -21,7 +21,7 @@
 package org.efaps.ui.wicket.models.cell;
 
 import org.efaps.admin.datamodel.Attribute;
-import org.efaps.util.cache.CacheReloadException;
+import org.efaps.util.EFapsException;
 
 /**
  * TODO comment!
@@ -34,14 +34,18 @@ public class FieldSetConfiguration
 {
 
     /**
-     *
+     * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Id of the related attribute, 0 if none.
+     */
     private final long attrId;
 
     /**
-     * @param _field
+     * @param _fieldId id of the field
+     * @param _attrId id of the attribute
      */
     public FieldSetConfiguration(final long _fieldId,
                                  final long _attrId)
@@ -49,15 +53,19 @@ public class FieldSetConfiguration
         super(_fieldId);
         this.attrId = _attrId;
     }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getName()
+        throws EFapsException
     {
-        String ret = null;
-        try {
+        final String ret;
+        if (this.attrId > 0) {
             ret = super.getName() + "_" + Attribute.get(this.attrId).getName();
-        } catch (final CacheReloadException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } else {
+            ret = super.getName();
         }
         return ret;
     }

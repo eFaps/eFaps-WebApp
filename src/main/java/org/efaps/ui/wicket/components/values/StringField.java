@@ -25,6 +25,9 @@ import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.efaps.ui.wicket.models.cell.FieldConfiguration;
+import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -38,14 +41,24 @@ public class StringField
 {
 
     /**
-     *
+     * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(StringField.class);
+
+    /**
+     * FieldConfiguration for this field.
+     */
     private final FieldConfiguration config;
 
     /**
-     * @param _id
-     * @param _model
+     * @param _wicketId wicket id fot this component
+     * @param _model    model for this componet
+     * @param _config   Config
      */
     public StringField(final String _wicketId,
                        final IModel<String> _model,
@@ -68,7 +81,13 @@ public class StringField
     @Override
     public String getInputName()
     {
-        return  this.config.getName();
+        String ret = "";
+        try {
+            ret = this.config.getName();
+        } catch (final EFapsException e) {
+            StringField.LOG.error("EFapsException", e);
+        }
+        return ret;
     }
 }
 

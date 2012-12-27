@@ -37,29 +37,44 @@ import org.efaps.admin.ui.field.Field;
 public class UISetColumnHeader
     implements Serializable
 {
-
-    private final String label;
-
-    private final long attrId;
-
-    private final long fieldId;
-
-
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
     /**
-     * @param _label
-     * @param _child
-     * @param _object4Compare
+     * Label for this column.
+     */
+    private final String label;
+
+    /**
+     * Id of the attribute, 0 if none.
+     */
+    private final long attrId;
+
+    /**
+     * Id of the fiel this column header belongs to.
+     */
+    private final long fieldId;
+
+    /**
+     * @param _label    label
+     * @param _child    child attribute
+     * @param _field    Field
      */
     public UISetColumnHeader(final String _label,
                              final Attribute _child,
                              final Field _field)
     {
-        this.label = DBProperties.getProperty(_label + "/" + _child.getName());
-        this.attrId = _child.getId();
+        if (_child == null) {
+            this.label = DBProperties.getProperty(_label);
+            this.attrId = 0;
+        } else {
+            this.label = DBProperties.getProperty(_label + "/" + _child.getName());
+            this.attrId = _child.getId();
+        }
         this.fieldId = _field.getId();
     }
-
 
     /**
      * Getter method for the instance variable {@link #label}.
@@ -71,8 +86,6 @@ public class UISetColumnHeader
         return this.label;
     }
 
-
-
     /**
      * Getter method for the instance variable {@link #attrId}.
      *
@@ -83,8 +96,6 @@ public class UISetColumnHeader
         return this.attrId;
     }
 
-
-
     /**
      * Getter method for the instance variable {@link #fieldId}.
      *
@@ -94,5 +105,4 @@ public class UISetColumnHeader
     {
         return this.fieldId;
     }
-
 }

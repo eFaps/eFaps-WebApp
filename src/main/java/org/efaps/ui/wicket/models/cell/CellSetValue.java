@@ -22,7 +22,7 @@ package org.efaps.ui.wicket.models.cell;
 
 import org.efaps.admin.datamodel.ui.UIValue;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
-import org.efaps.util.cache.CacheReloadException;
+import org.efaps.util.EFapsException;
 
 /**
  * TODO comment!
@@ -35,37 +35,44 @@ public class CellSetValue
 {
 
     /**
-     *
+     * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * Set the value belongs to.
+     */
     private final UIFormCellSet set;
 
     /**
-     * @param _instanceKey
-     * @param _parent
-     * @param _object
-     * @param _child
+     * @param _instanceKey key of the instacne
+     * @param _parent parent object
+     * @param _set set
+     * @param _value value
+     * @throws EFapsException on error
      */
     public CellSetValue(final String _instanceKey,
                         final AbstractUIObject _parent,
                         final UIFormCellSet _set,
                         final UIValue _value)
+        throws EFapsException
     {
         super(_instanceKey, _parent, _value);
         this.set = _set;
     }
-    /* (non-Javadoc)
-     * @see org.efaps.ui.wicket.models.cell.AbstractUICellValue#getNewFieldConfiguration()
+
+    /**
+     * {@inheritDoc}
      */
     @Override
     protected FieldConfiguration getNewFieldConfiguration()
+        throws EFapsException
     {
-        FieldSetConfiguration ret = null;
-        try {
-            ret =  new FieldSetConfiguration(getValue().getField().getId(), getValue().getAttribute().getId());
-        } catch (final CacheReloadException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        FieldConfiguration ret;
+        if (getValue().getAttribute() == null) {
+           ret = super.getNewFieldConfiguration();
+        } else {
+            ret = new FieldSetConfiguration(getValue().getField().getId(), getValue().getAttribute().getId());
         }
         return ret;
     }
