@@ -273,9 +273,9 @@ public class HeaderPanel
             .append("  addOnResizeEvent(function (){positionTableColumns(")
             .append(this.headerproperties)
             .append(");});\n")
-            .append("  dojo.ready(function (){positionTableColumns(")
-            .append(this.headerproperties).append(");});\n")
-            .append(this.js);
+            .append("dojo.ready(function (){ positionTableColumns(").append(this.headerproperties).append(");")
+            .append(this.js)
+            .append("});\n");
         return jsTmp.toString();
     }
 
