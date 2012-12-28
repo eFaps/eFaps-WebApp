@@ -27,12 +27,15 @@ import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.HiddenField;
+import org.apache.wicket.markup.html.form.IFormModelUpdateListener;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.RefreshingView;
@@ -213,6 +216,17 @@ public class SetDataGrid
         add(rowRepeater);
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.wicket.Component#onAfterRender()
+     */
+    @Override
+    protected void onAfterRender()
+    {
+        super.onAfterRender();
+        final UIFormCellSet cellSet = (UIFormCellSet) getDefaultModelObject();
+        cellSet.resetIndex();
+    }
+
     /**
      * Render to the web response the eFapsContentReference.
      *
@@ -274,7 +288,7 @@ public class SetDataGrid
      * Link to add a row.
      */
     public final class AddLink
-        extends AjaxLink<Void>
+        extends AjaxSubmitLink
     {
 
         /**
@@ -288,10 +302,13 @@ public class SetDataGrid
         public AddLink(final String _wicketId)
         {
             super(_wicketId);
+            setDefaultFormProcessing(false);
         }
 
+
         @Override
-        public void onClick(final AjaxRequestTarget _target)
+        protected void onSubmit(final AjaxRequestTarget _target,
+                                final Form<?> _form)
         {
             final SetDataGrid grid = findParent(SetDataGrid.class);
             final UIFormCellSet cellSet = (UIFormCellSet) grid.getDefaultModelObject();
@@ -301,6 +318,9 @@ public class SetDataGrid
                 if (component instanceof IValueConverter) {
                     final FormContainer frmContainer = findParent(FormContainer.class);
                     frmContainer.removeValueConverter((IValueConverter) component);
+                }
+                if (component instanceof IFormModelUpdateListener) {
+                    ((IFormModelUpdateListener) component).updateModel();
                 }
             }
             try {

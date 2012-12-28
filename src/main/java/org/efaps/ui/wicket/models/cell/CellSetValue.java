@@ -42,7 +42,7 @@ public class CellSetValue
     /**
      * Set the value belongs to.
      */
-    private final UIFormCellSet set;
+    private final UIFormCellSet cellSet;
 
     /**
      * @param _instanceKey key of the instacne
@@ -58,7 +58,7 @@ public class CellSetValue
         throws EFapsException
     {
         super(_instanceKey, _parent, _value);
-        this.set = _set;
+        this.cellSet = _set;
     }
 
     /**
@@ -70,10 +70,20 @@ public class CellSetValue
     {
         FieldConfiguration ret;
         if (getValue().getAttribute() == null) {
-           ret = super.getNewFieldConfiguration();
+            ret = super.getNewFieldConfiguration();
         } else {
             ret = new FieldSetConfiguration(getValue().getField().getId(), getValue().getAttribute().getId());
         }
         return ret;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #cellSet}.
+     *
+     * @return value of instance variable {@link #cellSet}
+     */
+    public UIFormCellSet getCellSet()
+    {
+        return this.cellSet;
     }
 }

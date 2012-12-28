@@ -70,6 +70,11 @@ public class UIFormCellSet
     private final List<CellSetRow> rows = new ArrayList<CellSetRow>();
 
     /**
+     * Mapping of field name to index.
+     */
+    private final Map<String, Integer> indexes = new HashMap<String, Integer>();
+
+    /**
      * @param _parent parent object
      * @param _fieldValue FieldValue
      * @param _instance instance
@@ -166,5 +171,27 @@ public class UIFormCellSet
             final CellSetValue cellSetValue = new CellSetValue(null, getParent(), this, uiValue);
             row.add(cellSetValue);
         }
+    }
+
+    /**
+     * @param _inputName
+     * @return
+     */
+    public int getIndex(final String _inputName)
+    {
+        Integer ret = 0;
+        if (this.indexes.containsKey(_inputName)) {
+            ret = this.indexes.get(_inputName) + 1;
+        }
+        this.indexes.put(_inputName, ret);
+        return ret;
+    }
+
+    /**
+     *
+     */
+    public void resetIndex()
+    {
+        this.indexes.clear();
     }
 }

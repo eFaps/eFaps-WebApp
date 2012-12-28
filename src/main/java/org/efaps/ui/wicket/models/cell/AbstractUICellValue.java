@@ -62,7 +62,8 @@ public abstract class AbstractUICellValue
 
     private final AbstractUIObject parent;
 
-    private final UIValue value;
+    private UIValue value;
+
 
     private final FieldConfiguration fieldConfiguration;
 
@@ -137,6 +138,9 @@ public abstract class AbstractUICellValue
         return this.value.toString();
     }
 
+    /**
+     * @return is this value editable
+     */
     public boolean editable()
     {
         return this.value.getField().isEditableDisplay(this.parent.getMode());
@@ -153,6 +157,17 @@ public abstract class AbstractUICellValue
     }
 
     /**
+     * Setter method for instance variable {@link #value}.
+     *
+     * @param _value value for instance variable {@link #value}
+     */
+
+    public void setValue(final UIValue _value)
+    {
+        this.value = _value;
+    }
+
+    /**
      * @param _string
      * @return
      * @throws EFapsException
@@ -163,8 +178,7 @@ public abstract class AbstractUICellValue
         Component ret;
         if (editable()) {
             if (getValue().getUIProvider() instanceof StringUI) {
-                ret = new StringField(_wicketId, Model.of((String) getValue().getEditValue(getParent().getMode())),
-                                getFieldConfiguration());
+                ret = new StringField(_wicketId, Model.of(this), getFieldConfiguration());
             } else if (getValue().getUIProvider() instanceof LinkWithRangesUI) {
                 ret = new DropDownField(_wicketId, getValue().getDbValue(),
                                 Model.ofMap((Map<Object, Object>) getValue().getEditValue(
@@ -207,6 +221,9 @@ public abstract class AbstractUICellValue
         return ret;
     }
 
+    /**
+     * @return the related FieldConfiguration
+     */
     public FieldConfiguration getFieldConfiguration()
     {
         return this.fieldConfiguration;

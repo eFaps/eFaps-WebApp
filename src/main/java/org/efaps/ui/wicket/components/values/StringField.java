@@ -23,9 +23,14 @@ package org.efaps.ui.wicket.components.values;
 
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
+import org.efaps.admin.datamodel.ui.UIValue;
+import org.efaps.ui.wicket.models.cell.AbstractUICellValue;
+import org.efaps.ui.wicket.models.cell.CellSetValue;
 import org.efaps.ui.wicket.models.cell.FieldConfiguration;
+import org.efaps.ui.wicket.models.cell.UIFormCellSet;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,16 +61,29 @@ public class StringField
     private final FieldConfiguration config;
 
     /**
+     * Was the value already converted.
+     */
+    private boolean converted = false;
+
+    /**
+     * value of this field.
+     */
+    private final AbstractUICellValue cellvalue;
+
+    /**
      * @param _wicketId wicket id fot this component
      * @param _model    model for this componet
      * @param _config   Config
      */
     public StringField(final String _wicketId,
-                       final IModel<String> _model,
+                       final Model<AbstractUICellValue> _model,
                        final FieldConfiguration _config)
+        throws EFapsException
     {
-        super(_wicketId, _model);
+        super(_wicketId, Model.of((String) _model.getObject().getValue()
+                        .getEditValue(_model.getObject().getParent().getMode())));
         this.config = _config;
+        this.cellvalue = _model.getObject();
     }
 
 
@@ -88,6 +106,34 @@ public class StringField
             StringField.LOG.error("EFapsException", e);
         }
         return ret;
+    }
+
+    @Override
+    protected void convertInput() {
+        this.converted = true;
+        int i = 0;
+        if (this.cellvalue instanceof CellSetValue) {
+            final UIFormCellSet cellset = ((CellSetValue) this.cellvalue).getCellSet();
+            i = cellset.getIndex(getInputName());
+        }
+        final String[] value = getInputAsArray();
+        setConvertedInput(value != null && value.length > 0 && value[i] != null ? trim(value[i]) : null);
+    }
+
+    @Override
+    public void updateModel()
+    {
+        if (!this.converted) {
+            convertInput();
+        }
+        setModelObject(getConvertedInput());
+        try {
+            this.cellvalue.setValue(UIValue.get(this.cellvalue.getValue().getField(), this.cellvalue.getValue()
+                            .getAttribute(), getDefaultModelObject()));
+        } catch (final CacheReloadException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 }
 
