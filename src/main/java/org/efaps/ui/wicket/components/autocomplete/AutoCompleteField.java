@@ -36,6 +36,7 @@ import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.field.Field;
@@ -45,8 +46,8 @@ import org.efaps.ui.wicket.components.form.command.AjaxCmdBehavior;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
-import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -171,6 +172,9 @@ public class AutoCompleteField
         if (this.uiAbstractCell.getParent().isEditMode() || this.uiAbstractCell.getParent().isCreateMode()) {
             _tag.put("value", this.uiAbstractCell.getCellTitle());
         }
+        _tag.append("class", "eFapsAutoComplete", " ");
+        _tag.put("placeholder",
+                DBProperties.getProperty("org.efaps.ui.wicket.components.autocomplete.AutoCompleteField.PlaceHolder"));
     }
 
     /**
