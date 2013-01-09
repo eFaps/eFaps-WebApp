@@ -249,7 +249,12 @@ public class UITable
             if (isCreateMode()) {
                 execute4NoInstance();
             } else {
-                execute4Instance();
+                final List<Instance> instances = getInstanceList();
+                if (instances.isEmpty() && isEditMode()) {
+                    execute4NoInstance();
+                } else {
+                    execute4Instance(instances);
+                }
             }
         } catch (final EFapsException e) {
             throw new RestartResponseException(new ErrorPage(e));
@@ -260,23 +265,20 @@ public class UITable
     /**
      * @throws EFapsException on error
      */
-    private void execute4Instance()
+    private void execute4Instance(final List<Instance> _instances)
         throws EFapsException
     {
-        // first get list of object ids
-        final List<Instance> instances = getInstanceList();
-
         final Set<String>altOIDSel = new HashSet<String>();
 
         // evaluate for all expressions in the table
-        final MultiPrintQuery multi = new MultiPrintQuery(instances);
+        final MultiPrintQuery multi = new MultiPrintQuery(_instances);
         final List<Integer> userWidthList = getUserWidths();
 
         final List<Field> fields = getUserSortedColumns();
         int i = 0;
         Type type;
-        if (instances.size() > 0) {
-            type = instances.get(0).getType();
+        if (_instances.size() > 0) {
+            type = _instances.get(0).getType();
         } else {
             type = getTypeFromEvent();
         }
@@ -285,7 +287,7 @@ public class UITable
             if (field.hasAccess(getMode(), getInstance(), getCommand())
                             && !field.isNoneDisplay(getMode()) && !field.isHiddenDisplay(getMode())) {
                 Attribute attr = null;
-                if (instances.size() > 0) {
+                if (_instances.size() > 0) {
                     if (field.getSelect() != null) {
                         multi.addSelect(field.getSelect());
                     } else if (field.getAttribute() != null) {
@@ -511,7 +513,7 @@ public class UITable
                 String htmlValue;
                 String htmlTitle = null;
                 boolean hidden = false;
-                if (isCreateMode() && field.isEditableDisplay(getMode())) {
+                if ((isCreateMode() || isEditMode()) && field.isEditableDisplay(getMode())) {
                     htmlValue = fieldvalue.getEditHtml(getMode());
                     htmlTitle = fieldvalue.getStringValue(getMode());
                 } else if (field.isHiddenDisplay(getMode())) {
@@ -765,6 +767,7 @@ public class UITable
      * {@link #sortKey} and the sort direction in {@link #sortDirection}.
      * @throws EFapsException on error
      */
+    @Override
     public void sort()
         throws EFapsException
     {
