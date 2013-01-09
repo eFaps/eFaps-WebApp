@@ -230,6 +230,7 @@ public class UIForm
             FormElement formElement = null;
             boolean addNew = true;
             UIClassification uiclass = null;
+            boolean firstTable = true;
             for (final Field field : form.getFields()) {
                 if (field.hasAccess(getMode(), getInstance(), getCommand()) && !field.isNoneDisplay(getMode())) {
                     if (field instanceof FieldGroup) {
@@ -249,6 +250,11 @@ public class UIForm
                             final UIFieldTable uiFieldTable = new UIFieldTable(getCommandUUID(), getInstanceKey(),
                                                                                    (FieldTable) field);
                             this.elements.add(new Element(UIForm.ElementType.TABLE, uiFieldTable));
+                            if (firstTable) {
+                                firstTable = false;
+                            } else {
+                                uiFieldTable.setFirstTable(false);
+                            }
                         } else {
                             final UIFieldStructurBrowser uiFieldStrucBrws = new UIFieldStructurBrowser(getCommandUUID(),
                                             getInstanceKey(), (FieldTable) field);
