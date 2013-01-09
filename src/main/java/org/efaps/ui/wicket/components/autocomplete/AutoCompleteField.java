@@ -209,7 +209,7 @@ public class AutoCompleteField
         cmp.append("<input type=\"hidden\" ").append("name=\"").append(this.fieldName).append("\" id=\"").append(
                         _tag.getAttribute("id")).append("_hidden\" ");
         try {
-            if ((this.uiAbstractCell.getParent().isEditMode() || this.uiAbstractCell.getParent().isCreateMode())
+            if ((this.uiAbstractCell.getParent().isEditMode())
                             && this.uiAbstractCell.getInstance() != null) {
                 cmp.append(" value=\"").append(this.uiAbstractCell.getInstance().getOid()).append("\"");
             }
