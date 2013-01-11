@@ -506,7 +506,7 @@ public class UITable
         for (final Field field : fields) {
             if (field.hasAccess(getMode(), getInstance(), getCommand()) && !field.isNoneDisplay(getMode())) {
                 attr = null;
-                if (field.getAttribute() != null) {
+                if (field.getAttribute() != null && type != null) {
                     attr = type.getAttribute(field.getAttribute());
                 }
                 final FieldValue fieldvalue = new FieldValue(field, attr, null, null, getInstance(), null);
