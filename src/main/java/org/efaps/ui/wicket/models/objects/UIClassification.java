@@ -36,11 +36,14 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.field.Field;
+import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.InstanceQuery;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class is used as a model for a classification.
@@ -56,6 +59,17 @@ public class UIClassification
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * Static part of the key to get the Information stored in the session
+     * in relation to this StruturBrowser.
+     */
+    private static final String USERSESSIONKEY = "org.efaps.ui.wicket.models.objects.UIClassification.UserSessionKey";
+
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(UIClassification.class);
 
     /**
      * Id of the field this UIClassification belongs to.
@@ -118,6 +132,11 @@ public class UIClassification
      */
     private final boolean multipleSelect;
 
+    /**
+     * Is this model expanded.
+     */
+    private boolean expanded;
+
 
     /**
      * @param _field FielClassification
@@ -172,6 +191,37 @@ public class UIClassification
     }
 
     /**
+     * Getter method for the instance variable {@link #expanded}.
+     *
+     * @return value of instance variable {@link #expanded}
+     */
+    public boolean isExpanded()
+    {
+        return this.expanded;
+    }
+
+    /**
+     * Setter method for instance variable {@link #expanded}.
+     *
+     * @param _expanded value for instance variable {@link #expanded}
+     */
+    private void setExpandedInternal(final boolean _expanded)
+    {
+        this.expanded = _expanded;
+    }
+
+    /**
+     * Setter method for instance variable {@link #expanded}.
+     *
+     * @param _expanded value for instance variable {@link #expanded}
+     */
+    public void setExpanded(final boolean _expanded)
+    {
+        this.expanded = _expanded;
+        storeInSession();
+    }
+
+    /**
      * Getter method for instance variable {@link #selected}.
      *
      * @return value of instance variable {@link #selected}
@@ -213,6 +263,57 @@ public class UIClassification
         }
         this.label = DBProperties.getProperty(type.getName() + ".Label");
         addChildren(this, type.getChildClassifications(), this.selectedUUID);
+        expand();
+    }
+
+    /**
+     * Expand the Tree.
+     */
+    @SuppressWarnings("unchecked")
+    private void expand()
+    {
+        try {
+            final String key = getCacheKey();
+            if (Context.getThreadContext().containsSessionAttribute(key)) {
+                final Set<UUID> sessMap = (Set<UUID>) Context
+                                .getThreadContext().getSessionAttribute(key);
+                setExpandedInternal(sessMap.contains(this.classificationUUID));
+                for (final UIClassification uiClazz : getDescendants()) {
+                    if (sessMap.contains(uiClazz.classificationUUID)) {
+                        uiClazz.setExpandedInternal(true);
+                    }
+                }
+            }
+        } catch (final EFapsException e) {
+            UIClassification.LOG.error("Error reading Session info for UICLassificagtion called by Filed with ID: {}",
+                            this.fieldId, e);
+        }
+    }
+
+    /**
+     * Store the Information in the Session.
+     */
+    @SuppressWarnings("unchecked")
+    private void storeInSession()
+    {
+        try {
+            final Set<UUID> sessMap;
+            final String key = getCacheKey();
+            if (Context.getThreadContext().containsSessionAttribute(key)) {
+                sessMap = (Set<UUID>) Context.getThreadContext().getSessionAttribute(key);
+            } else {
+                sessMap = new HashSet<UUID>();
+            }
+            if (this.expanded) {
+                sessMap.add(this.classificationUUID);
+            } else if (sessMap.contains(this.classificationUUID)) {
+                sessMap.remove(this.classificationUUID);
+            }
+            Context.getThreadContext().setSessionAttribute(key, sessMap);
+        } catch (final EFapsException e) {
+            UIClassification.LOG.error("Error storing Session info for UICLassificagtion called by Filed with ID: {}",
+                            this.fieldId, e);
+        }
     }
 
     /**
@@ -314,9 +415,8 @@ public class UIClassification
      */
     public List<UIClassification> getDescendants()
     {
-        final List<UIClassification> ret =new ArrayList<UIClassification>();
-        for (final UIClassification uiClass : getChildren())
-        {
+        final List<UIClassification> ret = new ArrayList<UIClassification>();
+        for (final UIClassification uiClass : getChildren()) {
             ret.add(uiClass);
             ret.addAll(uiClass.getDescendants());
         }
@@ -384,6 +484,27 @@ public class UIClassification
         this.selectedUUID.add(_uuid);
     }
 
+    /**
+     * This method generates the Key for a UserAttribute by using the UUID of
+     * the Command and the given static part, so that for every StruturBrowser a
+     * unique key for expand etc, is created.
+     *
+     * @return String with the key
+     */
+    public String getCacheKey()
+    {
+        String ret = "noKey";
+        UIClassification clazz = this;
+        while (!clazz.isRoot()) {
+            clazz = clazz.getParent();
+        }
+        final Field field = Field.get(clazz.getFieldId());
+        if (field != null) {
+            ret = field.getCollection().getUUID().toString() + "-" + field.getName() + "-"
+                            + UIClassification.USERSESSIONKEY;
+        }
+        return ret;
+    }
 
     @Override
     public String toString()

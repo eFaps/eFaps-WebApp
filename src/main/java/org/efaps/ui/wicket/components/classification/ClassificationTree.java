@@ -82,23 +82,45 @@ public class ClassificationTree
         }
 
         final String expand = properties.getProperty(Type.get(_model.getObject().getClassificationUUID()).getName(),
-                        "true");
-        if ("true".equalsIgnoreCase(expand)) {
-            addAll(getProvider().getRoots().next());
-        }
+                        "false");
+        addChildren(getProvider().getRoots().next(), "true".equalsIgnoreCase(expand));
     }
 
     /**
-     * Recursive method to add child classifcations.
+     * Recursive method to add child classifications.
      *
-     * @param _uiClass classification to add
+     * @param _uiClass  classification to add
+     * @param _force    force expanded
      */
-    private void addAll(final UIClassification _uiClass)
+    private void addChildren(final UIClassification _uiClass,
+                             final boolean _force)
     {
-        getModelObject().add(_uiClass);
-        for (final UIClassification child : _uiClass.getChildren()) {
-            addAll(child);
+        if (_force || _uiClass.isExpanded()) {
+            getModelObject().add(_uiClass);
+            for (final UIClassification child : _uiClass.getChildren()) {
+                addChildren(child, _force);
+            }
         }
+    }
+
+    @Override
+    public void expand(final UIClassification _uiStrBrws)
+    {
+        super.expand(_uiStrBrws);
+        _uiStrBrws.setExpanded(true);
+    }
+
+    /**
+     * Collapse the given node, tries to update the affected branch if the
+     * change happens on an {@link AjaxRequestTarget}.
+     *
+     * @param _uiStrBrws    the object to collapse
+     */
+    @Override
+    public void collapse(final UIClassification _uiStrBrws)
+    {
+        super.collapse(_uiStrBrws);
+        _uiStrBrws.setExpanded(false);
     }
 
     /*
