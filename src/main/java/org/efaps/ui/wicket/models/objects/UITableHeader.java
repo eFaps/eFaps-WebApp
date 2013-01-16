@@ -33,6 +33,7 @@ import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.AbstractCommand.SortDirection;
 import org.efaps.admin.ui.field.Field;
+import org.efaps.admin.ui.field.Filter;
 import org.efaps.util.cache.CacheReloadException;
 
 /**
@@ -76,41 +77,6 @@ public class UITableHeader
     private boolean sortable;
 
     /**
-     * Name of the header.
-     */
-    private final String fieldName;
-
-    /**
-     * Is this header filterable.
-     */
-    private boolean filter;
-
-    /**
-     * Is the filter related to this UITableHeader applied to the Table.
-     */
-    private boolean filterApplied;
-
-    /**
-     * Is the filter a picklist or a FreeText filter.
-     */
-    private final boolean filterPickList;
-
-    /**
-     * Is the filter memory or database based.
-     */
-    private final boolean filterMemoryBased;
-
-    /**
-     * Is this filter required.
-     */
-    private final boolean filterRequired;
-
-    /**
-     * Set the default value for a filter.
-     */
-    private final String filterDefault;
-
-    /**
      * The type of the filter.
      */
     private FilterType filterType = UITableHeader.FilterType.NONE;
@@ -146,6 +112,16 @@ public class UITableHeader
     private final long fieldId;
 
     /**
+     * Is the filter activated.
+     */
+    private boolean filter;
+
+    /**
+     * Is the filter actually applied.
+     */
+    private boolean filterApplied = false;
+
+    /**
      * @param _field field
      * @param _sortdirection sort direction
      * @param _attr attribute this field is used for
@@ -156,20 +132,15 @@ public class UITableHeader
     {
         this.label = _field.getLabel();
         this.sortable = _field.isSortAble();
-        this.fieldName = _field.getName();
-        this.filter = _field.isFilter();
-        this.filterMemoryBased = _field.isFilterMemoryBased();
-        this.filterPickList = _field.isFilterPickList();
-        this.filterRequired = _field.isFilterRequired();
-        setFilterApplied(this.filterRequired);
-        this.filterDefault = _field.getFilterDefault();
+        this.filter = !_field.getFilter().getType().equals(Filter.Type.NONE);
+        setFilterApplied(_field.getFilter().isRequired());
         this.sortDirection = _sortdirection;
         this.width = _field.getWidth();
         this.fixedWidth = _field.isFixedWidth();
         this.fieldId = _field.getId();
         this.attrId = _attr != null ? _attr.getId() : 0;
 
-        if (!this.filterPickList) {
+        if (_field.getFilter().getType().equals(Filter.Type.FREETEXT)) {
             final UIInterface uiInterface = _field.getClassUI();
             final UUID attrTypeUUId = _attr == null ? null : _attr.getAttributeType().getUUID();
             // String
@@ -257,7 +228,7 @@ public class UITableHeader
 
     public String getFieldName()
     {
-        return this.fieldName;
+        return getField().getName();
     }
 
     /**
@@ -271,14 +242,29 @@ public class UITableHeader
     }
 
     /**
+     * @return the field this haeder belongs to.
+     */
+    public Field getField()
+    {
+        return Field.get(getFieldId());
+    }
+
+    /**
      * This is the getter method for the instance variable {@link #filter}.
      *
      * @return value of instance variable {@link #filter}
      */
-
     public boolean isFilter()
     {
         return this.filter;
+    }
+
+    /**
+     * @return the filter belonging to this header.
+     */
+    public Filter getFilter()
+    {
+        return getField().getFilter();
     }
 
     /**
@@ -360,46 +346,6 @@ public class UITableHeader
     public void setMarkupId(final String _markupId)
     {
         this.markupId = _markupId;
-    }
-
-    /**
-     * Getter method for instance variable {@link #filterPickList}.
-     *
-     * @return value of instance variable {@link #filterPickList}
-     */
-    public boolean isFilterPickList()
-    {
-        return this.filterPickList;
-    }
-
-    /**
-     * Getter method for instance variable {@link #filterMemoryBased}.
-     *
-     * @return value of instance variable {@link #filterMemoryBased}
-     */
-    public boolean isFilterMemoryBased()
-    {
-        return this.filterMemoryBased;
-    }
-
-    /**
-     * Getter method for instance variable {@link #filterRequired}.
-     *
-     * @return value of instance variable {@link #filterRequired}
-     */
-    public boolean isFilterRequired()
-    {
-        return this.filterRequired;
-    }
-
-    /**
-     * Getter method for instance variable {@link #filterDefault}.
-     *
-     * @return value of instance variable {@link #filterDefault}
-     */
-    public String getFilterDefault()
-    {
-        return this.filterDefault;
     }
 
     /**

@@ -266,7 +266,7 @@ public class UIForm
                                                           new UIHeading((FieldHeading) field)));
                         addNew = true;
                     } else if (field instanceof FieldClassification) {
-                        uiclass = new UIClassification((FieldClassification) field, this);
+                        uiclass = new UIClassification(field, this);
                         this.elements.add(new Element(UIForm.ElementType.CLASSIFICATION, uiclass));
                         addNew = true;
                         this.classified  = true;
@@ -566,7 +566,7 @@ public class UIForm
                     this.elements.add(new Element(UIForm.ElementType.HEADING, new UIHeading((FieldHeading) field)));
                     addNew = true;
                 } else if (field instanceof FieldClassification) {
-                    uiclass = new UIClassification((FieldClassification) field, this);
+                    uiclass = new UIClassification(field, this);
                     this.elements.add(new Element(UIForm.ElementType.CLASSIFICATION, uiclass));
                     this.classified = true;
                     addNew = true;

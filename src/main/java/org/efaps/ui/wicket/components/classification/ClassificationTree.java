@@ -119,8 +119,9 @@ public class ClassificationTree
             protected void onUpdate(final AjaxRequestTarget _target)
             {
                 final boolean selected = getModelObject().isSelected();
-
-                if (!getModelObject().isMultipleSelect() && !selected) {
+                final ClassificationTreePanel parent = findParent(ClassificationTreePanel.class);
+                // Don't do that if it is a filter
+                if (parent != null && !getModelObject().isMultipleSelect() && !selected) {
                     // select event ensure that there are no other objects selected by cleaning it totally
                     UIClassification uiClass = getModelObject();
                     while (!uiClass.isRoot()) {
@@ -136,7 +137,9 @@ public class ClassificationTree
                     toggleUp(getModelObject(), true);
                 }
                 _target.add(ClassificationTree.this);
-                findParent(ClassificationTreePanel.class).modelChanged();
+                if (parent != null) {
+                    parent.modelChanged();
+                }
             }
 
             private void toggleUp(final UIClassification _uiClass,

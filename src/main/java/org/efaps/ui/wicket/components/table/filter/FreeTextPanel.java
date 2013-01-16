@@ -32,7 +32,7 @@ import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.models.objects.UITable;
-import org.efaps.ui.wicket.models.objects.UITable.Filter;
+import org.efaps.ui.wicket.models.objects.UITable.TableFilter;
 import org.efaps.ui.wicket.models.objects.UITableHeader;
 import org.efaps.ui.wicket.models.objects.UITableHeader.FilterType;
 import org.efaps.util.EFapsException;
@@ -89,7 +89,7 @@ public class FreeTextPanel
         } else if (filterType.equals(FilterType.DATE)) {
             DateTime fromDate = null;
             DateTime toDate = null;
-            final Filter filter = uitable.getFilter(_uitableHeader);
+            final TableFilter filter = uitable.getFilter(_uitableHeader);
             if (filter != null) {
                 fromDate = filter.getDateFrom();
                 toDate = filter.getDateTo().minusDays(1);

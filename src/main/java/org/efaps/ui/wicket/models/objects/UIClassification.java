@@ -30,14 +30,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import javax.swing.tree.DefaultMutableTreeNode;
-
 import org.apache.wicket.util.io.IClusterable;
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
-import org.efaps.admin.ui.field.FieldClassification;
+import org.efaps.admin.ui.field.Field;
 import org.efaps.db.Instance;
 import org.efaps.db.InstanceQuery;
 import org.efaps.db.MultiPrintQuery;
@@ -125,12 +123,12 @@ public class UIClassification
      * @param _field FielClassification
      * @param _uiObject ui object
      */
-    public UIClassification(final FieldClassification _field,
+    public UIClassification(final Field _field,
                             final AbstractUIObject _uiObject)
     {
         this.multipleSelect = ((Classification) Type.get(_field.getClassificationName())).isMultipleSelect();
-        this.fieldId = _field.getId();
         this.classificationUUID = Type.get(_field.getClassificationName()).getUUID();
+        this.fieldId = _field.getId();
         this.root = true;
         this.mode = _uiObject.getMode();
         this.commandName = _uiObject.getCommand().getName();
@@ -201,23 +199,6 @@ public class UIClassification
     public String getLabel()
     {
         return this.label;
-    }
-
-    /**
-     * Recursive method used to fill the TreeModel.
-     *
-     * @see #getTreeModel()
-     * @param _parent ParentNode children should be added
-     * @param _children to be added as childs
-     */
-    private void addNodes(final DefaultMutableTreeNode _parent,
-                          final List<UIClassification> _children)
-    {
-        for (final UIClassification child : _children) {
-            final DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(child);
-            child.addNodes(childNode, child.children);
-            _parent.add(childNode);
-        }
     }
 
     /**
@@ -326,6 +307,20 @@ public class UIClassification
     public List<UIClassification> getChildren()
     {
         return this.children;
+    }
+
+    /**
+     * @return a flat list of all decscandants.
+     */
+    public List<UIClassification> getDescendants()
+    {
+        final List<UIClassification> ret =new ArrayList<UIClassification>();
+        for (final UIClassification uiClass : getChildren())
+        {
+            ret.add(uiClass);
+            ret.addAll(uiClass.getDescendants());
+        }
+        return ret;
     }
 
     /**

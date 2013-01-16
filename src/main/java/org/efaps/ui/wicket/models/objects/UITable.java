@@ -46,6 +46,7 @@ import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractCommand.SortDirection;
 import org.efaps.admin.ui.Image;
 import org.efaps.admin.ui.field.Field;
+import org.efaps.admin.ui.field.Filter;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.MultiPrintQuery;
@@ -83,7 +84,7 @@ public class UITable
     /**
      * Map contains the applied filters to this table.
      */
-    private final Map<String, Filter> filters = new HashMap<String, Filter>();
+    private final Map<String, TableFilter> filters = new HashMap<String, TableFilter>();
 
     /**
      * Map is used to store the filters in relation to a field name. It is used
@@ -94,7 +95,7 @@ public class UITable
      * @see #getInstanceListsOld()
      * @see #execute4InstanceOld()
      */
-    private final Map<String, Filter> filterTempCache = new HashMap<String, Filter>();
+    private final Map<String, TableFilter> filterTempCache = new HashMap<String, TableFilter>();
 
     /**
      * All evaluated rows of this table are stored in this list.
@@ -158,19 +159,22 @@ public class UITable
                 setTableUUID(command.getTargetTable().getUUID());
                 if (Context.getThreadContext().containsSessionAttribute(getCacheKey(UITable.UserCacheKey.FILTER))) {
                     @SuppressWarnings("unchecked")
-                    final Map<String, Filter> sessfilter = (Map<String, Filter>) Context.getThreadContext()
+                    final Map<String, TableFilter> sessfilter = (Map<String, TableFilter>) Context.getThreadContext()
                         .getSessionAttribute(getCacheKey(UITable.UserCacheKey.FILTER));
                     for (final Field field : command.getTargetTable().getFields()) {
                         if (sessfilter.containsKey(field.getName())) {
-                            this.filters.put(field.getName(), sessfilter.get(field.getName()));
+                            final TableFilter filter = sessfilter.get(field.getName());
+                            filter.setHeaderFieldId(field.getId());
+                            this.filters.put(field.getName(), filter);
                         }
                     }
                 } else {
                     // add the filter here, if it is a required filter that must be
                     // applied against the database
                     for (final Field field : command.getTargetTable().getFields()) {
-                        if (field.isFilterRequired() && !field.isFilterMemoryBased()) {
-                            this.filters.put(field.getName(), new Filter());
+                        if (field.getFilter().isRequired()
+                                        && field.getFilter().getBase().equals(Filter.Base.DATABASE)) {
+                            this.filters.put(field.getName(), new TableFilter());
                         }
                     }
                 }
@@ -212,15 +216,15 @@ public class UITable
         throws EFapsException
     {
         // get the filters that must be applied against the database
-        final Map<String, Map<String, String>> dataBasefilters = new HashMap<String, Map<String, String>>();
-        final Iterator<Entry<String, Filter>> iter = this.filters.entrySet().iterator();
+        final Map<String, Map<String, Object>> dataBasefilters = new HashMap<String, Map<String, Object>>();
+        final Iterator<Entry<String, TableFilter>> iter = this.filters.entrySet().iterator();
         this.filterTempCache.clear();
         while (iter.hasNext()) {
-            final Entry<String, Filter> entry = iter.next();
+            final Entry<String, TableFilter> entry = iter.next();
             if (entry.getValue().getUiTableHeader() == null
-                            || (entry.getValue().getUiTableHeader() != null
-                            && !entry.getValue().getUiTableHeader().isFilterMemoryBased())) {
-                final Map<String, String> map = entry.getValue().getMap4esjp();
+                           || (entry.getValue().getUiTableHeader() != null
+                           && entry.getValue().getUiTableHeader().getFilter().getBase().equals(Filter.Base.DATABASE))) {
+                final Map<String, Object> map = entry.getValue().getMap4esjp();
                 dataBasefilters.put(entry.getKey(), map);
             }
             this.filterTempCache.put(entry.getKey(), entry.getValue());
@@ -263,6 +267,7 @@ public class UITable
     }
 
     /**
+     * @param _instances list of instances the table is executed for
      * @throws EFapsException on error
      */
     private void execute4Instance(final List<Instance> _instances)
@@ -307,18 +312,18 @@ public class UITable
                 if (field.getName().equals(getSortKey())) {
                     sortdirection = getSortDirection();
                 }
-                if (field.getFilterAttributes() != null) {
-                    if (field.getFilterAttributes().contains(",")) {
-                        if (field.getFilterAttributes().contains("/")) {
-                            attr = Attribute.get(field.getFilterAttributes().split(",")[0]);
+                if (field.getFilter().getAttributes() != null) {
+                    if (field.getFilter().getAttributes().contains(",")) {
+                        if (field.getFilter().getAttributes().contains("/")) {
+                            attr = Attribute.get(field.getFilter().getAttributes().split(",")[0]);
                         } else {
-                            attr = type.getAttribute(field.getFilterAttributes().split(",")[0]);
+                            attr = type.getAttribute(field.getFilter().getAttributes().split(",")[0]);
                         }
                     } else {
-                        if (field.getFilterAttributes().contains("/")) {
-                            attr = Attribute.get(field.getFilterAttributes());
+                        if (field.getFilter().getAttributes().contains("/")) {
+                            attr = Attribute.get(field.getFilter().getAttributes());
                         } else {
-                            attr = type.getAttribute(field.getFilterAttributes());
+                            attr = type.getAttribute(field.getFilter().getAttributes());
                         }
                     }
                 }
@@ -327,8 +332,8 @@ public class UITable
                     this.filters.put(uiTableHeader.getFieldName(),
                                     this.filterTempCache.get(uiTableHeader.getFieldName()));
                     uiTableHeader.setFilterApplied(true);
-                } else if (uiTableHeader.isFilterRequired()) {
-                    this.filters.put(uiTableHeader.getFieldName(), new Filter(uiTableHeader));
+                } else if (uiTableHeader.getFilter().isRequired()) {
+                    this.filters.put(uiTableHeader.getFieldName(), new TableFilter(uiTableHeader));
                 }
                 getHeaders().add(uiTableHeader);
                 if (!field.isFixedWidth()) {
@@ -590,7 +595,7 @@ public class UITable
     public void addFilterList(final UITableHeader _uitableHeader,
                               final Set<?> _list)
     {
-        final Filter filter = new Filter(_uitableHeader, _list);
+        final TableFilter filter = new TableFilter(_uitableHeader, _list);
         this.filters.put(_uitableHeader.getFieldName(), filter);
         final UITableHeader orig = getHeader4Id(_uitableHeader.getFieldId());
         if (orig != null) {
@@ -613,7 +618,28 @@ public class UITable
                                final String _to)
         throws EFapsException
     {
-        final Filter filter = new Filter(_uitableHeader, _from, _to);
+        final TableFilter filter = new TableFilter(_uitableHeader, _from, _to);
+        this.filters.put(_uitableHeader.getFieldName(), filter);
+        final UITableHeader orig = getHeader4Id(_uitableHeader.getFieldId());
+        if (orig != null) {
+            orig.setFilterApplied(true);
+        }
+        storeFilters();
+    }
+
+    /**
+     * Add a classification based filters of this UiTable.
+     *
+     * @param _uitableHeader    UitableHeader this filter belongs to
+     * @param _uiClassification classification based filters
+     * @throws EFapsException on error
+     *
+     */
+    public void addFilterClassifcation(final UITableHeader _uitableHeader,
+                                       final UIClassification _uiClassification)
+        throws EFapsException
+    {
+        final TableFilter filter = new TableFilter(_uitableHeader, _uiClassification);
         this.filters.put(_uitableHeader.getFieldName(), filter);
         final UITableHeader orig = getHeader4Id(_uitableHeader.getFieldId());
         if (orig != null) {
@@ -630,12 +656,12 @@ public class UITable
      * @return filter
      * @throws EFapsException on error
      */
-    public Filter getFilter(final UITableHeader _uitableHeader)
+    public TableFilter getFilter(final UITableHeader _uitableHeader)
         throws EFapsException
     {
-        Filter ret = this.filters.get(_uitableHeader.getFieldName());
+        TableFilter ret = this.filters.get(_uitableHeader.getFieldName());
         if (ret != null && ret.getUiTableHeader() == null) {
-            ret = new Filter(_uitableHeader);
+            ret = new TableFilter(_uitableHeader);
             this.filters.put(_uitableHeader.getFieldName(), ret);
         }
         return ret;
@@ -671,8 +697,8 @@ public class UITable
      */
     private void storeFilters()
     {
-        final Map<String, Filter> sessFilter = new HashMap<String, Filter>();
-        for (final Entry<String, Filter> entry : this.filters.entrySet()) {
+        final Map<String, TableFilter> sessFilter = new HashMap<String, TableFilter>();
+        for (final Entry<String, TableFilter> entry : this.filters.entrySet()) {
             sessFilter.put(entry.getKey(), entry.getValue());
         }
         try {
@@ -696,7 +722,7 @@ public class UITable
         if (isFiltered()) {
             for (final UIRow row : this.values) {
                 boolean filtered = false;
-                for (final Filter filter : this.filters.values()) {
+                for (final TableFilter filter : this.filters.values()) {
                     filtered = filter.filterRow(row);
                     if (filtered) {
                         break;
@@ -818,19 +844,23 @@ public class UITable
     /**
      * Class represents one filter applied to this UITable.
      */
-    public class Filter
+    public class TableFilter
         implements IClusterable
     {
-
         /**
-         * Key to the value for "from" in the nap for the esjp.
+         * Key to the value for "from" in the map for the esjp.
          */
         public static final String FROM = "from";
 
         /**
-         * Key to the value for "to" in the nap for the esjp.
+         * Key to the value for "to" in the map for the esjp.
          */
         public static final String TO = "to";
+
+        /**
+         * Key to the value for "to" in the map for the esjp.
+         */
+        public static final String LIST = "list";
 
         /**
          * Needed for serialization.
@@ -838,7 +868,7 @@ public class UITable
         private static final long serialVersionUID = 1L;
 
         /**
-         * Set of value for the filter. Only used for filter using a PICKERLIST.
+         * Set of value for the filter. Only used for filter using a PICKERLIST or CLASSIFICATION.
          */
         private Set<?> filterList;
 
@@ -865,14 +895,10 @@ public class UITable
         private DateTime dateTo;
 
         /**
-         * Id of the field this header belonog sto.
+         * Id of the field this header belongs to.
          */
-        private final long headerFieldId;
+        private long headerFieldId;
 
-        /**
-         * is the filter memoryBased.
-         */
-        private final boolean memoryBased;
 
         /**
          * Type of the Filter.
@@ -883,10 +909,9 @@ public class UITable
          * Constructor is used for a database based filter in case that it is
          * required.
          */
-        public Filter()
+        public TableFilter()
         {
             this.headerFieldId = 0;
-            this.memoryBased = false;
             this.filterType = null;
         }
 
@@ -897,15 +922,14 @@ public class UITable
          * @param _uitableHeader UITableHeader this filter lies in
          * @throws EFapsException on error
          */
-        public Filter(final UITableHeader _uitableHeader)
+        public TableFilter(final UITableHeader _uitableHeader)
             throws EFapsException
         {
             this.headerFieldId = _uitableHeader.getFieldId();
-            this.memoryBased = _uitableHeader.isFilterMemoryBased();
             this.filterType =  _uitableHeader.getFilterType();
-            if (_uitableHeader.getFilterDefault() != null) {
+            if (_uitableHeader.getFilter().getDefaultValue() != null) {
                 if (_uitableHeader.getFilterType().equals(FilterType.DATE)) {
-                    final String filter = _uitableHeader.getFilterDefault();
+                    final String filter = _uitableHeader.getFilter().getDefaultValue();
                     final String[] parts = filter.split(":");
                     final String range = parts[0];
                     final int sub = parts.length > 1 ? Integer.parseInt(parts[1]) : 0;
@@ -941,13 +965,13 @@ public class UITable
          * @param _to value for to
          * @throws EFapsException on error
          */
-        public Filter(final UITableHeader _uitableHeader,
-                      final String _from,
-                      final String _to) throws EFapsException
+        public TableFilter(final UITableHeader _uitableHeader,
+                           final String _from,
+                           final String _to)
+            throws EFapsException
         {
             this.headerFieldId = _uitableHeader.getFieldId();
-            this.memoryBased = _uitableHeader.isFilterMemoryBased();
-            this.filterType =  _uitableHeader.getFilterType();
+            this.filterType = _uitableHeader.getFilterType();
             this.from = _from;
             this.to = _to;
             if (_uitableHeader.getFilterType().equals(FilterType.DATE)) {
@@ -963,13 +987,35 @@ public class UITable
          * @param _uitableHeader UITableHeader this filter lies in
          * @param _filterList set of values for the filter
          */
-        public Filter(final UITableHeader _uitableHeader,
-                      final Set<?> _filterList)
+        public TableFilter(final UITableHeader _uitableHeader,
+                           final Set<?> _filterList)
         {
             this.headerFieldId = _uitableHeader.getFieldId();
-            this.memoryBased = _uitableHeader.isFilterMemoryBased();
-            this.filterType =  _uitableHeader.getFilterType();
+            this.filterType = _uitableHeader.getFilterType();
             this.filterList = _filterList;
+        }
+
+        /**
+         * Standard Constructor for a Filter using a CLASSICIATION.
+         *
+         * @param _uitableHeader UITableHeader this filter lies in
+         * @param _uiClassification set of values for the filter
+         */
+        public TableFilter(final UITableHeader _uitableHeader,
+                           final UIClassification _uiClassification)
+        {
+            this.headerFieldId = _uitableHeader.getFieldId();
+            this.filterType = _uitableHeader.getFilterType();
+            final Set<UUID> list = new HashSet<UUID>();
+            if (_uiClassification.isSelected()) {
+                list.add(_uiClassification.getClassificationUUID());
+            }
+            for (final UIClassification uiClass : _uiClassification.getDescendants()) {
+                if (uiClass.isSelected()) {
+                    list.add(uiClass.getClassificationUUID());
+                }
+            }
+            this.filterList = list;
         }
 
         /**
@@ -988,12 +1034,14 @@ public class UITable
          *
          * @return Map
          */
-        public Map<String, String> getMap4esjp()
+        public Map<String, Object> getMap4esjp()
         {
-            final Map<String, String> ret = new HashMap<String, String>();
+            final Map<String, Object> ret = new HashMap<String, Object>();
             if (this.filterList == null) {
-                ret.put(UITable.Filter.FROM, this.from);
-                ret.put(UITable.Filter.TO, this.to);
+                ret.put(UITable.TableFilter.FROM, this.from);
+                ret.put(UITable.TableFilter.TO, this.to);
+            } else {
+                ret.put(UITable.TableFilter.LIST, this.filterList);
             }
             return ret;
         }
@@ -1008,7 +1056,8 @@ public class UITable
         public boolean filterRow(final UIRow _uiRow)
         {
             boolean ret = false;
-            if (this.memoryBased) {
+            if (this.headerFieldId > 0
+                            && Field.get(this.headerFieldId).getFilter().getBase().equals(Filter.Base.MEMORY)) {
                 final List<UITableCell> cells = _uiRow.getValues();
                 for (final UITableCell cell : cells) {
                     if (cell.getFieldId() == this.headerFieldId) {
@@ -1054,6 +1103,17 @@ public class UITable
         public DateTime getDateTo()
         {
             return this.dateTo;
+        }
+
+        /**
+         * Setter method for instance variable {@link #headerFieldId}.
+         *
+         * @param _headerFieldId value for instance variable {@link #headerFieldId}
+         */
+
+        protected void setHeaderFieldId(final long _headerFieldId)
+        {
+            this.headerFieldId = _headerFieldId;
         }
     }
 }
