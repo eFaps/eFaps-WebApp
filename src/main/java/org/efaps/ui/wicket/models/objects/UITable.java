@@ -402,7 +402,7 @@ public class UITable
                         value = _multi.getPhrase(field.getName());
                     }
                     final FieldValue fieldvalue = new FieldValue(field, attr, value, instance, getInstance(),
-                                    new ArrayList<Instance>(_multi.getInstanceList()));
+                                    new ArrayList<Instance>(_multi.getInstanceList()), this);
                     String htmlTitle = null;
                     boolean hidden = false;
                     if (isPrintMode()) {
@@ -514,7 +514,7 @@ public class UITable
                 if (field.getAttribute() != null && type != null) {
                     attr = type.getAttribute(field.getAttribute());
                 }
-                final FieldValue fieldvalue = new FieldValue(field, attr, null, null, getInstance(), null);
+                final FieldValue fieldvalue = new FieldValue(field, attr, null, null, getInstance(), null, this);
                 String htmlValue;
                 String htmlTitle = null;
                 boolean hidden = false;

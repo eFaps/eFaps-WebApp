@@ -359,7 +359,7 @@ public class UIForm
             } else if (_field.getPhrase() != null) {
                 value = _query.getPhrase(_field.getName());
             }
-            final FieldValue fieldvalue = new FieldValue(_field, attr, value, fieldInstance, getInstance());
+            final FieldValue fieldvalue = new FieldValue(_field, attr, value, fieldInstance, getInstance(), null, this);
             final String strValue = fieldvalue.getHiddenHtml(getMode());
             addHidden(new UIHiddenCell(this, fieldvalue, null, strValue));
             ret = false;
@@ -409,7 +409,7 @@ public class UIForm
             value = _query.getPhrase(_field.getName());
         }
 
-        final FieldValue fieldvalue = new FieldValue(_field, _attr, value, _fieldInstance, getInstance());
+        final FieldValue fieldvalue = new FieldValue(_field, _attr, value, _fieldInstance, getInstance(), null, this);
 
         String strValue = null;
         if (isPrintMode()) {
@@ -467,7 +467,7 @@ public class UIForm
             fieldins.addAll(_query.getInstances4Attribute(_field.getAttribute()));
         }
 
-        final FieldValue fieldValue = new FieldValue(_field, null, "", _fieldInstance, getInstance());
+        final FieldValue fieldValue = new FieldValue(_field, null, "", _fieldInstance, getInstance(), null, this);
         final UIFormCellSet cellset = new UIFormCellSet(this, fieldValue, _fieldInstance, "", "", _label, isEditMode());
 
         for (final String attrName : ((FieldSet) _field).getOrder()) {
@@ -606,7 +606,7 @@ public class UIForm
                     final Instance fieldInstance = getInstance();
                     final FieldValue fieldvalue = new FieldValue(field, attr,
                                     super.isPartOfWizardCall() ? getValue4Wizard(field.getName()) : null,
-                                                    fieldInstance, getInstance());
+                                                    fieldInstance, getInstance(), null, this);
 
                     String strValue = null;
                     boolean hidden = false;

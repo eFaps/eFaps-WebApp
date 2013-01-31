@@ -550,7 +550,7 @@ public class UIStructurBrowser
                             value = multi.getPhrase(field.getName());
                         }
                         final FieldValue fieldvalue = new FieldValue(field, attr, value, instance, getInstance(),
-                                        new ArrayList<Instance>(multi.getInstanceList()));
+                                        new ArrayList<Instance>(multi.getInstanceList()), this);
                         String strValue;
                         String htmlTitle;
                         boolean isHidden = false;
