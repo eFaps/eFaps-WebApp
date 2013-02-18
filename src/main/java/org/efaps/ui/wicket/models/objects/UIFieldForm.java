@@ -78,6 +78,7 @@ public class UIFieldForm
      */
     public UIFieldForm(final UUID _commandUuid,
                        final UIClassification _classification)
+        throws EFapsException
     {
         super(_commandUuid, null);
         final Type type = Type.get(_classification.getClassificationUUID());

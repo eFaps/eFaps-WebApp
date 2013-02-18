@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2012 The eFaps Team
+ * Copyright 2003 - 2013 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@
 package org.efaps.ui.servlet;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.ServletException;
@@ -36,9 +35,10 @@ import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.db.SelectBuilder;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.AbstractAutomaticCache;
 import org.efaps.util.cache.CacheObjectInterface;
 import org.efaps.util.cache.CacheReloadException;
+import org.efaps.util.cache.InfinispanCache;
+import org.infinispan.Cache;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +55,7 @@ import org.slf4j.LoggerFactory;
 public class ImageServlet
     extends HttpServlet
 {
+
     /**
      * Needed for serialization.
      */
@@ -66,9 +67,14 @@ public class ImageServlet
     private static final Logger LOG = LoggerFactory.getLogger(ImageServlet.class);
 
     /**
-     * The cache stores all instance of class {@link #ImageMappe}.
+     * Name of the Cache.
      */
-    private static ImageCache CACHE = new ImageCache();
+    private static final String CACHENAME = "ImageServletCache";
+
+    /**
+     * Used as <code>null</code> for caching purpose.
+     */
+    private static ImageMapper NULL = new ImageMapper(null, null, null, Long.valueOf(0), Long.valueOf(0));
 
     /**
      * The method checks the image from the user interface image object out and
@@ -89,9 +95,33 @@ public class ImageServlet
         imgName = imgName.substring(imgName.lastIndexOf('/') + 1);
 
         try {
-            final ImageMapper imageMapper = ImageServlet.CACHE.get(imgName);
+            final Cache<String, ImageMapper> cache = InfinispanCache.get().<String, ImageMapper>getCache(
+                            ImageServlet.CACHENAME);
+            if (!cache.containsKey(imgName)) {
+                final QueryBuilder queryBldr = new QueryBuilder(CIAdminUserInterface.Image);
+                queryBldr.addWhereAttrEqValue(CIAdminUserInterface.Image.Name, imgName);
+                final MultiPrintQuery multi = queryBldr.getPrint();
+                final SelectBuilder selLabel = new SelectBuilder().file().label();
+                final SelectBuilder selLength = new SelectBuilder().file().length();
+                multi.addSelect(selLabel, selLength);
+                multi.addAttribute(CIAdminUserInterface.Image.Name,
+                                CIAdminUserInterface.Image.Modified);
+                multi.executeWithoutAccessCheck();
+                if (multi.next()) {
+                    final String name = multi.<String>getAttribute(CIAdminUserInterface.Image.Name);
+                    final String file = multi.<String>getSelect(selLabel);
+                    final Long filelength = multi.<Long>getSelect(selLength);
+                    final DateTime time = multi.<DateTime>getAttribute(CIAdminUserInterface.Image.Modified);
+                    final ImageMapper imageMapper = new ImageMapper(multi.getCurrentInstance(),
+                                    name, file, filelength, time.getMillis());
+                    cache.put(imgName, imageMapper);
+                } else {
+                    cache.put(imgName, ImageServlet.NULL);
+                }
+            }
 
-            if (imageMapper != null) {
+            final ImageMapper imageMapper = cache.get(imgName);
+            if (imageMapper != null && !imageMapper.equals(ImageServlet.NULL)) {
                 final Checkout checkout = new Checkout(imageMapper.instance);
 
                 _res.setContentType(getServletContext().getMimeType(imageMapper.file));
@@ -124,6 +154,7 @@ public class ImageServlet
     private static final class ImageMapper
         implements CacheObjectInterface
     {
+
         /**
          * The instance variable stores the administational name of the image.
          */
@@ -150,10 +181,10 @@ public class ImageServlet
         private final Instance instance;
 
         /**
-         * @param _instance     Instance
-         * @param _name         administrational name of the image
-         * @param _file         file name of the image
-         * @param _filelength   lenght of the file
+         * @param _instance Instance
+         * @param _name administrational name of the image
+         * @param _file file name of the image
+         * @param _filelength lenght of the file
          * @param _time time
          */
         private ImageMapper(final Instance _instance,
@@ -200,46 +231,6 @@ public class ImageServlet
         public long getId()
         {
             return 0;
-        }
-    }
-
-    /**
-     * Cache to store the images.
-     */
-    private static class ImageCache
-        extends AbstractAutomaticCache<ImageServlet.ImageMapper>
-    {
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected void readCache(final Map<Long, ImageServlet.ImageMapper> _cache4Id,
-                                 final Map<String, ImageServlet.ImageMapper> _cache4Name,
-                                 final Map<UUID, ImageServlet.ImageMapper> _cache4UUID)
-            throws CacheReloadException
-        {
-            try {
-                final QueryBuilder queryBldr = new QueryBuilder(CIAdminUserInterface.Image);
-                final MultiPrintQuery multi = queryBldr.getPrint();
-                final SelectBuilder selLabel = new SelectBuilder().file().label();
-                final SelectBuilder selLength = new SelectBuilder().file().length();
-                multi.addSelect(selLabel, selLength);
-                multi.addAttribute(CIAdminUserInterface.Image.Name,
-                                   CIAdminUserInterface.Image.Modified);
-                multi.executeWithoutAccessCheck();
-                while (multi.next()) {
-                    final String name = multi.<String>getAttribute(CIAdminUserInterface.Image.Name);
-                    final String file =  multi.<String>getSelect(selLabel);
-                    final Long filelength = multi.<Long>getSelect(selLength);
-                    final DateTime time = multi.<DateTime>getAttribute(CIAdminUserInterface.Image.Modified);
-                    final ImageMapper mapper = new ImageMapper(multi.getCurrentInstance(),
-                                    name, file, filelength, time.getMillis());
-
-                    _cache4Name.put(mapper.getName(), mapper);
-                }
-            } catch (final EFapsException e) {
-                throw new CacheReloadException("could not initialise image servlet cache");
-            }
         }
     }
 }

@@ -233,7 +233,7 @@ public abstract class AbstractUIHeaderObject
      */
     public Table getTable()
     {
-        return Table.get(getTableUUID());
+        return getTableUUID() == null ?  null : Table.get(getTableUUID());
     }
 
     /**

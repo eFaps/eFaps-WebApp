@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2012 The eFaps Team
+ * Copyright 2003 - 2013 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ package org.efaps.ui.servlet;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
 import java.util.UUID;
 import java.util.zip.GZIPOutputStream;
 
@@ -41,9 +40,10 @@ import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.db.SelectBuilder;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.AbstractAutomaticCache;
 import org.efaps.util.cache.CacheObjectInterface;
 import org.efaps.util.cache.CacheReloadException;
+import org.efaps.util.cache.InfinispanCache;
+import org.infinispan.Cache;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,9 +68,14 @@ public class StaticContentServlet
     private static final Logger LOG = LoggerFactory.getLogger(StaticContentServlet.class);
 
     /**
-     * Cache for the content.
+     * Name of the Cache.
      */
-    private static final StaticContentCache CACHE = new StaticContentCache();
+    private static final String CACHENAME = "StaticContentServletCache";
+
+    /**
+     * Used as <code>null</code> for caching purpose.
+     */
+    private static ContentMapper NULL = new ContentMapper(null, null, null, Long.valueOf(0), Long.valueOf(0));
 
     /**
      * Cache duration time default value.
@@ -93,25 +98,47 @@ public class StaticContentServlet
         throws ServletException
     {
         String contentName = _req.getRequestURI();
-
         contentName = contentName.substring(contentName.lastIndexOf('/') + 1);
-
         try {
-            if (!StaticContentServlet.CACHE.hasEntries()) {
+            final Cache<String, ContentMapper> cache = InfinispanCache.get().<String, ContentMapper>getCache(
+                            StaticContentServlet.CACHENAME);
+            if (!cache.isEmpty()) {
                 final SystemConfiguration config = SystemConfiguration.get(
                                 UUID.fromString("50a65460-2d08-4ea8-b801-37594e93dad5"));
                 if (config != null) {
                     this.cacheDuration = config.getAttributeValueAsInteger("CacheDuration");
                 }
             }
+            if (!cache.containsKey(contentName)) {
+                final QueryBuilder queryBldr = new QueryBuilder(CIAdminProgram.StaticCompiled);
+                queryBldr.addWhereAttrEqValue(CIAdminProgram.StaticCompiled.Name, contentName);
+                final MultiPrintQuery multi = queryBldr.getPrint();
+                final SelectBuilder selLabel = new SelectBuilder().file().label();
+                final SelectBuilder selLength = new SelectBuilder().file().length();
+                multi.addSelect(selLabel, selLength);
+                multi.addAttribute(CIAdminProgram.StaticCompiled.Name,
+                                CIAdminProgram.StaticCompiled.OID,
+                                CIAdminProgram.StaticCompiled.Modified);
+                multi.executeWithoutAccessCheck();
+                if (multi.next()) {
+                    final String name = multi.<String>getAttribute(CIAdminProgram.StaticCompiled.Name);
+                    final String file = multi.<String>getSelect(selLabel);
+                    final Long filelength = multi.<Long>getSelect(selLength);
+                    final DateTime datetime = multi.<DateTime>getAttribute(CIAdminProgram.StaticCompiled.Modified);
 
-            final ContentMapper imageMapper = StaticContentServlet.CACHE.get(contentName);
+                    final ContentMapper mapper = new ContentMapper(name, file, multi.getCurrentInstance().getOid(),
+                                    filelength, datetime.getMillis());
+                    cache.put(contentName, mapper);
+                } else {
+                    cache.put(contentName, StaticContentServlet.NULL);
+                }
+            }
+            final ContentMapper contentMapper = cache.get(contentName);
+            if (contentMapper != null && !contentMapper.equals(StaticContentServlet.NULL)) {
+                final Checkout checkout = new Checkout(contentMapper.oid);
 
-            if (imageMapper != null) {
-                final Checkout checkout = new Checkout(imageMapper.oid);
-
-                _res.setContentType(getServletContext().getMimeType(imageMapper.file));
-                _res.setDateHeader("Last-Modified", imageMapper.time);
+                _res.setContentType(getServletContext().getMimeType(contentMapper.file));
+                _res.setDateHeader("Last-Modified", contentMapper.time);
                 _res.setDateHeader("Expires", System.currentTimeMillis()
                                 + (this.cacheDuration * 1000));
                 _res.setHeader("Cache-Control", "max-age=" + this.cacheDuration);
@@ -127,12 +154,10 @@ public class StaticContentServlet
                     bytearray.close();
                     _res.getOutputStream().write(b);
                     checkout.close();
-
                 } else {
-                    _res.setContentLength((int) imageMapper.filelength);
+                    _res.setContentLength((int) contentMapper.filelength);
                     checkout.execute(_res.getOutputStream());
                 }
-
             } else if (BundleMaker.containsKey(contentName)) {
                 final BundleInterface bundle = BundleMaker.getBundle(contentName);
 
@@ -262,50 +287,6 @@ public class StaticContentServlet
         public long getId()
         {
             return 0;
-        }
-    }
-
-    /**
-     * Cache class.
-     */
-    private static class StaticContentCache
-        extends AbstractAutomaticCache<StaticContentServlet.ContentMapper>
-    {
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected void readCache(final Map<Long, StaticContentServlet.ContentMapper> _cache4Id,
-                                 final Map<String, StaticContentServlet.ContentMapper> _cache4Name,
-                                 final Map<UUID, StaticContentServlet.ContentMapper> _cache4UUID)
-            throws CacheReloadException
-        {
-            try {
-                final QueryBuilder queryBldr = new QueryBuilder(CIAdminProgram.StaticCompiled);
-                final MultiPrintQuery multi = queryBldr.getPrint();
-                final SelectBuilder selLabel = new SelectBuilder().file().label();
-                final SelectBuilder selLength = new SelectBuilder().file().length();
-                multi.addSelect(selLabel, selLength);
-                multi.addAttribute(CIAdminProgram.StaticCompiled.Name,
-                                CIAdminProgram.StaticCompiled.OID,
-                                CIAdminProgram.StaticCompiled.Modified);
-                multi.executeWithoutAccessCheck();
-
-                while (multi.next()) {
-                    final String name = multi.<String>getAttribute(CIAdminProgram.StaticCompiled.Name);
-                    final String file = multi.<String>getSelect(selLabel);
-                    final Long filelength = multi.<Long>getSelect(selLength);
-                    final DateTime datetime = multi.<DateTime>getAttribute(CIAdminProgram.StaticCompiled.Modified);
-
-                    final ContentMapper mapper = new ContentMapper(name, file, multi.getCurrentInstance().getOid(),
-                                    filelength, datetime.getMillis());
-
-                    _cache4Name.put(mapper.getName(), mapper);
-                }
-            } catch (final EFapsException e) {
-                throw new CacheReloadException("could not initialise "
-                                + "image servlet cache");
-            }
         }
     }
 }

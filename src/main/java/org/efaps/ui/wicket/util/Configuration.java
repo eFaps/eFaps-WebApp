@@ -28,6 +28,7 @@ import java.util.UUID;
 import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * TODO comment!
@@ -122,6 +123,7 @@ public final class Configuration
      * @return the WebApp Sytemconfiguration.
      */
     protected static SystemConfiguration getSysConfig()
+        throws CacheReloadException
     {
         // WebApp-Configuration
         return SystemConfiguration.get(UUID.fromString("50a65460-2d08-4ea8-b801-37594e93dad5"));
