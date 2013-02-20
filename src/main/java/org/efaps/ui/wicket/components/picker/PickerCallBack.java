@@ -23,7 +23,7 @@ package org.efaps.ui.wicket.components.picker;
 
 import java.util.Map;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.efaps.ui.wicket.models.cell.UIPicker;
@@ -80,7 +80,7 @@ public class PickerCallBack
             final String value = map.get(EFapsKey.PICKER_VALUE.getKey());
             if (value != null) {
                 js.append("wicketGet('").append(this.targetMarkupId).append("').value ='")
-                    .append(escape ? StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(value))
+                    .append(escape ? StringEscapeUtils.escapeEcmaScript(StringEscapeUtils.escapeHtml4(value))
                             : value).append("';");
             }
             for (final String keyString : map.keySet()) {
@@ -96,7 +96,7 @@ public class PickerCallBack
                         js.append("eFapsSetFieldValue('").append(this.targetMarkupId).append("','")
                         .append(keyString).append("','")
                         .append(escape
-                                ? StringEscapeUtils.escapeJavaScript(map.get(keyString))
+                                ? StringEscapeUtils.escapeEcmaScript(map.get(keyString))
                                 : map.get(keyString)).append("');");
                     }
                 }

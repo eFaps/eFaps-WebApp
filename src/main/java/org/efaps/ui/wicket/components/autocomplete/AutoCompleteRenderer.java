@@ -22,7 +22,7 @@ package org.efaps.ui.wicket.components.autocomplete;
 
 import java.util.Map;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AbstractAutoCompleteTextRenderer;
 import org.apache.wicket.request.Response;
 import org.efaps.ui.wicket.util.EFapsKey;
@@ -66,8 +66,8 @@ public class AutoCompleteRenderer
     @Override
     protected String getTextValue(final Map<String, String> _map)
     {
-        return _map.get(escape(_map) ? StringEscapeUtils.escapeHtml(EFapsKey.AUTOCOMPLETE_VALUE.getKey())
-                        : StringEscapeUtils.escapeHtml(EFapsKey.AUTOCOMPLETE_VALUE.getKey()));
+        return _map.get(escape(_map) ? StringEscapeUtils.escapeHtml4(EFapsKey.AUTOCOMPLETE_VALUE.getKey())
+                        : StringEscapeUtils.escapeHtml4(EFapsKey.AUTOCOMPLETE_VALUE.getKey()));
     }
 
     /**
@@ -88,7 +88,7 @@ public class AutoCompleteRenderer
                         ? _map.get(EFapsKey.AUTOCOMPLETE_CHOICE.getKey())
                         : _map.get(EFapsKey.AUTOCOMPLETE_VALUE.getKey());
 
-        _response.write(escape(_map) ? StringEscapeUtils.escapeHtml(choice) : choice);
+        _response.write(escape(_map) ? StringEscapeUtils.escapeHtml4(choice) : choice);
     }
 
     /**
@@ -106,7 +106,7 @@ public class AutoCompleteRenderer
         final boolean escape = escape(_map);
         final StringBuilder js = new StringBuilder();
         js.append("Wicket.$('").append(this.autoCompleteField.getMarkupId()).append("_hidden').value ='")
-                        .append(escape ? StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(key))
+                        .append(escape ? StringEscapeUtils.escapeEcmaScript(StringEscapeUtils.escapeHtml4(key))
                                         : key).append("';");
         for (final String keyString : _map.keySet()) {
             // if the map contains a key that is not defined in this class it is
@@ -122,7 +122,7 @@ public class AutoCompleteRenderer
                     js.append("eFapsSetFieldValue('").append(this.autoCompleteField.getMarkupId()).append("','")
                     .append(keyString).append("','")
                     .append(escape
-                            ? StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(_map.get(keyString)))
+                            ? StringEscapeUtils.escapeEcmaScript(StringEscapeUtils.escapeHtml4(_map.get(keyString)))
                             : _map.get(keyString)).append("');");
                 }
 
