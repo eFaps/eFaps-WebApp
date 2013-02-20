@@ -25,7 +25,7 @@ package org.efaps.ui.wicket.util;
  * esjp to a component or site in one place.
  *
  * @author The eFaps Team
- * @version $Id: $
+ * @version $Id$
  */
 public enum EFapsKey {
 

@@ -28,7 +28,7 @@ import org.apache.wicket.markup.ComponentTag;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id: $
+ * @version $Id$
  */
 public class ExpandTextareaBehavior
     extends Behavior
