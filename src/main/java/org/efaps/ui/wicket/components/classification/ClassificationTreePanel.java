@@ -45,9 +45,10 @@ import org.efaps.ui.wicket.models.objects.UIForm.Element;
 import org.efaps.ui.wicket.models.objects.UIForm.ElementType;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
-import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * TODO comment!
@@ -78,6 +79,7 @@ public class ClassificationTreePanel
      */
     public ClassificationTreePanel(final String _wicketId,
                                    final IModel<UIClassification> _model)
+        throws CacheReloadException
     {
         super(_wicketId, _model);
         setOutputMarkupId(true);

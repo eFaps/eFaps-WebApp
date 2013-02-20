@@ -26,6 +26,7 @@ import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.ui.Form;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * Class serves as the model for a field form. Meaning a from that is
@@ -75,6 +76,7 @@ public class UIFieldForm
      *
      * @param _commandUuid the uuid of the command that opened the parent form
      * @param _classification the classificationto be created
+     * @throws EFapsException on error
      */
     public UIFieldForm(final UUID _commandUuid,
                        final UIClassification _classification)
@@ -92,9 +94,11 @@ public class UIFieldForm
      *
      * @see org.efaps.ui.wicket.models.objects.UIForm#getCreateTargetType()
      * @return the classification type
+     * @throws CacheReloadException on error
      */
     @Override
     protected Type getCreateTargetType()
+        throws CacheReloadException
     {
         return Type.get(this.classificationUUID);
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2011 The eFaps Team
+ * Copyright 2003 - 2013 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import org.efaps.admin.ui.Table;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,13 +48,14 @@ public abstract class AbstractUIHeaderObject
      * This enum holds the Values used as part of the key for the UserAttributes
      * or SessionAttribute witch belong to a TableModel.
      */
-    public static enum UserCacheKey {
+    public static enum UserCacheKey
+    {
         /**
          * Key for UserAttributes used for the order of Columns.
          */
         COLUMNORDER("columnOrder"),
         /**
-         * Key  for UserAttributes used for the widths of Columns.
+         * Key for UserAttributes used for the widths of Columns.
          */
         COLUMNWIDTH("columnWidths"),
         /**
@@ -98,7 +100,6 @@ public abstract class AbstractUIHeaderObject
      */
     private static final long serialVersionUID = 1L;
 
-
     /**
      * Logging instance used in this class.
      */
@@ -123,7 +124,6 @@ public abstract class AbstractUIHeaderObject
      */
     private UUID tableUUID;
 
-
     /**
      * This instance variable sores if the Table should show CheckBodes.
      */
@@ -142,7 +142,8 @@ public abstract class AbstractUIHeaderObject
     private int widthWeight;
 
     /**
-     * The size of the current values list including filtereing etc. Update on filter events etc.
+     * The size of the current values list including filtereing etc. Update on
+     * filter events etc.
      */
     private int size;
 
@@ -160,26 +161,30 @@ public abstract class AbstractUIHeaderObject
      * @see #getSortKey
      * @see #setSortKey
      */
-    private  String sortKey = null;
+    private String sortKey = null;
 
     /**
-     * @param _commandUUID  UUID of the Command
-     * @param _instanceKey  key to the instance
-     * @param _openerId     id of the opener
+     * @param _commandUUID UUID of the Command
+     * @param _instanceKey key to the instance
+     * @param _openerId id of the opener
+     * @throws CacheReloadException on error
      */
     public AbstractUIHeaderObject(final UUID _commandUUID,
                                   final String _instanceKey,
                                   final String _openerId)
+        throws CacheReloadException
     {
         super(_commandUUID, _instanceKey, _openerId);
     }
 
     /**
-     * @param _commandUUID  UUID of the Command
-     * @param _instanceKey  key to the instance
+     * @param _commandUUID UUID of the Command
+     * @param _instanceKey key to the instance
+     * @throws CacheReloadException on error
      */
     public AbstractUIHeaderObject(final UUID _commandUUID,
                                   final String _instanceKey)
+        throws CacheReloadException
     {
         super(_commandUUID, _instanceKey);
     }
@@ -229,11 +234,12 @@ public abstract class AbstractUIHeaderObject
      * This is the getter method for the instance variable {@link #table}.
      *
      * @return value of instance variable {@link #table}
-     * @see #table
+     * @throws CacheReloadException on error
      */
     public Table getTable()
+        throws CacheReloadException
     {
-        return getTableUUID() == null ?  null : Table.get(getTableUUID());
+        return getTableUUID() == null ? null : Table.get(getTableUUID());
     }
 
     /**
@@ -284,7 +290,7 @@ public abstract class AbstractUIHeaderObject
     }
 
     /**
-     * @param _fieldId  id of the
+     * @param _fieldId id of the
      * @return UITableHeader header
      */
     public UITableHeader getHeader4Id(final long _fieldId)
@@ -456,7 +462,6 @@ public abstract class AbstractUIHeaderObject
         this.size = _size;
     }
 
-
     /**
      * Getter method for the instance variable {@link #sortKey}.
      *
@@ -531,9 +536,9 @@ public abstract class AbstractUIHeaderObject
      */
     protected List<Field> getUserSortedColumns()
     {
-        final List<Field> fields = getTable().getFields();
         List<Field> ret = new ArrayList<Field>();
         try {
+            final List<Field> fields = getTable().getFields();
             if (Context.getThreadContext().containsUserAttribute(
                             getCacheKey(UITable.UserCacheKey.COLUMNORDER))) {
 
@@ -566,6 +571,7 @@ public abstract class AbstractUIHeaderObject
 
     /**
      * Sort the UIObject;
+     *
      * @throws EFapsException on error
      */
     public abstract void sort()

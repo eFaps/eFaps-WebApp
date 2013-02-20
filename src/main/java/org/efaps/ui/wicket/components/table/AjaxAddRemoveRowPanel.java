@@ -41,6 +41,7 @@ import org.efaps.ui.wicket.models.objects.UIRow;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * Panel renders the add, insert and remove buttons for tables on insert.
@@ -84,7 +85,6 @@ public class AjaxAddRemoveRowPanel
      */
     private static final String FUNCTION_SUCCESSHANDLER = "eFapsSuccessHandler";
 
-
     /**
      * Suffix for the variable to hold the sucess handler.
      */
@@ -104,13 +104,14 @@ public class AjaxAddRemoveRowPanel
     /**
      * Constructor for only a ajax add link which is placed below the table.
      *
-     * @param _wicketId     wicket id for this component
-     * @param _model        model for this component
+     * @param _wicketId wicket id for this component
+     * @param _model model for this component
      * @param _rowsRepeater repeater
      */
     public AjaxAddRemoveRowPanel(final String _wicketId,
                                  final IModel<UITable> _model,
                                  final RepeatingView _rowsRepeater)
+        throws CacheReloadException
     {
         super(_wicketId, _model);
         if (_model.getObject() instanceof UIFieldTable) {
@@ -128,8 +129,8 @@ public class AjaxAddRemoveRowPanel
     }
 
     /**
-     * Constructor for a insert and remove link which is placed in the
-     * table for each row.
+     * Constructor for a insert and remove link which is placed in the table for
+     * each row.
      *
      * @param _wicketId wicket id for this component
      * @param _model model for this component
@@ -138,6 +139,7 @@ public class AjaxAddRemoveRowPanel
     public AjaxAddRemoveRowPanel(final String _wicketId,
                                  final IModel<UITable> _model,
                                  final RowPanel _rowPanel)
+        throws CacheReloadException
     {
         super(_wicketId, _model);
         if (_model.getObject() instanceof UIFieldTable) {
@@ -164,6 +166,7 @@ public class AjaxAddRemoveRowPanel
     public class AjaxAddRow
         extends WebMarkupContainer
     {
+
         /**
          * Needed for serialization.
          */
@@ -221,13 +224,13 @@ public class AjaxAddRemoveRowPanel
                             // tag in markup for this item
                             final StringBuilder js = new StringBuilder();
                             js.append("var item=document.createElement('").append("tr").append("');")
-                                .append("item.id='").append(row.getMarkupId()).append("';")
-                                .append("Wicket.$('").append(tablepanel.getMarkupId())
-                                .append("').insertBefore(item, Wicket.$('")
-                                .append(rowId != null && rowId.toString().length() > 0
-                                                && !rowId.toString().equalsIgnoreCase("null")
-                                                        ? rowId
-                                                        : AjaxAddRemoveRowPanel.this.getMarkupId()).append("'));");
+                                            .append("item.id='").append(row.getMarkupId()).append("';")
+                                            .append("Wicket.$('").append(tablepanel.getMarkupId())
+                                            .append("').insertBefore(item, Wicket.$('")
+                                            .append(rowId != null && rowId.toString().length() > 0
+                                                            && !rowId.toString().equalsIgnoreCase("null")
+                                                            ? rowId
+                                                            : AjaxAddRemoveRowPanel.this.getMarkupId()).append("'));");
                             _target.prependJavaScript(js.toString());
                             _target.add(row);
 
@@ -238,16 +241,16 @@ public class AjaxAddRemoveRowPanel
                     if (!sucesshandler.isNull() && !sucesshandler.isEmpty()
                                     && "true".equalsIgnoreCase(sucesshandler.toString())) {
                         _target.appendJavaScript(AjaxAddRemoveRowPanel.this.tableName
-                                    + AjaxAddRemoveRowPanel.VAR_SUFFIX + "();");
+                                        + AjaxAddRemoveRowPanel.VAR_SUFFIX + "();");
                     }
                 }
 
                 /**
-                 * The script must be added to the head but not on domready
-                 * like it is done out of the box.
+                 * The script must be added to the head but not on domready like
+                 * it is done out of the box.
                  *
-                 * @param _component    Component this behavior belongs to
-                 * @param _response     the reponse the script is written to
+                 * @param _component Component this behavior belongs to
+                 * @param _response the reponse the script is written to
                  */
                 @Override
                 public void renderHead(final Component _component,
@@ -271,31 +274,44 @@ public class AjaxAddRemoveRowPanel
                 {
                     super.onComponentTag(_tag);
                     _tag.put("onclick", AjaxAddRemoveRowPanel.FUNCTION_PREFIX
-                                    +  AjaxAddRemoveRowPanel.this.tableName + "(1, null, null)");
+                                    + AjaxAddRemoveRowPanel.this.tableName + "(1, null, null)");
                 }
 
                 @Override
                 public CharSequence getCallbackScript(final Component _component)
                 {
                     final StringBuilder js = new StringBuilder()
-                        .append("var ").append(AjaxAddRemoveRowPanel.this.tableName)
-                            .append(AjaxAddRemoveRowPanel.VAR_SUFFIX).append(";\n")
-                        .append("var ").append(AjaxAddRemoveRowPanel.FUNCTION_PREFIX)
-                            .append(AjaxAddRemoveRowPanel.this.tableName)
-                        .append("=function(_").append(AjaxAddRemoveRowPanel.FUNCTION_ROWCOUNT).append(",")
-                            .append(AjaxAddRemoveRowPanel.VAR_SUFFIX).append(",_")
-                            .append(AjaxAddRemoveRowPanel.FUNCTION_ROWDID).append(") {\n")
-                        .append(AjaxAddRemoveRowPanel.this.tableName).append(AjaxAddRemoveRowPanel.VAR_SUFFIX)
-                            .append("=").append(AjaxAddRemoveRowPanel.VAR_SUFFIX).append(";\n")
-                        .append("var eFapsAjaxCall=")
-                        .append(getCallbackFunction(CallbackParameter.explicit(AjaxAddRemoveRowPanel.FUNCTION_ROWCOUNT),
-                                             CallbackParameter.explicit(AjaxAddRemoveRowPanel.FUNCTION_SUCCESSHANDLER),
+                                    .append("var ")
+                                    .append(AjaxAddRemoveRowPanel.this.tableName)
+                                    .append(AjaxAddRemoveRowPanel.VAR_SUFFIX)
+                                    .append(";\n")
+                                    .append("var ")
+                                    .append(AjaxAddRemoveRowPanel.FUNCTION_PREFIX)
+                                    .append(AjaxAddRemoveRowPanel.this.tableName)
+                                    .append("=function(_")
+                                    .append(AjaxAddRemoveRowPanel.FUNCTION_ROWCOUNT)
+                                    .append(",")
+                                    .append(AjaxAddRemoveRowPanel.VAR_SUFFIX)
+                                    .append(",_")
+                                    .append(AjaxAddRemoveRowPanel.FUNCTION_ROWDID)
+                                    .append(") {\n")
+                                    .append(AjaxAddRemoveRowPanel.this.tableName)
+                                    .append(AjaxAddRemoveRowPanel.VAR_SUFFIX)
+                                    .append("=")
+                                    .append(AjaxAddRemoveRowPanel.VAR_SUFFIX)
+                                    .append(";\n")
+                                    .append("var eFapsAjaxCall=")
+                                    .append(getCallbackFunction(
+                                                    CallbackParameter.explicit(AjaxAddRemoveRowPanel.FUNCTION_ROWCOUNT),
+                                                    CallbackParameter
+                                                                    .explicit(AjaxAddRemoveRowPanel.FUNCTION_SUCCESSHANDLER),
                                                     CallbackParameter.explicit(AjaxAddRemoveRowPanel.FUNCTION_ROWDID)))
-                        .append("\n eFapsAjaxCall(_").append(AjaxAddRemoveRowPanel.FUNCTION_ROWCOUNT)
-                            .append(",jQuery.isFunction(")
-                            .append(AjaxAddRemoveRowPanel.this.tableName).append(AjaxAddRemoveRowPanel.VAR_SUFFIX)
-                            .append("),_").append(AjaxAddRemoveRowPanel.FUNCTION_ROWDID).append(");\n")
-                        .append("}");
+                                    .append("\n eFapsAjaxCall(_").append(AjaxAddRemoveRowPanel.FUNCTION_ROWCOUNT)
+                                    .append(",jQuery.isFunction(")
+                                    .append(AjaxAddRemoveRowPanel.this.tableName)
+                                    .append(AjaxAddRemoveRowPanel.VAR_SUFFIX)
+                                    .append("),_").append(AjaxAddRemoveRowPanel.FUNCTION_ROWDID).append(");\n")
+                                    .append("}");
                     return js;
                 }
             });
@@ -341,8 +357,8 @@ public class AjaxAddRemoveRowPanel
             super.onComponentTag(_tag);
             final StringBuilder js = new StringBuilder();
             js.append("var e = Wicket.$('").append(this.rowPanel.getMarkupId()).append("');")
-                .append("var p = e.parentNode;")
-                .append("p.removeChild(e);");
+                            .append("var p = e.parentNode;")
+                            .append("p.removeChild(e);");
             _tag.put("onclick", js);
         }
     }
@@ -388,7 +404,7 @@ public class AjaxAddRemoveRowPanel
             super.onComponentTag(_tag);
             final StringBuilder js = new StringBuilder();
             js.append(AjaxAddRemoveRowPanel.FUNCTION_PREFIX).append(AjaxAddRemoveRowPanel.this.tableName)
-                .append("(1, null, '").append(this.rowPanel.getMarkupId()).append("');");
+                            .append("(1, null, '").append(this.rowPanel.getMarkupId()).append("');");
             _tag.put("onclick", js);
         }
     }

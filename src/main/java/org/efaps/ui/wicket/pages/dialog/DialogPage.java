@@ -49,6 +49,7 @@ import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * This Page renders a Dialog for Userinterference.<br>
@@ -60,6 +61,7 @@ import org.efaps.util.EFapsException;
 public class DialogPage
     extends AbstractMergePage
 {
+
     /**
      *
      */
@@ -86,6 +88,7 @@ public class DialogPage
     public DialogPage(final PageReference _pageReference,
                       final IModel<UIMenuItem> _model,
                       final String[] _oids)
+        throws CacheReloadException
     {
         super(_model);
         this.pageReference = _pageReference;
@@ -106,10 +109,10 @@ public class DialogPage
      * Constructor setting the ModalWindow.
      *
      * @param _pageReference Reference to the page that opened this dialog
-     * @param _value        value is depending on parameter "_isSniplett" the key to a
+     * @param _value value is depending on parameter "_isSniplett" the key to a
      *            DBProperty or a snipplet
-     * @param _isSniplett   is it a snipplet or not
-     * @param _goOn         go on?
+     * @param _isSniplett is it a snipplet or not
+     * @param _goOn go on?
      */
     public DialogPage(final PageReference _pageReference,
                       final String _value,
@@ -171,6 +174,7 @@ public class DialogPage
     public class AjaxGoOnLink
         extends AjaxLink<Object>
     {
+
         /** Needed for serialization. */
         private static final long serialVersionUID = 1L;
 
@@ -268,8 +272,8 @@ public class DialogPage
 
         /**
          * @param _wicketId wicket id of this component
-         * @param _model    model for this component
-         * @param _oids     oids
+         * @param _model model for this component
+         * @param _oids oids
          */
         public AjaxSubmitLink(final String _wicketId,
                               final IModel<UIMenuItem> _model,
@@ -317,9 +321,9 @@ public class DialogPage
             super.renderHead(_component, _response);
             final StringBuilder js = new StringBuilder();
             js.append("function pressed (_event) {")
-                .append("var b=Wicket.$('").append(_component.getMarkupId())
-                .append("'); if (typeof(b.onclick) != 'undefined') { b.onclick();  }")
-                .append("}").append("window.onkeydown = pressed;");
+                            .append("var b=Wicket.$('").append(_component.getMarkupId())
+                            .append("'); if (typeof(b.onclick) != 'undefined') { b.onclick();  }")
+                            .append("}").append("window.onkeydown = pressed;");
             _response.render(JavaScriptHeaderItem.forScript(js, DialogPage.class.getName()));
         }
     }

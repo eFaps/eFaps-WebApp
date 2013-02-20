@@ -37,16 +37,19 @@ import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.models.cell.UIHiddenCell;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
+ * @version $Id: AbstractUIPageObject.java 7611 2012-06-08 21:56:57Z
+ *          jan@moxter.net $
  */
 public abstract class AbstractUIPageObject
     extends AbstractUIObject
 {
+
     /**
      * Needed for serialization.
      */
@@ -58,8 +61,8 @@ public abstract class AbstractUIPageObject
     private final Map<String, String> uiID2Oid = new HashMap<String, String>();
 
     /**
-     * Random that can be used for the id in the userinterface and
-     * stored in {@link #uiID2Oid}.
+     * Random that can be used for the id in the userinterface and stored in
+     * {@link #uiID2Oid}.
      */
     private final Random random = new Random();
 
@@ -73,10 +76,9 @@ public abstract class AbstractUIPageObject
      */
     private final Map<Instance, Boolean> accessMap = new HashMap<Instance, Boolean>();
 
-
     /**
-     * This instance variable stores the UUID of the CommandAbstract that is
-     * the target of this Page.
+     * This instance variable stores the UUID of the CommandAbstract that is the
+     * target of this Page.
      */
     private UUID targetCmdUUID;
 
@@ -106,7 +108,8 @@ public abstract class AbstractUIPageObject
     private boolean isTargetShowFile;
 
     /**
-     * Name of the wiki file, that is the target of the help link shown in the form, table etc.
+     * Name of the wiki file, that is the target of the help link shown in the
+     * form, table etc.
      */
     private String helpTarget;
 
@@ -116,10 +119,12 @@ public abstract class AbstractUIPageObject
      * @param _commandUUID UUID for this Model
      * @param _instanceKey instance id for this Model
      * @param _openerId id of the opener
+     * @throws CacheReloadException on error
      */
     public AbstractUIPageObject(final UUID _commandUUID,
                                 final String _instanceKey,
                                 final String _openerId)
+        throws CacheReloadException
     {
         super(_commandUUID, _instanceKey, _openerId);
         if (_commandUUID != null) {
@@ -139,9 +144,11 @@ public abstract class AbstractUIPageObject
      *
      * @param _commandUUID UUID for this Model
      * @param _instanceKey instance id for this Model
+     * @throws CacheReloadException on error
      */
     public AbstractUIPageObject(final UUID _commandUUID,
                                 final String _instanceKey)
+        throws CacheReloadException
     {
         this(_commandUUID, _instanceKey, null);
     }
@@ -158,6 +165,7 @@ public abstract class AbstractUIPageObject
 
     /**
      * Method to add a hidden Cell to the list {@link #hiddenCells}.
+     *
      * @param _hiddenCell cell to add
      */
     public void addHidden(final UIHiddenCell _hiddenCell)
@@ -166,14 +174,14 @@ public abstract class AbstractUIPageObject
     }
 
     /**
-     * Get the CommandAbstract that is
-     * the target of this Page.
+     * Get the CommandAbstract that is the target of this Page.
      *
      *
      * @see #targetCmdUUID
-     * @return the calling CommandAbstract
+     * @return the calling CommandAbstract UIClassification
      */
     public AbstractCommand getTargetCmd()
+        throws CacheReloadException
     {
         AbstractCommand cmd = Command.get(this.targetCmdUUID);
         if (cmd == null) {
@@ -181,7 +189,6 @@ public abstract class AbstractUIPageObject
         }
         return cmd;
     }
-
 
     /**
      * Getter method for instance variable {@link #targetCmdUUID}.
@@ -205,6 +212,7 @@ public abstract class AbstractUIPageObject
 
     /**
      * Method returns if this pageobject has a target command.
+     *
      * @return true if targetCmdUUID !=null
      */
     public boolean hasTargetCmd()
@@ -235,7 +243,8 @@ public abstract class AbstractUIPageObject
     /**
      * Setter method for instance variable {@link #targetCmdRevise}.
      *
-     * @param _targetCmdRevise value for instance variable {@link #targetCmdRevise}
+     * @param _targetCmdRevise value for instance variable
+     *            {@link #targetCmdRevise}
      */
     public void setTargetCmdRevise(final boolean _targetCmdRevise)
     {
@@ -349,8 +358,9 @@ public abstract class AbstractUIPageObject
 
     /**
      * Used to check the access to e.g. TreeMenus.
+     *
      * @param _instances Instances that must be checked for access
-     * @return  Map with Instance to Boolean
+     * @return Map with Instance to Boolean
      * @throws EFapsException on error
      */
     protected Map<Instance, Boolean> checkAccessToInstances(final List<Instance> _instances)

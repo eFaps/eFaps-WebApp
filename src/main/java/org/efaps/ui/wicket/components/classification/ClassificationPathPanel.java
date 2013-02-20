@@ -33,8 +33,9 @@ import org.apache.wicket.model.Model;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.ui.wicket.components.picker.AjaxPickerLink;
 import org.efaps.ui.wicket.models.objects.UIClassification;
-import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * TODO comment!
@@ -65,9 +66,11 @@ public class ClassificationPathPanel
     /**
      * @param _wicketId wicket id of this component
      * @param _model model for this component
+     * @throws CacheReloadException on error
      */
     public ClassificationPathPanel(final String _wicketId,
                                    final IModel<UIClassification> _model)
+        throws CacheReloadException
     {
         super(_wicketId, _model);
         setOutputMarkupId(true);

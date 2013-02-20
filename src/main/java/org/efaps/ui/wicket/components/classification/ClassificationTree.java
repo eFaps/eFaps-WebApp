@@ -35,6 +35,7 @@ import org.efaps.ui.wicket.models.objects.UIClassification;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,9 +62,11 @@ public class ClassificationTree
     /**
      * @param _wicketId wicketId of this component
      * @param _model model for this component
+     * @throws CacheReloadException on error
      */
     public ClassificationTree(final String _wicketId,
                               final IModel<UIClassification> _model)
+        throws CacheReloadException
     {
         super(_wicketId, new ClassificationTreeProvider(_model));
         setOutputMarkupId(true);

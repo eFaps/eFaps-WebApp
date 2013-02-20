@@ -229,9 +229,11 @@ public abstract class AbstractUICell
     /**
      * @see org.efaps.ui.wicket.models.AbstractInstanceObject#hasInstanceManager()
      * @return false
+     * @throws CacheReloadException on error
      */
     @Override
     public boolean hasInstanceManager()
+        throws CacheReloadException
     {
         return this.parent != null ? this.parent.hasInstanceManager() : false;
     }

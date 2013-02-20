@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2012 The eFaps Team
+ * Copyright 2003 - 2013 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,9 @@ import org.efaps.ui.wicket.components.modalwindow.ICmdUIObject;
 import org.efaps.ui.wicket.models.AbstractInstanceObject;
 import org.efaps.ui.wicket.models.objects.IEventUIObject;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO comment!
@@ -50,8 +53,12 @@ import org.efaps.util.EFapsException;
 public class UIPicker
     extends AbstractInstanceObject
     implements Serializable, ICmdUIObject, IEventUIObject
-
 {
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(UIPicker.class);
+
     /**
      * Needed for serialization.
      */
@@ -109,6 +116,7 @@ public class UIPicker
      * @return the command underlying this picker
      */
     public Command getCommand()
+        throws CacheReloadException
     {
         return Command.get(this.cmdUUID);
     }
@@ -128,7 +136,13 @@ public class UIPicker
      */
     public int getWindowHeight()
     {
-        return getCommand().getWindowHeight();
+        int ret = 0;
+        try {
+            ret = getCommand().getWindowHeight();
+        } catch (final CacheReloadException e) {
+            UIPicker.LOG.error("Coould not read WindowHeight for Command with uuid:{}", getCmdUUID());
+        }
+        return ret;
     }
 
     /**
@@ -136,7 +150,13 @@ public class UIPicker
      */
     public int getWindowWidth()
     {
-        return getCommand().getWindowWidth();
+        int ret = 0;
+        try {
+            ret = getCommand().getWindowWidth();
+        } catch (final CacheReloadException e) {
+            UIPicker.LOG.error("Coould not read WindowWith for Command with uuid:{}", getCmdUUID());
+        }
+        return ret;
     }
 
     /**
@@ -228,6 +248,7 @@ public class UIPicker
      */
     @Override
     public boolean hasInstanceManager()
+        throws CacheReloadException
     {
         return this.parent.hasInstanceManager();
     }

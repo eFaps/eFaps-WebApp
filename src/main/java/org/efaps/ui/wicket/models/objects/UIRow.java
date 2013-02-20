@@ -28,6 +28,7 @@ import org.efaps.ui.wicket.models.AbstractInstanceObject;
 import org.efaps.ui.wicket.models.cell.UIHiddenCell;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * Class represents one row in the UITable.
@@ -161,9 +162,11 @@ public class UIRow
     /**
      * @see org.efaps.ui.wicket.models.AbstractInstanceObject#hasInstanceManager()
      * @return parent
+     * @throws CacheReloadException on error
      */
     @Override
     public boolean hasInstanceManager()
+        throws CacheReloadException
     {
         return getParent().hasInstanceManager();
     }

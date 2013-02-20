@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2012 The eFaps Team
+ * Copyright 2003 - 2013 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@
 package org.efaps.ui.wicket.components.modalwindow;
 
 import org.efaps.admin.ui.AbstractCommand;
+import org.efaps.util.EFapsException;
 
 
 /**
@@ -32,10 +33,13 @@ import org.efaps.admin.ui.AbstractCommand;
  */
 public interface ICmdUIObject
 {
+
     /**
      * @return the command belonging to this CommandModel
+     * @throws EFapsException on error
      */
-    AbstractCommand getCommand();
+    AbstractCommand getCommand()
+        throws EFapsException;
 
     /**
      * @return the instance key for this object

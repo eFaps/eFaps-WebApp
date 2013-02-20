@@ -31,6 +31,7 @@ import org.efaps.admin.ui.Command;
 import org.efaps.db.Context;
 import org.efaps.message.MessageStatusHolder;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * TODO comment!
@@ -102,14 +103,18 @@ public class SetMessageStatusBehavior
      * @param _unread unread messages
      * @param _read read messages
      * @return string
+     * @throws CacheReloadException on error
      */
     public static String getLabel(final int _unread,
                                   final int _read)
+        throws CacheReloadException
     {
         final StringBuilder ret = new StringBuilder()
-            .append("<span").append(_unread > 0 ? "class=\"unread\"": "").append(">")
-            .append(String.format(Command.get(SetMessageStatusBehavior.getCmdUUD()).getLabelProperty(), _unread, _read))
-            .append("</span>");
+                        .append("<span")
+                        .append(_unread > 0 ? "class=\"unread\"" : "").append(">")
+                        .append(String.format(Command.get(SetMessageStatusBehavior.getCmdUUD()).getLabelProperty(),
+                                        _unread, _read))
+                        .append("</span>");
         return ret.toString();
     }
 }

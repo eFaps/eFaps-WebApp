@@ -56,6 +56,7 @@ import org.efaps.ui.wicket.models.objects.UITableHeader.FilterType;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.DateTimeUtil;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
@@ -795,8 +796,10 @@ public class UITable
      *
      * @param _eventType eventype to get
      * @return List of events
+     * @throws CacheReloadException on error
      */
     protected List<EventDefinition> getEvents(final EventType _eventType)
+        throws CacheReloadException
     {
         return this.getCommand().getEvents(_eventType);
     }
@@ -832,18 +835,23 @@ public class UITable
                                        final UIRow _rowModel2)
                     {
 
-                        final UITableCell cellModel1 = _rowModel1.getValues().get(index);
-                        final FieldValue fValue1 = new FieldValue(getTable().getFields().get(index), cellModel1
-                                        .getUiClass(), cellModel1.getCompareValue() != null ? cellModel1
-                                        .getCompareValue()
-                                        : cellModel1.getCellValue());
+                        FieldValue fValue1 = null;
+                        FieldValue fValue2 = null;
+                        try {
+                            final UITableCell cellModel1 = _rowModel1.getValues().get(index);
+                            fValue1 = new FieldValue(getTable().getFields().get(index), cellModel1
+                                            .getUiClass(), cellModel1.getCompareValue() != null ? cellModel1
+                                            .getCompareValue()
+                                            : cellModel1.getCellValue());
 
-                        final UITableCell cellModel2 = _rowModel2.getValues().get(index);
-                        final FieldValue fValue2 = new FieldValue(getTable().getFields().get(index), cellModel2
-                                        .getUiClass(), cellModel2.getCompareValue() != null ? cellModel2
-                                        .getCompareValue()
-                                        : cellModel2.getCellValue());
-
+                            final UITableCell cellModel2 = _rowModel2.getValues().get(index);
+                            fValue2 = new FieldValue(getTable().getFields().get(index), cellModel2
+                                            .getUiClass(), cellModel2.getCompareValue() != null ? cellModel2
+                                            .getCompareValue()
+                                            : cellModel2.getCellValue());
+                        } catch (final CacheReloadException e) {
+                            UITable.LOG.error("Error during sorting for table", e);
+                        }
                         return fValue1.compareTo(fValue2);
                     }
                 });

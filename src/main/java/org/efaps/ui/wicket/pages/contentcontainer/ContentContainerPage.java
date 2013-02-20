@@ -44,15 +44,16 @@ import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
-import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * This class renders a Page with is used as a Container for the Content. <br/>
- * This is necessary to be able to have a split in the page and be able to
- * reuse the same classes for the ContentPages. The Split contains on the left a
- * menu or tree and on the right an iframe for the content.
+ * This is necessary to be able to have a split in the page and be able to reuse
+ * the same classes for the ContentPages. The Split contains on the left a menu
+ * or tree and on the right an iframe for the content.
  *
  * @author The eFaps Team
  * @version $Id:ContentContainerPage.java 1510 2007-10-18 14:35:40Z jmox $
@@ -60,6 +61,7 @@ import org.efaps.util.EFapsException;
 public class ContentContainerPage
     extends AbstractMergePage
 {
+
     /**
      * Needed for serialization.
      */
@@ -126,9 +128,9 @@ public class ContentContainerPage
     }
 
     /**
-     * @param _uuid                 UUID of the command
-     * @param _instanceKey          oid
-     * @param _addStructurBrowser   add a StructurBrowser to this page
+     * @param _uuid UUID of the command
+     * @param _instanceKey oid
+     * @param _addStructurBrowser add a StructurBrowser to this page
      * @throws EFapsException on error on error
      */
     public ContentContainerPage(final UUID _uuid,
@@ -140,9 +142,9 @@ public class ContentContainerPage
     }
 
     /**
-     * @param _uuid             UUID of the calling command
-     * @param _instanceKey      instance key
-     * @param _selectedCmdUUID  UUID of the selected command
+     * @param _uuid UUID of the calling command
+     * @param _instanceKey instance key
+     * @param _selectedCmdUUID UUID of the selected command
      * @throws EFapsException on error
      */
     public ContentContainerPage(final UUID _uuid,
@@ -155,10 +157,10 @@ public class ContentContainerPage
     }
 
     /**
-     * @param _uuid                 UUID of the command
-     * @param _instanceKey          oid
-     * @param _selectedCmdUUID      UUID of the selected command
-     * @param _addStructurBrowser   add a StructurBrowser to this page
+     * @param _uuid UUID of the command
+     * @param _instanceKey oid
+     * @param _selectedCmdUUID UUID of the selected command
+     * @param _addStructurBrowser add a StructurBrowser to this page
      * @throws EFapsException on error
      */
     public ContentContainerPage(final UUID _uuid,
@@ -268,6 +270,7 @@ public class ContentContainerPage
      * @return a AbstractCommand
      */
     private AbstractCommand getCommand(final UUID _uuid)
+        throws CacheReloadException
     {
         AbstractCommand cmd = Command.get(_uuid);
         if (cmd == null) {

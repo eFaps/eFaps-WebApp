@@ -18,7 +18,6 @@
  * Last Changed By: $Author$
  */
 
-
 package org.efaps.ui.wicket.components.menutree;
 
 import java.util.ArrayList;
@@ -30,7 +29,7 @@ import org.apache.wicket.extensions.markup.html.repeater.tree.ITreeProvider;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
-
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * TODO comment!
@@ -49,24 +48,25 @@ public class TreeMenuModel
 
     private List<UIMenuItem> rootItems = new ArrayList<UIMenuItem>();
 
-
     /**
      * @param _commandUUID
      * @param _oid
      */
     public TreeMenuModel(final UUID _commandUUID,
                          final String _oid)
+        throws CacheReloadException
     {
         setModel(_commandUUID, _oid);
     }
 
-    public void setModel(final UUID _commandUUID, final String _oid)
+    public void setModel(final UUID _commandUUID,
+                         final String _oid)
+        throws CacheReloadException
     {
         this.rootItems.clear();
         final UIMenuItem model = new UIMenuItem(_commandUUID, _oid);
         this.rootItems.add(model);
     }
-
 
     /**
      * Setter method for instance variable {@link #roots}.
@@ -88,7 +88,8 @@ public class TreeMenuModel
         return this.rootItems;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
      * @see org.apache.wicket.model.IDetachable#detach()
      */
     @Override
@@ -98,8 +99,11 @@ public class TreeMenuModel
 
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.wicket.extensions.markup.html.repeater.tree.ITreeProvider#getRoots()
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.apache.wicket.extensions.markup.html.repeater.tree.ITreeProvider#
+     * getRoots()
      */
     @Override
     public Iterator<? extends UIMenuItem> getRoots()
@@ -107,8 +111,11 @@ public class TreeMenuModel
         return this.rootItems.iterator();
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.wicket.extensions.markup.html.repeater.tree.ITreeProvider#hasChildren(java.lang.Object)
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.apache.wicket.extensions.markup.html.repeater.tree.ITreeProvider#
+     * hasChildren(java.lang.Object)
      */
     @Override
     public boolean hasChildren(final UIMenuItem _menuItem)
@@ -116,8 +123,11 @@ public class TreeMenuModel
         return _menuItem.hasChildren();
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.wicket.extensions.markup.html.repeater.tree.ITreeProvider#getChildren(java.lang.Object)
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.apache.wicket.extensions.markup.html.repeater.tree.ITreeProvider#
+     * getChildren(java.lang.Object)
      */
     @Override
     public Iterator<? extends UIMenuItem> getChildren(final UIMenuItem _node)
@@ -125,8 +135,11 @@ public class TreeMenuModel
         return _node.getChildren().iterator();
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.wicket.extensions.markup.html.repeater.tree.ITreeProvider#model(java.lang.Object)
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.apache.wicket.extensions.markup.html.repeater.tree.ITreeProvider#
+     * model(java.lang.Object)
      */
     @Override
     public IModel<UIMenuItem> model(final UIMenuItem _object)

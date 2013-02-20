@@ -34,6 +34,7 @@ import org.efaps.ui.wicket.components.menu.ajax.SubmitItem;
 import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.models.objects.UISearchItem;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * TODO comment!
@@ -54,9 +55,11 @@ public class DropDownMenuPanel
     /**
      * @param _wicketId wicketId of this Panel
      * @param _model model for this Panel
+     * @throws CacheReloadException on error
      */
     public DropDownMenuPanel(final String _wicketId,
                              final IModel<?> _model)
+        throws CacheReloadException
     {
         super(_wicketId, _model);
         add(new DropDownMenuBehavior());
@@ -77,7 +80,7 @@ public class DropDownMenuPanel
                                         new UIModel<UIMenuItem>(childItem));
                     } else if (childItem.getTarget() == Target.POPUP) {
                         item = new PopupItem(itemRepeater.newChildId(), new UIModel<UIMenuItem>(childItem));
-                    } else if (childItem.getTarget() == Target.HIDDEN ) {
+                    } else if (childItem.getTarget() == Target.HIDDEN) {
                         item = new ExecItem(itemRepeater.newChildId(), new UIModel<UIMenuItem>(childItem));
                     } else {
                         item = new LinkItem(itemRepeater.newChildId(), new UIModel<UIMenuItem>(childItem));

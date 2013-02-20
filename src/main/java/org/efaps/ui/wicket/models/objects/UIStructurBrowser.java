@@ -63,6 +63,7 @@ import org.efaps.ui.wicket.models.cell.UIStructurBrowserTableCell;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 import org.efaps.util.RequestHandler;
+import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1277,8 +1278,10 @@ public class UIStructurBrowser
      * Get the Admin Object that contains the events that must be executed.
      *
      * @return the Admin Object that contains the events to be executed
+     * @throws CacheReloadException on error
      */
     protected AbstractAdminObject getObject4Event()
+        throws CacheReloadException
     {
         return this.getCommand();
     }

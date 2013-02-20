@@ -46,6 +46,7 @@ import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * Class extends a Link to work inside a content container. Used also by the
@@ -113,27 +114,31 @@ public class AjaxMenuContentLink
         public void onEvent(final Component _component,
                             final AjaxRequestTarget _target)
         {
-            final UITableCell cellmodel = (UITableCell) getComponent().getDefaultModelObject();
-            Instance instance = null;
-            if (cellmodel.getInstanceKey() != null) {
+            try {
+                final UITableCell cellmodel = (UITableCell) getComponent().getDefaultModelObject();
+                Instance instance = null;
+                if (cellmodel.getInstanceKey() != null) {
 
-                Menu menu = null;
-                try {
-                    instance = cellmodel.getInstance();
-                    menu = Menu.getTypeTreeMenu(instance.getType());
-                    // CHECKSTYLE:OFF
-                } catch (final Exception e) {
-                    throw new RestartResponseException(new ErrorPage(e));
-                } // CHECKSTYLE:ON
-                if (menu == null) {
-                    final Exception ex = new Exception("no tree menu defined for type " + instance.getType().getName());
-                    throw new RestartResponseException(new ErrorPage(ex));
+                    Menu menu = null;
+                    try {
+                        instance = cellmodel.getInstance();
+                        menu = Menu.getTypeTreeMenu(instance.getType());
+                        // CHECKSTYLE:OFF
+                    } catch (final Exception e) {
+                        throw new RestartResponseException(new ErrorPage(e));
+                    } // CHECKSTYLE:ON
+                    if (menu == null) {
+                        final Exception ex = new Exception("no tree menu defined for type " + instance.getType().getName());
+                        throw new RestartResponseException(new ErrorPage(ex));
+                    }
+                    final Page page = getPage();
+                    if (page instanceof AbstractContentPage) {
+                        final MenuTree menutree = (MenuTree) _component;
+                        menutree.addChildMenu(menu.getUUID(), cellmodel.getInstanceKey(), _target);
+                    }
                 }
-                final Page page = getPage();
-                if (page instanceof AbstractContentPage) {
-                    final MenuTree menutree = (MenuTree) _component;
-                    menutree.addChildMenu(menu.getUUID(), cellmodel.getInstanceKey(), _target);
-                }
+            } catch (final CacheReloadException e) {
+                throw new RestartResponseException(new ErrorPage(e));
             }
         }
     }

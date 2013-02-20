@@ -42,6 +42,7 @@ import org.efaps.db.InstanceQuery;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +50,8 @@ import org.slf4j.LoggerFactory;
  * Class is used as a model for a classification.
  *
  * @author The eFaps Team
- * @version $Id$
+ * @version $Id: UIClassification.java 8530 2013-01-16 01:56:29Z jan@moxter.net
+ *          $
  */
 public class UIClassification
     implements IFormElement, IClusterable
@@ -61,8 +63,8 @@ public class UIClassification
     private static final long serialVersionUID = 1L;
 
     /**
-     * Static part of the key to get the Information stored in the session
-     * in relation to this StruturBrowser.
+     * Static part of the key to get the Information stored in the session in
+     * relation to this StruturBrowser.
      */
     private static final String USERSESSIONKEY = "org.efaps.ui.wicket.models.objects.UIClassification.UserSessionKey";
 
@@ -102,8 +104,9 @@ public class UIClassification
     private final UUID classificationUUID;
 
     /**
-     * List of classification UUIDs that are connected to the given base instance. This variable is used only for the
-     * root. In any instances it will be empty.
+     * List of classification UUIDs that are connected to the given base
+     * instance. This variable is used only for the root. In any instances it
+     * will be empty.
      */
     private final Set<UUID> selectedUUID = new HashSet<UUID>();
 
@@ -123,7 +126,8 @@ public class UIClassification
     private final TargetMode mode;
 
     /**
-     * Stores the name of the command that called this object. Needed for getting DBProperties.
+     * Stores the name of the command that called this object. Needed for
+     * getting DBProperties.
      */
     private String commandName;
 
@@ -137,13 +141,14 @@ public class UIClassification
      */
     private boolean expanded;
 
-
     /**
      * @param _field FielClassification
      * @param _uiObject ui object
+     * @throws CacheReloadException on error
      */
     public UIClassification(final Field _field,
                             final AbstractUIObject _uiObject)
+        throws CacheReloadException
     {
         this.multipleSelect = ((Classification) Type.get(_field.getClassificationName())).isMultipleSelect();
         this.classificationUUID = Type.get(_field.getClassificationName()).getUUID();
@@ -158,9 +163,11 @@ public class UIClassification
      *
      * @param _uuid UUID of the classification type
      * @param _mode target mode
+     * @throws CacheReloadException on error
      */
     private UIClassification(final UUID _uuid,
                              final TargetMode _mode)
+        throws CacheReloadException
     {
         this.multipleSelect = ((Classification) Type.get(_uuid)).isMultipleSelect();
         this.fieldId = 0;
@@ -253,8 +260,11 @@ public class UIClassification
 
     /**
      * Execute the model.
+     *
+     * @throws CacheReloadException on error
      */
     public void execute()
+        throws CacheReloadException
     {
         this.initialized = true;
         final Classification type = (Classification) Type.get(this.classificationUUID);
@@ -322,10 +332,12 @@ public class UIClassification
      * @param _parent parent
      * @param _children children
      * @param _selectedUUID set of selected classification uuids
+     * @throws CacheReloadException on error
      */
     private void addChildren(final UIClassification _parent,
                              final Set<Classification> _children,
                              final Set<UUID> _selectedUUID)
+        throws CacheReloadException
     {
         for (final Classification child : _children) {
             final UIClassification childUI = new UIClassification(child.getUUID(), _parent.mode);
@@ -338,6 +350,7 @@ public class UIClassification
         }
         Collections.sort(_parent.children, new Comparator<UIClassification>()
         {
+
             public int compare(final UIClassification _class0,
                                final UIClassification _class2)
             {
@@ -474,8 +487,9 @@ public class UIClassification
     }
 
     /**
-     * Method to add a uuid to the set of selected classifications. This method should only be called on a root
-     * classification. e.;g. on cretae mode to set the default selected classifications.
+     * Method to add a uuid to the set of selected classifications. This method
+     * should only be called on a root classification. e.;g. on cretae mode to
+     * set the default selected classifications.
      *
      * @param _uuid uuid to set as selected
      */
@@ -500,8 +514,12 @@ public class UIClassification
         }
         final Field field = Field.get(clazz.getFieldId());
         if (field != null) {
-            ret = field.getCollection().getUUID().toString() + "-" + field.getName() + "-"
-                            + UIClassification.USERSESSIONKEY;
+            try {
+                ret = field.getCollection().getUUID().toString() + "-" + field.getName() + "-"
+                                + UIClassification.USERSESSIONKEY;
+            } catch (final CacheReloadException e) {
+                UIClassification.LOG.error("Cannot generate CacheKey", e);
+            }
         }
         return ret;
     }

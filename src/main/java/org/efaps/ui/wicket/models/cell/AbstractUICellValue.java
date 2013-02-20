@@ -44,6 +44,7 @@ import org.efaps.ui.wicket.components.values.StringField;
 import org.efaps.ui.wicket.models.AbstractInstanceObject;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * TODO comment!
@@ -96,9 +97,11 @@ public abstract class AbstractUICellValue
     /**
      * @see org.efaps.ui.wicket.models.AbstractInstanceObject#hasInstanceManager()
      * @return false
+     * @throws CacheReloadException on error
      */
     @Override
     public boolean hasInstanceManager()
+        throws CacheReloadException
     {
         return this.parent != null ? this.parent.hasInstanceManager() : false;
     }

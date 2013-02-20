@@ -35,6 +35,7 @@ import org.efaps.ui.wicket.behaviors.update.IRemoteUpdateable;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,15 +93,16 @@ public class MenuTree
     /**
      * Constructor used for a new MenuTree.
      *
-     * @param _wicketId         wicket id of the component
-     * @param _commandUUID      uuid of the command
-     * @param _oid              oid
-     * @param _selectCmdUUID    UUID of the selected Command
+     * @param _wicketId wicket id of the component
+     * @param _commandUUID uuid of the command
+     * @param _oid oid
+     * @param _selectCmdUUID UUID of the selected Command
      */
     public MenuTree(final String _wicketId,
                     final UUID _commandUUID,
                     final String _oid,
                     final UUID _selectCmdUUID)
+        throws CacheReloadException
     {
         super(_wicketId, new TreeMenuModel(_commandUUID, _oid));
 
@@ -115,7 +117,8 @@ public class MenuTree
      * Render to the web response the eFapsContentReference.
      *
      * @param _response Response object
-     */@Override
+     */
+    @Override
     public void renderHead(final IHeaderResponse _response)
     {
         super.renderHead(_response);
@@ -124,6 +127,7 @@ public class MenuTree
 
     /**
      * Set the default selected item.
+     *
      * @param _selectCmdUUID UUID of the selected Command
      */
     public void setDefault(final UUID _selectCmdUUID)
@@ -200,13 +204,14 @@ public class MenuTree
     }
 
     /**
-     * @param _commandUUID  UUID of the command
-     * @param _instanceKey  instance key
-     * @param _target       the ajax target to use
+     * @param _commandUUID UUID of the command
+     * @param _instanceKey instance key
+     * @param _target the ajax target to use
      */
     public void addChildMenu(final UUID _commandUUID,
                              final String _instanceKey,
                              final AjaxRequestTarget _target)
+        throws CacheReloadException
     {
         final UIMenuItem menuItem = (UIMenuItem) getSelected().getDefaultModelObject();
         boolean old = false;

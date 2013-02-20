@@ -50,10 +50,12 @@ import org.efaps.ui.wicket.models.AbstractInstanceObject;
 import org.efaps.ui.wicket.models.cell.UIPicker;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * @author The eFaps Team
- * @version $Id$
+ * @version $Id: AbstractUIObject.java 8237 2012-11-23 04:37:45Z jan@moxter.net
+ *          $
  */
 public abstract class AbstractUIObject
     extends AbstractInstanceObject
@@ -139,6 +141,7 @@ public abstract class AbstractUIObject
      */
     public AbstractUIObject(final UUID _commandUUID,
                             final String _instanceKey)
+        throws CacheReloadException
     {
         this(_commandUUID, _instanceKey, null);
     }
@@ -148,11 +151,12 @@ public abstract class AbstractUIObject
      *
      * @param _commandUUID UUID for this Model
      * @param _instanceKey instance id for this Model
-     * @param _openerId id of the opener
+     * @param _openerId id of the opener UIClassification
      */
     public AbstractUIObject(final UUID _commandUUID,
                             final String _instanceKey,
                             final String _openerId)
+        throws CacheReloadException
     {
         super(_instanceKey);
         initialize(_commandUUID, _openerId);
@@ -166,6 +170,7 @@ public abstract class AbstractUIObject
      */
     private void initialize(final UUID _commandUUID,
                             final String _openerId)
+        throws CacheReloadException
     {
         this.openerId = _openerId;
         final AbstractCommand command = getCommand(_commandUUID);
@@ -205,9 +210,11 @@ public abstract class AbstractUIObject
      * @see org.efaps.ui.wicket.models.AbstractInstanceObject#hasInstanceManager()
      * @return true if related command has got a event of type
      *         <code>UI_INSTANCEMANAGER</code> else false
+     * @throws CacheReloadException on eror
      */
     @Override
     public boolean hasInstanceManager()
+        throws CacheReloadException
     {
         return getCommand().hasEvents(EventType.UI_INSTANCEMANAGER);
     }
@@ -229,9 +236,10 @@ public abstract class AbstractUIObject
      * let to the construction of this model.
      *
      * @see #callingCmdUUID
-     * @return the calling CommandAbstract
+     * @return the calling CommandAbstract UIClassification
      */
     public AbstractCommand getCallingCommand()
+        throws CacheReloadException
     {
         AbstractCommand cmd = Command.get(this.callingCmdUUID);
         if (cmd == null) {
@@ -269,6 +277,7 @@ public abstract class AbstractUIObject
      * @see #command
      */
     public AbstractCommand getCommand()
+        throws CacheReloadException
     {
         AbstractCommand cmd = Command.get(this.cmdUUID);
         if (cmd == null) {
@@ -288,6 +297,7 @@ public abstract class AbstractUIObject
      * @return found command / menu instance, or <code>null</code> if not found
      */
     protected AbstractCommand getCommand(final UUID _uuid)
+        throws CacheReloadException
     {
         AbstractCommand cmd = Command.get(_uuid);
         if (cmd == null) {
@@ -381,9 +391,9 @@ public abstract class AbstractUIObject
      */
     public String getTitle()
     {
-        String title = DBProperties.getProperty(this.getCommand().getName() + ".Title");
+        String title = "";
         try {
-
+            title = DBProperties.getProperty(this.getCommand().getName() + ".Title");
             if ((title != null) && (getInstance() != null)) {
                 final PrintQuery print = new PrintQuery(getInstance());
                 final ValueParser parser = new ValueParser(new StringReader(title));
@@ -395,22 +405,24 @@ public abstract class AbstractUIObject
                 // WebApp-Configuration
                 final SystemConfiguration config = SystemConfiguration.get(
                                 UUID.fromString("50a65460-2d08-4ea8-b801-37594e93dad5"));
-                //Administration
-                if (config != null && config.getAttributeValueAsBoolean("ShowOID")
-                                && Context.getThreadContext().getPerson()
-                                .isAssigned(Role.get(UUID.fromString("1d89358d-165a-4689-8c78-fc625d37aacd")))) {
-                    title = title + " " +  getInstance().getOid();
+                // Administration
+                if (config != null
+                                && config.getAttributeValueAsBoolean("ShowOID")
+                                && Context.getThreadContext()
+                                                .getPerson()
+                                                .isAssigned(Role.get(UUID
+                                                                .fromString("1d89358d-165a-4689-8c78-fc625d37aacd")))) {
+                    title = title + " " + getInstance().getOid();
                 }
             }
         } catch (final ParseException e) {
             throw new RestartResponseException(new ErrorPage(new EFapsException(this.getClass(), "",
                             "Error reading the Title")));
-            //CHECKSTYLE:OFF
+            // CHECKSTYLE:OFF
         } catch (final Exception e) {
             throw new RestartResponseException(new ErrorPage(new EFapsException(this.getClass(), "",
                             "Error reading the Title")));
-        } //CHECKSTYLE:ON
-
+        } // CHECKSTYLE:ON
         return title;
     }
 

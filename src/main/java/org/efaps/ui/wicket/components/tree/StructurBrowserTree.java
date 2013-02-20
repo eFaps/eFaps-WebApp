@@ -22,6 +22,7 @@ package org.efaps.ui.wicket.components.tree;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
+import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.AjaxCallListener;
@@ -51,6 +52,7 @@ import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * This class renders a Tree, which loads the children asynchron.<br>
@@ -79,7 +81,7 @@ public class StructurBrowserTree
 
     /**
      * @param _wicketId WicketId of the Tree
-     * @param _model    Model for this Tree
+     * @param _model Model for this Tree
      */
     public StructurBrowserTree(final String _wicketId,
                                final IModel<UIStructurBrowser> _model)
@@ -173,7 +175,7 @@ public class StructurBrowserTree
                     if (uiStrBrws.getCommand().getTargetStructurBrowserField() != null) {
                         page = new StructurBrowserPage(uiStrBrws.getCommandUUID(),
                                         uiStrBrws.getInstanceKey(), getPage()
-                                                  .getPageReference());
+                                                        .getPageReference());
                     } else {
                         page = new TablePage(uiStrBrws.getCommandUUID(), uiStrBrws.getInstanceKey(), getPage()
                                         .getPageReference());
@@ -203,14 +205,18 @@ public class StructurBrowserTree
         @Override
         protected void onEvent(final AjaxRequestTarget _target)
         {
-            final UIStructurBrowser uiStrBrws = (UIStructurBrowser) getComponent().getDefaultModelObject();
-            final MenuTree menutree = ((ContentContainerPage) getPage()).getMenuTree();
-            final TreeMenuModel treeProvider = (TreeMenuModel) menutree.getProvider();
-            treeProvider.setModel(uiStrBrws.getCommandUUID(), uiStrBrws.getInstanceKey());
-            treeProvider.getRoots().next().setHeader(true);
-            menutree.setDefault(null);
-            menutree.setSelected(null);
-            _target.add(menutree);
+            try {
+                final UIStructurBrowser uiStrBrws = (UIStructurBrowser) getComponent().getDefaultModelObject();
+                final MenuTree menutree = ((ContentContainerPage) getPage()).getMenuTree();
+                final TreeMenuModel treeProvider = (TreeMenuModel) menutree.getProvider();
+                treeProvider.setModel(uiStrBrws.getCommandUUID(), uiStrBrws.getInstanceKey());
+                treeProvider.getRoots().next().setHeader(true);
+                menutree.setDefault(null);
+                menutree.setSelected(null);
+                _target.add(menutree);
+            } catch (final CacheReloadException e) {
+                throw new RestartResponseException(new ErrorPage(e));
+            }
         }
 
         /*
@@ -226,11 +232,11 @@ public class StructurBrowserTree
             final AjaxCallListener listener = new AjaxCallListener();
             final StringBuilder js = new StringBuilder();
             js.append("dijit.registry.byId(\"").append(((ContentContainerPage) getPage()).getCenterPanelId())
-                .append("\").set(\"content\", dojo.create(\"iframe\", {")
-                .append("\"src\": \"")
-                .append(getComponent().urlFor(ILinkListener.INTERFACE, new PageParameters()))
-                .append("\",\"style\": \"border: 0; width: 100%; height: 99%\"")
-                .append("})); ");
+                            .append("\").set(\"content\", dojo.create(\"iframe\", {")
+                            .append("\"src\": \"")
+                            .append(getComponent().urlFor(ILinkListener.INTERFACE, new PageParameters()))
+                            .append("\",\"style\": \"border: 0; width: 100%; height: 99%\"")
+                            .append("})); ");
             listener.onAfter(js);
             _attributes.getAjaxCallListeners().add(listener);
         }

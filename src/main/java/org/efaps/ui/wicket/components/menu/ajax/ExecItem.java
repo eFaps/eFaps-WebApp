@@ -92,8 +92,9 @@ public class ExecItem
         protected void onEvent(final AjaxRequestTarget _target)
         {
             final UIMenuItem model = (UIMenuItem) getComponent().getDefaultModelObject();
-            final AbstractCommand command = model.getCommand();
+            AbstractCommand command = null;
             try {
+                command = model.getCommand();
                 final List<Return> rets = model.executeEvents(ParameterValues.OTHERS, this);
                 if (command.isTargetShowFile()) {
                     final Object object = rets.get(0).get(ReturnValues.VALUES);
@@ -105,7 +106,7 @@ public class ExecItem
             } catch (final EFapsException e) {
                 throw new RestartResponseException(new ErrorPage(e));
             }
-            if (command.isNoUpdateAfterCmd()) {
+            if (command != null && command.isNoUpdateAfterCmd()) {
                 getRequestCycle().replaceAllRequestHandlers(new EmptyRequestHandler());
             }
         }

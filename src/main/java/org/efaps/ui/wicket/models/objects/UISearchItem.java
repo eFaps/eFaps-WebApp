@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2012 The eFaps Team
+ * Copyright 2003 - 2013 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ package org.efaps.ui.wicket.models.objects;
 import java.util.UUID;
 
 import org.efaps.admin.ui.Search;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * @author The eFaps Team
@@ -44,17 +45,22 @@ public class UISearchItem
 
     /**
      * @param _uuid UUID
+     * @throws CacheReloadException on error
      */
     public UISearchItem(final UUID _uuid)
+        throws CacheReloadException
     {
         this(_uuid, null);
     }
 
     /**
      * @param _uuid UUID
+     * @param _instanceKey key to the instance
+     * @throws CacheReloadException on error
      */
     public UISearchItem(final UUID _uuid,
                         final String _instanceKey)
+        throws CacheReloadException
     {
         super(_uuid, _instanceKey);
         this.searchuuid = _uuid;
@@ -62,8 +68,10 @@ public class UISearchItem
 
     /**
      * @return the Search
+     * @throws CacheReloadException on error
      */
     public Search getSearch()
+        throws CacheReloadException
     {
         return Search.get(this.searchuuid);
     }

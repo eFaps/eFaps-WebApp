@@ -55,7 +55,6 @@ public class LinkItem
     extends Link<UIMenuItem>
     implements IRecent
 {
-
     /**
      * Needed for serialization.
      */
@@ -81,9 +80,8 @@ public class LinkItem
     {
         ((EFapsSession) getSession()).addRecent(this);
         final UIMenuItem model = super.getModelObject();
-
-        final AbstractCommand command = model.getCommand();
         try {
+            final AbstractCommand command = model.getCommand();
             if (command.getTargetTable() != null) {
                 WebPage page;
                 if (command.getTargetStructurBrowserField() != null) {

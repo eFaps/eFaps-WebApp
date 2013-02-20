@@ -18,7 +18,6 @@
  * Last Changed By: $Author$
  */
 
-
 package org.efaps.ui.wicket.components.menu;
 
 import org.apache.wicket.markup.ComponentTag;
@@ -31,7 +30,7 @@ import org.efaps.ui.wicket.behaviors.dojo.PopupMenuBarItemBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.PopupMenuItemBehavior;
 import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
-
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * TODO comment!
@@ -55,10 +54,11 @@ public class PopupMenuPanel
 
     /**
      * @param _wicketId wicketId of this Panel
-     * @param _model    model for this Panel
+     * @param _model model for this Panel
      */
     public PopupMenuPanel(final String _wicketId,
                           final IModel<?> _model)
+        throws CacheReloadException
     {
         this(_wicketId, _model, true);
     }
@@ -66,6 +66,7 @@ public class PopupMenuPanel
     public PopupMenuPanel(final String _wicketId,
                           final IModel<?> _model,
                           final boolean _isMenuBarItem)
+        throws CacheReloadException
     {
         super(_wicketId, _model);
         this.menuBarItem = _isMenuBarItem;
@@ -76,7 +77,9 @@ public class PopupMenuPanel
         } else {
             add(new PopupMenuItemBehavior());
         }
-        add(new WebComponent("label", Model.of(menuItem)) {
+        add(new WebComponent("label", Model.of(menuItem))
+        {
+
             private static final long serialVersionUID = 1L;
 
             @Override

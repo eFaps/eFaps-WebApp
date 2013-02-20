@@ -128,7 +128,7 @@ public class MainPage
     /**
      * Constructor adding all Components to this Page.
      */
-    public MainPage()
+    public MainPage() throws CacheReloadException
     {
         super();
         // add the debug bar for administration role, in case of an erro only log it
@@ -203,9 +203,13 @@ public class MainPage
                 public void onComponentTagBody(final MarkupStream _markupStream,
                                                   final ComponentTag _openTag)
                 {
-                    replaceComponentTagBody(_markupStream, _openTag,
-                                    SetMessageStatusBehavior.getLabel(MessageStatusHolder.getUnReadCount(usrId),
-                                                    MessageStatusHolder.getReadCount(usrId)));
+                    try {
+                        replaceComponentTagBody(_markupStream, _openTag,
+                                        SetMessageStatusBehavior.getLabel(MessageStatusHolder.getUnReadCount(usrId),
+                                                        MessageStatusHolder.getReadCount(usrId)));
+                    } catch (final CacheReloadException e) {
+                        MainPage.LOG.error("Cannot replace Component tag");
+                    }
                 }
             };
             add(alert);

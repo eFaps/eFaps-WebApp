@@ -28,6 +28,9 @@ import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.model.IModel;
 import org.efaps.ui.wicket.models.objects.UIClassification;
+import org.efaps.util.cache.CacheReloadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO comment!
@@ -38,6 +41,11 @@ import org.efaps.ui.wicket.models.objects.UIClassification;
 public class ClassificationPath
     extends WebComponent
 {
+
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(ClassificationPath.class);
 
     /**
      * Needed for serialization.
@@ -68,7 +76,11 @@ public class ClassificationPath
         final StringBuilder html = new StringBuilder();
         final UIClassification uiclass = (UIClassification) getDefaultModelObject();
         if (!uiclass.isInitialized()) {
-            uiclass.execute();
+            try {
+                uiclass.execute();
+            } catch (final CacheReloadException e) {
+                ClassificationPath.LOG.error("Error for execute", e);
+            }
         }
         final List<UIClassification> leafs = new ArrayList<UIClassification>();
 

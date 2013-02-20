@@ -40,6 +40,7 @@ import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.models.objects.UISearchItem;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * TODO comment!
@@ -64,10 +65,11 @@ public class MenuBarPanel
     /**
      * @param _wicketId wicketId of this Panel
      * @param _model model for this Panel
-     * @throws EFapsException
+     * @throws CacheReloadException on error
      */
     public MenuBarPanel(final String _wicketId,
                         final IModel<?> _model)
+        throws CacheReloadException
     {
         super(_wicketId, _model);
         add(new MenuBarBehavior());

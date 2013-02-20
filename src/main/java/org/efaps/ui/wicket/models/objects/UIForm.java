@@ -62,6 +62,7 @@ import org.efaps.ui.wicket.models.cell.UIHiddenCell;
 import org.efaps.ui.wicket.models.cell.UISetColumnHeader;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 /**
  * Class is used to instantiate a form from eFaps into a Form with all Values
  * for the wicket webapp.
@@ -132,9 +133,11 @@ public class UIForm
      *
      * @param _commandUUID UUID of the command
      * @param _instanceKey oid for this model
+     * @throws CacheReloadException on error
      */
     public UIForm(final UUID _commandUUID,
                   final String _instanceKey)
+        throws CacheReloadException
     {
         this(_commandUUID, _instanceKey, null);
     }
@@ -145,10 +148,12 @@ public class UIForm
      * @param _commandUUID UUID of the command
      * @param _instanceKey oid for this model
      * @param _openerId id of the opener
+     * @throws CacheReloadException on error
      */
     public UIForm(final UUID _commandUUID,
                   final String _instanceKey,
                   final String _openerId)
+        throws CacheReloadException
     {
         super(_commandUUID, _instanceKey, _openerId);
         final AbstractCommand command = super.getCommand();
@@ -709,8 +714,10 @@ public class UIForm
      * Method to get the type that will be created by a form. A method must be
      * used so it can be overwritten.
      * @return Type to be created
+     * @throws CacheReloadException on error
      */
     protected Type getCreateTargetType()
+        throws CacheReloadException
     {
         return getCommand().getTargetCreateType();
     }
@@ -719,9 +726,11 @@ public class UIForm
      * Method to get the Form from eFaps using the instance variable
      * {@link #formUUID}.
      *
-     * @return From from eFaps
+     * @return Form from eFaps
+     * @throws CacheReloadException on error
      */
     public Form getForm()
+        throws CacheReloadException
     {
         return Form.get(this.formUUID);
     }

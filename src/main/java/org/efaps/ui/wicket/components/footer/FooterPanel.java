@@ -39,6 +39,9 @@ import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.dialog.DialogPage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.util.cache.CacheReloadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class renders the Footer under a WebForm or WebTable.<br>
@@ -56,6 +59,11 @@ public class FooterPanel
      * Reference to the stylesheet.
      */
     public static final EFapsContentReference CSS = new EFapsContentReference(FooterPanel.class, "FooterPanel.css");
+
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(FooterPanel.class);
 
     /**
      * Needed for serialization.
@@ -81,11 +89,13 @@ public class FooterPanel
      * @param _model Model of the Component
      * @param _modalWindow ModalWindowContainer containing this FooterPanel
      * @param _form FormContainer of the Page (needed to submit the Form)
+     * @throws CacheReloadException on error
      */
     public FooterPanel(final String _wicketId,
                        final IModel<?> _model,
                        final ModalWindowContainer _modalWindow,
                        final FormContainer _form)
+        throws CacheReloadException
     {
         super(_wicketId, _model);
         this.modalWindow = _modalWindow;
@@ -95,7 +105,8 @@ public class FooterPanel
         // if we want a SucessDialog we add it here, it will be opened after
         // closing the window
         if ("true".equals(uiObject.getCommand().getProperty("SuccessDialog"))) {
-            FooterPanel.this.modalWindow.setWindowClosedCallback(new WindowClosedCallback() {
+            FooterPanel.this.modalWindow.setWindowClosedCallback(new WindowClosedCallback()
+            {
 
                 private static final long serialVersionUID = 1L;
 
@@ -108,15 +119,24 @@ public class FooterPanel
                         FooterPanel.this.modalWindow.setWidthUnit("em");
                         FooterPanel.this.modalWindow.setHeightUnit("em");
 
-                        FooterPanel.this.modalWindow.setPageCreator(new ModalWindow.PageCreator() {
+                        FooterPanel.this.modalWindow.setPageCreator(new ModalWindow.PageCreator()
+                        {
 
                             private static final long serialVersionUID = 1L;
 
                             public Page createPage()
                             {
-                                return new DialogPage(((AbstractContentPage) getPage()).getPageReference(),
-                                                uiObject.getCommand().getName()
-                                                + ".Success", false, false);
+                                Page ret = null;
+
+                                try {
+                                    ret = new DialogPage(((AbstractContentPage) getPage()).getPageReference(),
+                                                    uiObject.getCommand().getName()
+                                                                    + ".Success", false, false);
+                                } catch (final CacheReloadException e) {
+                                    FooterPanel.LOG.error("Error on instanciation of page", e);
+                                }
+
+                                return ret;
                             }
                         });
 
@@ -145,23 +165,23 @@ public class FooterPanel
 
         if (uiObject.hasTargetCmd()) {
             final Button button = new Button("createeditsearch",
-                                             new AjaxSubmitCloseLink(Button.LINKID, uiObject, _form),
-                                             label, Button.ICON.NEXT.getReference());
+                            new AjaxSubmitCloseLink(Button.LINKID, uiObject, _form),
+                            label, Button.ICON.NEXT.getReference());
             this.add(button);
         } else if ((uiObject.isSubmit() && uiObject instanceof UITable) || !uiObject.isSearchMode()) {
             final Button button = new Button("createeditsearch",
-                                             new AjaxSubmitCloseLink(Button.LINKID, uiObject, _form),
-                                             label, Button.ICON.ACCEPT.getReference());
+                            new AjaxSubmitCloseLink(Button.LINKID, uiObject, _form),
+                            label, Button.ICON.ACCEPT.getReference());
             this.add(button);
         } else if (uiObject.isSearchMode() && uiObject instanceof UIForm) {
             final Button button = new Button("createeditsearch", new SearchSubmitLink(Button.LINKID, _model, _form),
-                                              label, Button.ICON.NEXT.getReference());
+                            label, Button.ICON.NEXT.getReference());
             this.add(button);
         } else {
             closelabelkey = "Close";
             label = getLabel(uiObject.getCommand().getName(), "Revise");
             final Button button = new Button("createeditsearch", new AjaxReviseLink(Button.LINKID, uiObject),
-                                             label, Button.ICON.PREVIOUS.getReference());
+                            label, Button.ICON.PREVIOUS.getReference());
             add(button);
         }
 
@@ -176,7 +196,7 @@ public class FooterPanel
         if (uiObject.isPartOfWizardCall() && uiObject.isRenderRevise()) {
             label = getLabel(uiObject.getCommand().getName(), "Revise");
             final Button prev = new Button("prev", new AjaxReviseLink(Button.LINKID, uiObject),
-                                           label, Button.ICON.PREVIOUS.getReference());
+                            label, Button.ICON.PREVIOUS.getReference());
             this.add(prev);
         } else {
             add(new WebMarkupContainer("prev").setVisible(false));
@@ -187,7 +207,8 @@ public class FooterPanel
      * Render to the web response the eFapsContentReference.
      *
      * @param _response Response object
-     */@Override
+     */
+    @Override
     public void renderHead(final IHeaderResponse _response)
     {
         super.renderHead(_response);

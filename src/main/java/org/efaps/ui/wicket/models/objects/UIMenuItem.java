@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2012 The eFaps Team
+ * Copyright 2003 - 2013 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,11 +38,11 @@ import org.efaps.db.PrintQuery;
 import org.efaps.ui.wicket.components.modalwindow.ICmdUIObject;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
- * This class provides the Model for rendering MenuComponents in
- * {@link #org.efaps.ui.wicket.components.menu.MenuPanel} and
- * in {@link #org.efaps.ui.wicket.components.menutree.MenuTree}.
+ * This class provides the Model for rendering MenuComponents in {@link #org.efaps.ui.wicket.components.menu.MenuPanel}
+ * and in {@link #org.efaps.ui.wicket.components.menutree.MenuTree}.
  *
  * @author The eFaps Team
  * @version $Id$
@@ -58,19 +58,16 @@ public class UIMenuItem
     private static final long serialVersionUID = 505704924081527139L;
 
     /**
-     * this instance variable stores in the case that this MenuItem
-     * is part of a {@link #org.efaps.ui.wicket.components.menutree.MenuTree}
-     * if it was steped into the
-     * ancestor of this menuitem.
+     * this instance variable stores in the case that this MenuItem is part of a
+     * {@link #org.efaps.ui.wicket.components.menutree.MenuTree} if it was steped into the ancestor of this menuitem.
      *
      * @see #ancestor
      */
     private UIMenuItem ancestor;
 
     /**
-     * in the case that the MenuItem is used for a submit, setting this
-     *  to true opens a Dialog to ask the user
-     * "do you really want to..?".
+     * in the case that the MenuItem is used for a submit, setting this to true
+     * opens a Dialog to ask the user "do you really want to..?".
      */
     private boolean askUser = false;
 
@@ -80,9 +77,8 @@ public class UIMenuItem
     private final List<UIMenuItem> children = new ArrayList<UIMenuItem>();
 
     /**
-     * this instance variable stores in the case that this MenuItem is
-     * part of a {@link #org.efaps.ui.wicket.components.menutree.MenuTree}
-     * if it is selected by default and therefore the Form or Table
+     * this instance variable stores in the case that this MenuItem is part of a
+     * {@link #org.efaps.ui.wicket.components.menutree.MenuTree} if it is selected by default and therefore the Form or Table
      * connected to this MenuItem must be opened.
      */
     private boolean defaultSelected = false;
@@ -91,10 +87,9 @@ public class UIMenuItem
     private String description;
 
     /**
-     * this instance variable stores in the case that this MenuItem is
-     * part of a {@link #org.efaps.ui.wicket.components.menutree.MenuTree}
-     * if it is a header. This is
-     * needed beacuse the headers are displayed in a differen style.
+     * this instance variable stores in the case that this MenuItem is part of a
+     * {@link #org.efaps.ui.wicket.components.menutree.MenuTree} if it is a header. This is needed beacuse the headers are
+     * displayed in a differen style.
      */
     private boolean header = false;
 
@@ -108,9 +103,8 @@ public class UIMenuItem
     private String reference;
 
     /**
-     * this instance variable stores in the case that this MenuItem is part
-     * of a {@link #org.efaps.ui.wicket.components.menutree.MenuTree} if
-     * it was steped into this MenuItem.
+     * this instance variable stores in the case that this MenuItem is part of a
+     * {@link #org.efaps.ui.wicket.components.menutree.MenuTree} if it was steped into this MenuItem.
      *
      * @see #ancestor
      */
@@ -140,25 +134,29 @@ public class UIMenuItem
      */
     private UIMenuItem parent;
 
-
     /**
      * Constructor setting the UUID of this MenuItem.
      *
      * @param _uuid UUID
+     * @throws CacheReloadException on error
      */
     public UIMenuItem(final UUID _uuid)
+        throws CacheReloadException
     {
         this(_uuid, null);
     }
 
     /**
-     * Constructor setting the UUID and the key for the instance of this MenuItem.
+     * Constructor setting the UUID and the key for the instance of this
+     * MenuItem.
      *
      * @param _uuid UUID
      * @param _instanceKey instance Key
+     * @throws CacheReloadException on error
      */
     public UIMenuItem(final UUID _uuid,
                       final String _instanceKey)
+        throws CacheReloadException
     {
         super(_uuid, _instanceKey);
         initialize();
@@ -277,7 +275,8 @@ public class UIMenuItem
     }
 
     /**
-     * This is the getter method for the instance variable {@link #windowHeight} .
+     * This is the getter method for the instance variable {@link #windowHeight}
+     * .
      *
      * @return value of instance variable {@link #windowHeight}
      */
@@ -300,8 +299,11 @@ public class UIMenuItem
 
     /**
      * this method initializes this MenuItem.
+     *
+     * @throws CacheReloadException on error
      */
     private void initialize()
+        throws CacheReloadException
     {
         final AbstractCommand command = super.getCommand();
         this.image = command.getIcon();
@@ -371,7 +373,8 @@ public class UIMenuItem
     }
 
     /**
-     * This is the getter method for the instance variable {@link #defaultSelected}.
+     * This is the getter method for the instance variable
+     * {@link #defaultSelected}.
      *
      * @return value of instance variable {@link #defaultSelected}
      */
@@ -482,7 +485,6 @@ public class UIMenuItem
         this.selected = _selected;
     }
 
-
     /**
      * Getter method for the instance variable {@link #parent}.
      *
@@ -506,7 +508,8 @@ public class UIMenuItem
 
     /**
      * @param _parentItem parentitem to check
-     * @return true if this UIMenuItem is child/grandchild of the given UIMenuItem
+     * @return true if this UIMenuItem is child/grandchild of the given
+     *         UIMenuItem
      */
     public boolean isChild(final UIMenuItem _parentItem)
     {
@@ -515,8 +518,9 @@ public class UIMenuItem
 
     /**
      * Is the Childitem a child/grandchild of the Parentitem.
-     * @param _childItem    ChildItem
-     * @param _parentItem   ParentItem
+     *
+     * @param _childItem ChildItem
+     * @param _parentItem ParentItem
      * @return true if child or grandchild etc.
      */
     public boolean isChild(final UIMenuItem _childItem,

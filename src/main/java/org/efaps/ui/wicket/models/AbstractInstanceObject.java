@@ -84,7 +84,8 @@ public abstract class AbstractInstanceObject
         throws EFapsException
     {
         Instance ret = null;
-        Map<String, Instance> map = (Map<String, Instance>) Session.get().getAttribute(EFapsKey.INSTANCE_CACHEKEY.getKey());
+        Map<String, Instance> map = (Map<String, Instance>) Session.get().getAttribute(
+                        EFapsKey.INSTANCE_CACHEKEY.getKey());
         if (map == null) {
             map = new HashMap<String, Instance>();
             Session.get().setAttribute(EFapsKey.INSTANCE_CACHEKEY.getKey(), (Serializable) map);
@@ -116,8 +117,8 @@ public abstract class AbstractInstanceObject
     public abstract Instance getInstanceFromManager()
         throws EFapsException;
 
-    public abstract boolean hasInstanceManager();
-
+    public abstract boolean hasInstanceManager()
+        throws EFapsException;
 
     /**
      * Getter method for the instance variable {@link #userinterfaceId}.
@@ -132,7 +133,8 @@ public abstract class AbstractInstanceObject
     /**
      * Setter method for instance variable {@link #userinterfaceId}.
      *
-     * @param _userinterfaceId value for instance variable {@link #userinterfaceId}
+     * @param _userinterfaceId value for instance variable
+     *            {@link #userinterfaceId}
      */
 
     public void setUserinterfaceId(final String _userinterfaceId)

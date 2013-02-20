@@ -48,6 +48,7 @@ import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.ui.wicket.util.ParameterUtil;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 
 
 /**
@@ -101,24 +102,84 @@ public class SubmitItem
         @Override
         protected void onSubmit(final AjaxRequestTarget _target)
         {
-            final UIMenuItem uiMenuItem = (UIMenuItem) super.getComponent().getDefaultModelObject();
+            try {
+                final UIMenuItem uiMenuItem = (UIMenuItem) super.getComponent().getDefaultModelObject();
 
-            final IRequestParameters para = getRequest().getRequestParameters();
-            final List<StringValue> oidValues = para.getParameterValues("selectedRow");
-            final String[] oids = ParameterUtil.parameter2Array(para, "selectedRow");
-            boolean check = false;
-            if (uiMenuItem.getSubmitSelectedRows() > -1) {
-                if (uiMenuItem.getSubmitSelectedRows() > 0) {
-                    check = oidValues == null ? false : oidValues.size() == uiMenuItem.getSubmitSelectedRows();
+                final IRequestParameters para = getRequest().getRequestParameters();
+                final List<StringValue> oidValues = para.getParameterValues("selectedRow");
+                final String[] oids = ParameterUtil.parameter2Array(para, "selectedRow");
+                boolean check = false;
+                if (uiMenuItem.getSubmitSelectedRows() > -1) {
+                    if (uiMenuItem.getSubmitSelectedRows() > 0) {
+                        check = oidValues == null ? false : oidValues.size() == uiMenuItem.getSubmitSelectedRows();
+                    } else {
+                        check = oidValues == null ? false : !oidValues.isEmpty();
+                    }
                 } else {
-                    check = oidValues == null ? false : !oidValues.isEmpty();
+                    check = true;
                 }
-            } else {
-                check = true;
-            }
 
-            if (check) {
-                if (uiMenuItem.isAskUser()) {
+                if (check) {
+                    if (uiMenuItem.isAskUser()) {
+                        final ModalWindowContainer modal;
+                        if (super.getComponent().getPage() instanceof MainPage) {
+                            modal = ((MainPage) super.getComponent().getPage()).getModal();
+                        } else {
+                            modal = ((AbstractContentPage) super.getComponent().getPage()).getModal();
+                        }
+                        modal.setPageCreator(new ModalWindow.PageCreator() {
+
+                            private static final long serialVersionUID = 1L;
+
+                            public Page createPage()
+                            {
+                                Page page = null;
+                                try {
+                                    page = new DialogPage(getPage().getPageReference(), new UIModel<UIMenuItem>(
+                                                    uiMenuItem),
+                                                    oids);
+                                } catch (final EFapsException e) {
+                                    page = new ErrorPage(e);
+                                }
+                                return page;
+                            }
+                        });
+                        modal.setInitialHeight(150);
+                        modal.setInitialWidth(350);
+                        modal.show(_target);
+                    } else {
+                        final AbstractCommand command = ((UIMenuItem) super.getComponent().getDefaultModelObject())
+                                        .getCommand();
+
+                        if (command.hasEvents(EventType.UI_COMMAND_EXECUTE)) {
+                            try {
+                                if (oidValues != null) {
+                                    command.executeEvents(EventType.UI_COMMAND_EXECUTE, ParameterValues.OTHERS, oids);
+                                } else {
+                                    command.executeEvents(EventType.UI_COMMAND_EXECUTE);
+                                }
+                            } catch (final EFapsException e) {
+                                throw new RestartResponseException(new ErrorPage(e));
+                            }
+                        }
+                        final AbstractUIObject uiObject = (AbstractUIObject) getPage().getDefaultModelObject();
+                        uiObject.resetModel();
+
+                        Page page = null;
+                        try {
+                            if (uiObject instanceof UITable) {
+                                page = new TablePage(new TableModel((UITable) uiObject),
+                                                ((AbstractContentPage) getPage()).getCalledByPageReference());
+                            } else if (uiObject instanceof UIForm) {
+                                page = new FormPage(new FormModel((UIForm) uiObject),
+                                                ((AbstractContentPage) getPage()).getCalledByPageReference());
+                            }
+                        } catch (final EFapsException e) {
+                            page = new ErrorPage(e);
+                        }
+                        setResponsePage(page);
+                    }
+                } else {
                     final ModalWindowContainer modal;
                     if (super.getComponent().getPage() instanceof MainPage) {
                         modal = ((MainPage) super.getComponent().getPage()).getModal();
@@ -131,65 +192,16 @@ public class SubmitItem
 
                         public Page createPage()
                         {
-                            return new DialogPage(getPage().getPageReference(), new UIModel<UIMenuItem>(uiMenuItem),
-                                            oids);
+                            return new DialogPage(getPage().getPageReference(), "SubmitSelectedRows.fail"
+                                            + uiMenuItem.getSubmitSelectedRows(), false, false);
                         }
                     });
                     modal.setInitialHeight(150);
                     modal.setInitialWidth(350);
                     modal.show(_target);
-                } else {
-                    final AbstractCommand command = ((UIMenuItem) super.getComponent().getDefaultModelObject())
-                                    .getCommand();
-
-                    if (command.hasEvents(EventType.UI_COMMAND_EXECUTE)) {
-                        try {
-                            if (oidValues != null) {
-                                command.executeEvents(EventType.UI_COMMAND_EXECUTE, ParameterValues.OTHERS, oids);
-                            } else {
-                                command.executeEvents(EventType.UI_COMMAND_EXECUTE);
-                            }
-                        } catch (final EFapsException e) {
-                            throw new RestartResponseException(new ErrorPage(e));
-                        }
-                    }
-                    final AbstractUIObject uiObject = (AbstractUIObject) getPage().getDefaultModelObject();
-                    uiObject.resetModel();
-
-                    Page page = null;
-                    try {
-                        if (uiObject instanceof UITable) {
-                            page = new TablePage(new TableModel((UITable) uiObject),
-                                            ((AbstractContentPage) getPage()).getCalledByPageReference());
-                        } else if (uiObject instanceof UIForm) {
-                            page = new FormPage(new FormModel((UIForm) uiObject),
-                                            ((AbstractContentPage) getPage()).getCalledByPageReference());
-                        }
-                    } catch (final EFapsException e) {
-                        page = new ErrorPage(e);
-                    }
-                    setResponsePage(page);
                 }
-            } else {
-                final ModalWindowContainer modal;
-                if (super.getComponent().getPage() instanceof MainPage) {
-                    modal = ((MainPage) super.getComponent().getPage()).getModal();
-                } else {
-                    modal = ((AbstractContentPage) super.getComponent().getPage()).getModal();
-                }
-                modal.setPageCreator(new ModalWindow.PageCreator() {
-
-                    private static final long serialVersionUID = 1L;
-
-                    public Page createPage()
-                    {
-                        return new DialogPage(getPage().getPageReference(), "SubmitSelectedRows.fail"
-                                        + uiMenuItem.getSubmitSelectedRows(), false, false);
-                    }
-                });
-                modal.setInitialHeight(150);
-                modal.setInitialWidth(350);
-                modal.show(_target);
+            } catch (final CacheReloadException e) {
+                throw new RestartResponseException(new ErrorPage(e));
             }
         }
     }
