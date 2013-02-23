@@ -201,25 +201,25 @@
        <dependency>
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-core</artifactId>
-            <version>6.5.0</version>
+            <version>6.6.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-extensions</artifactId>
-            <version>6.5.0</version>
+            <version>6.6.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-datetime</artifactId>
-            <version>6.5.0</version>
+            <version>6.6.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-devutils</artifactId>
-            <version>6.5.0</version>
+            <version>6.6.0</version>
             <scope>compile</scope>
         </dependency>
 
