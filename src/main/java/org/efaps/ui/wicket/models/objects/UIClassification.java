@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2012 The eFaps Team
+ * Copyright 2003 - 2013 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,8 +50,7 @@ import org.slf4j.LoggerFactory;
  * Class is used as a model for a classification.
  *
  * @author The eFaps Team
- * @version $Id: UIClassification.java 8530 2013-01-16 01:56:29Z jan@moxter.net
- *          $
+ * @version $Id: UIClassification.java 8530 2013-01-16 01:56:29Z jan@moxter.net$
  */
 public class UIClassification
     implements IFormElement, IClusterable
@@ -150,8 +149,9 @@ public class UIClassification
                             final AbstractUIObject _uiObject)
         throws CacheReloadException
     {
-        this.multipleSelect = ((Classification) Type.get(_field.getClassificationName())).isMultipleSelect();
-        this.classificationUUID = Type.get(_field.getClassificationName()).getUUID();
+        final Type type = Type.get(_field.getClassificationName());
+        this.classificationUUID = type.getUUID();
+        this.multipleSelect = ((Classification) type).isMultipleSelect();
         this.fieldId = _field.getId();
         this.root = true;
         this.mode = _uiObject.getMode();
