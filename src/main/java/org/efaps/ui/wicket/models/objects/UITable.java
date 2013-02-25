@@ -586,7 +586,7 @@ public class UITable
                 }
             }
         }
-        return Type.get(typeName);
+        return typeName == null ? null : Type.get(typeName);
     }
 
     /**
