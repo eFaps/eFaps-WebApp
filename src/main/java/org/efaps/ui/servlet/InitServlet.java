@@ -64,7 +64,7 @@ public class InitServlet
                         + _config.getServletContext().getServletContextName()
                         + "/");
 
-     // the runlevel should only be loaded once from a filter during the init phase, as long as is is the same one
+        // the runlevel should only be loaded once from a filter during the init phase, as long as is is the same one
         if (!"webapp".equals(RunLevel.getName4Current())) {
             try {
                 Context.begin();
@@ -82,5 +82,15 @@ public class InitServlet
                 }
             }
         }
+    }
+
+    /* (non-Javadoc)
+     * @see javax.servlet.GenericServlet#destroy()
+     */
+    @Override
+    public void destroy()
+    {
+        RunLevel.stop();
+        super.destroy();
     }
 }
