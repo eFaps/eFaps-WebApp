@@ -43,6 +43,7 @@ import org.apache.wicket.request.component.IRequestableComponent;
 import org.apache.wicket.request.http.WebRequest;
 import org.efaps.jaas.AppAccessHandler;
 import org.efaps.ui.filter.AbstractFilter;
+import org.efaps.ui.wicket.pages.error.UnexpectedErrorPage;
 import org.efaps.ui.wicket.pages.login.LoginPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.ui.wicket.request.EFapsRequest;
@@ -55,8 +56,7 @@ import org.efaps.ui.wicket.request.EFapsResourceAggregator;
  * Sessions for each user a created and basic Settings are set.
  *
  * @author Jan Moxter
- * @version $Id: EFapsApplication.java 7535 2012-05-19 18:25:05Z jan@moxter.net
- *          $
+ * @version $Id$
  */
 public class EFapsApplication
     extends WebApplication
@@ -91,6 +91,8 @@ public class EFapsApplication
 
         super.init();
         getApplicationSettings().setPageExpiredErrorPage(LoginPage.class);
+        getApplicationSettings().setInternalErrorPage(UnexpectedErrorPage.class);
+
         getApplicationSettings().setUploadProgressUpdatesEnabled(true);
 
         getDebugSettings().setAjaxDebugModeEnabled(false);
