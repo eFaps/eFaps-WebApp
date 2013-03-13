@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2011 The eFaps Team
+ * Copyright 2003 - 2013 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,26 +57,35 @@ public abstract class AbstractUICellValue
 {
 
     /**
-     *
+     * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Parent Object.
+     */
     private final AbstractUIObject parent;
 
+    /**
+     * UserInterface Value.
+     */
     private UIValue value;
 
-
+    /**
+     * Configuration of the related field.
+     */
     private final FieldConfiguration fieldConfiguration;
 
     /**
-     * @param _instanceKey
-     * @param _parent
-     * @param _value
+     * @param _instanceKey key to the instance
+     * @param _parent parent object
+     * @param _value value
      * @throws EFapsException on error
      */
     public AbstractUICellValue(final String _instanceKey,
                                final AbstractUIObject _parent,
-                               final UIValue _value) throws EFapsException
+                               final UIValue _value)
+        throws EFapsException
     {
         super(_instanceKey);
         this.parent = _parent;
@@ -171,10 +180,11 @@ public abstract class AbstractUICellValue
     }
 
     /**
-     * @param _string
-     * @return
-     * @throws EFapsException
+     * @param _wicketId   wicket id
+     * @return Component
+     * @throws EFapsException on error
      */
+    @SuppressWarnings("unchecked")
     public Component getComponent(final String _wicketId)
         throws EFapsException
     {
@@ -185,12 +195,12 @@ public abstract class AbstractUICellValue
             } else if (getValue().getUIProvider() instanceof LinkWithRangesUI) {
                 ret = new DropDownField(_wicketId, getValue().getDbValue(),
                                 Model.ofMap((Map<Object, Object>) getValue().getEditValue(
-                                getParent().getMode())),
+                                                getParent().getMode())),
                                 getFieldConfiguration());
-            } else  if (getValue().getUIProvider() instanceof BooleanUI) {
+            } else if (getValue().getUIProvider() instanceof BooleanUI) {
                 ret = new BooleanField(_wicketId, getValue().getDbValue(),
                                 Model.ofMap((Map<Object, Object>) getValue().getEditValue(
-                                getParent().getMode())),
+                                                getParent().getMode())),
                                 getFieldConfiguration());
             } else {
                 ret = new Label(_wicketId, (String) getValue().getEditValue(getParent().getMode()));
@@ -200,11 +210,11 @@ public abstract class AbstractUICellValue
                 String label = "";
                 if (getValue().getDbValue() != null) {
                     final Map<Object, Object> map = (Map<Object, Object>) getValue()
-                                .getReadOnlyValue(getParent().getMode());
+                                    .getReadOnlyValue(getParent().getMode());
                     label = String.valueOf(map.get(getValue().getDbValue()));
                 }
                 ret = new Label(_wicketId, label);
-            } else  if (getValue().getUIProvider() instanceof BooleanUI) {
+            } else if (getValue().getUIProvider() instanceof BooleanUI) {
                 String label = "";
                 if (getValue().getDbValue() != null) {
                     final Map<Object, Object> map = (Map<Object, Object>) getValue()

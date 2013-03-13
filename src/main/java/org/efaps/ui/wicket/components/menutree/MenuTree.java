@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2012 The eFaps Team
+ * Copyright 2003 - 2013 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,8 +36,6 @@ import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.cache.CacheReloadException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author The eFaps Team
@@ -76,11 +74,6 @@ public class MenuTree
     public static final EFapsContentReference CSS = new EFapsContentReference(MenuTree.class, "MenuTree.css");
 
     /**
-     * Logger.
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(MenuTree.class);
-
-    /**
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
@@ -97,6 +90,7 @@ public class MenuTree
      * @param _commandUUID uuid of the command
      * @param _oid oid
      * @param _selectCmdUUID UUID of the selected Command
+     * @throws CacheReloadException on error
      */
     public MenuTree(final String _wicketId,
                     final UUID _commandUUID,
@@ -207,6 +201,7 @@ public class MenuTree
      * @param _commandUUID UUID of the command
      * @param _instanceKey instance key
      * @param _target the ajax target to use
+     * @throws CacheReloadException on error
      */
     public void addChildMenu(final UUID _commandUUID,
                              final String _instanceKey,

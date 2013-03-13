@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2012 The eFaps Team
+ * Copyright 2003 - 2013 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ public class ChartPanel
                       final IModel<UIFormCellChart> _model)
     {
         super(_wicketId, _model);
-        this.add(new AttributeAppender("class", true, new Model<String>("eFapsChart"), " "));
+        this.add(new AttributeAppender("class", new Model<String>("eFapsChart"), " "));
         try {
             _model.getObject().initialize();
         } catch (final EFapsException e) {
