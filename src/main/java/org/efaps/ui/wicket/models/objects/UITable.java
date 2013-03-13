@@ -290,8 +290,7 @@ public class UITable
         }
 
         for (final Field field : fields) {
-            if (field.hasAccess(getMode(), getInstance(), getCommand())
-                            && !field.isNoneDisplay(getMode()) && !field.isHiddenDisplay(getMode())) {
+            if (field.hasAccess(getMode(), getInstance(), getCommand()) && !field.isNoneDisplay(getMode())) {
                 Attribute attr = null;
                 if (_instances.size() > 0) {
                     if (field.getSelect() != null) {
@@ -328,24 +327,26 @@ public class UITable
                         }
                     }
                 }
-                final UITableHeader uiTableHeader = new UITableHeader(field, sortdirection, attr);
-                if (this.filterTempCache.containsKey(uiTableHeader.getFieldName())) {
-                    this.filters.put(uiTableHeader.getFieldName(),
-                                    this.filterTempCache.get(uiTableHeader.getFieldName()));
-                    uiTableHeader.setFilterApplied(true);
-                } else if (uiTableHeader.getFilter().isRequired()) {
-                    this.filters.put(uiTableHeader.getFieldName(), new TableFilter(uiTableHeader));
-                }
-                getHeaders().add(uiTableHeader);
-                if (!field.isFixedWidth()) {
-                    if (userWidthList != null && userWidthList.size() > i) {
-                        if (isShowCheckBoxes() && userWidthList.size() > i + 1) {
-                            uiTableHeader.setWidth(userWidthList.get(i + 1));
-                        } else {
-                            uiTableHeader.setWidth(userWidthList.get(i));
-                        }
+                if (!field.isHiddenDisplay(getMode())) {
+                    final UITableHeader uiTableHeader = new UITableHeader(field, sortdirection, attr);
+                    if (this.filterTempCache.containsKey(uiTableHeader.getFieldName())) {
+                        this.filters.put(uiTableHeader.getFieldName(),
+                                        this.filterTempCache.get(uiTableHeader.getFieldName()));
+                        uiTableHeader.setFilterApplied(true);
+                    } else if (uiTableHeader.getFilter().isRequired()) {
+                        this.filters.put(uiTableHeader.getFieldName(), new TableFilter(uiTableHeader));
                     }
-                    setWidthWeight(getWidthWeight() + field.getWidth());
+                    getHeaders().add(uiTableHeader);
+                    if (!field.isFixedWidth()) {
+                        if (userWidthList != null && userWidthList.size() > i) {
+                            if (isShowCheckBoxes() && userWidthList.size() > i + 1) {
+                                uiTableHeader.setWidth(userWidthList.get(i + 1));
+                            } else {
+                                uiTableHeader.setWidth(userWidthList.get(i));
+                            }
+                        }
+                        setWidthWeight(getWidthWeight() + field.getWidth());
+                    }
                 }
                 i++;
             }

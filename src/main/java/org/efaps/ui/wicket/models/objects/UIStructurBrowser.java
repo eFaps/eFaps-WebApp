@@ -485,8 +485,7 @@ public class UIStructurBrowser
             int i = 0;
             for (final Field field : getUserSortedColumns()) {
                 Attribute attr = null;
-                if (field.hasAccess(getMode(), getInstance())
-                                && !field.isNoneDisplay(getMode()) && !field.isHiddenDisplay(getMode())) {
+                if (field.hasAccess(getMode(), getInstance()) && !field.isNoneDisplay(getMode())) {
                     if (_map.size() > 0) {
                         if (field.getSelect() != null) {
                             multi.addSelect(field.getSelect());
@@ -507,17 +506,19 @@ public class UIStructurBrowser
                         if (field.getName().equals(getSortKey())) {
                             sortdirection = getSortDirection();
                         }
-                        final UITableHeader uiTableHeader = new UITableHeader(field, sortdirection, attr);
-                        getHeaders().add(uiTableHeader);
-                        if (!field.isFixedWidth()) {
-                            if (userWidthList != null && userWidthList.size() > i) {
-                                if (isShowCheckBoxes() && userWidthList.size() > i + 1) {
-                                    uiTableHeader.setWidth(userWidthList.get(i + 1));
-                                } else {
-                                    uiTableHeader.setWidth(userWidthList.get(i));
+                        if (!field.isHiddenDisplay(getMode())) {
+                            final UITableHeader uiTableHeader = new UITableHeader(field, sortdirection, attr);
+                            getHeaders().add(uiTableHeader);
+                            if (!field.isFixedWidth()) {
+                                if (userWidthList != null && userWidthList.size() > i) {
+                                    if (isShowCheckBoxes() && userWidthList.size() > i + 1) {
+                                        uiTableHeader.setWidth(userWidthList.get(i + 1));
+                                    } else {
+                                        uiTableHeader.setWidth(userWidthList.get(i));
+                                    }
                                 }
+                                setWidthWeight(getWidthWeight() + field.getWidth());
                             }
-                            setWidthWeight(getWidthWeight() + field.getWidth());
                         }
                     }
                     i++;
