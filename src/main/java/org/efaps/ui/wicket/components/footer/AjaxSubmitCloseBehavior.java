@@ -59,6 +59,7 @@ import org.efaps.ui.wicket.components.values.IValueConverter;
 import org.efaps.ui.wicket.models.FormModel;
 import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.cell.UIFormCell;
+import org.efaps.ui.wicket.models.cell.UIFormCellSet;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
@@ -226,6 +227,35 @@ public class AjaxSubmitCloseBehavior
                                     update.setInstanceKey(this.uiObject.getInstanceKey());
                                     update.setMode(this.uiObject.getMode());
                                     _target.prependJavaScript(update.getAjaxCallback());
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                // in the case that validation did not pass the indexes for
+                // CellSets must be reseted
+                if (this.uiObject instanceof UIForm) {
+                    for (final Element element : ((UIForm) this.uiObject).getElements()) {
+                        if (element.getType().equals(ElementType.FORM)) {
+                            for (final FormRow row : ((UIForm.FormElement) element.getElement()).getRowModels()) {
+                                for (final UIFormCell cell : row.getValues()) {
+                                    if (cell instanceof UIFormCellSet) {
+                                        ((UIFormCellSet) cell).resetIndex();
+                                    }
+                                }
+                            }
+                        } else if (element.getType().equals(ElementType.SUBFORM)) {
+                            for (final Element nElement : ((UIFieldForm) element.getElement()).getElements()) {
+                                if (nElement.getType().equals(ElementType.FORM)) {
+                                    for (final FormRow row : ((UIForm.FormElement) nElement.getElement())
+                                                    .getRowModels()) {
+                                        for (final UIFormCell cell : row.getValues()) {
+                                            if (cell instanceof UIFormCellSet) {
+                                                ((UIFormCellSet) cell).resetIndex();
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }

@@ -818,7 +818,8 @@ public class UIForm
     /**
      * Class is used as store for one Row in the UIForm.
      */
-    public class FormRow implements IClusterable
+    public static class FormRow
+        implements IClusterable
     {
 
         /**
@@ -890,7 +891,7 @@ public class UIForm
     /**
      * Class represents a Element of Type Form used in a Form.
      */
-    public class FormElement
+    public static class FormElement
         implements IFormElement, IClusterable
     {
         /**
@@ -962,7 +963,7 @@ public class UIForm
     /**
      * Class represent one Element in a UIForm.
      */
-    public class Element
+    public static class Element
         implements IClusterable
     {
 

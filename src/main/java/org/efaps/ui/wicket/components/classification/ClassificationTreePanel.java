@@ -204,7 +204,7 @@ public class ClassificationTreePanel
                 } else {
                     fieldform = new UIFieldForm(_uiForm.getCommandUUID(), _parentClass);
                 }
-                _uiForm.getElements().add(_uiForm.new Element(ElementType.SUBFORM, fieldform));
+                _uiForm.getElements().add(new Element(ElementType.SUBFORM, fieldform));
             }
             for (final UIClassification child : _parentClass.getChildren()) {
                 add2Elements(_uiForm, child, _uuid2InstanceKey);
