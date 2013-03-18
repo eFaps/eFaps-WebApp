@@ -3,7 +3,7 @@
 
 <!--
 
-  Copyright 2003 - 2012 The eFaps Team
+  Copyright 2003 - 2013 The eFaps Team
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 
-  Author:          jmox
+  Author:          The eFaps Team
   Revision:        $Rev:1489 $
   Last Changed:    $Date:2007-10-15 17:50:46 -0500 (Mon, 15 Oct 2007) $
   Last Changed By: $Author:jmox $
@@ -25,19 +25,19 @@
 -->
 
 <html xmlns="http://www.w3.org/1999/xhtml">
-  <body wicket:id="body">
+<body wicket:id="body">
     <div class="eFapsWarnDialogText">
-      <span  wicket:id="textLabel">label</span>
+        <span wicket:id="textLabel">label</span>
     </div>
     <div class="eFapsWarnDialogButtons">
-      <div class="eFapsWarnDialogButton1" wicket:id="submitButton"></div>
-      <div class="eFapsWarnDialogButton2" wicket:id="closeButton"></div>
+        <div class="eFapsWarnDialogButton2" wicket:id="closeButton"></div>
+        <div class="eFapsWarnDialogButton1" wicket:id="submitButton"></div>
     </div>
     <form name="focusForm" action="">
-        <input type="hidden" id="hiddenInput"/>
+        <input type="hidden" id="hiddenInput" />
     </form>
     <script type="text/javascript">
       document.getElementById('hiddenInput').focus();
     </script>
-  </body>
+</body>
 </html>
