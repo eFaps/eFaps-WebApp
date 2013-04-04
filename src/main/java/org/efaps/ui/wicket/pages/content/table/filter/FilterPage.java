@@ -34,7 +34,9 @@ import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.util.iterator.ComponentHierarchyIterator;
 import org.apache.wicket.util.string.StringValue;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.field.Filter;
@@ -186,6 +188,21 @@ public class FilterPage
                             }
                         }
                         uiTable.addFilterRange(_uitableHeader, from, to);
+                        modal.setWindowClosedCallback(new UpdateParentCallback(FilterPage.this.pageReference,
+                                        modal, _uitableHeader.getFilter().getBase().equals(Filter.Base.DATABASE)));
+                        modal.setUpdateParent(true);
+                        modal.close(_target);
+                    } else if (_uitableHeader.getFilterType().equals(FilterType.TEXT)) {
+                        final FreeTextPanel freeTextPanel = (FreeTextPanel) panel;
+                        final ComponentHierarchyIterator iter = freeTextPanel.visitChildren(TextField.class);
+                        String from = null;
+                        while (iter.hasNext()) {
+                            final Component comp = iter.next();
+                            @SuppressWarnings("unchecked")
+                            final TextField<String> stringFilter = (TextField<String>) comp;
+                            from = stringFilter.getDefaultModelObjectAsString();
+                        }
+                        uiTable.addFilterTextLike(_uitableHeader, from);
                         modal.setWindowClosedCallback(new UpdateParentCallback(FilterPage.this.pageReference,
                                         modal, _uitableHeader.getFilter().getBase().equals(Filter.Base.DATABASE)));
                         modal.setUpdateParent(true);

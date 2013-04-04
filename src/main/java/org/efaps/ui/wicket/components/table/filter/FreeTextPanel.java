@@ -77,7 +77,28 @@ public class FreeTextPanel
 
         if (filterType.equals(FilterType.TEXT)) {
             this.add(new Label("textFrom", DBProperties.getProperty("FilterPage.textFilter")));
-            final WebMarkupContainer stringFilter = new TextField<Object>("from");
+            final TextField<String> stringFilter = new TextField<String>("from", new IModel<String>(){
+
+                private String value;
+                @Override
+                public void detach()
+                {
+                    // TODO Auto-generated method stub
+                }
+
+                @Override
+                public String getObject()
+                {
+                    return this.value;
+                }
+
+                @Override
+                public void setObject(final String object)
+                {
+                   this.value = object;
+                }
+
+              });
             this.add(stringFilter);
             this.add(new WebMarkupContainer("js").setVisible(false));
             this.add(new WebMarkupContainer("dateFrom").setVisible(false));

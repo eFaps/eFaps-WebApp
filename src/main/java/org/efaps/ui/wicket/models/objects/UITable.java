@@ -628,6 +628,28 @@ public class UITable
      * @throws EFapsException on error
      *
      */
+    public void addFilterTextLike(final UITableHeader _uitableHeader,
+                                   final String _from)
+        throws EFapsException
+    {
+        final TableFilter filter = new TableFilter(_uitableHeader, _from);
+        this.filters.put(_uitableHeader.getFieldName(), filter);
+        final UITableHeader orig = getHeader4Id(_uitableHeader.getFieldId());
+        if (orig != null) {
+            orig.setFilterApplied(true);
+        }
+        storeFilters();
+    }
+
+    /**
+     * Add a range to the filters of this UiTable.
+     *
+     * @param _uitableHeader UitableHeader this filter belongs to
+     * @param _from from value
+     * @param _to to value
+     * @throws EFapsException on error
+     *
+     */
     public void addFilterRange(final UITableHeader _uitableHeader,
                                final String _from,
                                final String _to)
@@ -832,6 +854,7 @@ public class UITable
                 Collections.sort(this.values, new Comparator<UIRow>()
                 {
 
+                    @Override
                     public int compare(final UIRow _rowModel1,
                                        final UIRow _rowModel2)
                     {
@@ -1001,6 +1024,23 @@ public class UITable
                 this.dateTo = DateTimeUtil.translateFromUI(_to);
                 this.dateTo = this.dateTo == null ? null : this.dateTo.plusDays(1);
             }
+        }
+
+        /**
+         * Standard Constructor for a Filter containing a range.
+         *
+         * @param _uitableHeader UITableHeader this filter lies in
+         * @param _from value for from
+         * @param _to value for to
+         * @throws EFapsException on error
+         */
+        public TableFilter(final UITableHeader _uitableHeader,
+                           final String _from)
+            throws EFapsException
+        {
+            this.headerFieldId = _uitableHeader.getFieldId();
+            this.filterType = _uitableHeader.getFilterType();
+            this.from = _from;
         }
 
         /**
