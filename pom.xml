@@ -33,10 +33,11 @@
     <parent>
         <groupId>org.efaps</groupId>
         <artifactId>efaps-parent</artifactId>
-        <version>3.0.1-SNAPSHOT</version>
+        <version>3.0.0</version>
     </parent>
     <packaging>jar</packaging>
     <artifactId>efaps-webapp</artifactId>
+  <version>3.0.1</version>
 
     <name>eFaps WebApp</name>
     <description>
@@ -91,9 +92,9 @@
 
     <!-- SubVersion Repository -->
     <scm>
-        <connection>scm:svn:http://efaps.googlecode.com/svn/eFaps-WebApp/trunk</connection>
-        <developerConnection>scm:svn:https://efaps.googlecode.com/svn/eFaps-WebApp/trunk</developerConnection>
-        <url>http://efaps.googlecode.com/svn/eFaps-WebApp</url>
+        <connection>scm:svn:http://efaps.googlecode.com/svn/eFaps-WebApp/tags/efaps-webapp-3.0.1</connection>
+        <developerConnection>scm:svn:https://efaps.googlecode.com/svn/eFaps-WebApp/tags/efaps-webapp-3.0.1</developerConnection>
+        <url>http://efaps.googlecode.com/svn/eFaps-WebApp/tags/efaps-webapp-3.0.1</url>
     </scm>
 
     <!-- Distribution Repository -->
@@ -179,7 +180,7 @@
         <dependency>
             <groupId>org.efaps</groupId>
             <artifactId>efaps-kernel</artifactId>
-            <version>3.0.1-SNAPSHOT</version>
+            <version>3.0.0</version>
         </dependency>
 
         <!-- to define a higher version (needed from another tool) -->
