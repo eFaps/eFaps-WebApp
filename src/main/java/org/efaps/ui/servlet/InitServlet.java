@@ -75,7 +75,7 @@ public class InitServlet
                 throw new ServletException(e);
             } finally {
                 try {
-                    Context.rollback();
+                    Context.commit();
                 } catch (final EFapsException e) {
                     InitServlet.LOG.error("Error during rollback of context after load of runlevel", e);
                     throw new ServletException(e);
