@@ -24,6 +24,7 @@ import java.util.UUID;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
+import org.apache.wicket.Page;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxEventBehavior;
@@ -39,7 +40,9 @@ import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.link.IPageLink;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.util.string.StringValue;
@@ -55,6 +58,7 @@ import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior.Region;
 import org.efaps.ui.wicket.behaviors.dojo.MessageListenerBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.RequireBehavior;
+import org.efaps.ui.wicket.components.LazyIframe;
 import org.efaps.ui.wicket.components.menu.LinkItem;
 import org.efaps.ui.wicket.components.menu.MenuBarPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
@@ -62,7 +66,9 @@ import org.efaps.ui.wicket.components.preloader.PreLoaderPanel;
 import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
+import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.ui.wicket.pages.user.UserPage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
@@ -162,7 +168,35 @@ public class MainPage
         this.add(borderPanel);
         borderPanel.add(new BorderContainerBehavior(Design.HEADLINE, false));
 
-        final WebMarkupContainer mainPanel = new WebMarkupContainer("mainPanel");
+        //final WebMarkupContainer mainPanel = new WebMarkupContainer("mainPanel");
+
+
+
+        final LazyIframe mainPanel = new LazyIframe("mainPanel", new IPageLink()
+        {
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public Page getPage()
+            {
+                Page error = null;
+                WebPage page = null;
+                try {
+                        page = new UserPage(getPageReference());
+                } catch (final EFapsException e) {
+                    error = new ErrorPage(e);
+                }
+                return error == null ? page : error;
+            }
+
+            @Override
+            public Class<? extends Page> getPageIdentity()
+            {
+                return AbstractContentPage.class;
+            }
+        });
+
         borderPanel.add(mainPanel);
         mainPanel.add(new ContentPaneBehavior(Region.CENTER, false));
 
