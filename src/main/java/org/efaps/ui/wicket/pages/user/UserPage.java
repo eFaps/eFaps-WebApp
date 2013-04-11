@@ -83,7 +83,7 @@ public class UserPage
                             @Override
                             public Page createPage()
                             {
-                                return new TaskPage(_rowModel);
+                                return new TaskPage(_rowModel, _pageReference);
                             }});
                         modal.show(_target);
                     }});
