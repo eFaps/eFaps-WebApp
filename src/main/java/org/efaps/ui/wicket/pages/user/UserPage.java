@@ -34,9 +34,12 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColu
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
 import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.efaps.admin.EFapsSystemConfiguration;
+import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.main.MainPage;
@@ -75,10 +78,6 @@ public class UserPage
 
         columns.add(new AbstractColumn<TaskSummary, String>(new Model<String>("Actions"))
         {
-
-            /**
-             *
-             */
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -89,12 +88,15 @@ public class UserPage
                 _cellItem.add(new AjaxLink<Void>(_componentId)
                 {
 
+                    private static final long serialVersionUID = 1L;
+
                     @Override
                     public void onClick(final AjaxRequestTarget _target)
                     {
                         final ModalWindowContainer modal = ((MainPage) _pageReference.getPage()).getModal();
                         modal.setPageCreator(new PageCreator()
                         {
+                            private static final long serialVersionUID = 1L;
 
                             @Override
                             public Page createPage()
@@ -118,8 +120,15 @@ public class UserPage
         columns.add(new PropertyColumn<TaskSummary, String>(new Model<String>("Status"), "status"));
         columns.add(new PropertyColumn<TaskSummary, String>(new Model<String>("Activation Time"), "activationTime"));
 
-        add(new AjaxFallbackDefaultDataTable<TaskSummary, String>("table", columns,
-                        new SortableTaskSummaryDataProvider(), 8));
+        final SystemConfiguration config = EFapsSystemConfiguration.KERNEL.get();
+
+        final boolean active = config != null ? config.getAttributeValueAsBoolean("ActivateBPM") : false;
+        if (active) {
+            add(new AjaxFallbackDefaultDataTable<TaskSummary, String>("table", columns,
+                            new SortableTaskSummaryDataProvider(), 8));
+        } else {
+            add(new WebMarkupContainer("table").setVisible(false));
+        }
     }
 
     @Override
