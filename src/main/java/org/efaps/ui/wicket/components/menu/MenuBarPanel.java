@@ -95,7 +95,11 @@ public class MenuBarPanel
                         } else if (childItem.getReference().equals(
                                         "/" + getSession().getApplication().getApplicationKey() + "/setcompany?")) {
                             item = new SetCompanyItem(itemRepeater.newChildId(), new UIModel<UIMenuItem>(childItem));
+                        } else if (childItem.getReference().equals(
+                                        "/" + getSession().getApplication().getApplicationKey() + "/home?")) {
+                            item = new HomeItem(itemRepeater.newChildId(), new UIModel<UIMenuItem>(childItem));
                         }
+
                         if (item != null) {
                             item.add(new MenuBarItemBehavior());
                             itemRepeater.add(item);
