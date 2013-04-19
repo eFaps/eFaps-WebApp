@@ -38,8 +38,8 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.efaps.admin.ConfigurationSettings;
 import org.efaps.admin.EFapsSystemConfiguration;
+import org.efaps.admin.KernelSettings;
 import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
@@ -124,7 +124,7 @@ public class UserPage
         final SystemConfiguration config = EFapsSystemConfiguration.KERNEL.get();
 
         final boolean active = config != null
-                        ? config.getAttributeValueAsBoolean(ConfigurationSettings.ActivateBPM) : false;
+                        ? config.getAttributeValueAsBoolean(KernelSettings.ActivateBPM) : false;
         if (active) {
             add(new AjaxFallbackDefaultDataTable<TaskSummary, String>("table", columns,
                             new SortableTaskSummaryDataProvider(), 8));
