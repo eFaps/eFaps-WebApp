@@ -74,6 +74,7 @@ public class StringField
      * @param _wicketId wicket id fot this component
      * @param _model    model for this componet
      * @param _config   Config
+     * @throws EFapsException on error
      */
     public StringField(final String _wicketId,
                        final Model<AbstractUICellValue> _model,
@@ -109,7 +110,8 @@ public class StringField
     }
 
     @Override
-    protected void convertInput() {
+    protected void convertInput()
+    {
         this.converted = true;
         int i = 0;
         if (this.cellvalue instanceof CellSetValue) {

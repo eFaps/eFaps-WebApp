@@ -152,6 +152,7 @@ public abstract class AbstractUIObject
      * @param _commandUUID UUID for this Model
      * @param _instanceKey instance id for this Model
      * @param _openerId id of the opener UIClassification
+     * @throws CacheReloadException on error
      */
     public AbstractUIObject(final UUID _commandUUID,
                             final String _instanceKey,
@@ -167,8 +168,9 @@ public abstract class AbstractUIObject
      *
      * @param _commandUUID UUID for this Model
      * @param _openerId id of the opener
+     * @throws CacheReloadException on error
      */
-    private void initialize(final UUID _commandUUID,
+    protected void initialize(final UUID _commandUUID,
                             final String _openerId)
         throws CacheReloadException
     {

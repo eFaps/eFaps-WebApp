@@ -42,12 +42,14 @@ import org.efaps.admin.EFapsSystemConfiguration;
 import org.efaps.admin.KernelSettings;
 import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
+import org.efaps.ui.wicket.models.objects.UITaskObject;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.ui.wicket.pages.task.TaskPage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 import org.jbpm.task.query.TaskSummary;
 
 /**
@@ -102,7 +104,18 @@ public class UserPage
                             @Override
                             public Page createPage()
                             {
-                                return new TaskPage(_rowModel, _pageReference);
+                                Page page = null;
+                                try {
+                                    page = new TaskPage(UITaskObject.getModelForTask(_rowModel.getObject()),
+                                                    _pageReference);
+                                } catch (final CacheReloadException e) {
+                                    // TODO Auto-generated catch block
+                                    e.printStackTrace();
+                                } catch (final EFapsException e) {
+                                    // TODO Auto-generated catch block
+                                    e.printStackTrace();
+                                }
+                                return page;
                             }
                         });
                         modal.show(_target);
@@ -110,12 +123,11 @@ public class UserPage
                 });
             }
         });
-
+        // only admin
         columns.add(new PropertyColumn<TaskSummary, String>(new Model<String>("ID"), "id"));
         columns.add(new PropertyColumn<TaskSummary, String>(new Model<String>("Name"), "name",
                         "name"));
-        columns.add(new PropertyColumn<TaskSummary, String>(new Model<String>("Subject"), "subject",
-                        "subject"));
+
         columns.add(new PropertyColumn<TaskSummary, String>(new Model<String>("Description"), "description",
                         "description"));
         columns.add(new PropertyColumn<TaskSummary, String>(new Model<String>("Status"), "status"));
