@@ -42,17 +42,21 @@ public class SnippletField
      */
     private static final long serialVersionUID = 1L;
 
+    /**
+     * The label for this Field.
+     */
     private final IModel<String> label;
 
     /**
-     * @param _id
-     * @param _model
+     * @param _wicketId wicket if of this component
+     * @param _model model for this component
+     * @param _label label for this component
      */
-    public SnippletField(final String _id,
+    public SnippletField(final String _wicketId,
                          final IModel<String> _model,
                          final IModel<String> _label)
     {
-        super(_id, _model);
+        super(_wicketId, _model);
         setEscapeModelStrings(false);
         this.label = _label;
     }

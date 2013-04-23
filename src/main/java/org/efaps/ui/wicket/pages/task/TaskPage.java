@@ -149,9 +149,19 @@ public class TaskPage
         @Override
         protected void populateItem(final Item<AbstractUIField> _item)
         {
-            final AbstractUIField value = _item.getModelObject();
+            final AbstractUIField uiField = _item.getModelObject();
             try {
-                _item.add(value.getComponent("field"));
+                final WebMarkupContainer labelField = new WebMarkupContainer("labelField");
+                final WebMarkupContainer nonLabelField = new WebMarkupContainer("nonLabelField");
+                _item.add(labelField);
+                _item.add(nonLabelField);
+                if (uiField.getFieldConfiguration().isHideLabel()) {
+                    nonLabelField.add(uiField.getComponent("field"));
+                    labelField.setVisible(false);
+                } else {
+                    labelField.add(uiField.getComponent("field"));
+                    nonLabelField.setVisible(false);
+                }
             } catch (final EFapsException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();

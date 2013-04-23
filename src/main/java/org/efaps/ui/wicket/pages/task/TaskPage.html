@@ -28,15 +28,20 @@
 <head>
 
 </head>
-<body wicket:id="body">
+<body wicket:id="body" class="taskPage">
     <form wicket:id="form">
         <div class="eFapsForm">
-            <span wicket:id="groupRepeater">
+            <div wicket:id="groupRepeater" class="group">
                 <span wicket:id="fieldRepeater">
-                    <label wicket:for="field"><wicket:label wicket:for="field"></wicket:label></label>
-                    <span wicket:id="field"></span>
+                    <span wicket:id="labelField">
+                        <label wicket:for="field" class="label"><wicket:label wicket:for="field"></wicket:label></label>
+                        <span wicket:id="field" class="field"></span>
+                    </span>
+                    <span wicket:id="nonLabelField">
+                        <span wicket:id="field" class="field"></span>
+                    </span>
                 </span>
-            </span>
+            </div>
         </div>
         <div class="eFapsFooter">
             <div class="eFapsFooterButtons">
