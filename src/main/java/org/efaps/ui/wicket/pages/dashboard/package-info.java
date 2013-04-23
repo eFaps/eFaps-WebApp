@@ -1,5 +1,5 @@
 /**
- * TODO comment!
+ * A DashBoard Page.
  *
  * @author The eFaps Team
  * @version $Id$

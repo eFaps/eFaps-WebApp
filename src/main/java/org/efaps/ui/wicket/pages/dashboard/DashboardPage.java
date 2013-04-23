@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.ui.wicket.pages.user;
+package org.efaps.ui.wicket.pages.dashboard;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +49,7 @@ import org.jbpm.task.query.TaskSummary;
  * @author The eFaps Team
  * @version $Id$
  */
-public class UserPage
+public class DashboardPage
     extends AbstractMergePage
 {
 
@@ -61,9 +61,9 @@ public class UserPage
     /**
      * Reference to the StyleSheet for this Page.
      */
-    private static final EFapsContentReference CSS = new EFapsContentReference(UserPage.class, "UserPage.css");
+    private static final EFapsContentReference CSS = new EFapsContentReference(DashboardPage.class, "DashboardPage.css");
 
-    public UserPage(final PageReference _pageReference)
+    public DashboardPage(final PageReference _pageReference)
         throws EFapsException
     {
         super();
@@ -115,6 +115,6 @@ public class UserPage
     public void renderHead(final IHeaderResponse _response)
     {
         super.renderHead(_response);
-        _response.render(AbstractEFapsHeaderItem.forCss(UserPage.CSS));
+        _response.render(AbstractEFapsHeaderItem.forCss(DashboardPage.CSS));
     }
 }

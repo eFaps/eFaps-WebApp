@@ -19,7 +19,7 @@
  */
 
 
-package org.efaps.ui.wicket.pages.user;
+package org.efaps.ui.wicket.pages.dashboard;
 
 import java.util.Iterator;
 import java.util.List;

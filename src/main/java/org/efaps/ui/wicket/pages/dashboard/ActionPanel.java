@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.ui.wicket.pages.user;
+package org.efaps.ui.wicket.pages.dashboard;
 
 import org.apache.wicket.Page;
 import org.apache.wicket.PageReference;

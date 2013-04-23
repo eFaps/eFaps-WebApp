@@ -67,8 +67,8 @@ import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
+import org.efaps.ui.wicket.pages.dashboard.DashboardPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
-import org.efaps.ui.wicket.pages.user.UserPage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
@@ -183,7 +183,7 @@ public class MainPage
                 Page error = null;
                 WebPage page = null;
                 try {
-                        page = new UserPage(getPageReference());
+                        page = new DashboardPage(getPageReference());
                 } catch (final EFapsException e) {
                     error = new ErrorPage(e);
                 }

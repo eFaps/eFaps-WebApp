@@ -22,7 +22,7 @@ package org.efaps.ui.wicket.components.menu;
 
 import org.apache.wicket.model.IModel;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
-import org.efaps.ui.wicket.pages.user.UserPage;
+import org.efaps.ui.wicket.pages.dashboard.DashboardPage;
 import org.efaps.util.EFapsException;
 
 /**
@@ -57,7 +57,7 @@ public class HomeItem
     public void onClick()
     {
         try {
-            setResponsePage(new UserPage(getPage().getPageReference()));
+            setResponsePage(new DashboardPage(getPage().getPageReference()));
         } catch (final EFapsException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
