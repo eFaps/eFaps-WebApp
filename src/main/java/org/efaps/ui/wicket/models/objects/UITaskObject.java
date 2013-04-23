@@ -26,15 +26,18 @@ import java.util.Map;
 
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.efaps.admin.datamodel.Attribute;
+import org.efaps.admin.datamodel.ui.UIValue;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.Form;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.bpm.Bpm;
 import org.efaps.db.Instance;
-import org.efaps.ui.wicket.models.AbstractInstanceObject;
+import org.efaps.db.PrintQuery;
 import org.efaps.ui.wicket.models.cell.FieldConfiguration;
 import org.efaps.ui.wicket.models.field.UIField;
 import org.efaps.ui.wicket.models.field.UIGroup;
@@ -49,7 +52,7 @@ import org.jbpm.task.query.TaskSummary;
  * @version $Id$
  */
 public class UITaskObject
-    extends AbstractInstanceObject
+    extends AbstractUIModeObject
 {
 
     /**
@@ -64,44 +67,82 @@ public class UITaskObject
 
     private final List<UIGroup> groups = new ArrayList<UIGroup>();
 
-
     /**
      * @param _taskSummary The related Task as Summary from Hibernate.
      */
     public UITaskObject(final TaskSummary _taskSummary)
         throws EFapsException
     {
+        super("");
         this.taskSummary = _taskSummary;
-        final Form form = Form.get(_taskSummary.getName());
-        for (final Field field : form.getFields()) {
-            final UIGroup uiGroup = new UIGroup();
-            this.groups.add(uiGroup);
-            Instance inst = null;
-            final Object values = Bpm.getTaskData(_taskSummary);
+        initialize();
+    }
+
+    protected void initialize()
+        throws EFapsException
+    {
+        final Form form = Form.get(getTaskSummary().getName());
+        if (form != null) {
+            Instance inst = Instance.get("");
+            final Object values = Bpm.getTaskData(getTaskSummary());
             if (values instanceof Map) {
-                final String oid = (String) ((Map<?,?>) values).get("OID");
+                final String oid = (String) ((Map<?, ?>) values).get("OID");
                 inst = Instance.get(oid);
             }
-            if (field.hasEvents(EventType.UI_FIELD_VALUE)) {
-                final StringBuilder html = new StringBuilder();
-                final List<Return> returns = field.executeEvents(EventType.UI_FIELD_VALUE,
-                                                    ParameterValues.INSTANCE, inst,
-                                ParameterValues.BPM_VALUES, values);
-                for (final Return ret : returns) {
-                    html.append(ret.get(ReturnValues.SNIPLETT));
+            if (inst != null && inst.isValid()) {
+                final PrintQuery print = new PrintQuery(inst);
+                for (final Field field : form.getFields()) {
+                    if (field.getAttribute() != null) {
+                        print.addAttribute(field.getAttribute());
+                    }
+                    if (field.getSelect() != null) {
+                        print.addSelect(field.getAttribute());
+                    }
                 }
-                final UISnippletField uiField = new UISnippletField(new FieldConfiguration(field.getId()));
-                uiGroup.add(uiField);
-                uiField.setHtml(html.toString());
-            } else {
-                final UIField uiField = new UIField(new FieldConfiguration(field.getId()));
-                uiGroup.add(uiField);
+                print.execute();
+
+                for (final Field field : form.getFields()) {
+                    final UIGroup uiGroup = new UIGroup();
+                    this.groups.add(uiGroup);
+                    if (field.hasEvents(EventType.UI_FIELD_VALUE)) {
+                        final StringBuilder html = new StringBuilder();
+                        final List<Return> returns = field.executeEvents(EventType.UI_FIELD_VALUE,
+                                        ParameterValues.INSTANCE, inst,
+                                        ParameterValues.BPM_VALUES, values);
+                        for (final Return ret : returns) {
+                            html.append(ret.get(ReturnValues.SNIPLETT));
+                        }
+                        final UISnippletField uiField = new UISnippletField(inst.getKey(), this,
+                                        new FieldConfiguration(
+                                                        field.getId()));
+                        uiGroup.add(uiField);
+                        uiField.setHtml(html.toString());
+                    } else {
+                        Attribute attr = null;
+                        Object object = null;
+                        if (field.getAttribute() != null) {
+                            object = print.getAttribute(field.getAttribute());
+                            attr = inst.getType().getAttribute(field.getAttribute());
+                        } else if (field.getSelect() != null) {
+                            object = print.getSelect(field.getSelect());
+                            attr = print.getAttribute4Select(field.getSelect());
+                        }
+                        final UIField uiField = new UIField(inst.getKey(), this, UIValue.get(field, attr, object));
+                        uiGroup.add(uiField);
+                    }
+                }
             }
         }
     }
 
-
-
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public TargetMode getMode()
+    {
+        return TargetMode.VIEW;
+    }
 
     /**
      * Getter method for the instance variable {@link #taskSummary}.
@@ -123,9 +164,6 @@ public class UITaskObject
         return this.groups;
     }
 
-
-
-
     /**
      * {@inheritDoc}
      */
@@ -136,13 +174,13 @@ public class UITaskObject
         return getInstance();
     }
 
-
-
     /**
      * {@inheritDoc}
      */
-    /* (non-Javadoc)
-     * @see org.efaps.ui.wicket.models.AbstractInstanceObject#hasInstanceManager()
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.efaps.ui.wicket.models.AbstractInstanceObject#hasInstanceManager()
      */
     @Override
     public boolean hasInstanceManager()
@@ -150,9 +188,6 @@ public class UITaskObject
     {
         return false;
     }
-
-
-
 
     /**
      * @param _object

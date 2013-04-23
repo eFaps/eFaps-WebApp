@@ -150,7 +150,12 @@ public class TaskPage
         protected void populateItem(final Item<AbstractUIField> _item)
         {
             final AbstractUIField value = _item.getModelObject();
-            _item.add(value.getComponent("field"));
+            try {
+                _item.add(value.getComponent("field"));
+            } catch (final EFapsException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
     }
 

@@ -24,6 +24,8 @@ import org.apache.wicket.Component;
 import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.components.values.SnippletField;
 import org.efaps.ui.wicket.models.cell.FieldConfiguration;
+import org.efaps.ui.wicket.models.objects.AbstractUIModeObject;
+import org.efaps.util.EFapsException;
 
 /**
  * TODO comment!
@@ -34,26 +36,49 @@ import org.efaps.ui.wicket.models.cell.FieldConfiguration;
 public class UISnippletField
     extends AbstractUIField
 {
+
     /**
      *
      */
     private static final long serialVersionUID = 1L;
 
+    /**
+     * The snipplet of this field.
+     */
     private String html;
 
-    public UISnippletField(final FieldConfiguration _config)
+    /**
+     * @param _config the FieldConfiguration for this Field
+     */
+    public UISnippletField(final String _instanceKey,
+                           final AbstractUIModeObject _parent,
+                           final FieldConfiguration _config)
+        throws EFapsException
     {
-        super(_config);
+        super(_instanceKey, _parent, null);
+        setFieldConfiguration(_config);
     }
+
+    @Override
+    protected FieldConfiguration getNewFieldConfiguration()
+        throws EFapsException
+    {
+        return null;
+    }
+
 
     @Override
     public Component getComponent(final String _wicketId)
     {
-        return new SnippletField(_wicketId, Model.of(this.html));
+        Model<String> label = null;
+        if (!getFieldConfiguration().isHideLabel()) {
+            label = Model.of(getFieldConfiguration().getLabel());
+        }
+        return new SnippletField(_wicketId, Model.of(this.html), label);
     }
 
     /**
-     * @param _html
+     * @param _html the html that will be presented
      */
     public void setHtml(final String _html)
     {

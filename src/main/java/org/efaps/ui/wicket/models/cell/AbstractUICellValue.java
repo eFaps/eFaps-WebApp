@@ -21,15 +21,7 @@
 package org.efaps.ui.wicket.models.cell;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
-import org.apache.wicket.Component;
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.model.Model;
-import org.efaps.admin.datamodel.ui.BooleanUI;
-import org.efaps.admin.datamodel.ui.LinkWithRangesUI;
-import org.efaps.admin.datamodel.ui.StringUI;
 import org.efaps.admin.datamodel.ui.UIValue;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter.ParameterValues;
@@ -38,13 +30,9 @@ import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
-import org.efaps.ui.wicket.components.values.BooleanField;
-import org.efaps.ui.wicket.components.values.DropDownField;
-import org.efaps.ui.wicket.components.values.StringField;
-import org.efaps.ui.wicket.models.AbstractInstanceObject;
+import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.CacheReloadException;
 
 /**
  * TODO comment!
@@ -53,7 +41,7 @@ import org.efaps.util.cache.CacheReloadException;
  * @version $Id$
  */
 public abstract class AbstractUICellValue
-    extends AbstractInstanceObject
+    extends AbstractUIField
 {
 
     /**
@@ -61,22 +49,8 @@ public abstract class AbstractUICellValue
      */
     private static final long serialVersionUID = 1L;
 
-    /**
-     * Parent Object.
-     */
-    private final AbstractUIObject parent;
 
-    /**
-     * UserInterface Value.
-     */
-    private UIValue value;
-
-    /**
-     * Configuration of the related field.
-     */
-    private final FieldConfiguration fieldConfiguration;
-
-    /**
+   /**
      * @param _instanceKey key to the instance
      * @param _parent parent object
      * @param _value value
@@ -87,32 +61,7 @@ public abstract class AbstractUICellValue
                                final UIValue _value)
         throws EFapsException
     {
-        super(_instanceKey);
-        this.parent = _parent;
-        this.value = _value;
-        this.fieldConfiguration = getNewFieldConfiguration();
-    }
-
-    /**
-     * @return a new FieldConfiguration
-     * @throws EFapsException on error
-     */
-    protected FieldConfiguration getNewFieldConfiguration()
-        throws EFapsException
-    {
-        return new FieldConfiguration(getValue().getField().getId());
-    }
-
-    /**
-     * @see org.efaps.ui.wicket.models.AbstractInstanceObject#hasInstanceManager()
-     * @return false
-     * @throws CacheReloadException on error
-     */
-    @Override
-    public boolean hasInstanceManager()
-        throws CacheReloadException
-    {
-        return this.parent != null ? this.parent.hasInstanceManager() : false;
+        super(_instanceKey, _parent, _value);
     }
 
     /**
@@ -139,107 +88,9 @@ public abstract class AbstractUICellValue
      *
      * @return value of instance variable {@link #parent}
      */
+    @Override
     public AbstractUIObject getParent()
     {
-        return this.parent;
+        return (AbstractUIObject) super.getParent();
     }
-
-    @Override
-    public String toString()
-    {
-        return this.value.toString();
-    }
-
-    /**
-     * @return is this value editable
-     */
-    public boolean editable()
-    {
-        return this.value.getField().isEditableDisplay(this.parent.getMode());
-    }
-
-    /**
-     * Getter method for the instance variable {@link #value}.
-     *
-     * @return value of instance variable {@link #value}
-     */
-    public UIValue getValue()
-    {
-        return this.value;
-    }
-
-    /**
-     * Setter method for instance variable {@link #value}.
-     *
-     * @param _value value for instance variable {@link #value}
-     */
-
-    public void setValue(final UIValue _value)
-    {
-        this.value = _value;
-    }
-
-    /**
-     * @param _wicketId   wicket id
-     * @return Component
-     * @throws EFapsException on error
-     */
-    @SuppressWarnings("unchecked")
-    public Component getComponent(final String _wicketId)
-        throws EFapsException
-    {
-        Component ret;
-        if (editable()) {
-            if (getValue().getUIProvider() instanceof StringUI) {
-                ret = new StringField(_wicketId, Model.of(this), getFieldConfiguration());
-            } else if (getValue().getUIProvider() instanceof LinkWithRangesUI) {
-                ret = new DropDownField(_wicketId, getValue().getDbValue(),
-                                Model.ofMap((Map<Object, Object>) getValue().getEditValue(
-                                                getParent().getMode())),
-                                getFieldConfiguration());
-            } else if (getValue().getUIProvider() instanceof BooleanUI) {
-                ret = new BooleanField(_wicketId, getValue().getDbValue(),
-                                Model.ofMap((Map<Object, Object>) getValue().getEditValue(
-                                                getParent().getMode())),
-                                getFieldConfiguration());
-            } else {
-                ret = new Label(_wicketId, (String) getValue().getEditValue(getParent().getMode()));
-            }
-        } else {
-            if (getValue().getUIProvider() instanceof LinkWithRangesUI) {
-                String label = "";
-                if (getValue().getDbValue() != null) {
-                    final Map<Object, Object> map = (Map<Object, Object>) getValue()
-                                    .getReadOnlyValue(getParent().getMode());
-                    label = String.valueOf(map.get(getValue().getDbValue()));
-                }
-                ret = new Label(_wicketId, label);
-            } else if (getValue().getUIProvider() instanceof BooleanUI) {
-                String label = "";
-                if (getValue().getDbValue() != null) {
-                    final Map<Object, Object> map = (Map<Object, Object>) getValue()
-                                    .getReadOnlyValue(getParent().getMode());
-                    for (final Entry<Object, Object> entry : map.entrySet()) {
-                        if (entry.getValue().equals(getValue().getDbValue())) {
-                            label = (String) entry.getKey();
-                            break;
-                        }
-                    }
-                }
-                ret = new Label(_wicketId, label);
-            } else {
-                ret = new Label(_wicketId, (String) getValue().getReadOnlyValue(getParent().getMode()));
-            }
-        }
-        return ret;
-    }
-
-    /**
-     * @return the related FieldConfiguration
-     */
-    public FieldConfiguration getFieldConfiguration()
-    {
-        return this.fieldConfiguration;
-    }
-
 }

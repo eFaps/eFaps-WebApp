@@ -23,6 +23,7 @@ package org.efaps.ui.wicket.models.cell;
 
 import java.io.Serializable;
 
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.util.EFapsException;
 
@@ -67,7 +68,7 @@ public class FieldConfiguration
     /**
      * @return the field this configuration belongs to
      */
-    protected Field getField()
+    public Field getField()
     {
         return Field.get(this.fieldId);
     }
@@ -86,5 +87,21 @@ public class FieldConfiguration
     public int getSize()
     {
         return getField().getCols();
+    }
+    /**
+     * @return the label of this field
+     */
+    public String getLabel()
+    {
+
+        return DBProperties.getProperty(getField().getLabel());
+    }
+
+    /**
+     * @return must the label been hidden
+     */
+    public boolean isHideLabel()
+    {
+        return getField().isHideLabel();
     }
 }

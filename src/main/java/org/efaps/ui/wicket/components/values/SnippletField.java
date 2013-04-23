@@ -22,6 +22,7 @@
 package org.efaps.ui.wicket.components.values;
 
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.ILabelProvider;
 import org.apache.wicket.model.IModel;
 
 
@@ -33,6 +34,7 @@ import org.apache.wicket.model.IModel;
  */
 public class SnippletField
     extends Label
+    implements ILabelProvider<String>
 {
 
     /**
@@ -40,16 +42,27 @@ public class SnippletField
      */
     private static final long serialVersionUID = 1L;
 
+    private final IModel<String> label;
+
     /**
      * @param _id
      * @param _model
      */
     public SnippletField(final String _id,
-                         final IModel<String> _model)
+                         final IModel<String> _model,
+                         final IModel<String> _label)
     {
         super(_id, _model);
         setEscapeModelStrings(false);
+        this.label = _label;
     }
 
-
+    /* (non-Javadoc)
+     * @see org.apache.wicket.markup.html.form.ILabelProvider#getLabel()
+     */
+    @Override
+    public IModel<String> getLabel()
+    {
+        return this.label;
+    }
 }

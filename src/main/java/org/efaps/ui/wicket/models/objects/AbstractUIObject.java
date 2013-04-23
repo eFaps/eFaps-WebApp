@@ -46,7 +46,6 @@ import org.efaps.beans.valueparser.ValueParser;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.PrintQuery;
-import org.efaps.ui.wicket.models.AbstractInstanceObject;
 import org.efaps.ui.wicket.models.cell.UIPicker;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
@@ -58,7 +57,7 @@ import org.efaps.util.cache.CacheReloadException;
  *          $
  */
 public abstract class AbstractUIObject
-    extends AbstractInstanceObject
+    extends AbstractUIModeObject
 {
 
     /**
@@ -93,14 +92,6 @@ public abstract class AbstractUIObject
      * @see #setInitialised
      */
     private boolean initialized = false;
-
-    /**
-     * The instance variable stores the mode of the form.
-     *
-     * @see #getMode
-     * @see #setMode
-     */
-    private TargetMode mode = TargetMode.UNKNOWN;
 
     /**
      * This instance variable stores, if the Model is supposed to be submitted.
@@ -171,13 +162,13 @@ public abstract class AbstractUIObject
      * @throws CacheReloadException on error
      */
     protected void initialize(final UUID _commandUUID,
-                            final String _openerId)
+                              final String _openerId)
         throws CacheReloadException
     {
         this.openerId = _openerId;
         final AbstractCommand command = getCommand(_commandUUID);
         this.cmdUUID = command.getUUID();
-        this.mode = command.getTargetMode();
+        setMode(command.getTargetMode());
         this.target = command.getTarget();
         this.submit = command.isSubmit();
         if (command.getTargetSearch() != null && !(this instanceof UIMenuItem)) {
@@ -349,30 +340,6 @@ public abstract class AbstractUIObject
     public void setOpenerId(final String _openerId)
     {
         this.openerId = _openerId;
-    }
-
-    /**
-     * This is the getter method for the instance variable {@link #mode}.
-     *
-     * @return value of instance variable {@link #mode}
-     * @see #mode
-     * @see #setMode
-     */
-    public TargetMode getMode()
-    {
-        return this.mode;
-    }
-
-    /**
-     * This is the setter method for the instance variable {@link #mode}.
-     *
-     * @param _mode new value for instance variable {@link #mode}
-     * @see #mode
-     * @see #getMode
-     */
-    public void setMode(final TargetMode _mode)
-    {
-        this.mode = _mode;
     }
 
     /**

@@ -18,11 +18,12 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.ui.wicket.models.field;
+package org.efaps.ui.wicket.components.values;
 
-import org.efaps.admin.datamodel.ui.UIValue;
-import org.efaps.ui.wicket.models.objects.AbstractUIModeObject;
-import org.efaps.util.EFapsException;
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.ILabelProvider;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 
 /**
  * TODO comment!
@@ -30,8 +31,9 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class UIField
-    extends AbstractUIField
+public class LabelField
+    extends Label
+    implements ILabelProvider<String>
 {
 
     /**
@@ -39,11 +41,28 @@ public class UIField
      */
     private static final long serialVersionUID = 1L;
 
-    public UIField(final String _instanceKey,
-                   final AbstractUIModeObject _parent,
-                   final UIValue _value)
-        throws EFapsException
+    private final IModel<String> label;
+
+    /**
+     * @param _wicketId
+     * @param _readOnlyValue
+     */
+    public LabelField(final String _wicketId,
+                      final String _readOnlyValue,
+                      final String _label)
     {
-        super(_instanceKey, _parent, _value);
+        super(_wicketId, Model.of(_readOnlyValue));
+        this.label = Model.of(_label);
     }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.wicket.markup.html.form.ILabelProvider#getLabel()
+     */
+    @Override
+    public IModel<String> getLabel()
+    {
+        return this.label;
+    }
+
 }

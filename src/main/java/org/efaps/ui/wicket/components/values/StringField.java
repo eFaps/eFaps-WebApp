@@ -25,10 +25,10 @@ import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.datamodel.ui.UIValue;
-import org.efaps.ui.wicket.models.cell.AbstractUICellValue;
 import org.efaps.ui.wicket.models.cell.CellSetValue;
 import org.efaps.ui.wicket.models.cell.FieldConfiguration;
 import org.efaps.ui.wicket.models.cell.UIFormCellSet;
+import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
@@ -68,16 +68,16 @@ public class StringField
     /**
      * value of this field.
      */
-    private final AbstractUICellValue cellvalue;
+    private final AbstractUIField cellvalue;
 
     /**
-     * @param _wicketId wicket id fot this component
+     * @param _wicketId wicket id for this component
      * @param _model    model for this componet
      * @param _config   Config
      * @throws EFapsException on error
      */
     public StringField(final String _wicketId,
-                       final Model<AbstractUICellValue> _model,
+                       final Model<AbstractUIField> _model,
                        final FieldConfiguration _config)
         throws EFapsException
     {

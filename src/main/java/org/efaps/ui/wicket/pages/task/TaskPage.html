@@ -24,7 +24,7 @@
 
 -->
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org">
 <head>
 
 </head>
@@ -32,7 +32,10 @@
     <form wicket:id="form">
         <div class="eFapsForm">
             <span wicket:id="groupRepeater">
-                <span wicket:id="fieldRepeater"><span wicket:id="field"></span></span>
+                <span wicket:id="fieldRepeater">
+                    <label wicket:for="field"><wicket:label wicket:for="field"></wicket:label></label>
+                    <span wicket:id="field"></span>
+                </span>
             </span>
         </div>
         <div class="eFapsFooter">
