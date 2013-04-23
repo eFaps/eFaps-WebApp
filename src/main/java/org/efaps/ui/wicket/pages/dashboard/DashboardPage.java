@@ -38,6 +38,7 @@ import org.apache.wicket.model.Model;
 import org.efaps.admin.EFapsSystemConfiguration;
 import org.efaps.admin.KernelSettings;
 import org.efaps.admin.common.SystemConfiguration;
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.user.Role;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
@@ -103,16 +104,25 @@ public class DashboardPage
                                             .isAssigned(Role.get(UUID
                                                             .fromString("1d89358d-165a-4689-8c78-fc625d37aacd")))) {
 
-                columns.add(new PropertyColumn<TaskSummary, String>(new Model<String>("ID"), "id"));
+                columns.add(new PropertyColumn<TaskSummary, String>(new Model<String>("ID"), "id", "id"));
                 columns.add(new PropertyColumn<TaskSummary, String>(new Model<String>("Name"), "name", "name"));
             }
-            columns.add(new PropertyColumn<TaskSummary, String>(new Model<String>("Description"), "description",
-                            "description"));
-            columns.add(new PropertyColumn<TaskSummary, String>(new Model<String>("Status"), "status"));
-            columns.add(new PropertyColumn<TaskSummary, String>(new Model<String>("Activation Time"), "activationTime"));
 
+            final String desc = DBProperties.getFormatedDBProperty(DashboardPage.class.getName()
+                            + ".TaskTable.Description");
+            final String status = DBProperties
+                            .getFormatedDBProperty(DashboardPage.class.getName() + ".TaskTable.Status");
+            final String at = DBProperties.getFormatedDBProperty(DashboardPage.class.getName()
+                            + ".TaskTable.ActivationTime");
+            columns.add(new PropertyColumn<TaskSummary, String>(new Model<String>(desc), "description",
+                            "description"));
+            columns.add(new PropertyColumn<TaskSummary, String>(new Model<String>(status), "status"));
+            columns.add(new PropertyColumn<TaskSummary, String>(new Model<String>(at), "activationTime",
+         "activationTime"));
+
+            final int rowsPerPage = Configuration.getAttributeAsInteger(Configuration.ConfigAttribute.TASKTABLE_MAX);
             add(new AjaxFallbackDefaultDataTable<TaskSummary, String>("table", columns,
-                            new SortableTaskSummaryDataProvider(), 8));
+                            new SortableTaskSummaryDataProvider(), rowsPerPage));
         } else {
             add(new WebMarkupContainer("table").setVisible(false));
         }

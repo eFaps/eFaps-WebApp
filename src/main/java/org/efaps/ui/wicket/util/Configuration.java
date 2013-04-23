@@ -75,7 +75,9 @@ public final class Configuration
         /** StyelSheet for the Structur Browser Tree. (human, windows) */
         STRUCBRWSRTREE_CLASS(true, true, WebAppSettings.STRUCBRWSRTREE_CLASS, "human"),
         /** */
-        SHOW_OID(false, true, WebAppSettings.SHOW_OID, "false");
+        SHOW_OID(false, true, WebAppSettings.SHOW_OID, "false"),
+        /** */
+        TASKTABLE_MAX(false, true, WebAppSettings.TASKTABLE_MAX, "8");
 
         /**
          * Stores the key for this Attribute..

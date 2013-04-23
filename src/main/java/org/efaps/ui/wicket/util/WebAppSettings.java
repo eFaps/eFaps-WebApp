@@ -98,4 +98,9 @@ public interface WebAppSettings
      */
     String SHOW_OID = "org.efaps.webapp.ShowOID";
 
+    /**
+     * Integer: Maximum rows of task shown in the task Table per Page. Default Value is 8.
+     */
+    String TASKTABLE_MAX = "org.efaps.webapp.TaskTable";
+
 }
