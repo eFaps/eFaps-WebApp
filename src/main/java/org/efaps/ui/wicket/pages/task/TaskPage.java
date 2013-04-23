@@ -202,25 +202,15 @@ public class TaskPage
             add(new AjaxFormSubmitBehavior("onclick")
             {
 
-                /**
-                 *
-                 */
                 private static final long serialVersionUID = 1L;
 
-                /*
-                 * (non-Javadoc)
-                 * @see
-                 * org.apache.wicket.ajax.form.AjaxFormSubmitBehavior#onEvent
-                 * (org.apache.wicket.ajax.AjaxRequestTarget)
-                 */
                 @Override
                 protected void onEvent(final AjaxRequestTarget _target)
                 {
                     final ModalWindowContainer modal = ((MainPage) _pageReference.getPage()).getModal();
-                    modal.close(_target);
+                    modal.setReloadChild(true);
 
                     final Map<String, Object> values = new HashMap<String, Object>();
-
                     try {
                         Bpm.executeTask(((UITaskObject) getComponent().getDefaultModelObject()).getTaskSummary(),
                                         _decision, values);
@@ -228,7 +218,8 @@ public class TaskPage
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
-                }
+                    modal.close(_target);
+               }
             });
         }
     }

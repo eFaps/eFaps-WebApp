@@ -41,8 +41,8 @@ public class HomeItem
     private static final long serialVersionUID = 1L;
 
     /**
-     * @param _id
-     * @param _model
+     * @param _wicketId     wicketId for this item
+     * @param _model        model for this item
      */
     public HomeItem(final String _wicketId,
                     final IModel<UIMenuItem> _model)

@@ -68,6 +68,7 @@ public class ActionPanel
             public void onClick(final AjaxRequestTarget _target)
             {
                 final ModalWindowContainer modal = ((MainPage) _pageReference.getPage()).getModal();
+
                 modal.setPageCreator(new PageCreator()
                 {
 

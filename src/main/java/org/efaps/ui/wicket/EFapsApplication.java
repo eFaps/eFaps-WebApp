@@ -95,7 +95,7 @@ public class EFapsApplication
 
         getApplicationSettings().setUploadProgressUpdatesEnabled(true);
 
-        getDebugSettings().setAjaxDebugModeEnabled(false);
+        getDebugSettings().setAjaxDebugModeEnabled(true);
         getDebugSettings().setDevelopmentUtilitiesEnabled(false);
 
         getMarkupSettings().setStripWicketTags(true);

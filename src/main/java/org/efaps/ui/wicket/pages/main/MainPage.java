@@ -168,10 +168,6 @@ public class MainPage
         this.add(borderPanel);
         borderPanel.add(new BorderContainerBehavior(Design.HEADLINE, false));
 
-        //final WebMarkupContainer mainPanel = new WebMarkupContainer("mainPanel");
-
-
-
         final LazyIframe mainPanel = new LazyIframe("mainPanel", new IPageLink()
         {
 
@@ -183,7 +179,7 @@ public class MainPage
                 Page error = null;
                 WebPage page = null;
                 try {
-                        page = new DashboardPage(getPageReference());
+                    page = new DashboardPage(getPageReference());
                 } catch (final EFapsException e) {
                     error = new ErrorPage(e);
                 }

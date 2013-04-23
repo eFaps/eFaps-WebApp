@@ -42,6 +42,7 @@ import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
+import org.efaps.ui.wicket.pages.dashboard.DashboardPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.ui.wicket.util.Configuration;
@@ -180,6 +181,23 @@ public class ModalWindowContainer
                         .append("\",\"style\": \"border: 0; width: 100%; height: 99%\"")
                         .append("}));");
                 }
+            } catch (final EFapsException e) {
+                throw new RestartResponseException(new ErrorPage(e));
+            }
+        } else if (getPage() instanceof MainPage) {
+            try {
+                // this was called by the DashBoard
+                final DashboardPage page = new DashboardPage(getPage().getPageReference());
+                final IRequestHandler handler = new RenderPageRequestHandler(new PageProvider(page));
+                final String url = getRequestCycle().urlFor(handler).toString();
+
+                javascript
+                    .append("top.dijit.registry.byId(\"").append("mainPanel")
+                    .append("\").set(\"content\", top.dojo.create(\"iframe\", {")
+                    .append("\"id\": \"").append(MainPage.IFRAME_ID)
+                    .append("\",\"src\": \"./wicket/").append(url)
+                    .append("\",\"style\": \"border: 0; width: 100%; height: 99%\"")
+                    .append("}));");
             } catch (final EFapsException e) {
                 throw new RestartResponseException(new ErrorPage(e));
             }
