@@ -32,6 +32,7 @@ import java.util.Set;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
+import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
@@ -173,6 +174,9 @@ public class AjaxSubmitCloseBehavior
             if (checkForRequired(_target) && validateFieldValues(_target)
                             && (validateForm(_target, others, classifications))) {
                 if (executeEvents(_target, others, classifications)) {
+                    // to be able to see the changes the context must be commited and reopened
+                    ((EFapsSession) Session.get()).saveContext();
+
                     if (this.uiObject.hasTargetCmd()) {
                         final AbstractCommand targetCmd = this.uiObject.getTargetCmd();
                         AbstractUIPageObject newUIObject;

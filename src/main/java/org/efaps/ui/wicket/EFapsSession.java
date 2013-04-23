@@ -465,6 +465,13 @@ public class EFapsSession
         }
     }
 
+    public void saveContext()
+    {
+        closeContext();
+        openContext();
+    }
+
+
     /**
      * @param _file FIle to be used for the ShowFileCallBackBehavior
      */
