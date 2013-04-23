@@ -36,6 +36,7 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.RefreshingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.bpm.Bpm;
 import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
@@ -107,12 +108,22 @@ public class TaskPage
 
         };
         form.add(groupRepeater);
+        String aprove = DBProperties.getProperty(_rowModel.getObject().getTaskSummary().getName() + ".aprove", false);
+
+        if (aprove == null) {
+            aprove = DBProperties.getProperty("org.efaps.ui.wicket.pages.task.TaskPage.default.Button.aprove");
+        }
+
+        String reject = DBProperties.getProperty(_rowModel.getObject().getTaskSummary().getName() + ".reject", false);
+        if (reject == null) {
+            reject = DBProperties.getProperty("org.efaps.ui.wicket.pages.task.TaskPage.default.Button.reject");
+        }
 
         form.add(new Button("aprove", new DecisionLink(Button.LINKID, _rowModel, _pageReference, true),
-                        "Label1", Button.ICON.ACCEPT.getReference()));
+                        aprove, Button.ICON.ACCEPT.getReference()));
 
         form.add(new Button("reject", new DecisionLink(Button.LINKID, _rowModel, _pageReference, false),
-                        "Label2", Button.ICON.CANCEL.getReference()));
+                        reject, Button.ICON.CANCEL.getReference()));
 
     }
 

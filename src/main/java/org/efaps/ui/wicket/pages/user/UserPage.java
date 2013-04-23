@@ -23,11 +23,7 @@ package org.efaps.ui.wicket.pages.user;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.wicket.Page;
 import org.apache.wicket.PageReference;
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow.PageCreator;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
@@ -41,15 +37,10 @@ import org.apache.wicket.model.Model;
 import org.efaps.admin.EFapsSystemConfiguration;
 import org.efaps.admin.KernelSettings;
 import org.efaps.admin.common.SystemConfiguration;
-import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
-import org.efaps.ui.wicket.models.objects.UITaskObject;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
-import org.efaps.ui.wicket.pages.main.MainPage;
-import org.efaps.ui.wicket.pages.task.TaskPage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.CacheReloadException;
 import org.jbpm.task.query.TaskSummary;
 
 /**
@@ -79,8 +70,9 @@ public class UserPage
 
         final List<IColumn<TaskSummary, String>> columns = new ArrayList<IColumn<TaskSummary, String>>();
 
-        columns.add(new AbstractColumn<TaskSummary, String>(new Model<String>("Actions"))
+        columns.add(new AbstractColumn<TaskSummary, String>(new Model<String>(""))
         {
+
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -88,39 +80,13 @@ public class UserPage
                                      final String _componentId,
                                      final IModel<TaskSummary> _rowModel)
             {
-                _cellItem.add(new AjaxLink<Void>(_componentId)
-                {
+                _cellItem.add(new ActionPanel(_componentId, _rowModel, _pageReference));
+            }
 
-                    private static final long serialVersionUID = 1L;
-
-                    @Override
-                    public void onClick(final AjaxRequestTarget _target)
-                    {
-                        final ModalWindowContainer modal = ((MainPage) _pageReference.getPage()).getModal();
-                        modal.setPageCreator(new PageCreator()
-                        {
-                            private static final long serialVersionUID = 1L;
-
-                            @Override
-                            public Page createPage()
-                            {
-                                Page page = null;
-                                try {
-                                    page = new TaskPage(UITaskObject.getModelForTask(_rowModel.getObject()),
-                                                    _pageReference);
-                                } catch (final CacheReloadException e) {
-                                    // TODO Auto-generated catch block
-                                    e.printStackTrace();
-                                } catch (final EFapsException e) {
-                                    // TODO Auto-generated catch block
-                                    e.printStackTrace();
-                                }
-                                return page;
-                            }
-                        });
-                        modal.show(_target);
-                    }
-                });
+            @Override
+            public String getCssClass()
+            {
+                return "openTask";
             }
         });
         // only admin
