@@ -118,7 +118,7 @@ public class DashboardPage
                             "description"));
             columns.add(new PropertyColumn<TaskSummary, String>(new Model<String>(status), "status"));
             columns.add(new PropertyColumn<TaskSummary, String>(new Model<String>(at), "activationTime",
-         "activationTime"));
+                            "activationTime"));
 
             final int rowsPerPage = Configuration.getAttributeAsInteger(Configuration.ConfigAttribute.TASKTABLE_MAX);
             add(new AjaxFallbackDefaultDataTable<TaskSummary, String>("table", columns,
