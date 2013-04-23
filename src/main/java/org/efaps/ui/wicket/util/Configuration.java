@@ -25,10 +25,13 @@ import java.io.StringReader;
 import java.util.Properties;
 import java.util.UUID;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO comment!
@@ -38,6 +41,10 @@ import org.efaps.util.cache.CacheReloadException;
  */
 public final class Configuration
 {
+    /**
+     * Logger for this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(Configuration.class);
 
     /**
      * Attribute enum.
@@ -45,24 +52,30 @@ public final class Configuration
     public enum ConfigAttribute
     {
         /**  */
-        RECENTCACHESIZE(false, true, "RecentCacheSize", "5"),
+        RECENTCACHESIZE(false, true, WebAppSettings.RECENT_CACHE_SIZE, "5"),
+        /**  */
+        RECENT_LINKMAX(false, true, WebAppSettings.RECENT_LINKMAX, "25"),
+        /**  */
+        CACHE_DURATION(false, true, WebAppSettings.CACHE_DURATION, "3600"),
 
         /** StyelSheet for the Classification Tree. (human, windows) */
-        CLASSTREE_CLASS(true, true, "ClassificationTreeStyleSheet", "human"),
+        CLASSTREE_CLASS(true, true, WebAppSettings.CLASSTREE_CLASS, "human"),
         /** Expand state for the Tree. */
-        CLASSTREE_EXPAND(false, true, "ClassificationTreeExpandState", ""),
+        CLASSTREE_EXPAND(false, true, WebAppSettings.CLASSTREE_EXPAND, ""),
         /** Name of the main stylesheet for dojo. (tundra,claro,nihilo,soria) */
-        DOJO_CLASS(true, true, "DojoMainStylesheet", "tundra"),
+        DOJO_CLASS(true, true, WebAppSettings.DOJO_CLASS, "tundra"),
         /** Name of the main stylesheet for dojo modal window. (w_blue,w_silver) */
-        DOJO_MODALCLASS(true, true, "DojoModalStylesheet", "w_silver"),
+        DOJO_MODALCLASS(true, true, WebAppSettings.DOJO_MODALCLASS, "w_silver"),
         /** position of the horizontal splitter. */
-        SPLITTERPOSHORIZONTAL(true, true, "PositionOfHorizontalSplitter", "200"),
+        SPLITTERPOSHORIZONTAL(true, true, WebAppSettings.SPLITTERPOSHORIZONTAL, "200"),
         /** position of the vertical splitter. */
-        SPLITTERPOSVERTICAL(true, true, "PositionOfVerticalSplitter", "50%"),
+        SPLITTERPOSVERTICAL(true, true, WebAppSettings.SPLITTERPOSVERTICAL, "50%"),
         /** StyelSheet for the Structur Browser Tree. (human, windows) */
-        STRUCTREE_CLASS(true, true, "StructurTreeStyleSheet", "windows"),
+        STRUCTREE_CLASS(true, true, WebAppSettings.STRUCTREE_CLASS, "windows"),
         /** StyelSheet for the Structur Browser Tree. (human, windows) */
-        STRUCBRWSRTREE_CLASS(true, true, "StructurBrowserTreeStyleSheet", "human");
+        STRUCBRWSRTREE_CLASS(true, true, WebAppSettings.STRUCBRWSRTREE_CLASS, "human"),
+        /** */
+        SHOW_OID(false, true, WebAppSettings.SHOW_OID, "false");
 
         /**
          * Stores the key for this Attribute..
@@ -110,6 +123,12 @@ public final class Configuration
         {
             return this.key;
         }
+
+        @Override
+        public String toString()
+        {
+            return ToStringBuilder.reflectionToString(this);
+        }
     }
 
     /**
@@ -121,6 +140,7 @@ public final class Configuration
 
     /**
      * @return the WebApp Sytemconfiguration.
+     * @throws CacheReloadException on error
      */
     protected static SystemConfiguration getSysConfig()
         throws CacheReloadException
@@ -139,8 +159,7 @@ public final class Configuration
         try {
             ret = Configuration.getSysConfig().getAttributeValue(_attribute.getKey());
         } catch (final EFapsException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            Configuration.LOG.warn("Catched error while reading Value from SystemConfiguration {}", _attribute, e);
         }
         return ret;
     }
@@ -191,6 +210,16 @@ public final class Configuration
     public static int getAttributeAsInteger(final ConfigAttribute _attribute)
     {
         return Integer.valueOf(Configuration.getAttribute(_attribute));
+    }
+
+
+    /**
+     * @param _attribute the attribute the value is search for
+     * @return the value for the configuraion
+     */
+    public static boolean getAttributeAsBoolean(final ConfigAttribute _attribute)
+    {
+        return Boolean.parseBoolean(Configuration.getAttribute(_attribute));
     }
 
     /**

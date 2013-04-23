@@ -22,6 +22,7 @@ package org.efaps.ui.wicket.pages.dashboard;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.wicket.PageReference;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
@@ -37,9 +38,12 @@ import org.apache.wicket.model.Model;
 import org.efaps.admin.EFapsSystemConfiguration;
 import org.efaps.admin.KernelSettings;
 import org.efaps.admin.common.SystemConfiguration;
+import org.efaps.admin.user.Role;
+import org.efaps.db.Context;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.util.EFapsException;
 import org.jbpm.task.query.TaskSummary;
 
@@ -67,43 +71,46 @@ public class DashboardPage
         throws EFapsException
     {
         super();
-
-        final List<IColumn<TaskSummary, String>> columns = new ArrayList<IColumn<TaskSummary, String>>();
-
-        columns.add(new AbstractColumn<TaskSummary, String>(new Model<String>(""))
-        {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public void populateItem(final Item<ICellPopulator<TaskSummary>> _cellItem,
-                                     final String _componentId,
-                                     final IModel<TaskSummary> _rowModel)
-            {
-                _cellItem.add(new ActionPanel(_componentId, _rowModel, _pageReference));
-            }
-
-            @Override
-            public String getCssClass()
-            {
-                return "openTask";
-            }
-        });
-        // only admin
-        columns.add(new PropertyColumn<TaskSummary, String>(new Model<String>("ID"), "id"));
-        columns.add(new PropertyColumn<TaskSummary, String>(new Model<String>("Name"), "name",
-                        "name"));
-
-        columns.add(new PropertyColumn<TaskSummary, String>(new Model<String>("Description"), "description",
-                        "description"));
-        columns.add(new PropertyColumn<TaskSummary, String>(new Model<String>("Status"), "status"));
-        columns.add(new PropertyColumn<TaskSummary, String>(new Model<String>("Activation Time"), "activationTime"));
-
         final SystemConfiguration config = EFapsSystemConfiguration.KERNEL.get();
-
         final boolean active = config != null
-                        ? config.getAttributeValueAsBoolean(KernelSettings.ActivateBPM) : false;
+                        ? config.getAttributeValueAsBoolean(KernelSettings.ACTIVATE_BPM) : false;
         if (active) {
+            final List<IColumn<TaskSummary, String>> columns = new ArrayList<IColumn<TaskSummary, String>>();
+
+            columns.add(new AbstractColumn<TaskSummary, String>(new Model<String>(""))
+            {
+
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                public void populateItem(final Item<ICellPopulator<TaskSummary>> _cellItem,
+                                         final String _componentId,
+                                         final IModel<TaskSummary> _rowModel)
+                {
+                    _cellItem.add(new ActionPanel(_componentId, _rowModel, _pageReference));
+                }
+
+                @Override
+                public String getCssClass()
+                {
+                    return "openTask";
+                }
+            });
+            // Administration
+            if (Configuration.getAttributeAsBoolean(Configuration.ConfigAttribute.SHOW_OID)
+                            && Context.getThreadContext()
+                                            .getPerson()
+                                            .isAssigned(Role.get(UUID
+                                                            .fromString("1d89358d-165a-4689-8c78-fc625d37aacd")))) {
+
+                columns.add(new PropertyColumn<TaskSummary, String>(new Model<String>("ID"), "id"));
+                columns.add(new PropertyColumn<TaskSummary, String>(new Model<String>("Name"), "name", "name"));
+            }
+            columns.add(new PropertyColumn<TaskSummary, String>(new Model<String>("Description"), "description",
+                            "description"));
+            columns.add(new PropertyColumn<TaskSummary, String>(new Model<String>("Status"), "status"));
+            columns.add(new PropertyColumn<TaskSummary, String>(new Model<String>("Activation Time"), "activationTime"));
+
             add(new AjaxFallbackDefaultDataTable<TaskSummary, String>("table", columns,
                             new SortableTaskSummaryDataProvider(), 8));
         } else {

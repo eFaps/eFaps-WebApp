@@ -21,7 +21,6 @@
 package org.efaps.ui.wicket.components.split.header;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.head.IHeaderResponse;
@@ -29,12 +28,12 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
-import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.components.IRecent;
-import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.util.EFapsException;
 
 /**
@@ -118,13 +117,9 @@ public class SplitHeaderPanel
         if (allRecents.isEmpty()) {
             recent.setVisible(false);
         } else {
-            //WebApp-Configuration
-            final SystemConfiguration config = SystemConfiguration.get(
-                            UUID.fromString("50a65460-2d08-4ea8-b801-37594e93dad5"));
-            int maxLength = 0;
-            if (config != null) {
-                maxLength = config.getAttributeValueAsInteger("RecentLinkMaxLenght");
-            }
+
+            final int maxLength = Configuration.getAttributeAsInteger(Configuration.ConfigAttribute.RECENT_LINKMAX);
+
             final RepeatingView repeater = new RepeatingView("repeater");
             recent.add(repeater);
             for (final IRecent rec : allRecents) {

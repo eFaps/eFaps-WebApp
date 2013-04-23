@@ -31,7 +31,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.admin.program.bundle.BundleInterface;
 import org.efaps.admin.program.bundle.BundleMaker;
 import org.efaps.ci.CIAdminProgram;
@@ -39,6 +38,7 @@ import org.efaps.db.Checkout;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.db.SelectBuilder;
+import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheObjectInterface;
 import org.efaps.util.cache.CacheReloadException;
@@ -78,11 +78,6 @@ public class StaticContentServlet
     private static ContentMapper NULL = new ContentMapper(null, null, null, Long.valueOf(0), Long.valueOf(0));
 
     /**
-     * Cache duration time default value.
-     */
-    private int cacheDuration = 3600;
-
-    /**
      * The method checks the image from the user interface image object out and
      * returns them in a output stream to the web client. The name of the user
      * interface image object must given as name at the end of the path.
@@ -102,13 +97,8 @@ public class StaticContentServlet
         try {
             final Cache<String, ContentMapper> cache = InfinispanCache.get().<String, ContentMapper>getCache(
                             StaticContentServlet.CACHENAME);
-            if (!cache.isEmpty()) {
-                final SystemConfiguration config = SystemConfiguration.get(
-                                UUID.fromString("50a65460-2d08-4ea8-b801-37594e93dad5"));
-                if (config != null) {
-                    this.cacheDuration = config.getAttributeValueAsInteger("CacheDuration");
-                }
-            }
+            final int cacheDuration = Configuration.getAttributeAsInteger(Configuration.ConfigAttribute.CACHE_DURATION);
+
             if (!cache.containsKey(contentName)) {
                 final QueryBuilder queryBldr = new QueryBuilder(CIAdminProgram.StaticCompiled);
                 queryBldr.addWhereAttrEqValue(CIAdminProgram.StaticCompiled.Name, contentName);
@@ -140,8 +130,8 @@ public class StaticContentServlet
                 _res.setContentType(getServletContext().getMimeType(contentMapper.file));
                 _res.setDateHeader("Last-Modified", contentMapper.time);
                 _res.setDateHeader("Expires", System.currentTimeMillis()
-                                + (this.cacheDuration * 1000));
-                _res.setHeader("Cache-Control", "max-age=" + this.cacheDuration);
+                                + (cacheDuration * 1000));
+                _res.setHeader("Cache-Control", "max-age=" + cacheDuration);
 
                 if (supportsCompression(_req)) {
                     _res.setHeader("Content-Encoding", "gzip");
@@ -164,8 +154,8 @@ public class StaticContentServlet
                 _res.setContentType(bundle.getContentType());
                 _res.setDateHeader("Last-Modified", bundle.getCreationTime());
                 _res.setDateHeader("Expires", System.currentTimeMillis()
-                                + (this.cacheDuration * 1000));
-                _res.setHeader("Cache-Control", "max-age=" + this.cacheDuration);
+                                + (cacheDuration * 1000));
+                _res.setHeader("Cache-Control", "max-age=" + cacheDuration);
                 _res.setHeader("Content-Encoding", "gzip");
 
                 int bytesRead;

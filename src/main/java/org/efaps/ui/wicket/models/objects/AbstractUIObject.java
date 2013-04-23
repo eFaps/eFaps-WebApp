@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.apache.wicket.RestartResponseException;
-import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter;
@@ -48,6 +47,7 @@ import org.efaps.db.Instance;
 import org.efaps.db.PrintQuery;
 import org.efaps.ui.wicket.models.cell.UIPicker;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 
@@ -371,12 +371,8 @@ public abstract class AbstractUIObject
                 if (print.execute()) {
                     title = list.makeString(getInstance(), print, getMode());
                 }
-                // WebApp-Configuration
-                final SystemConfiguration config = SystemConfiguration.get(
-                                UUID.fromString("50a65460-2d08-4ea8-b801-37594e93dad5"));
                 // Administration
-                if (config != null
-                                && config.getAttributeValueAsBoolean("ShowOID")
+                if (Configuration.getAttributeAsBoolean(Configuration.ConfigAttribute.SHOW_OID)
                                 && Context.getThreadContext()
                                                 .getPerson()
                                                 .isAssigned(Role.get(UUID

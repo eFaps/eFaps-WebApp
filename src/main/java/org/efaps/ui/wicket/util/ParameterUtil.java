@@ -18,14 +18,12 @@
  * Last Changed By: $Author$
  */
 
-
 package org.efaps.ui.wicket.util;
 
 import java.util.List;
 
 import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.util.string.StringValue;
-
 
 /**
  * TODO comment!
@@ -38,9 +36,11 @@ public class ParameterUtil
 
     /**
      * Get an array for the StringValues.
-     * @param _parameters       IRequestParameters
-     * @param _parameterName    name of the Paramaters
-     * @return always StringArray, if parameter does not exist an empty StringArray
+     *
+     * @param _parameters IRequestParameters
+     * @param _parameterName name of the Paramaters
+     * @return always StringArray, if parameter does not exist an empty
+     *         StringArray
      */
     public static String[] parameter2Array(final IRequestParameters _parameters,
                                            final String _parameterName)
@@ -49,25 +49,27 @@ public class ParameterUtil
         return ParameterUtil.stringValues2Array(values);
     }
 
-   /**
-    * Get an array for the StringValues.
-    * @param _parameters       IRequestParameters
-    * @param _parameterName    name of the Paramaters
-    * @return always StringArray, if parameter does not exist an empty StringArray
-    */
-   public static String[] stringValues2Array(final List<StringValue> values)
-   {
-       final String[] ret;
-       if (values != null) {
-           ret  = new String[values.size()];
-           int i = 0;
-           for (final StringValue value : values) {
-               ret[i] = value.toString();
-               i++;
-           }
-       } else {
-           ret = new String[0];
-       }
-       return ret;
-   }
+    /**
+     * Get an array for the StringValues.
+     *
+     * @param _parameters IRequestParameters
+     * @param _parameterName name of the Paramaters
+     * @return always StringArray, if parameter does not exist an empty
+     *         StringArray
+     */
+    public static String[] stringValues2Array(final List<StringValue> values)
+    {
+        final String[] ret;
+        if (values != null) {
+            ret = new String[values.size()];
+            int i = 0;
+            for (final StringValue value : values) {
+                ret[i] = value.toString();
+                i++;
+            }
+        } else {
+            ret = new String[0];
+        }
+        return ret;
+    }
 }
