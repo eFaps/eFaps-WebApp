@@ -29,7 +29,7 @@ import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.efaps.bpm.Bpm;
+import org.efaps.bpm.BPM;
 import org.jbpm.task.query.TaskSummary;
 
 /**
@@ -57,7 +57,7 @@ public class SortableTaskSummaryDataProvider
     {
         // set default sort
         setSort("description", SortOrder.ASCENDING);
-        this.summaries = Bpm.getTasksAssignedAsPotentialOwner();
+        this.summaries = BPM.getTasksAssignedAsPotentialOwner();
     }
 
     @Override

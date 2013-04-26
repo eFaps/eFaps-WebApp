@@ -37,7 +37,7 @@ import org.apache.wicket.markup.repeater.RefreshingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.dbproperty.DBProperties;
-import org.efaps.bpm.Bpm;
+import org.efaps.bpm.BPM;
 import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
@@ -212,7 +212,7 @@ public class TaskPage
 
                     final Map<String, Object> values = new HashMap<String, Object>();
                     try {
-                        Bpm.executeTask(((UITaskObject) getComponent().getDefaultModelObject()).getTaskSummary(),
+                        BPM.executeTask(((UITaskObject) getComponent().getDefaultModelObject()).getTaskSummary(),
                                         _decision, values);
                     } catch (final EFapsException e) {
                         // TODO Auto-generated catch block

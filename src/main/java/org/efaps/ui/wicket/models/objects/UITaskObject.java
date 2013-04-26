@@ -35,7 +35,7 @@ import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.Form;
 import org.efaps.admin.ui.field.Field;
-import org.efaps.bpm.Bpm;
+import org.efaps.bpm.BPM;
 import org.efaps.db.Instance;
 import org.efaps.db.PrintQuery;
 import org.efaps.ui.wicket.models.cell.FieldConfiguration;
@@ -84,7 +84,7 @@ public class UITaskObject
         final Form form = Form.get(getTaskSummary().getName());
         if (form != null) {
             Instance inst = Instance.get("");
-            final Object values = Bpm.getTaskData(getTaskSummary());
+            final Object values = BPM.getTaskData(getTaskSummary());
             if (values instanceof Map) {
                 final String oid = (String) ((Map<?, ?>) values).get("OID");
                 inst = Instance.get(oid);
