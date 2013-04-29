@@ -51,6 +51,12 @@ public abstract class AbstractUIField
 {
 
     /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
+
+    /**
      * Configuration of the related field.
      */
     private FieldConfiguration fieldConfiguration;

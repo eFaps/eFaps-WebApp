@@ -38,11 +38,15 @@ public class UIGroup
      *
      */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * List of fields belonging to this group.
+     */
     private final List<AbstractUIField> fields = new ArrayList<AbstractUIField>();
 
 
     /**
-     * @param _uiField
+     * @param _uiField add an field to this group
      */
     public void add(final AbstractUIField _uiField)
     {
