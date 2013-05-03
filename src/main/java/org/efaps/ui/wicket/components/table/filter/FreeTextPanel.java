@@ -77,14 +77,13 @@ public class FreeTextPanel
 
         if (filterType.equals(FilterType.TEXT)) {
             this.add(new Label("textFrom", DBProperties.getProperty("FilterPage.textFilter")));
-            final TextField<String> stringFilter = new TextField<String>("from", new IModel<String>(){
+
+            final IModel<String> model = new IModel<String>()
+            {
+
+                private static final long serialVersionUID = 1L;
 
                 private String value;
-                @Override
-                public void detach()
-                {
-                    // TODO Auto-generated method stub
-                }
 
                 @Override
                 public String getObject()
@@ -95,10 +94,18 @@ public class FreeTextPanel
                 @Override
                 public void setObject(final String object)
                 {
-                   this.value = object;
+                    this.value = object;
                 }
 
-              });
+                @Override
+                public void detach()
+                {
+                    // no detach needed
+                }
+            };
+            model.setObject(uitable.getFilter(_uitableHeader).getFrom());
+
+            final TextField<String> stringFilter = new TextField<String>("from", model);
             this.add(stringFilter);
             this.add(new WebMarkupContainer("js").setVisible(false));
             this.add(new WebMarkupContainer("dateFrom").setVisible(false));

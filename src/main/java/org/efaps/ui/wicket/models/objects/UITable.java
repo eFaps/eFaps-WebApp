@@ -1168,6 +1168,16 @@ public class UITable
         }
 
         /**
+         * Getter method for the instance variable {@link #from}.
+         *
+         * @return value of instance variable {@link #from}
+         */
+        public String getFrom()
+        {
+            return this.from;
+        }
+
+        /**
          * Setter method for instance variable {@link #headerFieldId}.
          *
          * @param _headerFieldId value for instance variable {@link #headerFieldId}
