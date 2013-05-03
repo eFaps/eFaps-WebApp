@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2011 The eFaps Team
+ * Copyright 2003 - 2013 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@
 
 package org.efaps.ui.wicket.components.values;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -30,9 +31,14 @@ import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.efaps.admin.datamodel.ui.UIValue;
+import org.efaps.ui.wicket.models.cell.CellSetValue;
 import org.efaps.ui.wicket.models.cell.FieldConfiguration;
+import org.efaps.ui.wicket.models.cell.UIFormCellSet;
+import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.objects.DropDownOption;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,19 +68,31 @@ public class DropDownField
     private final FieldConfiguration config;
 
     /**
+     * value of this field.
+     */
+    private final AbstractUIField cellvalue;
+
+    /**
+     * Was the value already converted.
+     */
+    private boolean converted = false;
+
+    /**
      * @param _wicketId     wicket id for this component
-      *@param _value        value for this component
+      *@param _model        Model for this component
      * @param _choices    Choices for the dropdowns
      * @param _fieldConfiguration    Configurationobject for this component.
      */
     public DropDownField(final String _wicketId,
-                         final Object _value,
+                         final Model<AbstractUIField> _model,
                          final IModel<Map<Object, Object>> _choices,
                          final FieldConfiguration _fieldConfiguration)
     {
         super(_wicketId);
-        if (_value != null) {
-            setDefaultModel(Model.of(new DropDownOption(String.valueOf(_value), null)));
+        this.cellvalue = _model.getObject();
+        final Serializable value = this.cellvalue.getValue().getDbValue();
+        if (value != null) {
+            setDefaultModel(Model.of(new DropDownOption(String.valueOf(value), null)));
         } else {
             setDefaultModel(new Model<String>());
         }
@@ -103,6 +121,43 @@ public class DropDownField
         return ret;
     }
 
+    @Override
+    protected void convertInput()
+    {
+        this.converted = true;
+        int i = 0;
+        if (this.cellvalue instanceof CellSetValue) {
+            final UIFormCellSet cellset = ((CellSetValue) this.cellvalue).getCellSet();
+            i = cellset.getIndex(getInputName());
+        }
+        final String[] value = getInputAsArray();
+
+        setConvertedInput(new DropDownOption(
+                        String.valueOf(value != null && value.length > 0 && value[i] != null ? trim(value[i]) : null),
+                        null));
+    }
+
+    @Override
+    public void updateModel()
+    {
+        if (!this.converted) {
+            convertInput();
+        }
+        setModelObject(getConvertedInput());
+        try {
+            this.cellvalue.setValue(UIValue.get(this.cellvalue.getValue().getField(), this.cellvalue.getValue()
+                            .getAttribute(), ((DropDownOption) getDefaultModelObject()).getValue()));
+        } catch (final CacheReloadException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+
+    /**
+     * @param _values value to convert to dropdown otions
+     * @return list of options
+     */
     private static List<DropDownOption> getSelectChoices(final Map<Object, Object> _values)
     {
         final List<DropDownOption> list = new ArrayList<DropDownOption>();
@@ -113,10 +168,15 @@ public class DropDownField
         return list;
     }
 
+    /**
+     * The renderer for this dropdown.
+     */
     public final class ChoiceRenderer
         implements IChoiceRenderer<DropDownOption>
     {
-
+        /**
+         * Needed fro serialization.
+         */
         private static final long serialVersionUID = 1L;
 
         @Override

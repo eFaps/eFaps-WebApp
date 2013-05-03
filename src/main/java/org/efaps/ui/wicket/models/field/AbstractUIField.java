@@ -163,7 +163,7 @@ public abstract class AbstractUIField
             if (getValue().getUIProvider() instanceof StringUI) {
                 ret = new StringField(_wicketId, Model.of(this), getFieldConfiguration());
             } else if (getValue().getUIProvider() instanceof LinkWithRangesUI) {
-                ret = new DropDownField(_wicketId, getValue().getDbValue(),
+                ret = new DropDownField(_wicketId, Model.of(this),
                                 Model.ofMap((Map<Object, Object>) getValue().getEditValue(
                                                 getParent().getMode())),
                                 getFieldConfiguration());
