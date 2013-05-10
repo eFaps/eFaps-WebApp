@@ -35,6 +35,8 @@ import org.efaps.admin.ui.AbstractCommand.SortDirection;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.admin.ui.field.Filter;
 import org.efaps.util.cache.CacheReloadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author The eFaps Team
@@ -43,6 +45,10 @@ import org.efaps.util.cache.CacheReloadException;
 public class UITableHeader
     implements IClusterable
 {
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(UITableHeader.class);
 
     /**
      * Enum for the different types of filter.
@@ -162,6 +168,10 @@ public class UITableHeader
                                 && (uiInterface instanceof DateUI || uiInterface instanceof DateTimeUI))) {
                 this.filterType = UITableHeader.FilterType.DATE;
             }
+        }
+
+        if (_field.getFilter().getType().equals(Filter.Type.FREETEXT) && _attr == null) {
+            UITableHeader.LOG.warn("ClassNameUI is require when the field have not an attribute");
         }
     }
 
