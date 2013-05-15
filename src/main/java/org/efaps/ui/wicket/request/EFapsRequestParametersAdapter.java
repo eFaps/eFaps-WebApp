@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2011 The eFaps Team
+ * Copyright 2003 - 2013 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,8 @@ import org.apache.wicket.util.string.StringValue;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.util.ParameterUtil;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO comment!
@@ -43,28 +45,48 @@ import org.efaps.util.EFapsException;
 public class EFapsRequestParametersAdapter
     implements IWritableRequestParameters
 {
+    /**
+     * Logger for this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(EFapsRequestParametersAdapter.class);
 
+    /**
+     * Mapping of the parameters.
+     */
     private final Map<String, List<StringValue>> parameters = new HashMap<String, List<StringValue>>();
 
     /**
-     * @param _queryParameters
-     * @param _postParameters
+     * @param _parameters paramters to work on
      */
     public EFapsRequestParametersAdapter(final IRequestParameters... _parameters)
     {
         for (final IRequestParameters p : _parameters) {
             for (final String name : p.getParameterNames()) {
-                this.parameters.put(name, p.getParameterValues(name));
+                final List<StringValue> values = p.getParameterValues(name);
+                this.parameters.put(name, values);
+                EFapsRequestParametersAdapter.LOG.trace("adding parameter from request. Name: '{}', value: {}", name,
+                                values);
             }
         }
     }
 
+    /**
+     * Returns immutable set of all available parameter names.
+     * @return list of parameter names
+     */
     @Override
     public Set<String> getParameterNames()
     {
         return Collections.unmodifiableSet(this.parameters.keySet());
     }
 
+    /**
+     * Returns single value for parameter with specified name. This method always returns non-null
+     * result even if the parameter does not exist.
+     *
+     * @param _name parameter name
+     * @return {@link StringValue} wrapping the actual value
+     */
     @Override
     public StringValue getParameterValue(final String _name)
     {
@@ -73,6 +95,14 @@ public class EFapsRequestParametersAdapter
                         : StringValue.valueOf((String) null);
     }
 
+    /**
+     * Returns list of values for parameter with specified name. If the parameter does not exist
+     * this method returns <code>null</code>
+     *
+     * @param _name parameter name
+     * @return list of all values for given parameter or <code>null</code> if parameter does not
+     *         exist
+     */
     @Override
     public List<StringValue> getParameterValues(final String _name)
     {
@@ -80,6 +110,12 @@ public class EFapsRequestParametersAdapter
         return values != null ? Collections.unmodifiableList(values) : null;
     }
 
+    /**
+     * Sets the values for given parameter.
+     *
+     * @param _name parameter name
+     * @param _value values
+     */
     @Override
     public void setParameterValues(final String _name,
                                    final List<StringValue> _value)
@@ -88,16 +124,15 @@ public class EFapsRequestParametersAdapter
         try {
             Context.getThreadContext().getParameters().put(_name, ParameterUtil.stringValues2Array(_value));
         } catch (final EFapsException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            EFapsRequestParametersAdapter.LOG.error("Could not set parameter '{}' in Context.", _name);
         }
     }
 
     /**
      * Sets value for given key.
      *
-     * @param _key      key for the value
-     * @param _value    value
+     * @param _key key for the value
+     * @param _value value
      */
     public void setParameterValue(final String _key,
                                   final String _value)
@@ -110,15 +145,14 @@ public class EFapsRequestParametersAdapter
     /**
      * Adds a value for given key.
      *
-     * @param _key      key for the value
-     * @param _value    value
+     * @param _key key for the value
+     * @param _value value
      */
     public void addParameterValue(final String _key,
                                   final String _value)
     {
         List<StringValue> list = this.parameters.get(_key);
-        if (list == null)
-        {
+        if (list == null) {
             list = new ArrayList<StringValue>(1);
             this.parameters.put(_key, list);
         }
@@ -126,11 +160,13 @@ public class EFapsRequestParametersAdapter
         try {
             Context.getThreadContext().getParameters().put(_key, ParameterUtil.stringValues2Array(list));
         } catch (final EFapsException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            EFapsRequestParametersAdapter.LOG.error("Could not add parameter '{}' in Context.", _key);
         }
     }
 
+    /**
+     * Clears all parameters.
+     */
     @Override
     public void reset()
     {

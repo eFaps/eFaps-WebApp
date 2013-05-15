@@ -33,8 +33,8 @@ import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
-import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.util.EFapsKey;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
@@ -87,15 +87,6 @@ public class AjaxFieldUpdateBehavior
     {
         super(_event);
         this.model = _model;
-    }
-
-    /**
-     * @see org.apache.wicket.ajax.AbstractDefaultAjaxBehavior#onBind()
-     */
-    @Override
-    protected void onBind()
-    {
-        super.onBind();
     }
 
     /**
