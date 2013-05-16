@@ -113,7 +113,7 @@ public class BasicAuthenticationFilter
             _response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         } else {
             final String encoded = header.substring(header.indexOf(" ") + 1);
-            final String decoded = new String(Base64.decodeBase64(encoded.getBytes()));
+            final String decoded = new String(Base64.decodeBase64(encoded.getBytes()), "UTF8");
             final String name = decoded.substring(0, decoded.indexOf(":"));
             final String passwd = decoded.substring(decoded.indexOf(":") + 1);
             if (checkLogin(name, passwd)) {
