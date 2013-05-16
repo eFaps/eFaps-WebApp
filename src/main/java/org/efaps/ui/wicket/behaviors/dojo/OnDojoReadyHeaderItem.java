@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2011 The eFaps Team
+ * Copyright 2003 - 2013 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,18 +40,26 @@ public class OnDojoReadyHeaderItem
     extends HeaderItem
 {
 
-    private final CharSequence javaScript;
     /**
-     * @param _javaScript
+     * Javascript for this HeaderItem.
+     */
+    private final CharSequence javaScript;
+
+    /**
+     * @param _javaScript Javascript for the header to add
      */
     public OnDojoReadyHeaderItem(final CharSequence _javaScript)
     {
         this.javaScript = _javaScript;
     }
 
-    public static OnDojoReadyHeaderItem forScript(final CharSequence javaScript)
+    /**
+     * @param _javaScript Javascript for the header to add
+     * @return new OnDojoReadyHeaderItem
+     */
+    public static OnDojoReadyHeaderItem forScript(final CharSequence _javaScript)
     {
-        return new OnDojoReadyHeaderItem(javaScript);
+        return new OnDojoReadyHeaderItem(_javaScript);
     }
 
     @Override
@@ -64,16 +72,6 @@ public class OnDojoReadyHeaderItem
     public String toString()
     {
         return "OnDojoReadyHeaderItem(" + getJavaScript() + ")";
-    }
-
-    @Override
-    public boolean equals(final Object _obj)
-    {
-        boolean ret = false;
-        if (_obj instanceof OnDojoReadyHeaderItem) {
-            ret =  ((OnDojoReadyHeaderItem) _obj).getJavaScript().equals(getJavaScript());
-        }
-        return ret;
     }
 
     @Override
@@ -107,5 +105,23 @@ public class OnDojoReadyHeaderItem
     public CharSequence getJavaScript()
     {
         return this.javaScript;
+    }
+
+    @Override
+    public boolean equals(final Object _obj)
+    {
+        boolean ret;
+        if (_obj instanceof OnDojoReadyHeaderItem) {
+            ret =  ((OnDojoReadyHeaderItem) _obj).getJavaScript().equals(getJavaScript());
+        } else {
+            ret = super.equals(_obj);
+        }
+        return ret;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return getJavaScript().hashCode();
     }
 }

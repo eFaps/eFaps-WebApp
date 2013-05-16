@@ -137,7 +137,7 @@ public abstract class AbstractDojoBehavior
     /**
      * Class to add Dojo script tags.
      */
-    public final class DojoHeaderItem
+    public static final class DojoHeaderItem
         extends HeaderItem
         implements IReferenceHeaderItem
     {
