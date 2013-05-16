@@ -77,7 +77,9 @@ public final class Configuration
         /** */
         SHOW_OID(false, true, WebAppSettings.SHOW_OID, "false"),
         /** */
-        TASKTABLE_MAX(false, true, WebAppSettings.TASKTABLE_MAX, "8");
+        TASKTABLE_MAX(false, true, WebAppSettings.TASKTABLE_MAX, "8"),
+        /** MainToolBar */
+        TOOLBAR(false, true, WebAppSettings.TOOLBAR, "87001cc3-c45c-44de-b8f1-776df507f268");
 
         /**
          * Stores the key for this Attribute..

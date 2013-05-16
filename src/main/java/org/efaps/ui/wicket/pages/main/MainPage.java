@@ -71,6 +71,8 @@ import org.efaps.ui.wicket.pages.dashboard.DashboardPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.ui.wicket.util.Configuration;
+import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
@@ -201,7 +203,7 @@ public class MainPage
         headerPanel.add(new ContentPaneBehavior(Region.TOP, false));
 
         headerPanel.add(new MenuBarPanel("menubar", new UIModel<UIMenuItem>(new UIMenuItem(UUID
-                      .fromString("87001cc3-c45c-44de-b8f1-776df507f268")))));
+                      .fromString(Configuration.getAttribute(ConfigAttribute.TOOLBAR))))));
 
         // set the title for the Page
         add(new Label("pageTitle", DBProperties.getProperty("Logo.Version.Label")));

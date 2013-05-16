@@ -103,4 +103,8 @@ public interface WebAppSettings
      */
     String TASKTABLE_MAX = "org.efaps.webapp.TaskTable";
 
+    /**
+     * Integer: Maximum rows of task shown in the task Table per Page. Default Value is 8.
+     */
+    String TOOLBAR = "org.efaps.webapp.MainToolBar";
 }
