@@ -194,7 +194,7 @@ public class HelpServlet
                 html.append("</div></div></body></html>");
                 _res.setContentType("text/html;charset=UTF-8");
                 _res.setContentLength(html.length());
-                _res.getOutputStream().write(html.toString().getBytes());
+                _res.getOutputStream().write(html.toString().getBytes("UTF8"));
             }
         } catch (final EFapsException e) {
             throw new ServletException(e);
