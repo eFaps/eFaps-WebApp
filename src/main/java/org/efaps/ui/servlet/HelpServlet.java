@@ -181,7 +181,7 @@ public class HelpServlet
                     query.execute();
                     if (query.next()) {
                         final Checkout checkout = new Checkout(query.getCurrentValue());
-                        final InputStreamReader in = new InputStreamReader(checkout.execute());
+                        final InputStreamReader in = new InputStreamReader(checkout.execute(), "UTF8");
                         if (in != null) {
                             final BufferedReader reader = new BufferedReader(in);
                             String line = null;
