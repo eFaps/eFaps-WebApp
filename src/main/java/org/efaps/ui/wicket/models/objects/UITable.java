@@ -54,6 +54,7 @@ import org.efaps.ui.wicket.models.cell.UIHiddenCell;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.models.objects.UITableHeader.FilterType;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.ui.wicket.util.FilterDefault;
 import org.efaps.util.DateTimeUtil;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
@@ -978,25 +979,30 @@ public class UITable
                     final String[] parts = filter.split(":");
                     final String range = parts[0];
                     final int sub = parts.length > 1 ? Integer.parseInt(parts[1]) : 0;
-                    if ("today".equalsIgnoreCase(range)) {
-                        final DateMidnight tmp = DateTimeUtil.translateFromUI(new DateTime()).toDateMidnight();
-                        this.dateFrom = tmp.toDateTime().minusDays(sub);
-                        this.dateTo = this.dateFrom.plusDays(1).plusSeconds(1);
-                    } else if ("week".equalsIgnoreCase(range)) {
-                        DateMidnight tmp = DateTimeUtil.translateFromUI(new DateTime()).toDateMidnight();
-                        tmp = tmp.minusDays(tmp.getDayOfWeek() - 1);
-                        this.dateFrom = tmp.toDateTime().minusWeeks(sub);
-                        this.dateTo = tmp.toDateTime().plusWeeks(1);
-                    } else if ("month".equalsIgnoreCase(range)) {
-                        DateMidnight tmp = DateTimeUtil.translateFromUI(new DateTime()).toDateMidnight();
-                        tmp = tmp.minusDays(tmp.getDayOfMonth() - 1);
-                        this.dateFrom = tmp.toDateTime().minusMonths(sub);
-                        this.dateTo = tmp.toDateTime().plusMonths(1);
-                    } else if ("year".equalsIgnoreCase(range)) {
-                        DateMidnight tmp = DateTimeUtil.translateFromUI(new DateTime()).toDateMidnight();
-                        tmp = tmp.minusDays(tmp.getDayOfYear() - 1);
-                        this.dateFrom = tmp.toDateTime().minusYears(sub);
-                        this.dateTo = tmp.toDateTime().plusYears(1);
+                    final FilterDefault def = FilterDefault.valueOf(range.toUpperCase());
+                    DateMidnight tmp = DateTimeUtil.translateFromUI(new DateTime()).toDateMidnight();
+                    switch (def) {
+                        case TODAY:
+                            this.dateFrom = tmp.toDateTime().minusDays(sub);
+                            this.dateTo = this.dateFrom.plusDays(1).plusSeconds(1);
+                            break;
+                        case WEEK:
+                            tmp = tmp.minusDays(tmp.getDayOfWeek() - 1);
+                            this.dateFrom = tmp.toDateTime().minusWeeks(sub);
+                            this.dateTo = tmp.toDateTime().plusWeeks(1);
+                            break;
+                        case MONTH:
+                            tmp = tmp.minusDays(tmp.getDayOfMonth() - 1);
+                            this.dateFrom = tmp.toDateTime().minusMonths(sub);
+                            this.dateTo = tmp.toDateTime().plusMonths(1);
+                            break;
+                        case YEAR:
+                            tmp = tmp.minusDays(tmp.getDayOfYear() - 1);
+                            this.dateFrom = tmp.toDateTime().minusYears(sub);
+                            this.dateTo = tmp.toDateTime().plusYears(1);
+                            break;
+                        default:
+                            break;
                     }
                 }
             }
