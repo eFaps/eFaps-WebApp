@@ -93,9 +93,11 @@ public class UIPicker
     /**
      * @param _field    fieldPicker this UIObject belongs to
      * @param _parent   parent field this fieldpicker belongs to
+     * @throws CacheReloadException on error during access to command
      */
     public UIPicker(final FieldPicker _field,
                     final UITableCell _parent)
+        throws CacheReloadException
     {
         this.cmdUUID = _field.getCommand().getUUID();
         this.label = _field.getCommand().getLabelProperty();
@@ -114,6 +116,7 @@ public class UIPicker
 
     /**
      * @return the command underlying this picker
+     * @throws CacheReloadException on error during access to command
      */
     public Command getCommand()
         throws CacheReloadException

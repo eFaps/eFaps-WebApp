@@ -37,6 +37,7 @@ import org.efaps.db.Instance;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * This class represents the model wich is used for rendering the components
@@ -112,6 +113,9 @@ public class UITableCell
      */
     private final UIPicker picker;
 
+    /**
+     * Show numbering in the cell.
+     */
     private final boolean showNumbering;
 
     /**
@@ -170,8 +174,10 @@ public class UITableCell
      * Method to evaluate the picker.
      * @param _fieldValue FieldValue
      * @return UIPIcker
+     * @throws CacheReloadException on error during access to command
      */
     private UIPicker evaluatePicker(final FieldValue _fieldValue)
+        throws CacheReloadException
     {
         UIPicker ret = null;
         if (_fieldValue.getField() instanceof FieldPicker) {
