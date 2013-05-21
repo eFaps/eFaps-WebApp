@@ -96,6 +96,8 @@ public class SortableTaskSummaryDataProvider
                     ret = _task0.getId().compareTo(task1.getId());
                 } else if ("status".equals(sortprop)) {
                     ret = task0.getStatus().compareTo(task1.getStatus());
+                }else if ("owner".equals(sortprop)) {
+                    ret = task0.getOwner().compareTo(task1.getOwner());
                 }
                 return ret;
             }
