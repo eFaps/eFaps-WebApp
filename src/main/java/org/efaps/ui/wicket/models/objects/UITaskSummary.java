@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.user.Person;
 import org.efaps.util.EFapsException;
 import org.jbpm.task.query.TaskSummary;
@@ -95,7 +96,8 @@ public class UITaskSummary
      */
     public String getStatus()
     {
-        return this.taskSummary.getStatus().toString();
+        return DBProperties.getProperty(UITaskSummary.class.getName() + ".Status."
+                        + this.taskSummary.getStatus().toString());
     }
 
     /**

@@ -113,14 +113,11 @@ public class DashboardPage
                 columns.add(new PropertyColumn<UITaskSummary, String>(new Model<String>("Name"), "name", "name"));
             }
 
-            final String desc = DBProperties.getFormatedDBProperty(DashboardPage.class.getName()
-                            + ".TaskTable.Description");
-            final String status = DBProperties
-                            .getFormatedDBProperty(DashboardPage.class.getName() + ".TaskTable.Status");
-            final String at = DBProperties.getFormatedDBProperty(DashboardPage.class.getName()
-                            + ".TaskTable.ActivationTime");
-            final String owner = DBProperties.getFormatedDBProperty(DashboardPage.class.getName()
-                            + ".TaskTableOwner");
+            final String desc = DBProperties.getProperty(DashboardPage.class.getName()+ ".TaskTable.Description");
+            final String status = DBProperties.getProperty(DashboardPage.class.getName() + ".TaskTable.Status");
+            final String at = DBProperties.getProperty(DashboardPage.class.getName() + ".TaskTable.ActivationTime");
+            final String owner = DBProperties.getProperty(DashboardPage.class.getName() + ".TaskTable.Owner");
+
             columns.add(new PropertyColumn<UITaskSummary, String>(new Model<String>(desc), "description",
                             "description"));
             columns.add(new PropertyColumn<UITaskSummary, String>(new Model<String>(status), "status"));
