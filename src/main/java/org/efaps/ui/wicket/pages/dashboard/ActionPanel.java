@@ -20,16 +20,26 @@
 
 package org.efaps.ui.wicket.pages.dashboard;
 
+import java.util.Map;
+
 import org.apache.wicket.Page;
 import org.apache.wicket.PageReference;
+import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow.PageCreator;
+import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
+import org.efaps.admin.ui.Menu;
+import org.efaps.bpm.BPM;
+import org.efaps.db.Instance;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.objects.UITaskObject;
 import org.efaps.ui.wicket.models.objects.UITaskSummary;
+import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
+import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
+import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.ui.wicket.pages.task.TaskPage;
 import org.efaps.util.EFapsException;
@@ -95,5 +105,49 @@ public class ActionPanel
             }
         };
         add(select);
+
+        final Link<UITaskSummary> open = new Link<UITaskSummary>("open", _model)
+        {
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void onClick()
+            {
+                final UITaskSummary uiTaskSummary = _model.getObject();
+                final Object values = BPM.getTaskData(uiTaskSummary.getTaskSummary());
+                Instance inst = null;
+                if (values instanceof Map) {
+                    final String oid = (String) ((Map<?, ?>) values).get("OID");
+                    inst = Instance.get(oid);
+                }
+
+                if (inst != null && inst.isValid()) {
+
+                    Menu menu = null;
+                    try {
+
+                        menu = Menu.getTypeTreeMenu(inst.getType());
+                    } catch (final EFapsException e) {
+                        throw new RestartResponseException(new ErrorPage(e));
+                    }
+                    if (menu == null) {
+                        final Exception ex = new Exception("no tree menu defined for type " + inst.getType().getName());
+                        throw new RestartResponseException(new ErrorPage(ex));
+                    }
+
+                    Page page;
+                    try {
+                        page = new ContentContainerPage(menu.getUUID(), inst.getOid(),
+                                        getPage() instanceof StructurBrowserPage);
+
+                    } catch (final EFapsException e) {
+                        page = new ErrorPage(e);
+                    }
+                    this.setResponsePage(page);
+                }
+            }
+        };
+        add(open);
     }
 }
