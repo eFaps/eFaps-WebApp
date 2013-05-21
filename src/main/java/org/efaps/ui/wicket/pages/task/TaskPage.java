@@ -108,15 +108,20 @@ public class TaskPage
 
         };
         form.add(groupRepeater);
-        String aprove = DBProperties.getProperty(_rowModel.getObject().getTaskSummary().getName() + ".aprove", false);
+        String aprove = DBProperties.getProperty(_rowModel.getObject().getUITaskSummary().getName() + ".aprove", false);
 
         if (aprove == null) {
             aprove = DBProperties.getProperty("org.efaps.ui.wicket.pages.task.TaskPage.default.Button.aprove");
         }
 
-        String reject = DBProperties.getProperty(_rowModel.getObject().getTaskSummary().getName() + ".reject", false);
+        String reject = DBProperties.getProperty(_rowModel.getObject().getUITaskSummary().getName() + ".reject", false);
         if (reject == null) {
             reject = DBProperties.getProperty("org.efaps.ui.wicket.pages.task.TaskPage.default.Button.reject");
+        }
+
+        String claim = DBProperties.getProperty(_rowModel.getObject().getUITaskSummary().getName() + ".claim", false);
+        if (claim == null) {
+            claim = DBProperties.getProperty("org.efaps.ui.wicket.pages.task.TaskPage.default.Button.claim");
         }
 
         form.add(new Button("aprove", new DecisionLink(Button.LINKID, _rowModel, _pageReference, true),
@@ -124,6 +129,9 @@ public class TaskPage
 
         form.add(new Button("reject", new DecisionLink(Button.LINKID, _rowModel, _pageReference, false),
                         reject, Button.ICON.CANCEL.getReference()));
+
+        form.add(new Button("claim", new ClaimLink(Button.LINKID, _rowModel, _pageReference),
+                        claim, Button.ICON.NEXT.getReference()));
 
     }
 
@@ -212,14 +220,61 @@ public class TaskPage
 
                     final Map<String, Object> values = new HashMap<String, Object>();
                     try {
-                        BPM.executeTask(((UITaskObject) getComponent().getDefaultModelObject()).getTaskSummary(),
+                        BPM.executeTask(((UITaskObject) getComponent().getDefaultModelObject()).getUITaskSummary()
+                                        .getTaskSummary(),
                                         _decision, values);
                     } catch (final EFapsException e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
                     modal.close(_target);
-               }
+                }
+            });
+        }
+    }
+
+    /**
+     *  Claim a task Link.
+     */
+    public class ClaimLink
+        extends WebMarkupContainer
+    {
+
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * @param _wicketId     wicket if fo this link
+         * @param _model        model for this component
+         * @param _pageReference reference to the page
+         */
+        public ClaimLink(final String _wicketId,
+                         final IModel<UITaskObject> _model,
+                         final PageReference _pageReference)
+        {
+            super(_wicketId, _model);
+            add(new AjaxFormSubmitBehavior("onclick")
+            {
+
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                protected void onEvent(final AjaxRequestTarget _target)
+                {
+                    final ModalWindowContainer modal = ((MainPage) _pageReference.getPage()).getModal();
+                    modal.setReloadChild(true);
+
+                    try {
+                        BPM.claimTask(((UITaskObject) getComponent().getDefaultModelObject()).getUITaskSummary()
+                                        .getTaskSummary());
+                    } catch (final EFapsException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                    modal.close(_target);
+                }
             });
         }
     }

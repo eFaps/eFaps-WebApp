@@ -43,7 +43,6 @@ import org.efaps.ui.wicket.models.field.UIField;
 import org.efaps.ui.wicket.models.field.UIGroup;
 import org.efaps.ui.wicket.models.field.UISnippletField;
 import org.efaps.util.EFapsException;
-import org.jbpm.task.query.TaskSummary;
 
 /**
  * TODO comment!
@@ -63,14 +62,14 @@ public class UITaskObject
     /**
      * The related Task as Summary from Hibernate.
      */
-    private final TaskSummary taskSummary;
+    private final UITaskSummary taskSummary;
 
     private final List<UIGroup> groups = new ArrayList<UIGroup>();
 
     /**
      * @param _taskSummary The related Task as Summary from Hibernate.
      */
-    public UITaskObject(final TaskSummary _taskSummary)
+    public UITaskObject(final UITaskSummary _taskSummary)
         throws EFapsException
     {
         super("");
@@ -81,10 +80,10 @@ public class UITaskObject
     protected void initialize()
         throws EFapsException
     {
-        final Form form = Form.get(getTaskSummary().getName());
+        final Form form = Form.get(getUITaskSummary().getName());
         if (form != null) {
             Instance inst = Instance.get("");
-            final Object values = BPM.getTaskData(getTaskSummary());
+            final Object values = BPM.getTaskData(getUITaskSummary().getTaskSummary());
             if (values instanceof Map) {
                 final String oid = (String) ((Map<?, ?>) values).get("OID");
                 inst = Instance.get(oid);
@@ -149,7 +148,7 @@ public class UITaskObject
      *
      * @return value of instance variable {@link #taskSummary}
      */
-    public TaskSummary getTaskSummary()
+    public UITaskSummary getUITaskSummary()
     {
         return this.taskSummary;
     }
@@ -193,7 +192,7 @@ public class UITaskObject
      * @param _object
      * @return
      */
-    public static IModel<UITaskObject> getModelForTask(final TaskSummary _taskSummary)
+    public static IModel<UITaskObject> getModelForTask(final UITaskSummary _taskSummary)
         throws EFapsException
     {
         return Model.of(new UITaskObject(_taskSummary));

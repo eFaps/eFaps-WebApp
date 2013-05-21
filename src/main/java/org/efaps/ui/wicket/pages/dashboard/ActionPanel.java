@@ -29,11 +29,11 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.objects.UITaskObject;
+import org.efaps.ui.wicket.models.objects.UITaskSummary;
 import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.ui.wicket.pages.task.TaskPage;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
-import org.jbpm.task.query.TaskSummary;
 
 /**
  * TODO comment!
@@ -55,11 +55,11 @@ public class ActionPanel
      * @param model model for contact
      */
     public ActionPanel(final String id,
-                       final IModel<TaskSummary> _model,
+                       final IModel<UITaskSummary> _model,
                        final PageReference _pageReference)
     {
         super(id, _model);
-        final AjaxLink<TaskSummary> select = new AjaxLink<TaskSummary>("select", _model)
+        final AjaxLink<UITaskSummary> select = new AjaxLink<UITaskSummary>("select", _model)
         {
 
             private static final long serialVersionUID = 1L;

@@ -30,7 +30,7 @@ import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvid
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.bpm.BPM;
-import org.jbpm.task.query.TaskSummary;
+import org.efaps.ui.wicket.models.objects.UITaskSummary;
 
 /**
  * TODO comment!
@@ -40,7 +40,7 @@ import org.jbpm.task.query.TaskSummary;
  *          jan@moxter.net $
  */
 public class SortableTaskSummaryDataProvider
-    extends SortableDataProvider<TaskSummary, String>
+    extends SortableDataProvider<UITaskSummary, String>
 {
 
     /**
@@ -48,32 +48,35 @@ public class SortableTaskSummaryDataProvider
      */
     private static final long serialVersionUID = 1L;
 
-    private final List<TaskSummary> summaries;
+    /**
+     * List of TaskSummary to be displayed.
+     */
+    private final List<UITaskSummary> summaries;
 
     /**
-     * constructor
+     * Constructor.
      */
     public SortableTaskSummaryDataProvider()
     {
         // set default sort
         setSort("description", SortOrder.ASCENDING);
-        this.summaries = BPM.getTasksAssignedAsPotentialOwner();
+        this.summaries = UITaskSummary.getUITaskSummary(BPM.getTasksAssignedAsPotentialOwner());
     }
 
     @Override
-    public Iterator<TaskSummary> iterator(final long _first,
+    public Iterator<UITaskSummary> iterator(final long _first,
                                           final long _count)
     {
         final String sortprop = getSort().getProperty();
         final boolean asc = getSort().isAscending();
-        Collections.sort(this.summaries, new Comparator<TaskSummary>()
+        Collections.sort(this.summaries, new Comparator<UITaskSummary>()
         {
             @Override
-            public int compare(final TaskSummary _task0,
-                               final TaskSummary _task1)
+            public int compare(final UITaskSummary _task0,
+                               final UITaskSummary _task1)
             {
-                final TaskSummary task0;
-                final TaskSummary task1;
+                final UITaskSummary task0;
+                final UITaskSummary task1;
                 if (asc) {
                     task0 = _task0;
                     task1 = _task1;
@@ -90,7 +93,7 @@ public class SortableTaskSummaryDataProvider
                 } else if ("name".equals(sortprop)) {
                     ret = task0.getName().compareTo(task1.getName());
                 } else if ("id".equals(sortprop)) {
-                    ret = Long.valueOf(_task0.getId()).compareTo(Long.valueOf(task1.getId()));
+                    ret = _task0.getId().compareTo(task1.getId());
                 } else if ("status".equals(sortprop)) {
                     ret = task0.getStatus().compareTo(task1.getStatus());
                 }
@@ -104,6 +107,7 @@ public class SortableTaskSummaryDataProvider
 
     /**
      * @see org.apache.wicket.markup.repeater.data.IDataProvider#size()
+     * @return size of the list of TaskSummary
      */
     @Override
     public long size()
@@ -113,9 +117,11 @@ public class SortableTaskSummaryDataProvider
 
     /**
      * @see org.apache.wicket.markup.repeater.data.IDataProvider#model(java.lang.Object)
+     * @param _object TaskSummary the model is wanted for
+     * @return Model of TaskSummary
      */
     @Override
-    public IModel<TaskSummary> model(final TaskSummary _object)
+    public IModel<UITaskSummary> model(final UITaskSummary _object)
     {
         return Model.of(_object);
     }
