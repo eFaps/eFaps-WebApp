@@ -108,31 +108,49 @@ public class TaskPage
 
         };
         form.add(groupRepeater);
-        String aprove = DBProperties.getProperty(_rowModel.getObject().getUITaskSummary().getName() + ".aprove", false);
 
-        if (aprove == null) {
-            aprove = DBProperties.getProperty("org.efaps.ui.wicket.pages.task.TaskPage.default.Button.aprove");
+        try {
+            if (_rowModel.getObject().isComplete()) {
+                String aprove = DBProperties.getProperty(_rowModel.getObject().getUITaskSummary().getName() + ".aprove",
+                                false);
+                if (aprove == null) {
+                    aprove = DBProperties.getProperty("org.efaps.ui.wicket.pages.task.TaskPage.default.Button.aprove");
+                }
+
+                form.add(new Button("aprove", new DecisionLink(Button.LINKID, _rowModel, _pageReference, true),
+                                aprove, Button.ICON.ACCEPT.getReference()));
+            } else {
+                form.add(new WebMarkupContainer("aprove").setVisible(false));
+            }
+
+            if (_rowModel.getObject().isFail()) {
+                String reject = DBProperties.getProperty(_rowModel.getObject().getUITaskSummary().getName() + ".reject",
+                                false);
+                if (reject == null) {
+                    reject = DBProperties.getProperty("org.efaps.ui.wicket.pages.task.TaskPage.default.Button.reject");
+                }
+                form.add(new Button("reject", new DecisionLink(Button.LINKID, _rowModel, _pageReference, false),
+                                reject, Button.ICON.CANCEL.getReference()));
+            } else {
+                form.add(new WebMarkupContainer("reject").setVisible(false));
+            }
+
+            if (_rowModel.getObject().isClaim()) {
+                String claim = DBProperties.getProperty(_rowModel.getObject().getUITaskSummary().getName() + ".claim",
+                                false);
+                if (claim == null) {
+                    claim = DBProperties.getProperty("org.efaps.ui.wicket.pages.task.TaskPage.default.Button.claim");
+                }
+                form.add(new Button("claim", new ClaimLink(Button.LINKID, _rowModel, _pageReference),
+                                claim, Button.ICON.NEXT.getReference()));
+            }
+            else {
+                form.add(new WebMarkupContainer("claim").setVisible(false));
+            }
+        } catch (EFapsException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
-
-        String reject = DBProperties.getProperty(_rowModel.getObject().getUITaskSummary().getName() + ".reject", false);
-        if (reject == null) {
-            reject = DBProperties.getProperty("org.efaps.ui.wicket.pages.task.TaskPage.default.Button.reject");
-        }
-
-        String claim = DBProperties.getProperty(_rowModel.getObject().getUITaskSummary().getName() + ".claim", false);
-        if (claim == null) {
-            claim = DBProperties.getProperty("org.efaps.ui.wicket.pages.task.TaskPage.default.Button.claim");
-        }
-
-        form.add(new Button("aprove", new DecisionLink(Button.LINKID, _rowModel, _pageReference, true),
-                        aprove, Button.ICON.ACCEPT.getReference()));
-
-        form.add(new Button("reject", new DecisionLink(Button.LINKID, _rowModel, _pageReference, false),
-                        reject, Button.ICON.CANCEL.getReference()));
-
-        form.add(new Button("claim", new ClaimLink(Button.LINKID, _rowModel, _pageReference),
-                        claim, Button.ICON.NEXT.getReference()));
-
     }
 
     public final class FieldRepeater

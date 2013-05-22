@@ -21,14 +21,18 @@
 package org.efaps.ui.wicket.models.objects;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.ui.UIValue;
 import org.efaps.admin.event.EventType;
+import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
@@ -36,6 +40,7 @@ import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.Form;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.bpm.BPM;
+import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.PrintQuery;
 import org.efaps.ui.wicket.models.cell.FieldConfiguration;
@@ -43,6 +48,8 @@ import org.efaps.ui.wicket.models.field.UIField;
 import org.efaps.ui.wicket.models.field.UIGroup;
 import org.efaps.ui.wicket.models.field.UISnippletField;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
+import org.jbpm.task.service.Operation;
 
 /**
  * TODO comment!
@@ -53,43 +60,66 @@ import org.efaps.util.EFapsException;
 public class UITaskObject
     extends AbstractUIModeObject
 {
-
     /**
-     *
+     * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
 
     /**
      * The related Task as Summary from Hibernate.
      */
-    private final UITaskSummary taskSummary;
+    private final UITaskSummary uiTaskSummary;
 
+    /**
+     * List of Field Groups.
+     */
     private final List<UIGroup> groups = new ArrayList<UIGroup>();
 
     /**
+     * Allowed Operations for this UITaskObject.
+     */
+    private final Set<Operation> operations = new HashSet<Operation>();
+
+    /**
+     * UUID top the form belonging to this UITaskObject.
+     */
+    private UUID formUUID = null;
+
+    /**
+     * Was the access checked allready.
+     */
+    private boolean accessChecked = false;
+
+    /**
      * @param _taskSummary The related Task as Summary from Hibernate.
+     * @throws EFapsException on error
      */
     public UITaskObject(final UITaskSummary _taskSummary)
         throws EFapsException
     {
         super("");
-        this.taskSummary = _taskSummary;
+        this.uiTaskSummary = _taskSummary;
         initialize();
     }
 
+    /**
+     * Initialize the Task Object.
+     * @throws EFapsException on error
+     */
     protected void initialize()
         throws EFapsException
     {
         final Form form = Form.get(getUITaskSummary().getName());
         if (form != null) {
-            Instance inst = Instance.get("");
+            this.formUUID = form.getUUID();
+
             final Object values = BPM.getTaskData(getUITaskSummary().getTaskSummary());
             if (values instanceof Map) {
                 final String oid = (String) ((Map<?, ?>) values).get("OID");
-                inst = Instance.get(oid);
+                setInstanceKey(oid);
             }
-            if (inst != null && inst.isValid()) {
-                final PrintQuery print = new PrintQuery(inst);
+            if (getInstanceKey() != null && getInstance().isValid()) {
+                final PrintQuery print = new PrintQuery(getInstance());
                 for (final Field field : form.getFields()) {
                     if (field.getAttribute() != null) {
                         print.addAttribute(field.getAttribute());
@@ -106,12 +136,12 @@ public class UITaskObject
                     if (field.hasEvents(EventType.UI_FIELD_VALUE)) {
                         final StringBuilder html = new StringBuilder();
                         final List<Return> returns = field.executeEvents(EventType.UI_FIELD_VALUE,
-                                        ParameterValues.INSTANCE, inst,
+                                        ParameterValues.INSTANCE, getInstance(),
                                         ParameterValues.BPM_VALUES, values);
                         for (final Return ret : returns) {
                             html.append(ret.get(ReturnValues.SNIPLETT));
                         }
-                        final UISnippletField uiField = new UISnippletField(inst.getKey(), this,
+                        final UISnippletField uiField = new UISnippletField(getInstance().getKey(), this,
                                         new FieldConfiguration(
                                                         field.getId()));
                         uiGroup.add(uiField);
@@ -121,12 +151,13 @@ public class UITaskObject
                         Object object = null;
                         if (field.getAttribute() != null) {
                             object = print.getAttribute(field.getAttribute());
-                            attr = inst.getType().getAttribute(field.getAttribute());
+                            attr = getInstance().getType().getAttribute(field.getAttribute());
                         } else if (field.getSelect() != null) {
                             object = print.getSelect(field.getSelect());
                             attr = print.getAttribute4Select(field.getSelect());
                         }
-                        final UIField uiField = new UIField(inst.getKey(), this, UIValue.get(field, attr, object));
+                        final UIField uiField = new UIField(getInstance().getKey(), this, UIValue.get(field, attr,
+                                        object));
                         uiGroup.add(uiField);
                     }
                 }
@@ -150,7 +181,7 @@ public class UITaskObject
      */
     public UITaskSummary getUITaskSummary()
     {
-        return this.taskSummary;
+        return this.uiTaskSummary;
     }
 
     /**
@@ -176,11 +207,6 @@ public class UITaskObject
     /**
      * {@inheritDoc}
      */
-    /*
-     * (non-Javadoc)
-     * @see
-     * org.efaps.ui.wicket.models.AbstractInstanceObject#hasInstanceManager()
-     */
     @Override
     public boolean hasInstanceManager()
         throws EFapsException
@@ -189,8 +215,90 @@ public class UITaskObject
     }
 
     /**
-     * @param _object
-     * @return
+     * @return true if aprove is allowed
+     * @throws EFapsException on error
+     */
+    public boolean isComplete()
+        throws EFapsException
+    {
+        checkAccess();
+        return this.operations.isEmpty() ? true : this.operations.contains(Operation.Complete);
+    }
+
+    /**
+     * @return true if fail is allowed
+     * @throws EFapsException on error
+     */
+    public boolean isFail()
+        throws EFapsException
+    {
+        checkAccess();
+        return this.operations.isEmpty() ? true : this.operations.contains(Operation.Fail);
+    }
+
+    /**
+     * @return true if claim is allowed
+     * @throws EFapsException on error
+     */
+    public boolean isClaim()
+        throws EFapsException
+    {
+        checkAccess();
+        return this.operations.isEmpty() ? true : this.operations.contains(Operation.Claim);
+    }
+
+
+    /**
+     * @throws EFapsException on error
+     */
+    private void checkAccess()
+        throws EFapsException
+    {
+        if (!this.accessChecked) {
+            List<Return> returns = new ArrayList<Return>();
+            final Form form = getForm();
+
+            if (form != null && form.hasEvents(EventType.UI_ACCESSCHECK)) {
+                final Parameter param = new Parameter();
+                param.put(ParameterValues.PARAMETERS, Context.getThreadContext().getParameters());
+                if (getInstance() != null) {
+                    final String[] contextoid = { getInstanceKey() };
+                    Context.getThreadContext().getParameters().put("oid", contextoid);
+                    param.put(ParameterValues.INSTANCE, getInstance());
+                    param.put(ParameterValues.BPM_TASK, getUITaskSummary().getTaskSummary());
+                }
+                final Object values = BPM.getTaskData(getUITaskSummary().getTaskSummary());
+                param.put(ParameterValues.BPM_VALUES, values);
+                returns = form.executeEvents(EventType.UI_ACCESSCHECK, param);
+            }
+            for (final Return ret : returns) {
+                final Set<?> vals = (Set<?>) ret.get(ReturnValues.VALUES);
+                for (final Object val : vals) {
+                    if (val instanceof Operation) {
+                        this.operations.add((Operation) val);
+                    } else if (val instanceof String) {
+                        this.operations.add(Operation.valueOf((String) val));
+                    }
+                }
+            }
+            this.accessChecked = true;
+        }
+    }
+
+    /**
+     * @return form this UITaskObject belongs to
+     * @throws CacheReloadException on error
+     */
+    public Form getForm()
+        throws CacheReloadException
+    {
+        return Form.get(this.formUUID);
+    }
+
+    /**
+     * @param _taskSummary  taskSummary the Model is wanted for
+     * @return model for a taskObject
+     * @throws EFapsException on error
      */
     public static IModel<UITaskObject> getModelForTask(final UITaskSummary _taskSummary)
         throws EFapsException

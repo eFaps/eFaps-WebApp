@@ -35,9 +35,8 @@ import org.efaps.util.cache.CacheReloadException;
 public abstract class AbstractUIModeObject
     extends AbstractInstanceObject
 {
-
     /**
-     *
+     * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
 
@@ -53,9 +52,7 @@ public abstract class AbstractUIModeObject
     /**
      * Constructor.
      *
-     * @param _commandUUID UUID for this Model
      * @param _instanceKey instance id for this Model
-     * @param _openerId id of the opener UIClassification
      * @throws CacheReloadException on error
      */
     public AbstractUIModeObject(final String _instanceKey)
