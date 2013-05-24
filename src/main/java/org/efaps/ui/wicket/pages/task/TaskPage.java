@@ -38,6 +38,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.bpm.BPM;
+import org.efaps.ui.wicket.behaviors.dojo.AbstractDojoBehavior;
 import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
@@ -78,7 +79,9 @@ public class TaskPage
                     final PageReference _pageReference)
     {
         super(_rowModel);
-
+        add(new AbstractDojoBehavior() {
+            private static final long serialVersionUID = 1L;}
+        );
         final Form<TaskSummary> form = new Form<TaskSummary>("form");
         add(form);
 
@@ -147,7 +150,7 @@ public class TaskPage
             else {
                 form.add(new WebMarkupContainer("claim").setVisible(false));
             }
-        } catch (EFapsException e) {
+        } catch (final EFapsException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }

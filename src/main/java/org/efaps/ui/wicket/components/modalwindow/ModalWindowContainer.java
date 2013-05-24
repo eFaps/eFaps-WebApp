@@ -167,19 +167,25 @@ public class ModalWindowContainer
                 final String url = getRequestCycle().urlFor(handler).toString();
                 if (calledByPageRef != null && calledByPageRef.getPage() instanceof ContentContainerPage) {
                     final String panelId = ((ContentContainerPage) calledByPageRef.getPage()).getCenterPanelId();
-                    javascript.append("var mainFrame = top.dojo.byId(\"").append(MainPage.IFRAME_ID)
-                        .append("\").contentWindow;").append("mainFrame.dijit.registry.byId(\"").append(panelId)
-                        .append("\").set(\"content\", dojo.create(\"iframe\", {")
-                        .append("\"src\": \"").append(url)
-                        .append("\",\"style\": \"border: 0; width: 100%; height: 99%\"")
-                        .append("}));");
+                    javascript.append("require([\"dojo/dom-construct\"], function(domConstruct){")
+                        .append("var mainFrame = top.dojo.doc.getElementById(\"")
+                            .append(MainPage.IFRAME_ID).append("\").contentWindow;")
+                        .append("mainFrame.dijit.registry.byId(\"").append(panelId)
+                        .append("\").set(\"content\",")
+                            .append(" domConstruct.create(\"iframe\", {")
+                                .append("\"src\": \"").append(url)
+                                .append("\",\"style\": \"border: 0; width: 100%; height: 99%\"}")
+                            .append("))")
+                        .append("});");
                 } else {
-                    javascript.append("top.dijit.registry.byId(\"").append("mainPanel")
-                        .append("\").set(\"content\", dojo.create(\"iframe\", {")
-                        .append("\"id\": \"").append(MainPage.IFRAME_ID)
-                        .append("\",\"src\": \"./wicket/").append(url)
-                        .append("\",\"style\": \"border: 0; width: 100%; height: 99%\"")
-                        .append("}));");
+                    javascript.append("require([\"dojo/dom-construct\"], function(domConstruct){")
+                        .append(" top.dijit.registry.byId(\"mainPanel\").set(\"content\",")
+                            .append(" domConstruct.create(\"iframe\",{")
+                                .append("\"id\": \"").append(MainPage.IFRAME_ID)
+                                .append("\",\"src\": \"./wicket/").append(url)
+                                .append("\",\"style\": \"border: 0; width: 100%; height: 99%\" }")
+                             .append("))")
+                        .append("});");
                 }
             } catch (final EFapsException e) {
                 throw new RestartResponseException(new ErrorPage(e));
@@ -190,14 +196,14 @@ public class ModalWindowContainer
                 final DashboardPage page = new DashboardPage(getPage().getPageReference());
                 final IRequestHandler handler = new RenderPageRequestHandler(new PageProvider(page));
                 final String url = getRequestCycle().urlFor(handler).toString();
-
-                javascript
-                    .append("top.dijit.registry.byId(\"").append("mainPanel")
-                    .append("\").set(\"content\", top.dojo.create(\"iframe\", {")
-                    .append("\"id\": \"").append(MainPage.IFRAME_ID)
-                    .append("\",\"src\": \"./wicket/").append(url)
-                    .append("\",\"style\": \"border: 0; width: 100%; height: 99%\"")
-                    .append("}));");
+                javascript.append("require([\"dojo/dom-construct\"], function(domConstruct){")
+                    .append(" top.dijit.registry.byId(\"mainPanel\").set(\"content\",")
+                        .append(" domConstruct.create(\"iframe\",{")
+                            .append("\"id\": \"").append(MainPage.IFRAME_ID)
+                            .append("\",\"src\": \"./wicket/").append(url)
+                            .append("\",\"style\": \"border: 0; width: 100%; height: 99%\" }")
+                         .append("))")
+                    .append("});");
             } catch (final EFapsException e) {
                 throw new RestartResponseException(new ErrorPage(e));
             }

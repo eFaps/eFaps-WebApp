@@ -67,7 +67,7 @@ public class AjaxStorePositionBehavior
     private final boolean vertical;
 
     /**
-     * @param _showStructurBrowser
+     * @param _vertical store vertical to
      */
     public AjaxStorePositionBehavior(final boolean _vertical)
     {
@@ -105,6 +105,7 @@ public class AjaxStorePositionBehavior
 
     /**
      * @see org.apache.wicket.ajax.AbstractDefaultAjaxBehavior#getCallbackScript()
+     * @param _component Component the script belongs to
      * @return script
      */
     @Override
@@ -127,7 +128,7 @@ public class AjaxStorePositionBehavior
             .append("dojo.ready(function() {\n")
             .append("var bp = dijit.registry.byId(\"").append(borderPanelId).append("\");\n")
             .append("var lp = dijit.registry.byId(\"").append(leftPanelId).append("\");\n")
-            .append("var hs = bp.getSplitter(\"left\");\n");
+            .append("var hs = bp.getSplitter(\"leading\");\n");
 
         if (this.vertical) {
             js.append("var tp = dijit.registry.byId(\"").append(topPanelId).append("\");\n")

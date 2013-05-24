@@ -183,9 +183,9 @@ public class LinkItem
     protected CharSequence getOnClickScript(final CharSequence _url)
     {
         final StringBuilder js = new StringBuilder()
-            .append("require([\"dijit/registry\"], function(registry){ ")
+            .append("require([\"dijit/registry\",\"dojo/dom-construct\"], function(registry, domConstruct){ ")
             .append("registry.byId(\"").append("mainPanel")
-            .append("\").set(\"content\", dojo.create(\"iframe\", {")
+            .append("\").set(\"content\", domConstruct.create(\"iframe\", {")
             .append("\"id\": \"").append(MainPage.IFRAME_ID)
             .append("\",\"src\": \"").append(_url)
             .append("\",\"style\": \"border: 0; width: 100%; height: 99%\"")

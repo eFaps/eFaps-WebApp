@@ -121,7 +121,7 @@ public class MenuItem
         }
 
         if (_model.getObject().getAncestor() == null) {
-            final WebMarkupContainer remove = new WebMarkupContainer("removeLink"){
+            final WebMarkupContainer remove = new WebMarkupContainer("removeLink") {
                 private static final long serialVersionUID = 1L;
 
                 @Override
@@ -250,9 +250,9 @@ public class MenuItem
             super.updateAjaxAttributes(_attributes);
             final AjaxCallListener listener = new AjaxCallListener();
             final StringBuilder js = new StringBuilder();
-            js.append("require([\"dijit/registry\"], function(registry){ ")
+            js.append("require([\"dijit/registry\",\"dojo/dom-construct\"], function(registry, domConstruct){ ")
                 .append("registry.byId(\"").append(((ContentContainerPage) getPage()).getCenterPanelId())
-                .append("\").set(\"content\", dojo.create(\"iframe\", {")
+                .append("\").set(\"content\", domConstruct.create(\"iframe\", {")
                 .append("\"src\": \"")
                 .append(getComponent().urlFor(ILinkListener.INTERFACE, new PageParameters()))
                 .append("\",\"style\": \"border: 0; width: 100%; height: 99%\"")
