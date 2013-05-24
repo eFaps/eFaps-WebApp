@@ -99,12 +99,38 @@ public interface WebAppSettings
     String SHOW_OID = "org.efaps.webapp.ShowOID";
 
     /**
-     * Integer: Maximum rows of task shown in the task Table per Page. Default Value is 8.
+     * String: UUID of the MainToolBar used.
      */
-    String TASKTABLE_MAX = "org.efaps.webapp.TaskTable";
+    String TOOLBAR = "org.efaps.webapp.MainToolBar";
 
     /**
      * Integer: Maximum rows of task shown in the task Table per Page. Default Value is 8.
      */
-    String TOOLBAR = "org.efaps.webapp.MainToolBar";
+    String DASHBOARD_ASSIGNEDTASK_MAX = "org.efaps.webapp.DashBoard.AssignedTaskTable.MaximumRows";
+
+    /**
+     * Boolean: Allow the User to activate deactivate the AutoUpdate. Default true.
+     */
+    String DASHBOARD_ASSIGNEDTASK_AU = "org.efaps.webapp.DashBoard.AssignedTable.UserAutoUpdate";
+
+    /**
+     * Integer: Time in seconds for an AutoUpdate. To deactivate AutoUpdate set to 0. Default Value 30 Seconds.
+     */
+    String DASHBOARD_ASSIGNED_AUTIME = "org.efaps.webapp.DashBoard.AssignedTaskTable.AutoUpdateDuration";
+
+    /**
+     * Integer: Maximum rows of task shown in the task Table per Page. Default Value is 8.
+     */
+    String DASHBOARD_OWNEDTASK_MAX = "org.efaps.webapp.DashBoard.OwnedTaskTable.MaximumRows";
+
+    /**
+     * Boolean: Allow the User to activate deactivate the AutoUpdate. Default true.
+     */
+    String DASHBOARD_OWNEDTASK_AU = "org.efaps.webapp.DashBoard.OwnedTaskTable.UserAutoUpdate";
+
+    /**
+     * Integer: Time in seconds for an AutoUpdate. To deactivate AutoUpdate set to 0. Default Value 30 Seconds.
+     */
+    String DASHBOARD_OWNEDTASK_AUTIME = "org.efaps.webapp.DashBoard.OwnedTaskTable.AutoUpdateDuration";
+
 }

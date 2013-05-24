@@ -21,19 +21,30 @@
 package org.efaps.ui.wicket.pages.dashboard;
 
 import org.apache.wicket.PageReference;
+import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
+import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.util.time.Duration;
 import org.efaps.admin.EFapsSystemConfiguration;
 import org.efaps.admin.KernelSettings;
 import org.efaps.admin.common.SystemConfiguration;
+import org.efaps.admin.dbproperty.DBProperties;
+import org.efaps.db.Context;
+import org.efaps.ui.wicket.components.task.AssignedTaskSummaryProvider;
+import org.efaps.ui.wicket.components.task.OwnedTaskSummaryProvider;
 import org.efaps.ui.wicket.components.task.TaskTablePanel;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.ui.wicket.util.Configuration;
+import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO comment!
@@ -44,6 +55,10 @@ import org.efaps.util.EFapsException;
 public class DashboardPage
     extends AbstractMergePage
 {
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(DashboardPage.class);
 
     /**
      *
@@ -68,20 +83,53 @@ public class DashboardPage
         final boolean active = config != null
                         ? config.getAttributeValueAsBoolean(KernelSettings.ACTIVATE_BPM) : false;
         if (active) {
-            final TaskTablePanel table = new TaskTablePanel("table", _pageReference);
-            add(table);
-            table.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(15)) {
+            final TaskTablePanel assignedTaskTable = new TaskTablePanel("assignedTaskTable", _pageReference,
+                            new AssignedTaskSummaryProvider());
+            add(assignedTaskTable);
 
-                private static final long serialVersionUID = 1L;
+            final int duration1 = Configuration.getAttributeAsInteger(ConfigAttribute.BOARD_ASSIGNED_AUTIME);
+            if (duration1 > 0) {
+                final SelfUpdatingTimerBehavior ajaxUpdate = new SelfUpdatingTimerBehavior(
+                                Duration.seconds(duration1));
+                assignedTaskTable.add(ajaxUpdate);
 
-                @Override
-                protected void onPostProcessTarget(final AjaxRequestTarget _target)
-                {
-                    table.updateData();
+                if (Configuration.getAttributeAsBoolean(ConfigAttribute.BOARD_ASSIGNEDTASK_AU)) {
+                    add(new AutomaticUpdateCheckbox("assignedTaskAU", ajaxUpdate));
+                } else {
+                    add(new WebMarkupContainer("assignedTaskAU").setVisible(false));
                 }
-            });
+            } else {
+                add(new WebMarkupContainer("assignedTaskAU").setVisible(false));
+            }
+            add(new Label("assignedTaskHeader", DBProperties.getProperty(DashboardPage.class.getName()
+                            + ".assignedTaskHeader")));
+
+            final TaskTablePanel ownedTaskTable = new TaskTablePanel("ownedTaskTable", _pageReference,
+                            new OwnedTaskSummaryProvider());
+            add(ownedTaskTable);
+
+            final int duration2 = Configuration.getAttributeAsInteger(ConfigAttribute.BOARD_OWNEDTASK_AUTIME);
+            if (duration2 > 0) {
+                final SelfUpdatingTimerBehavior ajaxUpdate = new SelfUpdatingTimerBehavior(
+                                Duration.seconds(duration2));
+                ownedTaskTable.add(ajaxUpdate);
+                if (Configuration.getAttributeAsBoolean(ConfigAttribute.BOARD_OWNEDTASK_AU)) {
+                    add(new AutomaticUpdateCheckbox("ownedTaskAU", ajaxUpdate));
+                } else {
+                    add(new WebMarkupContainer("ownedTaskAU").setVisible(false));
+                }
+            } else {
+                add(new WebMarkupContainer("ownedTaskAU").setVisible(false));
+            }
+            add(new Label("ownedTaskHeader",
+                            DBProperties.getProperty(DashboardPage.class.getName() + ".ownedTaskHeader")));
         } else {
-            add(new WebMarkupContainer("table").setVisible(false));
+            add(new WebMarkupContainer("assignedTaskTable").setVisible(false));
+            add(new WebMarkupContainer("ownedTaskTable").setVisible(false));
+            add(new WebMarkupContainer("assignedTaskHeader").setVisible(false));
+            add(new WebMarkupContainer("ownedTaskHeader").setVisible(false));
+            add(new WebMarkupContainer("assignedTaskAU").setVisible(false));
+            add(new WebMarkupContainer("ownedTaskAU").setVisible(false));
         }
     }
 
@@ -90,5 +138,103 @@ public class DashboardPage
     {
         super.renderHead(_response);
         _response.render(AbstractEFapsHeaderItem.forCss(DashboardPage.CSS));
+    }
+
+
+    /**
+     * CheckBox to be able to activate and disactivate the Update.
+     */
+    public class AutomaticUpdateCheckbox
+        extends AjaxCheckBox
+    {
+        /**
+         *Needed for serialization.
+         */
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * related updateBehavior.
+         */
+        private final SelfUpdatingTimerBehavior ajaxUpdate;
+
+        /**
+         * @param _wicketId wicketId for this component
+         * @param _ajaxUpdate related updateBehavior.
+         * @throws EFapsException on error
+         */
+        public AutomaticUpdateCheckbox(final String _wicketId,
+                                       final SelfUpdatingTimerBehavior _ajaxUpdate)
+            throws EFapsException
+        {
+            super(_wicketId);
+            final boolean activated = !"false".equalsIgnoreCase(Context.getThreadContext().getUserAttribute(
+                            DashboardPage.class.getName() + "." + _wicketId));
+            setModel(Model.of(activated));
+            this.ajaxUpdate = _ajaxUpdate;
+            if (!activated) {
+                this.ajaxUpdate.deactivate();
+            }
+        }
+
+        @Override
+        protected void onUpdate(final AjaxRequestTarget _target)
+        {
+            try {
+                Context.getThreadContext().setUserAttribute(DashboardPage.class.getName() + "." + getId(),
+                                getConvertedInput().toString());
+            } catch (final EFapsException e) {
+                DashboardPage.LOG.error("error on saving UserAttribute", e);
+            }
+            if (getConvertedInput()) {
+                this.ajaxUpdate.restart(_target);
+            } else {
+                this.ajaxUpdate.stop(_target);
+            }
+        }
+    }
+
+    public class SelfUpdatingTimerBehavior
+        extends AbstractAjaxTimerBehavior
+    {
+
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * deactivate on next tiner event.
+         */
+        private boolean deactivate;
+
+        /**
+         * Construct.
+         *
+         * @param updateInterval Duration between AJAX callbacks
+         */
+        public SelfUpdatingTimerBehavior(final Duration updateInterval)
+        {
+            super(updateInterval);
+        }
+
+        /**
+         *
+         */
+        public void deactivate()
+        {
+           this.deactivate = true;
+        }
+
+        /**
+         * @see org.apache.wicket.ajax.AbstractAjaxTimerBehavior#onTimer(AjaxRequestTarget)
+         */
+        @Override
+        protected final void onTimer(final AjaxRequestTarget _target)
+        {
+            if (this.deactivate) {
+                this.deactivate = false;
+                stop(_target);
+            } else {
+                ((TaskTablePanel) getComponent()).updateData();
+                _target.add(getComponent());
+            }
+        }
     }
 }

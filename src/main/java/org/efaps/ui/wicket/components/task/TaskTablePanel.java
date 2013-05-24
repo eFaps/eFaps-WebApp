@@ -61,7 +61,7 @@ public class TaskTablePanel
     /**
      * DataProvier for this TaskTable.
      */
-    private AssignedTaskSummaryProvider dataProvider;
+    private AbstractTaskSummaryProvider dataProvider;
 
     /**
      * @param _wicketId wicket for this component
@@ -69,11 +69,12 @@ public class TaskTablePanel
      * @throws EFapsException on error
      */
     public TaskTablePanel(final String _wicketId,
-                          final PageReference _pageReference)
+                          final PageReference _pageReference,
+                          final AbstractTaskSummaryProvider _dataProvider)
         throws EFapsException
     {
         super(_wicketId);
-        this.dataProvider = new AssignedTaskSummaryProvider();
+        this.dataProvider = _dataProvider;
 
         final List<IColumn<UITaskSummary, String>> columns = new ArrayList<IColumn<UITaskSummary, String>>();
 
@@ -119,10 +120,9 @@ public class TaskTablePanel
         columns.add(new PropertyColumn<UITaskSummary, String>(new Model<String>(owner), "owner",
                         "owner"));
 
-        final int rowsPerPage = Configuration.getAttributeAsInteger(Configuration.ConfigAttribute.TASKTABLE_MAX);
-
-        add(new AjaxFallbackDefaultDataTable<UITaskSummary, String>("table", columns, this.dataProvider, rowsPerPage));
-    }
+        add(new AjaxFallbackDefaultDataTable<UITaskSummary, String>("table", columns, this.dataProvider,
+                        this.dataProvider.getRowsPerPage()));
+   }
 
 
     /**

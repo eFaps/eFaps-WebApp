@@ -33,7 +33,7 @@ import org.efaps.ui.wicket.util.Configuration;
  * @author The eFaps Team
  * @version $Id$
  */
-public class AssignedTaskSummaryProvider
+public class OwnedTaskSummaryProvider
     extends AbstractTaskSummaryProvider
 {
 
@@ -48,7 +48,7 @@ public class AssignedTaskSummaryProvider
     @Override
     protected List<UITaskSummary> getUITaskSummary()
     {
-        return UITaskSummary.getUITaskSummary(BPM.getTasksAssignedAsPotentialOwner());
+        return UITaskSummary.getUITaskSummary(BPM.getTasksOwned());
     }
 
     /**
@@ -57,7 +57,7 @@ public class AssignedTaskSummaryProvider
     @Override
     protected String getUserAttributeKey4SortProperty()
     {
-        return AssignedTaskSummaryProvider.class.getName() + "SortProperty";
+        return OwnedTaskSummaryProvider.class.getName() + "SortProperty";
     }
 
     /**
@@ -66,7 +66,7 @@ public class AssignedTaskSummaryProvider
     @Override
     protected String getUserAttributeKey4SortOrder()
     {
-        return AssignedTaskSummaryProvider.class.getName() + "SortOrder";
+        return OwnedTaskSummaryProvider.class.getName() + "SortOrder";
     }
 
     /**
@@ -75,6 +75,6 @@ public class AssignedTaskSummaryProvider
     @Override
     public int getRowsPerPage()
     {
-        return Configuration.getAttributeAsInteger(Configuration.ConfigAttribute.BOARD_ASSIGNEDTASK_MAX);
+        return Configuration.getAttributeAsInteger(Configuration.ConfigAttribute.BOARD_OWNEDTASK_MAX);
     }
 }

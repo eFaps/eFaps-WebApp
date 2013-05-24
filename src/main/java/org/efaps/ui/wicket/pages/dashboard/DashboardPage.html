@@ -29,7 +29,20 @@
 <head>
 </head>
 <body wicket:id="body">
-    <div wicket:id="table">[table]</div>
+    <div class="item">
+        <div class="header">
+            <input  wicket:id="assignedTaskAU" type="checkbox" />
+            <span wicket:id="assignedTaskHeader">Title</span>
+        </div>
+        <div wicket:id="assignedTaskTable">[table]</div>
+    </div>
+    <div class="item">
+        <div class="header">
+            <input  wicket:id="ownedTaskAU" type="checkbox" />
+            <span wicket:id="ownedTaskHeader">Title 2</span>
+        </div>
+        <div wicket:id="ownedTaskTable">[table]</div>
+    </div>
 </body>
 </html>
 

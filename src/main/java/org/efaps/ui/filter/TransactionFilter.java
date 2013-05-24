@@ -144,7 +144,6 @@ public class TransactionFilter
             throw new ServletException(e);
         }
 
-        // TODO: is a open sql connection in the context returned automatically?
         try {
             boolean ok = false;
             try {
@@ -157,14 +156,8 @@ public class TransactionFilter
                 } else {
                     if (Context.isTMMarkedRollback()) {
                         TransactionFilter.LOG.error("transaction is marked to roll back");
-                        // TODO: throw of Exception is not a good idea... if an
-                        // exception is
-                        // thrown in
-                        // the try code, this exception is overwritten!
-                        // throw new
-                        // ServletException("transaction in undefined status");
                     } else if (!context.allConnectionClosed()) {
-                        TransactionFilter.LOG.error("not all connection to database are closed");
+                        TransactionFilter.LOG.debug("not all connection to database are closed");
                     } else {
                         TransactionFilter.LOG.error("transaction manager in undefined status");
                     }

@@ -57,7 +57,6 @@ public final class Configuration
         RECENT_LINKMAX(false, true, WebAppSettings.RECENT_LINKMAX, "25"),
         /**  */
         CACHE_DURATION(false, true, WebAppSettings.CACHE_DURATION, "3600"),
-
         /** StyelSheet for the Classification Tree. (human, windows) */
         CLASSTREE_CLASS(true, true, WebAppSettings.CLASSTREE_CLASS, "human"),
         /** Expand state for the Tree. */
@@ -77,8 +76,18 @@ public final class Configuration
         /** */
         SHOW_OID(false, true, WebAppSettings.SHOW_OID, "false"),
         /** */
-        TASKTABLE_MAX(false, true, WebAppSettings.TASKTABLE_MAX, "8"),
-        /** MainToolBar */
+        BOARD_ASSIGNEDTASK_MAX(false, true, WebAppSettings.DASHBOARD_ASSIGNEDTASK_MAX, "8"),
+        /** */
+        BOARD_OWNEDTASK_MAX(false, true, WebAppSettings.DASHBOARD_OWNEDTASK_MAX, "8"),
+        /** */
+        BOARD_ASSIGNEDTASK_AU(false, true, WebAppSettings.DASHBOARD_ASSIGNEDTASK_AU, "true"),
+        /** */
+        BOARD_OWNEDTASK_AU(false, true, WebAppSettings.DASHBOARD_OWNEDTASK_AU, "true"),
+        /** */
+        BOARD_ASSIGNED_AUTIME(false, true, WebAppSettings.DASHBOARD_ASSIGNED_AUTIME, "30"),
+        /** */
+        BOARD_OWNEDTASK_AUTIME(false, true, WebAppSettings.DASHBOARD_OWNEDTASK_AUTIME, "30"),
+        /** MainToolBar. */
         TOOLBAR(false, true, WebAppSettings.TOOLBAR, "87001cc3-c45c-44de-b8f1-776df507f268");
 
         /**

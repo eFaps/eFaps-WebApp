@@ -180,4 +180,9 @@ public abstract class AbstractTaskSummaryProvider
      * @return the key used to store the sort order as a UserAttribute.
      */
     protected abstract String getUserAttributeKey4SortOrder();
+
+    /**
+     * @return the number of rows presented per page
+     */
+    public abstract int getRowsPerPage();
 }
