@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.ui.wicket.pages.dashboard;
+package org.efaps.ui.wicket.components.task;
 
 import java.util.Map;
 
@@ -61,14 +61,15 @@ public class ActionPanel
     private static final long serialVersionUID = 1L;
 
     /**
-     * @param id component id
-     * @param model model for contact
+     * @param _wicketID component id
+     * @param _model model for contact
+     * @param _pageReference reference to the calling page
      */
-    public ActionPanel(final String id,
+    public ActionPanel(final String _wicketID,
                        final IModel<UITaskSummary> _model,
                        final PageReference _pageReference)
     {
-        super(id, _model);
+        super(_wicketID, _model);
         final AjaxLink<UITaskSummary> select = new AjaxLink<UITaskSummary>("select", _model)
         {
 

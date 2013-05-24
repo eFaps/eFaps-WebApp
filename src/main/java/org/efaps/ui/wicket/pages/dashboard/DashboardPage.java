@@ -20,32 +20,19 @@
 
 package org.efaps.ui.wicket.pages.dashboard;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
 import org.apache.wicket.PageReference;
-import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
-import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.repeater.Item;
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
+import org.apache.wicket.util.time.Duration;
 import org.efaps.admin.EFapsSystemConfiguration;
 import org.efaps.admin.KernelSettings;
 import org.efaps.admin.common.SystemConfiguration;
-import org.efaps.admin.dbproperty.DBProperties;
-import org.efaps.admin.user.Role;
-import org.efaps.db.Context;
-import org.efaps.ui.wicket.models.objects.UITaskSummary;
+import org.efaps.ui.wicket.components.task.TaskTablePanel;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.util.EFapsException;
 
 /**
@@ -81,54 +68,18 @@ public class DashboardPage
         final boolean active = config != null
                         ? config.getAttributeValueAsBoolean(KernelSettings.ACTIVATE_BPM) : false;
         if (active) {
-            final List<IColumn<UITaskSummary, String>> columns = new ArrayList<IColumn<UITaskSummary, String>>();
-
-            columns.add(new AbstractColumn<UITaskSummary, String>(new Model<String>(""))
-            {
+            final TaskTablePanel table = new TaskTablePanel("table", _pageReference);
+            add(table);
+            table.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(15)) {
 
                 private static final long serialVersionUID = 1L;
 
                 @Override
-                public void populateItem(final Item<ICellPopulator<UITaskSummary>> _cellItem,
-                                         final String _componentId,
-                                         final IModel<UITaskSummary> _rowModel)
+                protected void onPostProcessTarget(final AjaxRequestTarget _target)
                 {
-                    _cellItem.add(new ActionPanel(_componentId, _rowModel, _pageReference));
-                }
-
-                @Override
-                public String getCssClass()
-                {
-                    return "openTask";
+                    table.updateData();
                 }
             });
-            // Administration
-            if (Configuration.getAttributeAsBoolean(Configuration.ConfigAttribute.SHOW_OID)
-                            && Context.getThreadContext()
-                                            .getPerson()
-                                            .isAssigned(Role.get(UUID
-                                                            .fromString("1d89358d-165a-4689-8c78-fc625d37aacd")))) {
-
-                columns.add(new PropertyColumn<UITaskSummary, String>(new Model<String>("ID"), "id", "id"));
-                columns.add(new PropertyColumn<UITaskSummary, String>(new Model<String>("Name"), "name", "name"));
-            }
-
-            final String desc = DBProperties.getProperty(DashboardPage.class.getName()+ ".TaskTable.Description");
-            final String status = DBProperties.getProperty(DashboardPage.class.getName() + ".TaskTable.Status");
-            final String at = DBProperties.getProperty(DashboardPage.class.getName() + ".TaskTable.ActivationTime");
-            final String owner = DBProperties.getProperty(DashboardPage.class.getName() + ".TaskTable.Owner");
-
-            columns.add(new PropertyColumn<UITaskSummary, String>(new Model<String>(desc), "description",
-                            "description"));
-            columns.add(new PropertyColumn<UITaskSummary, String>(new Model<String>(status), "status"));
-            columns.add(new PropertyColumn<UITaskSummary, String>(new Model<String>(at), "activationTime",
-                            "activationTime"));
-            columns.add(new PropertyColumn<UITaskSummary, String>(new Model<String>(owner), "owner",
-                            "owner"));
-
-            final int rowsPerPage = Configuration.getAttributeAsInteger(Configuration.ConfigAttribute.TASKTABLE_MAX);
-            add(new AjaxFallbackDefaultDataTable<UITaskSummary, String>("table", columns,
-                            new SortableTaskSummaryDataProvider(), rowsPerPage));
         } else {
             add(new WebMarkupContainer("table").setVisible(false));
         }

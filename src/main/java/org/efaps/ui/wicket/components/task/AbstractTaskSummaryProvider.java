@@ -18,7 +18,8 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.ui.wicket.pages.dashboard;
+
+package org.efaps.ui.wicket.components.task;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -29,17 +30,20 @@ import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.efaps.bpm.BPM;
+import org.efaps.db.Context;
 import org.efaps.ui.wicket.models.objects.UITaskSummary;
+import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id: SortableTaskSummaryDataProvider.java 9249 2013-04-23 15:50:17Z
- *          jan@moxter.net $
+ * @version $Id$
  */
-public class SortableTaskSummaryDataProvider
+public abstract class AbstractTaskSummaryProvider
     extends SortableDataProvider<UITaskSummary, String>
 {
 
@@ -49,6 +53,11 @@ public class SortableTaskSummaryDataProvider
     private static final long serialVersionUID = 1L;
 
     /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractTaskSummaryProvider.class);
+
+    /**
      * List of TaskSummary to be displayed.
      */
     private final List<UITaskSummary> summaries;
@@ -56,21 +65,43 @@ public class SortableTaskSummaryDataProvider
     /**
      * Constructor.
      */
-    public SortableTaskSummaryDataProvider()
+    public AbstractTaskSummaryProvider()
     {
-        // set default sort
-        setSort("description", SortOrder.ASCENDING);
-        this.summaries = UITaskSummary.getUITaskSummary(BPM.getTasksAssignedAsPotentialOwner());
+        String property = null;
+        SortOrder order = null;
+        try {
+            property = Context.getThreadContext().getUserAttribute(getUserAttributeKey4SortProperty());
+            final String orderTmp = Context.getThreadContext().getUserAttribute(getUserAttributeKey4SortOrder());
+            if (orderTmp != null) {
+                order = SortOrder.valueOf(orderTmp);
+            }
+        } catch (final EFapsException e) {
+            // only UserAttributes ==> logging only
+            AbstractTaskSummaryProvider.LOG.error("error on retrieving UserAttributes", e);
+        }
+        setSort(property == null ? "description" : property, order == null ? SortOrder.ASCENDING : order);
+        this.summaries = getUITaskSummary();
     }
 
     @Override
     public Iterator<UITaskSummary> iterator(final long _first,
-                                          final long _count)
+                                            final long _count)
     {
         final String sortprop = getSort().getProperty();
         final boolean asc = getSort().isAscending();
+
+        try {
+            Context.getThreadContext().setUserAttribute(getUserAttributeKey4SortOrder(),
+                            asc ? SortOrder.ASCENDING.name() : SortOrder.DESCENDING.name());
+            Context.getThreadContext().setUserAttribute(getUserAttributeKey4SortProperty(), sortprop);
+        } catch (final EFapsException e) {
+            // only UserAttributes ==> logging only
+            AbstractTaskSummaryProvider.LOG.error("error on setting UserAttributes", e);
+        }
+
         Collections.sort(this.summaries, new Comparator<UITaskSummary>()
         {
+
             @Override
             public int compare(final UITaskSummary _task0,
                                final UITaskSummary _task1)
@@ -84,7 +115,6 @@ public class SortableTaskSummaryDataProvider
                     task1 = _task0;
                     task0 = _task1;
                 }
-
                 int ret = 0;
                 if ("description".equals(sortprop)) {
                     ret = task0.getDescription().compareTo(task1.getDescription());
@@ -96,13 +126,12 @@ public class SortableTaskSummaryDataProvider
                     ret = _task0.getId().compareTo(task1.getId());
                 } else if ("status".equals(sortprop)) {
                     ret = task0.getStatus().compareTo(task1.getStatus());
-                }else if ("owner".equals(sortprop)) {
+                } else if ("owner".equals(sortprop)) {
                     ret = task0.getOwner().compareTo(task1.getOwner());
                 }
                 return ret;
             }
         });
-
         return this.summaries.subList(Long.valueOf(_first).intValue(), Long.valueOf(_first + _count).intValue())
                         .iterator();
     }
@@ -127,4 +156,28 @@ public class SortableTaskSummaryDataProvider
     {
         return Model.of(_object);
     }
+
+    /**
+     * Requery the data.
+     */
+    public void requery()
+    {
+        this.summaries.clear();
+        this.summaries.addAll(getUITaskSummary());
+    }
+
+    /**
+     * @return list of UITaskSummary.
+     */
+    protected abstract List<UITaskSummary> getUITaskSummary();
+
+    /**
+     * @return the key used to store the sort property as a UserAttribute.
+     */
+    protected abstract String getUserAttributeKey4SortProperty();
+
+    /**
+     * @return the key used to store the sort order as a UserAttribute.
+     */
+    protected abstract String getUserAttributeKey4SortOrder();
 }
