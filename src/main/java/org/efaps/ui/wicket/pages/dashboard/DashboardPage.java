@@ -20,6 +20,8 @@
 
 package org.efaps.ui.wicket.pages.dashboard;
 
+import java.util.UUID;
+
 import org.apache.wicket.PageReference;
 import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -33,6 +35,8 @@ import org.efaps.admin.EFapsSystemConfiguration;
 import org.efaps.admin.KernelSettings;
 import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.admin.dbproperty.DBProperties;
+import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
+import org.efaps.admin.ui.Command;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.components.task.AssignedTaskSummaryProvider;
 import org.efaps.ui.wicket.components.task.OwnedTaskSummaryProvider;
@@ -82,7 +86,9 @@ public class DashboardPage
         final SystemConfiguration config = EFapsSystemConfiguration.KERNEL.get();
         final boolean active = config != null
                         ? config.getAttributeValueAsBoolean(KernelSettings.ACTIVATE_BPM) : false;
-        if (active) {
+        // BPM_DashBoard_AssignedTask
+        if (active && Command.get(UUID.fromString("63933a70-82d3-4fbc-bef2-cdf06c77013f")).hasAccess(
+                                        TargetMode.VIEW, null)) {
             final TaskTablePanel assignedTaskTable = new TaskTablePanel("assignedTaskTable", _pageReference,
                             new AssignedTaskSummaryProvider());
             add(assignedTaskTable);
@@ -103,7 +109,15 @@ public class DashboardPage
             }
             add(new Label("assignedTaskHeader", DBProperties.getProperty(DashboardPage.class.getName()
                             + ".assignedTaskHeader")));
+        } else {
+            add(new WebMarkupContainer("assignedTaskTable").setVisible(false));
+            add(new WebMarkupContainer("assignedTaskHeader").setVisible(false));
+            add(new WebMarkupContainer("assignedTaskAU").setVisible(false));
+        }
 
+        // BPM_DashBoard_OwnedTask
+        if (active && Command.get(UUID.fromString("60a9bfcd-928e-4b96-a617-94d70fb0c8ab")).hasAccess(
+                                        TargetMode.VIEW, null)) {
             final TaskTablePanel ownedTaskTable = new TaskTablePanel("ownedTaskTable", _pageReference,
                             new OwnedTaskSummaryProvider());
             add(ownedTaskTable);
@@ -124,11 +138,8 @@ public class DashboardPage
             add(new Label("ownedTaskHeader",
                             DBProperties.getProperty(DashboardPage.class.getName() + ".ownedTaskHeader")));
         } else {
-            add(new WebMarkupContainer("assignedTaskTable").setVisible(false));
             add(new WebMarkupContainer("ownedTaskTable").setVisible(false));
-            add(new WebMarkupContainer("assignedTaskHeader").setVisible(false));
             add(new WebMarkupContainer("ownedTaskHeader").setVisible(false));
-            add(new WebMarkupContainer("assignedTaskAU").setVisible(false));
             add(new WebMarkupContainer("ownedTaskAU").setVisible(false));
         }
     }
