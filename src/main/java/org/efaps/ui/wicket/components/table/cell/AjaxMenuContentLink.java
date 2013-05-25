@@ -184,7 +184,7 @@ public class AjaxMenuContentLink
                 ((ContentContainerPage) calledByPageRef.getPage()).getMenuTree().registerListener(up);
                 final AjaxCallListener listener = new AjaxCallListener();
                 final StringBuilder js = new StringBuilder()
-                    .append("var frameWin = top.dojo.byId(\"").append(MainPage.IFRAME_ID)
+                    .append("var frameWin = top.dojo.doc.getElementById(\"").append(MainPage.IFRAME_ID)
                     .append("\").contentWindow;")
                     .append(" frameWin.")
                     .append(MenuUpdateBehavior.FUNCTION_NAME).append("(\"").append(up.getKey()).append("\");")
@@ -214,9 +214,7 @@ public class AjaxMenuContentLink
                     throw new RestartResponseException(new ErrorPage(e));
                 } // CHECKSTYLE:ON
                 if (menu == null) {
-                    final Exception ex = new
-                                    Exception("no tree menu defined for type " +
-                                                    instance.getType().getName());
+                    final Exception ex = new Exception("no tree menu defined for type " + instance.getType().getName());
                     throw new RestartResponseException(new ErrorPage(ex));
                 }
 
