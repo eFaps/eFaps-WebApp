@@ -43,7 +43,8 @@ import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.util.string.StringValue;
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
-import org.efaps.admin.datamodel.ui.UIInterface;
+import org.efaps.admin.datamodel.ui.IUIProvider;
+import org.efaps.admin.datamodel.ui.UIValue;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
@@ -148,7 +149,7 @@ public class AjaxSubmitCloseBehavior
     @Override
     protected void onSubmit(final AjaxRequestTarget _target)
     {
-        AjaxSubmitCloseBehavior.LOG.debug("entering onSubmit");
+        AjaxSubmitCloseBehavior.LOG.trace("entering onSubmit");
         final String[] oids = ParameterUtil.parameter2Array(
                         getComponent().getRequest().getRequestParameters(), "selectedRow");
         final Map<String, String[]> others = new HashMap<String, String[]>();
@@ -402,7 +403,7 @@ public class AjaxSubmitCloseBehavior
     {
         AjaxSubmitCloseBehavior.LOG.trace("entering validateFieldValues");
         boolean ret = true;
-        final AbstractUIObject uiobject = (AbstractUIObject) getForm().getParent().getDefaultModelObject();
+        final AbstractUIObject uiobject = (AbstractUIObject) getForm().getPage().getDefaultModelObject();
         final StringBuilder html = new StringBuilder();
         html.append("<table class=\"eFapsValidateFieldValuesTable\">");
         if (uiobject instanceof UIForm) {
@@ -439,9 +440,10 @@ public class AjaxSubmitCloseBehavior
                         final StringValue value = getComponent().getRequest().getRequestParameters()
                                         .getParameterValue(cell.getName());
                         if (!value.isNull() && !value.isEmpty()) {
-                            final UIInterface clazz = cell.getUiClass();
+                            final IUIProvider clazz = cell.getUIProvider();
                             if (clazz != null) {
-                                final String warn = clazz.validateValue(value.toString(), cell.getAttribute());
+                                final UIValue uiValue = UIValue.get(cell.getField(), cell.getAttribute(), value);
+                                final String warn = clazz.validateValue(uiValue);
                                 if (warn != null) {
                                     _html.append("<tr><td>").append(cell.getCellLabel()).append(":</td><td>")
                                         .append(warn).append("</td></tr>");
@@ -470,23 +472,23 @@ public class AjaxSubmitCloseBehavior
                         final UITableHeader header = headerIter.next();
                         final List<StringValue> values = getComponent().getRequest().getRequestParameters()
                                         .getParameterValues(uiTableCell.getName());
-
                         if (values != null && !values.isEmpty()) {
                             int i = 0;
                             for (final StringValue value : values) {
                                 if (!value.isNull() && !value.isEmpty()) {
-
-                                    final UIInterface clazz = uiTableCell.getUiClass();
+                                    final IUIProvider clazz = uiTableCell.getUIProvider();
                                     if (clazz != null) {
-                                        final String warn = clazz.validateValue(value.toString(),
-                                                        uiTableCell.getAttribute());
+                                        final UIValue uiValue = UIValue.get(uiTableCell.getField(),
+                                                        uiTableCell.getAttribute(), value);
+                                        final String warn = clazz.validateValue(uiValue);
                                         if (warn != null) {
-                                            _html.append("<tr><td>").append(header.getLabel()).append(" ").append(i + 1)
+                                            _html.append("<tr><td>").append(header.getLabel()).append(" ")
+                                                .append(i + 1)
                                                 .append(":</td><td>").append(warn).append("</td></tr>");
                                             ret = false;
                                             final StringBuilder js = new StringBuilder();
-                                            js.append("document.getElementsByName('").append(uiTableCell.getName())
-                                                .append("')[").append(i)
+                                            js.append("document.getElementsByName('")
+                                                .append(uiTableCell.getName()).append("')[").append(i)
                                                 .append("].setAttribute('class', 'eFapsTableCellInvalidValue');");
                                             _target.appendJavaScript(js.toString());
                                         }

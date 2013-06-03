@@ -25,6 +25,8 @@ import java.util.List;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.ui.FieldValue;
+import org.efaps.admin.datamodel.ui.IUIProvider;
+import org.efaps.admin.datamodel.ui.StringUI;
 import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter.ParameterValues;
@@ -181,6 +183,24 @@ public abstract class AbstractUICell
     public UIInterface getUiClass()
     {
         return this.uiClass;
+    }
+
+    /**
+     * @return the IUIProvider for this cell
+     */
+    public IUIProvider getUIProvider()
+        throws CacheReloadException
+    {
+        IUIProvider ret = getField().getUIProvider();
+        if (ret == null) {
+            final Attribute attr = getAttribute();
+            if (attr != null) {
+                ret = attr.getAttributeType().getUIProvider();
+            } else {
+                ret = new StringUI();
+            }
+        }
+        return ret;
     }
 
     /**
