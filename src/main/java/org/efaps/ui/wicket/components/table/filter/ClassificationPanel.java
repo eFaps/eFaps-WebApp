@@ -28,7 +28,7 @@ import org.efaps.ui.wicket.components.classification.ClassificationTree;
 import org.efaps.ui.wicket.models.objects.UIClassification;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.models.objects.UITableHeader;
-import org.efaps.util.cache.CacheReloadException;
+import org.efaps.util.EFapsException;
 
 
 /**
@@ -55,18 +55,18 @@ public class ClassificationPanel
      * @param _wicketId         wicket id for this component
      * @param _model            model for this component
      * @param _uitableHeader    header this panel belongs to
-     * @throws CacheReloadException on error
+     * @throws EFapsException on error
      */
     public ClassificationPanel(final String _wicketId,
                                final IModel<?> _model,
                                final UITableHeader _uitableHeader)
-        throws CacheReloadException
+        throws EFapsException
     {
         super(_wicketId, _model);
         final UITable table = (UITable) super.getDefaultModelObject();
         this.uiClassification = new UIClassification(_uitableHeader.getField(), table);
         if (!this.uiClassification.isInitialized()) {
-            this.uiClassification.execute();
+            this.uiClassification.execute(table.getInstance());
         }
         final ClassificationTree tree = new ClassificationTree("tree", Model.of(this.uiClassification));
         this.add(tree);

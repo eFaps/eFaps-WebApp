@@ -32,6 +32,7 @@ import java.util.Stack;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.RestartResponseException;
+import org.apache.wicket.Session;
 import org.apache.wicket.protocol.http.WebSession;
 import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
@@ -465,11 +466,16 @@ public class EFapsSession
         }
     }
 
+    /**
+     * Save the Context.
+     */
     public void saveContext()
     {
         closeContext();
         openContext();
     }
+
+
 
 
     /**
@@ -488,6 +494,14 @@ public class EFapsSession
     public File getFile()
     {
         return this.file;
+    }
+
+    /**
+     * @return the current EFapsSession
+     */
+    public static EFapsSession get()
+    {
+        return (EFapsSession) Session.get();
     }
 
     /**

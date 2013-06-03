@@ -31,6 +31,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.wicket.util.io.IClusterable;
+import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.dbproperty.DBProperties;
@@ -141,21 +142,27 @@ public class UIClassification
     private boolean expanded;
 
     /**
+     * Instance thisclassificatio belongs to.
+     */
+    private Instance instance;
+
+    /**
      * @param _field FielClassification
      * @param _uiObject ui object
-     * @throws CacheReloadException on error
+     * @throws EFapsException on error
      */
     public UIClassification(final Field _field,
                             final AbstractUIObject _uiObject)
-        throws CacheReloadException
+        throws EFapsException
     {
-        final Type type = Type.get(_field.getClassificationName());
-        this.classificationUUID = type.getUUID();
-        this.multipleSelect = ((Classification) type).isMultipleSelect();
+        final Classification clazz = Classification.get(_field.getClassificationName());
+        this.classificationUUID = clazz.getUUID();
+        this.multipleSelect =  clazz.isMultipleSelect();
         this.fieldId = _field.getId();
         this.root = true;
         this.mode = _uiObject.getMode();
         this.commandName = _uiObject.getCommand().getName();
+        this.instance = _uiObject.getInstance();
     }
 
     /**
@@ -169,7 +176,7 @@ public class UIClassification
                              final TargetMode _mode)
         throws CacheReloadException
     {
-        this.multipleSelect = ((Classification) Type.get(_uuid)).isMultipleSelect();
+        this.multipleSelect = Classification.get(_uuid).isMultipleSelect();
         this.fieldId = 0;
         this.classificationUUID = _uuid;
         this.label = DBProperties.getProperty(Type.get(this.classificationUUID).getName() + ".Label");
@@ -261,10 +268,10 @@ public class UIClassification
     /**
      * Execute the model.
      *
-     * @throws CacheReloadException on error
+     * @throws EFapsException on error
      */
-    public void execute()
-        throws CacheReloadException
+    public void execute(final Instance _instance)
+        throws EFapsException
     {
         this.initialized = true;
         final Classification type = (Classification) Type.get(this.classificationUUID);
@@ -272,7 +279,7 @@ public class UIClassification
             this.selected = true;
         }
         this.label = DBProperties.getProperty(type.getName() + ".Label");
-        addChildren(this, type.getChildClassifications(), this.selectedUUID);
+        addChildren(this, type.getChildClassifications(), this.selectedUUID, _instance);
         expand();
     }
 
@@ -332,21 +339,33 @@ public class UIClassification
      * @param _parent parent
      * @param _children children
      * @param _selectedUUID set of selected classification uuids
-     * @throws CacheReloadException on error
+     * @param _instance instance the classifcation belongs to
+     * @throws EFapsException on error
      */
     private void addChildren(final UIClassification _parent,
                              final Set<Classification> _children,
-                             final Set<UUID> _selectedUUID)
-        throws CacheReloadException
+                             final Set<UUID> _selectedUUID,
+                             final Instance _instance)
+        throws EFapsException
     {
         for (final Classification child : _children) {
-            final UIClassification childUI = new UIClassification(child.getUUID(), _parent.mode);
-            if (_selectedUUID.contains(child.getUUID())) {
-                childUI.selected = true;
+            boolean access;
+            if (!child.isAbstract()) {
+                access = child.hasAccess(_instance, getMode() == TargetMode.CREATE
+                            || getMode() == TargetMode.EDIT ? AccessTypeEnums.CREATE.getAccessType()
+                            : AccessTypeEnums.SHOW.getAccessType());
+            } else {
+                access = true;
             }
-            childUI.addChildren(childUI, child.getChildClassifications(), _selectedUUID);
-            _parent.children.add(childUI);
-            childUI.setParent(_parent);
+            if (access) {
+                final UIClassification childUI = new UIClassification(child.getUUID(), _parent.mode);
+                if (_selectedUUID.contains(child.getUUID())) {
+                    childUI.selected = true;
+                }
+                childUI.addChildren(childUI, child.getChildClassifications(), _selectedUUID, _instance);
+                _parent.children.add(childUI);
+                childUI.setParent(_parent);
+            }
         }
         Collections.sort(_parent.children, new Comparator<UIClassification>()
         {
@@ -528,5 +547,19 @@ public class UIClassification
     public String toString()
     {
         return getLabel();
+    }
+
+    /**
+     * @return instance
+     */
+    public Instance getInstance()
+    {
+        Instance ret = this.instance;
+        UIClassification clazz = this;
+        while (!clazz.isRoot() && ret == null) {
+            clazz = clazz.getParent();
+            ret = clazz.instance;
+        }
+        return ret;
     }
 }

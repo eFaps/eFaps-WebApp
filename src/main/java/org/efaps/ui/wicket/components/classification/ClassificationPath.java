@@ -28,7 +28,7 @@ import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.model.IModel;
 import org.efaps.ui.wicket.models.objects.UIClassification;
-import org.efaps.util.cache.CacheReloadException;
+import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,8 +77,8 @@ public class ClassificationPath
         final UIClassification uiclass = (UIClassification) getDefaultModelObject();
         if (!uiclass.isInitialized()) {
             try {
-                uiclass.execute();
-            } catch (final CacheReloadException e) {
+                uiclass.execute(uiclass.getInstance());
+            } catch (final EFapsException e) {
                 ClassificationPath.LOG.error("Error for execute", e);
             }
         }

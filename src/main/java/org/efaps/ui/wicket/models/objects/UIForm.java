@@ -305,7 +305,7 @@ public class UIForm
                 final Map<UUID, String> instanceKeys = uiclass.getClassInstanceKeys(getInstance());
                 if (instanceKeys.size() > 0) {
                     if (!uiclass.isInitialized()) {
-                        uiclass.execute();
+                        uiclass.execute(getInstance());
                     }
                     // add the root classification
                     this.elements.add(new Element(UIForm.ElementType.SUBFORM, new UIFieldForm(getCommandUUID(),
@@ -683,7 +683,7 @@ public class UIForm
                 }
             }
             if (!uiclass.isInitialized()) {
-                uiclass.execute();
+                uiclass.execute(null);
             }
             add2Elements4Create(uiclass);
         }
