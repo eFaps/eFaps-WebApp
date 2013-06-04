@@ -31,6 +31,7 @@ import org.efaps.ui.wicket.components.table.TablePanel;
 import org.efaps.ui.wicket.components.table.header.HeaderPanel;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * @author The eFaps Team
@@ -59,10 +60,12 @@ public class StructurBrowserTreeTablePanel
      * @param _wicketId wicket id of this component
      * @param _model model for this component
      * @param _parentLink must the link be done using the parent
+     * @throws CacheReloadException on error
      */
     public StructurBrowserTreeTablePanel(final String _wicketId,
                                          final IModel<UIStructurBrowser> _model,
                                          final boolean _parentLink)
+        throws CacheReloadException
     {
         super(_wicketId, _model);
         this.parentLink = _parentLink;

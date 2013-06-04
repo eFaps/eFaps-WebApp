@@ -44,6 +44,7 @@ import org.efaps.ui.wicket.components.tree.StructurBrowserTreeTable;
 import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.AbstractUIHeaderObject;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
+import org.efaps.ui.wicket.models.objects.UIFieldTable;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UITableHeader;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
@@ -54,6 +55,7 @@ import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * This class renders the Header of a Table.
@@ -77,9 +79,9 @@ public class HeaderPanel
     private static final long serialVersionUID = 1L;
 
     /**
-     * Properties for this header.
+     * Key of the Properties for this header.
      */
-    private final String headerproperties;
+    private final String headerProperties;
 
     /**
      * StringBuilder used to add javascript.
@@ -97,11 +99,18 @@ public class HeaderPanel
     private final Panel tablepanel;
 
     /**
+     * Name of the table the Header belongs to.
+     */
+    private String tableName;
+
+    /**
      * @param _wicketId wicket id for this component
      * @param _panel    the Panel the table resides in
+     * @throws CacheReloadException on error
      */
     public HeaderPanel(final String _wicketId,
                        final Panel _panel)
+        throws CacheReloadException
     {
         this(_wicketId, _panel, _panel.getDefaultModel());
     }
@@ -110,24 +119,31 @@ public class HeaderPanel
      * @param _wicketId wicket id for this component
      * @param _panel    the Panel the table resides in
      * @param _model    model for this panel
+     * @throws CacheReloadException on error
      */
     public HeaderPanel(final String _wicketId,
                        final Panel _panel,
                        final IModel<?> _model)
+        throws CacheReloadException
     {
         super(_wicketId, _model);
         this.tablepanel = _panel;
         final AbstractUIHeaderObject uitable = (AbstractUIHeaderObject) super.getDefaultModelObject();
-        this.headerproperties = "eFapsTable" + uitable.getTableId();
+        if (uitable instanceof UIFieldTable) {
+            this.tableName = ((UIFieldTable) _model.getObject()).getName();
+        } else {
+            this.tableName = uitable.getTable().getName();
+        }
+        this.headerProperties = "eFapsTable" + uitable.getTableId();
 
         this.add(new AjaxStoreColumnWidthBehavior());
         this.add(new AjaxStoreColumnOrderBehavior());
         this.add(new AjaxReloadTableBehavior());
         this.add(AttributeModifier.append("class", "eFapsTableHeader"));
 
-        final DnDBehavior dndBehavior = DnDBehavior.getSourceBehavior(this.headerproperties);
-        dndBehavior.setAppendJavaScript(this.headerproperties + ".storeColumnOrder(getColumnOrder("
-                        + this.headerproperties + "));\n" + this.headerproperties + ".reloadTable()\n");
+        final DnDBehavior dndBehavior = DnDBehavior.getSourceBehavior(this.headerProperties);
+        dndBehavior.setAppendJavaScript(this.headerProperties + ".storeColumnOrder(getColumnOrder("
+                        + this.headerProperties + "));\n" + this.headerProperties + ".reloadTable()\n");
         this.add(dndBehavior);
 
         final int browserWidth = ((WebClientInfo) getSession().getClientInfo()).getProperties().getBrowserWidth();
@@ -195,7 +211,7 @@ public class HeaderPanel
                 } else {
                     cell.add(AttributeModifier.append("class", "eFapsTableHeaderCell eFapsCellWidth" + i));
                 }
-                cell.add(DnDBehavior.getItemBehavior(this.headerproperties));
+                cell.add(DnDBehavior.getItemBehavior(this.headerProperties));
             }
             cell.setOutputMarkupId(true);
             cellRepeater.add(cell);
@@ -209,10 +225,10 @@ public class HeaderPanel
                     }
                 }
                 if (add) {
-                    final Seperator seperator = new Seperator(cellRepeater.newChildId(), i, this.headerproperties);
+                    final Seperator seperator = new Seperator(cellRepeater.newChildId(), i, this.headerProperties);
                     cellRepeater.add(seperator);
                     this.js.append("addMoveable(\"").append(seperator.getMarkupId())
-                            .append("\", ").append(this.headerproperties).append(");");
+                            .append("\", ").append(this.headerProperties).append(");");
                 }
             }
             i++;
@@ -256,24 +272,25 @@ public class HeaderPanel
     {
         final StringBuilder jsTmp = new StringBuilder()
             .append("require([\"dojo/ready\"]);\n")
-            .append("  var ").append(this.headerproperties).append(" = new headerProperties();\n  ")
-            .append(this.headerproperties).append(".headerID = \"").append(this.getMarkupId()).append("\";\n  ")
-            .append(this.headerproperties + ".bodyID = \"").append(this.tablepanel.getMarkupId()).append("\";\n  ")
-            .append(this.headerproperties + ".modelID = ")
+            .append("  var ").append(this.headerProperties).append(" = new headerProperties();\n  ")
+            .append(this.headerProperties).append(".tableName = \"").append(this.tableName).append("\";\n  ")
+            .append(this.headerProperties).append(".headerID = \"").append(this.getMarkupId()).append("\";\n  ")
+            .append(this.headerProperties + ".bodyID = \"").append(this.tablepanel.getMarkupId()).append("\";\n  ")
+            .append(this.headerProperties + ".modelID = ")
             .append(((AbstractUIHeaderObject) super.getDefaultModelObject()).getTableId()).append(";\n  ")
-            .append(this.headerproperties).append(".storeColumnWidths = ")
+            .append(this.headerProperties).append(".storeColumnWidths = ")
             .append((this.getBehaviors(AjaxStoreColumnWidthBehavior.class).get(0)).getJavaScript())
             .append("; ")
-            .append(this.headerproperties).append(".storeColumnOrder = ")
+            .append(this.headerProperties).append(".storeColumnOrder = ")
             .append((this.getBehaviors(AjaxStoreColumnOrderBehavior.class).get(0)).getJavaScript())
             .append("; ")
-            .append(this.headerproperties + ".reloadTable = ")
+            .append(this.headerProperties + ".reloadTable = ")
             .append((this.getBehaviors(AjaxReloadTableBehavior.class).get(0)).getJavaScript())
             .append("; ")
-            .append("  addOnResizeEvent(function (){positionTableColumns(")
-            .append(this.headerproperties)
+            .append("  addOnResizeEvent(function (){ positionTableColumns(")
+            .append(this.headerProperties)
             .append(");});\n")
-            .append("dojo.ready(function (){ positionTableColumns(").append(this.headerproperties).append(");")
+            .append("dojo.ready(function (){ positionTableColumns(").append(this.headerProperties).append(");")
             .append(this.js)
             .append("});\n");
         return jsTmp.toString();
