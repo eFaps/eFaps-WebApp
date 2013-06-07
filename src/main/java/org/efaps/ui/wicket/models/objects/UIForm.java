@@ -414,7 +414,8 @@ public class UIForm
             value = _query.getPhrase(_field.getName());
         }
 
-        final FieldValue fieldvalue = new FieldValue(_field, _attr, value, _fieldInstance, getInstance(), null, this);
+        final FieldValue fieldvalue = new FieldValue(_field, _attr, value, _fieldInstance, getInstance(), null, this,
+                        getCallingCommandUUID() == null ? getCommand() : getCallingCommand());
 
         String strValue = null;
         if (isPrintMode()) {
