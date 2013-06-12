@@ -121,6 +121,11 @@ public class UIClassification
     private final boolean root;
 
     /**
+     * Is this UIClassification a base classification.
+     */
+    private final boolean base;
+
+    /**
      * Target mode.
      */
     private final TargetMode mode;
@@ -147,7 +152,7 @@ public class UIClassification
     private Instance instance;
 
     /**
-     * @param _field FielClassification
+     * @param _fieldId id of the FieldClassification
      * @param _uiObject ui object
      * @throws EFapsException on error
      */
@@ -159,6 +164,7 @@ public class UIClassification
         this.multipleSelect = true;
         this.fieldId = _fieldId;
         this.root = true;
+        this.base = false;
         this.mode = _uiObject.getMode();
         this.commandName = _uiObject.getCommand().getName();
         this.instance = _uiObject.getInstance();
@@ -169,10 +175,12 @@ public class UIClassification
      *
      * @param _uuid UUID of the classification type
      * @param _mode target mode
+     * @param _base is base classfication
      * @throws CacheReloadException on error
      */
     private UIClassification(final UUID _uuid,
-                             final TargetMode _mode)
+                             final TargetMode _mode,
+                             final boolean _base)
         throws CacheReloadException
     {
         this.multipleSelect = Classification.get(_uuid).isMultipleSelect();
@@ -181,6 +189,7 @@ public class UIClassification
         this.label = DBProperties.getProperty(Type.get(this.classificationUUID).getName() + ".Label");
         this.root = false;
         this.mode = _mode;
+        this.base = _base;
     }
 
     /**
@@ -252,6 +261,26 @@ public class UIClassification
     public void setSelected(final boolean _selected)
     {
         this.selected = _selected;
+    }
+
+    /**
+     * Getter method for instance variable {@link #root}.
+     *
+     * @return value of instance variable {@link #root}
+     */
+    public boolean isRoot()
+    {
+        return this.root;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #base}.
+     *
+     * @return value of instance variable {@link #base}
+     */
+    public boolean isBase()
+    {
+        return this.base;
     }
 
     /**
@@ -362,7 +391,7 @@ public class UIClassification
                 access = true;
             }
             if (access) {
-                final UIClassification childUI = new UIClassification(child.getUUID(), _parent.mode);
+                final UIClassification childUI = new UIClassification(child.getUUID(), _parent.mode, false);
                 if (_selectedUUID.contains(child.getUUID())) {
                     childUI.selected = true;
                 }
@@ -400,7 +429,7 @@ public class UIClassification
         Type reltype = null;
         for (final UIClassification child :  clazz.getChildren()) {
             final Classification classType = (Classification) Type.get(child.getClassificationUUID());
-            if (classType.getClassifyRelationType().equals(reltype)) {
+            if (!classType.getClassifyRelationType().equals(reltype)) {
                 final QueryBuilder queryBldr = new QueryBuilder(classType.getClassifyRelationType());
                 queryBldr.addWhereAttrEqValue(classType.getRelLinkAttributeName(), _instance.getId());
                 final MultiPrintQuery multi = queryBldr.getPrint();
@@ -490,16 +519,6 @@ public class UIClassification
     }
 
     /**
-     * Getter method for instance variable {@link #root}.
-     *
-     * @return value of instance variable {@link #root}
-     */
-    public boolean isRoot()
-    {
-        return this.root;
-    }
-
-    /**
      * Getter method for instance variable {@link #mode}.
      *
      * @return value of instance variable {@link #mode}
@@ -577,7 +596,12 @@ public class UIClassification
         return ret;
     }
 
-
+    /**
+     * @param _field FieldClassification
+     * @param _uiObject ui object
+     * @throws EFapsException on error
+     * @return new UIClassifcation
+     */
     public static UIClassification getUIClassification(final Field _field,
                                                        final AbstractUIObject _uiObject)
         throws EFapsException
@@ -589,7 +613,7 @@ public class UIClassification
             if (clazz.hasAccess(root.getInstance(), root.getMode() == TargetMode.CREATE
                             || root.getMode() == TargetMode.EDIT ? AccessTypeEnums.CREATE.getAccessType()
                             : AccessTypeEnums.SHOW.getAccessType())) {
-                final UIClassification childUI = new UIClassification(clazz.getUUID(), root.getMode());
+                final UIClassification childUI = new UIClassification(clazz.getUUID(), root.getMode(), true);
                 root.children.add(childUI);
                 childUI.setParent(root);
             }

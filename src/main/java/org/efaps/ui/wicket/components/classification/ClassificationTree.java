@@ -152,7 +152,7 @@ public class ClassificationTree
                 if (parent != null && !getModelObject().isMultipleSelect() && !selected) {
                     // select event ensure that there are no other objects selected by cleaning it totally
                     UIClassification uiClass = getModelObject();
-                    while (!uiClass.isRoot()) {
+                    while (!uiClass.isBase()) {
                         uiClass = uiClass.getParent();
                     }
                     toggleDown(uiClass, false);
@@ -175,7 +175,7 @@ public class ClassificationTree
             {
                 UIClassification uiClass = _uiClass;
                 uiClass.setSelected(_selected);
-                while (!uiClass.isRoot()) {
+                while (!uiClass.isBase()) {
                     uiClass = uiClass.getParent();
                     uiClass.setSelected(_selected);
                 }
