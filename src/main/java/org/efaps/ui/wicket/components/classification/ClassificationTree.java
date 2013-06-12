@@ -20,6 +20,7 @@
 
 package org.efaps.ui.wicket.components.classification;
 
+import java.util.Iterator;
 import java.util.Properties;
 
 import org.apache.wicket.Component;
@@ -83,10 +84,12 @@ public class ClassificationTree
             ClassificationTree.LOG.error("cannot read Properties from Configuration.");
             properties = new Properties();
         }
-
-        final String expand = properties.getProperty(Type.get(_model.getObject().getClassificationUUID()).getName(),
-                        "false");
-        addChildren(getProvider().getRoots().next(), "true".equalsIgnoreCase(expand));
+        final Iterator<? extends UIClassification> iter = getProvider().getRoots();
+        while (iter.hasNext()) {
+            final UIClassification clazz = iter.next();
+            final String expand = properties.getProperty(Type.get(clazz.getClassificationUUID()).getName(), "false");
+            addChildren(clazz, "true".equalsIgnoreCase(expand));
+        }
     }
 
     /**

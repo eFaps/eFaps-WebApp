@@ -59,7 +59,7 @@ public class ClassificationTreeProvider
         while (!clazz.isRoot()) {
             clazz = clazz.getParent();
         }
-        this.roots.add(clazz);
+        this.roots.addAll(clazz.getChildren());
     }
 
     @Override

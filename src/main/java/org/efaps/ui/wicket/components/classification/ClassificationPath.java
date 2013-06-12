@@ -83,16 +83,16 @@ public class ClassificationPath
             }
         }
         final List<UIClassification> leafs = new ArrayList<UIClassification>();
-
-        if (uiclass.isSelected()) {
-            findSelectedLeafs(leafs, uiclass);
+        for (final UIClassification clazz : uiclass.getChildren()) {
+            if (clazz.isSelected()) {
+                findSelectedLeafs(leafs, clazz);
+            }
         }
         for (final UIClassification leaf : leafs) {
             html.append("<div class=\"classPath\">");
             buildHtml(html, leaf);
             html.append("</div>");
         }
-
         replaceComponentTagBody(_markupStream, _openTag, html);
     }
 
@@ -123,10 +123,10 @@ public class ClassificationPath
                            final UIClassification _uiclass)
     {
         UIClassification tmp = _uiclass;
-        String path = "<span class=\"classPathEntry\">" + tmp.getLabel() + "</span>";
+        String path = "";
         while (!tmp.isRoot()) {
-            tmp = tmp.getParent();
             path = "<span class=\"classPathEntry\">" + tmp.getLabel() + "</span>" + path;
+            tmp = tmp.getParent();
         }
         _bldr.append(path);
     }

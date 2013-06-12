@@ -143,8 +143,8 @@ public class ClassificationTreePanel
         @Override
         public void onClick(final AjaxRequestTarget _target)
         {
-            _target.add(findParent(ClassificationPathPanel.class));
-            _target.add(findParent(ClassificationTreePanel.class).setVisible(false));
+            //_target.add(findParent(ClassificationPathPanel.class));
+            //_target.add(findParent(ClassificationTreePanel.class).setVisible(false));
             if (ClassificationTreePanel.this.changed) {
                 final Page page = getPage();
                 final UIForm uiform = (UIForm) page.getDefaultModelObject();
@@ -191,7 +191,7 @@ public class ClassificationTreePanel
                                   final Map<UUID, String> _uuid2InstanceKey)
             throws EFapsException
         {
-            if (_parentClass.isSelected()) {
+            if (_parentClass.isSelected() && !_parentClass.isRoot()) {
                 final UIFieldForm fieldform;
                 if (_uiForm.isEditMode()) {
                     if (_uuid2InstanceKey.containsKey(_parentClass.getClassificationUUID())) {

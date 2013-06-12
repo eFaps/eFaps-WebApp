@@ -271,7 +271,7 @@ public class UIForm
                                                           new UIHeading((FieldHeading) field)));
                         addNew = true;
                     } else if (field instanceof FieldClassification) {
-                        uiclass = new UIClassification(field, this);
+                        uiclass = UIClassification.getUIClassification(field, this);
                         this.elements.add(new Element(UIForm.ElementType.CLASSIFICATION, uiclass));
                         addNew = true;
                         this.classified  = true;
@@ -307,9 +307,6 @@ public class UIForm
                     if (!uiclass.isInitialized()) {
                         uiclass.execute(getInstance());
                     }
-                    // add the root classification
-                    this.elements.add(new Element(UIForm.ElementType.SUBFORM, new UIFieldForm(getCommandUUID(),
-                                     instanceKeys.get(uiclass.getClassificationUUID()))));
                     addChildrenClassificationForms(uiclass, instanceKeys);
                 }
             }
@@ -572,7 +569,7 @@ public class UIForm
                     this.elements.add(new Element(UIForm.ElementType.HEADING, new UIHeading((FieldHeading) field)));
                     addNew = true;
                 } else if (field instanceof FieldClassification) {
-                    uiclass = new UIClassification(field, this);
+                    uiclass = UIClassification.getUIClassification(field, this);
                     this.elements.add(new Element(UIForm.ElementType.CLASSIFICATION, uiclass));
                     this.classified = true;
                     addNew = true;

@@ -64,7 +64,7 @@ public class ClassificationPanel
     {
         super(_wicketId, _model);
         final UITable table = (UITable) super.getDefaultModelObject();
-        this.uiClassification = new UIClassification(_uitableHeader.getField(), table);
+        this.uiClassification = UIClassification.getUIClassification(_uitableHeader.getField(), table);
         if (!this.uiClassification.isInitialized()) {
             this.uiClassification.execute(table.getInstance());
         }

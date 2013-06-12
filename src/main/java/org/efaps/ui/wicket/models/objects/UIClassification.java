@@ -151,14 +151,13 @@ public class UIClassification
      * @param _uiObject ui object
      * @throws EFapsException on error
      */
-    public UIClassification(final Field _field,
-                            final AbstractUIObject _uiObject)
+    private UIClassification(final long _fieldId,
+                             final AbstractUIObject _uiObject)
         throws EFapsException
     {
-        final Classification clazz = Classification.get(_field.getClassificationName());
-        this.classificationUUID = clazz.getUUID();
-        this.multipleSelect =  clazz.isMultipleSelect();
-        this.fieldId = _field.getId();
+        this.classificationUUID = null;
+        this.multipleSelect = true;
+        this.fieldId = _fieldId;
         this.root = true;
         this.mode = _uiObject.getMode();
         this.commandName = _uiObject.getCommand().getName();
@@ -273,14 +272,19 @@ public class UIClassification
     public void execute(final Instance _instance)
         throws EFapsException
     {
-        this.initialized = true;
-        final Classification type = (Classification) Type.get(this.classificationUUID);
-        if (this.selectedUUID.contains(this.classificationUUID)) {
-            this.selected = true;
+        UIClassification clazz = this;
+        while (!clazz.isRoot()) {
+            clazz = clazz.getParent();
         }
-        this.label = DBProperties.getProperty(type.getName() + ".Label");
-        addChildren(this, type.getChildClassifications(), this.selectedUUID, _instance);
-        expand();
+        clazz.initialized = true;
+        for (final UIClassification child :  clazz.getChildren()) {
+            final Classification type = (Classification) Type.get(child.getClassificationUUID());
+            if (clazz.selectedUUID.contains(child.getClassificationUUID())) {
+                child.setSelected(true);
+            }
+            child.addChildren(child, type.getChildClassifications(), clazz.selectedUUID, _instance);
+            clazz.expand();
+        }
     }
 
     /**
@@ -389,25 +393,35 @@ public class UIClassification
         throws EFapsException
     {
         final Map<UUID, String> ret = new HashMap<UUID, String>();
-        final Classification classType = (Classification) Type.get(this.classificationUUID);
-        final QueryBuilder queryBldr = new QueryBuilder(classType.getClassifyRelationType());
-        queryBldr.addWhereAttrEqValue(classType.getRelLinkAttributeName(), _instance.getId());
-        final MultiPrintQuery multi = queryBldr.getPrint();
-        multi.addAttribute(classType.getRelTypeAttributeName());
-        multi.execute();
-        while (multi.next()) {
-            final Long typeid = multi.<Long>getAttribute(classType.getRelTypeAttributeName());
-            final Classification subClassType = (Classification) Type.get(typeid);
-            final QueryBuilder subQueryBldr = new QueryBuilder(subClassType);
-            subQueryBldr.addWhereAttrEqValue(subClassType.getLinkAttributeName(), _instance.getId());
-            final InstanceQuery query = subQueryBldr.getQuery();
-            query.execute();
-            if (query.next()) {
-                // TODO must return an instanceKey!!! not necessary the oid
-                final String instanceKey = query.getCurrentValue().getOid();
-                ret.put(query.getCurrentValue().getType().getUUID(), instanceKey);
-                this.selectedUUID.add(query.getCurrentValue().getType().getUUID());
+        UIClassification clazz = this;
+        while (!clazz.isRoot()) {
+            clazz = clazz.getParent();
+        }
+        Type reltype = null;
+        for (final UIClassification child :  clazz.getChildren()) {
+            final Classification classType = (Classification) Type.get(child.getClassificationUUID());
+            if (classType.getClassifyRelationType().equals(reltype)) {
+                final QueryBuilder queryBldr = new QueryBuilder(classType.getClassifyRelationType());
+                queryBldr.addWhereAttrEqValue(classType.getRelLinkAttributeName(), _instance.getId());
+                final MultiPrintQuery multi = queryBldr.getPrint();
+                multi.addAttribute(classType.getRelTypeAttributeName());
+                multi.execute();
+                while (multi.next()) {
+                    final Long typeid = multi.<Long>getAttribute(classType.getRelTypeAttributeName());
+                    final Classification subClassType = (Classification) Type.get(typeid);
+                    final QueryBuilder subQueryBldr = new QueryBuilder(subClassType);
+                    subQueryBldr.addWhereAttrEqValue(subClassType.getLinkAttributeName(), _instance.getId());
+                    final InstanceQuery query = subQueryBldr.getQuery();
+                    query.execute();
+                    if (query.next()) {
+                        // TODO must return an instanceKey!!! not necessary the oid
+                        final String instanceKey = query.getCurrentValue().getOid();
+                        ret.put(query.getCurrentValue().getType().getUUID(), instanceKey);
+                        this.selectedUUID.add(query.getCurrentValue().getType().getUUID());
+                    }
+                }
             }
+            reltype = classType.getClassifyRelationType();
         }
         return ret;
     }
@@ -561,5 +575,25 @@ public class UIClassification
             ret = clazz.instance;
         }
         return ret;
+    }
+
+
+    public static UIClassification getUIClassification(final Field _field,
+                                                       final AbstractUIObject _uiObject)
+        throws EFapsException
+    {
+        final String[] names = _field.getClassificationName().split(";");
+        final UIClassification root = new UIClassification(_field.getId(), _uiObject);
+        for (final String className : names) {
+            final Classification clazz = Classification.get(className);
+            if (clazz.hasAccess(root.getInstance(), root.getMode() == TargetMode.CREATE
+                            || root.getMode() == TargetMode.EDIT ? AccessTypeEnums.CREATE.getAccessType()
+                            : AccessTypeEnums.SHOW.getAccessType())) {
+                final UIClassification childUI = new UIClassification(clazz.getUUID(), root.getMode());
+                root.children.add(childUI);
+                childUI.setParent(root);
+            }
+        }
+        return root;
     }
 }
