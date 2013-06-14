@@ -21,12 +21,15 @@
 
 package org.efaps.ui.wicket.components.table.filter;
 
+import java.util.UUID;
+
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.components.classification.ClassificationTree;
 import org.efaps.ui.wicket.models.objects.UIClassification;
 import org.efaps.ui.wicket.models.objects.UITable;
+import org.efaps.ui.wicket.models.objects.UITable.TableFilter;
 import org.efaps.ui.wicket.models.objects.UITableHeader;
 import org.efaps.util.EFapsException;
 
@@ -65,6 +68,12 @@ public class ClassificationPanel
         super(_wicketId, _model);
         final UITable table = (UITable) super.getDefaultModelObject();
         this.uiClassification = UIClassification.getUIClassification(_uitableHeader.getField(), table);
+        final TableFilter filter = table.getFilter(_uitableHeader);
+        if (filter != null && filter.getFilterList() != null) {
+            for (final Object selected : filter.getFilterList()) {
+                this.uiClassification.addSelectedUUID((UUID) selected);
+            }
+        }
         if (!this.uiClassification.isInitialized()) {
             this.uiClassification.execute(table.getInstance());
         }
