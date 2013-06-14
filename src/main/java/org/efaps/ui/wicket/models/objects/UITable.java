@@ -625,7 +625,6 @@ public class UITable
      *
      * @param _uitableHeader UitableHeader this filter belongs to
      * @param _from from value
-     * @param _to to value
      * @throws EFapsException on error
      *
      */
@@ -1192,6 +1191,16 @@ public class UITable
         protected void setHeaderFieldId(final long _headerFieldId)
         {
             this.headerFieldId = _headerFieldId;
+        }
+
+        /**
+         * Getter method for the instance variable {@link #filterList}.
+         *
+         * @return value of instance variable {@link #filterList}
+         */
+        public Set<?> getFilterList()
+        {
+            return this.filterList;
         }
     }
 }
