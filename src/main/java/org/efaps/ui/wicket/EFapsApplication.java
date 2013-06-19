@@ -22,6 +22,7 @@ package org.efaps.ui.wicket;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -80,11 +81,11 @@ public class EFapsApplication
     {
         final String appKey = getInitParameter(AbstractFilter.INITPARAM_APP_KEY);
         final String loginRolesTmp = getInitParameter(AbstractFilter.INITPARAM_LOGIN_ROLES);
-        final Set<String> temp = new HashSet<String>();
+        final Set<UUID> temp = new HashSet<UUID>();
         if (loginRolesTmp != null) {
             final String[] loginRolesAr = loginRolesTmp.split(",");
             for (final String loginRole : loginRolesAr) {
-                temp.add(loginRole);
+                temp.add(UUID.fromString(loginRole));
             }
         }
         AppAccessHandler.init(appKey, temp);
