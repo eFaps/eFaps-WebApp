@@ -23,6 +23,7 @@ package org.efaps.ui.filter;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -89,11 +90,11 @@ public abstract class AbstractFilter
         if (loginName != null) {
             this.sessionParameterLoginName = loginName;
         }
-        final Set<String> temp = new HashSet<String>();
+        final Set<UUID> temp = new HashSet<UUID>();
         if (loginRolesTmp != null) {
             final String[] loginRolesAr = loginRolesTmp.split(",");
             for (final String loginRole : loginRolesAr) {
-                temp.add(loginRole);
+                temp.add(UUID.fromString(loginRole));
             }
         }
         AppAccessHandler.init(appkey, temp);
