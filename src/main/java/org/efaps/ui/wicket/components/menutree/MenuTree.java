@@ -20,21 +20,30 @@
 
 package org.efaps.ui.wicket.components.menutree;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
+import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.markup.html.repeater.tree.NestedTree;
 import org.apache.wicket.extensions.markup.html.repeater.tree.theme.HumanTheme;
 import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.html.link.ILinkListener;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.iterator.ComponentHierarchyIterator;
 import org.efaps.ui.wicket.behaviors.update.IRemoteUpdateListener;
 import org.efaps.ui.wicket.behaviors.update.IRemoteUpdateable;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
+import org.efaps.ui.wicket.pages.content.form.FormPage;
+import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
+import org.efaps.ui.wicket.pages.content.table.TablePage;
+import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 
 /**
@@ -43,7 +52,7 @@ import org.efaps.util.cache.CacheReloadException;
  */
 public class MenuTree
     extends NestedTree<UIMenuItem>
-    implements IRemoteUpdateable
+    implements IRemoteUpdateable, ILinkListener
 {
 
     /**
@@ -82,6 +91,12 @@ public class MenuTree
      * Selected Component.
      */
     private Component selected = null;
+
+
+    /**
+     * Mapping of a key to mnuitem.
+     */
+    private final Map<String, UIMenuItem> key2uimenuItem = new HashMap<String, UIMenuItem>();
 
     /**
      * Constructor used for a new MenuTree.
@@ -284,5 +299,47 @@ public class MenuTree
     {
         final MenuUpdateBehavior behavior = getBehaviors(MenuUpdateBehavior.class).get(0);
         behavior.register(_listener);
+    }
+
+    @Override
+    public void onLinkClicked()
+    {
+        final String key = getRequest().getRequestParameters().getParameterValue("D").toString();
+        final UIMenuItem currentItem = this.key2uimenuItem.get(key);
+
+        UIMenuItem menuItem = (UIMenuItem) getSelected().getDefaultModelObject();
+
+        if (menuItem.isChild(currentItem) || menuItem.equals(currentItem)) {
+            menuItem =  currentItem.getAncestor();
+        }
+
+        Page page;
+        try {
+            if (menuItem.getCommand().getTargetTable() != null) {
+                if (menuItem.getCommand().getTargetStructurBrowserField() != null) {
+                    page = new StructurBrowserPage(menuItem.getCommandUUID(),
+                                    menuItem.getInstanceKey(), getPage().getPageReference());
+                } else {
+                    page = new TablePage(menuItem.getCommandUUID(), menuItem.getInstanceKey(), getPage()
+                                    .getPageReference());
+                }
+            } else {
+                page = new FormPage(menuItem.getCommandUUID(), menuItem.getInstanceKey(), getPage()
+                                .getPageReference());
+            }
+        } catch (final EFapsException e) {
+            page = new ErrorPage(e);
+        }
+        setResponsePage(page);
+    }
+
+    /**
+     * @param _key          key
+     * @param _menuItem     menuitem
+     */
+    public void add(final String _key,
+                    final UIMenuItem _menuItem)
+    {
+        this.key2uimenuItem.put(_key, _menuItem);
     }
 }

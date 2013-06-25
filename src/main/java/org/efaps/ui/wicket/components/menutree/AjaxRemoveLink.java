@@ -20,7 +20,7 @@
 
 package org.efaps.ui.wicket.components.menutree;
 
-import org.apache.wicket.Page;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.AjaxCallListener;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
@@ -29,12 +29,7 @@ import org.apache.wicket.markup.html.link.ILinkListener;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
-import org.efaps.ui.wicket.pages.content.form.FormPage;
-import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
-import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
-import org.efaps.ui.wicket.pages.error.ErrorPage;
-import org.efaps.util.EFapsException;
 
 /**
  * This Class renders a Link which removes a Child from a MenuTree.
@@ -44,7 +39,6 @@ import org.efaps.util.EFapsException;
  */
 public class AjaxRemoveLink
     extends AjaxLink<UIMenuItem>
-    implements ILinkListener
 {
 
     /**
@@ -71,62 +65,24 @@ public class AjaxRemoveLink
         menutree.removeChild(getModelObject(), _target);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see
-     * org.apache.wicket.ajax.AjaxEventBehavior#updateAjaxAttributes(org
-     * .apache.wicket.ajax.attributes.AjaxRequestAttributes)
-     */
     @Override
     protected void updateAjaxAttributes(final AjaxRequestAttributes _attributes)
     {
         super.updateAjaxAttributes(_attributes);
-        final AjaxCallListener listener = new AjaxCallListener();
+        final AjaxCallListener listener = (AjaxCallListener) _attributes.getAjaxCallListeners().get(0);
         final StringBuilder js = new StringBuilder();
+        final MenuTree menuTree = findParent(MenuTree.class);
+        final String key = RandomStringUtils.randomAlphabetic(6);
+        menuTree.add(key, (UIMenuItem) getDefaultModelObject());
         js.append("require([\"dijit/registry\",\"dojo/dom-construct\"], function(registry, domConstruct){ ")
             .append("registry.byId(\"").append(((ContentContainerPage) getPage()).getCenterPanelId())
             .append("\").set(\"content\", domConstruct.create(\"iframe\", {")
             .append("\"src\": \"")
-            .append(AjaxRemoveLink.this.urlFor(ILinkListener.INTERFACE, new PageParameters()))
+            .append(menuTree.urlFor(ILinkListener.INTERFACE, new PageParameters()))
+            .append("&D=").append(key)
             .append("\",\"style\": \"border: 0; width: 100%; height: 99%\"")
             .append("})); ")
             .append("});");
         listener.onBefore(js);
-        _attributes.getAjaxCallListeners().add(listener);
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.wicket.markup.html.link.ILinkListener#onLinkClicked()
-     */
-    @Override
-    public void onLinkClicked()
-    {
-        final MenuTree menutree = findParent(MenuTree.class);
-        final UIMenuItem currentItem = getModelObject();
-
-        UIMenuItem menuItem = (UIMenuItem) menutree.getSelected().getDefaultModelObject();
-
-        if (menuItem.isChild(currentItem) || menuItem.equals(currentItem)) {
-            menuItem =  currentItem.getAncestor();
-        }
-
-        Page page;
-        try {
-            if (menuItem.getCommand().getTargetTable() != null) {
-                if (menuItem.getCommand().getTargetStructurBrowserField() != null) {
-                    page = new StructurBrowserPage(menuItem.getCommandUUID(),
-                                    menuItem.getInstanceKey(), getPage().getPageReference());
-                } else {
-                    page = new TablePage(menuItem.getCommandUUID(), menuItem.getInstanceKey(), getPage()
-                                    .getPageReference());
-                }
-            } else {
-                page = new FormPage(menuItem.getCommandUUID(), menuItem.getInstanceKey(), getPage()
-                                .getPageReference());
-            }
-        } catch (final EFapsException e) {
-            page = new ErrorPage(e);
-        }
-        setResponsePage(page);
     }
 }
