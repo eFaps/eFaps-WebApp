@@ -28,8 +28,9 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.model.IModel;
 import org.efaps.ui.wicket.behaviors.AjaxDownloadBehavior;
-import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.ui.wicket.resources.IconHeaderItem;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 
@@ -57,6 +58,11 @@ public abstract class AbstractMergePage
      */
     private static final EFapsContentReference CSS = new EFapsContentReference(AbstractMergePage.class,
                     "AbstractMergePage.css");
+
+    /**
+     * Reference to the StyleSheet for this Page.
+     */
+    private static final EFapsContentReference FAVICON = new EFapsContentReference(AbstractMergePage.class, "favicon");
 
     /**
      * The DownloadBehavior used for downloading files.
@@ -87,6 +93,7 @@ public abstract class AbstractMergePage
         this.body = new WebMarkupContainer("body");
         this.body.add(AttributeModifier.append("class", Configuration.getAttribute(ConfigAttribute.DOJO_CLASS)));
         super.add(this.body);
+
     }
 
     @Override
@@ -94,6 +101,7 @@ public abstract class AbstractMergePage
     {
         super.renderHead(_response);
         _response.render(AbstractEFapsHeaderItem.forCss(AbstractMergePage.CSS));
+        _response.render(new IconHeaderItem(AbstractMergePage.FAVICON));
     }
 
     /**

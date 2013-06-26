@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2012 The eFaps Team
+ * Copyright 2003 - 2013 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -221,13 +221,6 @@ public abstract class AbstractEFapsResource
          */
         protected void checkData(final boolean _checkDuration)
         {
-//            if ((Application.DEVELOPMENT.equals(Application.get()
-//                            .getConfigurationType()) || ((Time.now())
-//                            .subtract(lastModifiedTime()).getMilliseconds() / 1000 > getCacheDuration()))
-//                            && _checkDuration) {
-//                this.time = Time.now();
-//                setData();
-//            }
             if (this.data == null) {
                 setData();
             }
@@ -256,5 +249,16 @@ public abstract class AbstractEFapsResource
                 throw new RestartResponseException(new ErrorPage(e));
             }
         }
+    }
+
+
+    /**
+     * Getter method for the instance variable {@link #stream}.
+     *
+     * @return value of instance variable {@link #stream}
+     */
+    public AbstractEFapsResourceStream getStream()
+    {
+        return this.stream;
     }
 }
