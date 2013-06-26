@@ -62,7 +62,7 @@ public abstract class AbstractMergePage
     /**
      * Reference to the StyleSheet for this Page.
      */
-    private static final EFapsContentReference FAVICON = new EFapsContentReference(AbstractMergePage.class, "favicon");
+    public static final EFapsContentReference FAVICON = new EFapsContentReference(AbstractMergePage.class, "favicon");
 
     /**
      * The DownloadBehavior used for downloading files.

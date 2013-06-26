@@ -32,8 +32,10 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.efaps.admin.dbproperty.DBProperties;
-import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.ui.wicket.resources.IconHeaderItem;
 
 /**
  * TODO comment!
@@ -54,7 +56,6 @@ public class GatherInfoPage
      */
     private static final EFapsContentReference CSS = new EFapsContentReference(GatherInfoPage.class,
                     "GatherInfoPage.css");
-
 
     /**
      * Constructor.
@@ -112,6 +113,7 @@ public class GatherInfoPage
     {
         super.renderHead(_response);
         _response.render(AbstractEFapsHeaderItem.forCss(GatherInfoPage.CSS));
+        _response.render(new IconHeaderItem(AbstractMergePage.FAVICON));
     }
 
 }
