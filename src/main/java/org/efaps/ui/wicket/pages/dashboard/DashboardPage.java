@@ -83,7 +83,7 @@ public class DashboardPage
         throws EFapsException
     {
         super();
-        final SystemConfiguration config = EFapsSystemConfiguration.KERNEL.get();
+        final SystemConfiguration config = EFapsSystemConfiguration.get();
         final boolean active = config != null
                         ? config.getAttributeValueAsBoolean(KernelSettings.ACTIVATE_BPM) : false;
         // BPM_DashBoard_AssignedTask
