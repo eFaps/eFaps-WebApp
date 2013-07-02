@@ -42,7 +42,7 @@ import org.apache.wicket.request.Request;
 import org.apache.wicket.request.Response;
 import org.apache.wicket.request.component.IRequestableComponent;
 import org.apache.wicket.request.http.WebRequest;
-import org.apache.wicket.resource.JQueryResourceReference;
+import org.apache.wicket.resource.DynamicJQueryResourceReference;
 import org.efaps.jaas.AppAccessHandler;
 import org.efaps.ui.filter.AbstractFilter;
 import org.efaps.ui.wicket.pages.error.UnexpectedErrorPage;
@@ -93,7 +93,7 @@ public class EFapsApplication
 
         super.init();
 
-        getJavaScriptLibrarySettings().setJQueryReference(JQueryResourceReference.get());
+        getJavaScriptLibrarySettings().setJQueryReference(new DynamicJQueryResourceReference());
 
         getApplicationSettings().setPageExpiredErrorPage(LoginPage.class);
         getApplicationSettings().setInternalErrorPage(UnexpectedErrorPage.class);
