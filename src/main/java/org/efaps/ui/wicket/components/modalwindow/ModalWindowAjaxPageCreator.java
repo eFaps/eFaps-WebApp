@@ -25,8 +25,6 @@ import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.efaps.ui.wicket.models.FormModel;
 import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.UIModel;
-import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
-import org.efaps.ui.wicket.models.objects.IEventUIObject;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.models.objects.UITable;
@@ -85,20 +83,20 @@ public class ModalWindowAjaxPageCreator
         try {
             if (this.uiObject.getCommand().getTargetTable() == null) {
                 final UIForm uiform = new UIForm(this.uiObject.getCommand().getUUID(), this.uiObject.getInstanceKey());
-                addEventObject(uiform);
+                uiform.setPicker(this.uiObject);
                 ret = new FormPage(new FormModel(uiform), this.modalWindow, this.modalWindow.getPage()
                                 .getPageReference());
             } else {
                 if (this.uiObject.getCommand().getTargetStructurBrowserField() == null) {
                     final UITable uitable = new UITable(this.uiObject.getCommand().getUUID(),
                                     this.uiObject.getInstanceKey());
-                    addEventObject(uitable);
+                    uitable.setPicker(this.uiObject);
                     ret = new TablePage(new TableModel(uitable), this.modalWindow, this.modalWindow.getPage()
                                     .getPageReference());
                 } else {
                     final UIStructurBrowser uiPageObject = new UIStructurBrowser(this.uiObject.getCommand().getUUID(),
                                     this.uiObject.getInstanceKey());
-                    addEventObject(uiPageObject);
+                    uiPageObject.setPicker(this.uiObject);
                     ret = new StructurBrowserPage(new UIModel<UIStructurBrowser>(uiPageObject), this.modalWindow,
                                     this.modalWindow.getPage().getPageReference());
                 }
@@ -107,15 +105,5 @@ public class ModalWindowAjaxPageCreator
             ret = new ErrorPage(e);
         }
         return ret;
-    }
-
-    /**
-     * @param _uiPageObject PageObject
-     */
-    private void addEventObject(final AbstractUIPageObject _uiPageObject)
-    {
-        if (this.uiObject instanceof IEventUIObject) {
-            _uiPageObject.addEventObject((IEventUIObject) this.uiObject);
-        }
     }
 }

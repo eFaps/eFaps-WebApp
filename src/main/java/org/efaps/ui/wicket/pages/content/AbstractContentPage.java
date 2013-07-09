@@ -204,7 +204,7 @@ public abstract class AbstractContentPage
         }
         add(exLink);
         WebMarkupContainer footerpanel;
-        if (uiObject.isCreateMode() || uiObject.isEditMode() || uiObject.isSearchMode() || uiObject.isPicker()) {
+        if (uiObject.isCreateMode() || uiObject.isEditMode() || uiObject.isSearchMode() || uiObject.isOpenedByPicker()) {
             footerpanel = new FooterPanel("footer", getDefaultModel(), this.modalWindow, _form);
         } else {
             footerpanel = new WebMarkupContainer("footer");

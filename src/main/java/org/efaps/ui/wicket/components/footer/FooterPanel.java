@@ -151,6 +151,8 @@ public class FooterPanel
         String closelabelkey = "Cancel";
         if (uiObject.hasTargetCmd()) {
             label = DBProperties.getProperty(uiObject.getTargetCmd().getName() + ".Label");
+        } else if (uiObject.isOpenedByPicker()) {
+            label = getLabel(uiObject.getCommand().getName(), "Picker");
         } else if (uiObject.isCreateMode()) {
             label = getLabel(uiObject.getCommand().getName(), "Create");
         } else if (uiObject.isEditMode()) {
@@ -159,8 +161,6 @@ public class FooterPanel
             label = getLabel(uiObject.getCommand().getName(), "Connect");
         } else if (uiObject.isSearchMode()) {
             label = getLabel(uiObject.getCommand().getName(), "Search");
-        } else if (uiObject.isPicker()) {
-            label = getLabel(uiObject.getCommand().getName(), "Picker");
         }
 
         if (uiObject.hasTargetCmd()) {

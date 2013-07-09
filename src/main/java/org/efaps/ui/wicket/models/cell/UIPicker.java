@@ -38,7 +38,6 @@ import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.components.modalwindow.ICmdUIObject;
 import org.efaps.ui.wicket.models.AbstractInstanceObject;
-import org.efaps.ui.wicket.models.objects.IEventUIObject;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
@@ -52,7 +51,7 @@ import org.slf4j.LoggerFactory;
  */
 public class UIPicker
     extends AbstractInstanceObject
-    implements Serializable, ICmdUIObject, IEventUIObject
+    implements Serializable, ICmdUIObject
 {
     /**
      * Logging instance used in this class.
@@ -175,7 +174,6 @@ public class UIPicker
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
-    @Override
     public List<Return> executeEvents(final EventType _eventType,
                                       final Object... _objectTuples)
         throws EFapsException

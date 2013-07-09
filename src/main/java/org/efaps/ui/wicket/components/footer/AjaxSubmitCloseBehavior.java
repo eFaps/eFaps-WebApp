@@ -32,6 +32,7 @@ import java.util.Set;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
+import org.apache.wicket.PageReference;
 import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
@@ -45,6 +46,7 @@ import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.IUIProvider;
 import org.efaps.admin.datamodel.ui.UIValue;
+import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
@@ -388,6 +390,12 @@ public class AjaxSubmitCloseBehavior
                     ((EFapsSession) getComponent().getSession()).setFile(file);
                 }
             }
+        }
+
+        if (uiPageObject.isOpenedByPicker()) {
+            final PageReference pageRef = ((AbstractContentPage)getForm().getPage()).getCalledByPageReference();
+            uiPageObject.getPicker().executeEvents(EventType.UI_COMMAND_EXECUTE, ParameterValues.OTHERS, _other);
+            ((AbstractUIObject) pageRef.getPage().getDefaultModelObject()).setPicker(uiPageObject.getPicker());
         }
         return ret;
     }

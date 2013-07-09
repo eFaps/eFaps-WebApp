@@ -24,9 +24,11 @@ package org.efaps.ui.wicket.components.picker;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.wicket.PageReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.efaps.ui.wicket.models.cell.UIPicker;
+import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.util.EFapsKey;
 
 
@@ -45,24 +47,25 @@ public class PickerCallBack
     private static final long serialVersionUID = 1L;
 
     /**
-     * Picker this CallBack belongs to.
-     */
-    private final UIPicker picker;
-
-    /**
      * MarkupId of the Target Component.
      */
     private final String targetMarkupId;
 
     /**
-     * @param _picker           picker this callback belongs to
-     * @param _targetMarkupId   MarkupId of the target
+     * Refernce to the page.
      */
-    public PickerCallBack(final UIPicker _picker,
-                          final String _targetMarkupId)
+    private final PageReference pageReference;
+
+    /**
+     * @param _targetMarkupId   MarkupId of the target
+     * @param _pageReference    refernce to the page te call back must be executed in
+     *
+     */
+    public PickerCallBack(final String _targetMarkupId,
+                          final PageReference _pageReference)
     {
-        this.picker = _picker;
         this.targetMarkupId = _targetMarkupId;
+        this.pageReference = _pageReference;
     }
 
     /**
@@ -72,40 +75,46 @@ public class PickerCallBack
     @Override
     public void onClose(final AjaxRequestTarget _target)
     {
-        if (this.picker.isExecuted()) {
-            final Map<String, String> map = this.picker.getReturnMap();
-            final boolean escape = escape(map);
-            final StringBuilder js = new StringBuilder();
+        final AbstractUIPageObject pageObject = (AbstractUIPageObject) this.pageReference.getPage()
+                        .getDefaultModelObject();
+        if (pageObject.isOpenedByPicker()) {
+            final UIPicker picker = pageObject.getPicker();
+            pageObject.setPicker(null);
+            if (picker.isExecuted()) {
+                final Map<String, String> map = picker.getReturnMap();
+                final boolean escape = escape(map);
+                final StringBuilder js = new StringBuilder();
 
-            final String value = map.get(EFapsKey.PICKER_VALUE.getKey());
-            if (value != null) {
-                js.append("wicketGet('").append(this.targetMarkupId).append("').value ='")
-                    .append(escape ? StringEscapeUtils.escapeEcmaScript(StringEscapeUtils.escapeHtml4(value))
-                            : value).append("';");
-            }
-            for (final String keyString : map.keySet()) {
-                // if the map contains a key that is not defined in this class it is
-                // assumed to be the name of a field
-                if (!(EFapsKey.PICKER_JAVASCRIPT.getKey().equals(keyString)
-                                || EFapsKey.PICKER_DEACTIVATEESCAPE.getKey().equals(keyString)
-                                || EFapsKey.PICKER_VALUE.getKey().equals(keyString))) {
-                    if (map.get(keyString).contains("Array(")) {
-                        js.append("eFapsSetFieldValue('").append(this.targetMarkupId).append("','")
-                            .append(keyString).append("',").append(map.get(keyString)).append(");");
-                    } else {
-                        js.append("eFapsSetFieldValue('").append(this.targetMarkupId).append("','")
-                        .append(keyString).append("','")
-                        .append(escape
-                                ? StringEscapeUtils.escapeEcmaScript(map.get(keyString))
-                                : map.get(keyString)).append("');");
+                final String value = map.get(EFapsKey.PICKER_VALUE.getKey());
+                if (value != null) {
+                    js.append("require(['dojo/dom'], function(dom){\n")
+                        .append("dom.byId('").append(this.targetMarkupId).append("').value ='")
+                        .append(escape ? StringEscapeUtils.escapeEcmaScript(StringEscapeUtils.escapeHtml4(value))
+                                                    : value).append("';").append("});");
+                }
+                for (final String keyString : map.keySet()) {
+                    // if the map contains a key that is not defined in this
+                    // class it is assumed to be the name of a field
+                    if (!(EFapsKey.PICKER_JAVASCRIPT.getKey().equals(keyString)
+                                    || EFapsKey.PICKER_DEACTIVATEESCAPE.getKey().equals(keyString)
+                                    || EFapsKey.PICKER_VALUE.getKey().equals(keyString))) {
+                        if (map.get(keyString).contains("Array(")) {
+                            js.append("eFapsSetFieldValue('").append(this.targetMarkupId).append("','")
+                                            .append(keyString).append("',").append(map.get(keyString)).append(");");
+                        } else {
+                            js.append("eFapsSetFieldValue('").append(this.targetMarkupId).append("','")
+                                .append(keyString).append("','")
+                                .append(escape  ? StringEscapeUtils.escapeEcmaScript(map.get(keyString))
+                                                            : map.get(keyString)).append("');");
+                        }
                     }
                 }
+                if (map.containsKey(EFapsKey.PICKER_JAVASCRIPT.getKey())) {
+                    js.append(map.get(EFapsKey.PICKER_JAVASCRIPT.getKey()));
+                }
+                _target.prependJavaScript(js.toString());
+                picker.setExecuted(false);
             }
-            if (map.containsKey(EFapsKey.PICKER_JAVASCRIPT.getKey())) {
-                js.append(map.get(EFapsKey.PICKER_JAVASCRIPT.getKey()));
-            }
-            _target.prependJavaScript(js.toString());
-            this.picker.setExecuted(false);
         }
     }
 

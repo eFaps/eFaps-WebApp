@@ -148,7 +148,6 @@ public class AjaxPickerLink
         @Override
         protected void onEvent(final AjaxRequestTarget _target)
         {
-
             ModalWindowContainer modal;
             if (getPage() instanceof MainPage) {
                 modal = ((MainPage) getPage()).getModal();
@@ -157,13 +156,13 @@ public class AjaxPickerLink
             }
             modal.reset();
             final UIPicker picker = ((UITableCell) getDefaultModelObject()).getPicker();
+            picker.setUserinterfaceId(this.targetMarkupId);
 
-            modal.setWindowClosedCallback(new PickerCallBack(picker, this.targetMarkupId));
-            final PageCreator pageCreator = new ModalWindowAjaxPageCreator(
-                            ((UITableCell) getDefaultModelObject()).getPicker(), modal);
+            final PageCreator pageCreator = new ModalWindowAjaxPageCreator(picker, modal);
             modal.setPageCreator(pageCreator);
             modal.setInitialHeight(picker.getWindowHeight());
             modal.setInitialWidth(picker.getWindowWidth());
+            modal.setWindowClosedCallback(new PickerCallBack(this.targetMarkupId, getPage().getPageReference()));
             modal.show(_target);
         }
 

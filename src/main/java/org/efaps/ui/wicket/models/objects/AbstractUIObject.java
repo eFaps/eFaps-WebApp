@@ -45,6 +45,7 @@ import org.efaps.beans.valueparser.ValueParser;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.PrintQuery;
+import org.efaps.ui.wicket.components.modalwindow.ICmdUIObject;
 import org.efaps.ui.wicket.models.cell.UIPicker;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.util.Configuration;
@@ -115,14 +116,9 @@ public abstract class AbstractUIObject
     private String openerId;
 
     /**
-     * UIObjects which events will be executed also.
+     * Picker that opened this object.
      */
-    private final List<IEventUIObject> eventObjects = new ArrayList<IEventUIObject>();
-
-    /**
-     * Is this Model used inside a Page called from a picker.
-     */
-    private boolean picker;
+    private UIPicker picker;
 
     /**
      * Constructor.
@@ -550,9 +546,7 @@ public abstract class AbstractUIObject
             }
             ret = command.executeEvents(_eventType, param);
         }
-        for (final IEventUIObject eventObject : this.eventObjects) {
-            ret.addAll(eventObject.executeEvents(_eventType, _objectTuples));
-        }
+
         return ret;
     }
 
@@ -571,14 +565,27 @@ public abstract class AbstractUIObject
     }
 
     /**
-     * @param _uiObject UIObject
+     * Getter method for the instance variable {@link #picker}.
+     *
+     * @return value of instance variable {@link #picker}
      */
-    public void addEventObject(final IEventUIObject _uiObject)
+    public boolean isOpenedByPicker()
+    {
+        return this.picker != null;
+    }
+
+    /**
+     * Setter method for instance variable {@link #picker}.
+     *
+     * @param _picker value for instance variable {@link #picker}
+     */
+    public void setPicker(final ICmdUIObject _uiObject)
     {
         if (_uiObject instanceof UIPicker) {
-            this.picker = true;
+            this.picker = (UIPicker) _uiObject;
+        } else if (_uiObject == null) {
+            this.picker = null;
         }
-        this.eventObjects.add(_uiObject);
     }
 
     /**
@@ -586,7 +593,7 @@ public abstract class AbstractUIObject
      *
      * @return value of instance variable {@link #picker}
      */
-    public boolean isPicker()
+    public UIPicker getPicker()
     {
         return this.picker;
     }
