@@ -70,7 +70,7 @@ public class StaticContentServlet
     /**
      * Name of the Cache.
      */
-    private static final String CACHENAME = "StaticContentServletCache";
+    private static final String CACHENAME = StaticContentServlet.class.getName() + ".Cache";
 
     /**
      * Used as <code>null</code> for caching purpose.
