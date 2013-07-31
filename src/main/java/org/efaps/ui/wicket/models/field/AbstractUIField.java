@@ -20,6 +20,8 @@
 
 package org.efaps.ui.wicket.models.field;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -27,9 +29,12 @@ import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.datamodel.ui.BooleanUI;
+import org.efaps.admin.datamodel.ui.DateUI;
+import org.efaps.admin.datamodel.ui.DecimalUI;
 import org.efaps.admin.datamodel.ui.LinkWithRangesUI;
 import org.efaps.admin.datamodel.ui.StringUI;
 import org.efaps.admin.datamodel.ui.UIValue;
+import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.components.values.BooleanField;
 import org.efaps.ui.wicket.components.values.DropDownField;
@@ -39,6 +44,10 @@ import org.efaps.ui.wicket.models.AbstractInstanceObject;
 import org.efaps.ui.wicket.models.cell.FieldConfiguration;
 import org.efaps.ui.wicket.models.objects.AbstractUIModeObject;
 import org.efaps.util.EFapsException;
+import org.joda.time.DateMidnight;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 /**
  * TODO comment!
@@ -55,19 +64,27 @@ public abstract class AbstractUIField
      */
     private static final long serialVersionUID = 1L;
 
-
     /**
      * Configuration of the related field.
      */
     private FieldConfiguration fieldConfiguration;
 
-
+    /**
+     * Parent Object.
+     */
     private final AbstractUIModeObject parent;
+
     /**
      * UserInterface Value.
      */
     private UIValue value;
 
+    /**
+     * @param _instanceKey key to the instance
+     * @param _parent       parent object
+     * @param _value        value
+     * @throws EFapsException on error
+     */
     public AbstractUIField(final String _instanceKey,
                            final AbstractUIModeObject _parent,
                            final UIValue _value)
@@ -177,26 +194,50 @@ public abstract class AbstractUIField
             }
         } else {
             if (getValue().getUIProvider() instanceof LinkWithRangesUI) {
-                String label = "";
+                String strValue = "";
                 if (getValue().getDbValue() != null) {
                     final Map<Object, Object> map = (Map<Object, Object>) getValue()
                                     .getReadOnlyValue(getParent().getMode());
-                    label = String.valueOf(map.get(getValue().getDbValue()));
+                    strValue = String.valueOf(map.get(getValue().getDbValue()));
                 }
-                ret = new Label(_wicketId, label);
+                ret = new LabelField(_wicketId, strValue, getFieldConfiguration().getLabel());
             } else if (getValue().getUIProvider() instanceof BooleanUI) {
-                String label = "";
+                String strValue = "";
                 if (getValue().getDbValue() != null) {
                     final Map<Object, Object> map = (Map<Object, Object>) getValue()
                                     .getReadOnlyValue(getParent().getMode());
                     for (final Entry<Object, Object> entry : map.entrySet()) {
                         if (entry.getValue().equals(getValue().getDbValue())) {
-                            label = (String) entry.getKey();
+                            strValue = (String) entry.getKey();
                             break;
                         }
                     }
                 }
-                ret = new Label(_wicketId, label);
+                ret = new LabelField(_wicketId, strValue, getFieldConfiguration().getLabel());
+            } else if (getValue().getUIProvider() instanceof DateUI) {
+                String strValue = "";
+                final Object valueTmp = getValue().getReadOnlyValue(getParent().getMode());
+                if (valueTmp instanceof DateTime) {
+                    final DateTime datetime = (DateTime) valueTmp;
+                    final DateMidnight dateTmp = new DateMidnight(datetime.getYear(), datetime.getMonthOfYear(),
+                                    datetime.getDayOfMonth(), Context.getThreadContext().getChronology());
+                    final DateTimeFormatter formatter = DateTimeFormat.mediumDate();
+                    strValue = dateTmp.toString(formatter.withLocale(Context.getThreadContext().getLocale()));
+                }
+                ret = new LabelField(_wicketId, strValue, getFieldConfiguration().getLabel());
+
+            } else if (getValue().getUIProvider() instanceof DecimalUI) {
+                String strValue = "";
+                final Object valueTmp = getValue().getReadOnlyValue(getParent().getMode());
+                if (valueTmp instanceof Number) {
+                    final DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Context.getThreadContext()
+                                .getLocale());
+                    if (getValue().getAttribute() != null) {
+                        formatter.setMaximumFractionDigits(getValue().getAttribute().getScale());
+                    }
+                    strValue = formatter.format(valueTmp);
+                }
+                ret = new LabelField(_wicketId, strValue, getFieldConfiguration().getLabel());
             } else {
                 ret = new LabelField(_wicketId,
                                 (String) getValue().getReadOnlyValue(getParent().getMode()),

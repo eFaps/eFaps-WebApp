@@ -125,7 +125,7 @@ public class UITaskObject
                         print.addAttribute(field.getAttribute());
                     }
                     if (field.getSelect() != null) {
-                        print.addSelect(field.getAttribute());
+                        print.addSelect(field.getSelect());
                     }
                 }
                 print.execute();
