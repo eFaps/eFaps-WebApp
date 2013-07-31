@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2012 The eFaps Team
+ * Copyright 2003 - 2013 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ package org.efaps.ui.wicket.components.form.command;
 
 import java.util.Map;
 
+import org.apache.wicket.core.util.string.JavaScriptUtils;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebComponent;
@@ -41,14 +42,13 @@ import org.slf4j.LoggerFactory;
 public class EsjpAjaxComponent
     extends WebComponent
 {
-
     /**
      * Logger for this class.
      */
     private static final Logger LOG = LoggerFactory.getLogger(AjaxCmdBehavior.class);
 
     /**
-     *
+     * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
 
@@ -64,15 +64,23 @@ public class EsjpAjaxComponent
 
     @Override
     public void onComponentTagBody(final MarkupStream _markupstream,
-                                      final ComponentTag _componenttag)
+                                   final ComponentTag _componenttag)
     {
         super.onComponentTagBody(_markupstream, _componenttag);
-        final CharSequence script = ((AjaxCmdBehavior) getBehaviors().get(0)).getCallbackScript();
-        final UIFormCellCmd uiObject = (UIFormCellCmd) getDefaultModelObject();
         try {
+            final CharSequence script = ((AjaxCmdBehavior) getBehaviors().get(0)).getCallbackScript();
+            final UIFormCellCmd uiObject = (UIFormCellCmd) getDefaultModelObject();
+
             final AbstractUIPageObject pageObject = (AbstractUIPageObject) (getPage().getDefaultModelObject());
             final Map<String, String> uiID2Oid = pageObject == null ? null : pageObject.getUiID2Oid();
-            final String content = uiObject.getRenderedContent(script.toString(), uiID2Oid);
+            final StringBuilder  content = new StringBuilder();
+            content.append(JavaScriptUtils.SCRIPT_OPEN_TAG)
+                .append("function ").append(uiObject.getName()).append("(){\n")
+                .append(script)
+                .append("\n};")
+                .append(JavaScriptUtils.SCRIPT_CLOSE_TAG)
+                .append(uiObject.getRenderedContent(script.toString(), uiID2Oid));
+
             replaceComponentTagBody(_markupstream, _componenttag, content);
         } catch (final EFapsException e) {
             EsjpAjaxComponent.LOG.error("onComponentTagBody", e);

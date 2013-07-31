@@ -20,6 +20,7 @@
 
 package org.efaps.ui.wicket.components.form.command;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -27,8 +28,10 @@ import java.util.Map;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
@@ -39,6 +42,7 @@ import org.efaps.ui.wicket.components.form.cell.ValueCellPanel;
 import org.efaps.ui.wicket.models.cell.UIFormCell;
 import org.efaps.ui.wicket.models.cell.UIFormCellCmd;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
+import org.efaps.ui.wicket.util.EFapsKey;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,7 +77,7 @@ public class AjaxCmdBehavior
     private String others;
 
     /**
-     * @param _form     Form this behavior belonhg sto
+     * @param _form     Form this behavior belongs to
      * @param _targetComponent  target component
      */
     public AjaxCmdBehavior(final FormContainer _form,
@@ -83,6 +87,12 @@ public class AjaxCmdBehavior
         this.targetComponent = _targetComponent;
     }
 
+    @Override
+    public void renderHead(final Component _component,
+                           final IHeaderResponse _response)
+    {
+        // do not render the script to the head
+    }
 
     @Override
     protected void onError(final AjaxRequestTarget _target)
@@ -93,9 +103,7 @@ public class AjaxCmdBehavior
     @Override
     public void onSubmit(final AjaxRequestTarget _target)
     {
-
-        final UIFormCellCmd uiObject = (UIFormCellCmd) getComponent()
-                        .getDefaultModelObject();
+        final UIFormCellCmd uiObject = (UIFormCellCmd) getComponent().getDefaultModelObject();
 
         final StringBuilder snip = new StringBuilder();
         try {
@@ -111,15 +119,51 @@ public class AjaxCmdBehavior
         } catch (final EFapsException e) {
             AjaxCmdBehavior.LOG.error("onSubmit", e);
         }
+
+        final Map<String, String> map = new HashMap<String, String>();
+        try {
+            final AbstractUIPageObject pageObject = (AbstractUIPageObject) (getComponent().getPage()
+                            .getDefaultModelObject());
+            final Map<String, String> uiID2Oid = pageObject == null ? null : pageObject.getUiID2Oid();
+            final List<Return> returns = uiObject.getFieldUpdate(getComponent().getMarkupId(), uiID2Oid);
+            for (final Return aReturn : returns) {
+                final Object ob = aReturn.get(ReturnValues.VALUES);
+                if (ob instanceof List) {
+                    @SuppressWarnings("unchecked")
+                    final List<Map<String, String>> list = (List<Map<String, String>>) ob;
+                    for (final Map<String, String> mapObj : list) {
+                        map.putAll(mapObj);
+                    }
+                }
+            }
+        } catch (final EFapsException e) {
+            AjaxCmdBehavior.LOG.error("onSubmit", e);
+        }
+        final StringBuilder js = new StringBuilder();
+        if (map.size() > 0) {
+            for (final String keyString : map.keySet()) {
+                // if the map contains a key that is not defined in this class it is assumed to be the name of a field
+                if (!(EFapsKey.FIELDUPDATE_JAVASCRIPT.getKey().equals(keyString))) {
+                    js.append("eFapsSetFieldValue(0,'")
+                        .append(keyString).append("',")
+                        .append(map.get(keyString).contains("Array(") ? "" : "'")
+                        .append(map.get(keyString))
+                        .append(map.get(keyString).contains("Array(") ? "" : "'").append(");");
+                }
+            }
+        }
+        if (map.containsKey(EFapsKey.FIELDUPDATE_JAVASCRIPT.getKey())) {
+            js.append(map.get(EFapsKey.FIELDUPDATE_JAVASCRIPT.getKey()));
+        }
+        _target.appendJavaScript(js.toString());
+
         if (uiObject.isTargetField()) {
             final FormPanel formPanel = getComponent().findParent(FormPanel.class);
-            this.targetComponent = getModelFromChild(formPanel,
-                                               uiObject.getTargetField());
+            this.targetComponent = getModelFromChild(formPanel, uiObject.getTargetField());
         }
         if (!uiObject.isAppend() || !this.targetComponent.isVisible()) {
             final MarkupContainer parent = this.targetComponent.getParent();
-            final LabelComponent newComp = new LabelComponent(this.targetComponent.getId(),
-                                                   snip.toString());
+            final LabelComponent newComp = new LabelComponent(this.targetComponent.getId(), snip.toString());
             parent.addOrReplace(newComp);
             newComp.setOutputMarkupId(true);
             this.targetComponent = newComp;
@@ -133,6 +177,13 @@ public class AjaxCmdBehavior
                 .append("nS.innerHTML='").append(snip).append("'");
             _target.prependJavaScript(jScript.toString());
         }
+    }
+
+    @Override
+    protected void updateAjaxAttributes(final AjaxRequestAttributes _attributes)
+    {
+        super.updateAjaxAttributes(_attributes);
+        _attributes.setEventNames(new String[]{});
     }
 
     /**

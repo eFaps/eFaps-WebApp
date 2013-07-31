@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2012 The eFaps Team
+ * Copyright 2003 - 2013 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,14 +88,10 @@ public class AjaxExecuteLink
         _target.appendJavaScript(snip.toString());
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink#onError(org.apache.wicket.ajax.AjaxRequestTarget, org.apache.wicket.markup.html.form.Form)
-     */
     @Override
     protected void onError(final AjaxRequestTarget _target,
                            final Form<?> _form)
     {
-        // TODO Auto-generated method stub
-
+        // Nothing to do
     }
 }
