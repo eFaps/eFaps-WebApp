@@ -44,6 +44,8 @@ public class Button extends Panel
     public enum ICON {
         /** accept.png. */
         ACCEPT("accept.png"),
+        /** add.png. */
+        ADD("add.png"),
         /** cancel.png. */
         CANCEL("cancel.png"),
         /** delete.png. */

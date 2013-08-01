@@ -172,7 +172,7 @@ public class TaskPage
                                     .getProperty("org.efaps.ui.wicket.pages.task.TaskPage.default.Button.delegate");
                 }
                 form.add(new Button("delegate", new DelegateLink(Button.LINKID, _taskObjModel, form, _pageReference),
-                                delegate, Button.ICON.ACCEPT.getReference()));
+                                delegate, Button.ICON.ADD.getReference()));
                 final DropDownChoice<DelegateRole> choice = new DropDownChoice<DelegateRole>("delegateChoice",
                                 DelegateRole.getModel(), _taskObjModel.getObject().getDelegateRoles(),
                                 new DelegateRoleRendere());
@@ -181,7 +181,7 @@ public class TaskPage
                 choice.setVisible(false);
             } else {
                 form.add(new WebMarkupContainer("delegate").setVisible(false));
-                form.add(new WebMarkupContainer("delegateModal").setVisible(false));
+                form.add(new WebMarkupContainer("delegateChoice").setVisible(false));
             }
 
             if (_taskObjModel.getObject().isRelease()) {
@@ -192,7 +192,7 @@ public class TaskPage
                                     .getProperty("org.efaps.ui.wicket.pages.task.TaskPage.default.Button.release");
                 }
                 form.add(new Button("release", new ReleaseLink(Button.LINKID, _taskObjModel, _pageReference),
-                                release, Button.ICON.ACCEPT.getReference()));
+                                release, Button.ICON.PREVIOUS.getReference()));
             } else {
                 form.add(new WebMarkupContainer("release").setVisible(false));
             }

@@ -51,6 +51,7 @@ import org.efaps.ui.wicket.models.field.UISnippletField;
 import org.efaps.ui.wicket.models.task.DelegateRole;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
+import org.jbpm.task.Status;
 import org.jbpm.task.service.Operation;
 
 /**
@@ -98,6 +99,11 @@ public class UITaskObject
     private List<DelegateRole> delegates;
 
     /**
+     * Status of the related task.
+     */
+    private final Status status;
+
+    /**
      * @param _taskSummary The related Task as Summary from Hibernate.
      * @throws EFapsException on error
      */
@@ -106,6 +112,7 @@ public class UITaskObject
     {
         super("");
         this.uiTaskSummary = _taskSummary;
+        this.status = _taskSummary.getTaskSummary().getStatus();
         initialize();
     }
 
@@ -251,7 +258,8 @@ public class UITaskObject
         throws EFapsException
     {
         checkAccess();
-        return this.operations.isEmpty() ? true : this.operations.contains(Operation.Claim);
+        return this.operations.isEmpty()
+                        ? !this.status.equals(Status.Reserved) : this.operations.contains(Operation.Claim);
     }
 
     /**
@@ -292,7 +300,8 @@ public class UITaskObject
         throws EFapsException
     {
         checkAccess();
-        return this.operations.isEmpty() ? true : this.operations.contains(Operation.Release);
+        return this.operations.isEmpty()
+                        ? this.status.equals(Status.Reserved) : this.operations.contains(Operation.Release);
     }
 
     /**
