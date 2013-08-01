@@ -39,6 +39,7 @@ import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.Form;
 import org.efaps.admin.ui.field.Field;
+import org.efaps.admin.user.Role;
 import org.efaps.bpm.BPM;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
@@ -47,6 +48,7 @@ import org.efaps.ui.wicket.models.cell.FieldConfiguration;
 import org.efaps.ui.wicket.models.field.UIField;
 import org.efaps.ui.wicket.models.field.UIGroup;
 import org.efaps.ui.wicket.models.field.UISnippletField;
+import org.efaps.ui.wicket.models.task.DelegateRole;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 import org.jbpm.task.service.Operation;
@@ -89,6 +91,11 @@ public class UITaskObject
      * Was the access checked allready.
      */
     private boolean accessChecked = false;
+
+    /**
+     * Delegate Roles allowed.
+     */
+    private List<DelegateRole> delegates;
 
     /**
      * @param _taskSummary The related Task as Summary from Hibernate.
@@ -247,6 +254,46 @@ public class UITaskObject
         return this.operations.isEmpty() ? true : this.operations.contains(Operation.Claim);
     }
 
+    /**
+     * @return true if delegate is allowed
+     * @throws EFapsException on error
+     */
+    public boolean isDelegate()
+        throws EFapsException
+    {
+        checkAccess();
+        final boolean ret = this.operations.isEmpty() ? true : this.operations.contains(Operation.Delegate);
+        if (ret && this.delegates == null) {
+            this.delegates  = new ArrayList<DelegateRole>();
+            final List<Role> roles = BPM.getDelegates4Task(getUITaskSummary().getTaskSummary());
+            for (final Role role  :roles) {
+                this.delegates.add(new DelegateRole(role));
+            }
+        }
+        return ret && !this.delegates.isEmpty();
+    }
+
+    /**
+     * @return List of DelegateRoles.
+     * @throws EFapsException on erro
+     */
+    public List<? extends DelegateRole> getDelegateRoles()
+        throws EFapsException
+    {
+        isDelegate();
+        return this.delegates;
+    }
+
+    /**
+     * @return true if release is allowed
+     * @throws EFapsException on error
+     */
+    public boolean isRelease()
+        throws EFapsException
+    {
+        checkAccess();
+        return this.operations.isEmpty() ? true : this.operations.contains(Operation.Release);
+    }
 
     /**
      * @throws EFapsException on error
@@ -305,4 +352,6 @@ public class UITaskObject
     {
         return Model.of(new UITaskObject(_taskSummary));
     }
+
+
 }

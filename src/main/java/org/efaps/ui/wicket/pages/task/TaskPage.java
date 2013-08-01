@@ -31,11 +31,14 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.RefreshingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.util.iterator.ComponentHierarchyIterator;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.bpm.BPM;
 import org.efaps.ui.wicket.behaviors.dojo.AbstractDojoBehavior;
@@ -44,12 +47,15 @@ import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.field.UIGroup;
 import org.efaps.ui.wicket.models.objects.UITaskObject;
+import org.efaps.ui.wicket.models.task.DelegateRole;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
 import org.jbpm.task.query.TaskSummary;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO comment!
@@ -62,31 +68,38 @@ public class TaskPage
 {
 
     /**
-     *
+     * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * Logger for this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(TaskPage.class);
 
     /**
      * Reference to the StyleSheet for this Page.
      */
     private static final EFapsContentReference CSS = new EFapsContentReference(TaskPage.class, "TaskPage.css");
 
-
     /**
-     * @param _rowModel
+     * @param _taskObjModel model for the page
+     * @param _pageReference page Reference
      */
-    public TaskPage(final IModel<UITaskObject> _rowModel,
+    public TaskPage(final IModel<UITaskObject> _taskObjModel,
                     final PageReference _pageReference)
     {
-        super(_rowModel);
-        add(new AbstractDojoBehavior() {
-            private static final long serialVersionUID = 1L;}
-        );
+        super(_taskObjModel);
+        add(new AbstractDojoBehavior()
+        {
+
+            private static final long serialVersionUID = 1L;
+        });
         final Form<TaskSummary> form = new Form<TaskSummary>("form");
         add(form);
 
         final RefreshingView<UIGroup> groupRepeater = new RefreshingView<UIGroup>(
-                        "groupRepeater", Model.ofList(_rowModel.getObject().getGroups()))
+                        "groupRepeater", Model.ofList(_taskObjModel.getObject().getGroups()))
         {
 
             private static final long serialVersionUID = 1L;
@@ -113,56 +126,99 @@ public class TaskPage
         form.add(groupRepeater);
 
         try {
-            if (_rowModel.getObject().isComplete()) {
-                String aprove = DBProperties.getProperty(_rowModel.getObject().getUITaskSummary().getName() + ".aprove",
-                                false);
+            if (_taskObjModel.getObject().isComplete()) {
+                String aprove = DBProperties.getProperty(_taskObjModel.getObject().getUITaskSummary().getName()
+                                + ".aprove", false);
                 if (aprove == null) {
                     aprove = DBProperties.getProperty("org.efaps.ui.wicket.pages.task.TaskPage.default.Button.aprove");
                 }
 
-                form.add(new Button("aprove", new DecisionLink(Button.LINKID, _rowModel, _pageReference, true),
+                form.add(new Button("aprove", new DecisionLink(Button.LINKID, _taskObjModel, _pageReference, true),
                                 aprove, Button.ICON.ACCEPT.getReference()));
             } else {
                 form.add(new WebMarkupContainer("aprove").setVisible(false));
             }
 
-            if (_rowModel.getObject().isFail()) {
-                String reject = DBProperties.getProperty(_rowModel.getObject().getUITaskSummary().getName() + ".reject",
-                                false);
+            if (_taskObjModel.getObject().isFail()) {
+                String reject = DBProperties.getProperty(_taskObjModel.getObject().getUITaskSummary().getName()
+                                + ".reject", false);
                 if (reject == null) {
                     reject = DBProperties.getProperty("org.efaps.ui.wicket.pages.task.TaskPage.default.Button.reject");
                 }
-                form.add(new Button("reject", new DecisionLink(Button.LINKID, _rowModel, _pageReference, false),
+                form.add(new Button("reject", new DecisionLink(Button.LINKID, _taskObjModel, _pageReference, false),
                                 reject, Button.ICON.CANCEL.getReference()));
             } else {
                 form.add(new WebMarkupContainer("reject").setVisible(false));
             }
 
-            if (_rowModel.getObject().isClaim()) {
-                String claim = DBProperties.getProperty(_rowModel.getObject().getUITaskSummary().getName() + ".claim",
-                                false);
+            if (_taskObjModel.getObject().isClaim()) {
+                String claim = DBProperties.getProperty(_taskObjModel.getObject().getUITaskSummary().getName()
+                                + ".claim", false);
                 if (claim == null) {
                     claim = DBProperties.getProperty("org.efaps.ui.wicket.pages.task.TaskPage.default.Button.claim");
                 }
-                form.add(new Button("claim", new ClaimLink(Button.LINKID, _rowModel, _pageReference),
+                form.add(new Button("claim", new ClaimLink(Button.LINKID, _taskObjModel, _pageReference),
                                 claim, Button.ICON.NEXT.getReference()));
-            }
-            else {
+            } else {
                 form.add(new WebMarkupContainer("claim").setVisible(false));
             }
+
+            if (_taskObjModel.getObject().isDelegate()) {
+                String delegate = DBProperties.getProperty(_taskObjModel.getObject().getUITaskSummary().getName()
+                                + ".delegate",
+                                false);
+                if (delegate == null) {
+                    delegate = DBProperties
+                                    .getProperty("org.efaps.ui.wicket.pages.task.TaskPage.default.Button.delegate");
+                }
+                form.add(new Button("delegate", new DelegateLink(Button.LINKID, _taskObjModel, form, _pageReference),
+                                delegate, Button.ICON.ACCEPT.getReference()));
+                final DropDownChoice<DelegateRole> choice = new DropDownChoice<DelegateRole>("delegateChoice",
+                                DelegateRole.getModel(), _taskObjModel.getObject().getDelegateRoles(),
+                                new DelegateRoleRendere());
+                form.add(choice);
+                choice.setOutputMarkupPlaceholderTag(true);
+                choice.setVisible(false);
+            } else {
+                form.add(new WebMarkupContainer("delegate").setVisible(false));
+                form.add(new WebMarkupContainer("delegateModal").setVisible(false));
+            }
+
+            if (_taskObjModel.getObject().isRelease()) {
+                String release = DBProperties.getProperty(_taskObjModel.getObject().getUITaskSummary().getName()
+                                + ".release", false);
+                if (release == null) {
+                    release = DBProperties
+                                    .getProperty("org.efaps.ui.wicket.pages.task.TaskPage.default.Button.release");
+                }
+                form.add(new Button("release", new ReleaseLink(Button.LINKID, _taskObjModel, _pageReference),
+                                release, Button.ICON.ACCEPT.getReference()));
+            } else {
+                form.add(new WebMarkupContainer("release").setVisible(false));
+            }
+
         } catch (final EFapsException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            TaskPage.LOG.error("Catched error on construction of TaskPage", e);
         }
     }
 
+    @Override
+    public void renderHead(final IHeaderResponse _response)
+    {
+        super.renderHead(_response);
+        _response.render(AbstractEFapsHeaderItem.forCss(TaskPage.CSS));
+    }
+
+    /**
+     * Repeater for the fields.
+     */
     public final class FieldRepeater
         extends RefreshingView<AbstractUIField>
     {
 
         /**
-     *
-     */
+         * Needed for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
         /**
@@ -203,31 +259,35 @@ public class TaskPage
                     nonLabelField.setVisible(false);
                 }
             } catch (final EFapsException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                TaskPage.LOG.error("Catched error during population of a TaskPage", e);
             }
         }
     }
 
-    public class DecisionLink
+    /**
+     * Link for registering the decision.
+     */
+    public static class DecisionLink
         extends WebMarkupContainer
     {
 
         /**
-         *
+         * Needed for serialization.
          */
         private static final long serialVersionUID = 1L;
 
         /**
-         * @param _id
-         * @param _model
+         * @param _wicketId id of this component
+         * @param _model model for this component
+         * @param _pageReference reference to the page
+         * @param _decision decision to be taken
          */
-        public DecisionLink(final String _id,
+        public DecisionLink(final String _wicketId,
                             final IModel<UITaskObject> _model,
                             final PageReference _pageReference,
                             final boolean _decision)
         {
-            super(_id, _model);
+            super(_wicketId, _model);
             add(new AjaxFormSubmitBehavior("onclick")
             {
 
@@ -245,8 +305,7 @@ public class TaskPage
                                         .getTaskSummary(),
                                         _decision, values);
                     } catch (final EFapsException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
+                        TaskPage.LOG.error("Catched error during execute of a task", e);
                     }
                     modal.close(_target);
                 }
@@ -255,20 +314,20 @@ public class TaskPage
     }
 
     /**
-     *  Claim a task Link.
+     * Claim a task Link.
      */
-    public class ClaimLink
+    public static class ClaimLink
         extends WebMarkupContainer
     {
 
         /**
-         *
+         * Needed for serialization.
          */
         private static final long serialVersionUID = 1L;
 
         /**
-         * @param _wicketId     wicket if fo this link
-         * @param _model        model for this component
+         * @param _wicketId wicket if fo this link
+         * @param _model model for this component
          * @param _pageReference reference to the page
          */
         public ClaimLink(final String _wicketId,
@@ -291,8 +350,7 @@ public class TaskPage
                         BPM.claimTask(((UITaskObject) getComponent().getDefaultModelObject()).getUITaskSummary()
                                         .getTaskSummary());
                     } catch (final EFapsException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
+                        TaskPage.LOG.error("Catched error during claiming of a task", e);
                     }
                     modal.close(_target);
                 }
@@ -300,11 +358,134 @@ public class TaskPage
         }
     }
 
-
-    @Override
-    public void renderHead(final IHeaderResponse _response)
+    /**
+     * Release a task Link.
+     */
+    public static class ReleaseLink
+        extends WebMarkupContainer
     {
-        super.renderHead(_response);
-        _response.render(AbstractEFapsHeaderItem.forCss(TaskPage.CSS));
+
+        /**
+         * Needed for serialization.
+         */
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * @param _wicketId wicket if fo this link
+         * @param _model model for this component
+         * @param _pageReference reference to the page
+         */
+        public ReleaseLink(final String _wicketId,
+                           final IModel<UITaskObject> _model,
+                           final PageReference _pageReference)
+        {
+            super(_wicketId, _model);
+            add(new AjaxFormSubmitBehavior("onclick")
+            {
+
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                protected void onEvent(final AjaxRequestTarget _target)
+                {
+                    final ModalWindowContainer modal = ((MainPage) _pageReference.getPage()).getModal();
+                    modal.setReloadChild(true);
+
+                    try {
+                        BPM.releaseTask(((UITaskObject) getComponent().getDefaultModelObject()).getUITaskSummary()
+                                        .getTaskSummary());
+                    } catch (final EFapsException e) {
+                        TaskPage.LOG.error("Catched error during claiming of a task", e);
+                    }
+                    modal.close(_target);
+                }
+            });
+        }
     }
+
+    /**
+     * Delegate a task Link.
+     */
+    public static class DelegateLink
+        extends WebMarkupContainer
+    {
+
+        /**
+         * Needed for serialization.
+         */
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * @param _wicketId wicket if fo this link
+         * @param _model model for this component
+         * @param _form form to be used
+         * @param _pageReference reference to the page
+         */
+        public DelegateLink(final String _wicketId,
+                            final IModel<UITaskObject> _model,
+                            final Form<TaskSummary> _form,
+                            final PageReference _pageReference)
+        {
+            super(_wicketId, _model);
+            add(new AjaxFormSubmitBehavior(_form, "onclick")
+            {
+
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                protected void onSubmit(final AjaxRequestTarget _target)
+                {
+                    try {
+                        DelegateRole selected = null;
+                        if (_model.getObject().getDelegateRoles().size() > 1) {
+                            final ComponentHierarchyIterator modalIter = getPage().visitChildren(DropDownChoice.class);
+                            if (modalIter.hasNext()) {
+                                final DropDownChoice<?> choice = (DropDownChoice<?>) modalIter.next();
+                                final DelegateRole roleObj = (DelegateRole) choice.getDefaultModelObject();
+                                if (roleObj.getUuid() == null) {
+                                    choice.setVisible(true);
+                                    _target.add(choice);
+                                } else {
+                                    selected = roleObj;
+                                }
+                            }
+                        } else {
+                            selected = _model.getObject().getDelegateRoles().get(0);
+                        }
+                        if (selected != null) {
+                            final ModalWindowContainer modal = ((MainPage) _pageReference.getPage()).getModal();
+                            modal.setReloadChild(true);
+                            BPM.delegateTask(((UITaskObject) getComponent().getDefaultModelObject()).getUITaskSummary()
+                                            .getTaskSummary(), selected.getUuid().toString());
+                            modal.close(_target);
+                        }
+                    } catch (final EFapsException e) {
+                        TaskPage.LOG.error("Catched error during delegation of a task", e);
+                    }
+                }
+            });
+        }
+    }
+
+    public static class DelegateRoleRendere
+        implements IChoiceRenderer<DelegateRole>
+    {
+
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public Object getDisplayValue(final DelegateRole _object)
+        {
+
+            return _object.getName();
+        }
+
+        @Override
+        public String getIdValue(final DelegateRole _object,
+                                 final int _index)
+        {
+            return Integer.valueOf(_index).toString();
+        }
+    }
+
 }

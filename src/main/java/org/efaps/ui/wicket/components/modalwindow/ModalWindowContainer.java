@@ -31,7 +31,6 @@ import org.apache.wicket.mock.MockHomePage;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.request.IRequestHandler;
-import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
@@ -45,8 +44,6 @@ import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.dashboard.DashboardPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
-import org.efaps.ui.wicket.util.Configuration;
-import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 import org.efaps.util.EFapsException;
 
 /**
@@ -56,7 +53,7 @@ import org.efaps.util.EFapsException;
  * @version $Id:ModalWindowContainer.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class ModalWindowContainer
-    extends ModalWindow
+    extends AbstractModalWindow
 {
     /**
      * Needed for serialization.
@@ -86,13 +83,6 @@ public class ModalWindowContainer
     public ModalWindowContainer(final String _wicketId)
     {
         super(_wicketId);
-        if ("w_silver".equals(Configuration.getAttribute(ConfigAttribute.DOJO_MODALCLASS))) {
-            setCssClassName(ModalWindow.CSS_CLASS_GRAY);
-        } else if ("w_blue".equals(Configuration.getAttribute(ConfigAttribute.DOJO_MODALCLASS))) {
-            setCssClassName(ModalWindow.CSS_CLASS_BLUE);
-        }
-        showUnloadConfirmation(false);
-        setTitle(DBProperties.getProperty("Logo.Version.Label"));
     }
 
     /**
