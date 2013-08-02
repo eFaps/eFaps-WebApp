@@ -24,4 +24,4 @@
  * @author The eFaps Team
  * @version $Id$
  */
-package org.efaps.ui.wicket.components.bpm;
+package org.efaps.ui.wicket.components.bpm.task;

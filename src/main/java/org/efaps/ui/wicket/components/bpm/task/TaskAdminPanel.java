@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.ui.wicket.components.bpm;
+package org.efaps.ui.wicket.components.bpm.task;
 
 import org.apache.wicket.PageReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -29,7 +29,7 @@ import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.efaps.admin.dbproperty.DBProperties;
-import org.efaps.ui.wicket.components.bpm.AdminTaskSummaryProvider.Query;
+import org.efaps.ui.wicket.components.bpm.task.AdminTaskSummaryProvider.Query;
 import org.efaps.ui.wicket.pages.task.TaskAdminPage;
 import org.efaps.util.EFapsException;
 

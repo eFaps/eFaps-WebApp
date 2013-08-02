@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.ui.wicket.components.bpm;
+package org.efaps.ui.wicket.components.bpm.task;
 
 import java.util.Map;
 
