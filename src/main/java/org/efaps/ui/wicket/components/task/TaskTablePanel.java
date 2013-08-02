@@ -23,7 +23,6 @@ package org.efaps.ui.wicket.components.task;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import org.apache.wicket.PageReference;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
@@ -37,13 +36,10 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.dbproperty.DBProperties;
-import org.efaps.admin.user.Role;
-import org.efaps.db.Context;
 import org.efaps.ui.wicket.models.objects.UITaskSummary;
 import org.efaps.ui.wicket.pages.dashboard.DashboardPage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.util.EFapsException;
 
 
@@ -108,12 +104,8 @@ public class TaskTablePanel
                 return "openTask";
             }
         });
-        // Administration
-        if (Configuration.getAttributeAsBoolean(Configuration.ConfigAttribute.SHOW_OID)
-                        && Context.getThreadContext().getPerson()
-                                        .isAssigned(Role.get(UUID
-                                                        .fromString("1d89358d-165a-4689-8c78-fc625d37aacd")))) {
 
+        if (this.dataProvider.showOid()) {
             columns.add(new PropertyColumn<UITaskSummary, String>(new Model<String>("ID"), "id", "id"));
             columns.add(new PropertyColumn<UITaskSummary, String>(new Model<String>("Name"), "name", "name"));
         }

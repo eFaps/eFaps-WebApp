@@ -25,13 +25,16 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.efaps.admin.user.Role;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.models.objects.UITaskSummary;
+import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -185,4 +188,19 @@ public abstract class AbstractTaskSummaryProvider
      * @return the number of rows presented per page
      */
     public abstract int getRowsPerPage();
+
+
+    /**
+     * @return true if the OID columns should be shown
+     * @throws EFapsException on error
+     */
+    public boolean showOid()
+        throws EFapsException
+    {
+        // Administration Role
+        return Configuration.getAttributeAsBoolean(Configuration.ConfigAttribute.SHOW_OID)
+                        && Context.getThreadContext().getPerson()
+                                        .isAssigned(Role.get(UUID
+                                                        .fromString("1d89358d-165a-4689-8c78-fc625d37aacd")));
+    }
 }

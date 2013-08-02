@@ -150,4 +150,12 @@ public class AdminTaskSummaryProvider
         this.query = _query;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean showOid()
+    {
+        return true;
+    }
 }

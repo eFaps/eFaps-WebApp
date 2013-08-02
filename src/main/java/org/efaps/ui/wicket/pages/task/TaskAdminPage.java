@@ -22,9 +22,13 @@ package org.efaps.ui.wicket.pages.task;
 
 import org.apache.wicket.PageReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
+import org.apache.wicket.ajax.IAjaxIndicatorAware;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
+import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.head.IHeaderResponse;
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.components.task.AdminTaskSummaryProvider;
 import org.efaps.ui.wicket.components.task.AdminTaskSummaryProvider.Query;
 import org.efaps.ui.wicket.components.task.TaskTablePanel;
@@ -61,7 +65,8 @@ public class TaskAdminPage
     private static final EFapsContentReference CSS = new EFapsContentReference(TaskPage.class, "TaskPage.css");
 
     /**
-     * @param _pageReference
+     * @param _pageReference reference to the open page
+     * @throws EFapsException on error
      */
     public TaskAdminPage(final PageReference _pageReference)
         throws EFapsException
@@ -83,18 +88,11 @@ public class TaskAdminPage
         _response.render(AbstractEFapsHeaderItem.forCss(TaskAdminPage.CSS));
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.wicket.Page#onDetach()
+    /**
+     * Link to update the table.
      */
-    @Override
-    protected void onDetach()
-    {
-        super.onDetach();
-    }
-
     public static class UpdateTableLink
-        extends IndicatingAjaxLink<Void>
+        extends AjaxLink<Void> implements IAjaxIndicatorAware
     {
 
         /**
@@ -102,15 +100,19 @@ public class TaskAdminPage
          */
         private static final long serialVersionUID = 1L;
 
+        /**
+         * Query for this link.
+         */
         private final Query query;
 
         /**
-         * @param _id
+         * @param _wicketId wicket di
+         * @param _query    query
          */
-        public UpdateTableLink(final String _id,
+        public UpdateTableLink(final String _wicketId,
                                final Query _query)
         {
-            super(_id);
+            super(_wicketId);
             this.query = _query;
         }
 
@@ -125,6 +127,17 @@ public class TaskAdminPage
             _target.add(table);
         }
 
+        @Override
+        public String getAjaxIndicatorMarkupId()
+        {
+            return "eFapsVeil";
+        }
+        @Override
+        public void onComponentTagBody(final MarkupStream _markupStream,
+                                       final ComponentTag _openTag)
+        {
+            final String label = DBProperties.getProperty(TaskAdminPage.class.getName() + "." + this.query);
+            replaceComponentTagBody(_markupStream, _openTag, label);
+        }
     }
-
 }

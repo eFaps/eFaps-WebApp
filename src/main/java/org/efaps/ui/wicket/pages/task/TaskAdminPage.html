@@ -24,17 +24,21 @@
 
 -->
 
-<html xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:wicket="http://wicket.apache.org">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org">
 <head>
-
 </head>
 <body wicket:id="body" class="taskPage">
-    <input type="submit" wicket:id="activeTasksBtn" class="button" />
-    <input type="submit" wicket:id="completedTasksBtn" class="button" />
-    <input type="submit" wicket:id="readyTasksBtn" class="button" />
-    <input type="submit" wicket:id="reservedTasksBtn" class="button" />
-    <input type="submit" wicket:id="errorTasksBtn" class="button" />
+    <div id="eFapsVeil" style="display:none">
+            <div class="eFapsPreventClick"></div>
+            <div class="eFapsIndicator"></div>
+    </div>
+    <div>
+        <a wicket:id="activeTasksBtn" class="button" > active </a>
+        <a wicket:id="completedTasksBtn" class="button" >complete </a>
+        <a wicket:id="readyTasksBtn" class="button" >ready </a>
+        <a wicket:id="reservedTasksBtn" class="button" > reserved </a>
+        <a wicket:id="errorTasksBtn" class="button" > error </a>
+    </div>
     <div class="item">
         <div wicket:id="taskTable">[table]</div>
     </div>
