@@ -29,8 +29,9 @@ import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.efaps.admin.dbproperty.DBProperties;
+import org.efaps.ui.wicket.components.bpm.AbstractSortableProvider;
 import org.efaps.ui.wicket.components.bpm.task.AdminTaskSummaryProvider.Query;
-import org.efaps.ui.wicket.pages.task.TaskAdminPage;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
 
 /**
@@ -42,6 +43,12 @@ import org.efaps.util.EFapsException;
 public class TaskAdminPanel
     extends Panel
 {
+
+    /**
+     * Reference to the style sheet.
+     */
+    public static final EFapsContentReference CSS = new EFapsContentReference(AbstractSortableProvider.class,
+                    "BPM.css");
 
     /**
      *
@@ -117,7 +124,7 @@ public class TaskAdminPanel
         public void onComponentTagBody(final MarkupStream _markupStream,
                                        final ComponentTag _openTag)
         {
-            final String label = DBProperties.getProperty(TaskAdminPage.class.getName() + "." + this.query);
+            final String label = DBProperties.getProperty(TaskAdminPanel.class.getName() + "." + this.query);
             replaceComponentTagBody(_markupStream, _openTag, label);
         }
     }

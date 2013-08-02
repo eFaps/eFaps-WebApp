@@ -18,73 +18,38 @@
  * Last Changed By: $Author$
  */
 
-
 package org.efaps.ui.wicket.components.bpm.task;
 
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.List;
 import java.util.UUID;
 
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
-import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.user.Role;
 import org.efaps.db.Context;
+import org.efaps.ui.wicket.components.bpm.AbstractSortableProvider;
 import org.efaps.ui.wicket.models.objects.UITaskSummary;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.util.EFapsException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 
 /**
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
+ * @version $Id: AbstractTaskSummaryProvider.java 9950 2013-08-02 22:10:34Z
+ *          jan@moxter.net $
  */
 public abstract class AbstractTaskSummaryProvider
-    extends SortableDataProvider<UITaskSummary, String>
+    extends AbstractSortableProvider<UITaskSummary>
 {
 
     /**
      *
      */
     private static final long serialVersionUID = 1L;
-
-    /**
-     * Logging instance used in this class.
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractTaskSummaryProvider.class);
-
-    /**
-     * List of TaskSummary to be displayed.
-     */
-    private final List<UITaskSummary> summaries;
-
-    /**
-     * Constructor.
-     */
-    public AbstractTaskSummaryProvider()
-    {
-        String property = null;
-        SortOrder order = null;
-        try {
-            property = Context.getThreadContext().getUserAttribute(getUserAttributeKey4SortProperty());
-            final String orderTmp = Context.getThreadContext().getUserAttribute(getUserAttributeKey4SortOrder());
-            if (orderTmp != null) {
-                order = SortOrder.valueOf(orderTmp);
-            }
-        } catch (final EFapsException e) {
-            // only UserAttributes ==> logging only
-            AbstractTaskSummaryProvider.LOG.error("error on retrieving UserAttributes", e);
-        }
-        setSort(property == null ? "description" : property, order == null ? SortOrder.ASCENDING : order);
-        this.summaries = getUITaskSummary();
-    }
 
     @Override
     public Iterator<UITaskSummary> iterator(final long _first,
@@ -99,10 +64,10 @@ public abstract class AbstractTaskSummaryProvider
             Context.getThreadContext().setUserAttribute(getUserAttributeKey4SortProperty(), sortprop);
         } catch (final EFapsException e) {
             // only UserAttributes ==> logging only
-            AbstractTaskSummaryProvider.LOG.error("error on setting UserAttributes", e);
+            AbstractSortableProvider.LOG.error("error on setting UserAttributes", e);
         }
 
-        Collections.sort(this.summaries, new Comparator<UITaskSummary>()
+        Collections.sort(getValues(), new Comparator<UITaskSummary>()
         {
 
             @Override
@@ -135,18 +100,8 @@ public abstract class AbstractTaskSummaryProvider
                 return ret;
             }
         });
-        return this.summaries.subList(Long.valueOf(_first).intValue(), Long.valueOf(_first + _count).intValue())
+        return getValues().subList(Long.valueOf(_first).intValue(), Long.valueOf(_first + _count).intValue())
                         .iterator();
-    }
-
-    /**
-     * @see org.apache.wicket.markup.repeater.data.IDataProvider#size()
-     * @return size of the list of TaskSummary
-     */
-    @Override
-    public long size()
-    {
-        return this.summaries.size();
     }
 
     /**
@@ -161,34 +116,13 @@ public abstract class AbstractTaskSummaryProvider
     }
 
     /**
-     * Requery the data.
+     * {@inheritDoc}
      */
-    public void requery()
+    @Override
+    protected String getDefaultSortProperty()
     {
-        this.summaries.clear();
-        this.summaries.addAll(getUITaskSummary());
+        return "description";
     }
-
-    /**
-     * @return list of UITaskSummary.
-     */
-    protected abstract List<UITaskSummary> getUITaskSummary();
-
-    /**
-     * @return the key used to store the sort property as a UserAttribute.
-     */
-    protected abstract String getUserAttributeKey4SortProperty();
-
-    /**
-     * @return the key used to store the sort order as a UserAttribute.
-     */
-    protected abstract String getUserAttributeKey4SortOrder();
-
-    /**
-     * @return the number of rows presented per page
-     */
-    public abstract int getRowsPerPage();
-
 
     /**
      * @return true if the OID columns should be shown

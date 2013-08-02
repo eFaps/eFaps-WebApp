@@ -22,17 +22,26 @@ package org.efaps.ui.wicket.components.bpm.process;
 
 import org.apache.wicket.PageReference;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.efaps.ui.wicket.components.bpm.AbstractSortableProvider;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
 
 /**
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
+ * @version $Id: ProcessAdminPanel.java 9946 2013-08-02 22:04:49Z jan@moxter.net
+ *          $
  */
 public class ProcessAdminPanel
     extends Panel
 {
+
+    /**
+     * Reference to the style sheet.
+     */
+    public static final EFapsContentReference CSS = new EFapsContentReference(AbstractSortableProvider.class,
+                    "BPM.css");
 
     /**
      *
@@ -47,7 +56,9 @@ public class ProcessAdminPanel
         throws EFapsException
     {
         super(_id);
-        // TODO Auto-generated constructor stub
+        final ProcessTablePanel taskTable = new ProcessTablePanel("processTable", _pageReference,
+                        new ProcessInstanceProvider());
+        add(taskTable);
     }
 
 }

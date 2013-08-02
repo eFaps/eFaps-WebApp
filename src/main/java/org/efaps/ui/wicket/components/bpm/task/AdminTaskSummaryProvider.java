@@ -70,7 +70,7 @@ public class AdminTaskSummaryProvider
      * {@inheritDoc}
      */
     @Override
-    protected List<UITaskSummary> getUITaskSummary()
+    protected List<UITaskSummary> getUIValues()
     {
         if (this.query == null) {
             this.query = Query.ACTIVE;

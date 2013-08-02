@@ -26,20 +26,14 @@ import java.util.List;
 
 import org.apache.wicket.PageReference;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
-import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.markup.repeater.Item;
-import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.dbproperty.DBProperties;
-import org.efaps.ui.wicket.components.bpm.task.AbstractTaskSummaryProvider;
-import org.efaps.ui.wicket.components.bpm.task.ActionPanel;
-import org.efaps.ui.wicket.models.objects.UITaskSummary;
-import org.efaps.ui.wicket.pages.dashboard.DashboardPage;
+import org.efaps.ui.wicket.components.bpm.AbstractSortableProvider;
+import org.efaps.ui.wicket.models.objects.UIProcessInstance;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
@@ -58,8 +52,9 @@ public class ProcessTablePanel
     /**
      * Reference to the style sheet.
      */
-    public static final EFapsContentReference CSS = new EFapsContentReference(ProcessTablePanel.class,
-                    "TaskTablePanel.css");
+    public static final EFapsContentReference CSS = new EFapsContentReference(AbstractSortableProvider.class,
+                    "BPM.css");
+
 
     /**
      * Needed for serialization.
@@ -69,7 +64,7 @@ public class ProcessTablePanel
     /**
      * DataProvier for this TaskTable.
      */
-    private AbstractTaskSummaryProvider dataProvider;
+    private final ProcessInstanceProvider dataProvider;
 
     /**
      * @param _wicketId wicket for this component
@@ -78,54 +73,33 @@ public class ProcessTablePanel
      * @throws EFapsException on error
      */
     public ProcessTablePanel(final String _wicketId,
-                          final PageReference _pageReference,
-                          final AbstractTaskSummaryProvider _dataProvider)
+                             final PageReference _pageReference,
+                             final ProcessInstanceProvider _dataProvider)
         throws EFapsException
     {
         super(_wicketId);
         this.dataProvider = _dataProvider;
 
-        final List<IColumn<UITaskSummary, String>> columns = new ArrayList<IColumn<UITaskSummary, String>>();
+        final List<IColumn<UIProcessInstance, String>> columns = new ArrayList<IColumn<UIProcessInstance, String>>();
 
-        columns.add(new AbstractColumn<UITaskSummary, String>(new Model<String>(""))
-        {
+        columns.add(new PropertyColumn<UIProcessInstance, String>(new Model<String>("ID"), "id", "id"));
+        columns.add(new PropertyColumn<UIProcessInstance, String>(new Model<String>("processId"), "processId",
+                        "processId"));
 
-            private static final long serialVersionUID = 1L;
+        final String start = DBProperties.getProperty(ProcessTablePanel.class.getName() + ".Process.Start");
+        final String end = DBProperties.getProperty(ProcessTablePanel.class.getName() + ".Process.End");
+        final String status = DBProperties.getProperty(ProcessTablePanel.class.getName() + ".Process.Status");
+        final String outcome = DBProperties.getProperty(ProcessTablePanel.class.getName() + ".Process.Outcome");
 
-            @Override
-            public void populateItem(final Item<ICellPopulator<UITaskSummary>> _cellItem,
-                                     final String _componentId,
-                                     final IModel<UITaskSummary> _rowModel)
-            {
-                _cellItem.add(new ActionPanel(_componentId, _rowModel, _pageReference));
-            }
+        columns.add(new PropertyColumn<UIProcessInstance, String>(new Model<String>(start), "start",
+                        "start"));
+        columns.add(new PropertyColumn<UIProcessInstance, String>(new Model<String>(end), "end", "end"));
+        columns.add(new PropertyColumn<UIProcessInstance, String>(new Model<String>(status), "status",
+                        "status"));
+        columns.add(new PropertyColumn<UIProcessInstance, String>(new Model<String>(outcome), "outcome",
+                        "outcome"));
 
-            @Override
-            public String getCssClass()
-            {
-                return "openTask";
-            }
-        });
-
-        if (this.dataProvider.showOid()) {
-            columns.add(new PropertyColumn<UITaskSummary, String>(new Model<String>("ID"), "id", "id"));
-            columns.add(new PropertyColumn<UITaskSummary, String>(new Model<String>("Name"), "name", "name"));
-        }
-
-        final String desc = DBProperties.getProperty(DashboardPage.class.getName() + ".TaskTable.Description");
-        final String status = DBProperties.getProperty(DashboardPage.class.getName() + ".TaskTable.Status");
-        final String at = DBProperties.getProperty(DashboardPage.class.getName() + ".TaskTable.ActivationTime");
-        final String owner = DBProperties.getProperty(DashboardPage.class.getName() + ".TaskTable.Owner");
-
-        columns.add(new PropertyColumn<UITaskSummary, String>(new Model<String>(desc), "description",
-                        "description"));
-        columns.add(new PropertyColumn<UITaskSummary, String>(new Model<String>(status), "status"));
-        columns.add(new PropertyColumn<UITaskSummary, String>(new Model<String>(at), "activationTime",
-                        "activationTime"));
-        columns.add(new PropertyColumn<UITaskSummary, String>(new Model<String>(owner), "owner",
-                        "owner"));
-
-        add(new AjaxFallbackDefaultDataTable<UITaskSummary, String>("table", columns, this.dataProvider,
+        add(new AjaxFallbackDefaultDataTable<UIProcessInstance, String>("table", columns, this.dataProvider,
                         this.dataProvider.getRowsPerPage()));
     }
 

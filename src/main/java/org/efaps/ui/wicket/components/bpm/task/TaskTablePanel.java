@@ -36,8 +36,8 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.dbproperty.DBProperties;
+import org.efaps.ui.wicket.components.bpm.AbstractSortableProvider;
 import org.efaps.ui.wicket.models.objects.UITaskSummary;
-import org.efaps.ui.wicket.pages.dashboard.DashboardPage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
@@ -56,8 +56,9 @@ public class TaskTablePanel
     /**
      * Reference to the style sheet.
      */
-    public static final EFapsContentReference CSS = new EFapsContentReference(TaskTablePanel.class,
-                    "TaskTablePanel.css");
+    public static final EFapsContentReference CSS = new EFapsContentReference(AbstractSortableProvider.class,
+                    "BPM.css");
+
 
     /**
      * Needed for serialization.
@@ -110,10 +111,10 @@ public class TaskTablePanel
             columns.add(new PropertyColumn<UITaskSummary, String>(new Model<String>("Name"), "name", "name"));
         }
 
-        final String desc = DBProperties.getProperty(DashboardPage.class.getName() + ".TaskTable.Description");
-        final String status = DBProperties.getProperty(DashboardPage.class.getName() + ".TaskTable.Status");
-        final String at = DBProperties.getProperty(DashboardPage.class.getName() + ".TaskTable.ActivationTime");
-        final String owner = DBProperties.getProperty(DashboardPage.class.getName() + ".TaskTable.Owner");
+        final String desc = DBProperties.getProperty(TaskTablePanel.class.getName() + ".Description");
+        final String status = DBProperties.getProperty(TaskTablePanel.class.getName() + ".Status");
+        final String at = DBProperties.getProperty(TaskTablePanel.class.getName() + ".ActivationTime");
+        final String owner = DBProperties.getProperty(TaskTablePanel.class.getName() + ".Owner");
 
         columns.add(new PropertyColumn<UITaskSummary, String>(new Model<String>(desc), "description",
                         "description"));

@@ -75,14 +75,15 @@ public class TaskAdminPage
         final List<ITab> tabs = new ArrayList<ITab>();
         tabs.add(new AbstractTab(new Model<String>("Task"))
         {
+
             private static final long serialVersionUID = 1L;
 
             @Override
-            public Panel getPanel(final String panelId)
+            public Panel getPanel(final String _panelId)
             {
                 Panel ret = null;
                 try {
-                   ret =  new TaskAdminPanel(panelId, _pageReference);
+                    ret = new TaskAdminPanel(_panelId, _pageReference);
                 } catch (final EFapsException e) {
                     TaskAdminPage.LOG.error("Could not load TaskAdminPanel", e);
                 }
@@ -90,18 +91,17 @@ public class TaskAdminPage
             }
         });
 
-
-
         tabs.add(new AbstractTab(new Model<String>("Process"))
         {
+
             private static final long serialVersionUID = 1L;
 
             @Override
-            public Panel getPanel(final String panelId)
+            public Panel getPanel(final String _panelId)
             {
                 Panel ret = null;
                 try {
-                   ret =  new ProcessAdminPanel(panelId, _pageReference);
+                    ret = new ProcessAdminPanel(_panelId, _pageReference);
                 } catch (final EFapsException e) {
                     TaskAdminPage.LOG.error("Could not load TaskAdminPanel", e);
                 }
@@ -118,6 +118,5 @@ public class TaskAdminPage
         super.renderHead(_response);
         _response.render(AbstractEFapsHeaderItem.forCss(TaskAdminPage.CSS));
     }
-
 
 }

@@ -46,7 +46,7 @@ public class OwnedTaskSummaryProvider
      * {@inheritDoc}
      */
     @Override
-    protected List<UITaskSummary> getUITaskSummary()
+    protected List<UITaskSummary> getUIValues()
     {
         return UITaskSummary.getUITaskSummary(BPM.getTasksOwned());
     }
