@@ -31,6 +31,7 @@ import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulato
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
@@ -40,6 +41,8 @@ import org.efaps.admin.user.Role;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.models.objects.UITaskSummary;
 import org.efaps.ui.wicket.pages.dashboard.DashboardPage;
+import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.util.EFapsException;
 
@@ -53,6 +56,13 @@ import org.efaps.util.EFapsException;
 public class TaskTablePanel
     extends Panel
 {
+
+    /**
+     * Reference to the style sheet.
+     */
+    public static final EFapsContentReference CSS = new EFapsContentReference(TaskTablePanel.class,
+                    "TaskTablePanel.css");
+
     /**
      * Needed for serialization.
      */
@@ -133,5 +143,12 @@ public class TaskTablePanel
     {
         this.dataProvider.requery();
         return true;
+    }
+
+    @Override
+    public void renderHead(final IHeaderResponse _response)
+    {
+        super.renderHead(_response);
+        _response.render(AbstractEFapsHeaderItem.forCss(TaskTablePanel.CSS));
     }
 }

@@ -69,6 +69,8 @@ public class TaskAdminPage
         add(new UpdateTableLink("activeTasksBtn", Query.ACTIVE));
         add(new UpdateTableLink("completedTasksBtn", Query.COMPLETED));
         add(new UpdateTableLink("readyTasksBtn", Query.READY));
+        add(new UpdateTableLink("reservedTasksBtn", Query.RESERVED));
+        add(new UpdateTableLink("errorTasksBtn", Query.ERROR));
         final TaskTablePanel taskTable = new TaskTablePanel("taskTable", _pageReference,
                         new AdminTaskSummaryProvider());
         add(taskTable);

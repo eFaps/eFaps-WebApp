@@ -18,7 +18,6 @@
  * Last Changed By: $Author$
  */
 
-
 package org.efaps.ui.wicket.components.task;
 
 import java.util.ArrayList;
@@ -29,31 +28,47 @@ import org.efaps.bpm.task.TaskAdminstration;
 import org.efaps.ui.wicket.models.objects.UITaskSummary;
 import org.jbpm.task.query.TaskSummary;
 
-
 /**
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
+ * @version $Id: AdminTaskSummaryProvider.java 9938 2013-08-02 19:17:19Z
+ *          jan@moxter.net $
  */
 public class AdminTaskSummaryProvider
     extends AbstractTaskSummaryProvider
 {
+
+    /**
+     * Query Defintions Enum.
+     */
     public enum Query
     {
+        /** Active tasks.*/
         ACTIVE,
+        /** Completed tasks.*/
         COMPLETED,
-        READY;
+        /** Error tasks.*/
+        ERROR,
+        /** Ready tasks.*/
+        READY,
+        /** Reserved tasks.*/
+        RESERVED;
     }
 
-    private Query query;
     /**
-     *
+     * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Current query for this provider.
+     */
+    private Query query;
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected List<UITaskSummary> getUITaskSummary()
     {
@@ -73,6 +88,12 @@ public class AdminTaskSummaryProvider
             case READY:
                 ret = UITaskSummary.getUITaskSummary(admin.getReadyTasks());
                 break;
+            case ERROR:
+                ret = UITaskSummary.getUITaskSummary(admin.getErrorTasks());
+                break;
+            case RESERVED:
+                ret = UITaskSummary.getUITaskSummary(admin.getReservedTasks());
+                break;
             default:
                 ret = UITaskSummary.getUITaskSummary(new ArrayList<TaskSummary>());
                 break;
@@ -81,11 +102,18 @@ public class AdminTaskSummaryProvider
         return ret;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected String getUserAttributeKey4SortProperty()
     {
         return AdminTaskSummaryProvider.class.getName() + "SortProperty";
     }
+
+    /**
+     * {@inheritDoc}
+     */
 
     @Override
     protected String getUserAttributeKey4SortOrder()
@@ -93,12 +121,14 @@ public class AdminTaskSummaryProvider
         return AdminTaskSummaryProvider.class.getName() + "SortOrder";
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getRowsPerPage()
     {
         return 10;
     }
-
 
     /**
      * Getter method for the instance variable {@link #query}.
@@ -109,7 +139,6 @@ public class AdminTaskSummaryProvider
     {
         return this.query;
     }
-
 
     /**
      * Setter method for instance variable {@link #query}.
