@@ -20,18 +20,18 @@
 
 package org.efaps.ui.wicket.pages.task;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.wicket.PageReference;
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.IAjaxIndicatorAware;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
-import org.apache.wicket.markup.ComponentTag;
-import org.apache.wicket.markup.MarkupStream;
+import org.apache.wicket.extensions.ajax.markup.html.tabs.AjaxTabbedPanel;
+import org.apache.wicket.extensions.markup.html.tabs.AbstractTab;
+import org.apache.wicket.extensions.markup.html.tabs.ITab;
 import org.apache.wicket.markup.head.IHeaderResponse;
-import org.efaps.admin.dbproperty.DBProperties;
-import org.efaps.ui.wicket.components.task.AdminTaskSummaryProvider;
-import org.efaps.ui.wicket.components.task.AdminTaskSummaryProvider.Query;
-import org.efaps.ui.wicket.components.task.TaskTablePanel;
+import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.model.Model;
+import org.efaps.ui.wicket.components.bpm.TaskAdminPanel;
+import org.efaps.ui.wicket.components.bpm.process.ProcessAdminPanel;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
@@ -71,14 +71,45 @@ public class TaskAdminPage
     public TaskAdminPage(final PageReference _pageReference)
         throws EFapsException
     {
-        add(new UpdateTableLink("activeTasksBtn", Query.ACTIVE));
-        add(new UpdateTableLink("completedTasksBtn", Query.COMPLETED));
-        add(new UpdateTableLink("readyTasksBtn", Query.READY));
-        add(new UpdateTableLink("reservedTasksBtn", Query.RESERVED));
-        add(new UpdateTableLink("errorTasksBtn", Query.ERROR));
-        final TaskTablePanel taskTable = new TaskTablePanel("taskTable", _pageReference,
-                        new AdminTaskSummaryProvider());
-        add(taskTable);
+
+        final List<ITab> tabs = new ArrayList<ITab>();
+        tabs.add(new AbstractTab(new Model<String>("Task"))
+        {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public Panel getPanel(final String panelId)
+            {
+                Panel ret = null;
+                try {
+                   ret =  new TaskAdminPanel(panelId, _pageReference);
+                } catch (final EFapsException e) {
+                    TaskAdminPage.LOG.error("Could not load TaskAdminPanel", e);
+                }
+                return ret;
+            }
+        });
+
+
+
+        tabs.add(new AbstractTab(new Model<String>("Process"))
+        {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public Panel getPanel(final String panelId)
+            {
+                Panel ret = null;
+                try {
+                   ret =  new ProcessAdminPanel(panelId, _pageReference);
+                } catch (final EFapsException e) {
+                    TaskAdminPage.LOG.error("Could not load TaskAdminPanel", e);
+                }
+                return ret;
+
+            }
+        });
+        add(new AjaxTabbedPanel<ITab>("tabs", tabs));
     }
 
     @Override
@@ -88,56 +119,5 @@ public class TaskAdminPage
         _response.render(AbstractEFapsHeaderItem.forCss(TaskAdminPage.CSS));
     }
 
-    /**
-     * Link to update the table.
-     */
-    public static class UpdateTableLink
-        extends AjaxLink<Void> implements IAjaxIndicatorAware
-    {
 
-        /**
-         *
-         */
-        private static final long serialVersionUID = 1L;
-
-        /**
-         * Query for this link.
-         */
-        private final Query query;
-
-        /**
-         * @param _wicketId wicket di
-         * @param _query    query
-         */
-        public UpdateTableLink(final String _wicketId,
-                               final Query _query)
-        {
-            super(_wicketId);
-            this.query = _query;
-        }
-
-        @Override
-        public void onClick(final AjaxRequestTarget _target)
-        {
-            final AjaxFallbackDefaultDataTable<?, ?> table = (AjaxFallbackDefaultDataTable<?, ?>) getPage()
-                            .visitChildren(AjaxFallbackDefaultDataTable.class).next();
-            final AdminTaskSummaryProvider provider = (AdminTaskSummaryProvider) table.getDataProvider();
-            provider.setQuery(this.query);
-            provider.requery();
-            _target.add(table);
-        }
-
-        @Override
-        public String getAjaxIndicatorMarkupId()
-        {
-            return "eFapsVeil";
-        }
-        @Override
-        public void onComponentTagBody(final MarkupStream _markupStream,
-                                       final ComponentTag _openTag)
-        {
-            final String label = DBProperties.getProperty(TaskAdminPage.class.getName() + "." + this.query);
-            replaceComponentTagBody(_markupStream, _openTag, label);
-        }
-    }
 }
