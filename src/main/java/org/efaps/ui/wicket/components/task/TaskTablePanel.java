@@ -66,6 +66,7 @@ public class TaskTablePanel
     /**
      * @param _wicketId wicket for this component
      * @param _pageReference Reference to the calling page
+     * @param _dataProvider provider for the task table
      * @throws EFapsException on error
      */
     public TaskTablePanel(final String _wicketId,
@@ -122,7 +123,7 @@ public class TaskTablePanel
 
         add(new AjaxFallbackDefaultDataTable<UITaskSummary, String>("table", columns, this.dataProvider,
                         this.dataProvider.getRowsPerPage()));
-   }
+    }
 
 
     /**

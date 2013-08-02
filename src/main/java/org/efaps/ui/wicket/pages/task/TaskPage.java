@@ -467,16 +467,20 @@ public class TaskPage
         }
     }
 
+    /**
+     * Render the Roles.
+     */
     public static class DelegateRoleRendere
         implements IChoiceRenderer<DelegateRole>
     {
-
+        /**
+         * Needed for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
         @Override
         public Object getDisplayValue(final DelegateRole _object)
         {
-
             return _object.getName();
         }
 
@@ -487,5 +491,4 @@ public class TaskPage
             return Integer.valueOf(_index).toString();
         }
     }
-
 }

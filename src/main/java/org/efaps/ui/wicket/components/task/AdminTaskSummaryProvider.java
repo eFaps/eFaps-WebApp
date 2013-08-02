@@ -1,0 +1,124 @@
+/*
+ * Copyright 2003 - 2013 The eFaps Team
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
+ */
+
+
+package org.efaps.ui.wicket.components.task;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.efaps.bpm.BPM;
+import org.efaps.bpm.task.TaskAdminstration;
+import org.efaps.ui.wicket.models.objects.UITaskSummary;
+import org.jbpm.task.query.TaskSummary;
+
+
+/**
+ * TODO comment!
+ *
+ * @author The eFaps Team
+ * @version $Id$
+ */
+public class AdminTaskSummaryProvider
+    extends AbstractTaskSummaryProvider
+{
+    public enum Query
+    {
+        ACTIVE,
+        COMPLETED,
+        READY;
+    }
+
+    private Query query;
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
+
+
+    @Override
+    protected List<UITaskSummary> getUITaskSummary()
+    {
+        if (this.query == null) {
+            this.query = Query.ACTIVE;
+        }
+        final TaskAdminstration admin = BPM.getTaskAdmin();
+
+        List<UITaskSummary> ret;
+        switch (this.query) {
+            case ACTIVE:
+                ret = UITaskSummary.getUITaskSummary(admin.getActiveTasks());
+                break;
+            case COMPLETED:
+                ret = UITaskSummary.getUITaskSummary(admin.getCompletedTasks());
+                break;
+            case READY:
+                ret = UITaskSummary.getUITaskSummary(admin.getReadyTasks());
+                break;
+            default:
+                ret = UITaskSummary.getUITaskSummary(new ArrayList<TaskSummary>());
+                break;
+        }
+        admin.dispose();
+        return ret;
+    }
+
+    @Override
+    protected String getUserAttributeKey4SortProperty()
+    {
+        return AdminTaskSummaryProvider.class.getName() + "SortProperty";
+    }
+
+    @Override
+    protected String getUserAttributeKey4SortOrder()
+    {
+        return AdminTaskSummaryProvider.class.getName() + "SortOrder";
+    }
+
+    @Override
+    public int getRowsPerPage()
+    {
+        return 10;
+    }
+
+
+    /**
+     * Getter method for the instance variable {@link #query}.
+     *
+     * @return value of instance variable {@link #query}
+     */
+    public Query getQuery()
+    {
+        return this.query;
+    }
+
+
+    /**
+     * Setter method for instance variable {@link #query}.
+     *
+     * @param _query value for instance variable {@link #query}
+     */
+    public void setQuery(final Query _query)
+    {
+        this.query = _query;
+    }
+
+}
