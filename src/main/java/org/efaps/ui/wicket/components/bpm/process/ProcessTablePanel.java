@@ -26,14 +26,18 @@ import java.util.List;
 
 import org.apache.wicket.PageReference;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
+import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.markup.repeater.Item;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.components.bpm.AbstractSortableProvider;
-import org.efaps.ui.wicket.models.objects.UIProcessInstance;
+import org.efaps.ui.wicket.models.objects.UIProcessInstanceLog;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
@@ -80,10 +84,31 @@ public class ProcessTablePanel
         super(_wicketId);
         this.dataProvider = _dataProvider;
 
-        final List<IColumn<UIProcessInstance, String>> columns = new ArrayList<IColumn<UIProcessInstance, String>>();
+        final List<IColumn<UIProcessInstanceLog, String>> columns = new ArrayList<IColumn<UIProcessInstanceLog, String>>();
 
-        columns.add(new PropertyColumn<UIProcessInstance, String>(new Model<String>("ID"), "id", "id"));
-        columns.add(new PropertyColumn<UIProcessInstance, String>(new Model<String>("processId"), "processId",
+        columns.add(new AbstractColumn<UIProcessInstanceLog, String>(new Model<String>(""))
+        {
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void populateItem(final Item<ICellPopulator<UIProcessInstanceLog>> _cellItem,
+                                     final String _componentId,
+                                     final IModel<UIProcessInstanceLog> _rowModel)
+            {
+                _cellItem.add(new ActionPanel(_componentId, _rowModel, _pageReference));
+            }
+
+            @Override
+            public String getCssClass()
+            {
+                return "openProcess";
+            }
+        });
+
+
+        columns.add(new PropertyColumn<UIProcessInstanceLog, String>(new Model<String>("ID"), "id", "id"));
+        columns.add(new PropertyColumn<UIProcessInstanceLog, String>(new Model<String>("processId"), "processId",
                         "processId"));
 
         final String start = DBProperties.getProperty(ProcessTablePanel.class.getName() + ".Process.Start");
@@ -91,15 +116,15 @@ public class ProcessTablePanel
         final String status = DBProperties.getProperty(ProcessTablePanel.class.getName() + ".Process.Status");
         final String outcome = DBProperties.getProperty(ProcessTablePanel.class.getName() + ".Process.Outcome");
 
-        columns.add(new PropertyColumn<UIProcessInstance, String>(new Model<String>(start), "start",
+        columns.add(new PropertyColumn<UIProcessInstanceLog, String>(new Model<String>(start), "start",
                         "start"));
-        columns.add(new PropertyColumn<UIProcessInstance, String>(new Model<String>(end), "end", "end"));
-        columns.add(new PropertyColumn<UIProcessInstance, String>(new Model<String>(status), "status",
+        columns.add(new PropertyColumn<UIProcessInstanceLog, String>(new Model<String>(end), "end", "end"));
+        columns.add(new PropertyColumn<UIProcessInstanceLog, String>(new Model<String>(status), "status",
                         "status"));
-        columns.add(new PropertyColumn<UIProcessInstance, String>(new Model<String>(outcome), "outcome",
+        columns.add(new PropertyColumn<UIProcessInstanceLog, String>(new Model<String>(outcome), "outcome",
                         "outcome"));
 
-        add(new AjaxFallbackDefaultDataTable<UIProcessInstance, String>("table", columns, this.dataProvider,
+        add(new AjaxFallbackDefaultDataTable<UIProcessInstanceLog, String>("table", columns, this.dataProvider,
                         this.dataProvider.getRowsPerPage()));
     }
 

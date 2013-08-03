@@ -32,7 +32,7 @@ import org.apache.wicket.markup.repeater.data.IDataProvider;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.iterator.ComponentHierarchyIterator;
 import org.efaps.ui.wicket.components.bpm.AbstractSortableProvider;
-import org.efaps.ui.wicket.models.objects.UIProcessInstance;
+import org.efaps.ui.wicket.models.objects.UIProcessInstanceLog;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
@@ -70,10 +70,10 @@ public class ProcessAdminPanel
         throws EFapsException
     {
         super(_wicketId);
-        final Form<UIProcessInstance> form = new Form<UIProcessInstance>("form");
+        final Form<UIProcessInstanceLog> form = new Form<UIProcessInstanceLog>("form");
         add(form);
         final DropDownChoice<String> dropDown = new DropDownChoice<String>("processIds", Model.<String>of(),
-                        UIProcessInstance.getProcessIds());
+                        UIProcessInstanceLog.getProcessIds());
         dropDown.setNullValid(true);
         dropDown.add(new AjaxFormComponentUpdatingBehavior("onchange")
         {
@@ -102,6 +102,10 @@ public class ProcessAdminPanel
         final ProcessTablePanel taskTable = new ProcessTablePanel("processTable", _pageReference,
                         new ProcessInstanceProvider());
         form.add(taskTable);
+
+        final NodeTablePanel nodeTable = new NodeTablePanel("nodeTable", _pageReference,
+                        new NodeInstanceProvider());
+        form.add(nodeTable);
     }
 
     @Override

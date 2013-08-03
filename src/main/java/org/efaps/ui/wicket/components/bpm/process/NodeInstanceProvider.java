@@ -21,6 +21,7 @@
 
 package org.efaps.ui.wicket.components.bpm.process;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -33,9 +34,9 @@ import org.efaps.bpm.BPM;
 import org.efaps.bpm.process.ProcessAdmin;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.components.bpm.AbstractSortableProvider;
-import org.efaps.ui.wicket.models.objects.UIProcessInstanceLog;
+import org.efaps.ui.wicket.models.objects.UINodeInstanceLog;
 import org.efaps.util.EFapsException;
-import org.jbpm.process.audit.ProcessInstanceLog;
+import org.jbpm.process.audit.NodeInstanceLog;
 
 
 /**
@@ -44,8 +45,8 @@ import org.jbpm.process.audit.ProcessInstanceLog;
  * @author The eFaps Team
  * @version $Id$
  */
-public class ProcessInstanceProvider
-    extends AbstractSortableProvider<UIProcessInstanceLog>
+public class NodeInstanceProvider
+    extends AbstractSortableProvider<UINodeInstanceLog>
 {
 
     /**
@@ -56,23 +57,23 @@ public class ProcessInstanceProvider
     /**
      * ProcessId used as filter.
      */
-    private String processId;
+    private Long processInstanceId;
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected List<UIProcessInstanceLog> getUIValues()
+    protected List<UINodeInstanceLog> getUIValues()
     {
         final ProcessAdmin admin = BPM.getProcessAdmin();
-        final List<ProcessInstanceLog> instances;
+        final List<NodeInstanceLog> instances;
 
-        if (this.processId != null && !this.processId.isEmpty()) {
-            instances = admin.getProcessInstances(this.processId);
+        if (this.processInstanceId != null) {
+            instances = admin.getNodeInstances(this.processInstanceId);
         } else {
-            instances = admin.getProcessInstances();
+            instances = new ArrayList<NodeInstanceLog>();
         }
-        return  UIProcessInstanceLog.getUIProcessInstances(instances);
+        return UINodeInstanceLog.getUINodeInstances(instances);
     }
 
     /**
@@ -81,7 +82,7 @@ public class ProcessInstanceProvider
     @Override
     protected String getUserAttributeKey4SortProperty()
     {
-        return ProcessInstanceProvider.class.getName() + "SortProperty";
+        return NodeInstanceProvider.class.getName() + "SortProperty";
     }
 
     /**
@@ -91,7 +92,7 @@ public class ProcessInstanceProvider
     @Override
     protected String getUserAttributeKey4SortOrder()
     {
-        return ProcessInstanceProvider.class.getName() + "SortOrder";
+        return NodeInstanceProvider.class.getName() + "SortOrder";
     }
 
     /**
@@ -104,7 +105,7 @@ public class ProcessInstanceProvider
     }
 
     @Override
-    public Iterator<? extends UIProcessInstanceLog> iterator(final long _first,
+    public Iterator<? extends UINodeInstanceLog> iterator(final long _first,
                                                           final long _count)
     {
         final String sortprop = getSort().getProperty();
@@ -119,24 +120,24 @@ public class ProcessInstanceProvider
             AbstractSortableProvider.LOG.error("error on setting UserAttributes", e);
         }
 
-        Collections.sort(getValues(), new Comparator<UIProcessInstanceLog>()
+        Collections.sort(getValues(), new Comparator<UINodeInstanceLog>()
         {
             @Override
-            public int compare(final UIProcessInstanceLog _process0,
-                               final UIProcessInstanceLog _process1)
+            public int compare(final UINodeInstanceLog _node0,
+                               final UINodeInstanceLog _node1)
             {
-                final UIProcessInstanceLog process0;
-                final UIProcessInstanceLog process1;
+                final UINodeInstanceLog node0;
+                final UINodeInstanceLog node1;
                 if (asc) {
-                    process0 = _process0;
-                    process1 = _process1;
+                    node0 = _node0;
+                    node1 = _node1;
                 } else {
-                    process1 = _process0;
-                    process0 = _process1;
+                    node1 = _node0;
+                    node0 = _node1;
                 }
                 int ret = 0;
-                if ("processId".equals(sortprop)) {
-                    ret = process0.getProcessId().compareTo(process1.getProcessId());
+                if ("id".equals(sortprop)) {
+                    ret = Long.valueOf(node0.getId()).compareTo( Long.valueOf(node1.getId()));
                 }
                 return ret;
             }
@@ -147,11 +148,11 @@ public class ProcessInstanceProvider
 
     /**
      * @see org.apache.wicket.markup.repeater.data.IDataProvider#model(java.lang.Object)
-     * @param _object UIProcessInstance the model is wanted for
-     * @return Model of UIProcessInstance
+     * @param _object UINodeInstance the model is wanted for
+     * @return Model of UINodeInstance
      */
     @Override
-    public IModel<UIProcessInstanceLog> model(final UIProcessInstanceLog _object)
+    public IModel<UINodeInstanceLog> model(final UINodeInstanceLog _object)
     {
         return Model.of(_object);
     }
@@ -162,28 +163,28 @@ public class ProcessInstanceProvider
     @Override
     protected String getDefaultSortProperty()
     {
-        return "ProcessId";
+        return "id";
     }
 
 
     /**
-     * Getter method for the instance variable {@link #processId}.
+     * Getter method for the instance variable {@link #processInstanceId}.
      *
-     * @return value of instance variable {@link #processId}
+     * @return value of instance variable {@link #processInstanceId}
      */
-    public String getProcessId()
+    public Long getProcessInstanceId()
     {
-        return this.processId;
+        return this.processInstanceId;
     }
 
 
     /**
-     * Setter method for instance variable {@link #processId}.
+     * Setter method for instance variable {@link #processInstanceId}.
      *
-     * @param _processId value for instance variable {@link #processId}
+     * @param _processInstanceId value for instance variable {@link #processInstanceId}
      */
-    public void setProcessId(final String _processId)
+    public void setProcessInstanceId(final Long _processInstanceId)
     {
-        this.processId = _processId;
+        this.processInstanceId = _processInstanceId;
     }
 }

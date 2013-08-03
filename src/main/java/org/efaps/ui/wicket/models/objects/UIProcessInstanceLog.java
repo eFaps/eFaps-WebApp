@@ -38,7 +38,7 @@ import org.jbpm.process.audit.ProcessInstanceLog;
  * @author The eFaps Team
  * @version $Id$
  */
-public class UIProcessInstance
+public class UIProcessInstanceLog
     implements Serializable
 {
     /**
@@ -54,7 +54,7 @@ public class UIProcessInstance
     /**
      * @param _processInstance ProcessInstanceLog to use
      */
-    public UIProcessInstance(final ProcessInstanceLog _processInstance)
+    public UIProcessInstanceLog(final ProcessInstanceLog _processInstance)
     {
         this.processInstance = _processInstance;
     }
@@ -92,6 +92,14 @@ public class UIProcessInstance
     }
 
     /**
+     * @return the ProcessInstanceId of the underlying ProcessInstanceLog
+     */
+    public Long getProcessInstanceId()
+    {
+        return this.processInstance.getProcessInstanceId();
+    }
+
+    /**
      * @return the translated Status of the underlying TaskSummary
      */
     public int getStatus()
@@ -121,12 +129,12 @@ public class UIProcessInstance
      * @param _processInstanceLogs list of ProcessInstanceLog the UIProcessInstance is wanted for
      * @return List of UITaskSummary
      */
-    public static List<UIProcessInstance> getUITaskSummary(final List<ProcessInstanceLog> _processInstanceLogs)
+    public static List<UIProcessInstanceLog> getUIProcessInstances(final List<ProcessInstanceLog> _processInstanceLogs)
     {
-        final List<UIProcessInstance> ret = new ArrayList<UIProcessInstance>();
+        final List<UIProcessInstanceLog> ret = new ArrayList<UIProcessInstanceLog>();
 
         for (final ProcessInstanceLog processLog : _processInstanceLogs) {
-            ret.add(new UIProcessInstance(processLog));
+            ret.add(new UIProcessInstanceLog(processLog));
         }
         return ret;
     }
