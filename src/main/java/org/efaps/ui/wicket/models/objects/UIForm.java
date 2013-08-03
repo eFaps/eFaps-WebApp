@@ -39,6 +39,9 @@ import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.datamodel.ui.UIValue;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
+import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.event.Return;
+import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.Form;
@@ -63,6 +66,8 @@ import org.efaps.ui.wicket.models.cell.UISetColumnHeader;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Class is used to instantiate a form from eFaps into a Form with all Values
  * for the wicket webapp.
@@ -73,7 +78,6 @@ import org.efaps.util.cache.CacheReloadException;
 public class UIForm
     extends AbstractUIPageObject
 {
-
     /**
      * Enum is used to differ the different elements a form can contain.
      */
@@ -92,6 +96,11 @@ public class UIForm
         /** Element is a table.*/
         TABLE
     }
+
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(UIForm.class);
 
     /**
      * Used for serialization.
@@ -182,15 +191,42 @@ public class UIForm
     public void execute()
     {
         try {
-            if (isCreateMode() || isSearchMode() || getInstance() == null) {
+            if (isCreateMode() || isSearchMode()) {
                 execute4NoInstance();
             } else {
-                execute4Instance();
+                evaluate4Instance();
+                if (getInstance() == null) {
+                    execute4NoInstance();
+                } else {
+                    execute4Instance();
+                }
             }
         } catch (final EFapsException e) {
             throw new RestartResponseException(new ErrorPage(e));
         }
         super.setInitialized(true);
+    }
+
+    /**
+     * This is a possibility to replace the current Instance for the form with
+     * another one using an table evaluate esjp.
+     *
+     * @throws EFapsException on error
+     */
+    protected void evaluate4Instance()
+        throws EFapsException
+    {
+        final List<Return> ret = getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
+                        ParameterValues.INSTANCE, getInstance());
+        if (ret.size() > 0) {
+            final Object object = ret.get(0).get(ReturnValues.VALUES);
+            if (object != null && object instanceof Instance && ((Instance) object).isValid()) {
+                setInstanceKey(((Instance) object).getOid());
+            } else {
+                UIForm.LOG.error("The esjp called by Command '{}' must return a valid instance",
+                                getCommand().getName());
+            }
+        }
     }
 
     /**
@@ -674,10 +710,10 @@ public class UIForm
             final Set<Classification> clazzes = getCommand().getTargetCreateClassification();
             for (final Classification clazz : clazzes) {
                 uiclass.addSelectedUUID(clazz.getUUID());
-                Classification parent = (Classification) clazz.getParentClassification();
+                Classification parent = clazz.getParentClassification();
                 while (parent != null) {
                     uiclass.addSelectedUUID(parent.getUUID());
-                    parent = (Classification) parent.getParentClassification();
+                    parent = parent.getParentClassification();
                 }
             }
             if (!uiclass.isInitialized()) {

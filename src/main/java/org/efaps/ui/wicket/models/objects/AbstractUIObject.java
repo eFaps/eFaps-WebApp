@@ -125,6 +125,7 @@ public abstract class AbstractUIObject
      *
      * @param _commandUUID UUID for this Model
      * @param _instanceKey instance id for this Model
+     * @throws CacheReloadException on error
      */
     public AbstractUIObject(final UUID _commandUUID,
                             final String _instanceKey)
@@ -226,6 +227,7 @@ public abstract class AbstractUIObject
      *
      * @see #callingCmdUUID
      * @return the calling CommandAbstract UIClassification
+     * @throws CacheReloadException on error
      */
     public AbstractCommand getCallingCommand()
         throws CacheReloadException
@@ -263,7 +265,7 @@ public abstract class AbstractUIObject
      * get the CommandAbstract for the instance variable {@link #cmdUUID}.
      *
      * @return CommandAbstract for the instance variable {@link #cmdUUID}
-     * @see #command
+     * @throws CacheReloadException on error
      */
     public AbstractCommand getCommand()
         throws CacheReloadException
@@ -284,6 +286,7 @@ public abstract class AbstractUIObject
      *
      * @param _uuid UUID of searched command object
      * @return found command / menu instance, or <code>null</code> if not found
+     * @throws CacheReloadException on error
      */
     protected AbstractCommand getCommand(final UUID _uuid)
         throws CacheReloadException
