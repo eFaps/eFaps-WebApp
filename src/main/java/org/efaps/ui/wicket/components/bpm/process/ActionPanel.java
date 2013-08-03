@@ -75,7 +75,11 @@ public class ActionPanel
                                             .getProcessInstanceId());
                             ((NodeInstanceProvider) provider).requery();
                             _target.add(table);
-                            break;
+                        }else if (provider instanceof VariableInstanceProvider) {
+                            ((VariableInstanceProvider) provider).setProcessInstanceId(processinstance
+                                            .getProcessInstanceId());
+                            ((VariableInstanceProvider) provider).requery();
+                            _target.add(table);
                         }
                     }
 

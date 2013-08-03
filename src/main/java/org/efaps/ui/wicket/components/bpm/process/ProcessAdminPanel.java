@@ -106,6 +106,11 @@ public class ProcessAdminPanel
         final NodeTablePanel nodeTable = new NodeTablePanel("nodeTable", _pageReference,
                         new NodeInstanceProvider());
         form.add(nodeTable);
+
+        final VariableTablePanel variableTable = new VariableTablePanel("variableTable", _pageReference,
+                        new VariableInstanceProvider());
+        form.add(variableTable);
+
     }
 
     @Override
