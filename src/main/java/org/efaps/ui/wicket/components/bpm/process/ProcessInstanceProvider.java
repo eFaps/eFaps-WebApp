@@ -54,13 +54,24 @@ public class ProcessInstanceProvider
     private static final long serialVersionUID = 1L;
 
     /**
+     * ProcessId used as filter.
+     */
+    private String processId;
+
+    /**
      * {@inheritDoc}
      */
     @Override
     protected List<UIProcessInstance> getUIValues()
     {
         final ProcessAdmin admin = BPM.getProcessAdmin();
-        final List<ProcessInstanceLog> instances = admin.findProcessInstances();
+        final List<ProcessInstanceLog> instances;
+
+        if (this.processId != null && !this.processId.isEmpty()) {
+            instances = admin.getProcessInstances(this.processId);
+        } else {
+            instances = admin.getProcessInstances();
+        }
         return  UIProcessInstance.getUITaskSummary(instances);
     }
 
@@ -152,5 +163,27 @@ public class ProcessInstanceProvider
     protected String getDefaultSortProperty()
     {
         return "ProcessId";
+    }
+
+
+    /**
+     * Getter method for the instance variable {@link #processId}.
+     *
+     * @return value of instance variable {@link #processId}
+     */
+    public String getProcessId()
+    {
+        return this.processId;
+    }
+
+
+    /**
+     * Setter method for instance variable {@link #processId}.
+     *
+     * @param _processId value for instance variable {@link #processId}
+     */
+    public void setProcessId(final String _processId)
+    {
+        this.processId = _processId;
     }
 }

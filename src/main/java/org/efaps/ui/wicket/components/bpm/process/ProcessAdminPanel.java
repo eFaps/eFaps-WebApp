@@ -21,8 +21,19 @@
 package org.efaps.ui.wicket.components.bpm.process;
 
 import org.apache.wicket.PageReference;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
+import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.html.form.DropDownChoice;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.markup.repeater.data.IDataProvider;
+import org.apache.wicket.model.Model;
+import org.apache.wicket.util.iterator.ComponentHierarchyIterator;
 import org.efaps.ui.wicket.components.bpm.AbstractSortableProvider;
+import org.efaps.ui.wicket.models.objects.UIProcessInstance;
+import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
 
@@ -48,17 +59,56 @@ public class ProcessAdminPanel
      */
     private static final long serialVersionUID = 1L;
 
+
     /**
-     * @param _id
+     * @param _wicketId WicketId
+     * @param _pageReference    Refernce to the page
+     * @throws EFapsException on error
      */
-    public ProcessAdminPanel(final String _id,
+    public ProcessAdminPanel(final String _wicketId,
                              final PageReference _pageReference)
         throws EFapsException
     {
-        super(_id);
+        super(_wicketId);
+        final Form<UIProcessInstance> form = new Form<UIProcessInstance>("form");
+        add(form);
+        final DropDownChoice<String> dropDown = new DropDownChoice<String>("processIds", Model.<String>of(),
+                        UIProcessInstance.getProcessIds());
+        dropDown.setNullValid(true);
+        dropDown.add(new AjaxFormComponentUpdatingBehavior("onchange")
+        {
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            protected void onUpdate(final AjaxRequestTarget _target)
+            {
+                final ComponentHierarchyIterator iter = getPage().visitChildren(AjaxFallbackDefaultDataTable.class);
+                while (iter.hasNext()) {
+                    final AjaxFallbackDefaultDataTable<?, ?> table = (AjaxFallbackDefaultDataTable<?, ?>) iter.next();
+                    final IDataProvider<?> provider = table.getDataProvider();
+                    if (provider instanceof ProcessInstanceProvider) {
+                        ((ProcessInstanceProvider) provider).setProcessId(getComponent()
+                                        .getDefaultModelObjectAsString());
+                        ((ProcessInstanceProvider) provider).requery();
+                        _target.add(table);
+                        break;
+                    }
+                }
+            }
+        });
+        form.add(dropDown);
+
         final ProcessTablePanel taskTable = new ProcessTablePanel("processTable", _pageReference,
                         new ProcessInstanceProvider());
-        add(taskTable);
+        form.add(taskTable);
+    }
+
+    @Override
+    public void renderHead(final IHeaderResponse _response)
+    {
+        super.renderHead(_response);
+        _response.render(AbstractEFapsHeaderItem.forCss(ProcessAdminPanel.CSS));
     }
 
 }

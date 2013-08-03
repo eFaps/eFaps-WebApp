@@ -25,6 +25,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.efaps.ci.CIAdminProgram;
+import org.efaps.db.CachedMultiPrintQuery;
+import org.efaps.db.QueryBuilder;
+import org.efaps.util.EFapsException;
 import org.jbpm.process.audit.ProcessInstanceLog;
 
 /**
@@ -114,7 +118,7 @@ public class UIProcessInstance
     }
 
     /**
-     * @param _processInstanceLos list of ProcessInstanceLog the UIProcessInstance is wanted for
+     * @param _processInstanceLogs list of ProcessInstanceLog the UIProcessInstance is wanted for
      * @return List of UITaskSummary
      */
     public static List<UIProcessInstance> getUITaskSummary(final List<ProcessInstanceLog> _processInstanceLogs)
@@ -123,6 +127,25 @@ public class UIProcessInstance
 
         for (final ProcessInstanceLog processLog : _processInstanceLogs) {
             ret.add(new UIProcessInstance(processLog));
+        }
+        return ret;
+    }
+
+
+    /**
+     * @return List of processIds
+     * @throws EFapsException on error
+     */
+    public static List<? extends String> getProcessIds()
+        throws EFapsException
+    {
+        final List<String> ret = new ArrayList<String>();
+        final QueryBuilder queryBldr = new QueryBuilder(CIAdminProgram.BPM);
+        final CachedMultiPrintQuery multi = queryBldr.getCachedPrint("BPM");
+        multi.addAttribute(CIAdminProgram.BPM.Name);
+        multi.execute();
+        while (multi.next()) {
+            ret.add(multi.<String>getAttribute(CIAdminProgram.BPM.Name));
         }
         return ret;
     }
