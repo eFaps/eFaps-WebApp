@@ -24,10 +24,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.wicket.PageReference;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.IAjaxIndicatorAware;
+import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
 import org.apache.wicket.extensions.ajax.markup.html.tabs.AjaxTabbedPanel;
 import org.apache.wicket.extensions.markup.html.tabs.AbstractTab;
 import org.apache.wicket.extensions.markup.html.tabs.ITab;
 import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.components.bpm.process.ProcessAdminPanel;
@@ -109,7 +113,7 @@ public class TaskAdminPage
 
             }
         });
-        add(new AjaxTabbedPanel<ITab>("tabs", tabs));
+        add(new AjaxIndicatingTabbedPanel("tabs", tabs) );
     }
 
     @Override
@@ -119,4 +123,80 @@ public class TaskAdminPage
         _response.render(AbstractEFapsHeaderItem.forCss(TaskAdminPage.CSS));
     }
 
+
+    public static class AjaxIndicatingTabbedPanel
+        extends AjaxTabbedPanel<ITab>
+    {
+
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * @param _id
+         * @param _tabs
+         */
+        public AjaxIndicatingTabbedPanel(final String _id,
+                                         final List<ITab> _tabs)
+        {
+            super(_id, _tabs);
+        }
+
+        @Override
+        protected WebMarkupContainer newLink(final String linkId,
+                                             final int index)
+        {
+            return new IndicatingAjaxLink(linkId)
+            {
+
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                public void onClick(final AjaxRequestTarget target)
+                {
+                    setSelectedTab(index);
+                    if (target != null)
+                    {
+                        target.add(AjaxIndicatingTabbedPanel.this);
+                    }
+                    onAjaxUpdate(target);
+                }
+
+            };
+        }
+
+    }
+
+    public static class IndicatingAjaxLink
+        extends AjaxFallbackLink<Void>
+        implements IAjaxIndicatorAware
+    {
+
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * @param _id
+         */
+        public IndicatingAjaxLink(final String _id)
+        {
+            super(_id);
+        }
+
+        @Override
+        public void onClick(final AjaxRequestTarget _target)
+        {
+
+        }
+
+        @Override
+        public String getAjaxIndicatorMarkupId()
+        {
+            return "eFapsVeil";
+        }
+
+    }
 }
