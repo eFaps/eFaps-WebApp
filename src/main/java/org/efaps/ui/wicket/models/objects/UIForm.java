@@ -218,7 +218,7 @@ public class UIForm
     {
         final List<Return> ret = getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
                         ParameterValues.INSTANCE, getInstance());
-        if (ret.size() > 0) {
+        if (ret.size() > 0 && ret.get(0) != null) {
             final Object object = ret.get(0).get(ReturnValues.VALUES);
             if (object != null && object instanceof Instance && ((Instance) object).isValid()) {
                 setInstanceKey(((Instance) object).getOid());
