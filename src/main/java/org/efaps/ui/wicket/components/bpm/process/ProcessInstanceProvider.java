@@ -135,8 +135,19 @@ public class ProcessInstanceProvider
                     process0 = _process1;
                 }
                 int ret = 0;
-                if ("processId".equals(sortprop)) {
-                    ret = process0.getProcessId().compareTo(process1.getProcessId());
+                if (process0 != null && process1 != null) {
+                    if ("processId".equals(sortprop)) {
+                        ret = process0.getProcessId().compareTo(process1.getProcessId());
+                    } else if  ("id".equals(sortprop)) {
+                        ret = Long.valueOf(process0.getId()).compareTo(Long.valueOf(process1.getId()));
+                    } else if  ("start".equals(sortprop)) {
+                        ret = process0.getStart().compareTo(process1.getStart());
+                    } else if  ("end".equals(sortprop)) {
+                        ret = process0.getEnd() != null && process1.getEnd() != null
+                                        ? process0.getEnd().compareTo(process1.getEnd()) : 0;
+                    } else if  ("status".equals(sortprop)) {
+                        ret = Long.valueOf(process0.getStatus()).compareTo(Long.valueOf(process1.getStatus()));
+                    }
                 }
                 return ret;
             }

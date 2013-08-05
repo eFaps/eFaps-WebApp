@@ -136,8 +136,20 @@ public class NodeInstanceProvider
                     node0 = _node1;
                 }
                 int ret = 0;
-                if ("id".equals(sortprop)) {
-                    ret = Long.valueOf(node0.getId()).compareTo( Long.valueOf(node1.getId()));
+                if (node0 != null && node1 != null) {
+                    if ("id".equals(sortprop)) {
+                        ret = Long.valueOf(node0.getId()).compareTo( Long.valueOf(node1.getId()));
+                    } else if ("nodeId".equals(sortprop)) {
+                        ret = node0.getNodeId().compareTo(node1.getNodeId());
+                    } else if ("nodeInstanceId".equals(sortprop)) {
+                        ret = node0.getNodeInstanceId().compareTo(node1.getNodeInstanceId());
+                    } else if ("nodeName".equals(sortprop)) {
+                        ret = node0.getNodeName().compareTo(node1.getNodeName());
+                    } else if ("type".equals(sortprop)) {
+                        ret = Long.valueOf(node0.getType()).compareTo( Long.valueOf(node1.getType()));
+                    } else if ("date".equals(sortprop)) {
+                        ret = node0.getDate().compareTo(node1.getDate());
+                    }
                 }
                 return ret;
             }

@@ -126,18 +126,26 @@ public class VariableInstanceProvider
             public int compare(final UIVariableInstanceLog _var0,
                                final UIVariableInstanceLog _var1)
             {
-                final UIVariableInstanceLog node0;
-                final UIVariableInstanceLog node1;
+                final UIVariableInstanceLog var0;
+                final UIVariableInstanceLog var1;
                 if (asc) {
-                    node0 = _var0;
-                    node1 = _var1;
+                    var0 = _var0;
+                    var1 = _var1;
                 } else {
-                    node1 = _var0;
-                    node0 = _var1;
+                    var1 = _var0;
+                    var0 = _var1;
                 }
                 int ret = 0;
-                if ("id".equals(sortprop)) {
-                    ret = Long.valueOf(node0.getId()).compareTo( Long.valueOf(node1.getId()));
+                if (var0 != null && var1 != null) {
+                    if ("id".equals(sortprop)) {
+                        ret = Long.valueOf(var0.getId()).compareTo( Long.valueOf(var1.getId()));
+                    } else if ("variableId".equals(sortprop)) {
+                        ret = var0.getVariableId().compareTo(var1.getVariableId());
+                    } else if ("value".equals(sortprop)) {
+                        ret = var0.getValue().compareTo(var1.getValue());
+                    } else if ("date".equals(sortprop)) {
+                        ret = var0.getDate().compareTo( var1.getDate());
+                    }
                 }
                 return ret;
             }

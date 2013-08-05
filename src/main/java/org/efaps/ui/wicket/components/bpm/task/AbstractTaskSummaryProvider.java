@@ -96,6 +96,8 @@ public abstract class AbstractTaskSummaryProvider
                     ret = task0.getStatus().compareTo(task1.getStatus());
                 } else if ("owner".equals(sortprop)) {
                     ret = task0.getOwner().compareTo(task1.getOwner());
+                } else if ("id".equals(sortprop)) {
+                    ret = Long.valueOf(task0.getId()).compareTo(Long.valueOf(task1.getId()));
                 }
                 return ret;
             }
