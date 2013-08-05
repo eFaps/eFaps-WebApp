@@ -36,11 +36,14 @@ import org.jbpm.process.audit.VariableInstanceLog;
 public class UIVariableInstanceLog
     implements Serializable
 {
-
     /**
-     *
+     * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * The underlying Variable Instance log.
+     */
     private VariableInstanceLog variableInstanceLog;
 
     public UIVariableInstanceLog(final VariableInstanceLog _variableInstanceLog)
@@ -48,36 +51,57 @@ public class UIVariableInstanceLog
         this.variableInstanceLog = _variableInstanceLog;
     }
 
+    /**
+     * @return the date of the underlying Variable Instance log.
+     */
     public Date getDate()
     {
         return this.variableInstanceLog.getDate();
     }
 
+    /**
+     * @return the id of the underlying Variable Instance log.
+     */
     public Long getId()
     {
         return this.variableInstanceLog.getId();
     }
 
+    /**
+     * @return the Process Instance Id of the underlying Variable Instance log.
+     */
     public Long getProcessInstanceId()
     {
         return this.variableInstanceLog.getProcessInstanceId();
     }
 
+    /**
+     * @return the process id of the underlying Variable Instance log.
+     */
     public String getProcessId()
     {
         return this.variableInstanceLog.getProcessId();
     }
 
+    /**
+     * @return the value of the underlying Variable Instance log.
+     */
     public String getValue()
     {
         return this.variableInstanceLog.getValue();
     }
 
+    /**
+     * @return the variable id of the underlying Variable Instance log.
+     */
     public String getVariableId()
     {
         return this.variableInstanceLog.getVariableId();
     }
 
+    /**
+     * @return the variable instance id of the underlying Variable Instance log.
+     */
     public String getVariableInstanceId()
     {
         return this.variableInstanceLog.getVariableInstanceId();
