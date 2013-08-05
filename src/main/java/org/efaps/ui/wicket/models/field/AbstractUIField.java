@@ -32,6 +32,7 @@ import org.efaps.admin.datamodel.ui.BooleanUI;
 import org.efaps.admin.datamodel.ui.DateUI;
 import org.efaps.admin.datamodel.ui.DecimalUI;
 import org.efaps.admin.datamodel.ui.LinkWithRangesUI;
+import org.efaps.admin.datamodel.ui.NumberUI;
 import org.efaps.admin.datamodel.ui.StringUI;
 import org.efaps.admin.datamodel.ui.UIValue;
 import org.efaps.db.Context;
@@ -225,7 +226,6 @@ public abstract class AbstractUIField
                     strValue = dateTmp.toString(formatter.withLocale(Context.getThreadContext().getLocale()));
                 }
                 ret = new LabelField(_wicketId, strValue, getFieldConfiguration().getLabel());
-
             } else if (getValue().getUIProvider() instanceof DecimalUI) {
                 String strValue = "";
                 final Object valueTmp = getValue().getReadOnlyValue(getParent().getMode());
@@ -238,9 +238,18 @@ public abstract class AbstractUIField
                     strValue = formatter.format(valueTmp);
                 }
                 ret = new LabelField(_wicketId, strValue, getFieldConfiguration().getLabel());
+            } else if (getValue().getUIProvider() instanceof NumberUI) {
+                String strValue = "";
+                final Object valueTmp = getValue().getReadOnlyValue(getParent().getMode());
+                if (valueTmp instanceof Number) {
+                    strValue = String.valueOf(valueTmp);
+                } else {
+                    strValue = valueTmp == null ? "" : String.valueOf(valueTmp);
+                }
+                ret = new LabelField(_wicketId, strValue, getFieldConfiguration().getLabel());
             } else {
                 ret = new LabelField(_wicketId,
-                                (String) getValue().getReadOnlyValue(getParent().getMode()),
+                                String.valueOf(getValue().getReadOnlyValue(getParent().getMode())),
                                 getFieldConfiguration().getLabel());
             }
         }
