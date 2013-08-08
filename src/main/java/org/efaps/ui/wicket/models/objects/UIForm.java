@@ -588,7 +588,7 @@ public class UIForm
         UIClassification uiclass = null;
         boolean firstTable = true;
         for (final Field field : form.getFields()) {
-            if (field.hasAccess(getMode(), getInstance(), getCommand()) && !field.isNoneDisplay(getMode())) {
+            if (field.hasAccess(getMode(), getInstance4Create(type), getCommand()) && !field.isNoneDisplay(getMode())) {
                 if (field instanceof FieldGroup) {
                     final FieldGroup group = (FieldGroup) field;
                  // in case that the first field is a group the element must be initiated

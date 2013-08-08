@@ -42,6 +42,7 @@ import org.efaps.db.Instance;
 import org.efaps.db.InstanceQuery;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
+import org.efaps.ui.wicket.models.AbstractInstanceObject;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
@@ -384,7 +385,13 @@ public class UIClassification
         for (final Classification child : _children) {
             boolean access;
             if (!child.isAbstract()) {
-                access = child.hasAccess(_instance, getMode() == TargetMode.CREATE
+                final Instance inst;
+                if (getMode() == TargetMode.CREATE && _instance == null) {
+                    inst = AbstractInstanceObject.getInstance4Create(child);
+                } else {
+                    inst = _instance;
+                }
+                access = child.hasAccess(inst, getMode() == TargetMode.CREATE
                             || getMode() == TargetMode.EDIT ? AccessTypeEnums.CREATE.getAccessType()
                             : AccessTypeEnums.SHOW.getAccessType());
             } else {
@@ -403,6 +410,7 @@ public class UIClassification
         Collections.sort(_parent.children, new Comparator<UIClassification>()
         {
 
+            @Override
             public int compare(final UIClassification _class0,
                                final UIClassification _class2)
             {

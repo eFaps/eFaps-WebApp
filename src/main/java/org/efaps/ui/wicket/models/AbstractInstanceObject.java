@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.wicket.Session;
+import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.util.EFapsKey;
 import org.efaps.util.EFapsException;
@@ -102,6 +103,10 @@ public abstract class AbstractInstanceObject
             map.put(this.instanceKey, ret);
         }
         return ret;
+    }
+
+    public static Instance getInstance4Create(final Type _type) {
+        return Instance.get(_type, 0);
     }
 
     /**
