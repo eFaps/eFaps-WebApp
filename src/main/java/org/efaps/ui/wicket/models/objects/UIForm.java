@@ -56,6 +56,7 @@ import org.efaps.admin.ui.field.FieldSet;
 import org.efaps.admin.ui.field.FieldTable;
 import org.efaps.db.Instance;
 import org.efaps.db.PrintQuery;
+import org.efaps.ui.wicket.models.AbstractInstanceObject;
 import org.efaps.ui.wicket.models.cell.CellSetValue;
 import org.efaps.ui.wicket.models.cell.UIFormCell;
 import org.efaps.ui.wicket.models.cell.UIFormCellChart;
@@ -528,7 +529,7 @@ public class UIForm
                     valIter = tmplist.iterator();
                     values.put(attrName, valIter);
                 }
-                final UIValue uiValue = UIValue.get(_field, child, valIter.next());
+                final UIValue uiValue = UIValue.get(_field, child, valIter.hasNext() ?  valIter.next() : null);
                 cellset.addValue(rowInstance,
                                 new CellSetValue(rowInstance.getKey(), this, cellset, uiValue));
             }
@@ -588,7 +589,7 @@ public class UIForm
         UIClassification uiclass = null;
         boolean firstTable = true;
         for (final Field field : form.getFields()) {
-            if (field.hasAccess(getMode(), getInstance4Create(type), getCommand()) && !field.isNoneDisplay(getMode())) {
+            if (field.hasAccess(getMode(), AbstractInstanceObject.getInstance4Create(type), getCommand()) && !field.isNoneDisplay(getMode())) {
                 if (field instanceof FieldGroup) {
                     final FieldGroup group = (FieldGroup) field;
                  // in case that the first field is a group the element must be initiated
