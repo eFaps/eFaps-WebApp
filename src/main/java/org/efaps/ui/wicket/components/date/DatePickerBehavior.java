@@ -69,11 +69,6 @@ public class DatePickerBehavior
         this.unnestedComp = _unnested;
         this.unnestedComp.addPicker(this);
         setNested(false);
-
-//        final AjaxRequestTarget target = AjaxRequestTarget .get();
-//        if (target != null) {
-//            target.addListener(this.unnestedComp);
-//        }
     }
 
     /**

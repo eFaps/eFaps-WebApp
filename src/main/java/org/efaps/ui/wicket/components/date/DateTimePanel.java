@@ -32,11 +32,17 @@ import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.string.StringValue;
+import org.efaps.admin.datamodel.ui.UIValue;
 import org.efaps.db.Context;
+import org.efaps.ui.wicket.models.cell.CellSetValue;
+import org.efaps.ui.wicket.models.cell.FieldConfiguration;
+import org.efaps.ui.wicket.models.cell.UIFormCellSet;
+import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.MutableDateTime;
@@ -54,7 +60,7 @@ import org.slf4j.LoggerFactory;
  * @version $Id$
  */
 public class DateTimePanel
-    extends Panel
+    extends FormComponentPanel<DateTime>
 {
     /**
      * Logger for this class.
@@ -86,6 +92,30 @@ public class DateTimePanel
      */
     private DatePickerBehavior datePicker;
 
+    private AbstractUIField cellvalue;
+
+    private boolean converted;
+
+    /**
+     * @param _wicketId wicket id of this component
+     * @param _model model for this component
+     * @param _fieldConfiguration FieldConfiguration
+     * @param _dateObject object containing a DateTime, if null or not DateTime
+     *                       a new DateTime will be instantiated
+     * @param _time must the time be rendered also
+     * @throws EFapsException on error
+     */
+    public DateTimePanel(final String _wicketId,
+                         final Model<AbstractUIField> _model,
+                         final FieldConfiguration _fieldConfiguration,
+                         final Object _dateObject,
+                         final boolean _time)
+        throws EFapsException
+    {
+        this(_wicketId, _dateObject, _fieldConfiguration.getName(), _time, _fieldConfiguration.getSize());
+        this.cellvalue = _model.getObject();
+    }
+
     /**
      * @param _wicketId wicket id of this component
      * @param _dateObject object containing a DateTime, if null or not DateTime
@@ -102,7 +132,7 @@ public class DateTimePanel
                          final Integer _inputSize)
         throws EFapsException
     {
-        super(_wicketId);
+        super(_wicketId, Model.<DateTime>of());
         this.datetime = _dateObject == null || !(_dateObject instanceof DateTime)
                         ? new DateTime(Context.getThreadContext().getChronology())
                         : (DateTime) _dateObject;
@@ -308,7 +338,32 @@ public class DateTimePanel
                                              final List<StringValue> _ampm)
         throws EFapsException
     {
-        final List<StringValue> dates = new ArrayList<StringValue>();
+        final List<StringValue> ret = new ArrayList<StringValue>();
+        final List<DateTime> dates = getDateList(_date, _hour, _minute, _ampm);
+        for (final DateTime date : dates) {
+            final DateTimeFormatter isofmt = ISODateTimeFormat.dateTime();
+            ret.add(StringValue.valueOf(date.toString(isofmt)));
+        }
+        return ret.isEmpty() ? null : ret;
+    }
+
+    /**
+     * Method to get for the parameters returned from the form as a datetimes.
+     *
+     * @param _date date
+     * @param _hour hour
+     * @param _minute minutes
+     * @param _ampm am/pm
+     * @return valid string
+     * @throws EFapsException on error
+     */
+    public List<DateTime> getDateList(final List<StringValue> _date,
+                                      final List<StringValue> _hour,
+                                      final List<StringValue> _minute,
+                                      final List<StringValue> _ampm)
+        throws EFapsException
+    {
+        final List<DateTime> ret = new ArrayList<DateTime>();
         if (_date != null) {
             Iterator<StringValue> hourIter = null;
             Iterator<StringValue> minuteIter = null;
@@ -323,11 +378,11 @@ public class DateTimePanel
                 ampmIter = _ampm.iterator();
             }
 
-            for (final StringValue date :  _date) {
+            for (final StringValue date : _date) {
                 if (!date.isNull() && !date.isEmpty()) {
                     final DateTimeFormatter fmt = DateTimeFormat.forPattern(
                                     this.converter.getDatePattern(Context.getThreadContext().getLocale()))
-                        .withChronology(Context.getThreadContext().getChronology());
+                                    .withChronology(Context.getThreadContext().getChronology());
                     fmt.withLocale(getLocale());
                     final MutableDateTime mdt = fmt.parseMutableDateTime(date.toString());
                     if (hourIter != null) {
@@ -346,13 +401,13 @@ public class DateTimePanel
                             mdt.setMinuteOfHour(minute);
                         }
                     }
-                    final DateTimeFormatter isofmt = ISODateTimeFormat.dateTime();
-                    dates.add(StringValue.valueOf(mdt.toString(isofmt)));
+                    ret.add(mdt.toDateTime());
                 }
             }
         }
-        return dates.isEmpty() ? null : dates;
+        return ret;
     }
+
 
     /**
      * After rendering the datefields are added to the parent.
@@ -366,4 +421,57 @@ public class DateTimePanel
             container.addDateComponent(this);
         }
     }
+
+    @Override
+    protected void convertInput()
+    {
+        if (getCellvalue() != null) {
+            try {
+                this.converted = true;
+                int i = 0;
+                if (getCellvalue() instanceof CellSetValue) {
+                    final UIFormCellSet cellset = ((CellSetValue) getCellvalue()).getCellSet();
+                    i = cellset.getIndex(getFieldName());
+                }
+                final List<StringValue> dates = getRequest().getRequestParameters().getParameterValues(
+                                getDateFieldName());
+                final List<StringValue> hours = getRequest().getRequestParameters().getParameterValues(
+                                getHourFieldName());
+                final List<StringValue> minutes = getRequest().getRequestParameters().getParameterValues(
+                                getMinuteFieldName());
+                final List<StringValue> ampms = getRequest().getRequestParameters().getParameterValues(
+                                getAmPmFieldName());
+                final List<DateTime> dateTimes = getDateList(dates, hours, minutes, ampms);
+                setConvertedInput(dateTimes.get(i));
+            } catch (final EFapsException e) {
+                DateTimePanel.LOG.error("Catched error on convert input", e);
+            }
+        }
+    }
+
+    /**
+     * Getter method for the instance variable {@link #cellvalue}.
+     *
+     * @return value of instance variable {@link #cellvalue}
+     */
+    protected AbstractUIField getCellvalue()
+    {
+        return this.cellvalue;
+    }
+
+    @Override
+    public void updateModel()
+    {
+        if (!this.converted) {
+            convertInput();
+        }
+        setModelObject(getConvertedInput());
+        try {
+            getCellvalue().setValue(UIValue.get(getCellvalue().getValue().getField(), getCellvalue().getValue()
+                            .getAttribute(), getDefaultModelObject()));
+        } catch (final CacheReloadException e) {
+            DateTimePanel.LOG.error("Catched error on updateModel", e);
+        }
+    }
+
 }

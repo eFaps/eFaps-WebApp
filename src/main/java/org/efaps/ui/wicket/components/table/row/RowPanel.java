@@ -106,7 +106,7 @@ public class RowPanel
 
         final Map<String, Component> name2comp = new HashMap<String, Component>();
         for (final UITableCell uiCell : uirow.getValues()) {
-            final Panel cell;
+            Component cell;
             if (uiTable.isEditable() && uiCell.getDisplay().equals(Display.EDITABLE)
                             && (uiCell.getUiClass() instanceof DateUI || uiCell.getUiClass() instanceof DateTimeUI)) {
                 cell = new DateTimePanel("label", uiCell.getCompareValue(), uiCell.getName(),

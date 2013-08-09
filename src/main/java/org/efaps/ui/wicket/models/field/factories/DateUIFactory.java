@@ -21,9 +21,10 @@
 package org.efaps.ui.wicket.models.field.factories;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.model.Model;
 import org.efaps.admin.datamodel.ui.DateUI;
 import org.efaps.db.Context;
-import org.efaps.ui.wicket.components.values.LabelField;
+import org.efaps.ui.wicket.components.date.DatePanel;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.util.EFapsException;
 import org.joda.time.DateMidnight;
@@ -39,9 +40,10 @@ import org.joda.time.format.DateTimeFormatter;
  */
 // CHECKSTYLE:OFF
 public class DateUIFactory
-    implements IComponentFactory
+    extends AbstractUIFactory
 // CHECKSTYLE:ON
 {
+
     /**
      * Factory Instance.
      */
@@ -62,9 +64,10 @@ public class DateUIFactory
                                  final AbstractUIField _abstractUIField)
         throws EFapsException
     {
-        final Component ret = null;
-        if (_abstractUIField.getValue().getUIProvider() instanceof DateUI) {
-            // TODO
+        Component ret = null;
+        if (applies(_abstractUIField)) {
+            ret = new DatePanel(_wicketId, Model.of(_abstractUIField), _abstractUIField.getFieldConfiguration(),
+                            _abstractUIField.getValue().getEditValue(_abstractUIField.getParent().getMode()));
         }
         return ret;
     }
@@ -73,27 +76,33 @@ public class DateUIFactory
      * {@inheritDoc}
      */
     @Override
-    public Component getReadOnly(final String _wicketId,
-                                 final AbstractUIField _abstractUIField)
+    protected boolean applies(final AbstractUIField _abstractUIField)
         throws EFapsException
     {
-        Component ret = null;
-
-        if (_abstractUIField.getValue().getUIProvider() instanceof DateUI) {
-            String strValue = "";
-            final Object valueTmp = _abstractUIField.getValue()
-                            .getReadOnlyValue(_abstractUIField.getParent().getMode());
-            if (valueTmp instanceof DateTime) {
-                final DateTime datetime = (DateTime) valueTmp;
-                final DateMidnight dateTmp = new DateMidnight(datetime.getYear(), datetime.getMonthOfYear(),
-                                datetime.getDayOfMonth(), Context.getThreadContext().getChronology());
-                final DateTimeFormatter formatter = DateTimeFormat.mediumDate();
-                strValue = dateTmp.toString(formatter.withLocale(Context.getThreadContext().getLocale()));
-            }
-            ret = new LabelField(_wicketId, strValue, _abstractUIField.getFieldConfiguration().getLabel());
-        }
-        return ret;
+        return _abstractUIField.getValue().getUIProvider() instanceof DateUI;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected String getReadOnlyValue(final AbstractUIField _abstractUIField)
+        throws EFapsException
+    {
+
+        String strValue = "";
+        final Object valueTmp = _abstractUIField.getValue()
+                        .getReadOnlyValue(_abstractUIField.getParent().getMode());
+        if (valueTmp instanceof DateTime) {
+            final DateTime datetime = (DateTime) valueTmp;
+            final DateMidnight dateTmp = new DateMidnight(datetime.getYear(), datetime.getMonthOfYear(),
+                            datetime.getDayOfMonth(), Context.getThreadContext().getChronology());
+            final DateTimeFormatter formatter = DateTimeFormat.mediumDate();
+            strValue = dateTmp.toString(formatter.withLocale(Context.getThreadContext().getLocale()));
+        }
+        return strValue;
+    }
+
     /**
      * @return IComponentFactory instance
      */
