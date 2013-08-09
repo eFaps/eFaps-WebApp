@@ -18,11 +18,22 @@
  * Last Changed By: $Author$
  */
 
-
 package org.efaps.ui.wicket.components.values;
 
 import org.apache.wicket.model.Model;
+import org.apache.wicket.util.convert.ConversionException;
+import org.apache.wicket.util.convert.IConverter;
+import org.apache.wicket.util.convert.converter.BigDecimalConverter;
+import org.apache.wicket.util.convert.converter.DoubleConverter;
+import org.apache.wicket.util.convert.converter.IntegerConverter;
+import org.apache.wicket.util.convert.converter.LongConverter;
+import org.efaps.admin.datamodel.IAttributeType;
+import org.efaps.admin.datamodel.attributetype.DecimalType;
+import org.efaps.admin.datamodel.attributetype.IntegerType;
+import org.efaps.admin.datamodel.attributetype.LongType;
+import org.efaps.admin.datamodel.attributetype.RealType;
 import org.efaps.admin.datamodel.ui.UIValue;
+import org.efaps.db.Context;
 import org.efaps.ui.wicket.models.cell.CellSetValue;
 import org.efaps.ui.wicket.models.cell.FieldConfiguration;
 import org.efaps.ui.wicket.models.cell.UIFormCellSet;
@@ -32,15 +43,14 @@ import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * TODO comment!
  *
  * @author The eFaps Team
  * @version $Id$
  */
-public class StringField
-    extends AbstractField<String>
+public class NumberField
+    extends AbstractField<Number>
 {
 
     /**
@@ -51,21 +61,20 @@ public class StringField
     /**
      * Logging instance used in this class.
      */
-    private static final Logger LOG = LoggerFactory.getLogger(StringField.class);
+    private static final Logger LOG = LoggerFactory.getLogger(NumberField.class);
 
     /**
      * Was the value already converted.
      */
     private boolean converted = false;
 
-
     /**
      * @param _wicketId wicket id for this component
-     * @param _model    model for this componet
-     * @param _config   Config
+     * @param _model model for this componet
+     * @param _config Config
      * @throws EFapsException on error
      */
-    public StringField(final String _wicketId,
+    public NumberField(final String _wicketId,
                        final Model<AbstractUIField> _model,
                        final FieldConfiguration _config)
         throws EFapsException
@@ -83,7 +92,31 @@ public class StringField
             i = cellset.getIndex(getInputName());
         }
         final String[] value = getInputAsArray();
-        setConvertedInput(value != null && value.length > 0 && value[i] != null ? trim(value[i]) : null);
+        try
+        {
+            IConverter<? extends Number> converter = LongConverter.INSTANCE;
+            if (value != null && value.length > 0 && value[i] != null
+                            && getCellvalue().getValue().getAttribute() != null) {
+                final IAttributeType attrType = getCellvalue().getValue().getAttribute().getAttributeType()
+                                .getDbAttrType();
+                if (attrType instanceof LongType) {
+                    converter = LongConverter.INSTANCE;
+                } else if (attrType instanceof IntegerType) {
+                    converter = IntegerConverter.INSTANCE;
+                } else if (attrType instanceof RealType) {
+                    converter = DoubleConverter.INSTANCE;
+                } else if (attrType instanceof DecimalType) {
+                    converter = new BigDecimalConverter();
+                }
+            }
+            setConvertedInput(converter.convertToObject(value[i], Context.getThreadContext().getLocale()));
+        } catch (final ConversionException e) {
+            NumberField.LOG.error("Catched error on convertInput", e);
+        } catch (final CacheReloadException e) {
+            NumberField.LOG.error("Catched error on convertInput", e);
+        } catch (final EFapsException e) {
+            NumberField.LOG.error("Catched error on convertInput", e);
+        }
     }
 
     @Override
@@ -97,8 +130,7 @@ public class StringField
             getCellvalue().setValue(UIValue.get(getCellvalue().getValue().getField(), getCellvalue().getValue()
                             .getAttribute(), getDefaultModelObject()));
         } catch (final CacheReloadException e) {
-            StringField.LOG.error("Catched error on updateModel", e);
+            NumberField.LOG.error("Catched error on updateModel", e);
         }
     }
 }
-

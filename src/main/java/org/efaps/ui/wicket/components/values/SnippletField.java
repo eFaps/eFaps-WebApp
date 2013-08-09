@@ -38,7 +38,7 @@ public class SnippletField
 {
 
     /**
-     *
+     * Neede for serialization.
      */
     private static final long serialVersionUID = 1L;
 
@@ -61,9 +61,6 @@ public class SnippletField
         this.label = _label;
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.wicket.markup.html.form.ILabelProvider#getLabel()
-     */
     @Override
     public IModel<String> getLabel()
     {

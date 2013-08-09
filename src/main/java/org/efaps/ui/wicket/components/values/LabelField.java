@@ -37,15 +37,19 @@ public class LabelField
 {
 
     /**
-     *
+     * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Label model.
+     */
     private final IModel<String> label;
 
     /**
-     * @param _wicketId
-     * @param _readOnlyValue
+     * @param _wicketId         wicketid
+     * @param _readOnlyValue    read only value
+     * @param _label            label for the Component
      */
     public LabelField(final String _wicketId,
                       final String _readOnlyValue,
@@ -55,10 +59,6 @@ public class LabelField
         this.label = Model.of(_label);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.wicket.markup.html.form.ILabelProvider#getLabel()
-     */
     @Override
     public IModel<String> getLabel()
     {

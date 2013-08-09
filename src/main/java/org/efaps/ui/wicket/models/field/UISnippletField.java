@@ -36,9 +36,8 @@ import org.efaps.util.EFapsException;
 public class UISnippletField
     extends AbstractUIField
 {
-
     /**
-     *
+     * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
 
@@ -48,7 +47,10 @@ public class UISnippletField
     private String html;
 
     /**
+     * @param _instanceKey  key to the instance
+     * @param _parent       parent object
      * @param _config the FieldConfiguration for this Field
+     * @throws EFapsException on error
      */
     public UISnippletField(final String _instanceKey,
                            final AbstractUIModeObject _parent,
@@ -57,6 +59,14 @@ public class UISnippletField
     {
         super(_instanceKey, _parent, null);
         setFieldConfiguration(_config);
+    }
+
+    /**
+     * @param _html the html that will be presented
+     */
+    public void setHtml(final String _html)
+    {
+        this.html = _html;
     }
 
     @Override
@@ -75,13 +85,5 @@ public class UISnippletField
             label = Model.of(getFieldConfiguration().getLabel());
         }
         return new SnippletField(_wicketId, Model.of(this.html), label);
-    }
-
-    /**
-     * @param _html the html that will be presented
-     */
-    public void setHtml(final String _html)
-    {
-        this.html = _html;
     }
 }

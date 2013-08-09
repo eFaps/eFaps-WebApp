@@ -20,35 +20,24 @@
 
 package org.efaps.ui.wicket.models.field;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.model.Model;
-import org.efaps.admin.datamodel.ui.BooleanUI;
-import org.efaps.admin.datamodel.ui.DateUI;
-import org.efaps.admin.datamodel.ui.DecimalUI;
-import org.efaps.admin.datamodel.ui.LinkWithRangesUI;
-import org.efaps.admin.datamodel.ui.NumberUI;
-import org.efaps.admin.datamodel.ui.StringUI;
 import org.efaps.admin.datamodel.ui.UIValue;
-import org.efaps.db.Context;
 import org.efaps.db.Instance;
-import org.efaps.ui.wicket.components.values.BooleanField;
-import org.efaps.ui.wicket.components.values.DropDownField;
-import org.efaps.ui.wicket.components.values.LabelField;
-import org.efaps.ui.wicket.components.values.StringField;
 import org.efaps.ui.wicket.models.AbstractInstanceObject;
 import org.efaps.ui.wicket.models.cell.FieldConfiguration;
+import org.efaps.ui.wicket.models.field.factories.BooleanUIFactory;
+import org.efaps.ui.wicket.models.field.factories.DateUIFactory;
+import org.efaps.ui.wicket.models.field.factories.DecimalUIFactory;
+import org.efaps.ui.wicket.models.field.factories.IComponentFactory;
+import org.efaps.ui.wicket.models.field.factories.LinkWithRangesUIFactory;
+import org.efaps.ui.wicket.models.field.factories.NumberUIFactory;
+import org.efaps.ui.wicket.models.field.factories.StringUIFactory;
 import org.efaps.ui.wicket.models.objects.AbstractUIModeObject;
 import org.efaps.util.EFapsException;
-import org.joda.time.DateMidnight;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 /**
  * TODO comment!
@@ -59,12 +48,24 @@ import org.joda.time.format.DateTimeFormatter;
 public abstract class AbstractUIField
     extends AbstractInstanceObject
 {
-
     /**
-     *
+     * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
 
+    /**
+     * The factories used to construct the components.
+     */
+    private static final List<IComponentFactory> FACTORIES = new ArrayList<IComponentFactory>();
+
+    static {
+        AbstractUIField.FACTORIES.add(StringUIFactory.get());
+        AbstractUIField.FACTORIES.add(LinkWithRangesUIFactory.get());
+        AbstractUIField.FACTORIES.add(BooleanUIFactory.get());
+        AbstractUIField.FACTORIES.add(DateUIFactory.get());
+        AbstractUIField.FACTORIES.add(DecimalUIFactory.get());
+        AbstractUIField.FACTORIES.add(NumberUIFactory.get());
+    }
     /**
      * Configuration of the related field.
      */
@@ -95,7 +96,6 @@ public abstract class AbstractUIField
         this.parent = _parent;
         this.value = _value;
         this.fieldConfiguration = getNewFieldConfiguration();
-
     }
 
     /**
@@ -143,117 +143,9 @@ public abstract class AbstractUIField
      *
      * @param _value value for instance variable {@link #value}
      */
-
     public void setValue(final UIValue _value)
     {
         this.value = _value;
-    }
-
-    /**
-     * @return a new FieldConfiguration
-     * @throws EFapsException on error
-     */
-    protected FieldConfiguration getNewFieldConfiguration()
-        throws EFapsException
-    {
-        return new FieldConfiguration(getValue().getField().getId());
-    }
-
-    /**
-     * @return is this value editable
-     */
-    public boolean editable()
-    {
-        return getValue().getField().isEditableDisplay(getParent().getMode());
-    }
-
-    /**
-     * @param _wicketId wicket id
-     * @return Component
-     * @throws EFapsException on error
-     */
-    @SuppressWarnings("unchecked")
-    public Component getComponent(final String _wicketId)
-        throws EFapsException
-    {
-        Component ret;
-        if (editable()) {
-            if (getValue().getUIProvider() instanceof StringUI) {
-                ret = new StringField(_wicketId, Model.of(this), getFieldConfiguration());
-            } else if (getValue().getUIProvider() instanceof LinkWithRangesUI) {
-                ret = new DropDownField(_wicketId, Model.of(this),
-                                Model.ofMap((Map<Object, Object>) getValue().getEditValue(
-                                                getParent().getMode())),
-                                getFieldConfiguration());
-            } else if (getValue().getUIProvider() instanceof BooleanUI) {
-                ret = new BooleanField(_wicketId, getValue().getDbValue(),
-                                Model.ofMap((Map<Object, Object>) getValue().getEditValue(
-                                                getParent().getMode())),
-                                getFieldConfiguration());
-            } else {
-                ret = new Label(_wicketId, (String) getValue().getEditValue(getParent().getMode()));
-            }
-        } else {
-            if (getValue().getUIProvider() instanceof LinkWithRangesUI) {
-                String strValue = "";
-                if (getValue().getDbValue() != null) {
-                    final Map<Object, Object> map = (Map<Object, Object>) getValue()
-                                    .getReadOnlyValue(getParent().getMode());
-                    strValue = String.valueOf(map.get(getValue().getDbValue()));
-                }
-                ret = new LabelField(_wicketId, strValue, getFieldConfiguration().getLabel());
-            } else if (getValue().getUIProvider() instanceof BooleanUI) {
-                String strValue = "";
-                if (getValue().getDbValue() != null) {
-                    final Map<Object, Object> map = (Map<Object, Object>) getValue()
-                                    .getReadOnlyValue(getParent().getMode());
-                    for (final Entry<Object, Object> entry : map.entrySet()) {
-                        if (entry.getValue().equals(getValue().getDbValue())) {
-                            strValue = (String) entry.getKey();
-                            break;
-                        }
-                    }
-                }
-                ret = new LabelField(_wicketId, strValue, getFieldConfiguration().getLabel());
-            } else if (getValue().getUIProvider() instanceof DateUI) {
-                String strValue = "";
-                final Object valueTmp = getValue().getReadOnlyValue(getParent().getMode());
-                if (valueTmp instanceof DateTime) {
-                    final DateTime datetime = (DateTime) valueTmp;
-                    final DateMidnight dateTmp = new DateMidnight(datetime.getYear(), datetime.getMonthOfYear(),
-                                    datetime.getDayOfMonth(), Context.getThreadContext().getChronology());
-                    final DateTimeFormatter formatter = DateTimeFormat.mediumDate();
-                    strValue = dateTmp.toString(formatter.withLocale(Context.getThreadContext().getLocale()));
-                }
-                ret = new LabelField(_wicketId, strValue, getFieldConfiguration().getLabel());
-            } else if (getValue().getUIProvider() instanceof DecimalUI) {
-                String strValue = "";
-                final Object valueTmp = getValue().getReadOnlyValue(getParent().getMode());
-                if (valueTmp instanceof Number) {
-                    final DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Context.getThreadContext()
-                                .getLocale());
-                    if (getValue().getAttribute() != null) {
-                        formatter.setMaximumFractionDigits(getValue().getAttribute().getScale());
-                    }
-                    strValue = formatter.format(valueTmp);
-                }
-                ret = new LabelField(_wicketId, strValue, getFieldConfiguration().getLabel());
-            } else if (getValue().getUIProvider() instanceof NumberUI) {
-                String strValue = "";
-                final Object valueTmp = getValue().getReadOnlyValue(getParent().getMode());
-                if (valueTmp instanceof Number) {
-                    strValue = String.valueOf(valueTmp);
-                } else {
-                    strValue = valueTmp == null ? "" : String.valueOf(valueTmp);
-                }
-                ret = new LabelField(_wicketId, strValue, getFieldConfiguration().getLabel());
-            } else {
-                ret = new LabelField(_wicketId,
-                                String.valueOf(getValue().getReadOnlyValue(getParent().getMode())),
-                                getFieldConfiguration().getLabel());
-            }
-        }
-        return ret;
     }
 
     /**
@@ -277,10 +169,61 @@ public abstract class AbstractUIField
         this.fieldConfiguration = _fieldConfiguration;
     }
 
+    /**
+     * @return a new FieldConfiguration
+     * @throws EFapsException on error
+     */
+    protected FieldConfiguration getNewFieldConfiguration()
+        throws EFapsException
+    {
+        return new FieldConfiguration(getValue().getField().getId());
+    }
+
+    /**
+     * @return is this value editable
+     */
+    public boolean editable()
+    {
+        return getValue().getField().isEditableDisplay(getParent().getMode());
+    }
+
+    /**
+     * @return the List of Factories used for this Field on construction of the component.
+     */
+    protected List<IComponentFactory> getFactories()
+    {
+        return AbstractUIField.FACTORIES;
+    }
+
+    /**
+     * @param _wicketId wicket id
+     * @return Component
+     * @throws EFapsException on error
+     */
+    public Component getComponent(final String _wicketId)
+        throws EFapsException
+    {
+        Component ret = null;
+        for (final IComponentFactory factory : getFactories()) {
+            if (editable()) {
+                ret = factory.getEditable(_wicketId, this);
+            } else {
+                ret = factory.getReadOnly(_wicketId, this);
+            }
+            if (ret != null) {
+                break;
+            }
+        }
+
+        if (ret == null) {
+            ret = new Label(_wicketId, "No Factory was applied successfully");
+        }
+        return ret;
+    }
+
     @Override
     public String toString()
     {
         return getValue().toString();
     }
-
 }

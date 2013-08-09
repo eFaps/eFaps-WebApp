@@ -33,12 +33,17 @@ import org.efaps.util.EFapsException;
 public class UIField
     extends AbstractUIField
 {
-
     /**
-     *
+     * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
 
+    /**
+     * @param _instanceKey key to the instance
+     * @param _parent       parent object
+     * @param _value        value
+     * @throws EFapsException on error
+     */
     public UIField(final String _instanceKey,
                    final AbstractUIModeObject _parent,
                    final UIValue _value)

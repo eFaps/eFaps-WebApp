@@ -18,11 +18,11 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.ui.wicket.models.field;
+package org.efaps.ui.wicket.models.field.factories;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import org.apache.wicket.Component;
+import org.efaps.ui.wicket.models.field.AbstractUIField;
+import org.efaps.util.EFapsException;
 
 /**
  * TODO comment!
@@ -30,36 +30,21 @@ import java.util.List;
  * @author The eFaps Team
  * @version $Id$
  */
-public class UIGroup
-    implements Serializable
+public interface IComponentFactory
 {
 
     /**
-     * Needed for serialization.
+     * @return
      */
-    private static final long serialVersionUID = 1L;
+    Component getEditable(final String _wicketId,
+                          final AbstractUIField _abstractUIField)
+        throws EFapsException;
 
     /**
-     * List of fields belonging to this group.
+     * @return
      */
-    private final List<AbstractUIField> fields = new ArrayList<AbstractUIField>();
-
-    /**
-     * @param _uiField add an field to this group
-     */
-    public void add(final AbstractUIField _uiField)
-    {
-        this.fields.add(_uiField);
-    }
-
-    /**
-     * Getter method for the instance variable {@link #fields}.
-     *
-     * @return value of instance variable {@link #fields}
-     */
-    public List<AbstractUIField> getFields()
-    {
-        return this.fields;
-    }
+    Component getReadOnly(final String _wicketId,
+                          final AbstractUIField _abstractUIField)
+        throws EFapsException;
 
 }
