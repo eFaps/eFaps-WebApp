@@ -21,6 +21,7 @@
 package org.efaps.ui.wicket.components.footer;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -38,14 +39,19 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow.WindowClosedCallback;
+import org.apache.wicket.feedback.FeedbackCollector;
+import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.ValidationErrorFeedback;
 import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.util.string.StringValue;
+import org.apache.wicket.validation.IErrorMessageSource;
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.IUIProvider;
 import org.efaps.admin.datamodel.ui.UIValue;
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
@@ -59,6 +65,7 @@ import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.form.FormPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
+import org.efaps.ui.wicket.components.values.IFieldConfig;
 import org.efaps.ui.wicket.components.values.IValueConverter;
 import org.efaps.ui.wicket.models.FormModel;
 import org.efaps.ui.wicket.models.TableModel;
@@ -242,32 +249,7 @@ public class AjaxSubmitCloseBehavior
             } else {
                 // in the case that validation did not pass the indexes for
                 // CellSets must be reseted
-                if (this.uiObject instanceof UIForm) {
-                    for (final Element element : ((UIForm) this.uiObject).getElements()) {
-                        if (element.getType().equals(ElementType.FORM)) {
-                            for (final FormRow row : ((UIForm.FormElement) element.getElement()).getRowModels()) {
-                                for (final UIFormCell cell : row.getValues()) {
-                                    if (cell instanceof UIFormCellSet) {
-                                        ((UIFormCellSet) cell).resetIndex();
-                                    }
-                                }
-                            }
-                        } else if (element.getType().equals(ElementType.SUBFORM)) {
-                            for (final Element nElement : ((UIFieldForm) element.getElement()).getElements()) {
-                                if (nElement.getType().equals(ElementType.FORM)) {
-                                    for (final FormRow row : ((UIForm.FormElement) nElement.getElement())
-                                                    .getRowModels()) {
-                                        for (final UIFormCell cell : row.getValues()) {
-                                            if (cell instanceof UIFormCellSet) {
-                                                ((UIFormCellSet) cell).resetIndex();
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+                resetSetCounter();
             }
         } catch (final EFapsException e) {
             final ModalWindowContainer modal = ((AbstractContentPage) getComponent().getPage()).getModal();
@@ -334,7 +316,67 @@ public class AjaxSubmitCloseBehavior
     @Override
     protected void onError(final AjaxRequestTarget _target)
     {
-        // not useful here
+        resetSetCounter();
+        final FeedbackCollector collector = new FeedbackCollector(getForm().getPage());
+        final List<FeedbackMessage> msgs = collector.collect();
+        final ErrorMessageResource msgResource = new ErrorMessageResource();
+        final StringBuilder html = new StringBuilder()
+                        .append("<table class=\"eFapsValidateFieldValuesTable\">");
+        for (final FeedbackMessage msg : msgs) {
+            msg.getReporter().add(AttributeModifier.append("class", "eFapsFormLabelInvalidValue"));
+            _target.add(msg.getReporter());
+            Serializable warn = null;
+            if (msg.getMessage() instanceof ValidationErrorFeedback) {
+                // look if a message was set
+                warn = ((ValidationErrorFeedback) msg.getMessage()).getMessage();
+                // still no message, create one
+                if (warn == null) {
+                    warn = ((ValidationErrorFeedback) msg.getMessage()).getError().getErrorMessage(msgResource);
+                }
+            }
+            String label = "";
+            if (msg.getReporter() instanceof IFieldConfig) {
+                label = ((IFieldConfig) msg.getReporter()).getFieldConfig().getLabel();
+            }
+            html.append("<tr><td>").append(label).append(":</td><td>")
+            .append(warn).append("</td></tr>");
+        }
+        html.append("</table>");
+        showDialog(_target, html.toString(), true, false);
+    }
+
+
+    /**
+     * Reset the counters for sets.
+     */
+    private void resetSetCounter()
+    {
+        if (this.uiObject instanceof UIForm) {
+            for (final Element element : ((UIForm) this.uiObject).getElements()) {
+                if (element.getType().equals(ElementType.FORM)) {
+                    for (final FormRow row : ((UIForm.FormElement) element.getElement()).getRowModels()) {
+                        for (final UIFormCell cell : row.getValues()) {
+                            if (cell instanceof UIFormCellSet) {
+                                ((UIFormCellSet) cell).resetIndex();
+                            }
+                        }
+                    }
+                } else if (element.getType().equals(ElementType.SUBFORM)) {
+                    for (final Element nElement : ((UIFieldForm) element.getElement()).getElements()) {
+                        if (nElement.getType().equals(ElementType.FORM)) {
+                            for (final FormRow row : ((UIForm.FormElement) nElement.getElement())
+                                            .getRowModels()) {
+                                for (final UIFormCell cell : row.getValues()) {
+                                    if (cell instanceof UIFormCellSet) {
+                                        ((UIFormCellSet) cell).resetIndex();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -393,7 +435,7 @@ public class AjaxSubmitCloseBehavior
         }
 
         if (uiPageObject.isOpenedByPicker()) {
-            final PageReference pageRef = ((AbstractContentPage)getForm().getPage()).getCalledByPageReference();
+            final PageReference pageRef = ((AbstractContentPage) getForm().getPage()).getCalledByPageReference();
             uiPageObject.getPicker().executeEvents(EventType.UI_COMMAND_EXECUTE, ParameterValues.OTHERS, _other);
             ((AbstractUIObject) pageRef.getPage().getDefaultModelObject()).setPicker(uiPageObject.getPicker());
         }
@@ -681,5 +723,17 @@ public class AjaxSubmitCloseBehavior
     {
         final CharSequence ajaxAttributes = renderAjaxAttributes(getComponent());
         return "new Wicket.Ajax.Call().ajax(" + ajaxAttributes + ");";
+    }
+
+
+    public static class ErrorMessageResource
+        implements IErrorMessageSource
+    {
+        @Override
+        public String getMessage(final String _key,
+                                 final Map<String, Object> _vars)
+        {
+            return DBProperties.getProperty(_key);
+        }
     }
 }

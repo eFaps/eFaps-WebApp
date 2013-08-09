@@ -36,9 +36,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author The eFaps Team
  * @version $Id$
+ * @param <T> Type extending Serializable
  */
-public class AbstractField<T extends Serializable>
+public abstract class AbstractField<T extends Serializable>
     extends TextField<T>
+    implements IFieldConfig, IUIField
 {
 
     /**
@@ -63,19 +65,22 @@ public class AbstractField<T extends Serializable>
 
     /**
      * @param _wicketId wicket id for this component
-     * @param _model model for this componet
+     * @param _model model for this component
      * @param _config Config
      * @throws EFapsException on error
      */
     @SuppressWarnings("unchecked")
-    public AbstractField(final String _id,
+    public AbstractField(final String _wicketId,
                          final Model<AbstractUIField> _model,
                          final FieldConfiguration _config)
         throws EFapsException
     {
-        super(_id, Model.of((T) _model.getObject().getValue().getEditValue(_model.getObject().getParent().getMode())));
+        super(_wicketId, Model.of((T) _model.getObject().getValue().getEditValue(
+                        _model.getObject().getParent().getMode())));
         this.config = _config;
         this.cellvalue = _model.getObject();
+        this.add(new Validator<T>(this));
+        setOutputMarkupId(true);
     }
 
     /**
@@ -93,7 +98,7 @@ public class AbstractField<T extends Serializable>
      *
      * @return value of instance variable {@link #cellvalue}
      */
-    protected AbstractUIField getCellvalue()
+    public AbstractUIField getCellvalue()
     {
         return this.cellvalue;
     }
@@ -119,4 +124,12 @@ public class AbstractField<T extends Serializable>
         return ret;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public FieldConfiguration getFieldConfig()
+    {
+        return this.config;
+    }
 }

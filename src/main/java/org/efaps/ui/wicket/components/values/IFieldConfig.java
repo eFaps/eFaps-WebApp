@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2012 The eFaps Team
+ * Copyright 2003 - 2013 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,11 @@
  * Last Changed By: $Author$
  */
 
+
 package org.efaps.ui.wicket.components.values;
 
-import org.efaps.ui.wicket.request.EFapsRequestParametersAdapter;
-import org.efaps.util.EFapsException;
+import org.efaps.ui.wicket.models.cell.FieldConfiguration;
+
 
 /**
  * TODO comment!
@@ -29,13 +30,10 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public interface IValueConverter
+public interface IFieldConfig
 {
     /**
-     * @param _parameters parameters the value will be set in
-     * @throws EFapsException on error
+     * @return the FieldConfiguration object
      */
-    void convertValue(final EFapsRequestParametersAdapter _parameters)
-        throws EFapsException;
-
+    FieldConfiguration getFieldConfig();
 }

@@ -50,6 +50,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DropDownField
     extends DropDownChoice<DropDownOption>
+    implements IFieldConfig
 {
 
     /**
@@ -89,6 +90,7 @@ public class DropDownField
                          final FieldConfiguration _fieldConfiguration)
     {
         super(_wicketId);
+        setOutputMarkupId(true);
         this.cellvalue = _model.getObject();
         final Serializable value = this.cellvalue.getValue().getDbValue();
         if (value != null) {
@@ -151,6 +153,15 @@ public class DropDownField
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public FieldConfiguration getFieldConfig()
+    {
+        return this.config;
     }
 
 

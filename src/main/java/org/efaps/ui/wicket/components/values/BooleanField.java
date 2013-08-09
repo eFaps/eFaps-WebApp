@@ -43,7 +43,7 @@ import org.efaps.util.EFapsException;
  */
 public class BooleanField
     extends Panel
-    implements IValueConverter
+    implements IValueConverter, IFieldConfig
 {
 
     /**
@@ -68,6 +68,7 @@ public class BooleanField
                         final FieldConfiguration _fieldConfiguration)
     {
         super(_wicketId);
+        setOutputMarkupId(true);
         this.fieldConfiguration = _fieldConfiguration;
         final RadioGroup<Boolean> radioGroup = new RadioGroup<Boolean>("radioGroup");
         if (_value == null) {
@@ -124,5 +125,14 @@ public class BooleanField
         } else {
             _parameters.addParameterValue(getFieldConfiguration().getName(), "false");
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public FieldConfiguration getFieldConfig()
+    {
+        return this.fieldConfiguration;
     }
 }

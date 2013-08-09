@@ -18,24 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.ui.wicket.components.values;
-
-import org.efaps.ui.wicket.request.EFapsRequestParametersAdapter;
-import org.efaps.util.EFapsException;
-
 /**
- * TODO comment!
- *
- * @author The eFaps Team
- * @version $Id$
+ * Components for Field Value used in the WebApp.
  */
-public interface IValueConverter
-{
-    /**
-     * @param _parameters parameters the value will be set in
-     * @throws EFapsException on error
-     */
-    void convertValue(final EFapsRequestParametersAdapter _parameters)
-        throws EFapsException;
-
-}
+package org.efaps.ui.wicket.components.values;

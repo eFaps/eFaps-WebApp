@@ -92,8 +92,7 @@ public class NumberField
             i = cellset.getIndex(getInputName());
         }
         final String[] value = getInputAsArray();
-        try
-        {
+        try {
             IConverter<? extends Number> converter = LongConverter.INSTANCE;
             if (value != null && value.length > 0 && value[i] != null
                             && getCellvalue().getValue().getAttribute() != null) {
@@ -111,7 +110,7 @@ public class NumberField
             }
             setConvertedInput(converter.convertToObject(value[i], Context.getThreadContext().getLocale()));
         } catch (final ConversionException e) {
-            NumberField.LOG.error("Catched error on convertInput", e);
+            error(newValidationError(e));
         } catch (final CacheReloadException e) {
             NumberField.LOG.error("Catched error on convertInput", e);
         } catch (final EFapsException e) {
