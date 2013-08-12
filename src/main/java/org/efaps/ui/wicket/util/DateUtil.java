@@ -59,4 +59,21 @@ public final class DateUtil
         final DateTime dt = fmt.parseDateTime(_value);
         return dt;
     }
+
+    /**
+     * Convert a <code>DateTime</code> to a String for parameter.
+     *
+     * @param _value value to be converted
+     * @return DateTime
+     * @throws EFapsException on error
+     */
+    public static String getDate4Parameter(final DateTime _value)
+        throws EFapsException
+    {
+        final StyleDateConverter styledate = new StyleDateConverter(false);
+        final DateTimeFormatter fmt = DateTimeFormat.forPattern(styledate.getDatePattern(Context.getThreadContext()
+                        .getLocale()));
+        fmt.withLocale(Context.getThreadContext().getLocale());
+        return _value.toString(fmt);
+    }
 }
