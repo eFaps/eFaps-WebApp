@@ -467,8 +467,10 @@ public class DateTimePanel
         }
         setModelObject(getConvertedInput());
         try {
-            getCellvalue().setValue(UIValue.get(getCellvalue().getValue().getField(), getCellvalue().getValue()
+            if (getCellvalue() != null) {
+                getCellvalue().setValue(UIValue.get(getCellvalue().getValue().getField(), getCellvalue().getValue()
                             .getAttribute(), getDefaultModelObject()));
+            }
         } catch (final CacheReloadException e) {
             DateTimePanel.LOG.error("Catched error on updateModel", e);
         }
