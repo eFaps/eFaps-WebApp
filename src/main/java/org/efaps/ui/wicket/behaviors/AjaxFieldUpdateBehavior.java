@@ -20,7 +20,7 @@
 
 package org.efaps.ui.wicket.behaviors;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -125,7 +125,7 @@ public class AjaxFieldUpdateBehavior
         } else {
             uiObject = (UITableCell) this.model.getObject();
         }
-        final Map<String, String> map = new HashMap<String, String>();
+        final List<Map<String, String>> values = new ArrayList<Map<String, String>>();
         try {
             final AbstractUIPageObject pageObject = (AbstractUIPageObject) (getComponent().getPage()
                             .getDefaultModelObject());
@@ -136,29 +136,38 @@ public class AjaxFieldUpdateBehavior
                 if (ob instanceof List) {
                     @SuppressWarnings("unchecked")
                     final List<Map<String, String>> list = (List<Map<String, String>>) ob;
-                    for (final Map<String, String> mapObj : list) {
-                        map.putAll(mapObj);
-                    }
+                    values.addAll(list);
                 }
             }
         } catch (final EFapsException e) {
             AjaxFieldUpdateBehavior.LOG.error("onSubmit", e);
         }
         final StringBuilder js = new StringBuilder();
-        if (map.size() > 0) {
-            for (final String keyString : map.keySet()) {
-                // if the map contains a key that is not defined in this class it is assumed to be the name of a field
-                if (!(EFapsKey.FIELDUPDATE_JAVASCRIPT.getKey().equals(keyString))) {
-                    js.append("eFapsSetFieldValue('").append(getComponentMarkupId()).append("','")
-                        .append(keyString).append("',")
-                        .append(map.get(keyString).contains("Array(") ? "" : "'")
-                        .append(map.get(keyString))
-                        .append(map.get(keyString).contains("Array(") ? "" : "'").append(");");
+        int i = 0;
+        for (final Map<String, String> map : values) {
+            if (map.size() > 0) {
+                for (final String keyString : map.keySet()) {
+                    // if the map contains a key that is not defined in this class
+                    // it is assumed to be the name of a field. if only one value map is given the markupid is used,
+                    // else an internal counter
+                    if (!(EFapsKey.FIELDUPDATE_JAVASCRIPT.getKey().equals(keyString))) {
+                        js.append("eFapsSetFieldValue(");
+                        if (values.size() == 1) {
+                            js.append("'").append(getComponentMarkupId()).append("'");
+                        } else {
+                            js.append(i);
+                        }
+                        js.append(",'").append(keyString).append("',")
+                            .append(map.get(keyString).contains("Array(") ? "" : "'")
+                            .append(map.get(keyString))
+                            .append(map.get(keyString).contains("Array(") ? "" : "'").append(");");
+                    }
                 }
             }
-        }
-        if (map.containsKey(EFapsKey.FIELDUPDATE_JAVASCRIPT.getKey())) {
-            js.append(map.get(EFapsKey.FIELDUPDATE_JAVASCRIPT.getKey()));
+            if (map.containsKey(EFapsKey.FIELDUPDATE_JAVASCRIPT.getKey())) {
+                js.append(map.get(EFapsKey.FIELDUPDATE_JAVASCRIPT.getKey()));
+            }
+            i++;
         }
         _target.appendJavaScript(js.toString());
     }
