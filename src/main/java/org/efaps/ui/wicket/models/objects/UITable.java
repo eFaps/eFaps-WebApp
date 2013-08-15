@@ -977,28 +977,29 @@ public class UITable
                     final String filter = _uitableHeader.getFilter().getDefaultValue();
                     final String[] parts = filter.split(":");
                     final String range = parts[0];
-                    final int sub = parts.length > 1 ? Integer.parseInt(parts[1]) : 0;
+                    final int fromSub = parts.length > 1 ? Integer.parseInt(parts[1]) : 0;
+                    final int rangeCount = parts.length > 2 ? Integer.parseInt(parts[2]) : 1;
                     final FilterDefault def = FilterDefault.valueOf(range.toUpperCase());
                     DateMidnight tmp = DateTimeUtil.translateFromUI(new DateTime()).toDateMidnight();
                     switch (def) {
                         case TODAY:
-                            this.dateFrom = tmp.toDateTime().minusDays(sub);
-                            this.dateTo = this.dateFrom.plusDays(1).plusSeconds(1);
+                            this.dateFrom = tmp.toDateTime().minusDays(fromSub);
+                            this.dateTo = this.dateFrom.plusDays(rangeCount).plusSeconds(1);
                             break;
                         case WEEK:
                             tmp = tmp.minusDays(tmp.getDayOfWeek() - 1);
-                            this.dateFrom = tmp.toDateTime().minusWeeks(sub);
-                            this.dateTo = tmp.toDateTime().plusWeeks(1);
+                            this.dateFrom = tmp.toDateTime().minusWeeks(fromSub);
+                            this.dateTo = this.dateFrom.toDateTime().plusWeeks(rangeCount);
                             break;
                         case MONTH:
                             tmp = tmp.minusDays(tmp.getDayOfMonth() - 1);
-                            this.dateFrom = tmp.toDateTime().minusMonths(sub);
-                            this.dateTo = tmp.toDateTime().plusMonths(1);
+                            this.dateFrom = tmp.toDateTime().minusMonths(fromSub);
+                            this.dateTo = this.dateFrom.toDateTime().plusMonths(rangeCount);
                             break;
                         case YEAR:
                             tmp = tmp.minusDays(tmp.getDayOfYear() - 1);
-                            this.dateFrom = tmp.toDateTime().minusYears(sub);
-                            this.dateTo = tmp.toDateTime().plusYears(1);
+                            this.dateFrom = tmp.toDateTime().minusYears(fromSub);
+                            this.dateTo = this.dateFrom.toDateTime().plusYears(rangeCount);
                             break;
                         default:
                             break;
