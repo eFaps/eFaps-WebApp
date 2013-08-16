@@ -385,12 +385,8 @@ public class UIClassification
         for (final Classification child : _children) {
             boolean access;
             if (!child.isAbstract()) {
-                final Instance inst;
-                if (getMode() == TargetMode.CREATE && _instance == null) {
-                    inst = AbstractInstanceObject.getInstance4Create(child);
-                } else {
-                    inst = _instance;
-                }
+                final Instance inst = AbstractInstanceObject.getInstance4Create(child);
+
                 access = child.hasAccess(inst, getMode() == TargetMode.CREATE
                             || getMode() == TargetMode.EDIT ? AccessTypeEnums.CREATE.getAccessType()
                             : AccessTypeEnums.SHOW.getAccessType());
