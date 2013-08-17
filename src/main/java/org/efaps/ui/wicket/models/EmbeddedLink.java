@@ -50,7 +50,7 @@ public class EmbeddedLink
      */
     enum TAG
     {
-        JASPER("<span %s class=\"eFapsLink\"></span>");
+        JASPER("<span id=\"%s\" class=\"eFapsLink\"></span>");
 
         private String html;
 

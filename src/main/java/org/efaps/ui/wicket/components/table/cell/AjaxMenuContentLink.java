@@ -90,6 +90,9 @@ public class AjaxMenuContentLink
         _tag.put("href", "#");
     }
 
+    /**
+     * Behavior to update the menu.
+     */
     public class UpdateMenuBehavior
         extends AbstractRemoteUpdateListenerBehavior
 
@@ -100,7 +103,7 @@ public class AjaxMenuContentLink
         private static final long serialVersionUID = 1L;
 
         /**
-         * @param _ajaxMenuContentLink
+         * @param _component Component the behavior belongs to
          */
         public UpdateMenuBehavior(final Component _component)
         {
@@ -118,7 +121,6 @@ public class AjaxMenuContentLink
                 final UITableCell cellmodel = (UITableCell) getComponent().getDefaultModelObject();
                 Instance instance = null;
                 if (cellmodel.getInstanceKey() != null) {
-
                     Menu menu = null;
                     try {
                         instance = cellmodel.getInstance();
@@ -128,7 +130,8 @@ public class AjaxMenuContentLink
                         throw new RestartResponseException(new ErrorPage(e));
                     } // CHECKSTYLE:ON
                     if (menu == null) {
-                        final Exception ex = new Exception("no tree menu defined for type " + instance.getType().getName());
+                        final Exception ex = new Exception("no tree menu defined for type "
+                                        + instance.getType().getName());
                         throw new RestartResponseException(new ErrorPage(ex));
                     }
                     final Page page = getPage();
@@ -143,8 +146,6 @@ public class AjaxMenuContentLink
         }
     }
 
-
-
     /**
      * Class is used to call an event from inside istself.
      *
@@ -152,7 +153,6 @@ public class AjaxMenuContentLink
     public class AjaxMenuContentBehavior
         extends AjaxEventBehavior
     {
-
         /**
          * Needed for serialization.
          */
@@ -167,12 +167,6 @@ public class AjaxMenuContentLink
             super("onClick");
         }
 
-        /*
-         * (non-Javadoc)
-         * @see
-         * org.apache.wicket.ajax.AjaxEventBehavior#updateAjaxAttributes(org
-         * .apache.wicket.ajax.attributes.AjaxRequestAttributes)
-         */
         @Override
         protected void updateAjaxAttributes(final AjaxRequestAttributes _attributes)
         {
