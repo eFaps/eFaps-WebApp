@@ -25,6 +25,7 @@ import net.sf.jasperreports.engine.export.GenericElementHtmlHandler;
 import net.sf.jasperreports.engine.export.JRHtmlExporterContext;
 
 import org.efaps.ui.wicket.EFapsSession;
+import org.efaps.ui.wicket.models.EmbeddedLink;
 
 /**
  * TODO comment!
@@ -46,10 +47,8 @@ public class LinkElementHtmlHandler
     public String getHtmlFragment(final JRHtmlExporterContext _exporterContext,
                                   final JRGenericPrintElement _element)
     {
-        final LinkObject link = (LinkObject) _element.getParameterValue(LinkObject.PARAMETERKEY);
-        final String id =
-        System.out.println(link);
-        EFapsSession.get().addLinkElement(id);
-        return "<span id=\"" + id + "\">hallo<span>";
+        final EmbeddedLink link = (EmbeddedLink) _element.getParameterValue(EmbeddedLink.JASPER_PARAMETERKEY);
+        EFapsSession.get().addEmbededLink(link);
+        return link.getTag();
     }
 }

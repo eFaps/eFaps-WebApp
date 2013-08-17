@@ -47,7 +47,7 @@ public class LinkElementComponent
                                 final EmbeddedLink _embededLink)
     {
         super(_wicketId);
-        setMarkupId(_elementId);
+        setMarkupId(_embededLink.getId());
     }
 
     @Override
@@ -61,5 +61,4 @@ public class LinkElementComponent
     {
         //nothing to add, because only the javascript added is wanted
     }
-
 }
