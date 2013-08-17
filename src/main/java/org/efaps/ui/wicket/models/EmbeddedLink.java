@@ -21,6 +21,8 @@
 
 package org.efaps.ui.wicket.models;
 
+import org.apache.commons.lang3.RandomStringUtils;
+
 
 /**
  * TODO comment!
@@ -28,24 +30,29 @@ package org.efaps.ui.wicket.models;
  * @author The eFaps Team
  * @version $Id$
  */
-public class LinkObject
+public class EmbeddedLink
 {
-
     /**
      * The Parameter Key if used for with Jasper Element Handler.
      */
-    public static String JASPER_PARAMETERKEY = LinkObject.class + ".Key";
+    public static final String JASPER_PARAMETERKEY = EmbeddedLink.class + ".Key";
 
     /**
      * The instance key for the link.
      */
     private String instanceKey;
+
     /**
-     * @param _oid
+     * The id of this embedded link.
      */
-    public LinkObject(final String _instanceKey)
+    private final String id = RandomStringUtils.randomAlphanumeric(8);
+
+    /**
+     * @param _instanceKey instanc key
+     */
+    public EmbeddedLink(final String _instanceKey)
     {
-       this.instanceKey = _instanceKey;
+        this.instanceKey = _instanceKey;
     }
 
     /**
@@ -53,7 +60,7 @@ public class LinkObject
      *
      * @return value of instance variable {@link #instanceKey}
      */
-    protected String getInstanceKey()
+    public String getInstanceKey()
     {
         return this.instanceKey;
     }
@@ -63,9 +70,20 @@ public class LinkObject
      *
      * @param _instanceKey value for instance variable {@link #instanceKey}
      */
-    protected void setInstanceKey(final String _instanceKey)
+    public void setInstanceKey(final String _instanceKey)
     {
         this.instanceKey = _instanceKey;
     }
 
+
+    /**
+     * Getter method for the instance variable {@link #id}.
+     *
+     * @return value of instance variable {@link #id}
+     */
+    public String getId()
+    {
+        return this.id;
     }
+
+}

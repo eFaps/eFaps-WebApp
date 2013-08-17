@@ -47,6 +47,7 @@ import org.efaps.db.Context;
 import org.efaps.jaas.LoginHandler;
 import org.efaps.ui.wicket.behaviors.update.UpdateInterface;
 import org.efaps.ui.wicket.components.IRecent;
+import org.efaps.ui.wicket.models.EmbeddedLink;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
@@ -130,7 +131,10 @@ public class EFapsSession
      */
     private final Stack<IRecent> recentStack = new Stack<IRecent>();
 
-    private final List<String> linkElements = new ArrayList<String>();
+    /**
+     * Links that are embeded in html, generated outside this wicket app.
+     */
+    private final List<EmbeddedLink> embededlinks = new ArrayList<EmbeddedLink>();
 
     /**
      * Size of the Stack for the recent objects.
@@ -596,21 +600,20 @@ public class EFapsSession
     }
 
     /**
-     * @param _id
+     * @param _embededLink link to add
      */
-    public void addLinkElement(final String _id)
+    public void addEmbededLink(final EmbeddedLink _embededLink)
     {
-        this.linkElements.add(_id);
+        this.embededlinks.add(_embededLink);
     }
-
 
     /**
      * Getter method for the instance variable {@link #linkElements}.
      *
      * @return value of instance variable {@link #linkElements}
      */
-    public List<String> getLinkElements()
+    public List<EmbeddedLink> getEmbededLinks()
     {
-        return this.linkElements;
+        return this.embededlinks;
     }
 }

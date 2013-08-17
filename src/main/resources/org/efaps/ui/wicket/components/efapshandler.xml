@@ -31,10 +31,10 @@
                 <entry key="efapslink">
                     <map>
                         <entry key="net.sf.jasperreports.html">
-                            <bean class="org.efaps.ui.wicket.components.embededlink.LinkElementHtmlHandler" />
+                            <bean class="org.efaps.ui.wicket.components.embeddedlink.LinkElementHtmlHandler" />
                         </entry>
                         <entry key="net.sf.jasperreports.xhtml">
-                            <bean class="org.efaps.ui.wicket.components.embededlink.LinkElementHtmlHandler" />
+                            <bean class="org.efaps.ui.wicket.components.embeddedlink.LinkElementHtmlHandler" />
                         </entry>
                     </map>
                 </entry>

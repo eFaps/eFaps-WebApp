@@ -24,4 +24,4 @@
  * @author The eFaps Team
  * @version $Id$
  */
-package org.efaps.ui.wicket.components.embededlink;
+package org.efaps.ui.wicket.components.embeddedlink;

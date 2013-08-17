@@ -18,15 +18,13 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.ui.wicket.components.embededlink;
+package org.efaps.ui.wicket.components.embeddedlink;
 
 import net.sf.jasperreports.engine.JRGenericPrintElement;
 import net.sf.jasperreports.engine.export.GenericElementHtmlHandler;
 import net.sf.jasperreports.engine.export.JRHtmlExporterContext;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.efaps.ui.wicket.EFapsSession;
-import org.efaps.ui.wicket.models.LinkObject;
 
 /**
  * TODO comment!
@@ -49,7 +47,7 @@ public class LinkElementHtmlHandler
                                   final JRGenericPrintElement _element)
     {
         final LinkObject link = (LinkObject) _element.getParameterValue(LinkObject.PARAMETERKEY);
-        final String id = RandomStringUtils.randomAlphanumeric(8);
+        final String id =
         System.out.println(link);
         EFapsSession.get().addLinkElement(id);
         return "<span id=\"" + id + "\">hallo<span>";

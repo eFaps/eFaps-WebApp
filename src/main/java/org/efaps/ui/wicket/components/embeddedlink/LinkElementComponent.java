@@ -18,11 +18,12 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.ui.wicket.components.embededlink;
+package org.efaps.ui.wicket.components.embeddedlink;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.ComponentTag;
+import org.efaps.ui.wicket.models.EmbeddedLink;
 
 /**
  * TODO comment!
@@ -33,19 +34,17 @@ import org.apache.wicket.markup.ComponentTag;
 public class LinkElementComponent
     extends AjaxLink<Void>
 {
-
     /**
      *
      */
     private static final long serialVersionUID = 1L;
 
-
     /**
-     * @param _wicketId
-     * @param _elementId
+     * @param _wicketId     wicket id of the component
+     * @param _embededLink  link the component is representing
      */
     public LinkElementComponent(final String _wicketId,
-                                final String _elementId)
+                                final EmbeddedLink _embededLink)
     {
         super(_wicketId);
         setMarkupId(_elementId);
@@ -60,7 +59,7 @@ public class LinkElementComponent
     @Override
     protected void onComponentTag(final ComponentTag _tag)
     {
-        //nothing to add
+        //nothing to add, because only the javascript added is wanted
     }
 
 }

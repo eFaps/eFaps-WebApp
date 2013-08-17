@@ -33,8 +33,9 @@ import org.apache.wicket.model.IModel;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.LabelComponent;
-import org.efaps.ui.wicket.components.embededlink.LinkElementComponent;
+import org.efaps.ui.wicket.components.embeddedlink.LinkElementComponent;
 import org.efaps.ui.wicket.components.form.row.RowPanel;
+import org.efaps.ui.wicket.models.EmbeddedLink;
 import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.cell.UIHiddenCell;
 import org.efaps.ui.wicket.models.objects.UIForm;
@@ -108,12 +109,11 @@ public class FormPanel
             }
         }
 
-
-        final List<String> elements = EFapsSession.get().getLinkElements();
-        for (final String element : elements) {
-            hiddenRepeater.add(new LinkElementComponent(hiddenRepeater.newChildId(), element));
+        final List<EmbeddedLink> links = EFapsSession.get().getEmbededLinks();
+        for (final EmbeddedLink link : links) {
+            hiddenRepeater.add(new LinkElementComponent(hiddenRepeater.newChildId(), link));
         }
-        EFapsSession.get().getLinkElements().clear();
+        EFapsSession.get().getEmbededLinks().clear();
     }
 
     /**
