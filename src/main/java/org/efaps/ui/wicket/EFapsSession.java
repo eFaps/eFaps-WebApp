@@ -130,6 +130,8 @@ public class EFapsSession
      */
     private final Stack<IRecent> recentStack = new Stack<IRecent>();
 
+    private final List<String> linkElements = new ArrayList<String>();
+
     /**
      * Size of the Stack for the recent objects.
      */
@@ -591,5 +593,24 @@ public class EFapsSession
         {
             return this.fileItem.getSize();
         }
+    }
+
+    /**
+     * @param _id
+     */
+    public void addLinkElement(final String _id)
+    {
+        this.linkElements.add(_id);
+    }
+
+
+    /**
+     * Getter method for the instance variable {@link #linkElements}.
+     *
+     * @return value of instance variable {@link #linkElements}
+     */
+    public List<String> getLinkElements()
+    {
+        return this.linkElements;
     }
 }

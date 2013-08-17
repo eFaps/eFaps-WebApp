@@ -96,16 +96,6 @@ public class ContentContainerPage
     private String borderPanelId;
 
     /**
-     * Getter method for the instance variable {@link #borderPanelId}.
-     *
-     * @return value of instance variable {@link #borderPanelId}
-     */
-    public String getBorderPanelId()
-    {
-        return this.borderPanelId;
-    }
-
-    /**
      * Id of the center panel.
      */
     private String centerPanelId;
@@ -268,6 +258,7 @@ public class ContentContainerPage
      *
      * @param _uuid Uuid of the Command
      * @return a AbstractCommand
+     * @throws CacheReloadException on error
      */
     private AbstractCommand getCommand(final UUID _uuid)
         throws CacheReloadException
@@ -308,5 +299,15 @@ public class ContentContainerPage
     public String getCenterPanelId()
     {
         return this.centerPanelId;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #borderPanelId}.
+     *
+     * @return value of instance variable {@link #borderPanelId}
+     */
+    public String getBorderPanelId()
+    {
+        return this.borderPanelId;
     }
 }

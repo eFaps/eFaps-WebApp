@@ -21,6 +21,7 @@
 package org.efaps.ui.wicket.components.form;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.wicket.Page;
@@ -29,16 +30,18 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
+import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.LabelComponent;
+import org.efaps.ui.wicket.components.embededlink.LinkElementComponent;
 import org.efaps.ui.wicket.components.form.row.RowPanel;
 import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.cell.UIHiddenCell;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIForm.FormElement;
 import org.efaps.ui.wicket.models.objects.UIForm.FormRow;
-import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
 
 /**
@@ -104,6 +107,13 @@ public class FormPanel
                 cell.setAdded(true);
             }
         }
+
+
+        final List<String> elements = EFapsSession.get().getLinkElements();
+        for (final String element : elements) {
+            hiddenRepeater.add(new LinkElementComponent(hiddenRepeater.newChildId(), element));
+        }
+        EFapsSession.get().getLinkElements().clear();
     }
 
     /**
