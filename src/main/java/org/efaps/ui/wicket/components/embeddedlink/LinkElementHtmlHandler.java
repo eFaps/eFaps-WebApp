@@ -49,6 +49,14 @@ public class LinkElementHtmlHandler
     {
         final EmbeddedLink link = (EmbeddedLink) _element.getParameterValue(EmbeddedLink.JASPER_PARAMETERKEY);
         EFapsSession.get().addEmbededLink(link);
-        return link.getTag();
+
+        final StringBuilder html = new StringBuilder();
+        html.append("<div style=\"position:absolute;left:")
+            .append(_element.getX()).append("px;top:").append(_element.getY())
+            .append("px;width:").append(_element.getWidth()).append("px;height:")
+            .append(_element.getWidth()).append("px;\">")
+            .append(link.getTag())
+            .append("</div>");
+        return html.toString();
     }
 }
