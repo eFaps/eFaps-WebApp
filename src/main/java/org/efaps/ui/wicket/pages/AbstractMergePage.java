@@ -49,6 +49,11 @@ public abstract class AbstractMergePage
     extends WebPage
 {
     /**
+     * Reference to the StyleSheet for this Page.
+     */
+    public static final EFapsContentReference FAVICON = new EFapsContentReference(AbstractMergePage.class, "favicon");
+
+    /**
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
@@ -58,11 +63,6 @@ public abstract class AbstractMergePage
      */
     private static final EFapsContentReference CSS = new EFapsContentReference(AbstractMergePage.class,
                     "AbstractMergePage.css");
-
-    /**
-     * Reference to the StyleSheet for this Page.
-     */
-    public static final EFapsContentReference FAVICON = new EFapsContentReference(AbstractMergePage.class, "favicon");
 
     /**
      * The DownloadBehavior used for downloading files.
@@ -114,9 +114,6 @@ public abstract class AbstractMergePage
         return this.downloadBehavior;
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.wicket.MarkupContainer#add(org.apache.wicket.Component[])
-     */
     @Override
     public MarkupContainer add(final Component... _childs)
     {
