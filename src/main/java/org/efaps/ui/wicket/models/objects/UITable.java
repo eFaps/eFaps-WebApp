@@ -388,7 +388,11 @@ public class UITable
             }
             for (final Field field : _fields) {
                 if (field.getSelectAlternateOID() != null) {
-                    instance = Instance.get(_multi.<String> getSelect(field.getSelectAlternateOID()));
+                    try {
+                        instance = Instance.get(_multi.<String> getSelect(field.getSelectAlternateOID()));
+                    } catch(final ClassCastException e) {
+                        UITable.LOG.error("Field '{}' has invalid SelectAlternateOID value", field);
+                    }
                 } else {
                     instance = _multi.getCurrentInstance();
                 }
