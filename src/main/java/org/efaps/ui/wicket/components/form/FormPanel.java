@@ -34,6 +34,7 @@ import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.embeddedlink.LinkElementComponent;
+import org.efaps.ui.wicket.components.embeddedlink.LinkElementLink;
 import org.efaps.ui.wicket.components.form.row.RowPanel;
 import org.efaps.ui.wicket.models.EmbeddedLink;
 import org.efaps.ui.wicket.models.UIModel;
@@ -41,6 +42,8 @@ import org.efaps.ui.wicket.models.cell.UIHiddenCell;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIForm.FormElement;
 import org.efaps.ui.wicket.models.objects.UIForm.FormRow;
+import org.efaps.ui.wicket.pages.content.AbstractContentPage;
+import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
@@ -108,10 +111,18 @@ public class FormPanel
                 cell.setAdded(true);
             }
         }
-
+        final Page callPage = ((AbstractContentPage)_page).getCalledByPageReference().getPage();
+        boolean menuUpdate = true;
+        if (callPage instanceof MainPage) {
+            menuUpdate = false;
+        }
         final List<EmbeddedLink> links = EFapsSession.get().getEmbededLinks();
         for (final EmbeddedLink link : links) {
-            hiddenRepeater.add(new LinkElementComponent(hiddenRepeater.newChildId(), link));
+            if (menuUpdate) {
+                hiddenRepeater.add(new LinkElementComponent(hiddenRepeater.newChildId(), link));
+            } else {
+                hiddenRepeater.add(new LinkElementLink(hiddenRepeater.newChildId(), link));
+            }
         }
         EFapsSession.get().getEmbededLinks().clear();
     }
