@@ -817,8 +817,20 @@ public class UIStructurBrowser
             throw new EFapsException(this.getClass(), "execute4NoInstance.moreThanOneEvaluate");
         } else {
             final EventDefinition event = events.get(0);
-            if (event.getProperty("Types") != null) {
-                typeName = event.getProperty("Types").split(";")[0];
+            // test for basic or abstract types
+            if (event.getProperty("Type") != null) {
+                typeName = event.getProperty("Type");
+            }
+            // no type yet search alternatives
+            if (typeName == null) {
+                for (int i = 1; i < 100; i++) {
+                    final String nameTmp = "Type" + String.format("%02d", i);
+                    if (event.getProperty(nameTmp) != null) {
+                        typeName = event.getProperty(nameTmp);
+                    } else {
+                        break;
+                    }
+                }
             }
         }
         return Type.get(typeName);
