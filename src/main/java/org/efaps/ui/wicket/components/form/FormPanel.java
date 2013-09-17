@@ -111,12 +111,16 @@ public class FormPanel
                 cell.setAdded(true);
             }
         }
-        final Page callPage = ((AbstractContentPage)_page).getCalledByPageReference().getPage();
         boolean menuUpdate = true;
-        if (callPage instanceof MainPage) {
-            menuUpdate = false;
-        }
         final List<EmbeddedLink> links = EFapsSession.get().getEmbededLinks();
+        if (!links.isEmpty()) {
+            if (((AbstractContentPage) _page).getCalledByPageReference() != null) {
+                final Page callPage = ((AbstractContentPage) _page).getCalledByPageReference().getPage();
+                if (callPage instanceof MainPage) {
+                    menuUpdate = false;
+                }
+            }
+        }
         for (final EmbeddedLink link : links) {
             if (menuUpdate) {
                 hiddenRepeater.add(new LinkElementComponent(hiddenRepeater.newChildId(), link));
