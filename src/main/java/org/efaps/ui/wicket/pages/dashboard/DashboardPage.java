@@ -87,8 +87,8 @@ public class DashboardPage
         final boolean active = config != null
                         ? config.getAttributeValueAsBoolean(KernelSettings.ACTIVATE_BPM) : false;
         // BPM_DashBoard_AssignedTask
-        if (active && Command.get(UUID.fromString("63933a70-82d3-4fbc-bef2-cdf06c77013f")).hasAccess(
-                                        TargetMode.VIEW, null)) {
+        final Command assCmd = Command.get(UUID.fromString("63933a70-82d3-4fbc-bef2-cdf06c77013f"));
+        if (active && assCmd != null && assCmd.hasAccess(TargetMode.VIEW, null)) {
             final TaskTablePanel assignedTaskTable = new TaskTablePanel("assignedTaskTable", _pageReference,
                             new AssignedTaskSummaryProvider());
             add(assignedTaskTable);
@@ -116,8 +116,8 @@ public class DashboardPage
         }
 
         // BPM_DashBoard_OwnedTask
-        if (active && Command.get(UUID.fromString("60a9bfcd-928e-4b96-a617-94d70fb0c8ab")).hasAccess(
-                                        TargetMode.VIEW, null)) {
+        final Command ownCmd = Command.get(UUID.fromString("60a9bfcd-928e-4b96-a617-94d70fb0c8ab"));
+        if (active && ownCmd != null && ownCmd.hasAccess(TargetMode.VIEW, null)) {
             final TaskTablePanel ownedTaskTable = new TaskTablePanel("ownedTaskTable", _pageReference,
                             new OwnedTaskSummaryProvider());
             add(ownedTaskTable);
