@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.efaps.db.Context;
+import org.efaps.jaas.AppAccessHandler;
 import org.efaps.jaas.LoginHandler;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
@@ -76,8 +77,11 @@ public abstract class AbstractAuthenticationFilter
         throws ServletException
     {
         super.init(_filterConfig);
-        final String applInit = _filterConfig.getInitParameter(AbstractFilter.INITPARAM_APP_KEY);
-        this.loginHandler = new LoginHandler(applInit);
+        try {
+            this.loginHandler = new LoginHandler(AppAccessHandler.getApplicationKey());
+        } catch (final EFapsException e) {
+            AbstractAuthenticationFilter.LOG.error("AppAccessHandler", e);
+        }
     }
 
     /**
