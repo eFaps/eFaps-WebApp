@@ -48,7 +48,9 @@ import org.efaps.ui.wicket.components.modalwindow.UpdateParentCallback;
 import org.efaps.ui.wicket.components.table.filter.ClassificationPanel;
 import org.efaps.ui.wicket.components.table.filter.FreeTextPanel;
 import org.efaps.ui.wicket.components.table.filter.PickerPanel;
+import org.efaps.ui.wicket.components.table.filter.StatusPanel;
 import org.efaps.ui.wicket.models.objects.UIClassification;
+import org.efaps.ui.wicket.models.objects.UIStatusSet;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.models.objects.UITableHeader;
 import org.efaps.ui.wicket.models.objects.UITableHeader.FilterType;
@@ -104,6 +106,9 @@ public class FilterPage
             case PICKLIST:
                 panel = new PickerPanel("filterPanel", getDefaultModel(), _uitableHeader);
                 break;
+            case STATUS:
+                panel = new StatusPanel("filterPanel", getDefaultModel(), _uitableHeader);
+                break;
             default:
                 panel = new FreeTextPanel("filterPanel", getDefaultModel(), _uitableHeader);
                 break;
@@ -153,6 +158,30 @@ public class FilterPage
                         modal.setWindowClosedCallback(new UpdateParentCallback(FilterPage.this.pageReference,
                                         modal, _uitableHeader.getFilter().getBase().equals(Filter.Base.DATABASE)));
                         modal.setUpdateParent(true);
+                        modal.close(_target);
+                    } else if (_uitableHeader.getFilter().getType().equals(Filter.Type.STATUS)) {
+                        final List<StringValue> selection = getRequest().getRequestParameters()
+                                        .getParameterValues(StatusPanel.CHECKBOXNAME);
+                        if (selection != null) {
+                            final List<UIStatusSet> sets = ((StatusPanel) panel).getStatusSets();
+                            // all value are selected and the not required, meaning that nothing must be filtered
+                            if (selection.size() == sets.size()
+                                             && !_uitableHeader.getFilter().isRequired()) {
+                                uiTable.removeFilter(_uitableHeader);
+                            } else {
+                                final Set<Object> filterList = new HashSet<Object>();
+                                for (final StringValue value : selection) {
+                                    final Integer intpos = Integer.valueOf(value.toString());
+                                    filterList.addAll(sets.get(intpos).getIds());
+                                }
+                                uiTable.addFilterList(_uitableHeader, filterList);
+                            }
+                            modal.setWindowClosedCallback(new UpdateParentCallback(FilterPage.this.pageReference,
+                                             modal, _uitableHeader.getFilter().getBase().equals(Filter.Base.DATABASE)));
+                            modal.setUpdateParent(true);
+                        }  else {
+                            modal.setUpdateParent(false);
+                        }
                         modal.close(_target);
                     } else if (_uitableHeader.getFilterType().equals(FilterType.DATE)) {
                         final FreeTextPanel freeTextPanel = (FreeTextPanel) panel;
@@ -242,7 +271,7 @@ public class FilterPage
                                     .getModal();
                     modal.setUpdateParent(true);
                     modal.setWindowClosedCallback(new UpdateParentCallback(FilterPage.this.pageReference,
-                                    modal, false));
+                                    modal, _uitableHeader.getFilter().getBase().equals(Filter.Base.DATABASE)));
                     modal.close(_target);
                 }
             };

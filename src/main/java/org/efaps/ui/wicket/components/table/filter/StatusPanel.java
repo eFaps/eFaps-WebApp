@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2012 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.dbproperty.DBProperties;
+import org.efaps.ui.wicket.models.objects.UIStatusSet;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.models.objects.UITable.TableFilter;
 import org.efaps.ui.wicket.models.objects.UITableHeader;
@@ -45,7 +46,7 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class PickerPanel
+public class StatusPanel
     extends Panel
 {
     /**
@@ -61,7 +62,7 @@ public class PickerPanel
     /**
      * List of Picker positions.
      */
-    private final List<String> pickList;
+    private final List<UIStatusSet> uiStatusList;
 
     /**
      * Selected values.
@@ -74,7 +75,7 @@ public class PickerPanel
      * @param _uitableHeader    table header this picker belongs to
      * @throws EFapsException on error
      */
-    public PickerPanel(final String _wicketId,
+    public StatusPanel(final String _wicketId,
                        final IModel<?> _model,
                        final UITableHeader _uitableHeader)
         throws EFapsException
@@ -82,32 +83,32 @@ public class PickerPanel
         super(_wicketId, _model);
         final UITable table = (UITable) super.getDefaultModelObject();
         this.add(new Label("checkAll", DBProperties.getProperty("FilterPage.All")));
-        this.pickList = table.getFilterPickList(_uitableHeader);
+        this.uiStatusList = UIStatusSet.getUIStatusSet4List(table.getStatusFilterList(_uitableHeader));
         final TableFilter filter = table.getFilter(_uitableHeader);
         if (filter != null) {
             this.selected = filter.getFilterList();
         } else {
             this.selected = SetUtils.EMPTY_SET;
         }
-        final FilterListView checksList = new FilterListView("listview", getPickList());
+        final FilterListView checksList = new FilterListView("listview", getStatusSets());
         this.add(checksList);
     }
 
     /**
-     * Getter method for instance variable {@link #pickList}.
+     * Getter method for instance variable {@link #uiStatusList}.
      *
-     * @return value of instance variable {@link #pickList}
+     * @return value of instance variable {@link #uiStatusList}
      */
-    public List<String> getPickList()
+    public List<UIStatusSet> getStatusSets()
     {
-        return this.pickList;
+        return  this.uiStatusList;
     }
 
     /**
      * List for Filter.
      */
     public class FilterListView
-        extends ListView<String>
+        extends ListView<UIStatusSet>
     {
         /**
          * Needed for serialization.
@@ -119,17 +120,17 @@ public class PickerPanel
          * @param _list     list to be used
          */
         public FilterListView(final String _wicketId,
-                              final List<String> _list)
+                              final List<UIStatusSet> _list)
         {
             super(_wicketId, _list);
             setReuseItems(true);
         }
 
         @Override
-        protected ListItem<String> newItem(final int _index,
-                                           final IModel<String> _itemModel)
+        protected ListItem<UIStatusSet> newItem(final int _index,
+                                           final IModel<UIStatusSet> _itemModel)
         {
-            final ListItem<String> ret = super.newItem(_index, _itemModel);
+            final ListItem<UIStatusSet> ret = super.newItem(_index, _itemModel);
             if (_index % 2 == 0) {
                 ret.add(AttributeModifier.append("class", "eFapsTableRowOdd"));
             } else {
@@ -139,12 +140,12 @@ public class PickerPanel
         }
 
         @Override
-        protected void populateItem(final ListItem<String> _item)
+        protected void populateItem(final ListItem<UIStatusSet> _item)
         {
-            final String label = _item.getDefaultModelObjectAsString();
+            final UIStatusSet uiStatusSet = (UIStatusSet) _item.getDefaultModelObject();
             _item.add(new ValueCheckBox<Integer>("listview_tr_check", new Model<Integer>(_item.getIndex()),
-                            PickerPanel.this.selected.contains(label)));
-            _item.add(new Label("listview_tr_label", label));
+                            StatusPanel.this.selected.contains(uiStatusSet.getSelectedId())));
+            _item.add(new Label("listview_tr_label", uiStatusSet.getLabel()));
         }
     }
 
@@ -182,7 +183,7 @@ public class PickerPanel
         {
             super.onComponentTag(_tag);
             _tag.put("value", getValue());
-            _tag.put("name", PickerPanel.CHECKBOXNAME);
+            _tag.put("name", StatusPanel.CHECKBOXNAME);
             if (this.checked) {
                 _tag.put("checked", "checked");
             }

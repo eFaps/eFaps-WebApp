@@ -35,6 +35,8 @@ import java.util.UUID;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.util.io.IClusterable;
 import org.efaps.admin.datamodel.Attribute;
+import org.efaps.admin.datamodel.Status;
+import org.efaps.admin.datamodel.Status.StatusGroup;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.event.EventDefinition;
@@ -171,10 +173,12 @@ public class UITable
                         }
                     }
                 } else {
-                    // add the filter here, if it is a required filter that must be
+                    // add the filter here, if it is a required filter or a default value is set, that must be
                     // applied against the database
                     for (final Field field : command.getTargetTable().getFields()) {
-                        if (field.getFilter().isRequired()
+                        if ((field.getFilter().isRequired()
+                                        || (field.getFilter().getDefaultValue() != null && !field.getFilter()
+                                        .getDefaultValue().isEmpty()))
                                         && field.getFilter().getBase().equals(Filter.Base.DATABASE)) {
                             this.filters.put(field.getName(), new TableFilter());
                         }
@@ -390,7 +394,7 @@ public class UITable
                 if (field.getSelectAlternateOID() != null) {
                     try {
                         instance = Instance.get(_multi.<String> getSelect(field.getSelectAlternateOID()));
-                    } catch(final ClassCastException e) {
+                    } catch (final ClassCastException e) {
                         UITable.LOG.error("Field '{}' has invalid SelectAlternateOID value", field);
                     }
                 } else {
@@ -734,6 +738,39 @@ public class UITable
     }
 
     /**
+     * @param _uitableHeader    UITableHeader the Status filter list is wanted for
+     * @return list of status
+     * @throws CacheReloadException on error
+     */
+    public List<Status> getStatusFilterList(final UITableHeader _uitableHeader)
+        throws CacheReloadException
+    {
+        final Type grpType = _uitableHeader.getAttribute().getLink();
+        return getStatus4Type(grpType);
+    }
+
+    /**
+     * Recursive method to get all status for a Type representing a StatusGrp.
+     * @param _type Type the status list is wanted for
+     * @return list of status
+     * @throws CacheReloadException on error
+     */
+    private List<Status> getStatus4Type(final Type _type)
+        throws CacheReloadException
+    {
+        final List<Status> ret = new ArrayList<Status>();
+        final StatusGroup grp = Status.get(_type.getUUID());
+        if (grp != null) {
+            ret.addAll(grp.values());
+        } else {
+            for (final Type type : _type.getChildTypes()) {
+                ret.addAll(getStatus4Type(type));
+            }
+        }
+        return ret;
+    }
+
+    /**
      * Store the Filter in the Session.
      */
     private void storeFilters()
@@ -976,10 +1013,13 @@ public class UITable
         {
             this.headerFieldId = _uitableHeader.getFieldId();
             this.filterType =  _uitableHeader.getFilterType();
-            if (_uitableHeader.getFilter().getDefaultValue() != null) {
+            final Filter filter = _uitableHeader.getFilter();
+
+            if (Filter.Type.FREETEXT.equals(filter.getType())
+                            && filter.getDefaultValue() != null) {
                 if (_uitableHeader.getFilterType().equals(FilterType.DATE)) {
-                    final String filter = _uitableHeader.getFilter().getDefaultValue();
-                    final String[] parts = filter.split(":");
+                    final String defValue = _uitableHeader.getFilter().getDefaultValue();
+                    final String[] parts = defValue.split(":");
                     final String range = parts[0];
                     final int fromSub = parts.length > 1 ? Integer.parseInt(parts[1]) : 0;
                     final int rangeCount = parts.length > 2 ? Integer.parseInt(parts[2]) : 1;
@@ -1008,6 +1048,23 @@ public class UITable
                         default:
                             break;
                     }
+                }
+            } else if (Filter.Type.STATUS.equals(filter.getType())) {
+                if (filter.getDefaultValue() == null) {
+                    this.filterList = Collections.EMPTY_SET;
+                } else {
+                    final Set<Long> list = new HashSet<Long>();
+                    final Type grptype = _uitableHeader.getAttribute().getLink();
+                    final List<Status> status = getStatus4Type(grptype);
+                    final String[] defaultAr = filter.getDefaultValue().split(";");
+                    for (final String defaultv : defaultAr) {
+                        for (final Status statusTmp : status) {
+                            if (defaultv.equals(statusTmp.getKey())) {
+                                list.add(statusTmp.getId());
+                            }
+                        }
+                    }
+                    this.filterList = list;
                 }
             }
         }
@@ -1041,7 +1098,6 @@ public class UITable
          *
          * @param _uitableHeader UITableHeader this filter lies in
          * @param _from value for from
-         * @param _to value for to
          * @throws EFapsException on error
          */
         public TableFilter(final UITableHeader _uitableHeader,
