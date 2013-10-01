@@ -192,6 +192,8 @@ public class AutoCompleteField
     {
         _settings.setAdjustInputWidth(false);
         _settings.setUseSmartPositioning(true);
+        _settings.setMinInputLength(this.uiAbstractCell.getAutoCompleteMinInputLength());
+        _settings.setIgnoreBordersWhenPositioning(true);
         return new AutoCompleteFieldBehavior(this, new AutoCompleteRenderer(this), _settings);
     }
 

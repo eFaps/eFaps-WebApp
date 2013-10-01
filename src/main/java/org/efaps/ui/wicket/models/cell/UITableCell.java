@@ -89,6 +89,11 @@ public class UITableCell
     private boolean autoComplete;
 
     /**
+     * Minimum input length on client side for the autocomplete field.
+     */
+    private int autoCompleteMinInputLength = 1;
+
+    /**
      * Stores if the field has an esjp used for the update of other fields.
      */
     private final boolean fieldUpdate;
@@ -146,6 +151,13 @@ public class UITableCell
         this.icon = _icon;
         this.multiRows = _fieldValue.getField().getRows() > 1;
         this.autoComplete = _fieldValue.getField().hasEvents(EventType.UI_FIELD_AUTOCOMPLETE);
+        if (this.autoComplete) {
+            final List<EventDefinition> events = _fieldValue.getField().getEvents(EventType.UI_FIELD_AUTOCOMPLETE);
+            for (final EventDefinition event : events) {
+                this.autoCompleteMinInputLength = event.getProperty("MinInputLength") == null
+                                ? 1 : Integer.valueOf(event.getProperty("MinInputLength"));
+            }
+        }
         this.fieldUpdate = _fieldValue.getField().hasEvents(EventType.UI_FIELD_UPDATE);
         if (this.fieldUpdate) {
             final List<EventDefinition> events = _fieldValue.getField().getEvents(EventType.UI_FIELD_UPDATE);
@@ -361,6 +373,26 @@ public class UITableCell
         throws EFapsException
     {
         return executeEvents(EventType.UI_FIELD_AUTOCOMPLETE, _others, _uiID2Oid);
+    }
+
+    /**
+     * Getter method for the instance variable {@link #autoCompleteMinInputLength}.
+     *
+     * @return value of instance variable {@link #autoCompleteMinInputLength}
+     */
+    public int getAutoCompleteMinInputLength()
+    {
+        return this.autoCompleteMinInputLength;
+    }
+
+    /**
+     * Setter method for instance variable {@link #autoCompleteMinInputLength}.
+     *
+     * @param _autoCompleteMinInputLength value for instance variable {@link #autoCompleteMinInputLength}
+     */
+    public void setAutoCompleteMinInputLength(final int _autoCompleteMinInputLength)
+    {
+        this.autoCompleteMinInputLength = _autoCompleteMinInputLength;
     }
 
     /**
