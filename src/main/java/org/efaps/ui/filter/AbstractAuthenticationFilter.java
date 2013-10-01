@@ -47,13 +47,6 @@ public abstract class AbstractAuthenticationFilter
     private static final Logger LOG = LoggerFactory.getLogger(AbstractAuthenticationFilter.class);
 
     /**
-     * The string is name of the parameter used to define the application.
-     *
-     * @see #init
-     */
-    private static final String INIT_PARAM_APPLICATION = "application";
-
-    /**
      * Login handler used to check the login in method {@link #checkLogin}.
      *
      * @see #init
@@ -83,7 +76,7 @@ public abstract class AbstractAuthenticationFilter
         throws ServletException
     {
         super.init(_filterConfig);
-        final String applInit = _filterConfig.getInitParameter(AbstractAuthenticationFilter.INIT_PARAM_APPLICATION);
+        final String applInit = _filterConfig.getInitParameter(AbstractFilter.INITPARAM_APP_KEY);
         this.loginHandler = new LoginHandler(applInit);
     }
 

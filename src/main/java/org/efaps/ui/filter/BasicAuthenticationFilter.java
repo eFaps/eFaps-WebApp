@@ -46,7 +46,7 @@ public class BasicAuthenticationFilter
      *
      * @see #init
      */
-    private static final String INIT_PARAM_TITLE = "title";
+    private static final String INIT_PARAM_TITLE = "org.efaps.application.title";
 
     /**
      * Store the title which is shown in the realm dialog on the client side.

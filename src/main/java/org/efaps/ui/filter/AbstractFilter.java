@@ -53,7 +53,6 @@ public abstract class AbstractFilter
      */
     public static final String INITPARAM_APP_KEY = "org.efaps.application.key";
 
-
     /**
      * Name of the InitParameter variable for the login name.
      */
