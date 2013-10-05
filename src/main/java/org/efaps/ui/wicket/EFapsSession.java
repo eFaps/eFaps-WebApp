@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2012 The eFaps Team
+ * Copyright 2003 - 2013 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -318,11 +318,23 @@ public class EFapsSession
             // further requests are made (e.g. setting the current company
             openContext();
             setAttribute(EFapsSession.LOGIN_ATTRIBUTE_NAME, this.userName);
+            getConnectionRegistry().setUser(this.userName, getId());
         } else {
             this.userName = null;
             this.sessionAttributes.clear();
         }
     }
+
+    /**
+     * Get the Connection Registry.
+     *
+     * @return value of instance Connection Registry
+     */
+    public ConnectionRegistry getConnectionRegistry()
+    {
+        return EFapsApplication.get().getConnectionRegistry();
+    }
+
 
     /**
      * Logs a user out and stores the UserAttribues in the eFaps database.
@@ -341,6 +353,7 @@ public class EFapsSession
             }
         }
         closeContext();
+        getConnectionRegistry().removeUser(this.userName);
         this.userName = null;
     }
 
@@ -503,6 +516,24 @@ public class EFapsSession
     }
 
     /**
+     * @param _embededLink link to add
+     */
+    public void addEmbededLink(final EmbeddedLink _embededLink)
+    {
+        this.embededlinks.add(_embededLink);
+    }
+
+    /**
+     * Getter method for the instance variable {@link #linkElements}.
+     *
+     * @return value of instance variable {@link #linkElements}
+     */
+    public List<EmbeddedLink> getEmbededLinks()
+    {
+        return this.embededlinks;
+    }
+
+    /**
      * @return the current EFapsSession
      */
     public static EFapsSession get()
@@ -597,23 +628,5 @@ public class EFapsSession
         {
             return this.fileItem.getSize();
         }
-    }
-
-    /**
-     * @param _embededLink link to add
-     */
-    public void addEmbededLink(final EmbeddedLink _embededLink)
-    {
-        this.embededlinks.add(_embededLink);
-    }
-
-    /**
-     * Getter method for the instance variable {@link #linkElements}.
-     *
-     * @return value of instance variable {@link #linkElements}
-     */
-    public List<EmbeddedLink> getEmbededLinks()
-    {
-        return this.embededlinks;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2012 The eFaps Team
+ * Copyright 2003 - 2013 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.wicket.Application;
 import org.apache.wicket.Component;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.Session;
@@ -63,6 +64,10 @@ import org.efaps.ui.wicket.request.EFapsResourceAggregator;
 public class EFapsApplication
     extends WebApplication
 {
+    /**
+     * Registry for the Connections of Users in this application.
+     */
+    private ConnectionRegistry connectionRegistry;
 
     /**
      * @see org.apache.wicket.Application#getHomePage()
@@ -131,6 +136,7 @@ public class EFapsApplication
                 return new EFapsResourceAggregator(_response);
             }
         });
+        this.connectionRegistry = new ConnectionRegistry();
     }
 
     /**
@@ -158,6 +164,26 @@ public class EFapsApplication
                                     final String _filterPath)
     {
         return new EFapsRequest(_servletRequest, _filterPath);
+    }
+
+    /**
+     * Getter method for the instance variable {@link #connectionRegistry}.
+     *
+     * @return value of instance variable {@link #connectionRegistry}
+     */
+    public final ConnectionRegistry getConnectionRegistry()
+    {
+        return this.connectionRegistry;
+    }
+
+    /**
+     * Get EFapsApplication for current thread.
+     *
+     * @return The current thread's Application
+     */
+    public static EFapsApplication get()
+    {
+        return (EFapsApplication) Application.get();
     }
 
     /**

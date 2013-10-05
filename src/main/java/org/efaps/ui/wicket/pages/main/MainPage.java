@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2012 The eFaps Team
+ * Copyright 2003 - 2013 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import org.apache.wicket.ajax.attributes.AjaxRequestAttributes.Method;
 import org.apache.wicket.ajax.attributes.CallbackParameter;
 import org.apache.wicket.ajax.attributes.ThrottlingSettings;
 import org.apache.wicket.devutils.debugbar.DebugBar;
+import org.apache.wicket.event.IEvent;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.head.IHeaderResponse;
@@ -45,12 +46,16 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.IPageLink;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.http.request.WebClientInfo;
+import org.apache.wicket.protocol.ws.api.WebSocketBehavior;
+import org.apache.wicket.protocol.ws.api.event.WebSocketPushPayload;
+import org.apache.wicket.protocol.ws.api.message.ConnectedMessage;
 import org.apache.wicket.util.string.StringValue;
 import org.apache.wicket.util.time.Duration;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.user.Role;
 import org.efaps.db.Context;
 import org.efaps.message.MessageStatusHolder;
+import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.behaviors.SetMessageStatusBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.BorderContainerBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.BorderContainerBehavior.Design;
@@ -133,10 +138,14 @@ public class MainPage
      */
     private final ModalWindowContainer modal = new ModalWindowContainer("modal");
 
+    private Label socketMsg;
+
     /**
      * Constructor adding all Components to this Page.
+     * @throws CacheReloadException on error
      */
-    public MainPage() throws CacheReloadException
+    public MainPage()
+        throws CacheReloadException
     {
         super();
         // add the debug bar for administration role, in case of an erro only log it
@@ -251,6 +260,21 @@ public class MainPage
                 alert.add(new AttributeModifier("style", new Model<String>("display:none")));
             }
 
+            this.socketMsg = new Label("socketMsg", "sdasdasdasd");
+            this.socketMsg.setOutputMarkupPlaceholderTag(true);
+            this.socketMsg.add(new WebSocketBehavior()
+            {
+
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                protected void onConnect(final ConnectedMessage _message)
+                {
+                    EFapsSession.get().getConnectionRegistry()
+                                    .addMsgConnection(_message.getSessionId(), _message.getPageId());
+                }
+            });
+            add(this.socketMsg);
         } catch (final EFapsException e) {
             throw new RestartResponseException(new ErrorPage(e));
         }
@@ -276,6 +300,18 @@ public class MainPage
     public final ModalWindowContainer getModal()
     {
         return this.modal;
+    }
+
+    @Override
+    public void onEvent(final IEvent<?> _event)
+    {
+        if (_event.getPayload() instanceof WebSocketPushPayload) {
+            final WebSocketPushPayload wsEvent = (WebSocketPushPayload) _event
+                            .getPayload();
+            this.socketMsg.setDefaultModelObject(wsEvent.getMessage().toString());
+            this.add(new AttributeModifier("style", new Model<String>("display:block")));
+            wsEvent.getHandler().add(this.socketMsg);
+        }
     }
 
     /**
