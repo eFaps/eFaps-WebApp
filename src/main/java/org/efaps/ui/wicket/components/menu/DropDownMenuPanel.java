@@ -80,6 +80,10 @@ public class DropDownMenuPanel
                                     "/" + getSession().getApplication().getApplicationKey() + "/taskadmin?")) {
                         item = new TaskAdminItem(itemRepeater.newChildId(), new UIModel<UIMenuItem>(childItem));
                     }
+                    if (childItem.getReference().equals(
+                                    "/" + getSession().getApplication().getApplicationKey() + "/connection?")) {
+                        item = new ConnectionItem(itemRepeater.newChildId(), new UIModel<UIMenuItem>(childItem));
+                    }
                     if (item != null) {
                         item.add(new MenuItemBehavior());
                         itemRepeater.add(item);

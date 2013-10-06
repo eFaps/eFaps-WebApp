@@ -101,8 +101,10 @@ public class MenuBarPanel
                         } else if (childItem.getReference().equals(
                                         "/" + getSession().getApplication().getApplicationKey() + "/taskadmin?")) {
                             item = new TaskAdminItem(itemRepeater.newChildId(), new UIModel<UIMenuItem>(childItem));
+                        } else if (childItem.getReference().equals(
+                                        "/" + getSession().getApplication().getApplicationKey() + "/connection?")) {
+                            item = new ConnectionItem(itemRepeater.newChildId(), new UIModel<UIMenuItem>(childItem));
                         }
-
                         if (item != null) {
                             item.add(new MenuBarItemBehavior());
                             itemRepeater.add(item);

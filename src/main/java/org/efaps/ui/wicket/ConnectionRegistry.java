@@ -20,6 +20,14 @@
 
 package org.efaps.ui.wicket;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.apache.wicket.MetaDataKey;
@@ -27,6 +35,7 @@ import org.apache.wicket.Session;
 import org.apache.wicket.protocol.ws.IWebSocketSettings;
 import org.apache.wicket.protocol.ws.api.IWebSocketConnection;
 import org.apache.wicket.protocol.ws.api.IWebSocketConnectionRegistry;
+import org.apache.wicket.util.collections.ConcurrentHashSet;
 import org.apache.wicket.util.lang.Generics;
 
 /**
@@ -41,8 +50,8 @@ public class ConnectionRegistry
     /**
      * MetaDataKey for User to Session Mapping.
      */
-    private static final MetaDataKey<ConcurrentMap<String, String>> USER2SESSION =
-                    new MetaDataKey<ConcurrentMap<String, String>>()
+    private static final MetaDataKey<ConcurrentMap<String, ConcurrentHashSet<String>>> USER2SESSION =
+                    new MetaDataKey<ConcurrentMap<String, ConcurrentHashSet<String>>>()
             {
                 private static final long serialVersionUID = 1L;
             };
@@ -63,7 +72,7 @@ public class ConnectionRegistry
     public void setUser(final String _userName,
                         final String _sessionId)
     {
-        ConcurrentMap<String, String> user2session = Session.get().getApplication()
+        ConcurrentMap<String, ConcurrentHashSet<String>> user2session = Session.get().getApplication()
                         .getMetaData(ConnectionRegistry.USER2SESSION);
 
         if (user2session == null) {
@@ -76,7 +85,17 @@ public class ConnectionRegistry
                 }
             }
         }
-        user2session.put(_userName, _sessionId);
+        ConcurrentHashSet<String> sessions = user2session.get(_userName);
+        if (sessions == null) {
+            synchronized (ConnectionRegistry.USER2SESSION) {
+                sessions = user2session.get(_userName);
+                if (sessions == null) {
+                    sessions = new ConcurrentHashSet<String>();
+                    user2session.put(_userName, sessions);
+                }
+            }
+        }
+        sessions.add(_sessionId);
     }
 
     /**
@@ -99,21 +118,23 @@ public class ConnectionRegistry
             }
         }
         session2pageId.put(_sessionId, _pageId);
-
     }
 
     /**
-     * @param _login login of the user to be remved for the registry
+     * @param _login        login of the user to be remved for the registry
+     * @param _sessionId    id to be removed
      */
-    public void removeUser(final String _login)
+    public void removeUser(final String _login,
+                           final String _sessionId)
     {
-        ConcurrentMap<String, String> user2session = Session.get().getApplication()
+        ConcurrentMap<String, ConcurrentHashSet<String>> user2session = Session.get().getApplication()
                         .getMetaData(ConnectionRegistry.USER2SESSION);
-
-        if (user2session == null) {
-            synchronized (ConnectionRegistry.USER2SESSION) {
-                user2session = Session.get().getApplication().getMetaData(ConnectionRegistry.USER2SESSION);
-                if (user2session != null) {
+        synchronized (ConnectionRegistry.USER2SESSION) {
+            user2session = Session.get().getApplication().getMetaData(ConnectionRegistry.USER2SESSION);
+            if (user2session != null) {
+                final ConcurrentHashSet<String> sessions = user2session.get(_login);
+                sessions.remove(_sessionId);
+                if (sessions.isEmpty()) {
                     user2session.remove(_login);
                 }
             }
@@ -122,26 +143,91 @@ public class ConnectionRegistry
 
     /**
      * @param _login login of the user the session is wanted for
-     * @return Connection for the user, <code>null</code> if not found
+     * @return Connections for the user, empty list if not found
      */
-    public IWebSocketConnection getConnection4User(final String _login)
+    public List<IWebSocketConnection> getConnections4User(final String _login)
     {
-        IWebSocketConnection ret = null;
-
-        final ConcurrentMap<String, String> user2session = Session.get().getApplication()
+        final List<IWebSocketConnection> ret = new ArrayList<IWebSocketConnection>();
+        final ConcurrentMap<String, ConcurrentHashSet<String>> user2session = Session.get().getApplication()
                         .getMetaData(ConnectionRegistry.USER2SESSION);
         final ConcurrentMap<String, Integer> sessionId2pageId = Session.get().getApplication()
                         .getMetaData(ConnectionRegistry.SESSION2PAGEID);
-        final String sessionId = user2session.get(_login);
+        final ConcurrentHashSet<String> sessionIds = user2session.get(_login);
 
-        if (sessionId != null) {
-            final Integer pageId = sessionId2pageId.get(sessionId);
-            if (pageId != null) {
-                final IWebSocketConnectionRegistry registry = IWebSocketSettings.Holder.get(EFapsApplication.get())
-                                .getConnectionRegistry();
-                ret = registry.getConnection(EFapsApplication.get(), sessionId, pageId);
+        if (sessionIds != null && !sessionIds.isEmpty()) {
+            final Iterator<String> iter = sessionIds.iterator();
+            while (iter.hasNext()) {
+                final String sessionId = iter.next();
+                final Integer pageId = sessionId2pageId.get(sessionId);
+                if (pageId != null) {
+                    final IWebSocketConnectionRegistry registry = IWebSocketSettings.Holder.get(EFapsApplication.get())
+                                    .getConnectionRegistry();
+                    final IWebSocketConnection conn = registry.getConnection(EFapsApplication.get(), sessionId, pageId);
+                    if (conn != null) {
+                        ret.add(conn);
+                    }
+                }
             }
         }
         return ret;
+    }
+
+    /**
+     * @param _login login of the user the session is wanted for
+     * @param _sessionId sessionid the connection is wanted for
+     * @return Connection for the user, <code>null</code> if not found
+     */
+    public IWebSocketConnection getConnection4UserSession(final String _login,
+                                                          final String _sessionId)
+    {
+        IWebSocketConnection ret = null;
+        final ConcurrentMap<String, ConcurrentHashSet<String>> user2session = Session.get().getApplication()
+                        .getMetaData(ConnectionRegistry.USER2SESSION);
+        final ConcurrentMap<String, Integer> sessionId2pageId = Session.get().getApplication()
+                        .getMetaData(ConnectionRegistry.SESSION2PAGEID);
+        final ConcurrentHashSet<String> sessionIds = user2session.get(_login);
+
+        if (sessionIds.contains(_sessionId)) {
+
+            final Integer pageId = sessionId2pageId.get(_sessionId);
+            if (pageId != null) {
+                final IWebSocketConnectionRegistry registry = IWebSocketSettings.Holder.get(EFapsApplication.get())
+                                .getConnectionRegistry();
+                ret = registry.getConnection(EFapsApplication.get(), _sessionId, pageId);
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * @param _userName login of the user
+     * @return list of sessionIds for the given user
+     */
+    public List<String> getSession4User(final String _userName)
+    {
+        List<String> ret = new ArrayList<String>();
+        final ConcurrentMap<String, ConcurrentHashSet<String>> user2session = Session.get().getApplication()
+                        .getMetaData(ConnectionRegistry.USER2SESSION);
+        if (user2session != null) {
+            final ConcurrentHashSet<String> sessions = user2session.get(_userName);
+            ret = new ArrayList<String>(sessions);
+        }
+        return ret;
+    }
+
+    /**
+     * @return the map of Session currently active
+     */
+    public Map<String, Set<String>> getSessions4Users()
+    {
+        final ConcurrentMap<String, ConcurrentHashSet<String>> user2session = Session.get().getApplication()
+                        .getMetaData(ConnectionRegistry.USER2SESSION);
+        final Map<String, Set<String>> tmpmap = new TreeMap<String, Set<String>>();
+        if (user2session != null) {
+            for (final Entry<String, ConcurrentHashSet<String>> entry : user2session.entrySet()) {
+                tmpmap.put(entry.getKey(), Collections.unmodifiableSet(entry.getValue()));
+            }
+        }
+        return Collections.unmodifiableMap(tmpmap);
     }
 }

@@ -353,7 +353,7 @@ public class EFapsSession
             }
         }
         closeContext();
-        getConnectionRegistry().removeUser(this.userName);
+        getConnectionRegistry().removeUser(this.userName, getId());
         this.userName = null;
     }
 

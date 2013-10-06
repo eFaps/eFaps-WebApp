@@ -49,6 +49,7 @@ import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.protocol.ws.api.WebSocketBehavior;
 import org.apache.wicket.protocol.ws.api.event.WebSocketPushPayload;
 import org.apache.wicket.protocol.ws.api.message.ConnectedMessage;
+import org.apache.wicket.protocol.ws.api.message.IWebSocketPushMessage;
 import org.apache.wicket.util.string.StringValue;
 import org.apache.wicket.util.time.Duration;
 import org.efaps.admin.dbproperty.DBProperties;
@@ -68,8 +69,10 @@ import org.efaps.ui.wicket.components.menu.LinkItem;
 import org.efaps.ui.wicket.components.menu.MenuBarPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.preloader.PreLoaderPanel;
+import org.efaps.ui.wicket.models.PushMsg;
 import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
+import org.efaps.ui.wicket.models.objects.UIUserSession;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.dashboard.DashboardPage;
@@ -138,7 +141,10 @@ public class MainPage
      */
     private final ModalWindowContainer modal = new ModalWindowContainer("modal");
 
-    private Label socketMsg;
+    /**
+     * Socket listening Component.
+     */
+    private Component socketMsg;
 
     /**
      * Constructor adding all Components to this Page.
@@ -306,11 +312,20 @@ public class MainPage
     public void onEvent(final IEvent<?> _event)
     {
         if (_event.getPayload() instanceof WebSocketPushPayload) {
-            final WebSocketPushPayload wsEvent = (WebSocketPushPayload) _event
-                            .getPayload();
-            this.socketMsg.setDefaultModelObject(wsEvent.getMessage().toString());
-            this.add(new AttributeModifier("style", new Model<String>("display:block")));
-            wsEvent.getHandler().add(this.socketMsg);
+            final WebSocketPushPayload wsEvent = (WebSocketPushPayload) _event.getPayload();
+            if (wsEvent != null) {
+                final IWebSocketPushMessage msg = wsEvent.getMessage();
+                if (msg instanceof PushMsg) {
+                    this.socketMsg.setDefaultModelObject(wsEvent.getMessage().toString());
+                    this.add(new AttributeModifier("style", new Model<String>("display:block")));
+                    wsEvent.getHandler().add(this.socketMsg);
+                } else if (msg instanceof UIUserSession) {
+                    final String sessId = ((UIUserSession) msg).getSessionId();
+                    if (sessId.endsWith(getSession().getId())) {
+                        getSession().invalidate();
+                    }
+                }
+            }
         }
     }
 
