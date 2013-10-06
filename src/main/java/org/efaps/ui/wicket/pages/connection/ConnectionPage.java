@@ -29,6 +29,7 @@ import org.apache.wicket.extensions.markup.html.tabs.ITab;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
+import org.efaps.ui.wicket.components.connection.MessagePanel;
 import org.efaps.ui.wicket.components.connection.SessionPanel;
 import org.efaps.ui.wicket.components.tabs.AjaxIndicatingTabbedPanel;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
@@ -83,6 +84,24 @@ public class ConnectionPage
                 Panel ret = null;
                 try {
                     ret = new SessionPanel(_panelId, _pageReference);
+                } catch (final EFapsException e) {
+                    ConnectionPage.LOG.error("Could not load SessionPanel", e);
+                }
+                return ret;
+            }
+        });
+
+        tabs.add(new AbstractTab(new Model<String>("Message"))
+        {
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public Panel getPanel(final String _panelId)
+            {
+                Panel ret = null;
+                try {
+                    ret = new MessagePanel(_panelId, _pageReference);
                 } catch (final EFapsException e) {
                     ConnectionPage.LOG.error("Could not load SessionPanel", e);
                 }

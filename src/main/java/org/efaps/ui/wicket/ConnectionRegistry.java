@@ -215,6 +215,21 @@ public class ConnectionRegistry
         return ret;
     }
 
+
+    /**
+     * @return list of all registered Users
+     */
+    public List<String> getUsers()
+    {
+        List<String> ret = new ArrayList<String>();
+        final ConcurrentMap<String, ConcurrentHashSet<String>> user2session = Session.get().getApplication()
+                        .getMetaData(ConnectionRegistry.USER2SESSION);
+        if (user2session != null) {
+            ret = new ArrayList<String>(user2session.keySet());
+        }
+        return ret;
+    }
+
     /**
      * @return the map of Session currently active
      */

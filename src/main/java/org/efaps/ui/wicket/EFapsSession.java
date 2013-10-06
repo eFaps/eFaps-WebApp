@@ -533,6 +533,14 @@ public class EFapsSession
         return this.embededlinks;
     }
 
+    @Override
+    public void onInvalidate()
+    {
+        if (this.userName != null) {
+            getConnectionRegistry().removeUser(this.userName, getId());
+        }
+        super.onInvalidate();
+    }
     /**
      * @return the current EFapsSession
      */

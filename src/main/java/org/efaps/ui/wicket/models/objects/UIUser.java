@@ -20,15 +20,11 @@
 
 package org.efaps.ui.wicket.models.objects;
 
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.wicket.protocol.ws.api.message.IWebSocketPushMessage;
 import org.efaps.ui.wicket.ConnectionRegistry;
 import org.efaps.ui.wicket.EFapsApplication;
 
@@ -38,8 +34,8 @@ import org.efaps.ui.wicket.EFapsApplication;
  * @author The eFaps Team
  * @version $Id$
  */
-public class UIUserSession
-    extends UIUser implements IWebSocketPushMessage
+public class UIUser
+    implements Serializable
 {
 
     /**
@@ -48,39 +44,36 @@ public class UIUserSession
     private static final long serialVersionUID = 1L;
 
     /**
-     * SessionId for the user.
+     * UserName.
      */
-    private String sessionId;
+    private String userName;
 
     /**
      * @param _userName username
-     * @param _sessionId    sessionid
      */
-    public UIUserSession(final String _userName,
-                         final String _sessionId)
+    public UIUser(final String _userName)
     {
-        super(_userName);
-        this.sessionId = _sessionId;
+        this.userName = _userName;
     }
 
     /**
-     * Getter method for the instance variable {@link #sessionId}.
+     * Getter method for the instance variable {@link #userName}.
      *
-     * @return value of instance variable {@link #sessionId}
+     * @return value of instance variable {@link #userName}
      */
-    public String getSessionId()
+    public String getUserName()
     {
-        return this.sessionId;
+        return this.userName;
     }
 
     /**
-     * Setter method for instance variable {@link #sessionId}.
+     * Setter method for instance variable {@link #userName}.
      *
-     * @param _sessionId value for instance variable {@link #sessionId}
+     * @param _userName value for instance variable {@link #userName}
      */
-    public void setSessionId(final String _sessionId)
+    public void setUserName(final String _userName)
     {
-        this.sessionId = _sessionId;
+        this.userName = _userName;
     }
 
     @Override
@@ -89,20 +82,19 @@ public class UIUserSession
         return ToStringBuilder.reflectionToString(this);
     }
 
+
     /**
      * @return list of currently registered Users
      */
-    public static List<UIUserSession> getUIUserSessions()
+    public static List<UIUser> getUIUser()
     {
-        final List<UIUserSession> ret = new ArrayList<UIUserSession>();
+        final List<UIUser> ret = new ArrayList<UIUser>();
         final ConnectionRegistry registry = EFapsApplication.get().getConnectionRegistry();
-        final Map<String, Set<String>> userSessions = registry.getSessions4Users();
-        for (final Entry<String, Set<String>> entry : userSessions.entrySet()) {
-            final Iterator<String> iter = entry.getValue().iterator();
-            while (iter.hasNext()) {
-                ret.add(new UIUserSession(entry.getKey(), iter.next()));
-            }
+        final List<String> users = registry.getUsers();
+        for (final String user : users) {
+            ret.add(new UIUser(user));
         }
         return ret;
     }
+
 }
