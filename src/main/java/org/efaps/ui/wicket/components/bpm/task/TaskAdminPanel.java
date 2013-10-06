@@ -24,15 +24,13 @@ import org.apache.wicket.PageReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.IAjaxIndicatorAware;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.protocol.ws.api.IWebSocketConnection;
 import org.efaps.admin.dbproperty.DBProperties;
-import org.efaps.ui.wicket.EFapsApplication;
 import org.efaps.ui.wicket.components.bpm.AbstractSortableProvider;
 import org.efaps.ui.wicket.components.bpm.task.AdminTaskSummaryProvider.Query;
-import org.efaps.ui.wicket.models.PushMsg;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
 
@@ -108,19 +106,12 @@ public class TaskAdminPanel
         @Override
         public void onClick(final AjaxRequestTarget _target)
         {
-//            final AjaxFallbackDefaultDataTable<?, ?> table = (AjaxFallbackDefaultDataTable<?, ?>) getPage()
-//                            .visitChildren(AjaxFallbackDefaultDataTable.class).next();
-//            final AdminTaskSummaryProvider provider = (AdminTaskSummaryProvider) table.getDataProvider();
-//            provider.setQuery(this.query);
-//            provider.requery();
-//            _target.add(table);
-
-            final IWebSocketConnection wsConnection = EFapsApplication.get().getConnectionRegistry()
-                            .getConnection4User("Administrator");
-
-            if (wsConnection != null && wsConnection.isOpen()) {
-                wsConnection.sendMessage(new PushMsg("-----demo----"));
-            }
+            final AjaxFallbackDefaultDataTable<?, ?> table = (AjaxFallbackDefaultDataTable<?, ?>) getPage()
+                            .visitChildren(AjaxFallbackDefaultDataTable.class).next();
+            final AdminTaskSummaryProvider provider = (AdminTaskSummaryProvider) table.getDataProvider();
+            provider.setQuery(this.query);
+            provider.requery();
+            _target.add(table);
         }
 
         @Override

@@ -36,19 +36,18 @@ import org.slf4j.LoggerFactory;
  *
  * @author The eFaps Team
  * @version $Id$
+ * @param <T> Sortable object
  */
 public abstract class AbstractSortableProvider<T>
     extends SortableDataProvider<T, String>
 {
-
     /**
      * Logging instance used in this class.
      */
     protected static final Logger LOG = LoggerFactory.getLogger(AbstractSortableProvider.class);
 
-
     /**
-     *
+     * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
 
@@ -57,7 +56,9 @@ public abstract class AbstractSortableProvider<T>
      */
     private final List<T> uiValues;
 
-
+    /**
+     * Constructor.
+     */
     public AbstractSortableProvider()
     {
         String property = null;
@@ -87,6 +88,9 @@ public abstract class AbstractSortableProvider<T>
     }
 
 
+    /**
+     * @return the list of values provided by this provider
+     */
     protected List<T> getValues()
     {
         return this.uiValues;
@@ -125,8 +129,4 @@ public abstract class AbstractSortableProvider<T>
      * @return the number of rows presented per page
      */
     public abstract int getRowsPerPage();
-
-
-
-
 }
