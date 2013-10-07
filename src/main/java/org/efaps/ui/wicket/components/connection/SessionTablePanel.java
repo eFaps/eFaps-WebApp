@@ -32,6 +32,8 @@ import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulato
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
+import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.Item;
@@ -112,7 +114,20 @@ public class SessionTablePanel
                                         .getConnection4UserSession(uiSession.getUserName(), uiSession.getSessionId());
                         conn.sendMessage(uiSession);
                     }
+
+                    @Override
+                    public void onComponentTagBody(final MarkupStream _markupStream,
+                                                   final ComponentTag _openTag)
+                    {
+                        replaceComponentTagBody(_markupStream, _openTag, "");
+                    }
                 });
+            }
+
+            @Override
+            public String getCssClass()
+            {
+                return "closeSessionLink";
             }
         });
 
