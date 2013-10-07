@@ -24,6 +24,7 @@ import java.util.UUID;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
+import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.Page;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.Session;
@@ -33,6 +34,7 @@ import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes.Method;
 import org.apache.wicket.ajax.attributes.CallbackParameter;
 import org.apache.wicket.ajax.attributes.ThrottlingSettings;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.devutils.debugbar.DebugBar;
 import org.apache.wicket.event.IEvent;
 import org.apache.wicket.markup.ComponentTag;
@@ -265,8 +267,10 @@ public class MainPage
             if (!MessageStatusHolder.hasReadMsg(usrId)) {
                 alert.add(new AttributeModifier("style", new Model<String>("display:none")));
             }
-
-            this.socketMsg = new Label("socketMsg", "sdasdasdasd");
+            final WebMarkupContainer socketMsgContainer = new WebMarkupContainer("socketMsgContainer");
+            socketMsgContainer.setOutputMarkupPlaceholderTag(true);
+            add(socketMsgContainer);
+            this.socketMsg = new Label("socketMsg", "none yet");
             this.socketMsg.setOutputMarkupPlaceholderTag(true);
             this.socketMsg.add(new WebSocketBehavior()
             {
@@ -280,7 +284,22 @@ public class MainPage
                                     .addMsgConnection(_message.getSessionId(), _message.getPageId());
                 }
             });
-            add(this.socketMsg);
+            socketMsgContainer.add(this.socketMsg);
+
+            final AjaxLink<Void> close = new AjaxLink<Void>("socketMsgClose") {
+
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                public void onClick(final AjaxRequestTarget _target)
+                {
+                    final MarkupContainer msgContainer = MainPage.this.socketMsg.getParent();
+                    msgContainer.add(new AttributeModifier("style", new Model<String>("display:none")));
+                    _target.add(msgContainer);
+                }
+
+            };
+            socketMsgContainer.add(close);
         } catch (final EFapsException e) {
             throw new RestartResponseException(new ErrorPage(e));
         }
@@ -317,8 +336,9 @@ public class MainPage
                 final IWebSocketPushMessage msg = wsEvent.getMessage();
                 if (msg instanceof PushMsg) {
                     this.socketMsg.setDefaultModelObject(wsEvent.getMessage().toString());
-                    this.socketMsg.add(new AttributeModifier("style", new Model<String>("display:block")));
-                    wsEvent.getHandler().add(this.socketMsg);
+                    final MarkupContainer msgContainer = this.socketMsg.getParent();
+                    msgContainer.add(new AttributeModifier("style", new Model<String>("display:block")));
+                    wsEvent.getHandler().add(msgContainer);
                 } else if (msg instanceof UIUserSession) {
                     final String sessId = ((UIUserSession) msg).getSessionId();
                     if (sessId.endsWith(getSession().getId())) {
