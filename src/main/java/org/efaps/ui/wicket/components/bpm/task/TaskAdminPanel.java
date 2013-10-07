@@ -51,18 +51,20 @@ public class TaskAdminPanel
                     "BPM.css");
 
     /**
-     *
+     * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
 
     /**
-     * @param _id
+     * @param _wicketId wicketid of the component
+     * @param _pageReference reference to th epage
+     * @throws EFapsException on error
      */
-    public TaskAdminPanel(final String _id,
+    public TaskAdminPanel(final String _wicketId,
                           final PageReference _pageReference)
         throws EFapsException
     {
-        super(_id);
+        super(_wicketId);
         add(new UpdateTableLink("activeTasksBtn", Query.ACTIVE));
         add(new UpdateTableLink("completedTasksBtn", Query.COMPLETED));
         add(new UpdateTableLink("readyTasksBtn", Query.READY));
@@ -71,7 +73,6 @@ public class TaskAdminPanel
         final TaskTablePanel taskTable = new TaskTablePanel("taskTable", _pageReference,
                         new AdminTaskSummaryProvider());
         add(taskTable);
-
     }
 
     /**
@@ -128,5 +129,4 @@ public class TaskAdminPanel
             replaceComponentTagBody(_markupStream, _openTag, label);
         }
     }
-
 }

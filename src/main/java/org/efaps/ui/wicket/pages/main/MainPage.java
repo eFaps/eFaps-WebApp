@@ -317,7 +317,7 @@ public class MainPage
                 final IWebSocketPushMessage msg = wsEvent.getMessage();
                 if (msg instanceof PushMsg) {
                     this.socketMsg.setDefaultModelObject(wsEvent.getMessage().toString());
-                    this.add(new AttributeModifier("style", new Model<String>("display:block")));
+                    this.socketMsg.add(new AttributeModifier("style", new Model<String>("display:block")));
                     wsEvent.getHandler().add(this.socketMsg);
                 } else if (msg instanceof UIUserSession) {
                     final String sessId = ((UIUserSession) msg).getSessionId();

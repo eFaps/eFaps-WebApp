@@ -18,19 +18,27 @@
  * Last Changed By: $Author$
  */
 
-
 package org.efaps.ui.wicket.components.connection;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
+import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
+import org.apache.wicket.markup.IMarkupResourceStreamProvider;
 import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.markup.repeater.Item;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.util.resource.IResourceStream;
+import org.apache.wicket.util.resource.StringResourceStream;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.components.bpm.AbstractSortableProvider;
 import org.efaps.ui.wicket.models.objects.UIUser;
@@ -38,17 +46,16 @@ import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
 
-
 /**
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
+ * @version $Id: MessageTablePanel.java 10378 2013-10-06 01:57:57Z
+ *          jan@moxter.net $
  */
 public class MessageTablePanel
     extends Panel
 {
-
     /**
      * Reference to the style sheet.
      */
@@ -81,6 +88,20 @@ public class MessageTablePanel
 
         final List<IColumn<UIUser, String>> columns = new ArrayList<IColumn<UIUser, String>>();
 
+        columns.add(new AbstractColumn<UIUser, String>(new Model<String>(""))
+        {
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void populateItem(final Item<ICellPopulator<UIUser>> _cellItem,
+                                     final String _componentId,
+                                     final IModel<UIUser> _rowModel)
+            {
+                _cellItem.add(new CheckBoxPanel(_componentId, _rowModel));
+            }
+        });
+
         final String userName = DBProperties.getProperty(MessageTablePanel.class.getName() + ".UserName");
 
         columns.add(new PropertyColumn<UIUser, String>(new Model<String>(userName), "userName", "userName"));
@@ -88,7 +109,6 @@ public class MessageTablePanel
         add(new AjaxFallbackDefaultDataTable<UIUser, String>("table", columns, this.dataProvider,
                         this.dataProvider.getRowsPerPage()));
     }
-
 
     /**
      * @return update the underlying data
@@ -104,5 +124,38 @@ public class MessageTablePanel
     {
         super.renderHead(_response);
         _response.render(AbstractEFapsHeaderItem.forCss(MessageTablePanel.CSS));
+    }
+
+    /**
+     * Panel for the checkbox column.
+     */
+    public static class CheckBoxPanel
+        extends Panel
+        implements IMarkupResourceStreamProvider
+    {
+
+        /**
+         * Needed for serialization.
+         */
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * @param _wicketId wicketid for this component
+         * @param _rowModel model for the row
+         */
+        public CheckBoxPanel(final String _wicketId,
+                             final IModel<UIUser> _rowModel)
+        {
+            super(_wicketId, _rowModel);
+            add(new CheckBox("checkbox", Model.of(false)));
+        }
+
+        @Override
+        public IResourceStream getMarkupResourceStream(final MarkupContainer _container,
+                                                       final Class<?> _containerClass)
+        {
+            return new StringResourceStream(
+                            "<wicket:panel><input wicket:id=\"checkbox\" type=\"checkbox\"/></wicket:panel>");
+        }
     }
 }

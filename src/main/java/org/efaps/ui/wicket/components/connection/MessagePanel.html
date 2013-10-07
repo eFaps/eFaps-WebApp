@@ -24,10 +24,16 @@
 -->
 
 <wicket:panel xmlns:wicket="http://wicket.apache.org">
-    <div>
-    </div>
-    <div class="item">
-        <div wicket:id="messageTable">[table]</div>
-    </div>
+    <form wicket:id="msgForm" >
+        <div>
+            <label wicket:for="msg">Hallo</label>
+            <textarea wicket:id="msg" />
+            <input type="submit" wicket:id="sendMsgBtn" value="send" />
+            <input type="submit" wicket:id="broadcastMsgBtn" value="broadcast" />
+        </div>
+        <div class="item">
+            <div wicket:id="messageTable">[table]</div>
+        </div>
+    </form>
 </wicket:panel>
 
