@@ -268,38 +268,41 @@ public class MainPage
                 alert.add(new AttributeModifier("style", new Model<String>("display:none")));
             }
             final WebMarkupContainer socketMsgContainer = new WebMarkupContainer("socketMsgContainer");
-            socketMsgContainer.setOutputMarkupPlaceholderTag(true);
             add(socketMsgContainer);
-            this.socketMsg = new Label("socketMsg", "none yet");
-            this.socketMsg.setOutputMarkupPlaceholderTag(true);
-            this.socketMsg.add(new WebSocketBehavior()
-            {
-
-                private static final long serialVersionUID = 1L;
-
-                @Override
-                protected void onConnect(final ConnectedMessage _message)
+            if (Configuration.getAttributeAsBoolean(ConfigAttribute.WEBSOCKET_ACTVATE)) {
+                socketMsgContainer.setOutputMarkupPlaceholderTag(true);
+                this.socketMsg = new Label("socketMsg", "none yet");
+                this.socketMsg.setOutputMarkupPlaceholderTag(true);
+                this.socketMsg.add(new WebSocketBehavior()
                 {
-                    EFapsSession.get().getConnectionRegistry()
-                                    .addMsgConnection(_message.getSessionId(), _message.getPageId());
-                }
-            });
-            socketMsgContainer.add(this.socketMsg);
 
-            final AjaxLink<Void> close = new AjaxLink<Void>("socketMsgClose") {
+                    private static final long serialVersionUID = 1L;
 
-                private static final long serialVersionUID = 1L;
+                    @Override
+                    protected void onConnect(final ConnectedMessage _message)
+                    {
+                        EFapsSession.get().getConnectionRegistry()
+                                        .addMsgConnection(_message.getSessionId(), _message.getPageId());
+                    }
+                });
+                socketMsgContainer.add(this.socketMsg);
 
-                @Override
-                public void onClick(final AjaxRequestTarget _target)
-                {
-                    final MarkupContainer msgContainer = MainPage.this.socketMsg.getParent();
-                    msgContainer.add(new AttributeModifier("style", new Model<String>("display:none")));
-                    _target.add(msgContainer);
-                }
+                final AjaxLink<Void> close = new AjaxLink<Void>("socketMsgClose") {
 
-            };
-            socketMsgContainer.add(close);
+                    private static final long serialVersionUID = 1L;
+
+                    @Override
+                    public void onClick(final AjaxRequestTarget _target)
+                    {
+                        final MarkupContainer msgContainer = MainPage.this.socketMsg.getParent();
+                        msgContainer.add(new AttributeModifier("style", new Model<String>("display:none")));
+                        _target.add(msgContainer);
+                    }
+                };
+                socketMsgContainer.add(close);
+            } else {
+                socketMsgContainer.setVisible(false);
+            }
         } catch (final EFapsException e) {
             throw new RestartResponseException(new ErrorPage(e));
         }

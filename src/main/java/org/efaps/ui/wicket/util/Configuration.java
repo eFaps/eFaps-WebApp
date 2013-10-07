@@ -88,7 +88,9 @@ public final class Configuration
         /** */
         BOARD_OWNEDTASK_AUTIME(false, true, WebAppSettings.DASHBOARD_OWNEDTASK_AUTIME, "30"),
         /** MainToolBar. */
-        TOOLBAR(false, true, WebAppSettings.TOOLBAR, "87001cc3-c45c-44de-b8f1-776df507f268");
+        TOOLBAR(false, true, WebAppSettings.TOOLBAR, "87001cc3-c45c-44de-b8f1-776df507f268"),
+         /** Websocket activated. */
+        WEBSOCKET_ACTVATE(false, true, WebAppSettings.WEBSOCKET_ACTIVATE, "true");
 
         /**
          * Stores the key for this Attribute..

@@ -133,4 +133,10 @@ public interface WebAppSettings
      */
     String DASHBOARD_OWNEDTASK_AUTIME = "org.efaps.webapp.DashBoard.OwnedTaskTable.AutoUpdateDuration";
 
+    /**
+     * Boolean (true/false): Activate the websocket/push management. Default: true
+     */
+    String WEBSOCKET_ACTIVATE = "org.efaps.webapp.WebSocket.activate";
+
+
 }
