@@ -90,7 +90,11 @@ public final class Configuration
         /** MainToolBar. */
         TOOLBAR(false, true, WebAppSettings.TOOLBAR, "87001cc3-c45c-44de-b8f1-776df507f268"),
          /** Websocket activated. */
-        WEBSOCKET_ACTVATE(false, true, WebAppSettings.WEBSOCKET_ACTIVATE, "true");
+        WEBSOCKET_ACTVATE(false, true, WebAppSettings.WEBSOCKET_ACTIVATE, "true"),
+        /** */
+        WEBSOCKET_MESSAGETABLE_MAX(false, true, WebAppSettings.WEBSOCKET_MESSAGETABLE_MAX, "20"),
+        /** */
+        WEBSOCKET_SESSIONTABLE_MAX(false, true, WebAppSettings.WEBSOCKET_SESSIONTABLE_MAX, "20");
 
         /**
          * Stores the key for this Attribute..

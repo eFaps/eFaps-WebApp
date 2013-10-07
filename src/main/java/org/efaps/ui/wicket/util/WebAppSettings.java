@@ -138,5 +138,14 @@ public interface WebAppSettings
      */
     String WEBSOCKET_ACTIVATE = "org.efaps.webapp.WebSocket.activate";
 
+    /**
+     * Integer: Maximum rows of session shown in the Session Table per Page. Default Value is 20.
+     */
+    String WEBSOCKET_SESSIONTABLE_MAX = "org.efaps.webapp.WebSocket.SessionTable.MaximumRows";
+
+    /**
+     * Integer: Maximum rows of session shown in the Session Table per Page. Default Value is 20.
+     */
+    String WEBSOCKET_MESSAGETABLE_MAX = "org.efaps.webapp.WebSocket.MessageTable.MaximumRows";
 
 }

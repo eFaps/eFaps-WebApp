@@ -31,6 +31,7 @@ import org.apache.wicket.model.Model;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.components.bpm.AbstractSortableProvider;
 import org.efaps.ui.wicket.models.objects.UIUserSession;
+import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.util.EFapsException;
 
 /**
@@ -150,6 +151,6 @@ public class SessionProvider
     @Override
     public int getRowsPerPage()
     {
-        return 8;
+        return Configuration.getAttributeAsInteger(Configuration.ConfigAttribute.WEBSOCKET_SESSIONTABLE_MAX);
     }
 }
