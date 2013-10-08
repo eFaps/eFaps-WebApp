@@ -40,20 +40,36 @@ public class PushMsg
      */
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Content of  this message.
+     */
     private final String content;
+
+    /**
+     * timestamp of this message.
+     */
     private final Date timestamp;
 
-    public PushMsg(final String content)
+    /**
+     * @param _content content of the message
+     */
+    public PushMsg(final String _content)
     {
-        this.content = content;
+        this.content = _content;
         this.timestamp = new Date();
     }
 
+    /**
+     * @return the content of the message
+     */
     public String getContent()
     {
         return this.content;
     }
 
+    /**
+     * @return the timestamp of the message
+     */
     public Date getTimestamp()
     {
         return this.timestamp;
@@ -65,5 +81,4 @@ public class PushMsg
         final SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
         return format.format(this.timestamp) + ": " + this.content;
     }
-
 }
