@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
  * @version $Id: UIClassification.java 8530 2013-01-16 01:56:29Z jan@moxter.net$
  */
 public class UIClassification
-    implements IFormElement, IClusterable
+implements IFormElement, IClusterable
 {
 
     /**
@@ -159,8 +159,8 @@ public class UIClassification
      */
     private UIClassification(final long _fieldId,
                              final AbstractUIObject _uiObject)
-        throws EFapsException
-    {
+                                             throws EFapsException
+                                             {
         this.classificationUUID = null;
         this.multipleSelect = true;
         this.fieldId = _fieldId;
@@ -169,7 +169,7 @@ public class UIClassification
         this.mode = _uiObject.getMode();
         this.commandName = _uiObject.getCommand().getName();
         this.instance = _uiObject.getInstance();
-    }
+                                             }
 
     /**
      * Private constructor used for instantiating child UIClassification.
@@ -182,8 +182,8 @@ public class UIClassification
     private UIClassification(final UUID _uuid,
                              final TargetMode _mode,
                              final boolean _base)
-        throws CacheReloadException
-    {
+                                             throws CacheReloadException
+                                             {
         this.multipleSelect = Classification.get(_uuid).isMultipleSelect();
         this.fieldId = 0;
         this.classificationUUID = _uuid;
@@ -191,7 +191,7 @@ public class UIClassification
         this.root = false;
         this.mode = _mode;
         this.base = _base;
-    }
+                                             }
 
     /**
      * Getter method for instance variable {@link #fieldId}.
@@ -300,8 +300,8 @@ public class UIClassification
      * @throws EFapsException on error
      */
     public void execute(final Instance _instance)
-        throws EFapsException
-    {
+                    throws EFapsException
+                    {
         UIClassification clazz = this;
         while (!clazz.isRoot()) {
             clazz = clazz.getParent();
@@ -315,7 +315,7 @@ public class UIClassification
             child.addChildren(child, type.getChildClassifications(), clazz.selectedUUID, _instance);
             clazz.expand();
         }
-    }
+                    }
 
     /**
      * Expand the Tree.
@@ -380,16 +380,16 @@ public class UIClassification
                              final Set<Classification> _children,
                              final Set<UUID> _selectedUUID,
                              final Instance _instance)
-        throws EFapsException
-    {
+                                             throws EFapsException
+                                             {
         for (final Classification child : _children) {
             boolean access;
             if (!child.isAbstract()) {
                 final Instance inst = AbstractInstanceObject.getInstance4Create(child);
 
                 access = child.hasAccess(inst, getMode() == TargetMode.CREATE
-                            || getMode() == TargetMode.EDIT ? AccessTypeEnums.CREATE.getAccessType()
-                            : AccessTypeEnums.SHOW.getAccessType());
+                                || getMode() == TargetMode.EDIT ? AccessTypeEnums.CREATE.getAccessType()
+                                                : AccessTypeEnums.SHOW.getAccessType());
             } else {
                 access = true;
             }
@@ -404,7 +404,7 @@ public class UIClassification
             }
         }
         Collections.sort(_parent.children, new Comparator<UIClassification>()
-        {
+                        {
 
             @Override
             public int compare(final UIClassification _class0,
@@ -412,8 +412,8 @@ public class UIClassification
             {
                 return _class0.getLabel().compareTo(_class2.getLabel());
             }
-        });
-    }
+                        });
+                                             }
 
     /**
      * Method to get the key to the instances related to this classification.
@@ -423,8 +423,8 @@ public class UIClassification
      * @throws EFapsException on error
      */
     public Map<UUID, String> getClassInstanceKeys(final Instance _instance)
-        throws EFapsException
-    {
+                    throws EFapsException
+                    {
         final Map<UUID, String> ret = new HashMap<UUID, String>();
         UIClassification clazz = this;
         while (!clazz.isRoot()) {
@@ -444,6 +444,7 @@ public class UIClassification
                     final Classification subClassType = (Classification) Type.get(typeid);
                     final QueryBuilder subQueryBldr = new QueryBuilder(subClassType);
                     subQueryBldr.addWhereAttrEqValue(subClassType.getLinkAttributeName(), _instance.getId());
+                    subQueryBldr.addOrderByAttributeAsc("ID");
                     final InstanceQuery query = subQueryBldr.getQuery();
                     query.execute();
                     if (query.next()) {
@@ -457,7 +458,7 @@ public class UIClassification
             reltype = classType.getClassifyRelationType();
         }
         return ret;
-    }
+                    }
 
     /**
      * Getter method for instance variable {@link #initialized}.
@@ -608,20 +609,20 @@ public class UIClassification
      */
     public static UIClassification getUIClassification(final Field _field,
                                                        final AbstractUIObject _uiObject)
-        throws EFapsException
-    {
+                                                                       throws EFapsException
+                                                                       {
         final String[] names = _field.getClassificationName().split(";");
         final UIClassification root = new UIClassification(_field.getId(), _uiObject);
         for (final String className : names) {
             final Classification clazz = Classification.get(className);
             if (clazz.hasAccess(root.getInstance(), root.getMode() == TargetMode.CREATE
                             || root.getMode() == TargetMode.EDIT ? AccessTypeEnums.CREATE.getAccessType()
-                            : AccessTypeEnums.SHOW.getAccessType())) {
+                                            : AccessTypeEnums.SHOW.getAccessType())) {
                 final UIClassification childUI = new UIClassification(clazz.getUUID(), root.getMode(), true);
                 root.children.add(childUI);
                 childUI.setParent(root);
             }
         }
         return root;
-    }
+                                                                       }
 }
