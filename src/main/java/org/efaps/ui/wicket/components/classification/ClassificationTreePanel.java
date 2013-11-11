@@ -20,11 +20,6 @@
 
 package org.efaps.ui.wicket.components.classification;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.UUID;
-
 import org.apache.wicket.Page;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -34,15 +29,10 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.iterator.ComponentHierarchyIterator;
 import org.efaps.admin.dbproperty.DBProperties;
-import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.button.Button;
-import org.efaps.ui.wicket.models.objects.IFormElement;
 import org.efaps.ui.wicket.models.objects.UIClassification;
-import org.efaps.ui.wicket.models.objects.UIFieldForm;
 import org.efaps.ui.wicket.models.objects.UIForm;
-import org.efaps.ui.wicket.models.objects.UIForm.Element;
-import org.efaps.ui.wicket.models.objects.UIForm.ElementType;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
@@ -143,71 +133,20 @@ public class ClassificationTreePanel
         @Override
         public void onClick(final AjaxRequestTarget _target)
         {
-            //_target.add(findParent(ClassificationPathPanel.class));
-            //_target.add(findParent(ClassificationTreePanel.class).setVisible(false));
             if (ClassificationTreePanel.this.changed) {
                 final Page page = getPage();
                 final UIForm uiform = (UIForm) page.getDefaultModelObject();
                 final ComponentHierarchyIterator visitor = page.visitChildren(FormContainer.class);
 
                 final FormContainer form = (FormContainer) visitor.next();
-
                 form.removeAll();
-                // remove previous added classification forms
-                final Iterator<Element> iter2 = uiform.getElements().iterator();
-                final Map<UUID, String> uuid2InstanceKey = new HashMap<UUID, String>();
-                while (iter2.hasNext()) {
-                    final IFormElement element = iter2.next().getElement();
-                    if (element instanceof UIFieldForm) {
-                        final String instanceKey = ((UIFieldForm) element).getInstanceKey();
-                        if (instanceKey != null) {
-                            final UUID classUUID = ((UIFieldForm) element).getClassificationUUID();
-                            uuid2InstanceKey.put(classUUID, instanceKey);
-                        }
-                        iter2.remove();
-                    }
-                }
                 try {
-                    add2Elements(uiform, (UIClassification) getDefaultModelObject(), uuid2InstanceKey);
+                    uiform.updateClassElements((UIClassification) getDefaultModelObject());
                     FormPage.updateFormContainer(page, form, uiform);
                 } catch (final EFapsException e) {
                     throw new RestartResponseException(new ErrorPage(e));
                 }
                 _target.add(form);
-            }
-        }
-
-        /**
-         * Recursive method that adds the classification forms as elements to
-         * the form by walking down the tree.
-         *
-         * @param _uiForm uiForm the elements must be added to
-         * @param _parentClass the classification to be added
-         * @param _uuid2InstanceKey map from uuid to instance keys
-         * @throws EFapsException on error
-         */
-        private void add2Elements(final UIForm _uiForm,
-                                  final UIClassification _parentClass,
-                                  final Map<UUID, String> _uuid2InstanceKey)
-            throws EFapsException
-        {
-            if (_parentClass.isSelected() && !_parentClass.isRoot()) {
-                final UIFieldForm fieldform;
-                if (_uiForm.isEditMode()) {
-                    if (_uuid2InstanceKey.containsKey(_parentClass.getClassificationUUID())) {
-                        fieldform = new UIFieldForm(_uiForm.getCommandUUID(),
-                                        _uuid2InstanceKey.get(_parentClass.getClassificationUUID()));
-                    } else {
-                        fieldform = new UIFieldForm(_uiForm.getCommandUUID(), _parentClass);
-                        fieldform.setMode(TargetMode.CREATE);
-                    }
-                } else {
-                    fieldform = new UIFieldForm(_uiForm.getCommandUUID(), _parentClass);
-                }
-                _uiForm.getElements().add(new Element(ElementType.SUBFORM, fieldform));
-            }
-            for (final UIClassification child : _parentClass.getChildren()) {
-                add2Elements(_uiForm, child, _uuid2InstanceKey);
             }
         }
     }

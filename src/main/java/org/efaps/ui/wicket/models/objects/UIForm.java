@@ -21,6 +21,8 @@
 package org.efaps.ui.wicket.models.objects;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -344,10 +346,55 @@ public class UIForm
                     if (!uiclass.isInitialized()) {
                         uiclass.execute(getInstance());
                     }
-                    addChildrenClassificationForms(uiclass, instanceKeys);
+                    addClassElements(uiclass, instanceKeys);
+
                 }
             }
         }
+    }
+
+    /**
+     * Method that adds the classification forms as elements to
+     * the form by walking down the tree.
+     *
+     * @param _uiclass the classification to be added
+     * @param _uuid2InstanceKey map from uuid to instance keys
+     * @throws EFapsException on error
+     */
+    public void addClassElements(final UIClassification _uiclass,
+                                 final Map<UUID, String> _instanceKeys)
+        throws EFapsException
+    {
+        this.elements.addAll(getClassElements(_uiclass, _instanceKeys));
+    }
+
+    /**
+     * Method that removes all classifcations and afterwards
+     * adds the classification forms as elements to
+     * the form by walking down the tree.
+     *
+     * @param _uiclass the classification to be added
+     * @param _uuid2InstanceKey map from uuid to instance keys
+     * @throws EFapsException on error
+     */
+    public void updateClassElements(final UIClassification _uiclass)
+        throws EFapsException
+    {
+        // remove previous added classification forms
+        final Iterator<Element> iter2 = this.elements.iterator();
+        final Map<UUID, String> uuid2InstanceKey = new HashMap<UUID, String>();
+        while (iter2.hasNext()) {
+            final IFormElement element = iter2.next().getElement();
+            if (element instanceof UIFieldForm) {
+                final String instanceKey = ((UIFieldForm) element).getInstanceKey();
+                if (instanceKey != null) {
+                    final UUID classUUID = ((UIFieldForm) element).getClassificationUUID();
+                    uuid2InstanceKey.put(classUUID, instanceKey);
+                }
+                iter2.remove();
+            }
+        }
+        addClassElements(_uiclass, uuid2InstanceKey);
     }
 
     /**
@@ -540,20 +587,42 @@ public class UIForm
     /**
      * Recursive method to add the children classification forms.
      * @param _uiclass      parent classification form
-     * @param _instanceKeys mapo of instancekeys
+     * @param _uuid2InstanceKey mapping of instancekeys
      * @throws EFapsException o nerro
      */
-    private void addChildrenClassificationForms(final UIClassification _uiclass,
-                                                final Map<UUID, String> _instanceKeys)
+    private List<Element> getClassElements(final UIClassification _uiclass,
+                                           final Map<UUID, String> _uuid2InstanceKey)
         throws EFapsException
     {
-        for (final UIClassification childClass : _uiclass.getChildren()) {
-            if (_instanceKeys.containsKey(childClass.getClassificationUUID())) {
-                this.elements.add(new Element(UIForm.ElementType.SUBFORM, new UIFieldForm(getCommandUUID(),
-                                    _instanceKeys.get(childClass.getClassificationUUID()))));
+        final List<Element> ret = new ArrayList<Element>();
+        if (_uiclass.isSelected() && !_uiclass.isRoot()) {
+            final UIFieldForm fieldform;
+            if (_uuid2InstanceKey.containsKey(_uiclass.getClassificationUUID())) {
+                fieldform = new UIFieldForm(getCommandUUID(),
+                                _uuid2InstanceKey.get(_uiclass.getClassificationUUID()));
+            } else {
+                fieldform = new UIFieldForm(getCommandUUID(), _uiclass);
+                if (isEditMode()) {
+                    // in edit mode, if there is no classification yet, create mode must be forced
+                    fieldform.setMode(TargetMode.CREATE);
+                }
             }
-            addChildrenClassificationForms(childClass, _instanceKeys);
+            ret.add(new Element(ElementType.SUBFORM, fieldform));
         }
+        for (final UIClassification child : _uiclass.getChildren()) {
+            ret.addAll(getClassElements(child, _uuid2InstanceKey));
+        }
+        Collections.sort(ret, new Comparator<Element>()
+        {
+            @Override
+            public int compare(final Element _o1,
+                               final Element _o2)
+            {
+                return ((UIFieldForm) _o1.getElement()).getWeight().compareTo(
+                                ((UIFieldForm) _o2.getElement()).getWeight());
+            }
+        });
+        return ret;
     }
 
     /**
@@ -589,7 +658,8 @@ public class UIForm
         UIClassification uiclass = null;
         boolean firstTable = true;
         for (final Field field : form.getFields()) {
-            if (field.hasAccess(getMode(), AbstractInstanceObject.getInstance4Create(type), getCommand()) && !field.isNoneDisplay(getMode())) {
+            if (field.hasAccess(getMode(), AbstractInstanceObject.getInstance4Create(type), getCommand())
+                            && !field.isNoneDisplay(getMode())) {
                 if (field instanceof FieldGroup) {
                     final FieldGroup group = (FieldGroup) field;
                  // in case that the first field is a group the element must be initiated
@@ -720,30 +790,9 @@ public class UIForm
             if (!uiclass.isInitialized()) {
                 uiclass.execute(null);
             }
-            add2Elements4Create(uiclass);
+            this.elements.addAll(getClassElements(uiclass, new HashMap<UUID, String>()));
         }
     }
-
-    /**
-     * Recursive method that adds the classification forms as elements to the
-     * form by walking down the tree.
-     *
-     * @param _parentClass the classification to be added
-     * @throws EFapsException on error
-     */
-    private void add2Elements4Create(final UIClassification _parentClass)
-        throws EFapsException
-    {
-        if (_parentClass.isSelected()) {
-            final UIFieldForm fieldform = new UIFieldForm(getCommandUUID(), _parentClass);
-            fieldform.setMode(TargetMode.CREATE);
-            this.elements.add(new Element(UIForm.ElementType.SUBFORM, fieldform));
-        }
-        for (final UIClassification child : _parentClass.getChildren()) {
-            add2Elements4Create(child);
-        }
-    }
-
 
     /**
      * Method to get the type that will be created by a form. A method must be
@@ -805,9 +854,9 @@ public class UIForm
      *
      * @return value of instance variable {@link #elements}
      */
-    public List<Element> getElements()
+    public final List<Element> getElements()
     {
-        return this.elements;
+        return Collections.unmodifiableList(this.elements);
     }
 
     /**

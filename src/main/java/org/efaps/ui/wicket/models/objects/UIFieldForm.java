@@ -53,6 +53,11 @@ public class UIFieldForm
     private UUID classificationUUID;
 
     /**
+     * Weight Integer used as sort criteria.
+     */
+    private Integer weight = 100;
+
+    /**
      * Constructor for the case that a instance is given e.g. view, edit.
      *
      * @param _commandUuid the uuid of the command that opened the parent form
@@ -68,6 +73,10 @@ public class UIFieldForm
             final Form form = Form.getTypeForm(getInstance().getType());
             this.classificationUUID = getInstance().getType().getUUID();
             setFormUUID(form.getUUID());
+            final String weightStr = form.getProperty("Weight");
+            if (weightStr != null && !weightStr.isEmpty()) {
+                this.weight = Integer.parseInt(weightStr);
+            }
         }
     }
 
@@ -87,6 +96,10 @@ public class UIFieldForm
         this.classificationUUID = type.getUUID();
         final Form form = Form.getTypeForm(type);
         setFormUUID(form.getUUID());
+        final String weightStr = form.getProperty("Weight");
+        if (weightStr != null && !weightStr.isEmpty()) {
+            this.weight = Integer.parseInt(weightStr);
+        }
     }
 
     /**
@@ -111,5 +124,15 @@ public class UIFieldForm
     public UUID getClassificationUUID()
     {
         return this.classificationUUID;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #weight}.
+     *
+     * @return value of instance variable {@link #weight}
+     */
+    public Integer getWeight()
+    {
+        return this.weight;
     }
 }
