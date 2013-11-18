@@ -34,8 +34,8 @@ import org.efaps.ui.wicket.components.menutree.MenuTree;
 import org.efaps.ui.wicket.components.split.header.SplitHeaderPanel;
 import org.efaps.ui.wicket.components.tree.StructurBrowserTreePanel;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
-import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 import org.efaps.util.EFapsException;
@@ -129,13 +129,12 @@ public class SidePanel
 
         overflow.add(this.menuTree.setOutputMarkupId(true));
 
-        final StructurBrowserTreePanel stuctbrows = new StructurBrowserTreePanel("stuctbrows", _commandUUID, _oid);
-        stuctbrows.setOutputMarkupId(true);
-        top.add(stuctbrows);
-
         this.add(new ContentPaneBehavior(Region.LEADING, true, positionH , null, splitterState));
 
         if (_showStructurBrowser) {
+            final StructurBrowserTreePanel stuctbrows = new StructurBrowserTreePanel("stuctbrows", _commandUUID, _oid);
+            stuctbrows.setOutputMarkupId(true);
+            top.add(stuctbrows);
             add(new WebMarkupContainer("header").setVisible(false));
             add(new BorderContainerBehavior(Design.HEADLINE, true));
             bottom.add(new ContentPaneBehavior(Region.CENTER, true));
