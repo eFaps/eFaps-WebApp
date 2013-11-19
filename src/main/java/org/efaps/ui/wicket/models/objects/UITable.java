@@ -60,7 +60,6 @@ import org.efaps.ui.wicket.util.FilterDefault;
 import org.efaps.util.DateTimeUtil;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
-import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.slf4j.Logger;
@@ -637,10 +636,12 @@ public class UITable
      *
      */
     public void addFilterTextLike(final UITableHeader _uitableHeader,
-                                   final String _from)
+                                  final String _from,
+                                  final boolean _expertMode,
+                                  final boolean _ignoreCase)
         throws EFapsException
     {
-        final TableFilter filter = new TableFilter(_uitableHeader, _from);
+        final TableFilter filter = new TableFilter(_uitableHeader, _from, _expertMode, _ignoreCase);
         this.filters.put(_uitableHeader.getFieldName(), filter);
         final UITableHeader orig = getHeader4Id(_uitableHeader.getFieldId());
         if (orig != null) {
@@ -944,9 +945,19 @@ public class UITable
         public static final String TO = "to";
 
         /**
-         * Key to the value for "to" in the map for the esjp.
+         * Key to the value for "list" in the map for the esjp.
          */
         public static final String LIST = "list";
+
+        /**
+         * Key to the value for "expertMode" in the map for the esjp.
+         */
+        public static final String EXPERTMODE = "expertMode";
+
+        /**
+         * Key to the value for "expertMode" in the map for the esjp.
+         */
+        public static final String IGNORECASE = "ignoreCase";
 
         /**
          * Needed for serialization.
@@ -985,11 +996,20 @@ public class UITable
          */
         private long headerFieldId;
 
-
         /**
          * Type of the Filter.
          */
         private final FilterType filterType;
+
+        /**
+         * ExpertMode or not.
+         */
+        private boolean expertMode = false;
+
+        /**
+         * IgnoreCase or not.
+         */
+        private boolean ignoreCase = true;
 
         /**
          * Constructor is used for a database based filter in case that it is
@@ -1024,7 +1044,7 @@ public class UITable
                     final int fromSub = parts.length > 1 ? Integer.parseInt(parts[1]) : 0;
                     final int rangeCount = parts.length > 2 ? Integer.parseInt(parts[2]) : 1;
                     final FilterDefault def = FilterDefault.valueOf(range.toUpperCase());
-                    DateMidnight tmp = DateTimeUtil.translateFromUI(new DateTime()).toDateMidnight();
+                    DateTime tmp = DateTimeUtil.translateFromUI(new DateTime()).withTimeAtStartOfDay();
                     switch (def) {
                         case TODAY:
                             this.dateFrom = tmp.toDateTime().minusDays(fromSub);
@@ -1101,12 +1121,16 @@ public class UITable
          * @throws EFapsException on error
          */
         public TableFilter(final UITableHeader _uitableHeader,
-                           final String _from)
+                           final String _from,
+                           final boolean _expertMode,
+                           final boolean _ignoreCase)
             throws EFapsException
         {
             this.headerFieldId = _uitableHeader.getFieldId();
             this.filterType = _uitableHeader.getFilterType();
             this.from = _from;
+            this.expertMode  = _expertMode;
+            this.ignoreCase  = _ignoreCase;
         }
 
         /**
@@ -1168,6 +1192,8 @@ public class UITable
             if (this.filterList == null) {
                 ret.put(UITable.TableFilter.FROM, this.from);
                 ret.put(UITable.TableFilter.TO, this.to);
+                ret.put(UITable.TableFilter.EXPERTMODE, isExpertMode());
+                ret.put(UITable.TableFilter.IGNORECASE, isIgnoreCase());
             } else {
                 ret.put(UITable.TableFilter.LIST, this.filterList);
             }
@@ -1262,6 +1288,26 @@ public class UITable
         public Set<?> getFilterList()
         {
             return this.filterList;
+        }
+
+        /**
+         * Getter method for the instance variable {@link #expertMode}.
+         *
+         * @return value of instance variable {@link #expertMode}
+         */
+        public boolean isExpertMode()
+        {
+            return this.expertMode;
+        }
+
+        /**
+         * Getter method for the instance variable {@link #ignoreCase}.
+         *
+         * @return value of instance variable {@link #ignoreCase}
+         */
+        public boolean isIgnoreCase()
+        {
+            return this.ignoreCase;
         }
     }
 }

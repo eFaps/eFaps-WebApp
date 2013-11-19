@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2012 The eFaps Team
+ * Copyright 2003 - 2013 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,9 +25,11 @@ import java.util.Date;
 import org.apache.wicket.datetime.StyleDateConverter;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
@@ -77,7 +79,6 @@ public class FreeTextPanel
 
         if (filterType.equals(FilterType.TEXT)) {
             this.add(new Label("textFrom", DBProperties.getProperty("FilterPage.textFilter")));
-
             final IModel<String> model = new IModel<String>()
             {
 
@@ -107,6 +108,20 @@ public class FreeTextPanel
 
             final TextField<String> stringFilter = new TextField<String>("from", model);
             this.add(stringFilter);
+
+            final WebMarkupContainer options = new WebMarkupContainer("options");
+            this.add(options);
+            options.add(new Label("expertModeLabel", DBProperties.getProperty("FilterPage.expertModeLabel")));
+            options.add(new Label("ignoreCaseLabel", DBProperties.getProperty("FilterPage.ignoreCaseLabel")));
+            final CheckBox checkBox = new CheckBox("expertMode",
+                            Model.of(new Boolean(uitable.getFilter(_uitableHeader).isExpertMode())));
+            checkBox.setOutputMarkupId(true);
+            options.add(checkBox);
+            final CheckBox checkBox2 = new CheckBox("ignoreCase",
+                            Model.of(new Boolean(uitable.getFilter(_uitableHeader).isIgnoreCase())));
+            checkBox2.setOutputMarkupId(true);
+            options.add(checkBox2);
+
             this.add(new WebMarkupContainer("js").setVisible(false));
             this.add(new WebMarkupContainer("dateFrom").setVisible(false));
             this.add(new WebMarkupContainer("textTo").setVisible(false));
@@ -156,7 +171,7 @@ public class FreeTextPanel
             this.toFieldName = "dateTo";
             this.add(new WebMarkupContainer("from").setVisible(false));
             this.add(new WebMarkupContainer("to").setVisible(false));
-
+            this.add(new WebMarkupContainer("options").setVisible(false));
         } else if (filterType.equals(FilterType.INTEGER) || filterType.equals(FilterType.DECIMAL)) {
             this.add(new Label("textFrom", DBProperties.getProperty("FilterPage.textFrom")));
             this.add(new Label("textTo", DBProperties.getProperty("FilterPage.textTo")));
@@ -167,6 +182,8 @@ public class FreeTextPanel
             this.add(new WebMarkupContainer("js").setVisible(false));
             this.add(new WebMarkupContainer("dateFrom").setVisible(false));
             this.add(new WebMarkupContainer("dateTo").setVisible(false));
+            this.add(new WebMarkupContainer("expertMode").setVisible(false));
+            this.add(new WebMarkupContainer("options").setVisible(false));
         }
     }
 

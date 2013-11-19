@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2012 The eFaps Team
+ * Copyright 2003 - 2013 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -231,7 +232,20 @@ public class FilterPage
                             final TextField<String> stringFilter = (TextField<String>) comp;
                             from = stringFilter.getDefaultModelObjectAsString();
                         }
-                        uiTable.addFilterTextLike(_uitableHeader, from);
+
+                        final ComponentHierarchyIterator iter2 = freeTextPanel.visitChildren(CheckBox.class);
+                        boolean expertMode = false;
+                        boolean ignoreCase = false;
+                        while (iter2.hasNext()) {
+                            final Component comp = iter2.next();
+                            final CheckBox checkBox = (CheckBox) comp;
+                            if ("expertMode".equals(checkBox.getId())) {
+                                expertMode = (boolean) checkBox.getDefaultModelObject();
+                            } else {
+                                ignoreCase = (boolean) checkBox.getDefaultModelObject();
+                            }
+                        }
+                        uiTable.addFilterTextLike(_uitableHeader, from, expertMode, ignoreCase);
                         modal.setWindowClosedCallback(new UpdateParentCallback(FilterPage.this.pageReference,
                                         modal, _uitableHeader.getFilter().getBase().equals(Filter.Base.DATABASE)));
                         modal.setUpdateParent(true);
