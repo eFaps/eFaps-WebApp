@@ -503,7 +503,11 @@ public class UIForm
             strValue = fieldvalue.getStringValue(getMode());
         } else {
             if (isEditMode() && _field.isEditableDisplay(getMode())) {
-                strValue = fieldvalue.getEditHtml(getMode());
+                if (_field.hasEvents(EventType.UI_FIELD_AUTOCOMPLETE)) {
+                    strValue = fieldvalue.getStringValue(getMode());
+                } else {
+                    strValue = fieldvalue.getEditHtml(getMode());
+                }
             } else if (_field.isReadonlyDisplay(getMode())) {
                 strValue = fieldvalue.getReadOnlyHtml(getMode());
             }
