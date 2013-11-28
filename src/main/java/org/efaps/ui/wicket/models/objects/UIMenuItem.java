@@ -34,11 +34,14 @@ import org.efaps.admin.ui.Image;
 import org.efaps.beans.ValueList;
 import org.efaps.beans.valueparser.ParseException;
 import org.efaps.beans.valueparser.ValueParser;
+import org.efaps.db.Context;
 import org.efaps.db.PrintQuery;
 import org.efaps.ui.wicket.components.modalwindow.ICmdUIObject;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class provides the Model for rendering MenuComponents in {@link #org.efaps.ui.wicket.components.menu.MenuPanel}
@@ -51,11 +54,21 @@ public class UIMenuItem
     extends AbstractUIObject
     implements ICmdUIObject
 {
+    /**
+     * Static part of the key to get the Information stored in the session
+     * in relation to this StruturBrowser.
+     */
+    public static final String USERSESSIONKEY = "eFapsUIMenuItem";
 
     /**
      * Needed for serialization.
      */
     private static final long serialVersionUID = 505704924081527139L;
+
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(UIMenuItem.class);
 
     /**
      * this instance variable stores in the case that this MenuItem is part of a
@@ -77,9 +90,10 @@ public class UIMenuItem
     private final List<UIMenuItem> children = new ArrayList<UIMenuItem>();
 
     /**
-     * this instance variable stores in the case that this MenuItem is part of a
-     * {@link #org.efaps.ui.wicket.components.menutree.MenuTree} if it is selected by default and therefore the Form or Table
-     * connected to this MenuItem must be opened.
+     * this instance variable stores in the case that this MenuItem is part of
+     * a {@link #org.efaps.ui.wicket.components.menutree.MenuTree} if it is
+     * selected by default and therefore the Form or Table connected to this
+     * MenuItem must be opened.
      */
     private boolean defaultSelected = false;
 
@@ -133,6 +147,11 @@ public class UIMenuItem
      * The parent for this item.
      */
     private UIMenuItem parent;
+
+     /**
+     * Is this model expanded.
+     */
+    private boolean expanded = false;
 
     /**
      * Constructor setting the UUID of this MenuItem.
@@ -327,6 +346,16 @@ public class UIMenuItem
                             final UIMenuItem child = new UIMenuItem(subCmd.getUUID(), getInstanceKey());
                             child.setParent(this);
                             this.children.add(child);
+                            try {
+                                if (Context.getThreadContext().containsSessionAttribute(child.getCacheKey())) {
+                                    final Boolean expanded = (Boolean) Context.getThreadContext().getSessionAttribute(
+                                                    child.getCacheKey());
+                                    child.setExpanded(expanded);
+                                }
+                            } catch (final EFapsException e) {
+                                UIMenuItem.LOG.error("Error retrieving Session info for UIMenuItem called by Command "
+                                                + "with UUID: {}", getCommandUUID(), e);
+                            }
                         }
                     }
                 }
@@ -404,26 +433,6 @@ public class UIMenuItem
     {
         this.header = _header;
         return this;
-    }
-
-    /**
-     * This is the getter method for the instance variable {@link #stepInto}.
-     *
-     * @return value of instance variable {@link #stepInto}
-     */
-    public boolean isStepInto()
-    {
-        return this.stepInto;
-    }
-
-    /**
-     * This is the setter method for the instance variable {@link #stepInto}.
-     *
-     * @param _stepInto the stepInto to set
-     */
-    public void setStepInto(final boolean _stepInto)
-    {
-        this.stepInto = _stepInto;
     }
 
     /**
@@ -538,5 +547,55 @@ public class UIMenuItem
             }
         }
         return ret;
+    }
+
+    /**
+     * Getter method for instance variable {@link #expanded}.
+     *
+     * @return value of instance variable {@link #expanded}
+     */
+    public boolean isExpanded()
+    {
+        return this.expanded;
+    }
+
+    /**
+     * Setter method for instance variable {@link #expanded}.
+     *
+     * @param _expanded value for instance variable {@link #expanded}
+     */
+    public void setExpanded(final boolean _expanded)
+    {
+        this.expanded = _expanded;
+        if (getParent() != null) {
+            storeInSession();
+        }
+    }
+
+    /**
+     * Store the Information in the Session.
+     */
+
+    private void storeInSession()
+    {
+        try {
+            Context.getThreadContext().setSessionAttribute(getCacheKey(), isExpanded());
+        } catch (final EFapsException e) {
+            UIMenuItem.LOG.error("Error storing Session info for UIMenuItem called by Command with UUID: {}",
+                            getCommandUUID(), e);
+        }
+    }
+
+    /**
+     * This method generates the Key for a UserAttribute by using the UUID of
+     * the Command and the given static part, so that for every MenuItem a
+     * unique key for expand etc, is created.
+     *
+     * @return String with the key
+     */
+    public String getCacheKey()
+    {
+        return (getParent() == null ? "" : getParent().getCommandUUID()) + "-" + getCommandUUID() + "-"
+                        + UIMenuItem.USERSESSIONKEY;
     }
 }

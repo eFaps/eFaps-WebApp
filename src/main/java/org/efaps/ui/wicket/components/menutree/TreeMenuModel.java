@@ -88,59 +88,30 @@ public class TreeMenuModel
         return this.rootItems;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.wicket.model.IDetachable#detach()
-     */
     @Override
     public void detach()
     {
-        // TODO Auto-generated method stub
-
+        // We do nothing here
     }
 
-    /*
-     * (non-Javadoc)
-     * @see
-     * org.apache.wicket.extensions.markup.html.repeater.tree.ITreeProvider#
-     * getRoots()
-     */
     @Override
     public Iterator<? extends UIMenuItem> getRoots()
     {
         return this.rootItems.iterator();
     }
 
-    /*
-     * (non-Javadoc)
-     * @see
-     * org.apache.wicket.extensions.markup.html.repeater.tree.ITreeProvider#
-     * hasChildren(java.lang.Object)
-     */
     @Override
     public boolean hasChildren(final UIMenuItem _menuItem)
     {
         return _menuItem.hasChildren();
     }
 
-    /*
-     * (non-Javadoc)
-     * @see
-     * org.apache.wicket.extensions.markup.html.repeater.tree.ITreeProvider#
-     * getChildren(java.lang.Object)
-     */
     @Override
     public Iterator<? extends UIMenuItem> getChildren(final UIMenuItem _node)
     {
         return _node.getChildren().iterator();
     }
 
-    /*
-     * (non-Javadoc)
-     * @see
-     * org.apache.wicket.extensions.markup.html.repeater.tree.ITreeProvider#
-     * model(java.lang.Object)
-     */
     @Override
     public IModel<UIMenuItem> model(final UIMenuItem _object)
     {

@@ -155,13 +155,21 @@ public class MenuTree
             menuItem.setSelected(true);
         }
         expand(menuItem);
+        expandChildren(menuItem);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.wicket.extensions.markup.html.repeater.tree.AbstractTree#
-     * newContentComponent(java.lang.String, org.apache.wicket.model.IModel)
+    /**
+     * @param menuItem menuitem the children will be expanded for
      */
+    protected void expandChildren(final UIMenuItem menuItem) {
+        for (final UIMenuItem childItem : menuItem.getChildren()) {
+            if (childItem.isExpanded()) {
+                expand(childItem);
+            }
+            expandChildren(childItem);
+        }
+    }
+
     @Override
     protected Component newContentComponent(final String _id,
                                             final IModel<UIMenuItem> _model)
@@ -341,5 +349,19 @@ public class MenuTree
                     final UIMenuItem _menuItem)
     {
         this.key2uimenuItem.put(_key, _menuItem);
+    }
+
+    @Override
+    public void expand(final UIMenuItem _menuItem)
+    {
+        super.expand(_menuItem);
+        _menuItem.setExpanded(true);
+    }
+
+    @Override
+    public void collapse(final UIMenuItem _menuItem)
+    {
+        super.collapse(_menuItem);
+        _menuItem.setExpanded(false);
     }
 }

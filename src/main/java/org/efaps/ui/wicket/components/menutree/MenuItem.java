@@ -162,10 +162,6 @@ public class MenuItem
             add(new ItemBehavior());
         }
 
-        /*
-         * (non-Javadoc)
-         * @see org.apache.wicket.markup.html.link.ILinkListener#onLinkClicked()
-         */
         @Override
         public void onLinkClicked()
         {

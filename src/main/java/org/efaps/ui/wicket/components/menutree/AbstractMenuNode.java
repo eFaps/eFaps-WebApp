@@ -64,7 +64,6 @@ public abstract class AbstractMenuNode
         add(AttributeModifier.append("class", "eFapsMenuTreeNode"));
     }
 
-
     /**
      * Getter method for the instance variable {@link #tree}.
      *
@@ -74,7 +73,6 @@ public abstract class AbstractMenuNode
     {
         return this.tree;
     }
-
 
     @Override
     protected MarkupContainer createJunctionComponent(final String _wicketId)
@@ -90,9 +88,6 @@ public abstract class AbstractMenuNode
                 toggle();
             }
 
-            /* (non-Javadoc)
-             * @see org.apache.wicket.ajax.markup.html.AjaxLink#onComponentTag(org.apache.wicket.markup.ComponentTag)
-             */
             @Override
             protected void onComponentTag(final ComponentTag _tag)
             {
