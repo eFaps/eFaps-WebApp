@@ -29,9 +29,11 @@ import org.efaps.admin.datamodel.ui.UIValue;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.models.AbstractInstanceObject;
 import org.efaps.ui.wicket.models.cell.FieldConfiguration;
+import org.efaps.ui.wicket.models.field.factories.BitEnumUIFactory;
 import org.efaps.ui.wicket.models.field.factories.BooleanUIFactory;
 import org.efaps.ui.wicket.models.field.factories.DateUIFactory;
 import org.efaps.ui.wicket.models.field.factories.DecimalUIFactory;
+import org.efaps.ui.wicket.models.field.factories.EnumUIFactory;
 import org.efaps.ui.wicket.models.field.factories.IComponentFactory;
 import org.efaps.ui.wicket.models.field.factories.LinkWithRangesUIFactory;
 import org.efaps.ui.wicket.models.field.factories.NumberUIFactory;
@@ -65,6 +67,8 @@ public abstract class AbstractUIField
         AbstractUIField.FACTORIES.add(DateUIFactory.get());
         AbstractUIField.FACTORIES.add(DecimalUIFactory.get());
         AbstractUIField.FACTORIES.add(NumberUIFactory.get());
+        AbstractUIField.FACTORIES.add(EnumUIFactory.get());
+        AbstractUIField.FACTORIES.add(BitEnumUIFactory.get());
     }
     /**
      * Configuration of the related field.

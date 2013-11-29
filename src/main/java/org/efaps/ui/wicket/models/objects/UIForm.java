@@ -66,6 +66,7 @@ import org.efaps.ui.wicket.models.cell.UIFormCellCmd;
 import org.efaps.ui.wicket.models.cell.UIFormCellSet;
 import org.efaps.ui.wicket.models.cell.UIHiddenCell;
 import org.efaps.ui.wicket.models.cell.UISetColumnHeader;
+import org.efaps.ui.wicket.models.field.UIField;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
@@ -460,12 +461,48 @@ public class UIForm
                 final UIFormCellChart fieldChart = new UIFormCellChart(this, (FieldChart) _field, fieldInstance, label);
                 _row.add(fieldChart);
             } else {
-                evaluateField(_row, _query, _field, fieldInstance, label, attr);
+                // temp to decide what to do
+                if (attr != null && attr.getAttributeType().getUI() == null) {
+                    evaluateUIProvider(_row, _query, _field, fieldInstance, label, attr);
+                } else {
+                    evaluateField(_row, _query, _field, fieldInstance, label, attr);
+                }
             }
         }
         return ret;
-
     }
+
+    /**
+     * Method evaluates a Field and adds it to the row.
+     *
+     * @param _row              FormRow to add the cell to
+     * @param _query            query containing the values
+     * @param _field            field the cell belongs to
+     * @param _fieldInstance    instance of the Field
+     * @param _label            label for the Field
+     * @param _attr             attribute for the Field
+     * @throws EFapsException on error
+     */
+    private void evaluateUIProvider(final FormRow _row,
+                                    final PrintQuery _print,
+                                    final Field _field,
+                                    final Instance _fieldInstance,
+                                    final String _label,
+                                    final Attribute _attr)
+        throws EFapsException
+    {
+        Object value = null;
+        if (_field.getAttribute() != null) {
+            value = _print.<Object>getAttribute(_field.getAttribute());
+        } else if (_field.getSelect() != null) {
+            value = _print.<Object>getSelect(_field.getSelect());
+        } else if (_field.getPhrase() != null) {
+            value = _print.getPhrase(_field.getName());
+        }
+        final UIField uiField = new UIField(getInstance().getKey(), this, UIValue.get(_field, _attr, value));
+        _row.add(uiField);
+    }
+
 
     /**
      * Method evaluates a Field and adds it to the row.
@@ -918,7 +955,7 @@ public class UIForm
         /**
          * Stores the UIFormCell contained in this FormRow.
          */
-        private final List<UIFormCell> values = new ArrayList<UIFormCell>();
+        private final List<AbstractInstanceObject> values = new ArrayList<AbstractInstanceObject>();
 
         /**
          * Stores if the row must be spanned.
@@ -930,9 +967,9 @@ public class UIForm
          *
          * @param _uiFormCell UIFormCell to add
          */
-        public void add(final UIFormCell _uiFormCell)
+        public void add(final AbstractInstanceObject _uiObject)
         {
-            this.values.add(_uiFormCell);
+            this.values.add(_uiObject);
         }
 
         /**
@@ -960,7 +997,7 @@ public class UIForm
          *
          * @return value of instance variable {@link #values}
          */
-        public List<UIFormCell> getValues()
+        public List<AbstractInstanceObject> getValues()
         {
             return this.values;
         }

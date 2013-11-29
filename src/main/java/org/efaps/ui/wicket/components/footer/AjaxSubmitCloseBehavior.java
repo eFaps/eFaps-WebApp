@@ -67,6 +67,7 @@ import org.efaps.ui.wicket.components.form.FormPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.values.IFieldConfig;
 import org.efaps.ui.wicket.components.values.IValueConverter;
+import org.efaps.ui.wicket.models.AbstractInstanceObject;
 import org.efaps.ui.wicket.models.FormModel;
 import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.cell.UIFormCell;
@@ -355,7 +356,7 @@ public class AjaxSubmitCloseBehavior
             for (final Element element : ((UIForm) this.uiObject).getElements()) {
                 if (element.getType().equals(ElementType.FORM)) {
                     for (final FormRow row : ((UIForm.FormElement) element.getElement()).getRowModels()) {
-                        for (final UIFormCell cell : row.getValues()) {
+                        for (final AbstractInstanceObject cell : row.getValues()) {
                             if (cell instanceof UIFormCellSet) {
                                 ((UIFormCellSet) cell).resetIndex();
                             }
@@ -366,7 +367,7 @@ public class AjaxSubmitCloseBehavior
                         if (nElement.getType().equals(ElementType.FORM)) {
                             for (final FormRow row : ((UIForm.FormElement) nElement.getElement())
                                             .getRowModels()) {
-                                for (final UIFormCell cell : row.getValues()) {
+                                for (final AbstractInstanceObject cell : row.getValues()) {
                                     if (cell instanceof UIFormCellSet) {
                                         ((UIFormCellSet) cell).resetIndex();
                                     }
@@ -486,7 +487,9 @@ public class AjaxSubmitCloseBehavior
             if (element.getType().equals(ElementType.FORM)) {
                 final FormElement formElement = (FormElement) element.getElement();
                 for (final FormRow row : formElement.getRowModels()) {
-                    for (final UIFormCell cell : row.getValues()) {
+                    for (final AbstractInstanceObject object : row.getValues()) {
+                        if (object instanceof UIFormCell) {
+                            final UIFormCell cell= (UIFormCell) object;
                         final StringValue value = getComponent().getRequest().getRequestParameters()
                                         .getParameterValue(cell.getName());
                         if (!value.isNull() && !value.isEmpty()) {
@@ -504,7 +507,7 @@ public class AjaxSubmitCloseBehavior
                                     _target.add(label);
                                 }
                             }
-
+                        }
                         }
                     }
                 }
