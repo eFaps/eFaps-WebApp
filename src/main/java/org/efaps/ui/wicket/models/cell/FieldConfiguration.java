@@ -25,7 +25,9 @@ import java.io.Serializable;
 
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.field.Field;
+import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 
 
 /**
@@ -93,7 +95,6 @@ public class FieldConfiguration
      */
     public String getLabel()
     {
-
         return DBProperties.getProperty(getField().getLabel());
     }
 
@@ -103,5 +104,26 @@ public class FieldConfiguration
     public boolean isHideLabel()
     {
         return getField().isHideLabel();
+    }
+
+    /**
+     * @param _abstractUIField
+     * @return
+     */
+    public String getLabel(final AbstractUIField _abstractUIField)
+        throws CacheReloadException
+    {
+        String key;
+        if (getField().getLabel() == null) {
+            if (_abstractUIField.getValue() != null && _abstractUIField.getValue().getAttribute() != null) {
+                key = _abstractUIField.getValue().getAttribute().getLabelKey();
+            } else {
+                key = FieldConfiguration.class.getName() + ".NoLabel";
+            }
+        } else {
+            key = getField().getLabel();
+        }
+
+        return DBProperties.getProperty(key);
     }
 }
