@@ -91,6 +91,7 @@ public class CheckBoxField
         }
         setChoiceRenderer(new ChoiceRenderer());
         setOutputMarkupId(true);
+        setRequired(_fieldConfiguration.getField().isRequired());
     }
 
     /**

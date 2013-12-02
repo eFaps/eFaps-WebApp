@@ -21,6 +21,8 @@
 
 package org.efaps.ui.wicket.models.objects;
 
+import java.io.Serializable;
+
 
 /**
  * TODO comment!
@@ -29,7 +31,13 @@ package org.efaps.ui.wicket.models.objects;
  * @version $Id$
  */
 public abstract class AbstractOption
+    implements Serializable
 {
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
     private String label;
     private String value;
 
