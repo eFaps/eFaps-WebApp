@@ -26,7 +26,7 @@ import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.datamodel.ui.BitEnumUI;
-import org.efaps.ui.wicket.components.values.NumberField;
+import org.efaps.ui.wicket.components.values.CheckBoxField;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.util.EFapsException;
 
@@ -58,6 +58,7 @@ public class BitEnumUIFactory
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
     @Override
     public Component getEditable(final String _wicketId,
                                  final AbstractUIField _abstractUIField)
@@ -65,7 +66,9 @@ public class BitEnumUIFactory
     {
         Component ret = null;
         if (applies(_abstractUIField)) {
-            ret = new NumberField(_wicketId, Model.of(_abstractUIField), _abstractUIField.getFieldConfiguration());
+            ret = new CheckBoxField(_wicketId, Model.of(_abstractUIField),
+                       (List<Object>) _abstractUIField.getValue().getEditValue(_abstractUIField.getParent().getMode()),
+                            _abstractUIField.getFieldConfiguration());
         }
         return ret;
     }
@@ -88,10 +91,15 @@ public class BitEnumUIFactory
         throws EFapsException
     {
         final StringBuilder ret = new StringBuilder();
-        final Object valueTmp = _abstractUIField.getValue()
-                        .getReadOnlyValue(_abstractUIField.getParent().getMode());
+        final Object valueTmp = _abstractUIField.getValue().getReadOnlyValue(_abstractUIField.getParent().getMode());
         if (valueTmp instanceof List) {
+            boolean first = true;
             for (final Object obj : (List<?>) valueTmp) {
+                if (first) {
+                    first = false;
+                } else {
+                    ret.append(", ");
+                }
                 ret.append(obj);
             }
         }

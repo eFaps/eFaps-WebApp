@@ -18,9 +18,9 @@
  * Last Changed By: $Author$
  */
 
+
 package org.efaps.ui.wicket.models.objects;
 
-import java.io.Serializable;
 
 /**
  * TODO comment!
@@ -28,18 +28,37 @@ import java.io.Serializable;
  * @author The eFaps Team
  * @version $Id$
  */
-public class DropDownOption
-    extends AbstractOption
-    implements Serializable
+public abstract class AbstractOption
 {
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
+    private String label;
+    private String value;
 
-    public DropDownOption(final String _value,
+    public AbstractOption(final String _value,
                           final String _label)
+
     {
-        super(_value, _label);
+        this.label = _label;
+        this.value = _value;
     }
+
+    public String getLabel()
+    {
+        return this.label;
+    }
+
+    public void setLabel(final String _label)
+    {
+        this.label = _label;
+    }
+
+    public String getValue()
+    {
+        return this.value;
+    }
+
+    public void setValue(final String _value)
+    {
+        this.value = _value;
+    }
+
 }
