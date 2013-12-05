@@ -134,6 +134,11 @@ public interface WebAppSettings
     String DASHBOARD_OWNEDTASK_AUTIME = "org.efaps.webapp.DashBoard.OwnedTaskTable.AutoUpdateDuration";
 
     /**
+     * Integer: Time in seconds for an AutoUpdate. To deactivate AutoUpdate set to 0. Default Value 30 Seconds.
+     */
+    String DASHBOARD_PANEL1 = "org.efaps.webapp.DashBoard.Panel1";
+
+    /**
      * Boolean (true/false): Activate the websocket/push management. Default: true
      */
     String WEBSOCKET_ACTIVATE = "org.efaps.webapp.WebSocket.activate";

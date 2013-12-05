@@ -41,6 +41,8 @@ import org.efaps.db.Context;
 import org.efaps.ui.wicket.components.bpm.task.AssignedTaskSummaryProvider;
 import org.efaps.ui.wicket.components.bpm.task.OwnedTaskSummaryProvider;
 import org.efaps.ui.wicket.components.bpm.task.TaskTablePanel;
+import org.efaps.ui.wicket.components.dashboard.EsjpComponent;
+import org.efaps.ui.wicket.models.EsjpInvoker;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
@@ -142,6 +144,13 @@ public class DashboardPage
             add(new WebMarkupContainer("ownedTaskHeader").setVisible(false));
             add(new WebMarkupContainer("ownedTaskAU").setVisible(false));
         }
+        final String esjp = Configuration.getAttribute(ConfigAttribute.BOARD_PANEL1);
+        if (esjp != null && !esjp.isEmpty()) {
+            add(new EsjpComponent("dashBoard1", Model.of(new EsjpInvoker(esjp))));
+        } else {
+            add(new WebMarkupContainer("dashBoard1").setVisible(false));
+        }
+
     }
 
     @Override
