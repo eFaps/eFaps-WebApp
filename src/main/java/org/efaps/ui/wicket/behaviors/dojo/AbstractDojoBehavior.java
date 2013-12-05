@@ -142,6 +142,11 @@ public abstract class AbstractDojoBehavior
         implements IReferenceHeaderItem
     {
         /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
+
+        /**
          * Resource refrecne with the actual script.
          */
         private final ResourceReference reference;

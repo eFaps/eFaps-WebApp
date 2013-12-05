@@ -41,6 +41,11 @@ public class OnDojoReadyHeaderItem
 {
 
     /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * Javascript for this HeaderItem.
      */
     private final CharSequence javaScript;
