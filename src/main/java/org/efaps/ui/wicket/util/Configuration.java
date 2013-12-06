@@ -88,7 +88,7 @@ public final class Configuration
         /** */
         BOARD_OWNEDTASK_AUTIME(false, true, WebAppSettings.DASHBOARD_OWNEDTASK_AUTIME, "30"),
         /** */
-        BOARD_PANEL1(false, true, WebAppSettings.DASHBOARD_PANEL1, ""),
+        BOARD_PANELS(false, true, WebAppSettings.DASHBOARD_PANELS, ""),
         /** MainToolBar. */
         TOOLBAR(false, true, WebAppSettings.TOOLBAR, "87001cc3-c45c-44de-b8f1-776df507f268"),
          /** Websocket activated. */

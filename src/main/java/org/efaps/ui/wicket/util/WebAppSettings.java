@@ -134,9 +134,11 @@ public interface WebAppSettings
     String DASHBOARD_OWNEDTASK_AUTIME = "org.efaps.webapp.DashBoard.OwnedTaskTable.AutoUpdateDuration";
 
     /**
-     * Integer: Time in seconds for an AutoUpdate. To deactivate AutoUpdate set to 0. Default Value 30 Seconds.
+     * DBProperties: Esjp to be used as PanelXY. panel11, panel12, panel21, panel22, panel31, panel32
+     * In case that BPM is activated the BMP allways will use panel11
+     *
      */
-    String DASHBOARD_PANEL1 = "org.efaps.webapp.DashBoard.Panel1";
+    String DASHBOARD_PANELS = "org.efaps.webapp.DashBoard.Panels";
 
     /**
      * Boolean (true/false): Activate the websocket/push management. Default: true

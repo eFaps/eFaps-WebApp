@@ -20,6 +20,7 @@
 
 package org.efaps.ui.wicket.pages.dashboard;
 
+import java.util.Properties;
 import java.util.UUID;
 
 import org.apache.wicket.PageReference;
@@ -86,6 +87,7 @@ public class DashboardPage
     {
         super();
         final SystemConfiguration config = EFapsSystemConfiguration.get();
+        boolean used = false;
         final boolean active = config != null
                         ? config.getAttributeValueAsBoolean(KernelSettings.ACTIVATE_BPM) : false;
         // BPM_DashBoard_AssignedTask
@@ -111,6 +113,7 @@ public class DashboardPage
             }
             add(new Label("assignedTaskHeader", DBProperties.getProperty(DashboardPage.class.getName()
                             + ".assignedTaskHeader")));
+            used = true;
         } else {
             add(new WebMarkupContainer("assignedTaskTable").setVisible(false));
             add(new WebMarkupContainer("assignedTaskHeader").setVisible(false));
@@ -139,18 +142,76 @@ public class DashboardPage
             }
             add(new Label("ownedTaskHeader",
                             DBProperties.getProperty(DashboardPage.class.getName() + ".ownedTaskHeader")));
+            used = true;
         } else {
             add(new WebMarkupContainer("ownedTaskTable").setVisible(false));
             add(new WebMarkupContainer("ownedTaskHeader").setVisible(false));
             add(new WebMarkupContainer("ownedTaskAU").setVisible(false));
         }
-        final String esjp = Configuration.getAttribute(ConfigAttribute.BOARD_PANEL1);
-        if (esjp != null && !esjp.isEmpty()) {
-            add(new EsjpComponent("dashBoard1", Model.of(new EsjpInvoker(esjp))));
-        } else {
-            add(new WebMarkupContainer("dashBoard1").setVisible(false));
+
+        if (used) {
+            add(new WebMarkupContainer("dashBoard11").setVisible(false));
         }
 
+        final Properties panelProperties = Configuration.getAttributeAsProperties(ConfigAttribute.BOARD_PANELS);
+        if (panelProperties != null) {
+            final String panel11 = panelProperties.getProperty("panel11");
+            final String panel12 = panelProperties.getProperty("panel12");
+            String panel21 = panelProperties.getProperty("panel21");
+            final String panel22 = panelProperties.getProperty("panel22");
+            String panel31 = panelProperties.getProperty("panel31");
+            final String panel32 = panelProperties.getProperty("panel32");
+            //shift down
+            if (used && panel11 != null && !panel11.isEmpty()) {
+                panel31 = panel21;
+                panel21 = panel11;
+            }
+
+            if (panel11 != null && !panel11.isEmpty() && !used) {
+                add(new EsjpComponent("dashBoard11", Model.of(new EsjpInvoker(panel11))));
+            } else if (!used) {
+                add(new WebMarkupContainer("dashBoard11").setVisible(false));
+            }
+
+            if (panel12 != null && !panel12.isEmpty()) {
+                add(new EsjpComponent("dashBoard12", Model.of(new EsjpInvoker(panel12))));
+            } else {
+                add(new WebMarkupContainer("dashBoard12").setVisible(false));
+            }
+
+            if (panel21 != null && !panel21.isEmpty()) {
+                add(new EsjpComponent("dashBoard21", Model.of(new EsjpInvoker(panel21))));
+            } else {
+                add(new WebMarkupContainer("dashBoard21").setVisible(false));
+            }
+
+            if (panel22 != null && !panel22.isEmpty()) {
+                add(new EsjpComponent("dashBoard22", Model.of(new EsjpInvoker(panel22))));
+            } else {
+                add(new WebMarkupContainer("dashBoard22").setVisible(false));
+            }
+
+            if (panel31 != null && !panel31.isEmpty()) {
+                add(new EsjpComponent("dashBoard31", Model.of(new EsjpInvoker(panel31))));
+            } else {
+                add(new WebMarkupContainer("dashBoard31").setVisible(false));
+            }
+
+            if (panel32 != null && !panel32.isEmpty()) {
+                add(new EsjpComponent("dashBoard32", Model.of(new EsjpInvoker(panel32))));
+            } else {
+                add(new WebMarkupContainer("dashBoard32").setVisible(false));
+            }
+        } else {
+            if (!used) {
+                add(new WebMarkupContainer("dashBoard11").setVisible(false));
+            }
+            add(new WebMarkupContainer("dashBoard12").setVisible(false));
+            add(new WebMarkupContainer("dashBoard21").setVisible(false));
+            add(new WebMarkupContainer("dashBoard22").setVisible(false));
+            add(new WebMarkupContainer("dashBoard31").setVisible(false));
+            add(new WebMarkupContainer("dashBoard32").setVisible(false));
+        }
     }
 
     @Override

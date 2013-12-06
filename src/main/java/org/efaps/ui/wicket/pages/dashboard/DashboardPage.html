@@ -29,24 +29,55 @@
 <head>
 </head>
 <body wicket:id="body" class="dashboard">
-    <div class="item">
-        <div class="header">
-            <input  wicket:id="assignedTaskAU" type="checkbox" />
-            <span wicket:id="assignedTaskHeader">Title</span>
+    <div class="table">
+        <div class="row r1">
+            <div class="cell c11">
+                <div class="item">
+                    <div class="header">
+                        <input wicket:id="assignedTaskAU"
+                            type="checkbox" /> <span
+                            wicket:id="assignedTaskHeader">Title</span>
+                    </div>
+                    <div wicket:id="assignedTaskTable">[table]</div>
+                </div>
+                <div class="item">
+                    <div class="header">
+                        <input wicket:id="ownedTaskAU" type="checkbox" />
+                        <span wicket:id="ownedTaskHeader">Title 2</span>
+                    </div>
+                    <div wicket:id="ownedTaskTable">[table]</div>
+                </div>
+                <div class="item" wicket:id="dashBoard11">content</div>
+            </div>
+            <div class="cell c12">
+                <div class="item" wicket:id="dashBoard12">content</div>
+            </div>
         </div>
-        <div wicket:id="assignedTaskTable">[table]</div>
-    </div>
-    <div class="item">
-        <div class="header">
-            <input  wicket:id="ownedTaskAU" type="checkbox" />
-            <span wicket:id="ownedTaskHeader">Title 2</span>
+        <div class="row r2">
+            <div class="cell c21">
+                <div class="item">
+                    <div wicket:id="dashBoard21">content</div>
+                </div>
+            </div>
+            <div class="cell c22">
+                <div class="item">
+                    <div wicket:id="dashBoard22">content</div>
+                </div>
+            </div>
         </div>
-        <div wicket:id="ownedTaskTable">[table]</div>
+        <div class="row r3">
+            <div class="cell c31">
+                <div class="item">
+                    <div wicket:id="dashBoard31">content</div>
+                </div>
+            </div>
+            <div class="cell c32">
+                <div class="item">
+                    <div wicket:id="dashBoard32">content</div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="item">
-        <div wicket:id="dashBoard1">content</div>
-    </div>
-    
 </body>
 </html>
 
