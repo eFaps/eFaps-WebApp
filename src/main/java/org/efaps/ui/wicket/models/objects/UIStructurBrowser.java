@@ -685,6 +685,7 @@ public class UIStructurBrowser
     {
         if (isRoot()) {
             this.expandedBrowsers.add(_structBrowser);
+            this.expanded = true;
         } else {
             getParentBrws().add2ExpandedBrowsers(_structBrowser);
         }
