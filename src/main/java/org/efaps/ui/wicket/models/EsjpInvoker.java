@@ -18,15 +18,14 @@
  * Last Changed By: $Author$
  */
 
-
 package org.efaps.ui.wicket.models;
 
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 import org.efaps.admin.program.esjp.EFapsClassLoader;
-
+import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO comment!
@@ -44,50 +43,69 @@ public class EsjpInvoker
     private static final long serialVersionUID = 1L;
 
     /**
-     * ClassNaem of the esjp that will be invoked.
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(EsjpInvoker.class);
+
+    /**
+     * ClassName of the esjp that will be invoked.
      */
     private final String esjp;
+
+    private boolean init = false;
+
+    private IEsjpSnipplet snipplet;
 
     /**
      * @param _esjp
      */
     public EsjpInvoker(final String _esjp)
     {
-       this.esjp = _esjp;
+        this.esjp = _esjp;
+    }
+
+    public CharSequence getHtmlSnipplet()
+        throws EFapsException
+    {
+        initialize();
+        return this.snipplet.getHtmlSnipplet();
     }
 
     /**
      * @return
      */
-    public CharSequence getHtmlSnipplet()
+    private void initialize()
     {
-        CharSequence ret = "";
         try {
-            final Class<?> clazz = Class.forName("org.efaps.esjp.ui.dashboard.StatusPanel", false,
-                            EFapsClassLoader.getInstance());
-            final Method method = clazz.getMethod("getHtmlSnipplet");
-            ret = (CharSequence) method.invoke(clazz.newInstance());
+            if (!this.init) {
+                final Class<?> clazz = Class.forName(this.esjp, false, EFapsClassLoader.getInstance());
+                this.snipplet = (IEsjpSnipplet) clazz.newInstance();
+                this.init = true;
+            }
         } catch (final ClassNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (final NoSuchMethodException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            EsjpInvoker.LOG.error("ClassNotFoundException", e);
         } catch (final SecurityException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            EsjpInvoker.LOG.error("SecurityException", e);
         } catch (final IllegalAccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            EsjpInvoker.LOG.error("IllegalAccessException", e);
         } catch (final IllegalArgumentException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (final InvocationTargetException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            EsjpInvoker.LOG.error("IllegalArgumentException", e);
         } catch (final InstantiationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            EsjpInvoker.LOG.error("InstantiationException", e);
+        }
+    }
+
+    /**
+     * @return
+     */
+    public boolean isVisible()
+    {
+        initialize();
+        boolean ret = false;
+        try {
+            ret = this.snipplet.isVisible();
+        } catch (final EFapsException e) {
+            EsjpInvoker.LOG.error("EFapsException", e);
         }
         return ret;
     }
