@@ -146,16 +146,22 @@ public class AjaxFieldUpdateBehavior
         int i = 0;
         for (final Map<String, String> map : values) {
             if (map.size() > 0) {
+                final boolean useId = map.containsKey(EFapsKey.FIELDUPDATE_USEID.getKey());
+                final boolean useIdx = map.containsKey(EFapsKey.FIELDUPDATE_USEIDX.getKey());
                 for (final String keyString : map.keySet()) {
                     // if the map contains a key that is not defined in this class
-                    // it is assumed to be the name of a field. if only one value map is given the markupid is used,
-                    // else an internal counter
-                    if (!(EFapsKey.FIELDUPDATE_JAVASCRIPT.getKey().equals(keyString))) {
+                    // it is assumed to be the name of a field
+                    if (!(EFapsKey.FIELDUPDATE_JAVASCRIPT.getKey().equals(keyString)) &&
+                                    !(EFapsKey.FIELDUPDATE_USEID.getKey().equals(keyString)) &&
+                                    !(EFapsKey.FIELDUPDATE_USEIDX.getKey().equals(keyString))) {
                         js.append("eFapsSetFieldValue(");
-                        if (values.size() == 1) {
-                            js.append("'").append(getComponentMarkupId()).append("'");
+                        if (useId || (values.size() == 1 && !useIdx)) {
+                            js.append("'").append(map.get(EFapsKey.FIELDUPDATE_USEID.getKey()) == null
+                                            ? getComponentMarkupId() :
+                                                map.get(EFapsKey.FIELDUPDATE_USEID.getKey())).append("'");
                         } else {
-                            js.append(i);
+                            js.append(map.get(EFapsKey.FIELDUPDATE_USEIDX.getKey()) == null ? i :
+                                map.get(EFapsKey.FIELDUPDATE_USEIDX.getKey()));
                         }
                         js.append(",'").append(keyString).append("',")
                             .append(map.get(keyString).contains("Array(") ? "" : "'")

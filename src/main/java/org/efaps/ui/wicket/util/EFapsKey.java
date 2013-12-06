@@ -50,6 +50,10 @@ public enum EFapsKey {
 
     /** Key used for the javascript in the map. */
     FIELDUPDATE_JAVASCRIPT("eFapsFieldUpdateJS"),
+    /** Key used to configure the update mechanism for each map. */
+    FIELDUPDATE_USEID("eFapsFieldUseId"),
+    /** Key used to configure the update mechanism for each map. */
+    FIELDUPDATE_USEIDX("eFapsFieldUseIndex"),
 
     /** Key used as name for the hidden field that contains the Level of a node. */
     STRUCBRWSR_LEVEL("eFapsStructurBrowserNodeLevel"),
