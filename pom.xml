@@ -2,7 +2,7 @@
 
 <!--
 
-  Copyright 2003 - 2012 The eFaps Team
+  Copyright 2003 - 2013 The eFaps Team
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -23,13 +23,14 @@
 
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
     <!-- ************************************************************************
-    * Module Definition
-    ************************************************************************* -->
+        * Module Definition
+        ************************************************************************* -->
     <parent>
         <groupId>org.efaps</groupId>
         <artifactId>efaps-parent</artifactId>
@@ -116,8 +117,8 @@
     </distributionManagement>
 
     <!-- ************************************************************************
-    * Project itself
-    ************************************************************************* -->
+        * Project itself
+        ************************************************************************* -->
     <build>
         <plugins>
             <plugin>
@@ -133,11 +134,11 @@
                             <target>
                                 <echo message="prepare phase" />
                                 <exec executable="tar">
-                                        <arg value="--extract" />
-                                        <arg value="--gzip" />
-                                        <arg value="--file=lib/dojo-release-1.9.1.tar.gz" />
-                                        <arg value="--directory=src/main/java/org/efaps/ui/wicket/behaviors/dojo" />
-                                        <arg value="--strip-components=1" />
+                                    <arg value="--extract" />
+                                    <arg value="--gzip" />
+                                    <arg value="--file=lib/dojo-release-1.9.2.tar.gz" />
+                                    <arg value="--directory=src/main/java/org/efaps/ui/wicket/behaviors/dojo" />
+                                    <arg value="--strip-components=1" />
                                 </exec>
                             </target>
                         </configuration>
@@ -171,8 +172,8 @@
     </build>
 
     <!-- ************************************************************************
-    * Dependencies
-    ************************************************************************* -->
+        * Dependencies
+        ************************************************************************* -->
     <dependencies>
 
         <!-- eFaps kernel -->
@@ -198,7 +199,7 @@
         </dependency>
 
         <!-- wicket -->
-       <dependency>
+        <dependency>
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-core</artifactId>
             <version>6.12.0</version>
@@ -233,12 +234,12 @@
             <artifactId>wicket-native-websocket-tomcat</artifactId>
             <version>0.14</version>
         </dependency>
-        
+
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
             <version>2.5</version>
             <scope>provided</scope>
         </dependency>
-   </dependencies>
+    </dependencies>
 </project>
