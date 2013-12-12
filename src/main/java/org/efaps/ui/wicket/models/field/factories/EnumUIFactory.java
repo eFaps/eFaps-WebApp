@@ -18,20 +18,14 @@
  * Last Changed By: $Author$
  */
 
-
 package org.efaps.ui.wicket.models.field.factories;
-
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.datamodel.ui.EnumUI;
-import org.efaps.db.Context;
-import org.efaps.ui.wicket.components.values.NumberField;
+import org.efaps.ui.wicket.components.values.RadioField;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.util.EFapsException;
-
 
 /**
  * TODO comment!
@@ -39,11 +33,12 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-//CHECKSTYLE:OFF
+// CHECKSTYLE:OFF
 public class EnumUIFactory
     extends AbstractUIFactory
-//CHECKSTYLE:ON
+// CHECKSTYLE:ON
 {
+
     /**
      * Factory Instance.
      */
@@ -66,7 +61,9 @@ public class EnumUIFactory
     {
         Component ret = null;
         if (applies(_abstractUIField)) {
-            ret = new NumberField(_wicketId, Model.of(_abstractUIField), _abstractUIField.getFieldConfiguration());
+            ret = new RadioField(_wicketId, Model.of(_abstractUIField), _abstractUIField.getValue().getEditValue(
+                                            _abstractUIField.getParent().getMode()),
+                            _abstractUIField.getFieldConfiguration());
         }
         return ret;
     }
@@ -88,18 +85,10 @@ public class EnumUIFactory
     protected String getReadOnlyValue(final AbstractUIField _abstractUIField)
         throws EFapsException
     {
-        String strValue = "";
         final Object valueTmp = _abstractUIField.getValue()
                         .getReadOnlyValue(_abstractUIField.getParent().getMode());
-        if (valueTmp instanceof Number) {
-            final DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Context.getThreadContext()
-                            .getLocale());
-            if (_abstractUIField.getValue().getAttribute() != null) {
-                formatter.setMaximumFractionDigits(_abstractUIField.getValue().getAttribute().getScale());
-            }
-            strValue = formatter.format(valueTmp);
-        }
-        return strValue;
+
+        return valueTmp.toString();
     }
 
     /**

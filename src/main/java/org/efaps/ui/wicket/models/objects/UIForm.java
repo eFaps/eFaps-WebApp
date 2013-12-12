@@ -778,7 +778,7 @@ public class UIForm
                     if (hidden) {
                         addHidden(new UIHiddenCell(this, fieldvalue, null, strValue));
                     } else {
-                        final UIFormCell cell;
+                        final AbstractInstanceObject cell;
                         if (field instanceof FieldSet) {
                             cell = new UIFormCellSet(this, fieldvalue, null, "", "", label, isCreateMode());
                             if (type == null) {
@@ -795,13 +795,17 @@ public class UIForm
                         } else if (field instanceof FieldCommand) {
                             cell = new UIFormCellCmd(this, (FieldCommand) field, null, label);
                         } else {
-                            cell = new UIFormCell(this, fieldvalue, strValue, "", label, attrTypeName);
-                            if (isSearchMode()) {
-                                cell.setReference(null);
-                            } else if (strValue != null && !this.fileUpload) {
-                                final String tmp = strValue.replaceAll(" ", "");
-                                if (tmp.toLowerCase().contains("type=\"file\"")) {
-                                    this.fileUpload = true;
+                            if (attr != null && attr.getAttributeType().getUI() == null) {
+                                cell = new UIField(null, this, UIValue.get(field, attr, null));
+                            } else {
+                                cell = new UIFormCell(this, fieldvalue, strValue, "", label, attrTypeName);
+                                if (isSearchMode()) {
+                                    ((UIFormCell) cell).setReference(null);
+                                } else if (strValue != null && !this.fileUpload) {
+                                    final String tmp = strValue.replaceAll(" ", "");
+                                    if (tmp.toLowerCase().contains("type=\"file\"")) {
+                                        this.fileUpload = true;
+                                    }
                                 }
                             }
                         }
