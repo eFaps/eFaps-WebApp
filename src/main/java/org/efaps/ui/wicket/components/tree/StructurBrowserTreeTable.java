@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2012 The eFaps Team
+ * Copyright 2003 - 2013 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,6 @@ import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.util.SetModel;
-import org.efaps.ui.wicket.components.date.UnnestedDatePickers;
 import org.efaps.ui.wicket.components.table.cell.CellPanel;
 import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.cell.UIStructurBrowserTableCell;
@@ -75,11 +74,6 @@ public class StructurBrowserTreeTable
     private final boolean parentLink;
 
     /**
-     * DatePicker.
-     */
-    private final UnnestedDatePickers datePickers;
-
-    /**
      * Constructor.
      *
      * @param _wicketId wicket id for this component
@@ -89,8 +83,7 @@ public class StructurBrowserTreeTable
      */
     public StructurBrowserTreeTable(final String _wicketId,
                                     final IModel<UIStructurBrowser> _model,
-                                    final boolean _parentLink,
-                                    final UnnestedDatePickers _datePickers)
+                                    final boolean _parentLink)
     {
         super(_wicketId, new StructurBrowserProvider(_model),
                         new SetModel<UIStructurBrowser>(_model.getObject().getExpandedBrowsers()));
@@ -100,7 +93,6 @@ public class StructurBrowserTreeTable
             add(new WindowsTheme());
         }
         this.parentLink = _parentLink;
-        this.datePickers = _datePickers;
     }
 
     @Override

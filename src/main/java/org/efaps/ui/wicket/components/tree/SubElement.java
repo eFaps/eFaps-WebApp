@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2012 The eFaps Team
+ * Copyright 2003 - 2013 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,11 @@ import org.apache.wicket.markup.repeater.RefreshingView;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.efaps.admin.datamodel.ui.DateTimeUI;
+import org.efaps.admin.datamodel.ui.DateUI;
+import org.efaps.admin.ui.field.Field.Display;
 import org.efaps.ui.wicket.components.LabelComponent;
+import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.table.cell.CellPanel;
 import org.efaps.ui.wicket.components.table.row.RowId;
 import org.efaps.ui.wicket.models.AbstractInstanceObject;
@@ -223,8 +227,16 @@ public class SubElement
                 } else {
                     repeater = cellsAfterRepeater;
                 }
-                cell = new CellPanel(repeater.newChildId(), new UIModel<UITableCell>(uiCell),
-                                updateMenu, new UITable(strucBrws.getCommandUUID(), strucBrws.getInstanceKey()), 0);
+                if (strucBrws.isEditable() && uiCell.getDisplay().equals(Display.EDITABLE)
+                                && (uiCell.getUiClass() instanceof DateUI
+                                                || uiCell.getUiClass() instanceof DateTimeUI)) {
+                    cell = new DateTimePanel(repeater.newChildId(), uiCell.getCompareValue(), uiCell.getName(),
+                                    uiCell.getUiClass() instanceof DateTimeUI,
+                                    uiCell.getField().getCols());
+                } else {
+                    cell = new CellPanel(repeater.newChildId(), new UIModel<UITableCell>(uiCell),
+                                    updateMenu, new UITable(strucBrws.getCommandUUID(), strucBrws.getInstanceKey()), 0);
+                }
                 cell.setOutputMarkupId(true);
                 repeater.add(cell);
             }

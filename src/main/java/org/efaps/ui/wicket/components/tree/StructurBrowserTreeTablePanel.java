@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2012 The eFaps Team
+ * Copyright 2003 - 2013 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,6 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.efaps.ui.wicket.behaviors.RowSelectedInput;
 import org.efaps.ui.wicket.behaviors.dojo.OnDojoReadyHeaderItem;
-import org.efaps.ui.wicket.components.date.UnnestedDatePickers;
 import org.efaps.ui.wicket.components.table.TablePanel;
 import org.efaps.ui.wicket.components.table.header.HeaderPanel;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
@@ -52,11 +51,6 @@ public class StructurBrowserTreeTablePanel
     private final boolean parentLink;
 
     /**
-     * DatePickers.
-     */
-    private final UnnestedDatePickers datePickers;
-
-    /**
      * @param _wicketId wicket id of this component
      * @param _model model for this component
      * @param _parentLink must the link be done using the parent
@@ -74,11 +68,9 @@ public class StructurBrowserTreeTablePanel
         if (!uiObject.isInitialized()) {
             uiObject.execute();
         }
-        this.datePickers = new UnnestedDatePickers("datePickers");
-        add(this.datePickers);
+
         add(new RowSelectedInput("selected"));
-        final StructurBrowserTreeTable tree = new StructurBrowserTreeTable("treeTable", _model, _parentLink,
-                        this.datePickers);
+        final StructurBrowserTreeTable tree = new StructurBrowserTreeTable("treeTable", _model, _parentLink);
 
         final HeaderPanel header = new HeaderPanel("header", tree, _model);
         add(tree);
