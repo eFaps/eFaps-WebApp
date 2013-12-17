@@ -22,9 +22,11 @@ package org.efaps.ui.wicket.models.field.factories;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.model.Model;
+import org.efaps.admin.datamodel.IEnum;
 import org.efaps.admin.datamodel.ui.EnumUI;
 import org.efaps.ui.wicket.components.values.RadioField;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
+import org.efaps.ui.wicket.util.EnumUtil;
 import org.efaps.util.EFapsException;
 
 /**
@@ -87,7 +89,7 @@ public class EnumUIFactory
     {
         final Object valueTmp = _abstractUIField.getValue()
                         .getReadOnlyValue(_abstractUIField.getParent().getMode());
-        return valueTmp == null ? null : valueTmp.toString();
+        return valueTmp == null ? null : EnumUtil.getUILabel((IEnum) valueTmp);
     }
 
     /**

@@ -30,6 +30,7 @@ import org.efaps.admin.datamodel.ui.BitEnumUI;
 import org.efaps.admin.datamodel.ui.IUIProvider;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
+import org.efaps.ui.wicket.util.EnumUtil;
 import org.efaps.util.EFapsException;
 
 /**
@@ -42,7 +43,6 @@ public class CheckBoxOption
     extends AbstractOption
     implements Serializable
 {
-
     /**
      *
      */
@@ -57,7 +57,7 @@ public class CheckBoxOption
 
     public CheckBoxOption(final IEnum _enum)
     {
-        super(Integer.valueOf(_enum.getInt()).toString(), _enum.toString());
+        super(Integer.valueOf(_enum.getInt()).toString(), EnumUtil.getUILabel(_enum));
     }
 
     /**
@@ -74,10 +74,10 @@ public class CheckBoxOption
             if (uiProvider instanceof BitEnumUI) {
                 try {
                     final Class<?> clazz = Class.forName(attr.getClassName(), false, EFapsClassLoader.getInstance());
-                    final Object[] consts=clazz.getEnumConstants();
+                    final Object[] consts = clazz.getEnumConstants();
                     for (final Object obj : consts) {
-                         final IEnum enumConst = ((IEnum) obj);
-                         ret.add(new CheckBoxOption(enumConst));
+                        final IEnum enumConst = ((IEnum) obj);
+                        ret.add(new CheckBoxOption(enumConst));
                     }
                 } catch (final ClassNotFoundException e) {
                     // TODO Auto-generated catch block
@@ -88,9 +88,8 @@ public class CheckBoxOption
             for (final Object obj : _choices) {
                 final IEnum enumConst = ((IEnum) obj);
                 ret.add(new CheckBoxOption(enumConst));
-           }
+            }
         }
         return ret;
-
     }
 }

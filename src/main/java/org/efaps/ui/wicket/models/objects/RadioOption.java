@@ -30,6 +30,7 @@ import org.efaps.admin.datamodel.ui.EnumUI;
 import org.efaps.admin.datamodel.ui.IUIProvider;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
+import org.efaps.ui.wicket.util.EnumUtil;
 import org.efaps.util.EFapsException;
 
 /**
@@ -61,7 +62,7 @@ public class RadioOption
 
     public RadioOption(final IEnum _enum)
     {
-        super(Integer.valueOf(_enum.getInt()).toString(), _enum.toString());
+        super(Integer.valueOf(_enum.getInt()).toString(), EnumUtil.getUILabel(_enum));
     }
 
     /**

@@ -25,9 +25,11 @@ import java.util.List;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.model.Model;
+import org.efaps.admin.datamodel.IEnum;
 import org.efaps.admin.datamodel.ui.BitEnumUI;
 import org.efaps.ui.wicket.components.values.CheckBoxField;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
+import org.efaps.ui.wicket.util.EnumUtil;
 import org.efaps.util.EFapsException;
 
 
@@ -100,7 +102,7 @@ public class BitEnumUIFactory
                 } else {
                     ret.append(", ");
                 }
-                ret.append(obj);
+                ret.append(EnumUtil.getUILabel((IEnum) obj));
             }
         }
         return ret.toString();
@@ -116,5 +118,4 @@ public class BitEnumUIFactory
         }
         return BitEnumUIFactory.FACTORY;
     }
-
 }
