@@ -30,6 +30,9 @@ import org.apache.wicket.Application;
 import org.apache.wicket.Component;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.Session;
+import org.apache.wicket.application.AbstractClassResolver;
+import org.apache.wicket.application.CompoundClassResolver;
+import org.apache.wicket.application.DefaultClassResolver;
 import org.apache.wicket.authorization.Action;
 import org.apache.wicket.authorization.IAuthorizationStrategy;
 import org.apache.wicket.javascript.DefaultJavaScriptCompressor;
@@ -44,6 +47,7 @@ import org.apache.wicket.request.Response;
 import org.apache.wicket.request.component.IRequestableComponent;
 import org.apache.wicket.request.http.WebRequest;
 import org.apache.wicket.resource.DynamicJQueryResourceReference;
+import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.jaas.AppAccessHandler;
 import org.efaps.ui.filter.AbstractFilter;
 import org.efaps.ui.wicket.pages.error.UnexpectedErrorPage;
@@ -102,6 +106,18 @@ public class EFapsApplication
 
         getApplicationSettings().setPageExpiredErrorPage(LoginPage.class);
         getApplicationSettings().setInternalErrorPage(UnexpectedErrorPage.class);
+
+        final CompoundClassResolver resolver = new CompoundClassResolver();
+        resolver.add(new DefaultClassResolver());
+        resolver.add(new AbstractClassResolver() {
+            @Override
+            public ClassLoader getClassLoader()
+            {
+                return EFapsClassLoader.getInstance();
+            }
+
+        });
+        getApplicationSettings().setClassResolver(resolver);
 
         getApplicationSettings().setUploadProgressUpdatesEnabled(true);
 
