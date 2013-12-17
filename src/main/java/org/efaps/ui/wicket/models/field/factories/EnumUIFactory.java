@@ -87,8 +87,7 @@ public class EnumUIFactory
     {
         final Object valueTmp = _abstractUIField.getValue()
                         .getReadOnlyValue(_abstractUIField.getParent().getMode());
-
-        return valueTmp.toString();
+        return valueTmp == null ? null : valueTmp.toString();
     }
 
     /**
