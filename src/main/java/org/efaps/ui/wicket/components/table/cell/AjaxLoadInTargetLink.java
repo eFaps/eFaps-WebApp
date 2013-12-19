@@ -64,7 +64,7 @@ public class AjaxLoadInTargetLink<T>
         /** top. */
         TOP("top"),
         /** opener. */
-        OPENER("opener");
+        OPENER("opener.top");
 
         /***/
         private String key;
