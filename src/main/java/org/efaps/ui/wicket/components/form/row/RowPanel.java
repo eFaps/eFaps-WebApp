@@ -141,7 +141,9 @@ public class RowPanel
                 cellRepeater.add(valueCell);
                 valueCell.add(new AttributeAppender("class", new Model<String>("eFapsFormValue"), " "));
             } else if (object instanceof AbstractUIField) {
-                cellRepeater.add(new FieldPanel(cellRepeater.newChildId(), Model.of((AbstractUIField) object)));
+                final FieldPanel field = new FieldPanel(cellRepeater.newChildId(), Model.of((AbstractUIField) object));
+                field.add(AttributeModifier.replace("colspan", 2));
+                cellRepeater.add(field);
             }
         }
     }
