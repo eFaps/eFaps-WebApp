@@ -20,10 +20,15 @@
 
 package org.efaps.ui.wicket.components.values;
 
+import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.ILabelProvider;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.efaps.ui.wicket.models.cell.FieldConfiguration;
+import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO comment!
@@ -35,6 +40,11 @@ public class LabelField
     extends Label
     implements ILabelProvider<String>
 {
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(LabelField.class);
+
 
     /**
      * Needed for serialization.
@@ -42,27 +52,37 @@ public class LabelField
     private static final long serialVersionUID = 1L;
 
     /**
-     * Label model.
+     * Configuration object.
      */
-    private final IModel<String> label;
+    private final FieldConfiguration fieldConfiguration;
 
     /**
-     * @param _wicketId         wicketid
-     * @param _readOnlyValue    read only value
-     * @param _label            label for the Component
+     * @param _wicketId             wicketid
+     * @param _readOnlyValue        read only value
+     * @param _fieldConfiguration   FieldConfiguration for this labelFiels
      */
     public LabelField(final String _wicketId,
                       final String _readOnlyValue,
-                      final String _label)
+                      final FieldConfiguration _fieldConfiguration)
     {
         super(_wicketId, Model.of(_readOnlyValue));
-        this.label = Model.of(_label);
+        this.fieldConfiguration = _fieldConfiguration;
     }
 
     @Override
     public IModel<String> getLabel()
     {
-        return this.label;
+        return Model.of(this.fieldConfiguration.getLabel());
     }
 
+    @Override
+    protected void onComponentTag(final ComponentTag _tag)
+    {
+        super.onComponentTag(_tag);
+        try {
+            _tag.put("name", this.fieldConfiguration.getName());
+        } catch (final EFapsException e) {
+            LabelField.LOG.error("Catched error on setting name in tag for: {}", this);
+        }
+    }
 }
