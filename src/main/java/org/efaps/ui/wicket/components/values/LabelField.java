@@ -57,22 +57,30 @@ public class LabelField
     private final FieldConfiguration fieldConfiguration;
 
     /**
+     * Label for this field.
+     */
+    private final String label;
+
+    /**
      * @param _wicketId             wicketid
      * @param _readOnlyValue        read only value
-     * @param _fieldConfiguration   FieldConfiguration for this labelFiels
+     * @param _fieldConfiguration   FieldConfiguration for this labelField
+     * @param _label                label for the Field
      */
     public LabelField(final String _wicketId,
                       final String _readOnlyValue,
-                      final FieldConfiguration _fieldConfiguration)
+                      final FieldConfiguration _fieldConfiguration,
+                      final String _label)
     {
         super(_wicketId, Model.of(_readOnlyValue));
         this.fieldConfiguration = _fieldConfiguration;
+        this.label = _label;
     }
 
     @Override
     public IModel<String> getLabel()
     {
-        return Model.of(this.fieldConfiguration.getLabel());
+        return Model.of(this.label);
     }
 
     @Override

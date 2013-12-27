@@ -44,8 +44,9 @@ public abstract class AbstractUIFactory
     {
         Component ret = null;
         if (applies(_abstractUIField)) {
-            ret = new LabelField(_wicketId, getReadOnlyValue(_abstractUIField), _abstractUIField
-                            .getFieldConfiguration());
+            ret = new LabelField(_wicketId, getReadOnlyValue(_abstractUIField),
+                            _abstractUIField.getFieldConfiguration(),
+                            _abstractUIField.getFieldConfiguration().getLabel(_abstractUIField));
         }
         return ret;
     }
