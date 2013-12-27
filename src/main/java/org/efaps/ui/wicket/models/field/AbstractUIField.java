@@ -35,6 +35,7 @@ import org.efaps.ui.wicket.models.field.factories.DateUIFactory;
 import org.efaps.ui.wicket.models.field.factories.DecimalUIFactory;
 import org.efaps.ui.wicket.models.field.factories.EnumUIFactory;
 import org.efaps.ui.wicket.models.field.factories.IComponentFactory;
+import org.efaps.ui.wicket.models.field.factories.JaxbUIFactory;
 import org.efaps.ui.wicket.models.field.factories.LinkWithRangesUIFactory;
 import org.efaps.ui.wicket.models.field.factories.NumberUIFactory;
 import org.efaps.ui.wicket.models.field.factories.StringUIFactory;
@@ -69,6 +70,7 @@ public abstract class AbstractUIField
         AbstractUIField.FACTORIES.add(NumberUIFactory.get());
         AbstractUIField.FACTORIES.add(EnumUIFactory.get());
         AbstractUIField.FACTORIES.add(BitEnumUIFactory.get());
+        AbstractUIField.FACTORIES.add(JaxbUIFactory.get());
     }
     /**
      * Configuration of the related field.
