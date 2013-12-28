@@ -74,8 +74,6 @@ public class JaxbUIFactory
     protected String getReadOnlyValue(final AbstractUIField _abstractUIField)
         throws EFapsException
     {
-        final Object valueTmp = _abstractUIField.getValue()
-                        .getReadOnlyValue(_abstractUIField.getParent().getMode());
         final Attribute attr = _abstractUIField.getValue().getAttribute();
         String ret = null;
         if (attr != null) {
@@ -83,7 +81,7 @@ public class JaxbUIFactory
                 final Class<?> clazz = Class.forName(attr.getClassName(), false,
                                 EFapsClassLoader.getInstance());
                 final IJaxb jaxb = (IJaxb) clazz.newInstance();
-                ret = jaxb.getUIValue(valueTmp);
+                ret = jaxb.getUISnipplet(_abstractUIField.getParent().getMode(), _abstractUIField.getValue());
             } catch (final ClassNotFoundException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
