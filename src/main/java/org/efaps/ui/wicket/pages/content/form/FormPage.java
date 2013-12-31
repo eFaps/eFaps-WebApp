@@ -254,8 +254,7 @@ public class FormPage
                                 (FormElement) element.getElement(), _form));
             } else if (element.getType().equals(ElementType.HEADING)) {
                 final UIHeading headingmodel = (UIHeading) element.getElement();
-                elementRepeater.add(new HeadingPanel(elementRepeater.newChildId(), headingmodel.getLabel(),
-                                headingmodel.getLevel()));
+                elementRepeater.add(new HeadingPanel(elementRepeater.newChildId(), Model.of(headingmodel)));
             } else if (element.getType().equals(ElementType.TABLE)) {
                 i++;
                 final UIFieldTable fieldTable = (UIFieldTable) element.getElement();
@@ -285,8 +284,7 @@ public class FormPage
                                         new FormModel(uiFieldForm), (FormElement) subElement.getElement(), _form));
                     } else if (subElement.getType().equals(ElementType.HEADING)) {
                         final UIHeading headingmodel = (UIHeading) subElement.getElement();
-                        elementRepeater.add(new HeadingPanel(elementRepeater.newChildId(), headingmodel.getLabel(),
-                                        headingmodel.getLevel()));
+                        elementRepeater.add(new HeadingPanel(elementRepeater.newChildId(), Model.of(headingmodel)));
                     } else if (subElement.getType().equals(ElementType.TABLE)) {
                         i++;
                         final UIFieldTable fieldTable = (UIFieldTable) subElement.getElement();

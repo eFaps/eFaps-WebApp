@@ -359,7 +359,7 @@ public class UIForm
      * the form by walking down the tree.
      *
      * @param _uiclass the classification to be added
-     * @param _uuid2InstanceKey map from uuid to instance keys
+     * @param _instanceKeys map from uuid to instance keys
      * @throws EFapsException on error
      */
     public void addClassElements(final UIClassification _uiclass,
@@ -375,7 +375,6 @@ public class UIForm
      * the form by walking down the tree.
      *
      * @param _uiclass the classification to be added
-     * @param _uuid2InstanceKey map from uuid to instance keys
      * @throws EFapsException on error
      */
     public void updateClassElements(final UIClassification _uiclass)
@@ -476,7 +475,7 @@ public class UIForm
      * Method evaluates a Field and adds it to the row.
      *
      * @param _row              FormRow to add the cell to
-     * @param _query            query containing the values
+     * @param _print            query containing the values
      * @param _field            field the cell belongs to
      * @param _fieldInstance    instance of the Field
      * @param _label            label for the Field
@@ -629,7 +628,8 @@ public class UIForm
      * Recursive method to add the children classification forms.
      * @param _uiclass      parent classification form
      * @param _uuid2InstanceKey mapping of instancekeys
-     * @throws EFapsException o nerro
+     * @return List of elements to be added
+     * @throws EFapsException on error
      */
     private List<Element> getClassElements(final UIClassification _uiclass,
                                            final Map<UUID, String> _uuid2InstanceKey)
@@ -969,7 +969,7 @@ public class UIForm
         /**
          * Add a UIFormCell to this FormRow.
          *
-         * @param _uiFormCell UIFormCell to add
+         * @param _uiObject UIObject to add
          */
         public void add(final AbstractInstanceObject _uiObject)
         {

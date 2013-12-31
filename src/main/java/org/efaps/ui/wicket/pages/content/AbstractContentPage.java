@@ -29,6 +29,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.link.PopupSettings;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.ui.wicket.behaviors.SetMessageStatusBehavior;
@@ -40,6 +41,7 @@ import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
+import org.efaps.ui.wicket.models.objects.UIHeading;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.models.objects.UISearchItem;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
@@ -172,7 +174,7 @@ public abstract class AbstractContentPage
         add(this.modal);
 
         final AbstractUIObject uiObject = (AbstractUIObject) super.getDefaultModelObject();
-        add(new HeadingPanel("titel", uiObject.getTitle()));
+        add(new HeadingPanel("titel",  Model.of(new UIHeading( uiObject.getTitle()))));
 
         UIModel<UIMenuItem> model = null;
         if (uiObject.getMode() == TargetMode.SEARCH

@@ -24,10 +24,12 @@ package org.efaps.ui.wicket.components.menu.ajax;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.util.iterator.ComponentHierarchyIterator;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.heading.HeadingPanel;
 import org.efaps.ui.wicket.models.objects.UIForm;
+import org.efaps.ui.wicket.models.objects.UIHeading;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
@@ -109,7 +111,7 @@ public class SearchItem
                 uiform.setCommandUUID(menuitem.getCommandUUID());
                 uiform.setFormUUID(uiform.getCommand().getTargetForm().getUUID());
                 uiform.execute();
-                heading.addComponents(uiform.getTitle());
+                heading.addComponents(Model.of(new UIHeading(uiform.getTitle())));
                 FormPage.updateFormContainer(getPage(), form, uiform);
             } catch (final EFapsException e) {
                 throw new RestartResponseException(new ErrorPage(e));

@@ -49,12 +49,32 @@ public class UIHeading
     private final String label;
 
     /**
+     * Boolean used as a tristate.
+     */
+    private final Boolean collapsed;
+
+    /**
+     * @param _label label to use
+     */
+    public UIHeading(final String _label)
+    {
+        this.label = _label;
+        this.level = 0;
+        this.collapsed = null;
+    }
+
+    /**
      * @param _heading Heading
      */
     public UIHeading(final FieldHeading _heading)
     {
         this.label = DBProperties.getProperty(_heading.getLabel());
         this.level = _heading.getLevel();
+        if (_heading.getProperty("Collapsed") == null) {
+            this.collapsed = null;
+        } else {
+            this.collapsed = new Boolean(_heading.getProperty("Collapsed"));
+        }
     }
 
     /**
@@ -77,4 +97,20 @@ public class UIHeading
         return this.label;
     }
 
+    public boolean isCollapsible()
+    {
+        return this.collapsed != null;
+    }
+
+
+
+    /**
+     * Getter method for the instance variable {@link #collapsed}.
+     *
+     * @return value of instance variable {@link #collapsed}
+     */
+    public Boolean getCollapsed()
+    {
+        return this.collapsed;
+    }
 }
