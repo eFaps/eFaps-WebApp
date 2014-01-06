@@ -29,7 +29,8 @@ import java.util.UUID;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.user.Person;
 import org.efaps.util.EFapsException;
-import org.jbpm.task.query.TaskSummary;
+import org.kie.api.task.model.TaskSummary;
+
 
 /**
  * Wrapper class for a TaskSummary to be able to replace the values for the

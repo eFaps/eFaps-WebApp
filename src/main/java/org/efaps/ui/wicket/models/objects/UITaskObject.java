@@ -51,8 +51,10 @@ import org.efaps.ui.wicket.models.field.UISnippletField;
 import org.efaps.ui.wicket.models.task.DelegateRole;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
-import org.jbpm.task.Status;
-import org.jbpm.task.service.Operation;
+import org.kie.api.task.model.Status;
+import org.kie.internal.task.api.model.InternalTask;
+import org.kie.internal.task.api.model.Operation;
+
 
 /**
  * TODO comment!
@@ -123,7 +125,8 @@ public class UITaskObject
     protected void initialize()
         throws EFapsException
     {
-        final Form form = Form.get(getUITaskSummary().getName());
+        final InternalTask task = BPM.getTaskById(getUITaskSummary().getTaskSummary());
+        final Form form = Form.get(task.getFormName());
         if (form != null) {
             this.formUUID = form.getUUID();
 

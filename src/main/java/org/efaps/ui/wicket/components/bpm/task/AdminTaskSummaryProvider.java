@@ -26,7 +26,8 @@ import java.util.List;
 import org.efaps.bpm.BPM;
 import org.efaps.bpm.task.TaskAdminstration;
 import org.efaps.ui.wicket.models.objects.UITaskSummary;
-import org.jbpm.task.query.TaskSummary;
+import org.kie.api.task.model.TaskSummary;
+
 
 /**
  * TODO comment!
@@ -98,7 +99,7 @@ public class AdminTaskSummaryProvider
                 ret = UITaskSummary.getUITaskSummary(new ArrayList<TaskSummary>());
                 break;
         }
-        admin.dispose();
+        //admin.dispose();
         return ret;
     }
 

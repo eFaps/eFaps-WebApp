@@ -41,6 +41,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.util.iterator.ComponentHierarchyIterator;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.bpm.BPM;
+import org.efaps.db.Context;
 import org.efaps.ui.wicket.behaviors.dojo.AbstractDojoBehavior;
 import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
@@ -53,7 +54,7 @@ import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
-import org.jbpm.task.query.TaskSummary;
+import org.kie.api.task.model.TaskSummary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -304,6 +305,7 @@ public class TaskPage
                         BPM.executeTask(((UITaskObject) getComponent().getDefaultModelObject()).getUITaskSummary()
                                         .getTaskSummary(),
                                         _decision, values);
+                        Context.save();
                     } catch (final EFapsException e) {
                         TaskPage.LOG.error("Catched error during execute of a task", e);
                     }
@@ -349,6 +351,7 @@ public class TaskPage
                     try {
                         BPM.claimTask(((UITaskObject) getComponent().getDefaultModelObject()).getUITaskSummary()
                                         .getTaskSummary());
+                        Context.save();
                     } catch (final EFapsException e) {
                         TaskPage.LOG.error("Catched error during claiming of a task", e);
                     }
@@ -394,6 +397,7 @@ public class TaskPage
                     try {
                         BPM.releaseTask(((UITaskObject) getComponent().getDefaultModelObject()).getUITaskSummary()
                                         .getTaskSummary());
+                        Context.save();
                     } catch (final EFapsException e) {
                         TaskPage.LOG.error("Catched error during claiming of a task", e);
                     }
