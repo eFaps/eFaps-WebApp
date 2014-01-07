@@ -138,15 +138,23 @@ public class ProcessInstanceProvider
                 if (process0 != null && process1 != null) {
                     if ("processId".equals(sortprop)) {
                         ret = process0.getProcessId().compareTo(process1.getProcessId());
-                    } else if  ("id".equals(sortprop)) {
+                    } else if ("id".equals(sortprop)) {
                         ret = Long.valueOf(process0.getId()).compareTo(Long.valueOf(process1.getId()));
-                    } else if  ("start".equals(sortprop)) {
+                    } else if ("start".equals(sortprop)) {
                         ret = process0.getStart().compareTo(process1.getStart());
-                    } else if  ("end".equals(sortprop)) {
+                    } else if ("end".equals(sortprop)) {
                         ret = process0.getEnd() != null && process1.getEnd() != null
                                         ? process0.getEnd().compareTo(process1.getEnd()) : 0;
-                    } else if  ("status".equals(sortprop)) {
+                    } else if ("status".equals(sortprop)) {
                         ret = Long.valueOf(process0.getStatus()).compareTo(Long.valueOf(process1.getStatus()));
+                    } else if ("processName".equals(sortprop)) {
+                        ret = String.valueOf(process0.getProcessName()).compareTo(
+                                        String.valueOf(process1.getProcessName()));
+                    } else if ("processVersion".equals(sortprop)) {
+                        ret = String.valueOf(process0.getProcessVersion()).compareTo(
+                                        String.valueOf(process1.getProcessVersion()));
+                    } else if ("durationTime".equals(sortprop)) {
+                        ret = Long.valueOf(process0.getDuration()).compareTo(Long.valueOf(process1.getDuration()));
                     }
                 }
                 return ret;

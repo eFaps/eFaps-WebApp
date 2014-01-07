@@ -84,7 +84,8 @@ public class ProcessTablePanel
         super(_wicketId);
         this.dataProvider = _dataProvider;
 
-        final List<IColumn<UIProcessInstanceLog, String>> columns = new ArrayList<IColumn<UIProcessInstanceLog, String>>();
+        final List<IColumn<UIProcessInstanceLog, String>> columns
+            = new ArrayList<IColumn<UIProcessInstanceLog, String>>();
 
         columns.add(new AbstractColumn<UIProcessInstanceLog, String>(new Model<String>(""))
         {
@@ -106,7 +107,6 @@ public class ProcessTablePanel
             }
         });
 
-
         columns.add(new PropertyColumn<UIProcessInstanceLog, String>(new Model<String>("ID"), "id", "id"));
         columns.add(new PropertyColumn<UIProcessInstanceLog, String>(new Model<String>("processId"), "processId",
                         "processId"));
@@ -115,19 +115,29 @@ public class ProcessTablePanel
         final String end = DBProperties.getProperty(ProcessTablePanel.class.getName() + ".Process.End");
         final String status = DBProperties.getProperty(ProcessTablePanel.class.getName() + ".Process.Status");
         final String outcome = DBProperties.getProperty(ProcessTablePanel.class.getName() + ".Process.Outcome");
+        final String processName = DBProperties.getProperty(ProcessTablePanel.class.getName() + ".Process.ProcessName");
+        final String processVersion = DBProperties.getProperty(ProcessTablePanel.class.getName()
+                        + ".Process.ProcessVersion");
+        final String durationTime = DBProperties.getProperty(ProcessTablePanel.class.getName()
+                        + ".Process.DurationTime");
 
         columns.add(new PropertyColumn<UIProcessInstanceLog, String>(new Model<String>(start), "start",
                         "start"));
         columns.add(new PropertyColumn<UIProcessInstanceLog, String>(new Model<String>(end), "end", "end"));
         columns.add(new PropertyColumn<UIProcessInstanceLog, String>(new Model<String>(status), "status",
-                        "status"));
+                        "statusStr"));
         columns.add(new PropertyColumn<UIProcessInstanceLog, String>(new Model<String>(outcome), "outcome",
                         "outcome"));
+        columns.add(new PropertyColumn<UIProcessInstanceLog, String>(new Model<String>(processName), "processName",
+                        "processName"));
+        columns.add(new PropertyColumn<UIProcessInstanceLog, String>(new Model<String>(processVersion),
+                        "processVersion", "processVersion"));
+        columns.add(new PropertyColumn<UIProcessInstanceLog, String>(new Model<String>(durationTime),
+                        "durationTime", "durationTime"));
 
         add(new AjaxFallbackDefaultDataTable<UIProcessInstanceLog, String>("table", columns, this.dataProvider,
                         this.dataProvider.getRowsPerPage()));
     }
-
 
     /**
      * @return update the underlying data

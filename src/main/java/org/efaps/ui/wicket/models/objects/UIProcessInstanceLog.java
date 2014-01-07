@@ -25,8 +25,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.wicket.util.time.Duration;
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ci.CIAdminProgram;
 import org.efaps.db.CachedMultiPrintQuery;
+import org.efaps.db.Context;
 import org.efaps.db.QueryBuilder;
 import org.efaps.util.EFapsException;
 import org.jbpm.process.audit.ProcessInstanceLog;
@@ -36,11 +39,13 @@ import org.jbpm.process.audit.ProcessInstanceLog;
  * UserInterface.
  *
  * @author The eFaps Team
- * @version $Id$
+ * @version $Id: UIProcessInstanceLog.java 9959 2013-08-03 18:55:39Z
+ *          jan@moxter.net $
  */
 public class UIProcessInstanceLog
     implements Serializable
 {
+
     /**
      *
      */
@@ -68,7 +73,7 @@ public class UIProcessInstanceLog
     }
 
     /**
-     * @return the start time  of the underlying ProcessInstanceLog
+     * @return the start time of the underlying ProcessInstanceLog
      */
     public Date getStart()
     {
@@ -110,9 +115,74 @@ public class UIProcessInstanceLog
     /**
      * @return the translated Status of the underlying TaskSummary
      */
+    public String getStatusStr()
+    {
+        String ret;
+        final String base = "org.efaps.ui.wicket.components.bpm.process.ProcessInstance.";
+        switch (this.processInstance.getStatus()) {
+            case org.kie.api.runtime.process.ProcessInstance.STATE_ABORTED:
+                ret = DBProperties.getProperty(base + "STATE_ABORTED");
+                break;
+            case org.kie.api.runtime.process.ProcessInstance.STATE_ACTIVE:
+                ret = DBProperties.getProperty(base + "STATE_ACTIVE");
+                break;
+            case org.kie.api.runtime.process.ProcessInstance.STATE_COMPLETED:
+                ret = DBProperties.getProperty(base + "STATE_COMPLETED");
+                break;
+            case org.kie.api.runtime.process.ProcessInstance.STATE_PENDING:
+                ret = DBProperties.getProperty(base + "STATE_PENDING");
+                break;
+            case org.kie.api.runtime.process.ProcessInstance.STATE_SUSPENDED:
+                ret = DBProperties.getProperty(base + "STATE_SUSPENDED");
+                break;
+            default:
+                ret = "";
+                break;
+        }
+        return ret;
+    }
+
+    /**
+     * @return the outcome of the underlying ProcessInstanceLog
+     */
     public String getOutcome()
     {
         return this.processInstance.getOutcome();
+    }
+
+    /**
+     * @return the ProcessName of the underlying ProcessInstanceLog
+     */
+    public String getProcessName()
+    {
+        return this.processInstance.getProcessName();
+    }
+
+    /**
+     * @return the ProcessVersion of the underlying ProcessInstanceLog
+     */
+    public String getProcessVersion()
+    {
+        return this.processInstance.getProcessVersion();
+    }
+
+    /**
+     * @return the Duration of the underlying ProcessInstanceLog
+     */
+    public Long getDuration()
+    {
+        final Long ret = this.processInstance.getDuration();
+        return ret == null ? 0 : ret;
+    }
+
+    /**
+     * @return the duration as formated string
+     * @throws EFapsException on error
+     */
+    public String getDurationTime()
+        throws EFapsException
+    {
+        return Duration.valueOf(getDuration()).toString(Context.getThreadContext().getLocale());
     }
 
     /**
@@ -126,7 +196,8 @@ public class UIProcessInstanceLog
     }
 
     /**
-     * @param _processInstanceLogs list of ProcessInstanceLog the UIProcessInstance is wanted for
+     * @param _processInstanceLogs list of ProcessInstanceLog the
+     *            UIProcessInstance is wanted for
      * @return List of UITaskSummary
      */
     public static List<UIProcessInstanceLog> getUIProcessInstances(final List<ProcessInstanceLog> _processInstanceLogs)
@@ -138,7 +209,6 @@ public class UIProcessInstanceLog
         }
         return ret;
     }
-
 
     /**
      * @return List of processIds
