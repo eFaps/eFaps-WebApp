@@ -685,7 +685,15 @@ public class UIForm
             final List<EventDefinition> events = getCommand().getEvents(EventType.UI_TABLE_EVALUATE);
             if (events != null) {
                 for (final EventDefinition eventDef : events) {
-                    final String tmp = eventDef.getProperty("Types");
+                    String tmp = eventDef.getProperty("Type");
+                    if (tmp == null) {
+                        tmp = eventDef.getProperty("Types");
+                        if (tmp != null) {
+                            UIForm.LOG.warn("Event '{}' uses deprecated API for type.", eventDef.getName());
+                        } else {
+                            UIForm.LOG.error("Event '{}' is not type property", eventDef.getName());
+                        }
+                    }
                     if (tmp != null) {
                         type = Type.get(tmp);
                         break;
