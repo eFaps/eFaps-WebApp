@@ -91,6 +91,8 @@ public final class Configuration
         BOARD_PANELS(false, true, WebAppSettings.DASHBOARD_PANELS, ""),
         /** MainToolBar. */
         TOOLBAR(false, true, WebAppSettings.TOOLBAR, "87001cc3-c45c-44de-b8f1-776df507f268"),
+        /** Default form for Task to prevent errors. */
+        BPM_DEFAULTTASKFROM(false, true, WebAppSettings.BPM_DEFAULTTASKFROM, "c34e35ad-93ed-4190-887d-5be9a2302edf"),
          /** Websocket activated. */
         WEBSOCKET_ACTVATE(false, true, WebAppSettings.WEBSOCKET_ACTIVATE, "true"),
         /** */

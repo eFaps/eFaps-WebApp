@@ -37,6 +37,11 @@ public interface WebAppSettings
     String CACHE_DURATION = "org.efaps.webapp.StaticContentCacheDuration";
 
     /**
+     * String. UUID of a form that will be used in case that there is no form found for the task page.
+     */
+    String BPM_DEFAULTTASKFROM = "org.efaps.webapp.BPM.DefaultTaskForm";
+
+    /**
      * Integer: Number of items in the Recent Links menu. Default Value is 5.
      */
     String RECENT_CACHE_SIZE = "org.efaps.webapp.RecentCacheSize";
@@ -154,5 +159,8 @@ public interface WebAppSettings
      * Integer: Maximum rows of session shown in the Session Table per Page. Default Value is 20.
      */
     String WEBSOCKET_MESSAGETABLE_MAX = "org.efaps.webapp.WebSocket.MessageTable.MaximumRows";
+
+
+
 
 }

@@ -31,7 +31,7 @@ import org.apache.wicket.util.string.StringValue;
  * @author The eFaps Team
  * @version $Id$
  */
-public class ParameterUtil
+public final class ParameterUtil
 {
 
     /**

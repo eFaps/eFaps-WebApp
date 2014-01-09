@@ -49,6 +49,8 @@ import org.efaps.ui.wicket.models.field.UIField;
 import org.efaps.ui.wicket.models.field.UIGroup;
 import org.efaps.ui.wicket.models.field.UISnippletField;
 import org.efaps.ui.wicket.models.task.DelegateRole;
+import org.efaps.ui.wicket.util.Configuration;
+import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 import org.kie.api.task.model.Status;
@@ -126,7 +128,18 @@ public class UITaskObject
         throws EFapsException
     {
         final InternalTask task = BPM.getTaskById(getUITaskSummary().getTaskSummary());
-        final Form form = Form.get(task.getFormName());
+        final Form form;
+        if (task.getFormName() == null) {
+            form = Form.get(UUID.fromString(Configuration.getAttribute(ConfigAttribute.BPM_DEFAULTTASKFROM)));
+        } else {
+            final Form formTmp = Form.get(task.getFormName());
+            if (formTmp == null) {
+                form = Form.get(UUID.fromString(Configuration.getAttribute(ConfigAttribute.BPM_DEFAULTTASKFROM)));
+            } else {
+                form = formTmp;
+            }
+        }
+
         if (form != null) {
             this.formUUID = form.getUUID();
 
@@ -159,8 +172,7 @@ public class UITaskObject
                             html.append(ret.get(ReturnValues.SNIPLETT));
                         }
                         final UISnippletField uiField = new UISnippletField(getInstance().getKey(), this,
-                                        new FieldConfiguration(
-                                                        field.getId()));
+                                        new FieldConfiguration(field.getId()));
                         uiGroup.add(uiField);
                         uiField.setHtml(html.toString());
                     } else {
@@ -180,6 +192,7 @@ public class UITaskObject
                 }
             }
         }
+
     }
 
     /**
