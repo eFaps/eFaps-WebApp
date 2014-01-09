@@ -48,10 +48,6 @@ public class ButtonStyleBehavior
      */
     private static final long serialVersionUID = 1L;
 
-    /* (non-Javadoc)
-     * @see org.apache.wicket.behavior.Behavior#renderHead(org.apache.wicket.Component,
-     * org.apache.wicket.markup.head.IHeaderResponse)
-     */
     @Override
     public void renderHead(final Component _component,
                            final IHeaderResponse _response)
@@ -60,12 +56,6 @@ public class ButtonStyleBehavior
         _response.render(CssHeaderItem.forUrl(ButtonStyleBehavior.CSS.getStaticContentUrl()));
     }
 
-    /*
-     * (non-Javadoc)
-     * @see
-     * org.apache.wicket.behavior.AbstractBehavior#onComponentTag(org.apache
-     * .wicket.Component, org.apache.wicket.markup.ComponentTag)
-     */
     @Override
     public void onComponentTag(final Component _component,
                                final ComponentTag _tag)

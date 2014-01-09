@@ -23,11 +23,16 @@ package org.efaps.ui.wicket.components.bpm.process;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.data.IDataProvider;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.iterator.ComponentHierarchyIterator;
+import org.efaps.bpm.BPM;
+import org.efaps.ui.wicket.components.button.AjaxButton;
+import org.efaps.ui.wicket.components.button.Button;
+import org.efaps.ui.wicket.components.modalwindow.AbstractModalWindow;
 import org.efaps.ui.wicket.models.objects.UIProcessInstanceLog;
 
 /**
@@ -55,9 +60,15 @@ public class ActionPanel
                        final PageReference _pageReference)
     {
         super(_wicketID, _model);
+
+        final ModalWindow modal = new AbstractModalWindow("modal", _model) {
+
+            private static final long serialVersionUID = 1L;
+        } .setInitialWidth(200).setInitialHeight(100);
+
+        this.add(modal);
         final AjaxLink<UIProcessInstanceLog> select = new AjaxLink<UIProcessInstanceLog>("select", _model)
         {
-
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -75,7 +86,7 @@ public class ActionPanel
                                             .getProcessInstanceId());
                             ((NodeInstanceProvider) provider).requery();
                             _target.add(table);
-                        }else if (provider instanceof VariableInstanceProvider) {
+                        } else if (provider instanceof VariableInstanceProvider) {
                             ((VariableInstanceProvider) provider).setProcessInstanceId(processinstance
                                             .getProcessInstanceId());
                             ((VariableInstanceProvider) provider).requery();
@@ -87,5 +98,32 @@ public class ActionPanel
             }
         };
         add(select);
+
+        final AjaxLink<UIProcessInstanceLog> abort = new AjaxLink<UIProcessInstanceLog>("abort", _model)
+        {
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void onClick(final AjaxRequestTarget _target)
+            {
+                modal.setContent(new AjaxButton<UIProcessInstanceLog>(modal.getContentId(), _model,
+                                Button.ICON.ACCEPT.getReference(), "OK")
+                {
+
+                    private static final long serialVersionUID = 1L;
+
+                    @Override
+                    public void onClick(final AjaxRequestTarget _target)
+                    {
+                        final UIProcessInstanceLog processinstance = (UIProcessInstanceLog) getDefaultModelObject();
+                        BPM.abortProcessInstance(processinstance.getProcessInstanceId());
+                        modal.close(_target);
+                    }
+                });
+                modal.show(_target);
+            }
+        };
+        add(abort);
     }
 }

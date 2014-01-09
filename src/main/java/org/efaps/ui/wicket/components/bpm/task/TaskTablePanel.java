@@ -109,6 +109,9 @@ public class TaskTablePanel
         if (this.dataProvider.showOid()) {
             columns.add(new PropertyColumn<UITaskSummary, String>(new Model<String>("ID"), "id", "id"));
             columns.add(new PropertyColumn<UITaskSummary, String>(new Model<String>("Name"), "name", "name"));
+            columns.add(new PropertyColumn<UITaskSummary, String>(new Model<String>("ProcessId"), "processId"));
+            columns.add(new PropertyColumn<UITaskSummary, String>(new Model<String>("ProcessInstanceId"),
+                            "processInstanceId"));
         }
 
         final String desc = DBProperties.getProperty(TaskTablePanel.class.getName() + ".Description");

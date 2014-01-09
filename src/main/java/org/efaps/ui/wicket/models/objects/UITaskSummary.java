@@ -69,6 +69,22 @@ public class UITaskSummary
     }
 
     /**
+     * @return the description of the underlying TaskSummary
+     */
+    public String getProcessId()
+    {
+        return this.taskSummary.getProcessId();
+    }
+
+    /**
+     * @return the description of the underlying TaskSummary
+     */
+    public Long getProcessInstanceId()
+    {
+        return this.taskSummary.getProcessInstanceId();
+    }
+
+    /**
      * @return the activation time  of the underlying TaskSummary
      */
     public Date getActivationTime()

@@ -22,6 +22,7 @@
 package org.efaps.ui.wicket.components.modalwindow;
 
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.model.IModel;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
@@ -36,7 +37,6 @@ import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 public abstract class AbstractModalWindow
     extends ModalWindow
 {
-
     /**
      * Needed for serialization.
      */
@@ -48,6 +48,25 @@ public abstract class AbstractModalWindow
     public AbstractModalWindow(final String _wicketId)
     {
         super(_wicketId);
+        initialize();
+    }
+
+    /**
+     * @param _wicketId wicket id for this component
+     * @param _model model for this component
+     */
+    public AbstractModalWindow(final String _wicketId,
+                               final IModel<?> _model)
+    {
+        super(_wicketId, _model);
+        initialize();
+    }
+
+    /**
+     * Initialize.
+     */
+    protected void initialize()
+    {
         if ("w_silver".equals(Configuration.getAttribute(ConfigAttribute.DOJO_MODALCLASS))) {
             setCssClassName(ModalWindow.CSS_CLASS_GRAY);
         } else if ("w_blue".equals(Configuration.getAttribute(ConfigAttribute.DOJO_MODALCLASS))) {

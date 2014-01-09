@@ -31,9 +31,11 @@ import org.efaps.ui.wicket.resources.EFapsContentReference;
  * @author The eFaps Team
  * @version $Id$
  */
-public class Button extends Panel
+public class Button
+    extends Panel
 {
-    /**
+
+   /**
      * Wicket id that must be used for the link component.
      */
     public static final String LINKID = "buttonLink";
@@ -87,13 +89,17 @@ public class Button extends Panel
 
     private final ButtonImage imagediv = new ButtonImage("icon");
 
-    public Button(final String _wicketId, final WebMarkupContainer _link, final String _label)
+    public Button(final String _wicketId,
+                  final WebMarkupContainer _link,
+                  final String _label)
     {
         this(_wicketId, _link, _label, null);
     }
 
-    public Button(final String _wicketId, final WebMarkupContainer _link, final String _label,
-                    final EFapsContentReference _icon)
+    public Button(final String _wicketId,
+                  final WebMarkupContainer _link,
+                  final String _label,
+                  final EFapsContentReference _icon)
     {
         super(_wicketId);
         this.add(_link);
@@ -107,7 +113,6 @@ public class Button extends Panel
         if (_icon != null) {
             this.imagediv.setReference(_icon);
         }
-
     }
 
     public String getLinkWicketId()
@@ -134,28 +139,39 @@ public class Button extends Panel
         super.onBeforeRender();
     }
 
-    public class ButtonImage extends StaticImageComponent
+    /**
+     * Image for the Button.
+     */
+    public static class ButtonImage
+        extends StaticImageComponent
     {
 
+        /**
+         * Needed for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
+        /**
+         * Has a reference or not.
+         */
         private boolean reference = false;
 
+        /**
+         * @param _wicketId wicketid for this component
+         */
         public ButtonImage(final String _wicketId)
         {
             super(_wicketId);
         }
 
+        /**
+         * @return true if has reference, else false
+         */
         public boolean hasReference()
         {
             return this.reference;
         }
 
-
-        /**
-         * @see org.efaps.ui.wicket.components.efapscontent.StaticImageComponent#setReference(org.efaps.ui.wicket.resources.EFapsContentReference)
-         * @param _reference EFapsContentReference
-         */
         @Override
         public void setReference(final EFapsContentReference _reference)
         {
@@ -163,17 +179,12 @@ public class Button extends Panel
             this.reference = true;
         }
 
-        /**
-         * @see org.efaps.ui.wicket.components.efapscontent.StaticImageComponent#onComponentTag(org.apache.wicket.markup.ComponentTag)
-         * @param _tag ComponentTag
-         */
         @Override
         protected void onComponentTag(final ComponentTag _tag)
         {
-            _tag.put("style", "background-repeat: no-repeat; " + "background-position: left top; "
+            _tag.put("style", "background-repeat: no-repeat; "
+                            + "background-position: left top; "
                             + "background-image:url(" + super.getUrl() + ")");
         }
-
     }
-
 }
