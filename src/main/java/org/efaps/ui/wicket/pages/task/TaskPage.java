@@ -198,6 +198,32 @@ public class TaskPage
                 form.add(new WebMarkupContainer("release").setVisible(false));
             }
 
+            if (_taskObjModel.getObject().isStop()) {
+                String release = DBProperties.getProperty(_taskObjModel.getObject().getUITaskSummary().getName()
+                                + ".stop", false);
+                if (release == null) {
+                    release = DBProperties
+                                    .getProperty("org.efaps.ui.wicket.pages.task.TaskPage.default.Button.stop");
+                }
+                form.add(new Button("stop", new StopLink(Button.LINKID, _taskObjModel, _pageReference),
+                                release, Button.ICON.CANCEL.getReference()));
+            } else {
+                form.add(new WebMarkupContainer("stop").setVisible(false));
+            }
+
+            if (_taskObjModel.getObject().isExit()) {
+                String release = DBProperties.getProperty(_taskObjModel.getObject().getUITaskSummary().getName()
+                                + ".exit", false);
+                if (release == null) {
+                    release = DBProperties
+                                    .getProperty("org.efaps.ui.wicket.pages.task.TaskPage.default.Button.exit");
+                }
+                form.add(new Button("exit", new ExitLink(Button.LINKID, _taskObjModel, _pageReference),
+                                release, Button.ICON.CANCEL.getReference()));
+            } else {
+                form.add(new WebMarkupContainer("exit").setVisible(false));
+            }
+
         } catch (final EFapsException e) {
             TaskPage.LOG.error("Catched error on construction of TaskPage", e);
         }
@@ -350,6 +376,97 @@ public class TaskPage
 
                     try {
                         BPM.claimTask(((UITaskObject) getComponent().getDefaultModelObject()).getUITaskSummary()
+                                        .getTaskSummary());
+                        Context.save();
+                    } catch (final EFapsException e) {
+                        TaskPage.LOG.error("Catched error during claiming of a task", e);
+                    }
+                    modal.close(_target);
+                }
+            });
+        }
+    }
+
+    /**
+     * Stop a task Link.
+     */
+    public static class StopLink
+        extends WebMarkupContainer
+    {
+
+        /**
+         * Needed for serialization.
+         */
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * @param _wicketId wicket if fo this link
+         * @param _model model for this component
+         * @param _pageReference reference to the page
+         */
+        public StopLink(final String _wicketId,
+                         final IModel<UITaskObject> _model,
+                         final PageReference _pageReference)
+        {
+            super(_wicketId, _model);
+            add(new AjaxFormSubmitBehavior("onclick")
+            {
+
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                protected void onEvent(final AjaxRequestTarget _target)
+                {
+                    final ModalWindowContainer modal = ((MainPage) _pageReference.getPage()).getModal();
+                    modal.setReloadChild(true);
+
+                    try {
+                        BPM.stopTask(((UITaskObject) getComponent().getDefaultModelObject()).getUITaskSummary()
+                                        .getTaskSummary());
+                        Context.save();
+                    } catch (final EFapsException e) {
+                        TaskPage.LOG.error("Catched error during claiming of a task", e);
+                    }
+                    modal.close(_target);
+                }
+            });
+        }
+    }
+
+    /**
+     * Exit a task Link.
+     */
+    public static class ExitLink
+        extends WebMarkupContainer
+    {
+        /**
+         * Needed for serialization.
+         */
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * @param _wicketId wicket if fo this link
+         * @param _model model for this component
+         * @param _pageReference reference to the page
+         */
+        public ExitLink(final String _wicketId,
+                         final IModel<UITaskObject> _model,
+                         final PageReference _pageReference)
+        {
+            super(_wicketId, _model);
+            add(new AjaxFormSubmitBehavior("onclick")
+            {
+
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                protected void onEvent(final AjaxRequestTarget _target)
+                {
+                    final ModalWindowContainer modal = ((MainPage) _pageReference.getPage()).getModal();
+                    modal.setReloadChild(true);
+
+                    try {
+                        BPM.exitTask(((UITaskObject) getComponent().getDefaultModelObject()).getUITaskSummary()
                                         .getTaskSummary());
                         Context.save();
                     } catch (final EFapsException e) {

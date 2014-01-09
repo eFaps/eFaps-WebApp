@@ -54,7 +54,9 @@ public class AdminTaskSummaryProvider
         /** Ready tasks.*/
         READY,
         /** Reserved tasks.*/
-        RESERVED;
+        RESERVED,
+        /** Exited tasks.*/
+        EXITED;
     }
 
     /**
@@ -94,6 +96,9 @@ public class AdminTaskSummaryProvider
                 break;
             case RESERVED:
                 ret = UITaskSummary.getUITaskSummary(admin.getReservedTasks());
+                break;
+            case EXITED:
+                ret = UITaskSummary.getUITaskSummary(admin.getExitedTasks());
                 break;
             default:
                 ret = UITaskSummary.getUITaskSummary(new ArrayList<TaskSummary>());

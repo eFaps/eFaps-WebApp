@@ -29,6 +29,7 @@ import java.util.UUID;
 
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.efaps.admin.KernelSettings;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.ui.UIValue;
 import org.efaps.admin.event.EventType;
@@ -298,6 +299,19 @@ public class UITaskObject
     }
 
     /**
+     * Exit is only an admin event.!!
+     * @return true if exit allowed
+     */
+    public boolean isExit()
+        throws EFapsException
+    {
+        return this.operations.isEmpty()
+                        ? Context.getThreadContext().getPerson()
+                                        .isAssigned(Role.get(KernelSettings.USER_ROLE_ADMINISTRATION))
+                        : this.operations.contains(Operation.Exit);
+    }
+
+    /**
      * @return List of DelegateRoles.
      * @throws EFapsException on erro
      */
@@ -318,6 +332,18 @@ public class UITaskObject
         checkAccess();
         return this.operations.isEmpty()
                         ? this.status.equals(Status.Reserved) : this.operations.contains(Operation.Release);
+    }
+
+    /**
+     * @return true if release is allowed
+     * @throws EFapsException on error
+     */
+    public boolean isStop()
+        throws EFapsException
+    {
+        checkAccess();
+        return this.operations.isEmpty()
+                        ?  this.status.equals(Status.InProgress) : this.operations.contains(Operation.Stop);
     }
 
     /**
