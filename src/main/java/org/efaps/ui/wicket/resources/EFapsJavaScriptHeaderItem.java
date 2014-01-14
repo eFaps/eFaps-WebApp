@@ -32,6 +32,11 @@ public class EFapsJavaScriptHeaderItem
     extends AbstractEFapsHeaderItem
 {
     /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * @param _reference reference for this HeaderItem
      */
     public EFapsJavaScriptHeaderItem(final EFapsContentReference _reference)

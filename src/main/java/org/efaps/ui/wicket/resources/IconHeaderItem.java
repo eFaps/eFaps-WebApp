@@ -35,6 +35,11 @@ public class IconHeaderItem
     extends HeaderItem
 {
     /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * Content Reference.
      */
     private final EFapsContentReference contentReference;

@@ -37,6 +37,11 @@ public abstract class AbstractEFapsHeaderItem
     extends HeaderItem
 {
     /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * The reference for this HeaderItem.
      */
     private final EFapsContentReference reference;

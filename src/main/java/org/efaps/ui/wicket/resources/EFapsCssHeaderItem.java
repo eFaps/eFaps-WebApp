@@ -33,6 +33,11 @@ public class EFapsCssHeaderItem
     extends AbstractEFapsHeaderItem
 {
     /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * @param _reference reference for this HeaderItem
      */
     public EFapsCssHeaderItem(final EFapsContentReference _reference)
