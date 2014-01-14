@@ -154,6 +154,8 @@ public class ModalWindowContainer
                 }
 
                 final IRequestHandler handler = new RenderPageRequestHandler(new PageProvider(page));
+                // touch the page to ensure that the pagemanager stores it to be accessible
+                getSession().getPageManager().touchPage(page);
                 final String url = getRequestCycle().urlFor(handler).toString();
                 if (calledByPageRef != null && calledByPageRef.getPage() instanceof ContentContainerPage) {
                     final String panelId = ((ContentContainerPage) calledByPageRef.getPage()).getCenterPanelId();

@@ -22,6 +22,7 @@ package org.efaps.ui.wicket.pages.info;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.OnLoadHeaderItem;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
@@ -56,6 +57,9 @@ public class GatherInfoPage
      */
     private static final EFapsContentReference CSS = new EFapsContentReference(GatherInfoPage.class,
                     "GatherInfoPage.css");
+
+
+    private BrowserInfoForm browserInfoForm;
 
     /**
      * Constructor.
@@ -93,7 +97,7 @@ public class GatherInfoPage
 
         add(new Label("label", DBProperties.getProperty("gatherInfoPage.message")).setEscapeModelStrings(false));
 
-        add(new BrowserInfoForm("postback")
+        this.browserInfoForm =new BrowserInfoForm("postback")
         {
             private static final long serialVersionUID = 1L;
 
@@ -105,7 +109,8 @@ public class GatherInfoPage
             {
                 RequestCycle.get().setResponsePage(WebApplication.get().getHomePage());
             }
-        });
+        };
+        add(this.browserInfoForm);
     }
 
     @Override
@@ -114,6 +119,8 @@ public class GatherInfoPage
         super.renderHead(_response);
         _response.render(AbstractEFapsHeaderItem.forCss(GatherInfoPage.CSS));
         _response.render(new IconHeaderItem(AbstractMergePage.FAVICON));
+        _response.render(OnLoadHeaderItem.forScript(
+                        String.format("Wicket.BrowserInfo.submitForm('%s')", this.browserInfoForm.getFormMarkupId())));
     }
 
 }
