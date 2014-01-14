@@ -143,7 +143,8 @@ public class AjaxLoadInTargetLink<T>
                 final ContentContainerPage page = new ContentContainerPage(menu.getUUID(), cellmodel.getInstanceKey(),
                                 cellmodel instanceof UIStructurBrowserTableCell);
                 final CharSequence url = urlFor(new RenderPageRequestHandler(new PageProvider(page)));
-
+                // touch the page to ensure that the pagemanager stores it to be accessible
+                getSession().getPageManager().touchPage(page);
                 final StringBuilder js = new StringBuilder()
                     .append(this.target.key).append(".dijit.registry.byId(\"").append("mainPanel")
                     .append("\").set(\"content\", dojo.create(\"iframe\",{")
