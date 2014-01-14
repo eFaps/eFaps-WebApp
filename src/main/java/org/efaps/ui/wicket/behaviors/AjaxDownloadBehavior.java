@@ -22,7 +22,6 @@ package org.efaps.ui.wicket.behaviors;
 
 import java.io.File;
 
-import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.behavior.AbstractAjaxBehavior;
 import org.apache.wicket.request.handler.resource.ResourceStreamRequestHandler;
@@ -118,15 +117,5 @@ public class AjaxDownloadBehavior
     {
         final File file = ((EFapsSession) getComponent().getSession()).getFile();
         return new FileResourceStream(file);
-    }
-
-
-    /* (non-Javadoc)
-     * @see org.apache.wicket.behavior.Behavior#getStatelessHint(org.apache.wicket.Component)
-     */
-    @Override
-    public boolean getStatelessHint(final Component _component)
-    {
-        return true;
     }
 }
