@@ -27,7 +27,6 @@ import org.efaps.db.Context;
 import org.efaps.ui.wicket.components.date.DatePanel;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.util.EFapsException;
-import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -95,8 +94,8 @@ public class DateUIFactory
                         .getReadOnlyValue(_abstractUIField.getParent().getMode());
         if (valueTmp instanceof DateTime) {
             final DateTime datetime = (DateTime) valueTmp;
-            final DateMidnight dateTmp = new DateMidnight(datetime.getYear(), datetime.getMonthOfYear(),
-                            datetime.getDayOfMonth(), Context.getThreadContext().getChronology());
+            final DateTime dateTmp = datetime.withChronology(Context.getThreadContext().getChronology())
+                            .withTimeAtStartOfDay();
             final DateTimeFormatter formatter = DateTimeFormat.mediumDate();
             strValue = dateTmp.toString(formatter.withLocale(Context.getThreadContext().getLocale()));
         }

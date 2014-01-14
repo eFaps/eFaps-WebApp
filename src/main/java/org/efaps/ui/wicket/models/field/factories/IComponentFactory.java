@@ -34,14 +34,22 @@ public interface IComponentFactory
 {
 
     /**
-     * @return
+     * Get an editable component.
+     * @param _wicketId wicket if for the component
+     * @param _abstractUIField field use for the component
+     * @return the component
+     * @throws EFapsException on error
      */
     Component getEditable(final String _wicketId,
                           final AbstractUIField _abstractUIField)
         throws EFapsException;
 
     /**
-     * @return
+     *  Get an read only component.
+     * @param _wicketId wicket if for the component
+     * @param _abstractUIField field use for the component
+     * @return the component
+     * @throws EFapsException on error
      */
     Component getReadOnly(final String _wicketId,
                           final AbstractUIField _abstractUIField)

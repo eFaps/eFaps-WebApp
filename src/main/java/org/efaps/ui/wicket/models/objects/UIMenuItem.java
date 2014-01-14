@@ -102,8 +102,9 @@ public class UIMenuItem
 
     /**
      * this instance variable stores in the case that this MenuItem is part of a
-     * {@link #org.efaps.ui.wicket.components.menutree.MenuTree} if it is a header. This is needed beacuse the headers are
-     * displayed in a differen style.
+     * {@link #org.efaps.ui.wicket.components.menutree.MenuTree} if it is a header.
+     * This is needed because the headers are
+     * displayed in a different style.
      */
     private boolean header = false;
 
@@ -115,14 +116,6 @@ public class UIMenuItem
 
     /** Reference of this menu item. */
     private String reference;
-
-    /**
-     * this instance variable stores in the case that this MenuItem is part of a
-     * {@link #org.efaps.ui.wicket.components.menutree.MenuTree} if it was steped into this MenuItem.
-     *
-     * @see #ancestor
-     */
-    private boolean stepInto;
 
     /** Url of this menu item. */
     private String url;
@@ -348,9 +341,9 @@ public class UIMenuItem
                             this.children.add(child);
                             try {
                                 if (Context.getThreadContext().containsSessionAttribute(child.getCacheKey())) {
-                                    final Boolean expanded = (Boolean) Context.getThreadContext().getSessionAttribute(
+                                    final Boolean expandTmp = (Boolean) Context.getThreadContext().getSessionAttribute(
                                                     child.getCacheKey());
-                                    child.setExpanded(expanded);
+                                    child.setExpanded(expandTmp);
                                 }
                             } catch (final EFapsException e) {
                                 UIMenuItem.LOG.error("Error retrieving Session info for UIMenuItem called by Command "
