@@ -24,10 +24,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.user.Person;
+import org.efaps.bpm.identity.EntityMapper;
 import org.efaps.util.EFapsException;
 import org.kie.api.task.model.TaskSummary;
 
@@ -135,7 +135,7 @@ public class UITaskSummary
         Person person = null;
         try {
             if (this.taskSummary.getActualOwner() != null) {
-                person = Person.get(UUID.fromString(this.taskSummary.getActualOwner().getId()));
+                person = Person.get(EntityMapper.getUUID(this.taskSummary.getActualOwner().getId()));
             }
         } catch (final EFapsException e) {
             // TODO Auto-generated catch block

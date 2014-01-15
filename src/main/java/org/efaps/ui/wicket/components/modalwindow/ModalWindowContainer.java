@@ -187,6 +187,8 @@ public class ModalWindowContainer
                 // this was called by the DashBoard
                 final DashboardPage page = new DashboardPage(getPage().getPageReference());
                 final IRequestHandler handler = new RenderPageRequestHandler(new PageProvider(page));
+                // touch the page to ensure that the pagemanager stores it to be accessible
+                getSession().getPageManager().touchPage(page);
                 final String url = getRequestCycle().urlFor(handler).toString();
                 javascript.append("require([\"dojo/dom-construct\"], function(domConstruct){")
                     .append(" top.dijit.registry.byId(\"mainPanel\").set(\"content\",")
