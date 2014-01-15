@@ -56,6 +56,7 @@ import org.efaps.admin.ui.field.FieldGroup;
 import org.efaps.admin.ui.field.FieldHeading;
 import org.efaps.admin.ui.field.FieldSet;
 import org.efaps.admin.ui.field.FieldTable;
+import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.PrintQuery;
 import org.efaps.ui.wicket.models.AbstractInstanceObject;
@@ -221,7 +222,9 @@ public class UIForm
         throws EFapsException
     {
         final List<Return> ret = getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
-                        ParameterValues.INSTANCE, getInstance());
+                        ParameterValues.INSTANCE, getInstance(),
+                        ParameterValues.PARAMETERS, Context.getThreadContext().getParameters(),
+                        ParameterValues.CLASS, this);
         if (ret.size() > 0 && ret.get(0) != null) {
             final Object object = ret.get(0).get(ReturnValues.VALUES);
             if (object != null && object instanceof Instance && ((Instance) object).isValid()) {
@@ -294,6 +297,7 @@ public class UIForm
                         if (((FieldTable) field).getTargetStructurBrowserField() == null) {
                             final UIFieldTable uiFieldTable = new UIFieldTable(getCommandUUID(), getInstanceKey(),
                                                                                    (FieldTable) field);
+                            uiFieldTable.setMode(getMode());
                             this.elements.add(new Element(UIForm.ElementType.TABLE, uiFieldTable));
                             if (firstTable) {
                                 firstTable = false;
@@ -303,6 +307,7 @@ public class UIForm
                         } else {
                             final UIFieldStructurBrowser uiFieldStrucBrws = new UIFieldStructurBrowser(getCommandUUID(),
                                             getInstanceKey(), (FieldTable) field);
+                            uiFieldStrucBrws.setMode(getMode());
                             this.elements.add(new Element(UIForm.ElementType.STRUCBRWS, uiFieldStrucBrws));
                         }
                         addNew = true;

@@ -135,6 +135,17 @@ public class UIFieldTable
     }
 
     /**
+     * @return <i>true</i> if the check boxes must be shown, other <i>false</i>
+     *         is returned.
+     * @see #showCheckBoxes
+     */
+    @Override
+    public boolean isShowCheckBoxes()
+    {
+        return getShowCheckBoxes();
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override

@@ -259,6 +259,18 @@ public abstract class AbstractUIHeaderObject
     }
 
     /**
+     * To make it overwritable.
+     *
+     * @return <i>true</i> if the check boxes must be shown, other <i>false</i>
+     *         is returned.
+     * @see #showCheckBoxes
+     */
+    protected boolean getShowCheckBoxes()
+    {
+        return this.showCheckBoxes;
+    }
+
+    /**
      * This is the setter method for the instance variable
      * {@link #showCheckBoxes}.
      *
@@ -570,7 +582,7 @@ public abstract class AbstractUIHeaderObject
     }
 
     /**
-     * Sort the UIObject;
+     * Sort the UIObject.
      *
      * @throws EFapsException on error
      */
