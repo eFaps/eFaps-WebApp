@@ -41,6 +41,7 @@ import org.apache.wicket.request.Request;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.util.string.StringValue;
 import org.apache.wicket.util.upload.FileItem;
+import org.efaps.admin.access.AccessCache;
 import org.efaps.admin.user.Person;
 import org.efaps.admin.user.UserAttributesSet;
 import org.efaps.db.Context;
@@ -344,6 +345,7 @@ public class EFapsSession
         if (this.sessionAttributes.containsKey(UserAttributesSet.CONTEXTMAPKEY)) {
             try {
                 ((UserAttributesSet) this.sessionAttributes.get(UserAttributesSet.CONTEXTMAPKEY)).storeInDb();
+                AccessCache.clean4Person(Context.getThreadContext().getPersonId());
             } catch (final EFapsException e) {
                 EFapsSession.LOG.error("Error on logout", e);
             } finally {
