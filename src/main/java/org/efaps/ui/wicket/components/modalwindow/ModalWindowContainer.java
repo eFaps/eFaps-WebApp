@@ -114,11 +114,8 @@ public class ModalWindowContainer
     public void close(final AjaxRequestTarget _target,
                       final AbstractUIPageObject _uiObject)
     {
-        if (this.reloadChild) {
-            _target.prependJavaScript(getReloadJavaScript(_uiObject));
-            this.reloadChild = false;
-        }
-        close(_target);
+        super.close(_target);
+        closeInternal(_target, _uiObject);
     }
 
     /**
@@ -130,14 +127,24 @@ public class ModalWindowContainer
     public void close(final AjaxRequestTarget _target)
     {
         super.close(_target);
+        closeInternal(_target, null);
+    }
+
+    /**
+     * @param _target AjaxRequestTarget
+     * @param _uiObject uiObject of the page that was opened in the current modal
+     */
+    private void closeInternal(final AjaxRequestTarget _target,
+                               final AbstractUIPageObject _uiObject)
+    {
         if (this.targetShowFile) {
             ((AbstractMergePage) getPage()).getDownloadBehavior().initiate(_target);
         }
         if (this.reloadChild) {
-            _target.prependJavaScript(getReloadJavaScript(null));
+            _target.prependJavaScript(getReloadJavaScript(_uiObject));
         }
-
     }
+
 
     /**
      * Method creates a JavaScript to reload the parent page.
