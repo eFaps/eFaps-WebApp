@@ -86,9 +86,9 @@ public class MenuBarPanel
                 if (childItem.hasChildren()) {
                     itemRepeater.add(new PopupMenuPanel(itemRepeater.newChildId(), new UIModel<UIMenuItem>(childItem)));
                 } else {
+                    Component item = null;
                     if (childItem.getReference() != null) {
                         childItem.setURL(childItem.getReference());
-                        Component item = null;
                         if (childItem.getReference().equals(
                                         "/" + getSession().getApplication().getApplicationKey() + "/logout?")) {
                             item = new LogOutItem(itemRepeater.newChildId(), new UIModel<UIMenuItem>(childItem));
@@ -105,12 +105,8 @@ public class MenuBarPanel
                                         "/" + getSession().getApplication().getApplicationKey() + "/connection?")) {
                             item = new ConnectionItem(itemRepeater.newChildId(), new UIModel<UIMenuItem>(childItem));
                         }
-                        if (item != null) {
-                            item.add(new MenuBarItemBehavior());
-                            itemRepeater.add(item);
-                        }
-                    } else {
-                        Component item;
+                    }
+                    if (item == null) {
                         if (childItem.getTarget() != Target.UNKNOWN) {
                             if (childItem.getTarget() == Target.MODAL) {
                                 item = new OpenModalItem(itemRepeater.newChildId(),
@@ -134,6 +130,8 @@ public class MenuBarPanel
                                 item = new ExecItem(itemRepeater.newChildId(), new UIModel<UIMenuItem>(childItem));
                             }
                         }
+                    }
+                    if (item != null) {
                         item.add(new MenuBarItemBehavior());
                         itemRepeater.add(item);
                     }

@@ -59,6 +59,7 @@ import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.db.Context;
+import org.efaps.db.Instance;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.behaviors.update.UpdateInterface;
 import org.efaps.ui.wicket.components.FormContainer;
@@ -227,7 +228,7 @@ public class AjaxSubmitCloseBehavior
                                                 && this.uiObject.getCallingCommand().getTarget() == Target.MODAL)) {
                             footer.getModalWindow().setReloadChild(!this.uiObject.getCommand().isNoUpdateAfterCmd());
                             footer.getModalWindow().setTargetShowFile(this.uiObject.getCommand().isTargetShowFile());
-                            footer.getModalWindow().close(_target);
+                            footer.getModalWindow().close(_target, this.uiObject);
                         } else {
                             //TODO
                         }
@@ -433,6 +434,9 @@ public class AjaxSubmitCloseBehavior
                     ((EFapsSession) getComponent().getSession()).setFile(file);
                 }
             }
+            if (oneReturn.get(ReturnValues.INSTANCE) != null) {
+                uiPageObject.setInstanceKey(((Instance) oneReturn.get(ReturnValues.INSTANCE)).getKey());
+            }
         }
 
         if (uiPageObject.isOpenedByPicker()) {
@@ -489,25 +493,25 @@ public class AjaxSubmitCloseBehavior
                 for (final FormRow row : formElement.getRowModels()) {
                     for (final AbstractInstanceObject object : row.getValues()) {
                         if (object instanceof UIFormCell) {
-                            final UIFormCell cell= (UIFormCell) object;
-                        final StringValue value = getComponent().getRequest().getRequestParameters()
-                                        .getParameterValue(cell.getName());
-                        if (!value.isNull() && !value.isEmpty()) {
-                            final IUIProvider clazz = cell.getUIProvider();
-                            if (clazz != null) {
-                                final UIValue uiValue = UIValue.get(cell.getField(), cell.getAttribute(), value);
-                                final String warn = clazz.validateValue(uiValue);
-                                if (warn != null) {
-                                    _html.append("<tr><td>").append(cell.getCellLabel()).append(":</td><td>")
-                                        .append(warn).append("</td></tr>");
-                                    ret = false;
-                                    final WebMarkupContainer comp = cell.getComponent();
-                                    final Component label = comp.getParent().get(0);
-                                    label.add(AttributeModifier.append("class", "eFapsFormLabelInvalidValue"));
-                                    _target.add(label);
+                            final UIFormCell cell = (UIFormCell) object;
+                            final StringValue value = getComponent().getRequest().getRequestParameters()
+                                            .getParameterValue(cell.getName());
+                            if (!value.isNull() && !value.isEmpty()) {
+                                final IUIProvider clazz = cell.getUIProvider();
+                                if (clazz != null) {
+                                    final UIValue uiValue = UIValue.get(cell.getField(), cell.getAttribute(), value);
+                                    final String warn = clazz.validateValue(uiValue);
+                                    if (warn != null) {
+                                        _html.append("<tr><td>").append(cell.getCellLabel()).append(":</td><td>")
+                                                        .append(warn).append("</td></tr>");
+                                        ret = false;
+                                        final WebMarkupContainer comp = cell.getComponent();
+                                        final Component label = comp.getParent().get(0);
+                                        label.add(AttributeModifier.append("class", "eFapsFormLabelInvalidValue"));
+                                        _target.add(label);
+                                    }
                                 }
                             }
-                        }
                         }
                     }
                 }
@@ -729,6 +733,9 @@ public class AjaxSubmitCloseBehavior
     }
 
 
+    /**
+     * Resource for Messages based on DBProperties.
+     */
     public static class ErrorMessageResource
         implements IErrorMessageSource
     {

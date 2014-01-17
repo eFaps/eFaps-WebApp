@@ -31,6 +31,7 @@ import org.apache.wicket.mock.MockHomePage;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.request.IRequestHandler;
+import org.efaps.admin.ui.Menu;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
@@ -107,6 +108,20 @@ public class ModalWindowContainer
     }
 
     /**
+     * @param _target AjaxRequestTarget
+     * @param _uiObject uiObject of the page that was opened in the current modal
+     */
+    public void close(final AjaxRequestTarget _target,
+                      final AbstractUIPageObject _uiObject)
+    {
+        if (this.reloadChild) {
+            _target.prependJavaScript(getReloadJavaScript(_uiObject));
+            this.reloadChild = false;
+        }
+        close(_target);
+    }
+
+    /**
      * Method is called when the modal window is closed.
      *
      * @param _target AjaxRequestTarget
@@ -119,7 +134,7 @@ public class ModalWindowContainer
             ((AbstractMergePage) getPage()).getDownloadBehavior().initiate(_target);
         }
         if (this.reloadChild) {
-            _target.prependJavaScript(getReloadJavaScript());
+            _target.prependJavaScript(getReloadJavaScript(null));
         }
 
     }
@@ -127,10 +142,11 @@ public class ModalWindowContainer
     /**
      * Method creates a JavaScript to reload the parent page.
      *
+     * @param _uiObject uiObject of the page that was opened in the current modal
      * @return JavaScript
      * @throws EFapsException
      */
-    public String getReloadJavaScript()
+    public String getReloadJavaScript(final AbstractUIPageObject _uiObject)
     {
         final AbstractUIPageObject uiObject = (AbstractUIPageObject) getPage().getDefaultModelObject();
         final StringBuilder javascript = new StringBuilder();
@@ -140,19 +156,29 @@ public class ModalWindowContainer
                 if (calledByPageRef != null && calledByPageRef.getPage() instanceof AbstractContentPage) {
                     calledByPageRef = ((AbstractContentPage) calledByPageRef.getPage()).getCalledByPageReference();
                 }
-
-                uiObject.resetModel();
+                final String href = _uiObject.getCommand().getReference();
                 final Page page;
-                if (uiObject instanceof UITable) {
-                    page = new TablePage(Model.of((UITable) uiObject), calledByPageRef);
-                } else if (uiObject instanceof UIForm) {
-                    page = new FormPage(Model.of((UIForm) uiObject), calledByPageRef);
-                } else if (uiObject instanceof UIStructurBrowser) {
-                    page = new StructurBrowserPage(Model.of((UIStructurBrowser) uiObject), calledByPageRef);
+                if ("TREE?".equalsIgnoreCase(href) && _uiObject.getInstance() != null
+                                && _uiObject.getInstance().isValid()) {
+                    final Menu menu = Menu.getTypeTreeMenu(_uiObject.getInstance().getType());
+                    if (menu == null) {
+                        final Exception ex = new Exception("no tree menu defined for type "
+                                        + _uiObject.getInstance().getType().getName());
+                        throw new RestartResponseException(new ErrorPage(ex));
+                    }
+                    page = new ContentContainerPage(menu.getUUID(), _uiObject.getInstance().getKey());
                 } else {
-                    page = new MockHomePage();
+                    uiObject.resetModel();
+                    if (uiObject instanceof UITable) {
+                        page = new TablePage(Model.of((UITable) uiObject), calledByPageRef);
+                    } else if (uiObject instanceof UIForm) {
+                        page = new FormPage(Model.of((UIForm) uiObject), calledByPageRef);
+                    } else if (uiObject instanceof UIStructurBrowser) {
+                        page = new StructurBrowserPage(Model.of((UIStructurBrowser) uiObject), calledByPageRef);
+                    } else {
+                        page = new MockHomePage();
+                    }
                 }
-
                 final IRequestHandler handler = new RenderPageRequestHandler(new PageProvider(page));
                 // touch the page to ensure that the pagemanager stores it to be accessible
                 getSession().getPageManager().touchPage(page);
@@ -336,4 +362,6 @@ public class ModalWindowContainer
     {
         this.targetShowFile = _targetShowFile;
     }
+
+
 }
