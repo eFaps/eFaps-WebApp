@@ -196,10 +196,11 @@ public class UIForm
     public void execute()
     {
         try {
+            // evaluate now to give the chance to change the mode
+            evaluate4Instance();
             if (isCreateMode() || isSearchMode()) {
                 execute4NoInstance();
             } else {
-                evaluate4Instance();
                 if (getInstance() == null) {
                     execute4NoInstance();
                 } else {
