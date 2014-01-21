@@ -140,6 +140,9 @@ public class ProcessInstanceProvider
                         ret = process0.getProcessId().compareTo(process1.getProcessId());
                     } else if ("id".equals(sortprop)) {
                         ret = Long.valueOf(process0.getId()).compareTo(Long.valueOf(process1.getId()));
+                    } else if ("processInstanceId".equals(sortprop)) {
+                            ret = Long.valueOf(process0.getProcessInstanceId()).compareTo(
+                                            Long.valueOf(process1.getProcessInstanceId()));
                     } else if ("start".equals(sortprop)) {
                         ret = process0.getStart().compareTo(process1.getStart());
                     } else if ("end".equals(sortprop)) {

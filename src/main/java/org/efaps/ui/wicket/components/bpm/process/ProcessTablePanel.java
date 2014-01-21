@@ -110,6 +110,8 @@ public class ProcessTablePanel
         columns.add(new PropertyColumn<UIProcessInstanceLog, String>(new Model<String>("ID"), "id", "id"));
         columns.add(new PropertyColumn<UIProcessInstanceLog, String>(new Model<String>("processId"), "processId",
                         "processId"));
+        columns.add(new PropertyColumn<UIProcessInstanceLog, String>(new Model<String>("processInstanceId"),
+                        "processInstanceId", "processInstanceId"));
 
         final String start = DBProperties.getProperty(ProcessTablePanel.class.getName() + ".Process.Start");
         final String end = DBProperties.getProperty(ProcessTablePanel.class.getName() + ".Process.End");
