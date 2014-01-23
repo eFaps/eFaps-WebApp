@@ -45,7 +45,6 @@ import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.link.IPageLink;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.protocol.ws.api.WebSocketBehavior;
@@ -67,6 +66,7 @@ import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior.Region;
 import org.efaps.ui.wicket.behaviors.dojo.MessageListenerBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.RequireBehavior;
 import org.efaps.ui.wicket.components.LazyIframe;
+import org.efaps.ui.wicket.components.LazyIframe.IFrameProvider;
 import org.efaps.ui.wicket.components.menu.LinkItem;
 import org.efaps.ui.wicket.components.menu.MenuBarPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
@@ -76,7 +76,6 @@ import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.models.objects.UIUserSession;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
-import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.dashboard.DashboardPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
@@ -109,7 +108,6 @@ public class MainPage
      * Id of the Iframe.
      */
     public static final String IFRAME_ID = "eFapsContentFrame";
-
 
     /**
      * Needed for serialization.
@@ -187,7 +185,7 @@ public class MainPage
         this.add(borderPanel);
         borderPanel.add(new BorderContainerBehavior(Design.HEADLINE, false));
 
-        final LazyIframe mainPanel = new LazyIframe("mainPanel", new IPageLink()
+        final LazyIframe mainPanel = new LazyIframe("mainPanel", new IFrameProvider()
         {
 
             private static final long serialVersionUID = 1L;
@@ -204,13 +202,7 @@ public class MainPage
                 }
                 return error == null ? page : error;
             }
-
-            @Override
-            public Class<? extends Page> getPageIdentity()
-            {
-                return AbstractContentPage.class;
-            }
-        });
+        }, MainPage.IFRAME_ID);
 
         borderPanel.add(mainPanel);
         mainPanel.add(new ContentPaneBehavior(Region.CENTER, false));

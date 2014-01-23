@@ -24,7 +24,6 @@ import java.util.UUID;
 import org.apache.wicket.Page;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.link.IPageLink;
 import org.apache.wicket.protocol.http.ClientProperties;
 import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.efaps.admin.ui.AbstractCommand;
@@ -36,6 +35,7 @@ import org.efaps.ui.wicket.behaviors.dojo.BorderContainerBehavior.Design;
 import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior.Region;
 import org.efaps.ui.wicket.components.LazyIframe;
+import org.efaps.ui.wicket.components.LazyIframe.IFrameProvider;
 import org.efaps.ui.wicket.components.menutree.MenuTree;
 import org.efaps.ui.wicket.components.split.SidePanel;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
@@ -200,7 +200,7 @@ public class ContentContainerPage
         }
         final UUID uuid4NewPage = tmpUUID;
 
-        final LazyIframe centerPanel = new LazyIframe("centerPanel", new IPageLink()
+        final LazyIframe centerPanel = new LazyIframe("centerPanel", new IFrameProvider()
         {
 
             private static final long serialVersionUID = 1L;
@@ -225,13 +225,8 @@ public class ContentContainerPage
                 }
                 return error == null ? page : error;
             }
+        }, null);
 
-            @Override
-            public Class<? extends Page> getPageIdentity()
-            {
-                return AbstractContentPage.class;
-            }
-        });
         borderPanel.add(centerPanel);
         centerPanel.add(new ContentPaneBehavior(Region.CENTER, false));
         this.centerPanelId = centerPanel.getMarkupId(true);

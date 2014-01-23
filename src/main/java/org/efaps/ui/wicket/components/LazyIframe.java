@@ -20,9 +20,10 @@
 
 package org.efaps.ui.wicket.components;
 
+import org.apache.wicket.Page;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.link.ILinkListener;
-import org.apache.wicket.markup.html.link.IPageLink;
+import org.apache.wicket.util.io.IClusterable;
 import org.efaps.ui.wicket.behaviors.dojo.LazyIframeBehavior;
 
 /**
@@ -35,6 +36,20 @@ public class LazyIframe
     extends WebMarkupContainer
     implements ILinkListener
 {
+
+    /**
+     * Provides the Frame Content.
+     */
+    public interface IFrameProvider
+        extends IClusterable
+    {
+        /**
+         * @return the page to be displayed
+         */
+        Page getPage();
+    }
+
+
     /**
      * Needed for serialization.
      */
@@ -43,25 +58,26 @@ public class LazyIframe
     /**
      * The link to the page.
      */
-    private final IPageLink pageLink;
+    private final IFrameProvider frameProvider;
 
 
     /**
-     * @param _wicketId     wicket id of this component
-     * @param _pageLink     Link to the page
+     * @param _wicketId         wicket id of this component
+     * @param _frameProvider    Provider for the frame
      */
     public LazyIframe(final String _wicketId,
-                      final IPageLink _pageLink)
+                      final IFrameProvider _frameProvider,
+                      final String _frameMarkupId)
     {
         super(_wicketId);
-        this.pageLink = _pageLink;
-        add(new LazyIframeBehavior());
+        this.frameProvider = _frameProvider;
+        add(new LazyIframeBehavior(_frameMarkupId));
         setOutputMarkupId(true);
     }
 
     @Override
     public void onLinkClicked()
     {
-        setResponsePage(this.pageLink.getPage());
+        setResponsePage(this.frameProvider.getPage());
     }
 }

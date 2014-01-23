@@ -26,6 +26,7 @@ import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.html.link.ILinkListener;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.efaps.ui.wicket.pages.main.MainPage;
 
 
 /**
@@ -44,6 +45,40 @@ public class LazyIframeBehavior
     private static final long serialVersionUID = 1L;
 
     /**
+     * Markup id for the generated iframe.
+     */
+    private String frameMarkupId;
+
+    /**
+     * @param _frameMarkupId markup id for the generated iframe
+     */
+    public LazyIframeBehavior(final String _frameMarkupId)
+    {
+        this.frameMarkupId = _frameMarkupId;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #frameMarkupId}.
+     *
+     * @return value of instance variable {@link #frameMarkupId}
+     */
+    public String getFrameMarkupId()
+    {
+        return this.frameMarkupId;
+    }
+
+
+    /**
+     * Setter method for instance variable {@link #frameMarkupId}.
+     *
+     * @param _frameMarkupId value for instance variable {@link #frameMarkupId}
+     */
+    public void setFrameMarkupId(final String _frameMarkupId)
+    {
+        this.frameMarkupId = _frameMarkupId;
+    }
+
+    /**
      * Render the links for the head.
      *
      * @param _component component the header will be rendered for
@@ -59,8 +94,13 @@ public class LazyIframeBehavior
             .append(" function(ready, registry, domConstruct) {")
             .append("ready(function() {")
             .append("registry.byId(\"").append(_component.getMarkupId())
-            .append("\").set(\"content\", domConstruct.create(\"iframe\", {")
-            .append("\"src\": \"").append(_component.urlFor(ILinkListener.INTERFACE, new PageParameters()))
+            .append("\").set(\"content\", domConstruct.create(\"iframe\", {");
+
+        if (this.frameMarkupId != null) {
+            js.append("\"id\": \"").append(MainPage.IFRAME_ID).append("\",");
+        }
+
+        js.append("\"src\": \"").append(_component.urlFor(ILinkListener.INTERFACE, new PageParameters()))
             .append("\",\"style\": \"border: 0; width: 100%; height: 99%\", \"nodeId\": \"jan\"")
             .append("}));")
             .append("});});");
