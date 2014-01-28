@@ -20,7 +20,9 @@
 
 package org.efaps.ui.wicket;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -47,6 +49,7 @@ import org.apache.wicket.request.Response;
 import org.apache.wicket.request.component.IRequestableComponent;
 import org.apache.wicket.request.http.WebRequest;
 import org.apache.wicket.resource.DynamicJQueryResourceReference;
+import org.efaps.admin.AppConfigHandler;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.jaas.AppAccessHandler;
 import org.efaps.ui.filter.AbstractFilter;
@@ -99,6 +102,15 @@ public class EFapsApplication
             }
         }
         AppAccessHandler.init(appKey, temp);
+
+        final Map<String,String> map = new HashMap<String, String>();
+        for (final AppConfigHandler.Parameter param : AppConfigHandler.Parameter.values()) {
+            final String configTmp = getInitParameter(param.getKey());
+            if (configTmp != null) {
+                map.put(param.getKey(), configTmp);
+            }
+        }
+        AppConfigHandler.init(map);
 
         super.init();
 
