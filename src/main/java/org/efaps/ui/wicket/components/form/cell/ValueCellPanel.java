@@ -96,7 +96,7 @@ public class ValueCellPanel
                             && uiFormCell.getDisplay().equals(Display.EDITABLE)) {
 
                 final DateTimePanel dateField = new DateTimePanel("label", uiFormCell.getCompareValue(),
-                                                       uiFormCell.getName(),
+                                                       uiFormCell.getName(), uiFormCell.getCellLabel(),
                                                        "DateTime".equals(uiFormCell.getTypeName())
                                                                        || uiFormCell.getUiClass() instanceof DateTimeUI,
                                                        uiFormCell.getField().getCols());

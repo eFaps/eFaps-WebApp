@@ -36,6 +36,7 @@ import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.string.StringValue;
 import org.efaps.admin.datamodel.ui.UIValue;
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.models.cell.CellSetValue;
 import org.efaps.ui.wicket.models.cell.FieldConfiguration;
@@ -92,9 +93,20 @@ public class DateTimePanel
      */
     private DatePickerBehavior datePicker;
 
+    /**
+     * Field underlying this Panel.
+     */
     private AbstractUIField cellvalue;
 
+    /**
+     * Was the value already converted.
+     */
     private boolean converted;
+
+    /**
+     * Label of the Panel. mainly used for error indication.
+     */
+    private String fieldLabel;
 
     /**
      * @param _wicketId wicket id of this component
@@ -112,7 +124,8 @@ public class DateTimePanel
                          final boolean _time)
         throws EFapsException
     {
-        this(_wicketId, _dateObject, _fieldConfiguration.getName(), _time, _fieldConfiguration.getSize());
+        this(_wicketId, _dateObject, _fieldConfiguration.getName(), _fieldConfiguration.getLabel(), _time,
+                        _fieldConfiguration.getSize());
         this.cellvalue = _model.getObject();
     }
 
@@ -121,6 +134,7 @@ public class DateTimePanel
      * @param _dateObject object containing a DateTime, if null or not DateTime
      *                       a new DateTime will be instantiated
      * @param _fieldName Name of the field this DateTimePanel belongs to
+     * @param _fieldLabel Label to e used in case of error
      * @param _time must the time be rendered also
      * @param _inputSize size of the input
      * @throws EFapsException on error
@@ -128,6 +142,7 @@ public class DateTimePanel
     public DateTimePanel(final String _wicketId,
                          final Object _dateObject,
                          final String _fieldName,
+                         final String _fieldLabel,
                          final boolean _time,
                          final Integer _inputSize)
         throws EFapsException
@@ -136,6 +151,7 @@ public class DateTimePanel
         this.datetime = _dateObject == null || !(_dateObject instanceof DateTime)
                         ? new DateTime(Context.getThreadContext().getChronology())
                         : (DateTime) _dateObject;
+        this.fieldLabel = _fieldLabel;
 
         this.converter = new StyleDateConverter(false) {
 
@@ -193,7 +209,16 @@ public class DateTimePanel
             protected void onComponentTag(final ComponentTag _tag)
             {
                 super.onComponentTag(_tag);
-                _tag.put("value", DateTimePanel.this.datetime.getHourOfDay() % (use12HourFormat() ? 12 : 24));
+                int hourTmp = DateTimePanel.this.datetime.getHourOfDay();
+                if (use12HourFormat()) {
+                    if (hourTmp == 0) {
+                        hourTmp = 12;
+                    }
+                    if (hourTmp > 12) {
+                        hourTmp = hourTmp - 12;
+                    }
+                }
+                _tag.put("value", String.format("%02d",hourTmp));
                 _tag.put("name", DateTimePanel.this.getHourFieldName());
                 _tag.put("maxlength", 2);
             }
@@ -211,7 +236,7 @@ public class DateTimePanel
             protected void onComponentTag(final ComponentTag _tag)
             {
                 super.onComponentTag(_tag);
-                _tag.put("value", DateTimePanel.this.datetime.getMinuteOfHour());
+                _tag.put("value", String.format("%02d", DateTimePanel.this.datetime.getMinuteOfHour()));
                 _tag.put("name", DateTimePanel.this.getMinuteFieldName());
                 _tag.put("maxlength", 2);
 
@@ -241,11 +266,12 @@ public class DateTimePanel
             {
                 super.onComponentTagBody(_markupStream, _openTag);
                 final StringBuilder html = new StringBuilder();
-                html.append("<option ").append(
-                                DateTimePanel.this.datetime.getHourOfDay() > 11 ? "" : "selected=\"true\"").append(
-                                ">am</option>").append("<option ").append(
-                                DateTimePanel.this.datetime.getHourOfDay() > 11 ? "selected=\"true\"" : "").append(
-                                ">pm</option>");
+                html.append("<option ")
+                    .append(DateTimePanel.this.datetime.getHourOfDay() > 12 ? "" : "selected=\"true\"")
+                    .append(">am</option>").append("<option ")
+                    .append(DateTimePanel.this.datetime.getHourOfDay() > 12
+                                    || DateTimePanel.this.datetime.getHourOfDay() == 0 ? "selected=\"true\"" : "")
+                    .append(">pm</option>");
                 replaceComponentTagBody(_markupStream, _openTag, html);
             }
 
@@ -371,10 +397,10 @@ public class DateTimePanel
             if (_hour != null) {
                 hourIter = _hour.iterator();
             }
-            if (_hour != null) {
+            if (_minute != null) {
                 minuteIter = _minute.iterator();
             }
-            if (_hour != null) {
+            if (_ampm != null) {
                 ampmIter = _ampm.iterator();
             }
 
@@ -392,7 +418,11 @@ public class DateTimePanel
                         if (ampmIter != null) {
                             final StringValue ampmStr = ampmIter.next();
                             if (use12HourFormat() && "pm".equals(ampmStr.toString("am"))) {
-                                mdt.setHourOfDay(hour + 12);
+                                if (hour == 12) {
+                                    mdt.setHourOfDay(0);
+                                } else {
+                                    mdt.setHourOfDay(hour + 12);
+                                }
                             }
                         }
                         if (minuteIter != null) {
@@ -476,4 +506,131 @@ public class DateTimePanel
         }
     }
 
+
+    /**
+     * @param _date date list
+     * @param _hour hour list
+     * @param _minute minute lits
+     * @param _ampm ampm list
+     * @param _htmlTable html; the error msg will be appended to
+     * @return true if validated successfully, else false
+     */
+    public boolean validate(final List<StringValue> _date,
+                            final List<StringValue> _hour,
+                            final List<StringValue> _minute,
+                            final List<StringValue> _ampm,
+                            final StringBuilder _htmlTable)
+    {
+        boolean ret = true;
+        Iterator<StringValue> hourIter = null;
+        Iterator<StringValue> minuteIter = null;
+        Iterator<StringValue> ampmIter = null;
+        if (_hour != null) {
+            hourIter = _hour.iterator();
+        }
+        if (_minute != null) {
+            minuteIter = _minute.iterator();
+        }
+        if (_ampm != null) {
+            ampmIter = _ampm.iterator();
+        }
+
+        if (hourIter != null) {
+            int i = 1;
+            while (hourIter.hasNext()) {
+                final StringValue hourStr = hourIter.next();
+                int hour = 1;
+                try {
+                    hour = Integer.parseInt(hourStr.toString("0"));
+                } catch (final NumberFormatException e) {
+                    _htmlTable.append("<tr><td>");
+                    if (_hour.size() > 1) {
+                        _htmlTable.append(DBProperties.getFormatedDBProperty(DateTimePanel.class.getName()
+                                        + ".validate.hour.nonumber.line", new Object[] { getFieldLabel(),i }));
+                    } else {
+                        _htmlTable.append(DBProperties.getFormatedDBProperty(DateTimePanel.class.getName()
+                                    + ".validate.hour.nonumber", new Object[] { getFieldLabel() }));
+                    }
+                    _htmlTable.append("</td></tr>");
+                    ret = false;
+                    break;
+                }
+                // if am/pm the value must be 1 - 12 , else 0 - 24
+                if (ampmIter == null && (hour < 0 || hour > 24)) {
+                    _htmlTable.append("<tr><td>");
+                    if (_hour.size() > 1) {
+                        _htmlTable.append(DBProperties.getFormatedDBProperty(DateTimePanel.class.getName()
+                                        + ".validate.hour.line", new Object[] { getFieldLabel(), i, 0, 24 }));
+                    } else {
+                        _htmlTable.append(DBProperties.getFormatedDBProperty(DateTimePanel.class.getName()
+                                        + ".validate.hour", new Object[] { getFieldLabel(), 0, 24 }));
+                    }
+                    _htmlTable.append("</td></tr>");
+                    ret = false;
+                    break;
+                } else if (ampmIter != null && (hour < 1 || hour > 12)) {
+                    _htmlTable.append("<tr><td>");
+                    if (_hour.size() > 1) {
+                        _htmlTable.append(DBProperties.getFormatedDBProperty(DateTimePanel.class.getName()
+                                        + ".validate.hour.line", new Object[] { getFieldLabel(), i, 1, 12 }));
+                    } else {
+                        _htmlTable.append(DBProperties.getFormatedDBProperty(DateTimePanel.class.getName()
+                                        + ".validate.hour", new Object[] { getFieldLabel(), 1, 12 }));
+                    }
+                    _htmlTable.append("</td></tr>");
+                    ret = false;
+                    break;
+                }
+                i++;
+            }
+        }
+
+        if (minuteIter != null) {
+            int i = 1;
+            while (minuteIter.hasNext()) {
+                final StringValue minuteStr = minuteIter.next();
+                int minute = 0;
+                try {
+                    minute = Integer.parseInt(minuteStr.toString("0"));
+                } catch (final NumberFormatException e) {
+                    _htmlTable.append("<tr><td>");
+                    if (_hour.size() > 1) {
+                        _htmlTable.append(DBProperties.getFormatedDBProperty(DateTimePanel.class.getName()
+                                        + ".validate.minute.nonumber.line", new Object[] { getFieldLabel(),i }));
+                    } else {
+                        _htmlTable.append(DBProperties.getFormatedDBProperty(DateTimePanel.class.getName()
+                                    + ".validate.minute.nonumber", new Object[] { getFieldLabel() }));
+                    }
+                    _htmlTable.append("</td></tr>");
+                    ret = false;
+                    break;
+                }
+                if (minute < 0 || minute > 59) {
+                    _htmlTable.append("<tr><td>");
+                    if (_hour.size() > 1) {
+                        _htmlTable.append(DBProperties.getFormatedDBProperty(DateTimePanel.class.getName()
+                                        + ".validate.minute.line", new Object[] { getFieldLabel(), i, 0, 59 }));
+                    } else {
+                        _htmlTable.append(DBProperties.getFormatedDBProperty(DateTimePanel.class.getName()
+                                        + ".validate.minute", new Object[] { getFieldLabel(), 0, 59 }));
+                    }
+                    _htmlTable.append("</td></tr>");
+                    ret = false;
+                    break;
+                }
+                i++;
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #fieldLabel}.
+     *
+     * @return value of instance variable {@link #fieldLabel}
+     */
+    public String getFieldLabel()
+    {
+        return this.fieldLabel;
+    }
 }

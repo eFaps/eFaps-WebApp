@@ -44,6 +44,7 @@ import org.efaps.ui.wicket.models.cell.UIHiddenCell;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.models.objects.UIRow;
 import org.efaps.ui.wicket.models.objects.UITable;
+import org.efaps.ui.wicket.models.objects.UITableHeader;
 import org.efaps.util.EFapsException;
 
 /**
@@ -105,11 +106,20 @@ public class RowPanel
         }
 
         final Map<String, Component> name2comp = new HashMap<String, Component>();
+
         for (final UITableCell uiCell : uirow.getValues()) {
             Component cell;
             if (uiTable.isEditable() && uiCell.getDisplay().equals(Display.EDITABLE)
                             && (uiCell.getUiClass() instanceof DateUI || uiCell.getUiClass() instanceof DateTimeUI)) {
-                cell = new DateTimePanel("label", uiCell.getCompareValue(), uiCell.getName(),
+
+                final UITableHeader header = uiTable.getHeader4Id(uiCell.getFieldId());
+                final String label;
+                if (header == null) {
+                    label = "";
+                } else {
+                    label = header.getLabel();
+                }
+                cell = new DateTimePanel("label", uiCell.getCompareValue(), uiCell.getName(), label,
                                 uiCell.getUiClass() instanceof DateTimeUI,
                                 uiCell.getField().getCols());
             } else {

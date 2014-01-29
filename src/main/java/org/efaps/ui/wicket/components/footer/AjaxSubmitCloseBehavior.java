@@ -168,8 +168,6 @@ public class AjaxSubmitCloseBehavior
 
         final List<Classification> classifications = new ArrayList<Classification>();
         try {
-            convertDateFieldValues();
-            convertFieldValues();
             if (this.uiObject instanceof UIForm) {
                 final UIForm uiform = (UIForm) this.uiObject;
                 others.putAll(uiform.getNewValues());
@@ -183,7 +181,8 @@ public class AjaxSubmitCloseBehavior
                     }
                 }
             }
-            if (checkForRequired(_target) && validateFieldValues(_target)
+            if (convertDateFieldValues(_target) && convertFieldValues(_target)
+                            && checkForRequired(_target) && validateFieldValues(_target)
                             && (validateForm(_target, others, classifications))) {
                 if (executeEvents(_target, others, classifications)) {
                     // to be able to see the changes the context must be commited and reopened
@@ -271,12 +270,17 @@ public class AjaxSubmitCloseBehavior
     /**
      * Method used to convert the date value from the ui in date values for
      * eFaps.
+     * @return true if converted successfully, else false
      * @throws EFapsException on error
      */
-    private void convertDateFieldValues()
+    private boolean convertDateFieldValues(final AjaxRequestTarget _target)
         throws EFapsException
     {
         AjaxSubmitCloseBehavior.LOG.trace("entering convertDateFieldValues");
+        boolean ret = true;
+        final StringBuilder html = new StringBuilder();
+        html.append("<table class=\"eFapsValidateFieldValuesTable\">");
+
         final EFapsRequestParametersAdapter parameters = (EFapsRequestParametersAdapter) getComponent()
                         .getRequest().getRequestParameters();
         final Set<String> names = parameters.getParameterNames();
@@ -286,18 +290,29 @@ public class AjaxSubmitCloseBehavior
                 final List<StringValue> hour = parameters.getParameterValues(datepicker.getHourFieldName());
                 final List<StringValue> minute = parameters.getParameterValues(datepicker.getMinuteFieldName());
                 final List<StringValue> ampm = parameters.getParameterValues(datepicker.getAmPmFieldName());
-                parameters.setParameterValues(datepicker.getFieldName(),
+                ret = datepicker.validate(date, hour, minute, ampm, html);
+                if (ret) {
+                    parameters.setParameterValues(datepicker.getFieldName(),
                                 datepicker.getDateAsString(date, hour, minute, ampm));
+                } else {
+                    break;
+                }
             }
         }
+        if (!ret) {
+            html.append("</table>");
+            showDialog(_target, html.toString(), true, false);
+        }
+        return ret;
     }
 
     /**
      * Method used to convert the values from the ui in values for
      * eFaps.
+     * @return true if converted successfully, else false
      * @throws EFapsException on error
      */
-    private void convertFieldValues()
+    private boolean convertFieldValues(final AjaxRequestTarget _target)
         throws EFapsException
     {
         AjaxSubmitCloseBehavior.LOG.trace("entering convertFieldValues");
@@ -308,6 +323,7 @@ public class AjaxSubmitCloseBehavior
         for (final IValueConverter converter : frmContainer.getValueConverters()) {
             converter.convertValue(parameters);
         }
+        return true;
     }
 
     /**
