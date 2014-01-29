@@ -25,8 +25,11 @@ import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.IJaxb;
 import org.efaps.admin.datamodel.ui.JaxbUI;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
+import org.efaps.ui.wicket.components.values.LabelField;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO comment!
@@ -35,7 +38,7 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  */
 // CHECKSTYLE:OFF
-public class JaxbUIFactory
+public final class JaxbUIFactory
     extends AbstractUIFactory
 // CHECKSTYLE:ON
 {
@@ -44,6 +47,34 @@ public class JaxbUIFactory
      * Factory Instance.
      */
     private static JaxbUIFactory FACTORY;
+
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(JaxbUIFactory.class);
+
+    /**
+     * Singleton Constructor.
+     */
+    private JaxbUIFactory()
+    {
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Component getReadOnly(final String _wicketId,
+                                 final AbstractUIField _abstractUIField)
+        throws EFapsException
+    {
+        final Component ret = super.getReadOnly(_wicketId, _abstractUIField);
+        if (ret != null) {
+            ((LabelField) ret).setEscapeModelStrings(false);
+        }
+        return ret;
+    }
 
     /**
      * {@inheritDoc}
@@ -83,14 +114,11 @@ public class JaxbUIFactory
                 final IJaxb jaxb = (IJaxb) clazz.newInstance();
                 ret = jaxb.getUISnipplet(_abstractUIField.getParent().getMode(), _abstractUIField.getValue());
             } catch (final ClassNotFoundException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                JaxbUIFactory.LOG.error("ClassNotFoundException", e);
             } catch (final InstantiationException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                JaxbUIFactory.LOG.error("InstantiationException", e);
             } catch (final IllegalAccessException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                JaxbUIFactory.LOG.error("IllegalAccessException", e);
             }
         }
         return ret;
