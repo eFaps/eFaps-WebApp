@@ -421,11 +421,13 @@ public class AjaxSubmitCloseBehavior
         final AbstractUIPageObject uiPageObject = (AbstractUIPageObject) getForm().getPage().getDefaultModelObject();
         if (_classifications.size() > 0) {
             returns = uiPageObject.executeEvents(ParameterValues.OTHERS, _other,
+                            ParameterValues.ACCESSMODE, uiPageObject.getMode(),
                             ParameterValues.CLASSIFICATIONS, _classifications,
                             ParameterValues.OIDMAP4UI,
                                     ((AbstractUIPageObject) getForm().getPage().getDefaultModelObject()).getUiID2Oid());
         } else {
             returns = uiPageObject.executeEvents(ParameterValues.OTHERS, _other,
+                            ParameterValues.ACCESSMODE, uiPageObject.getMode(),
                             ParameterValues.OIDMAP4UI,
                             ((AbstractUIPageObject) getForm().getPage().getDefaultModelObject()).getUiID2Oid());
         }
