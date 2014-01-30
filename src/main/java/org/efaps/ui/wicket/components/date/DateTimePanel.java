@@ -218,7 +218,7 @@ public class DateTimePanel
                         hourTmp = hourTmp - 12;
                     }
                 }
-                _tag.put("value", String.format("%02d",hourTmp));
+                _tag.put("value", String.format("%02d", hourTmp));
                 _tag.put("name", DateTimePanel.this.getHourFieldName());
                 _tag.put("maxlength", 2);
             }
@@ -266,15 +266,18 @@ public class DateTimePanel
             {
                 super.onComponentTagBody(_markupStream, _openTag);
                 final StringBuilder html = new StringBuilder();
-                html.append("<option ")
-                    .append(DateTimePanel.this.datetime.getHourOfDay() > 12 ? "" : "selected=\"true\"")
-                    .append(">am</option>").append("<option ")
-                    .append(DateTimePanel.this.datetime.getHourOfDay() > 12
-                                    || DateTimePanel.this.datetime.getHourOfDay() == 0 ? "selected=\"true\"" : "")
-                    .append(">pm</option>");
+                html.append("<option ");
+                final int hourTmp = DateTimePanel.this.datetime.getHourOfDay();
+                if (hourTmp < 12) {
+                    html.append("selected=\"true\"");
+                }
+                html.append(">am</option>").append("<option ");
+                if (hourTmp > 11) {
+                    html.append("selected=\"true\"");
+                }
+                html.append(">pm</option>");
                 replaceComponentTagBody(_markupStream, _openTag, html);
             }
-
         };
         this.add(ampm);
         ampm.setVisible(_time);
@@ -417,10 +420,12 @@ public class DateTimePanel
                         mdt.setHourOfDay(hour);
                         if (ampmIter != null) {
                             final StringValue ampmStr = ampmIter.next();
-                            if (use12HourFormat() && "pm".equals(ampmStr.toString("am"))) {
+                            if ("am".equals(ampmStr.toString("am"))) {
                                 if (hour == 12) {
                                     mdt.setHourOfDay(0);
-                                } else {
+                                }
+                            } else {
+                                if (hour != 12) {
                                     mdt.setHourOfDay(hour + 12);
                                 }
                             }
@@ -546,7 +551,7 @@ public class DateTimePanel
                     _htmlTable.append("<tr><td>");
                     if (_hour.size() > 1) {
                         _htmlTable.append(DBProperties.getFormatedDBProperty(DateTimePanel.class.getName()
-                                        + ".validate.hour.nonumber.line", new Object[] { getFieldLabel(),i }));
+                                        + ".validate.hour.nonumber.line", new Object[] { getFieldLabel(), i}));
                     } else {
                         _htmlTable.append(DBProperties.getFormatedDBProperty(DateTimePanel.class.getName()
                                     + ".validate.hour.nonumber", new Object[] { getFieldLabel() }));
@@ -596,7 +601,7 @@ public class DateTimePanel
                     _htmlTable.append("<tr><td>");
                     if (_hour.size() > 1) {
                         _htmlTable.append(DBProperties.getFormatedDBProperty(DateTimePanel.class.getName()
-                                        + ".validate.minute.nonumber.line", new Object[] { getFieldLabel(),i }));
+                                        + ".validate.minute.nonumber.line", new Object[] { getFieldLabel(), i}));
                     } else {
                         _htmlTable.append(DBProperties.getFormatedDBProperty(DateTimePanel.class.getName()
                                     + ".validate.minute.nonumber", new Object[] { getFieldLabel() }));
