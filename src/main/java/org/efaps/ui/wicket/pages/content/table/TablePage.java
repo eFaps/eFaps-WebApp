@@ -157,6 +157,7 @@ public class TablePage
         if (!uiTable.isInitialized()) {
             uiTable.execute();
         }
+
         final TablePanel tablebody = new TablePanel("tablebody", new TableModel(uiTable), this);
         this.add(new HeaderPanel("header", tablebody));
 

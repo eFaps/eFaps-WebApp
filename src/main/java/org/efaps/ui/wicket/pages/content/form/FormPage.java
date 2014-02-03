@@ -270,7 +270,7 @@ public class FormPage
             } else if (element.getType().equals(ElementType.STRUCBRWS)) {
                 final StructurBrowserTreeTablePanel strucBrws = new StructurBrowserTreeTablePanel(
                                 elementRepeater.newChildId(), new UIModel<UIStructurBrowser>(
-                                                (UIFieldStructurBrowser) element.getElement()), true);
+                                                (UIFieldStructurBrowser) element.getElement()));
                 elementRepeater.add(strucBrws);
             } else if (element.getType().equals(ElementType.SUBFORM)) {
                 final UIFieldForm uiFieldForm = (UIFieldForm) element.getElement();

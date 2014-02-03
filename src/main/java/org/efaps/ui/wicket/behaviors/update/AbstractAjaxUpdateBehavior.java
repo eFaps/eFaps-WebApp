@@ -118,17 +118,6 @@ public abstract class AbstractAjaxUpdateBehavior
     }
 
     /**
-     * The precondition script must be overwritten to prevent JavaScript error.
-     *
-     * @return null
-     */
-    @Override
-    protected CharSequence getPreconditionScript()
-    {
-        return null;
-    }
-
-    /**
      * Get the call back script.
      *
      * @see org.apache.wicket.ajax.AbstractDefaultAjaxBehavior#getCallbackScript()

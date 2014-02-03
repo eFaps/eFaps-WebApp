@@ -37,7 +37,6 @@ import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 public class SetEditedBehavior
     extends Behavior
 {
-
     /**
      * Needed for serialization.
      */
@@ -58,7 +57,7 @@ public class SetEditedBehavior
     }
 
     /**
-     * @return
+     * @return CharSequence with script
      */
     private CharSequence getJavaScript()
     {
@@ -82,9 +81,6 @@ public class SetEditedBehavior
         return ret;
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.wicket.behavior.Behavior#renderHead(org.apache.wicket.Component, org.apache.wicket.markup.head.IHeaderResponse)
-     */
     @Override
     public void renderHead(final Component _component,
                            final IHeaderResponse _response)

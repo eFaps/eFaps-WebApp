@@ -56,7 +56,6 @@ import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 public class StructurBrowserTreeTable
     extends NestedTree<UIStructurBrowser>
 {
-
     /**
      * Needed for serialization.
      */
@@ -69,21 +68,13 @@ public class StructurBrowserTreeTable
                     "StructurTreeTable.css");
 
     /**
-     * Must the link update the parent in the link.
-     */
-    private final boolean parentLink;
-
-    /**
      * Constructor.
      *
      * @param _wicketId wicket id for this component
      * @param _model model
-     * @param _parentLink must the link be done over the parent
-     * @param _datePickers DatePicker
      */
     public StructurBrowserTreeTable(final String _wicketId,
-                                    final IModel<UIStructurBrowser> _model,
-                                    final boolean _parentLink)
+                                    final IModel<UIStructurBrowser> _model)
     {
         super(_wicketId, new StructurBrowserProvider(_model),
                         new SetModel<UIStructurBrowser>(_model.getObject().getExpandedBrowsers()));
@@ -92,7 +83,6 @@ public class StructurBrowserTreeTable
         } else if ("windows".equals(Configuration.getAttribute(ConfigAttribute.STRUCBRWSRTREE_CLASS))) {
             add(new WindowsTheme());
         }
-        this.parentLink = _parentLink;
     }
 
     @Override

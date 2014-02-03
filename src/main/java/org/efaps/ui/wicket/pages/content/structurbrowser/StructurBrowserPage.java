@@ -150,8 +150,7 @@ public class StructurBrowserPage
         this.add(form);
         super.addComponents(form);
         form.add(AttributeModifier.append("class", uiObject.getMode().toString()));
-        form.add(new StructurBrowserTreeTablePanel("structurBrowserTable", new UIModel<UIStructurBrowser>(uiObject),
-                        true));
+        form.add(new StructurBrowserTreeTablePanel("structurBrowserTable", new UIModel<UIStructurBrowser>(uiObject)));
     }
 
     @Override

@@ -61,8 +61,7 @@ import org.efaps.util.cache.CacheReloadException;
  * on a Tristate.
  *
  * @author The eFaps Team
- * @version $Id: StructurBrowserTree.java 7556 2012-05-29 19:51:07Z
- *          jan@moxter.net $
+ * @version $Id$
  */
 public class StructurBrowserTree
     extends NestedTree<UIStructurBrowser>
@@ -95,16 +94,10 @@ public class StructurBrowserTree
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.wicket.extensions.markup.html.repeater.tree.AbstractTree#
-     * newContentComponent(java.lang.String, org.apache.wicket.model.IModel)
-     */
     @Override
     protected Component newContentComponent(final String _wicketId,
                                             final IModel<UIStructurBrowser> _model)
     {
-        // TODO Auto-generated method stub
         return new Folder<UIStructurBrowser>(_wicketId, this, _model)
         {
 
@@ -132,6 +125,9 @@ public class StructurBrowserTree
         _response.render(AbstractEFapsHeaderItem.forCss(StructurBrowserTree.CSS));
     }
 
+    /**
+     * A Link component.
+     */
     public class ItemLink
         extends WebMarkupContainer
         implements ILinkListener
@@ -143,13 +139,13 @@ public class StructurBrowserTree
         private static final long serialVersionUID = 1L;
 
         /**
-         * @param _id
-         * @param _model
+         * @param _wicketId wicketID for this component
+         * @param _model    modle for this component
          */
-        public ItemLink(final String _id,
+        public ItemLink(final String _wicketId,
                         final IModel<UIStructurBrowser> _model)
         {
-            super(_id, _model);
+            super(_wicketId, _model);
             add(new ItemLinkBehavior());
         }
 
@@ -161,10 +157,6 @@ public class StructurBrowserTree
             super.replaceComponentTagBody(_markupStream, _openTag, uiStrBrws.getLabel());
         }
 
-        /*
-         * (non-Javadoc)
-         * @see org.apache.wicket.markup.html.link.ILinkListener#onLinkClicked()
-         */
         @Override
         public void onLinkClicked()
         {
@@ -191,12 +183,21 @@ public class StructurBrowserTree
         }
     }
 
+    /**
+     * Link.
+     */
     private final class ItemLinkBehavior
         extends AjaxEventBehavior
     {
 
+        /**
+         * Needed for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
+        /**
+         * Constructor.
+         */
         public ItemLinkBehavior()
         {
             super("onclick");
@@ -219,12 +220,6 @@ public class StructurBrowserTree
             }
         }
 
-        /*
-         * (non-Javadoc)
-         * @see
-         * org.apache.wicket.ajax.AjaxEventBehavior#updateAjaxAttributes(org
-         * .apache.wicket.ajax.attributes.AjaxRequestAttributes)
-         */
         @Override
         protected void updateAjaxAttributes(final AjaxRequestAttributes _attributes)
         {
@@ -232,11 +227,11 @@ public class StructurBrowserTree
             final AjaxCallListener listener = new AjaxCallListener();
             final StringBuilder js = new StringBuilder();
             js.append("dijit.registry.byId(\"").append(((ContentContainerPage) getPage()).getCenterPanelId())
-                            .append("\").set(\"content\", dojo.create(\"iframe\", {")
-                            .append("\"src\": \"")
-                            .append(getComponent().urlFor(ILinkListener.INTERFACE, new PageParameters()))
-                            .append("\",\"style\": \"border: 0; width: 100%; height: 99%\"")
-                            .append("})); ");
+                .append("\").set(\"content\", dojo.create(\"iframe\", {")
+                .append("\"src\": \"")
+                .append(getComponent().urlFor(ILinkListener.INTERFACE, new PageParameters()))
+                .append("\",\"style\": \"border: 0; width: 100%; height: 99%\"")
+                .append("})); ");
             listener.onAfter(js);
             _attributes.getAjaxCallListeners().add(listener);
         }

@@ -39,30 +39,21 @@ import org.efaps.util.cache.CacheReloadException;
 public class StructurBrowserTreeTablePanel
     extends Panel
 {
-
     /**
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
 
     /**
-     * must the link be done using the parent or the listmenu updated.
-     */
-    private final boolean parentLink;
-
-    /**
      * @param _wicketId wicket id of this component
      * @param _model model for this component
-     * @param _parentLink must the link be done using the parent
      * @throws CacheReloadException on error
      */
     public StructurBrowserTreeTablePanel(final String _wicketId,
-                                         final IModel<UIStructurBrowser> _model,
-                                         final boolean _parentLink)
+                                         final IModel<UIStructurBrowser> _model)
         throws CacheReloadException
     {
         super(_wicketId, _model);
-        this.parentLink = _parentLink;
         final UIStructurBrowser uiObject = (UIStructurBrowser) super.getDefaultModelObject();
 
         if (!uiObject.isInitialized()) {
@@ -70,7 +61,7 @@ public class StructurBrowserTreeTablePanel
         }
 
         add(new RowSelectedInput("selected"));
-        final StructurBrowserTreeTable tree = new StructurBrowserTreeTable("treeTable", _model, _parentLink);
+        final StructurBrowserTreeTable tree = new StructurBrowserTreeTable("treeTable", _model);
 
         final HeaderPanel header = new HeaderPanel("header", tree, _model);
         add(tree);
