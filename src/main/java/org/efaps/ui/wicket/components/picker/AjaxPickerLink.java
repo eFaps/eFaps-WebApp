@@ -165,17 +165,6 @@ public class AjaxPickerLink
             modal.setWindowClosedCallback(new PickerCallBack(this.targetMarkupId, getPage().getPageReference()));
             modal.show(_target);
         }
-
-        /**
-         * Method must be overwritten, otherwise the default would break the execution of the JavaScript.
-         *
-         * @return null
-         */
-        @Override
-        protected CharSequence getPreconditionScript()
-        {
-            return null;
-        }
     }
 
 }

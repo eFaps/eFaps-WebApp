@@ -134,6 +134,7 @@ public class HeaderPanel
         } else {
             this.tableName = uitable.getTable().getName();
         }
+        final boolean  dnd = uitable.isDnD();
         this.headerProperties = "eFapsTable" + uitable.getTableId();
 
         this.add(new AjaxStoreColumnWidthBehavior());
@@ -141,10 +142,12 @@ public class HeaderPanel
         this.add(new AjaxReloadTableBehavior());
         this.add(AttributeModifier.append("class", "eFapsTableHeader"));
 
-        final DnDBehavior dndBehavior = DnDBehavior.getSourceBehavior(this.headerProperties);
-        dndBehavior.setAppendJavaScript(this.headerProperties + ".storeColumnOrder(getColumnOrder("
+        if (dnd) {
+            final DnDBehavior dndBehavior = DnDBehavior.getSourceBehavior(this.headerProperties);
+            dndBehavior.setAppendJavaScript(this.headerProperties + ".storeColumnOrder(getColumnOrder("
                         + this.headerProperties + "));\n" + this.headerProperties + ".reloadTable()\n");
-        this.add(dndBehavior);
+            this.add(dndBehavior);
+        }
 
         final int browserWidth = ((WebClientInfo) getSession().getClientInfo()).getProperties().getBrowserWidth();
 
@@ -211,7 +214,9 @@ public class HeaderPanel
                 } else {
                     cell.add(AttributeModifier.append("class", "eFapsTableHeaderCell eFapsCellWidth" + i));
                 }
-                cell.add(DnDBehavior.getItemBehavior(this.headerProperties));
+                if (dnd) {
+                    cell.add(DnDBehavior.getItemBehavior(this.headerProperties));
+                }
             }
             cell.setOutputMarkupId(true);
             cellRepeater.add(cell);

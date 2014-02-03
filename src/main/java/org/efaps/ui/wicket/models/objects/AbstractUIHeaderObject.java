@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.UUID;
 
+import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractCommand.SortDirection;
 import org.efaps.admin.ui.Table;
 import org.efaps.admin.ui.field.Field;
@@ -164,6 +165,11 @@ public abstract class AbstractUIHeaderObject
     private String sortKey = null;
 
     /**
+     * Is Drag and drop allowed.
+     */
+    private boolean dnD = true;
+
+    /**
      * @param _commandUUID UUID of the Command
      * @param _instanceKey key to the instance
      * @param _openerId id of the opener
@@ -175,6 +181,7 @@ public abstract class AbstractUIHeaderObject
         throws CacheReloadException
     {
         super(_commandUUID, _instanceKey, _openerId);
+        initialize();
     }
 
     /**
@@ -187,6 +194,40 @@ public abstract class AbstractUIHeaderObject
         throws CacheReloadException
     {
         super(_commandUUID, _instanceKey);
+        initialize();
+    }
+
+    /**
+     * @throws CacheReloadException on error
+     */
+    protected void initialize()
+        throws CacheReloadException
+    {
+        final AbstractCommand cmd = getCommand();
+        if (cmd != null) {
+            setDnD(!"true".equalsIgnoreCase(cmd.getProperty("TargetDeactivateDnD")));
+        }
+    }
+
+
+    /**
+     * Getter method for the instance variable {@link #dnd}.
+     *
+     * @return value of instance variable {@link #dnd}
+     */
+    public boolean isDnD()
+    {
+        return this.dnD;
+    }
+
+    /**
+     * Setter method for instance variable {@link #dnD}.
+     *
+     * @param _dnD value for instance variable {@link #dnD}
+     */
+    public void setDnD(final boolean _dnD)
+    {
+        this.dnD = _dnD;
     }
 
     /**
@@ -224,7 +265,6 @@ public abstract class AbstractUIHeaderObject
      *
      * @param _tableUUID value for instance variable {@link #tableUUID}
      */
-
     protected void setTableUUID(final UUID _tableUUID)
     {
         this.tableUUID = _tableUUID;

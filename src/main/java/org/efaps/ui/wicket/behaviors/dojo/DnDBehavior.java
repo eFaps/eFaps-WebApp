@@ -136,7 +136,7 @@ public class DnDBehavior
         super.renderHead(_component, _response);
         _response.render(JavaScriptHeaderItem.forScript("require([\"dojo/dnd/Source\",\"dojo/parser\"]);",
                         DnDBehavior.class.toString()));
-       if (this.type == DnDBehavior.BehaviorType.SOURCE) {
+        if (this.type == DnDBehavior.BehaviorType.SOURCE) {
             final StringBuilder js = new StringBuilder()
                 .append("require([\"dojo/aspect\",\"dojo/dom\",\"dojo/dnd/Source\"], ")
                 .append("function(aspect,dom){\n")
