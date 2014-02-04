@@ -170,12 +170,12 @@ public class LinkElementComponent
                 ((ContentContainerPage) calledByPageRef.getPage()).getMenuTree().registerListener(up);
                 final AjaxCallListener listener = new AjaxCallListener();
                 final StringBuilder js = new StringBuilder()
-                                .append("var frameWin = top.dojo.doc.getElementById(\"").append(MainPage.IFRAME_ID)
-                                .append("\").contentWindow;")
-                                .append(" frameWin.")
-                                .append(MenuUpdateBehavior.FUNCTION_NAME).append("(\"").append(up.getKey())
-                                .append("\");")
-                                .append("return true;");
+                    .append("var frameWin = top.dojo.doc.getElementById(\"").append(MainPage.IFRAME_ID)
+                    .append("\").contentWindow;")
+                    .append(" frameWin.")
+                    .append(MenuUpdateBehavior.FUNCTION_NAME).append("(\"").append(up.getKey())
+                    .append("\");")
+                    .append("return true;");
                 listener.onPrecondition(js);
                 _attributes.getAjaxCallListeners().add(listener);
             }
@@ -190,7 +190,7 @@ public class LinkElementComponent
         protected void onEvent(final AjaxRequestTarget _target)
         {
             final EmbeddedLink link = (EmbeddedLink) getComponent().getDefaultModelObject();
-             Instance instance = null;
+            Instance instance = null;
             if (link.getInstanceKey() != null) {
                 AbstractCommand menu = null;
                 try {

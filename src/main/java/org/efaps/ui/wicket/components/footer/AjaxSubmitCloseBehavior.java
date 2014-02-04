@@ -61,7 +61,6 @@ import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.EFapsSession;
-import org.efaps.ui.wicket.behaviors.update.UpdateInterface;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.form.FormPanel;
@@ -228,23 +227,8 @@ public class AjaxSubmitCloseBehavior
                             footer.getModalWindow().setReloadChild(!this.uiObject.getCommand().isNoUpdateAfterCmd());
                             footer.getModalWindow().setTargetShowFile(this.uiObject.getCommand().isTargetShowFile());
                             footer.getModalWindow().close(_target, this.uiObject);
-                        } else {
-                            //TODO
                         }
                         footer.setSuccess(true);
-
-                        // execute the CallBacks
-                        final List<UpdateInterface> updates = ((EFapsSession) getComponent().getSession())
-                                        .getUpdateBehavior(this.uiObject.getInstanceKey());
-                        if (updates != null) {
-                            for (final UpdateInterface update : updates) {
-                                if (update.isAjaxCallback()) {
-                                    update.setInstanceKey(this.uiObject.getInstanceKey());
-                                    update.setMode(this.uiObject.getMode());
-                                    _target.prependJavaScript(update.getAjaxCallback());
-                                }
-                            }
-                        }
                     }
                 }
             } else {
@@ -270,6 +254,7 @@ public class AjaxSubmitCloseBehavior
     /**
      * Method used to convert the date value from the ui in date values for
      * eFaps.
+     * @param _target AjaxRequestTarget
      * @return true if converted successfully, else false
      * @throws EFapsException on error
      */
@@ -309,6 +294,7 @@ public class AjaxSubmitCloseBehavior
     /**
      * Method used to convert the values from the ui in values for
      * eFaps.
+     * @param _target AjaxRequestTarget
      * @return true if converted successfully, else false
      * @throws EFapsException on error
      */

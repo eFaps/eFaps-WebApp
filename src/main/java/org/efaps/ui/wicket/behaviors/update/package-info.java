@@ -18,35 +18,10 @@
  * Last Changed By: $Author$
  */
 
-
-package org.efaps.ui.wicket.behaviors.update;
-
-import org.apache.wicket.Component;
-import org.apache.wicket.ajax.AjaxRequestTarget;
-
-
 /**
- * TODO comment!
+ * Basic update events and related interfaces.
  *
  * @author The eFaps Team
  * @version $Id$
  */
-public interface IRemoteUpdateListener
-{
-    /**
-     * Key for the parameter passed by the UserInterface.
-     */
-    String PARAMETERKEY = "eFapsULKey";
-
-    /**
-     * @return key that is a unique identifier for this IMenuUpdateListener.
-     */
-    String getKey();
-
-    /**
-     * @param _component component the vent belongs to
-     * @param _target the AjaxTarget
-     */
-    void onEvent(final Component _component,
-                 final AjaxRequestTarget _target);
-}
+package org.efaps.ui.wicket.behaviors.update;

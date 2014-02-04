@@ -92,9 +92,8 @@ public class MenuTree
      */
     private Component selected = null;
 
-
     /**
-     * Mapping of a key to mnuitem.
+     * Mapping of a key to menuitem.
      */
     private final Map<String, UIMenuItem> key2uimenuItem = new HashMap<String, UIMenuItem>();
 
@@ -159,10 +158,11 @@ public class MenuTree
     }
 
     /**
-     * @param menuItem menuitem the children will be expanded for
+     * @param _menuItem menuitem the children will be expanded for
      */
-    protected void expandChildren(final UIMenuItem menuItem) {
-        for (final UIMenuItem childItem : menuItem.getChildren()) {
+    protected void expandChildren(final UIMenuItem _menuItem)
+    {
+        for (final UIMenuItem childItem : _menuItem.getChildren()) {
             if (childItem.isExpanded()) {
                 expand(childItem);
             }

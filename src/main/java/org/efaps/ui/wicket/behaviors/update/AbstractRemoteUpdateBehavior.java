@@ -83,12 +83,6 @@ public abstract class AbstractRemoteUpdateBehavior
         return this.funtionName;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see
-     * org.apache.wicket.ajax.AbstractDefaultAjaxBehavior#respond(org.apache
-     * .wicket.ajax.AjaxRequestTarget)
-     */
     @Override
     protected void respond(final AjaxRequestTarget _target)
     {

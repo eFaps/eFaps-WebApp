@@ -46,7 +46,6 @@ import org.efaps.admin.user.Person;
 import org.efaps.admin.user.UserAttributesSet;
 import org.efaps.db.Context;
 import org.efaps.jaas.LoginHandler;
-import org.efaps.ui.wicket.behaviors.update.UpdateInterface;
 import org.efaps.ui.wicket.components.IRecent;
 import org.efaps.ui.wicket.models.EmbeddedLink;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
@@ -111,16 +110,6 @@ public class EFapsSession
      * @see #openContext()
      */
     private final Map<String, Object> sessionAttributes = new HashMap<String, Object>();
-
-    /**
-     * This instance map stores the Behaviors that will be called through the
-     * UpdateInterface.
-     *
-     * @see #addUpdateBehaviors(String, UpdateInterface)
-     * @see #getUpdateBehavior(String)
-     * @see #getUpdateBehaviors()
-     */
-    private final Map<String, List<UpdateInterface>> updateBehaviors = new HashMap<String, List<UpdateInterface>>();
 
     /**
      * File to be shown by the ShowFileCallBackBehavior.
@@ -196,57 +185,6 @@ public class EFapsSession
         final Stack<IRecent> clone = (Stack<IRecent>) this.recentStack.clone();
         Collections.reverse(clone);
         return clone;
-    }
-
-    /**
-     * method to add a Behavior to the {@link #updateBehaviors}. The behavior
-     * will only be added if no update behavior with the same Id is existing in
-     * the List related to the given oid.
-     *
-     * @param _oid Oid (used as key in the map)
-     * @param _behavior (behavoir to be added)
-     */
-    public void addUpdateBehaviors(final String _oid,
-                                   final UpdateInterface _behavior)
-    {
-        List<UpdateInterface> behaviors;
-
-        if (this.updateBehaviors.containsKey(_oid)) {
-            behaviors = this.updateBehaviors.get(_oid);
-            for (int i = 0; i < behaviors.size(); i++) {
-                if (behaviors.get(i).getId().equals(_behavior.getId())) {
-                    behaviors.remove(i);
-                    break;
-                }
-            }
-        } else {
-            behaviors = new ArrayList<UpdateInterface>();
-
-        }
-        behaviors.add(_behavior);
-        this.updateBehaviors.put(_oid, behaviors);
-    }
-
-    /**
-     * Method that returns the behaviors as aList that rely to a specified oid.
-     *
-     * @param _oid OID to get the List for
-     * @return List with Behaviors
-     */
-    public List<UpdateInterface> getUpdateBehavior(final String _oid)
-    {
-        return this.updateBehaviors.get(_oid);
-    }
-
-    /**
-     * This is the getter method for the instance variable
-     * {@link #updateBehaviors}.
-     *
-     * @return value of instance variable {@link #updateBehaviors}
-     */
-    public Map<String, List<UpdateInterface>> getUpdateBehaviors()
-    {
-        return this.updateBehaviors;
     }
 
     /**

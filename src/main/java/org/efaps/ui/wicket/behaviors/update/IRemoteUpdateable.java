@@ -30,5 +30,8 @@ package org.efaps.ui.wicket.behaviors.update;
  */
 public interface IRemoteUpdateable
 {
+    /**
+     * @param _listener listener to executed on ajax call
+     */
     void registerListener(final IRemoteUpdateListener _listener);
 }
