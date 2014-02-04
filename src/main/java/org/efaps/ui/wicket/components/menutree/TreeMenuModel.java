@@ -46,11 +46,15 @@ public class TreeMenuModel
      */
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Root items.
+     */
     private List<UIMenuItem> rootItems = new ArrayList<UIMenuItem>();
 
     /**
-     * @param _commandUUID
-     * @param _oid
+     * @param _commandUUID UUID of the command/menu
+     * @param _oid          oid of the instance
+     * @throws CacheReloadException on error
      */
     public TreeMenuModel(final UUID _commandUUID,
                          final String _oid)
@@ -59,6 +63,11 @@ public class TreeMenuModel
         setModel(_commandUUID, _oid);
     }
 
+    /**
+     * @param _commandUUID UUID of the command/menu
+     * @param _oid          oid of the instance
+     * @throws CacheReloadException on error
+     */
     public void setModel(final UUID _commandUUID,
                          final String _oid)
         throws CacheReloadException
@@ -71,7 +80,7 @@ public class TreeMenuModel
     /**
      * Setter method for instance variable {@link #roots}.
      *
-     * @param _roots value for instance variable {@link #roots}
+     * @param _rootItems value for instance variable {@link #roots}
      */
     public void setRootItems(final List<UIMenuItem> _rootItems)
     {

@@ -196,6 +196,22 @@ public class UIMenuItem
         return this.children;
     }
 
+
+    public List<UIMenuItem>getDescendants()
+    {
+        return getDescendants(this);
+    }
+
+
+    private List<UIMenuItem>getDescendants(final UIMenuItem _menuItem) {
+        final List<UIMenuItem> ret = new ArrayList<UIMenuItem>();
+        ret.add(_menuItem);
+        for (final UIMenuItem menuItem : _menuItem.getChildren()) {
+            ret.addAll(getDescendants(menuItem));
+        }
+        return ret;
+    }
+
     /**
      * This is the getter method for the instance variable {@link #description}.
      *
@@ -360,27 +376,32 @@ public class UIMenuItem
 
     /**
      * Requery the Label.
+     * @return true if the label was changed, else false
      */
-    public void requeryLabel()
+    public boolean requeryLabel()
     {
+        boolean ret = false;
         try {
-            this.label = DBProperties.getProperty(getCommand().getLabel());
+            String labelTmp = DBProperties.getProperty(getCommand().getLabel());
             if (getInstance() != null) {
-                final ValueParser parser = new ValueParser(new StringReader(this.label));
+                final ValueParser parser = new ValueParser(new StringReader(labelTmp));
                 final ValueList list = parser.ExpressionString();
                 if (list.getExpressions().size() > 0) {
                     final PrintQuery print = new PrintQuery(getInstance());
                     list.makeSelect(print);
                     if (print.execute()) {
-                        this.label = list.makeString(getInstance(), print, getMode());
+                        labelTmp = list.makeString(getInstance(), print, getMode());
                     }
                 }
             }
+            ret = !labelTmp.equals(this.label);
+            this.label = labelTmp;
         } catch (final EFapsException e) {
             throw new RestartResponseException(new ErrorPage(e));
         } catch (final ParseException e) {
             throw new RestartResponseException(new ErrorPage(e));
         }
+        return ret;
     }
 
     /**

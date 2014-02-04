@@ -61,6 +61,7 @@ public abstract class AbstractMenuNode
     {
         super(_wicketId, _tree, _model);
         this.tree = _tree;
+        setOutputMarkupId(true);
         add(AttributeModifier.append("class", "eFapsMenuTreeNode"));
     }
 

@@ -32,6 +32,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.request.IRequestHandler;
 import org.efaps.admin.ui.Menu;
+import org.efaps.ui.wicket.components.menutree.MenuUpdateBehavior;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
@@ -202,6 +203,13 @@ public class ModalWindowContainer
                                 .append("\",\"style\": \"border: 0; width: 100%; height: 99%\"}")
                             .append("))")
                         .append("});");
+
+                    javascript.append("var frameWin = top.dojo.doc.getElementById(\"").append(MainPage.IFRAME_ID)
+                        .append("\").contentWindow;")
+                        .append(" frameWin.")
+                        .append(MenuUpdateBehavior.FUNCTION_NAME).append("(\"")
+                        .append(MenuUpdateBehavior.PARAMETERKEY4UPDATE)
+                        .append("\");");
                 } else {
                     javascript.append("require([\"dojo/dom-construct\"], function(domConstruct){")
                         .append(" top.dijit.registry.byId(\"mainPanel\").set(\"content\",")

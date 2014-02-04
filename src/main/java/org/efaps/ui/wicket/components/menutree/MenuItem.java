@@ -95,6 +95,7 @@ public class MenuItem
         add(link);
 
         final Label label = new Label("label", _model.getObject().getLabel());
+        label.setOutputMarkupId(true);
         link.add(label);
 
         if (_model.getObject().isHeader()) {

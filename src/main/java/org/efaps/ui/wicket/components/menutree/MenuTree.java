@@ -29,11 +29,15 @@ import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.markup.html.repeater.tree.NestedTree;
+import org.apache.wicket.extensions.markup.html.repeater.tree.Node;
 import org.apache.wicket.extensions.markup.html.repeater.tree.theme.HumanTheme;
 import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.ILinkListener;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.iterator.ComponentHierarchyIterator;
+import org.apache.wicket.util.visit.IVisit;
+import org.apache.wicket.util.visit.IVisitor;
 import org.efaps.ui.wicket.behaviors.update.IRemoteUpdateListener;
 import org.efaps.ui.wicket.behaviors.update.IRemoteUpdateable;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
@@ -363,5 +367,38 @@ public class MenuTree
     {
         super.collapse(_menuItem);
         _menuItem.setExpanded(false);
+    }
+
+    @Override
+    public void updateNode(final UIMenuItem _menuItem,
+                           final AjaxRequestTarget _target)
+    {
+        if (_target != null) {
+            final IModel<UIMenuItem> model = getProvider().model(_menuItem);
+            visitChildren(Node.class, new IVisitor<Node<UIMenuItem>, Void>()
+            {
+
+                @Override
+                public void component(final Node<UIMenuItem> _node,
+                                      final IVisit<Void> _visit)
+                {
+                    if (model.equals(_node.getModel())) {
+                        _target.add(_node);
+                        _node.visitChildren(Label.class, new IVisitor<Label, Void>()
+                        {
+                            @Override
+                            public void component(final Label _label,
+                                                  final IVisit<Void> _visit)
+                            {
+                                _label.setDefaultModelObject(((UIMenuItem) _node.getDefaultModelObject()).getLabel());
+                            }
+                        });
+                        _visit.stop();
+                    }
+                    _visit.dontGoDeeper();
+                }
+            });
+            model.detach();
+        }
     }
 }
