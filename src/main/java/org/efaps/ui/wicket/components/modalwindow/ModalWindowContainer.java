@@ -166,6 +166,7 @@ public class ModalWindowContainer
                 }
                 final String href = _uiObject.getCommand().getReference();
                 final Page page;
+                boolean tree = false;
                 if ("TREE?".equalsIgnoreCase(href) && _uiObject.getInstance() != null
                                 && _uiObject.getInstance().isValid()) {
                     final Menu menu = Menu.getTypeTreeMenu(_uiObject.getInstance().getType());
@@ -175,6 +176,7 @@ public class ModalWindowContainer
                         throw new RestartResponseException(new ErrorPage(ex));
                     }
                     page = new ContentContainerPage(menu.getUUID(), _uiObject.getInstance().getKey());
+                    tree = true;
                 } else {
                     uiObject.resetModel();
                     if (uiObject instanceof UITable) {
@@ -191,7 +193,7 @@ public class ModalWindowContainer
                 // touch the page to ensure that the pagemanager stores it to be accessible
                 getSession().getPageManager().touchPage(page);
                 final String url = getRequestCycle().urlFor(handler).toString();
-                if (calledByPageRef != null && calledByPageRef.getPage() instanceof ContentContainerPage) {
+                if (calledByPageRef != null && calledByPageRef.getPage() instanceof ContentContainerPage && !tree) {
                     final String panelId = ((ContentContainerPage) calledByPageRef.getPage()).getCenterPanelId();
                     javascript.append("require([\"dojo/dom-construct\"], function(domConstruct){")
                         .append("var mainFrame = top.dojo.doc.getElementById(\"")
