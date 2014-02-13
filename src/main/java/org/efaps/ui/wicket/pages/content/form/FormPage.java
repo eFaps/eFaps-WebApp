@@ -268,9 +268,11 @@ public class FormPage
                 elementRepeater.add(new ClassificationPathPanel(elementRepeater.newChildId(),
                                 new UIModel<UIClassification>((UIClassification) element.getElement())));
             } else if (element.getType().equals(ElementType.STRUCBRWS)) {
+                i++;
+                final UIFieldStructurBrowser strBrwsr = (UIFieldStructurBrowser) element.getElement();
+                strBrwsr.setTableId(i);
                 final StructurBrowserTreeTablePanel strucBrws = new StructurBrowserTreeTablePanel(
-                                elementRepeater.newChildId(), new UIModel<UIStructurBrowser>(
-                                                (UIFieldStructurBrowser) element.getElement()));
+                                elementRepeater.newChildId(), new UIModel<UIStructurBrowser>(strBrwsr));
                 elementRepeater.add(strucBrws);
             } else if (element.getType().equals(ElementType.SUBFORM)) {
                 final UIFieldForm uiFieldForm = (UIFieldForm) element.getElement();
