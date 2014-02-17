@@ -93,9 +93,12 @@ public class DashboardPage
         // BPM_DashBoard_AssignedTask
         final Command assCmd = Command.get(UUID.fromString("63933a70-82d3-4fbc-bef2-cdf06c77013f"));
         if (active && assCmd != null && assCmd.hasAccess(TargetMode.VIEW, null)) {
+            final WebMarkupContainer assignedTask = new WebMarkupContainer("assignedTask");
+            add(assignedTask);
+
             final TaskTablePanel assignedTaskTable = new TaskTablePanel("assignedTaskTable", _pageReference,
                             new AssignedTaskSummaryProvider());
-            add(assignedTaskTable);
+            assignedTask.add(assignedTaskTable);
 
             final int duration1 = Configuration.getAttributeAsInteger(ConfigAttribute.BOARD_ASSIGNED_AUTIME);
             if (duration1 > 0) {
@@ -104,28 +107,28 @@ public class DashboardPage
                 assignedTaskTable.add(ajaxUpdate);
 
                 if (Configuration.getAttributeAsBoolean(ConfigAttribute.BOARD_ASSIGNEDTASK_AU)) {
-                    add(new AutomaticUpdateCheckbox("assignedTaskAU", ajaxUpdate));
+                    assignedTask.add(new AutomaticUpdateCheckbox("assignedTaskAU", ajaxUpdate));
                 } else {
-                    add(new WebMarkupContainer("assignedTaskAU").setVisible(false));
+                    assignedTask.add(new WebMarkupContainer("assignedTaskAU").setVisible(false));
                 }
             } else {
-                add(new WebMarkupContainer("assignedTaskAU").setVisible(false));
+                assignedTask.add(new WebMarkupContainer("assignedTaskAU").setVisible(false));
             }
-            add(new Label("assignedTaskHeader", DBProperties.getProperty(DashboardPage.class.getName()
+            assignedTask.add(new Label("assignedTaskHeader", DBProperties.getProperty(DashboardPage.class.getName()
                             + ".assignedTaskHeader")));
             used = true;
         } else {
-            add(new WebMarkupContainer("assignedTaskTable").setVisible(false));
-            add(new WebMarkupContainer("assignedTaskHeader").setVisible(false));
-            add(new WebMarkupContainer("assignedTaskAU").setVisible(false));
+            add(new WebMarkupContainer("assignedTask").setVisible(false));
         }
 
         // BPM_DashBoard_OwnedTask
         final Command ownCmd = Command.get(UUID.fromString("60a9bfcd-928e-4b96-a617-94d70fb0c8ab"));
         if (active && ownCmd != null && ownCmd.hasAccess(TargetMode.VIEW, null)) {
+            final WebMarkupContainer ownedTask = new WebMarkupContainer("ownedTask");
+            add(ownedTask);
             final TaskTablePanel ownedTaskTable = new TaskTablePanel("ownedTaskTable", _pageReference,
                             new OwnedTaskSummaryProvider());
-            add(ownedTaskTable);
+            ownedTask.add(ownedTaskTable);
 
             final int duration2 = Configuration.getAttributeAsInteger(ConfigAttribute.BOARD_OWNEDTASK_AUTIME);
             if (duration2 > 0) {
@@ -133,20 +136,18 @@ public class DashboardPage
                                 Duration.seconds(duration2));
                 ownedTaskTable.add(ajaxUpdate);
                 if (Configuration.getAttributeAsBoolean(ConfigAttribute.BOARD_OWNEDTASK_AU)) {
-                    add(new AutomaticUpdateCheckbox("ownedTaskAU", ajaxUpdate));
+                    ownedTask.add(new AutomaticUpdateCheckbox("ownedTaskAU", ajaxUpdate));
                 } else {
-                    add(new WebMarkupContainer("ownedTaskAU").setVisible(false));
+                    ownedTask.add(new WebMarkupContainer("ownedTaskAU").setVisible(false));
                 }
             } else {
-                add(new WebMarkupContainer("ownedTaskAU").setVisible(false));
+                ownedTask.add(new WebMarkupContainer("ownedTaskAU").setVisible(false));
             }
-            add(new Label("ownedTaskHeader",
+            ownedTask.add(new Label("ownedTaskHeader",
                             DBProperties.getProperty(DashboardPage.class.getName() + ".ownedTaskHeader")));
             used = true;
         } else {
-            add(new WebMarkupContainer("ownedTaskTable").setVisible(false));
-            add(new WebMarkupContainer("ownedTaskHeader").setVisible(false));
-            add(new WebMarkupContainer("ownedTaskAU").setVisible(false));
+            add(new WebMarkupContainer("ownedTask").setVisible(false));
         }
 
         if (used) {
@@ -274,10 +275,16 @@ public class DashboardPage
         }
     }
 
+    /**
+     * Update behavior.
+     */
     public class SelfUpdatingTimerBehavior
         extends AbstractAjaxTimerBehavior
     {
 
+        /**
+         * Needed for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
         /**
@@ -288,11 +295,11 @@ public class DashboardPage
         /**
          * Construct.
          *
-         * @param updateInterval Duration between AJAX callbacks
+         * @param _updateInterval Duration between AJAX callbacks
          */
-        public SelfUpdatingTimerBehavior(final Duration updateInterval)
+        public SelfUpdatingTimerBehavior(final Duration _updateInterval)
         {
-            super(updateInterval);
+            super(_updateInterval);
         }
 
         /**
@@ -300,12 +307,9 @@ public class DashboardPage
          */
         public void deactivate()
         {
-           this.deactivate = true;
+            this.deactivate = true;
         }
 
-        /**
-         * @see org.apache.wicket.ajax.AbstractAjaxTimerBehavior#onTimer(AjaxRequestTarget)
-         */
         @Override
         protected final void onTimer(final AjaxRequestTarget _target)
         {
