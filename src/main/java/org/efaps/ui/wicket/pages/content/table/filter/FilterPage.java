@@ -37,6 +37,7 @@ import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.util.iterator.ComponentHierarchyIterator;
 import org.apache.wicket.util.string.StringValue;
 import org.efaps.admin.dbproperty.DBProperties;
@@ -51,6 +52,9 @@ import org.efaps.ui.wicket.components.table.filter.FreeTextPanel;
 import org.efaps.ui.wicket.components.table.filter.PickerPanel;
 import org.efaps.ui.wicket.components.table.filter.StatusPanel;
 import org.efaps.ui.wicket.models.objects.UIClassification;
+import org.efaps.ui.wicket.models.objects.UIForm;
+import org.efaps.ui.wicket.models.objects.UIForm.Element;
+import org.efaps.ui.wicket.models.objects.UIForm.ElementType;
 import org.efaps.ui.wicket.models.objects.UIStatusSet;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.models.objects.UITableHeader;
@@ -102,16 +106,16 @@ public class FilterPage
 
         switch (_uitableHeader.getFilter().getType()) {
             case CLASSIFICATION:
-                panel = new ClassificationPanel("filterPanel", getDefaultModel(), _uitableHeader);
+                panel = new ClassificationPanel("filterPanel", Model.of(_uitableHeader));
                 break;
             case PICKLIST:
-                panel = new PickerPanel("filterPanel", getDefaultModel(), _uitableHeader);
+                panel = new PickerPanel("filterPanel", Model.of(_uitableHeader));
                 break;
             case STATUS:
-                panel = new StatusPanel("filterPanel", getDefaultModel(), _uitableHeader);
+                panel = new StatusPanel("filterPanel", Model.of(_uitableHeader));
                 break;
             default:
-                panel = new FreeTextPanel("filterPanel", getDefaultModel(), _uitableHeader);
+                panel = new FreeTextPanel("filterPanel", Model.of(_uitableHeader));
                 break;
         }
         form.add(panel);
@@ -127,7 +131,25 @@ public class FilterPage
                 try {
                     final AbstractContentPage page = (AbstractContentPage) FilterPage.this.pageReference.getPage();
                     final ModalWindowContainer modal = page.getModal();
-                    final UITable uiTable = (UITable) _pageReference.getPage().getDefaultModelObject();
+                    // to ensure that it is never null, set the wrong one and then analyze
+                    UITable uiTable = (UITable) _uitableHeader.getUiHeaderObject();
+                    if (page.getDefaultModelObject() instanceof UITable) {
+                        uiTable = (UITable) page.getDefaultModelObject();
+                    } else {
+                        // in case that the table is inside a form it must be searched for
+                        final UIForm uiForm = (UIForm) page.getDefaultModelObject();
+                        for (final Element element : uiForm.getElements()) {
+                            if (element.getType().equals(ElementType.TABLE)) {
+                                final UITable uiTableTmp = (UITable) element.getElement();
+                                // compare them, if tableid is the same this it is
+                                if (_uitableHeader.getUiHeaderObject().getTableId() == uiTableTmp.getTableId()) {
+                                    uiTable = uiTableTmp;
+                                    break;
+                                }
+                            }
+                        }
+
+                    }
                     if (_uitableHeader.getFilter().getType().equals(Filter.Type.PICKLIST)) {
                         final List<StringValue> selection = getRequest().getRequestParameters()
                                         .getParameterValues(PickerPanel.CHECKBOXNAME);

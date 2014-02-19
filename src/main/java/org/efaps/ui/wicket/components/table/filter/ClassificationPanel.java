@@ -53,30 +53,34 @@ public class ClassificationPanel
      */
     private final UIClassification uiClassification;
 
-
     /**
      * @param _wicketId         wicket id for this component
      * @param _model            model for this component
-     * @param _uitableHeader    header this panel belongs to
      * @throws EFapsException on error
      */
     public ClassificationPanel(final String _wicketId,
-                               final IModel<?> _model,
-                               final UITableHeader _uitableHeader)
+                               final IModel<UITableHeader> _model)
         throws EFapsException
     {
         super(_wicketId, _model);
-        final UITable table = (UITable) super.getDefaultModelObject();
-        this.uiClassification = UIClassification.getUIClassification(_uitableHeader.getField(), table);
-        final TableFilter filter = table.getFilter(_uitableHeader);
-        if (filter != null && filter.getFilterList() != null) {
-            for (final Object selected : filter.getFilterList()) {
-                this.uiClassification.addSelectedUUID((UUID) selected);
+        final UITableHeader tableHeader = (UITableHeader) super.getDefaultModelObject();
+        if (tableHeader.getUiHeaderObject() instanceof UITable) {
+            final UITable table = (UITable) tableHeader.getUiHeaderObject();
+            this.uiClassification = UIClassification.getUIClassification(tableHeader.getField(), table);
+            final TableFilter filter = table.getFilter(tableHeader);
+            if (filter != null && filter.getFilterList() != null) {
+                for (final Object selected : filter.getFilterList()) {
+                    this.uiClassification.addSelectedUUID((UUID) selected);
+                }
             }
+            if (!this.uiClassification.isInitialized()) {
+                this.uiClassification.execute(table.getInstance());
+            }
+        } else {
+            this.uiClassification = UIClassification.getUIClassification(tableHeader.getField(),
+                            tableHeader.getUiHeaderObject());
         }
-        if (!this.uiClassification.isInitialized()) {
-            this.uiClassification.execute(table.getInstance());
-        }
+
         final ClassificationTree tree = new ClassificationTree("tree", Model.of(this.uiClassification));
         this.add(tree);
     }

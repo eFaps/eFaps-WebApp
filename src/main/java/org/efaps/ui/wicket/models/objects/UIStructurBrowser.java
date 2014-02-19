@@ -507,7 +507,7 @@ public class UIStructurBrowser
                             sortdirection = getSortDirection();
                         }
                         if (!field.isHiddenDisplay(getMode())) {
-                            final UITableHeader uiTableHeader = new UITableHeader(field, sortdirection, attr);
+                            final UITableHeader uiTableHeader = new UITableHeader(this, field, sortdirection, attr);
                             getHeaders().add(uiTableHeader);
                             if (!field.isFixedWidth()) {
                                 if (userWidthList != null && userWidthList.size() > i) {

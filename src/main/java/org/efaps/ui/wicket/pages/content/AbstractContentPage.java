@@ -109,7 +109,6 @@ public abstract class AbstractContentPage
      *
      * @param _model        model for this page
      * @param _modalWindow  modal window
-     * @param _updateMenu   update the menu
      */
     public AbstractContentPage(final IModel<?> _model,
                                final ModalWindowContainer _modalWindow)
@@ -174,7 +173,7 @@ public abstract class AbstractContentPage
         add(this.modal);
 
         final AbstractUIObject uiObject = (AbstractUIObject) super.getDefaultModelObject();
-        add(new HeadingPanel("titel",  Model.of(new UIHeading( uiObject.getTitle()))));
+        add(new HeadingPanel("titel",  Model.of(new UIHeading(uiObject.getTitle()))));
 
         UIModel<UIMenuItem> model = null;
         if (uiObject.getMode() == TargetMode.SEARCH
@@ -206,7 +205,8 @@ public abstract class AbstractContentPage
         }
         add(exLink);
         WebMarkupContainer footerpanel;
-        if (uiObject.isCreateMode() || uiObject.isEditMode() || uiObject.isSearchMode() || uiObject.isOpenedByPicker()) {
+        if (uiObject.isCreateMode() || uiObject.isEditMode() || uiObject.isSearchMode()
+                        || uiObject.isOpenedByPicker()) {
             footerpanel = new FooterPanel("footer", getDefaultModel(), this.modalWindow, _form);
         } else {
             footerpanel = new WebMarkupContainer("footer");

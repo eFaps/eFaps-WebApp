@@ -176,8 +176,8 @@ public class UITable
                     // applied against the database
                     for (final Field field : command.getTargetTable().getFields()) {
                         if ((field.getFilter().isRequired()
-                                        || (field.getFilter().getDefaultValue() != null && !field.getFilter()
-                                        .getDefaultValue().isEmpty()))
+                                        || (field.getFilter().getDefaultValue() != null
+                                            && !field.getFilter().getDefaultValue().isEmpty()))
                                         && field.getFilter().getBase().equals(Filter.Base.DATABASE)) {
                             this.filters.put(field.getName(), new TableFilter());
                         }
@@ -332,7 +332,7 @@ public class UITable
                     }
                 }
                 if (!field.isHiddenDisplay(getMode())) {
-                    final UITableHeader uiTableHeader = new UITableHeader(field, sortdirection, attr);
+                    final UITableHeader uiTableHeader = new UITableHeader(this, field, sortdirection, attr);
                     if (this.filterTempCache.containsKey(uiTableHeader.getFieldName())) {
                         this.filters.put(uiTableHeader.getFieldName(),
                                         this.filterTempCache.get(uiTableHeader.getFieldName()));
@@ -495,7 +495,7 @@ public class UITable
                 if (field.getName().equals(getSortKey())) {
                     sortdirection = getSortDirection();
                 }
-                final UITableHeader headermodel = new UITableHeader(field, sortdirection, null);
+                final UITableHeader headermodel = new UITableHeader(this, field, sortdirection, null);
                 headermodel.setSortable(false);
                 headermodel.setFilter(false);
                 getHeaders().add(headermodel);
@@ -632,6 +632,8 @@ public class UITable
      *
      * @param _uitableHeader UitableHeader this filter belongs to
      * @param _from from value
+     * @param _expertMode expert mode
+     * @param _ignoreCase ignore case
      * @throws EFapsException on error
      *
      */
@@ -1118,6 +1120,8 @@ public class UITable
          *
          * @param _uitableHeader UITableHeader this filter lies in
          * @param _from value for from
+         * @param _expertMode exprt mode
+         * @param _ignoreCase ignore case
          * @throws EFapsException on error
          */
         public TableFilter(final UITableHeader _uitableHeader,

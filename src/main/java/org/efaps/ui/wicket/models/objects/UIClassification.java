@@ -54,8 +54,8 @@ import org.slf4j.LoggerFactory;
  * @author The eFaps Team
  * @version $Id: UIClassification.java 8530 2013-01-16 01:56:29Z jan@moxter.net$
  */
-public class UIClassification
-implements IFormElement, IClusterable
+public final class UIClassification
+    implements IFormElement, IClusterable
 {
 
     /**
@@ -159,8 +159,8 @@ implements IFormElement, IClusterable
      */
     private UIClassification(final long _fieldId,
                              final AbstractUIObject _uiObject)
-                                             throws EFapsException
-                                             {
+        throws EFapsException
+    {
         this.classificationUUID = null;
         this.multipleSelect = true;
         this.fieldId = _fieldId;
@@ -169,7 +169,7 @@ implements IFormElement, IClusterable
         this.mode = _uiObject.getMode();
         this.commandName = _uiObject.getCommand().getName();
         this.instance = _uiObject.getInstance();
-                                             }
+    }
 
     /**
      * Private constructor used for instantiating child UIClassification.
@@ -182,8 +182,8 @@ implements IFormElement, IClusterable
     private UIClassification(final UUID _uuid,
                              final TargetMode _mode,
                              final boolean _base)
-                                             throws CacheReloadException
-                                             {
+        throws CacheReloadException
+    {
         this.multipleSelect = Classification.get(_uuid).isMultipleSelect();
         this.fieldId = 0;
         this.classificationUUID = _uuid;
@@ -191,7 +191,7 @@ implements IFormElement, IClusterable
         this.root = false;
         this.mode = _mode;
         this.base = _base;
-                                             }
+    }
 
     /**
      * Getter method for instance variable {@link #fieldId}.
@@ -296,18 +296,18 @@ implements IFormElement, IClusterable
 
     /**
      * Execute the model.
-     *
+     * @param _instance Instance
      * @throws EFapsException on error
      */
     public void execute(final Instance _instance)
-                    throws EFapsException
-                    {
+        throws EFapsException
+    {
         UIClassification clazz = this;
         while (!clazz.isRoot()) {
             clazz = clazz.getParent();
         }
         clazz.initialized = true;
-        for (final UIClassification child :  clazz.getChildren()) {
+        for (final UIClassification child : clazz.getChildren()) {
             final Classification type = (Classification) Type.get(child.getClassificationUUID());
             if (clazz.selectedUUID.contains(child.getClassificationUUID())) {
                 child.setSelected(true);
@@ -315,7 +315,7 @@ implements IFormElement, IClusterable
             child.addChildren(child, type.getChildClassifications(), clazz.selectedUUID, _instance);
             clazz.expand();
         }
-                    }
+    }
 
     /**
      * Expand the Tree.
@@ -380,16 +380,15 @@ implements IFormElement, IClusterable
                              final Set<Classification> _children,
                              final Set<UUID> _selectedUUID,
                              final Instance _instance)
-                                             throws EFapsException
-                                             {
+        throws EFapsException
+    {
         for (final Classification child : _children) {
             boolean access;
             if (!child.isAbstract()) {
                 final Instance inst = AbstractInstanceObject.getInstance4Create(child);
-
                 access = child.hasAccess(inst, getMode() == TargetMode.CREATE
                                 || getMode() == TargetMode.EDIT ? AccessTypeEnums.CREATE.getAccessType()
-                                                : AccessTypeEnums.SHOW.getAccessType());
+                                : AccessTypeEnums.SHOW.getAccessType());
             } else {
                 access = true;
             }
@@ -404,16 +403,15 @@ implements IFormElement, IClusterable
             }
         }
         Collections.sort(_parent.children, new Comparator<UIClassification>()
-                        {
-
+        {
             @Override
             public int compare(final UIClassification _class0,
                                final UIClassification _class2)
             {
                 return _class0.getLabel().compareTo(_class2.getLabel());
             }
-                        });
-                                             }
+        });
+    }
 
     /**
      * Method to get the key to the instances related to this classification.
@@ -423,15 +421,15 @@ implements IFormElement, IClusterable
      * @throws EFapsException on error
      */
     public Map<UUID, String> getClassInstanceKeys(final Instance _instance)
-                    throws EFapsException
-                    {
+        throws EFapsException
+    {
         final Map<UUID, String> ret = new HashMap<UUID, String>();
         UIClassification clazz = this;
         while (!clazz.isRoot()) {
             clazz = clazz.getParent();
         }
         Type reltype = null;
-        for (final UIClassification child :  clazz.getChildren()) {
+        for (final UIClassification child : clazz.getChildren()) {
             final Classification classType = (Classification) Type.get(child.getClassificationUUID());
             if (!classType.getClassifyRelationType().equals(reltype)) {
                 final QueryBuilder queryBldr = new QueryBuilder(classType.getClassifyRelationType());
@@ -448,7 +446,8 @@ implements IFormElement, IClusterable
                     final InstanceQuery query = subQueryBldr.getQuery();
                     query.execute();
                     if (query.next()) {
-                        // TODO must return an instanceKey!!! not necessary the oid
+                        // TODO must return an instanceKey!!! not necessary the
+                        // oid
                         final String instanceKey = query.getCurrentValue().getOid();
                         ret.put(query.getCurrentValue().getType().getUUID(), instanceKey);
                         this.selectedUUID.add(query.getCurrentValue().getType().getUUID());
@@ -458,7 +457,7 @@ implements IFormElement, IClusterable
             reltype = classType.getClassifyRelationType();
         }
         return ret;
-                    }
+    }
 
     /**
      * Getter method for instance variable {@link #initialized}.
@@ -609,15 +608,15 @@ implements IFormElement, IClusterable
      */
     public static UIClassification getUIClassification(final Field _field,
                                                        final AbstractUIObject _uiObject)
-                                                                       throws EFapsException
-                                                                       {
+        throws EFapsException
+    {
         final String[] names = _field.getClassificationName().split(";");
         final UIClassification root = new UIClassification(_field.getId(), _uiObject);
         for (final String className : names) {
             final Classification clazz = Classification.get(className);
             if (clazz.hasAccess(root.getInstance(), root.getMode() == TargetMode.CREATE
                             || root.getMode() == TargetMode.EDIT ? AccessTypeEnums.CREATE.getAccessType()
-                                            : AccessTypeEnums.SHOW.getAccessType())) {
+                            : AccessTypeEnums.SHOW.getAccessType())) {
                 final UIClassification childUI = new UIClassification(clazz.getUUID(), root.getMode(), true);
                 root.children.add(childUI);
                 childUI.setParent(root);

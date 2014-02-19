@@ -20,6 +20,7 @@
 
 package org.efaps.ui.wicket.components.table.filter;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -61,33 +62,34 @@ public class PickerPanel
     /**
      * List of Picker positions.
      */
-    private final List<String> pickList;
+    private List<String> pickList  = Collections.<String>emptyList();
 
     /**
      * Selected values.
      */
-    private final Set<?> selected;
+    private Set<?> selected = SetUtils.EMPTY_SET;
 
     /**
      * @param _wicketId         wicket id for this component
      * @param _model            model
-     * @param _uitableHeader    table header this picker belongs to
      * @throws EFapsException on error
      */
     public PickerPanel(final String _wicketId,
-                       final IModel<?> _model,
-                       final UITableHeader _uitableHeader)
+                       final IModel<UITableHeader> _model)
         throws EFapsException
     {
         super(_wicketId, _model);
-        final UITable table = (UITable) super.getDefaultModelObject();
+        final UITableHeader tableHeader = (UITableHeader) super.getDefaultModelObject();
         this.add(new Label("checkAll", DBProperties.getProperty("FilterPage.All")));
-        this.pickList = table.getFilterPickList(_uitableHeader);
-        final TableFilter filter = table.getFilter(_uitableHeader);
-        if (filter != null) {
-            this.selected = filter.getFilterList();
-        } else {
-            this.selected = SetUtils.EMPTY_SET;
+        if (tableHeader.getUiHeaderObject() instanceof UITable) {
+            final UITable table = (UITable) tableHeader.getUiHeaderObject();
+            this.pickList = table.getFilterPickList(tableHeader);
+            final TableFilter filter = table.getFilter(tableHeader);
+            if (filter != null) {
+                this.selected = filter.getFilterList();
+            } else {
+                this.selected = SetUtils.EMPTY_SET;
+            }
         }
         final FilterListView checksList = new FilterListView("listview", getPickList());
         this.add(checksList);

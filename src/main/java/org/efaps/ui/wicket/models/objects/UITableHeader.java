@@ -128,14 +128,22 @@ public class UITableHeader
     private boolean filterApplied = false;
 
     /**
-     * @param _field field
-     * @param _sortdirection sort direction
-     * @param _attr attribute this field is used for
+     * The header object this header is embedded in.
      */
-    public UITableHeader(final Field _field,
+    private AbstractUIHeaderObject uiHeaderObject;
+
+    /**
+     * @param _uiHeaderObject   the header object this header is embedded in
+     * @param _field            field
+     * @param _sortdirection    sort direction
+     * @param _attr             attribute this field is used for
+     */
+    public UITableHeader(final AbstractUIHeaderObject _uiHeaderObject,
+                         final Field _field,
                          final SortDirection _sortdirection,
                          final Attribute _attr)
     {
+        this.uiHeaderObject = _uiHeaderObject;
         this.label = _field.getLabel();
         this.sortable = _field.isSortAble();
         this.filter = !_field.getFilter().getType().equals(Filter.Type.NONE);
@@ -376,5 +384,25 @@ public class UITableHeader
     public void setFilterApplied(final boolean _filterApplied)
     {
         this.filterApplied = _filterApplied;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #uiHeaderObject}.
+     *
+     * @return value of instance variable {@link #uiHeaderObject}
+     */
+    public AbstractUIHeaderObject getUiHeaderObject()
+    {
+        return this.uiHeaderObject;
+    }
+
+    /**
+     * Setter method for instance variable {@link #uiHeaderObject}.
+     *
+     * @param _uiHeaderObject value for instance variable {@link #uiHeaderObject}
+     */
+    public void setUiHeaderObject(final AbstractUIHeaderObject _uiHeaderObject)
+    {
+        this.uiHeaderObject = _uiHeaderObject;
     }
 }

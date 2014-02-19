@@ -69,13 +69,13 @@ public class FreeTextPanel
      * @throws EFapsException on error
      */
     public FreeTextPanel(final String _wicketId,
-                         final IModel<?> _model,
-                         final UITableHeader _uitableHeader)
+                         final IModel<UITableHeader> _model)
         throws EFapsException
     {
         super(_wicketId, _model);
-        final UITable uitable = (UITable) super.getDefaultModelObject();
-        final FilterType filterType = _uitableHeader.getFilterType();
+        final UITableHeader tableHeader = (UITableHeader) super.getDefaultModelObject();
+        final UITable uitable = (UITable) tableHeader.getUiHeaderObject();
+        final FilterType filterType = tableHeader.getFilterType();
 
         if (filterType.equals(FilterType.TEXT)) {
             this.add(new Label("textFrom", DBProperties.getProperty("FilterPage.textFilter")));
@@ -104,7 +104,7 @@ public class FreeTextPanel
                     // no detach needed
                 }
             };
-            model.setObject(uitable.getFilter(_uitableHeader).getFrom());
+            model.setObject(uitable.getFilter(tableHeader).getFrom());
 
             final TextField<String> stringFilter = new TextField<String>("from", model);
             this.add(stringFilter);
@@ -114,11 +114,11 @@ public class FreeTextPanel
             options.add(new Label("expertModeLabel", DBProperties.getProperty("FilterPage.expertModeLabel")));
             options.add(new Label("ignoreCaseLabel", DBProperties.getProperty("FilterPage.ignoreCaseLabel")));
             final CheckBox checkBox = new CheckBox("expertMode",
-                            Model.of(new Boolean(uitable.getFilter(_uitableHeader).isExpertMode())));
+                            Model.of(new Boolean(uitable.getFilter(tableHeader).isExpertMode())));
             checkBox.setOutputMarkupId(true);
             options.add(checkBox);
             final CheckBox checkBox2 = new CheckBox("ignoreCase",
-                            Model.of(new Boolean(uitable.getFilter(_uitableHeader).isIgnoreCase())));
+                            Model.of(new Boolean(uitable.getFilter(tableHeader).isIgnoreCase())));
             checkBox2.setOutputMarkupId(true);
             options.add(checkBox2);
 
@@ -132,7 +132,7 @@ public class FreeTextPanel
         } else if (filterType.equals(FilterType.DATE)) {
             DateTime fromDate = null;
             DateTime toDate = null;
-            final TableFilter filter = uitable.getFilter(_uitableHeader);
+            final TableFilter filter = uitable.getFilter(tableHeader);
             if (filter != null) {
                 fromDate = filter.getDateFrom();
                 toDate = filter.getDateTo().minusDays(1);
@@ -141,7 +141,7 @@ public class FreeTextPanel
             this.add(new Label("textFrom", DBProperties.getProperty("FilterPage.textFrom")));
             this.add(new Label("textTo", DBProperties.getProperty("FilterPage.textTo")));
 
-            final DateTimePanel dateFrom = new DateTimePanel("dateFrom", fromDate, "dateFrom","dateFrom", false, null);
+            final DateTimePanel dateFrom = new DateTimePanel("dateFrom", fromDate, "dateFrom", "dateFrom", false, null);
             this.add(dateFrom);
             final DateTimePanel dateTo = new DateTimePanel("dateTo", toDate, "dateTo", "dateTo", false, null);
             this.add(dateTo);

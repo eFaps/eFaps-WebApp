@@ -119,12 +119,15 @@ public class UpdateParentCallback
             try {
                 if (uiObject instanceof UITable) {
                     page = new TablePage(new TableModel((UITable) uiObject),
+                                    ((AbstractContentPage) this.pageReference.getPage()).getModalWindow(),
                                     ((AbstractContentPage) this.pageReference.getPage()).getCalledByPageReference());
                 } else if (uiObject instanceof UIForm) {
                     page = new FormPage(new FormModel((UIForm) uiObject),
+                                    ((AbstractContentPage) this.pageReference.getPage()).getModalWindow(),
                                     ((AbstractContentPage) this.pageReference.getPage()).getCalledByPageReference());
                 } else if (uiObject instanceof UIStructurBrowser) {
                     page = new StructurBrowserPage(new UIModel<UIStructurBrowser>((UIStructurBrowser) uiObject),
+                                    ((AbstractContentPage) this.pageReference.getPage()).getModalWindow(),
                                     ((AbstractContentPage) this.pageReference.getPage()).getCalledByPageReference());
                 }
                 RequestCycle.get().setResponsePage(page);
