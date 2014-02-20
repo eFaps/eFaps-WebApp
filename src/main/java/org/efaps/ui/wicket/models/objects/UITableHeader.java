@@ -178,8 +178,10 @@ public class UITableHeader
             }
         }
 
-        if (_field.getFilter().getType().equals(Filter.Type.FREETEXT) && _attr == null) {
-            UITableHeader.LOG.warn("ClassNameUI is require when the field have not an attribute");
+        if (_field.getFilter().getType().equals(Filter.Type.FREETEXT) && _attr == null &&
+                        _field.getClassUI() == null) {
+            UITableHeader.LOG.warn("ClassNameUI is require when the field has no attribute, Field:{}",
+                            _field.getName());
         }
     }
 
