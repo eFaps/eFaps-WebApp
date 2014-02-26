@@ -299,8 +299,17 @@ public class UITaskObject
     }
 
     /**
+     * @return a key for this task
+     */
+    public String getKey()
+    {
+        return getUITaskSummary().getName().replaceAll(" " , "");
+    }
+
+    /**
      * Exit is only an admin event.!!
      * @return true if exit allowed
+     * @throws EFapsException on error
      */
     public boolean isExit()
         throws EFapsException

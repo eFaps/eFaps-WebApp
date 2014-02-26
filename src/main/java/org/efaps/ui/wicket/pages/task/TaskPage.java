@@ -128,10 +128,9 @@ public class TaskPage
 
         try {
             if (_taskObjModel.getObject().isComplete()) {
-                String aprove = DBProperties.getProperty(_taskObjModel.getObject().getUITaskSummary().getName()
-                                + ".aprove", false);
+                String aprove = DBProperties.getProperty(_taskObjModel.getObject().getKey() + ".approve", false);
                 if (aprove == null) {
-                    aprove = DBProperties.getProperty("org.efaps.ui.wicket.pages.task.TaskPage.default.Button.aprove");
+                    aprove = DBProperties.getProperty("org.efaps.ui.wicket.pages.task.TaskPage.default.Button.approve");
                 }
 
                 form.add(new Button("aprove", new DecisionLink(Button.LINKID, _taskObjModel, _pageReference, true),
@@ -141,8 +140,7 @@ public class TaskPage
             }
 
             if (_taskObjModel.getObject().isFail()) {
-                String reject = DBProperties.getProperty(_taskObjModel.getObject().getUITaskSummary().getName()
-                                + ".reject", false);
+                String reject = DBProperties.getProperty(_taskObjModel.getObject().getKey() + ".reject", false);
                 if (reject == null) {
                     reject = DBProperties.getProperty("org.efaps.ui.wicket.pages.task.TaskPage.default.Button.reject");
                 }
@@ -153,8 +151,7 @@ public class TaskPage
             }
 
             if (_taskObjModel.getObject().isClaim()) {
-                String claim = DBProperties.getProperty(_taskObjModel.getObject().getUITaskSummary().getName()
-                                + ".claim", false);
+                String claim = DBProperties.getProperty(_taskObjModel.getObject().getKey() + ".claim", false);
                 if (claim == null) {
                     claim = DBProperties.getProperty("org.efaps.ui.wicket.pages.task.TaskPage.default.Button.claim");
                 }
@@ -165,9 +162,7 @@ public class TaskPage
             }
 
             if (_taskObjModel.getObject().isDelegate()) {
-                String delegate = DBProperties.getProperty(_taskObjModel.getObject().getUITaskSummary().getName()
-                                + ".delegate",
-                                false);
+                String delegate = DBProperties.getProperty(_taskObjModel.getObject().getKey() + ".delegate", false);
                 if (delegate == null) {
                     delegate = DBProperties
                                     .getProperty("org.efaps.ui.wicket.pages.task.TaskPage.default.Button.delegate");
@@ -186,8 +181,7 @@ public class TaskPage
             }
 
             if (_taskObjModel.getObject().isRelease()) {
-                String release = DBProperties.getProperty(_taskObjModel.getObject().getUITaskSummary().getName()
-                                + ".release", false);
+                String release = DBProperties.getProperty(_taskObjModel.getObject().getKey() + ".release", false);
                 if (release == null) {
                     release = DBProperties
                                     .getProperty("org.efaps.ui.wicket.pages.task.TaskPage.default.Button.release");
@@ -199,8 +193,7 @@ public class TaskPage
             }
 
             if (_taskObjModel.getObject().isStop()) {
-                String release = DBProperties.getProperty(_taskObjModel.getObject().getUITaskSummary().getName()
-                                + ".stop", false);
+                String release = DBProperties.getProperty(_taskObjModel.getObject().getKey() + ".stop", false);
                 if (release == null) {
                     release = DBProperties
                                     .getProperty("org.efaps.ui.wicket.pages.task.TaskPage.default.Button.stop");
@@ -212,8 +205,7 @@ public class TaskPage
             }
 
             if (_taskObjModel.getObject().isExit()) {
-                String release = DBProperties.getProperty(_taskObjModel.getObject().getUITaskSummary().getName()
-                                + ".exit", false);
+                String release = DBProperties.getProperty(_taskObjModel.getObject().getKey() + ".exit", false);
                 if (release == null) {
                     release = DBProperties
                                     .getProperty("org.efaps.ui.wicket.pages.task.TaskPage.default.Button.exit");
