@@ -274,7 +274,7 @@ public class MainPage
                     protected void onConnect(final ConnectedMessage _message)
                     {
                         EFapsSession.get().getConnectionRegistry()
-                                        .addMsgConnection(_message.getSessionId(), _message.getPageId());
+                                        .addMsgConnection(_message.getSessionId(), _message.getKey());
                     }
                 });
                 socketMsgContainer.add(this.socketMsg);

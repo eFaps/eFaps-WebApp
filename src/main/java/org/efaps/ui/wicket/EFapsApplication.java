@@ -103,7 +103,7 @@ public class EFapsApplication
         }
         AppAccessHandler.init(appKey, temp);
 
-        final Map<String,String> map = new HashMap<String, String>();
+        final Map<String, String> map = new HashMap<String, String>();
         for (final AppConfigHandler.Parameter param : AppConfigHandler.Parameter.values()) {
             final String configTmp = getInitParameter(param.getKey());
             if (configTmp != null) {

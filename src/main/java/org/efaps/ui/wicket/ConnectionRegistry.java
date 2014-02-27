@@ -34,7 +34,8 @@ import org.apache.wicket.MetaDataKey;
 import org.apache.wicket.Session;
 import org.apache.wicket.protocol.ws.IWebSocketSettings;
 import org.apache.wicket.protocol.ws.api.IWebSocketConnection;
-import org.apache.wicket.protocol.ws.api.IWebSocketConnectionRegistry;
+import org.apache.wicket.protocol.ws.api.registry.IKey;
+import org.apache.wicket.protocol.ws.api.registry.IWebSocketConnectionRegistry;
 import org.apache.wicket.util.collections.ConcurrentHashSet;
 import org.apache.wicket.util.lang.Generics;
 
@@ -59,8 +60,8 @@ public class ConnectionRegistry
     /**
      * MetaDataKey for Session to Page Mapping.
      */
-    private static final MetaDataKey<ConcurrentMap<String, Integer>> SESSION2PAGEID =
-                    new MetaDataKey<ConcurrentMap<String, Integer>>()
+    private static final MetaDataKey<ConcurrentMap<String, IKey>> SESSION2KEY =
+                    new MetaDataKey<ConcurrentMap<String, IKey>>()
             {
                 private static final long serialVersionUID = 1L;
             };
@@ -100,24 +101,24 @@ public class ConnectionRegistry
 
     /**
      * @param _sessionId    Sessionid the message belongs to
-     * @param _pageId       PageId the message belongs to
+     * @param _key          key the message belongs to
      */
     public void addMsgConnection(final String _sessionId,
-                                 final Integer _pageId)
+                                 final IKey _key)
     {
-        ConcurrentMap<String, Integer> session2pageId = Session.get().getApplication()
-                        .getMetaData(ConnectionRegistry.SESSION2PAGEID);
-        if (session2pageId == null) {
+        ConcurrentMap<String, IKey> session2key = Session.get().getApplication()
+                        .getMetaData(ConnectionRegistry.SESSION2KEY);
+        if (session2key == null) {
 
-            synchronized (ConnectionRegistry.SESSION2PAGEID) {
-                session2pageId = Session.get().getApplication().getMetaData(ConnectionRegistry.SESSION2PAGEID);
-                if (session2pageId == null) {
-                    session2pageId = Generics.newConcurrentHashMap();
-                    Session.get().getApplication().setMetaData(ConnectionRegistry.SESSION2PAGEID, session2pageId);
+            synchronized (ConnectionRegistry.SESSION2KEY) {
+                session2key = Session.get().getApplication().getMetaData(ConnectionRegistry.SESSION2KEY);
+                if (session2key == null) {
+                    session2key = Generics.newConcurrentHashMap();
+                    Session.get().getApplication().setMetaData(ConnectionRegistry.SESSION2KEY, session2key);
                 }
             }
         }
-        session2pageId.put(_sessionId, _pageId);
+        session2key.put(_sessionId, _key);
     }
 
     /**
@@ -150,19 +151,19 @@ public class ConnectionRegistry
         final List<IWebSocketConnection> ret = new ArrayList<IWebSocketConnection>();
         final ConcurrentMap<String, ConcurrentHashSet<String>> user2session = Session.get().getApplication()
                         .getMetaData(ConnectionRegistry.USER2SESSION);
-        final ConcurrentMap<String, Integer> sessionId2pageId = Session.get().getApplication()
-                        .getMetaData(ConnectionRegistry.SESSION2PAGEID);
+        final ConcurrentMap<String, IKey> sessionId2pageId = Session.get().getApplication()
+                        .getMetaData(ConnectionRegistry.SESSION2KEY);
         final ConcurrentHashSet<String> sessionIds = user2session.get(_login);
 
         if (sessionIds != null && !sessionIds.isEmpty()) {
             final Iterator<String> iter = sessionIds.iterator();
             while (iter.hasNext()) {
                 final String sessionId = iter.next();
-                final Integer pageId = sessionId2pageId.get(sessionId);
-                if (pageId != null) {
+                final IKey key = sessionId2pageId.get(sessionId);
+                if (key != null) {
                     final IWebSocketConnectionRegistry registry = IWebSocketSettings.Holder.get(EFapsApplication.get())
                                     .getConnectionRegistry();
-                    final IWebSocketConnection conn = registry.getConnection(EFapsApplication.get(), sessionId, pageId);
+                    final IWebSocketConnection conn = registry.getConnection(EFapsApplication.get(), sessionId, key);
                     if (conn != null) {
                         ret.add(conn);
                     }
@@ -183,17 +184,16 @@ public class ConnectionRegistry
         IWebSocketConnection ret = null;
         final ConcurrentMap<String, ConcurrentHashSet<String>> user2session = Session.get().getApplication()
                         .getMetaData(ConnectionRegistry.USER2SESSION);
-        final ConcurrentMap<String, Integer> sessionId2pageId = Session.get().getApplication()
-                        .getMetaData(ConnectionRegistry.SESSION2PAGEID);
+        final ConcurrentMap<String, IKey> sessionId2key = Session.get().getApplication()
+                        .getMetaData(ConnectionRegistry.SESSION2KEY);
         final ConcurrentHashSet<String> sessionIds = user2session.get(_login);
 
         if (sessionIds.contains(_sessionId)) {
-
-            final Integer pageId = sessionId2pageId.get(_sessionId);
-            if (pageId != null) {
+            final IKey key = sessionId2key.get(_sessionId);
+            if (key != null) {
                 final IWebSocketConnectionRegistry registry = IWebSocketSettings.Holder.get(EFapsApplication.get())
                                 .getConnectionRegistry();
-                ret = registry.getConnection(EFapsApplication.get(), _sessionId, pageId);
+                ret = registry.getConnection(EFapsApplication.get(), _sessionId, key);
             }
         }
         return ret;

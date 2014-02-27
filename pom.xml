@@ -136,7 +136,7 @@
                                 <exec executable="tar">
                                     <arg value="--extract" />
                                     <arg value="--gzip" />
-                                    <arg value="--file=lib/dojo-release-1.9.2.tar.gz" />
+                                    <arg value="--file=lib/dojo-release-1.9.3.tar.gz" />
                                     <arg value="--directory=src/main/java/org/efaps/ui/wicket/behaviors/dojo" />
                                     <arg value="--strip-components=1" />
                                 </exec>
@@ -202,37 +202,36 @@
         <dependency>
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-core</artifactId>
-            <version>6.13.0</version>
+            <version>6.14.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-extensions</artifactId>
-            <version>6.13.0</version>
+            <version>6.14.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-datetime</artifactId>
-            <version>6.13.0</version>
+            <version>6.14.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-devutils</artifactId>
-            <version>6.13.0</version>
+            <version>6.14.0</version>
             <scope>compile</scope>
         </dependency>
-        <!-- Local version due to bug! -->
         <dependency>
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-native-websocket-jetty9</artifactId>
-            <version>0.14</version>
+            <version>6.14.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-native-websocket-tomcat</artifactId>
-            <version>0.14</version>
+            <version>6.14.0</version>
         </dependency>
 
         <dependency>
