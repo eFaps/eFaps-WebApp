@@ -242,6 +242,7 @@ public class AjaxSubmitCloseBehavior
 
                 private static final long serialVersionUID = 1L;
 
+                @Override
                 public Page createPage()
                 {
                     return new ErrorPage(e);
@@ -598,23 +599,30 @@ public class AjaxSubmitCloseBehavior
                                 ((AbstractUIPageObject) getForm().getPage().getDefaultModelObject()).getUiID2Oid());
             }
 
+            boolean goOn = true;
+            boolean sniplett = false;
+            String key = "";
             for (final Return oneReturn : returns) {
                 if (oneReturn.get(ReturnValues.VALUES) != null || oneReturn.get(ReturnValues.SNIPLETT) != null) {
-                    boolean sniplett = false;
-                    String key = (String) oneReturn.get(ReturnValues.VALUES);
-                    if (key == null) {
-                        key = (String) oneReturn.get(ReturnValues.SNIPLETT);
+                    if (oneReturn.get(ReturnValues.VALUES) != null) {
+                        key = key + (String) oneReturn.get(ReturnValues.VALUES);
+                    } else {
+                        key = key + (String) oneReturn.get(ReturnValues.SNIPLETT);
                         sniplett = true;
                     }
-                    showDialog(_target, key, sniplett, oneReturn.get(ReturnValues.TRUE) != null);
                     ret = false;
-                    break;
+                    if (oneReturn.get(ReturnValues.TRUE) == null) {
+                        goOn = false;
+                    }
                 } else {
                     if (oneReturn.get(ReturnValues.TRUE) == null) {
                         ret = false;
                         // that is the case if it is wrong configured!
                     }
                 }
+            }
+            if (!ret) {
+                showDialog(_target, key, sniplett, goOn);
             }
         }
         return ret;
@@ -702,6 +710,7 @@ public class AjaxSubmitCloseBehavior
 
             private static final long serialVersionUID = 1L;
 
+            @Override
             public Page createPage()
             {
                 return new DialogPage(((AbstractContentPage) getComponent().getPage()).getPageReference(),
