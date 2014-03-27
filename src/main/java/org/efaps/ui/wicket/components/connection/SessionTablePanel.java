@@ -39,7 +39,6 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.protocol.ws.api.IWebSocketConnection;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.EFapsApplication;
 import org.efaps.ui.wicket.components.bpm.AbstractSortableProvider;
@@ -110,9 +109,7 @@ public class SessionTablePanel
                     public void onClick(final AjaxRequestTarget _target)
                     {
                         final UIUserSession uiSession = (UIUserSession) getDefaultModelObject();
-                        final IWebSocketConnection conn = EFapsApplication.get().getConnectionRegistry()
-                                        .getConnection4UserSession(uiSession.getUserName(), uiSession.getSessionId());
-                        conn.sendMessage(uiSession);
+                        EFapsApplication.get().getConnectionRegistry().markSessionAsInvalid(uiSession.getSessionId());
                     }
 
                     @Override

@@ -148,6 +148,11 @@ public interface WebAppSettings
     /**
      * Boolean (true/false): Activate the websocket/push management. Default: true
      */
+    String CONMAN_ACTIVATE = " org.efaps.webapp.ConnectionManagement.activate";
+
+    /**
+     * Boolean (true/false): Activate the websocket/push management. Default: true
+     */
     String WEBSOCKET_ACTIVATE = "org.efaps.webapp.WebSocket.activate";
 
     /**
@@ -159,8 +164,4 @@ public interface WebAppSettings
      * Integer: Maximum rows of session shown in the Session Table per Page. Default Value is 20.
      */
     String WEBSOCKET_MESSAGETABLE_MAX = "org.efaps.webapp.WebSocket.MessageTable.MaximumRows";
-
-
-
-
 }

@@ -70,6 +70,9 @@ public class EFapsRequestCycleListener
         final EFapsSession session = getEFapsSession(_cycle.getRequest());
         if (session != null) {
             session.openContext();
+            if (!session.getConnectionRegistry().sessionValid(session.getId())) {
+                session.invalidate();
+            }
         }
         EFapsRequestCycleListener.LOG.debug("Begin of Request.");
     }

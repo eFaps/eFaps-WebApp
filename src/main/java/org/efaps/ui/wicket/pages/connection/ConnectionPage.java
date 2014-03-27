@@ -35,6 +35,7 @@ import org.efaps.ui.wicket.components.tabs.AjaxIndicatingTabbedPanel;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,24 +92,25 @@ public class ConnectionPage
             }
         });
 
-        tabs.add(new AbstractTab(new Model<String>("Message"))
-        {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public Panel getPanel(final String _panelId)
+        if (Configuration.getAttributeAsBoolean(Configuration.ConfigAttribute.WEBSOCKET_ACTVATE)) {
+            tabs.add(new AbstractTab(new Model<String>("Message"))
             {
-                Panel ret = null;
-                try {
-                    ret = new MessagePanel(_panelId, _pageReference);
-                } catch (final EFapsException e) {
-                    ConnectionPage.LOG.error("Could not load SessionPanel", e);
-                }
-                return ret;
-            }
-        });
 
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                public Panel getPanel(final String _panelId)
+                {
+                    Panel ret = null;
+                    try {
+                        ret = new MessagePanel(_panelId, _pageReference);
+                    } catch (final EFapsException e) {
+                        ConnectionPage.LOG.error("Could not load SessionPanel", e);
+                    }
+                    return ret;
+                }
+            });
+        }
         add(new AjaxIndicatingTabbedPanel("tabs", tabs));
     }
 

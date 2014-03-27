@@ -67,6 +67,56 @@ public class ConnectionRegistry
             };
 
     /**
+     * MetaDataKey for Session to Page Mapping.
+     */
+    private static final MetaDataKey<ConcurrentHashSet<String>> INVALIDATED =
+                    new MetaDataKey<ConcurrentHashSet<String>>()
+            {
+                private static final long serialVersionUID = 1L;
+            };
+
+    /**
+     * @param _sessionID sessionId to be check for invalid
+     * @return true if valid, else false
+     */
+    public boolean sessionValid(final String _sessionID)
+    {
+        ConcurrentHashSet<String> invalidated = Session.get().getApplication()
+                        .getMetaData(ConnectionRegistry.INVALIDATED);
+
+        if (invalidated == null) {
+            synchronized (ConnectionRegistry.INVALIDATED) {
+                invalidated = Session.get().getApplication().getMetaData(ConnectionRegistry.INVALIDATED);
+                if (invalidated == null) {
+                    invalidated = new ConcurrentHashSet<String>();
+                    Session.get().getApplication().setMetaData(ConnectionRegistry.INVALIDATED, invalidated);
+                }
+            }
+        }
+        return !invalidated.contains(_sessionID);
+    }
+
+    /**
+     * @param _sessionID session to marked as invalid
+     */
+    public void markSessionAsInvalid(final String _sessionID)
+    {
+        ConcurrentHashSet<String> invalidated = Session.get().getApplication()
+                        .getMetaData(ConnectionRegistry.INVALIDATED);
+
+        if (invalidated == null) {
+            synchronized (ConnectionRegistry.INVALIDATED) {
+                invalidated = Session.get().getApplication().getMetaData(ConnectionRegistry.INVALIDATED);
+                if (invalidated == null) {
+                    invalidated = new ConcurrentHashSet<String>();
+                    Session.get().getApplication().setMetaData(ConnectionRegistry.INVALIDATED, invalidated);
+                }
+            }
+        }
+        invalidated.add(_sessionID);
+    }
+
+    /**
      * @param _userName login of the user
      * @param _sessionId    SessionId assigned
      */

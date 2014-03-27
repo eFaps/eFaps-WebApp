@@ -98,7 +98,9 @@ public final class Configuration
         /** */
         WEBSOCKET_MESSAGETABLE_MAX(false, true, WebAppSettings.WEBSOCKET_MESSAGETABLE_MAX, "20"),
         /** */
-        WEBSOCKET_SESSIONTABLE_MAX(false, true, WebAppSettings.WEBSOCKET_SESSIONTABLE_MAX, "20");
+        WEBSOCKET_SESSIONTABLE_MAX(false, true, WebAppSettings.WEBSOCKET_SESSIONTABLE_MAX, "20"),
+        /** Websocket activated. */
+        CONMAN_ACTVATE(false, true, WebAppSettings.CONMAN_ACTIVATE, "true");
 
         /**
          * Stores the key for this Attribute..
