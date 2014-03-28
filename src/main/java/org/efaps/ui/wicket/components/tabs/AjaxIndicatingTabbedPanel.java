@@ -54,9 +54,6 @@ public class AjaxIndicatingTabbedPanel
         super(_wicketId, _tabs);
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.wicket.extensions.ajax.markup.html.tabs.AjaxTabbedPanel#newLink(java.lang.String, int)
-     */
     @Override
     protected WebMarkupContainer newLink(final String _linkId,
                                          final int _index)

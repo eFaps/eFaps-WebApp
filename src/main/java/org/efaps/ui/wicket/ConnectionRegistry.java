@@ -22,6 +22,7 @@ package org.efaps.ui.wicket;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.apache.wicket.Application;
 import org.apache.wicket.MetaDataKey;
 import org.apache.wicket.Session;
 import org.apache.wicket.protocol.ws.IWebSocketSettings;
@@ -38,6 +40,8 @@ import org.apache.wicket.protocol.ws.api.registry.IKey;
 import org.apache.wicket.protocol.ws.api.registry.IWebSocketConnectionRegistry;
 import org.apache.wicket.util.collections.ConcurrentHashSet;
 import org.apache.wicket.util.lang.Generics;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO comment!
@@ -47,6 +51,11 @@ import org.apache.wicket.util.lang.Generics;
  */
 public class ConnectionRegistry
 {
+
+    /**
+     * Logger for this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(ConnectionRegistry.class);
 
     /**
      * MetaDataKey for User to Session Mapping.
@@ -67,10 +76,19 @@ public class ConnectionRegistry
             };
 
     /**
-     * MetaDataKey for Session to Page Mapping.
+     * MetaDataKey for Session that must be invalidated on next request.
      */
     private static final MetaDataKey<ConcurrentHashSet<String>> INVALIDATED =
                     new MetaDataKey<ConcurrentHashSet<String>>()
+            {
+                private static final long serialVersionUID = 1L;
+            };
+
+    /**
+     * MetaDataKey for the last Request Time of a Session.
+     */
+    private static final MetaDataKey<ConcurrentMap<String, Long>> LASTACTIVE =
+                    new MetaDataKey<ConcurrentMap<String, Long>>()
             {
                 private static final long serialVersionUID = 1L;
             };
@@ -97,6 +115,28 @@ public class ConnectionRegistry
     }
 
     /**
+     * @param _sessionID sessionId the Activit will be registered for
+     * @param _date date of the activity
+     */
+    public void registerSessionActivity(final String _sessionID,
+                                        final Date _date)
+    {
+        ConcurrentMap<String, Long> lastactive = Session.get().getApplication()
+                        .getMetaData(ConnectionRegistry.LASTACTIVE);
+
+        if (lastactive == null) {
+            synchronized (ConnectionRegistry.LASTACTIVE) {
+                lastactive = Session.get().getApplication().getMetaData(ConnectionRegistry.LASTACTIVE);
+                if (lastactive == null) {
+                    lastactive = Generics.<String, Long>newConcurrentHashMap();
+                    Session.get().getApplication().setMetaData(ConnectionRegistry.LASTACTIVE, lastactive);
+                }
+            }
+        }
+        lastactive.put(_sessionID, _date.getTime());
+    }
+
+    /**
      * @param _sessionID session to marked as invalid
      */
     public void markSessionAsInvalid(final String _sessionID)
@@ -120,9 +160,10 @@ public class ConnectionRegistry
      * @param _userName login of the user
      * @param _sessionId    SessionId assigned
      */
-    public void setUser(final String _userName,
-                        final String _sessionId)
+    protected void setUser(final String _userName,
+                           final String _sessionId)
     {
+        ConnectionRegistry.LOG.debug("register user: '{}', session: '{}'", _userName, _sessionId);
         ConcurrentMap<String, ConcurrentHashSet<String>> user2session = Session.get().getApplication()
                         .getMetaData(ConnectionRegistry.USER2SESSION);
 
@@ -131,7 +172,7 @@ public class ConnectionRegistry
             synchronized (ConnectionRegistry.USER2SESSION) {
                 user2session = Session.get().getApplication().getMetaData(ConnectionRegistry.USER2SESSION);
                 if (user2session == null) {
-                    user2session = Generics.newConcurrentHashMap();
+                    user2session = Generics.<String, ConcurrentHashSet<String>>newConcurrentHashMap();
                     Session.get().getApplication().setMetaData(ConnectionRegistry.USER2SESSION, user2session);
                 }
             }
@@ -163,7 +204,7 @@ public class ConnectionRegistry
             synchronized (ConnectionRegistry.SESSION2KEY) {
                 session2key = Session.get().getApplication().getMetaData(ConnectionRegistry.SESSION2KEY);
                 if (session2key == null) {
-                    session2key = Generics.newConcurrentHashMap();
+                    session2key = Generics.<String, IKey>newConcurrentHashMap();
                     Session.get().getApplication().setMetaData(ConnectionRegistry.SESSION2KEY, session2key);
                 }
             }
@@ -175,13 +216,26 @@ public class ConnectionRegistry
      * @param _login        login of the user to be remved for the registry
      * @param _sessionId    id to be removed
      */
-    public void removeUser(final String _login,
-                           final String _sessionId)
+    protected void removeUser(final String _login,
+                              final String _sessionId)
     {
-        ConcurrentMap<String, ConcurrentHashSet<String>> user2session = Session.get().getApplication()
-                        .getMetaData(ConnectionRegistry.USER2SESSION);
+       removeUser(_login, _sessionId, Session.get().getApplication());
+    }
+
+    /**
+     * @param _login        login of the user to be remved for the registry
+     * @param _sessionId    id to be removed
+     * @param _application  Application taht contains the mapping
+     */
+    protected void removeUser(final String _login,
+                              final String _sessionId,
+                              final Application _application)
+    {
+        ConnectionRegistry.LOG.debug("remove user: '{}', session: '{}'", _login, _sessionId);
+        ConcurrentMap<String, ConcurrentHashSet<String>> user2session = _application.getMetaData(
+                        ConnectionRegistry.USER2SESSION);
         synchronized (ConnectionRegistry.USER2SESSION) {
-            user2session = Session.get().getApplication().getMetaData(ConnectionRegistry.USER2SESSION);
+            user2session = _application.getMetaData(ConnectionRegistry.USER2SESSION);
             if (user2session != null) {
                 final ConcurrentHashSet<String> sessions = user2session.get(_login);
                 sessions.remove(_sessionId);
@@ -294,5 +348,21 @@ public class ConnectionRegistry
             }
         }
         return Collections.unmodifiableMap(tmpmap);
+    }
+
+    /**
+     * @return the map of Session with its last registered activity.
+     */
+    public Map<String, Long> getSessionsActivity()
+    {
+        final ConcurrentMap<String, Long> lastactive = Session.get().getApplication()
+                        .getMetaData(ConnectionRegistry.LASTACTIVE);
+        Map<String, Long> ret;
+        if (lastactive == null) {
+            ret = Collections.unmodifiableMap(Collections.<String, Long>emptyMap());
+        } else {
+            ret = Collections.unmodifiableMap(lastactive);
+        }
+        return ret;
     }
 }

@@ -20,6 +20,8 @@
 
 package org.efaps.ui.wicket.request;
 
+import java.util.Date;
+
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.cycle.AbstractRequestCycleListener;
@@ -70,7 +72,9 @@ public class EFapsRequestCycleListener
         final EFapsSession session = getEFapsSession(_cycle.getRequest());
         if (session != null) {
             session.openContext();
-            if (!session.getConnectionRegistry().sessionValid(session.getId())) {
+            if (session.getConnectionRegistry().sessionValid(session.getId())) {
+                session.getConnectionRegistry().registerSessionActivity(session.getId(), new Date());
+            } else {
                 session.invalidate();
             }
         }

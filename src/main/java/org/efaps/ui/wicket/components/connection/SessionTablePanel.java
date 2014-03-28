@@ -35,6 +35,7 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColu
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
@@ -110,6 +111,9 @@ public class SessionTablePanel
                     {
                         final UIUserSession uiSession = (UIUserSession) getDefaultModelObject();
                         EFapsApplication.get().getConnectionRegistry().markSessionAsInvalid(uiSession.getSessionId());
+                        info(DBProperties.getFormatedDBProperty(SessionTablePanel.class.getName() + ".Feedback",
+                                        new Object[] { uiSession.getSessionId() }));
+                        _target.addChildren(getPage(), FeedbackPanel.class);
                     }
 
                     @Override
@@ -130,10 +134,14 @@ public class SessionTablePanel
 
         final String userName = DBProperties.getProperty(SessionTablePanel.class.getName() + ".UserName");
         final String sessionId = DBProperties.getProperty(SessionTablePanel.class.getName() + ".SessionId");
+        final String lastActivity = DBProperties.getProperty(SessionTablePanel.class.getName() + ".LastActivity");
 
         columns.add(new PropertyColumn<UIUserSession, String>(new Model<String>(userName), "userName",
                         "userName"));
         columns.add(new PropertyColumn<UIUserSession, String>(new Model<String>(sessionId), "sessionId", "sessionId"));
+
+        columns.add(new PropertyColumn<UIUserSession, String>(new Model<String>(lastActivity), "lastActivity",
+                        "lastActivity"));
 
         add(new AjaxFallbackDefaultDataTable<UIUserSession, String>("table", columns, this.dataProvider,
                         this.dataProvider.getRowsPerPage()));

@@ -31,6 +31,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.wicket.protocol.ws.api.message.IWebSocketPushMessage;
 import org.efaps.ui.wicket.ConnectionRegistry;
 import org.efaps.ui.wicket.EFapsApplication;
+import org.joda.time.DateTime;
 
 /**
  * TODO comment!
@@ -53,14 +54,22 @@ public class UIUserSession
     private String sessionId;
 
     /**
+     * last Activity as date long.
+     */
+    private final long lastActivity;
+
+    /**
      * @param _userName username
      * @param _sessionId    sessionid
+     * @param _lastActivity last registered activity
      */
     public UIUserSession(final String _userName,
-                         final String _sessionId)
+                         final String _sessionId,
+                         final Long _lastActivity)
     {
         super(_userName);
         this.sessionId = _sessionId;
+        this.lastActivity = _lastActivity == null ? 100 : _lastActivity;
     }
 
     /**
@@ -83,6 +92,16 @@ public class UIUserSession
         this.sessionId = _sessionId;
     }
 
+    /**
+     * Getter method for the instance variable {@link #lastActivity}.
+     *
+     * @return value of instance variable {@link #lastActivity}
+     */
+    public DateTime getLastActivity()
+    {
+        return new DateTime(this.lastActivity);
+    }
+
     @Override
     public String toString()
     {
@@ -97,10 +116,13 @@ public class UIUserSession
         final List<UIUserSession> ret = new ArrayList<UIUserSession>();
         final ConnectionRegistry registry = EFapsApplication.get().getConnectionRegistry();
         final Map<String, Set<String>> userSessions = registry.getSessions4Users();
+        final Map<String, Long> activity = registry.getSessionsActivity();
+
         for (final Entry<String, Set<String>> entry : userSessions.entrySet()) {
             final Iterator<String> iter = entry.getValue().iterator();
             while (iter.hasNext()) {
-                ret.add(new UIUserSession(entry.getKey(), iter.next()));
+                final String sessionTmp = iter.next();
+                ret.add(new UIUserSession(entry.getKey(), sessionTmp, activity.get(sessionTmp)));
             }
         }
         return ret;

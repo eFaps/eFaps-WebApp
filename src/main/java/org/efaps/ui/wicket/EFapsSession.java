@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.wicket.Application;
 import org.apache.wicket.Component;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.Session;
@@ -132,14 +134,21 @@ public class EFapsSession
     private final int stackSize;
 
     /**
+     * Application Key.
+     */
+    private final String appKey;
+
+    /**
      * Standard Constructor from Wicket.
      *
      * @param _request Request
      * @throws EFapsException
      */
-    public EFapsSession(final Request _request)
+    public EFapsSession(final Request _request,
+                        final String _appKey)
     {
         super(_request);
+        this.appKey = _appKey;
         this.stackSize = Configuration.getAttributeAsInteger(ConfigAttribute.RECENTCACHESIZE);
     }
 
@@ -434,9 +443,6 @@ public class EFapsSession
         openContext();
     }
 
-
-
-
     /**
      * @param _file FIle to be used for the ShowFileCallBackBehavior
      */
@@ -476,11 +482,21 @@ public class EFapsSession
     @Override
     public void onInvalidate()
     {
+        EFapsSession.LOG.trace("Session invalidated: {}", this);
         if (this.userName != null) {
-            getConnectionRegistry().removeUser(this.userName, getId());
+            final EFapsApplication app = ((EFapsApplication) Application.get(this.appKey));
+            app.getConnectionRegistry().removeUser(this.userName, getId(), app);
         }
         super.onInvalidate();
     }
+
+    @Override
+    public String toString()
+    {
+        return new ToStringBuilder(this).append("userName", this.userName)
+                        .append("sessionId", getId()).build();
+    }
+
     /**
      * @return the current EFapsSession
      */

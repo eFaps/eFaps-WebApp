@@ -49,11 +49,6 @@ public class SessionProvider
      */
     private static final long serialVersionUID = 1L;
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.wicket.markup.repeater.data.IDataProvider#iterator(long,
-     * long)
-     */
     @Override
     public Iterator<UIUserSession> iterator(final long _first,
                                             final long _count)
@@ -89,8 +84,10 @@ public class SessionProvider
                 int ret = 0;
                 if ("userName".equals(sortprop)) {
                     ret = session0.getUserName().compareTo(session1.getUserName());
-                } else if ("SessionId".equals(sortprop)) {
+                } else if ("sessionId".equals(sortprop)) {
                     ret = session0.getSessionId().compareTo(session1.getSessionId());
+                } else if ("lastActivity".equals(sortprop)) {
+                    ret = session0.getLastActivity().compareTo(session1.getLastActivity());
                 }
                 return ret;
             }

@@ -178,7 +178,7 @@ public class EFapsApplication
     public Session newSession(final Request _request,
                               final Response _response)
     {
-        return new EFapsSession(_request);
+        return new EFapsSession(_request, getApplicationKey());
     }
 
     /**

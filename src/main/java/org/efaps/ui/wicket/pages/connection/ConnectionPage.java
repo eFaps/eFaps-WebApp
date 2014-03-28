@@ -24,9 +24,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.wicket.PageReference;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.markup.html.tabs.AbstractTab;
 import org.apache.wicket.extensions.markup.html.tabs.ITab;
 import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.components.connection.MessagePanel;
@@ -111,7 +113,18 @@ public class ConnectionPage
                 }
             });
         }
-        add(new AjaxIndicatingTabbedPanel("tabs", tabs));
+        add(new AjaxIndicatingTabbedPanel("tabs", tabs) {
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            protected void onAjaxUpdate(final AjaxRequestTarget _target)
+            {
+                super.onAjaxUpdate(_target);
+                _target.addChildren(getPage(), FeedbackPanel.class);
+            }
+        });
+        add(new FeedbackPanel("feedback").setOutputMarkupId(true));
     }
 
     @Override
