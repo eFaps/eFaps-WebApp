@@ -148,7 +148,7 @@ public interface WebAppSettings
     /**
      * Boolean (true/false): Activate the websocket/push management. Default: true
      */
-    String CONMAN_ACTIVATE = " org.efaps.webapp.ConnectionManagement.activate";
+    String CONMAN_ACTIVATE = "org.efaps.webapp.ConnectionManagement.activate";
 
     /**
      * Boolean (true/false): Activate the websocket/push management. Default: true
