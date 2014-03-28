@@ -184,26 +184,19 @@ public class ConnectionRegistry
             final Method method = clazz.getMethod("register", String.class, String.class, String.class);
             method.invoke(obj, _userName, _sessionId, ipAddress);
         } catch (final ClassNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            ConnectionRegistry.LOG.error("Error on registering Login", e);
         } catch (final NoSuchMethodException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            ConnectionRegistry.LOG.error("Error on registering Login", e);
         } catch (final SecurityException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            ConnectionRegistry.LOG.error("Error on registering Login", e);
         } catch (final IllegalAccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            ConnectionRegistry.LOG.error("Error on registering Login", e);
         } catch (final IllegalArgumentException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            ConnectionRegistry.LOG.error("Error on registering Login", e);
         } catch (final InvocationTargetException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            ConnectionRegistry.LOG.error("Error on registering Login", e);
         } catch (final InstantiationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            ConnectionRegistry.LOG.error("Error on registering Login", e);
         }
     }
 
@@ -221,26 +214,19 @@ public class ConnectionRegistry
             final Method method = clazz.getMethod("register", String.class, String.class, String.class);
             method.invoke(obj, _userName, _sessionId, "N.A.");
         } catch (final ClassNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            ConnectionRegistry.LOG.error("Error on registering Logout", e);
         } catch (final NoSuchMethodException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            ConnectionRegistry.LOG.error("Error on registering Logout", e);
         } catch (final SecurityException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            ConnectionRegistry.LOG.error("Error on registering Logout", e);
         } catch (final IllegalAccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            ConnectionRegistry.LOG.error("Error on registering Logout", e);
         } catch (final IllegalArgumentException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            ConnectionRegistry.LOG.error("Error on registering Logout", e);
         } catch (final InvocationTargetException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            ConnectionRegistry.LOG.error("Error on registering Logout", e);
         } catch (final InstantiationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            ConnectionRegistry.LOG.error("Error on registering Logout", e);
         }
     }
 
