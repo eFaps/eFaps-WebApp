@@ -142,6 +142,7 @@ public class EFapsSession
      * Standard Constructor from Wicket.
      *
      * @param _request Request
+     * @param _appKey application key
      * @throws EFapsException
      */
     public EFapsSession(final Request _request,
@@ -282,7 +283,6 @@ public class EFapsSession
     {
         return EFapsApplication.get().getConnectionRegistry();
     }
-
 
     /**
      * Logs a user out and stores the UserAttribues in the eFaps database.
@@ -484,7 +484,7 @@ public class EFapsSession
     {
         EFapsSession.LOG.trace("Session invalidated: {}", this);
         if (this.userName != null) {
-            final EFapsApplication app = ((EFapsApplication) Application.get(this.appKey));
+            final EFapsApplication app = (EFapsApplication) Application.get(this.appKey);
             app.getConnectionRegistry().removeUser(this.userName, getId(), app);
         }
         super.onInvalidate();

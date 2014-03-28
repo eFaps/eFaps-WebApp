@@ -20,6 +20,8 @@
 
 package org.efaps.ui.wicket;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -31,6 +33,8 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentMap;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.wicket.Application;
 import org.apache.wicket.MetaDataKey;
 import org.apache.wicket.Session;
@@ -38,8 +42,11 @@ import org.apache.wicket.protocol.ws.IWebSocketSettings;
 import org.apache.wicket.protocol.ws.api.IWebSocketConnection;
 import org.apache.wicket.protocol.ws.api.registry.IKey;
 import org.apache.wicket.protocol.ws.api.registry.IWebSocketConnectionRegistry;
+import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.request.http.WebRequest;
 import org.apache.wicket.util.collections.ConcurrentHashSet;
 import org.apache.wicket.util.lang.Generics;
+import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -157,6 +164,88 @@ public class ConnectionRegistry
     }
 
     /**
+     * @param _userName userName
+     * @param _sessionId sessionid
+     */
+    private void registerLogin4History(final String _userName,
+                                       final String _sessionId)
+    {
+        try {
+            final WebRequest req = (WebRequest) RequestCycle.get().getRequest();
+            final HttpServletRequest httpReq = (HttpServletRequest) req.getContainerRequest();
+            String ipAddress = httpReq.getHeader("X-FORWARDED-FOR");
+            if (ipAddress == null) {
+                ipAddress = httpReq.getRemoteAddr();
+            }
+
+            final Class<?> clazz = Class.forName("org.efaps.esjp.common.history.LoginHistory", true,
+                            EFapsClassLoader.getInstance());
+            final Object obj = clazz.newInstance();
+            final Method method = clazz.getMethod("register", String.class, String.class, String.class);
+            method.invoke(obj, _userName, _sessionId, ipAddress);
+        } catch (final ClassNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (final NoSuchMethodException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (final SecurityException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (final IllegalAccessException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (final IllegalArgumentException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (final InvocationTargetException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (final InstantiationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * @param _userName userName
+     * @param _sessionId sessionid
+     */
+    private void registerLogout4History(final String _userName,
+                                        final String _sessionId)
+    {
+        try {
+            final Class<?> clazz = Class.forName("org.efaps.esjp.common.history.LogoutHistory", true,
+                            EFapsClassLoader.getInstance());
+            final Object obj = clazz.newInstance();
+            final Method method = clazz.getMethod("register", String.class, String.class, String.class);
+            method.invoke(obj, _userName, _sessionId, "N.A.");
+        } catch (final ClassNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (final NoSuchMethodException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (final SecurityException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (final IllegalAccessException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (final IllegalArgumentException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (final InvocationTargetException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (final InstantiationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+
+    /**
      * @param _userName login of the user
      * @param _sessionId    SessionId assigned
      */
@@ -188,6 +277,7 @@ public class ConnectionRegistry
             }
         }
         sessions.add(_sessionId);
+        registerLogin4History(_userName, _sessionId);
     }
 
     /**
@@ -219,7 +309,7 @@ public class ConnectionRegistry
     protected void removeUser(final String _login,
                               final String _sessionId)
     {
-       removeUser(_login, _sessionId, Session.get().getApplication());
+        removeUser(_login, _sessionId, Session.get().getApplication());
     }
 
     /**
@@ -244,6 +334,7 @@ public class ConnectionRegistry
                 }
             }
         }
+        registerLogout4History(_login, _sessionId);
     }
 
     /**
