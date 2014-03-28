@@ -47,6 +47,8 @@ import org.apache.wicket.request.http.WebRequest;
 import org.apache.wicket.util.collections.ConcurrentHashSet;
 import org.apache.wicket.util.lang.Generics;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
+import org.efaps.db.Context;
+import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -207,7 +209,12 @@ public class ConnectionRegistry
     private void registerLogout4History(final String _userName,
                                         final String _sessionId)
     {
+        boolean contextOpened = false;
         try {
+            if (!Context.isThreadActive()) {
+                Context.begin(_userName);
+                contextOpened = true;
+            }
             final Class<?> clazz = Class.forName("org.efaps.esjp.common.history.LogoutHistory", true,
                             EFapsClassLoader.getInstance());
             final Object obj = clazz.newInstance();
@@ -227,6 +234,16 @@ public class ConnectionRegistry
             ConnectionRegistry.LOG.error("Error on registering Logout", e);
         } catch (final InstantiationException e) {
             ConnectionRegistry.LOG.error("Error on registering Logout", e);
+        } catch (final EFapsException e) {
+            ConnectionRegistry.LOG.error("Error on registering Logout", e);
+        } finally {
+            if (contextOpened && Context.isThreadActive()) {
+                try {
+                    Context.commit();
+                } catch (final EFapsException e) {
+                    ConnectionRegistry.LOG.error("Error on registering Logout", e);
+                }
+            }
         }
     }
 
