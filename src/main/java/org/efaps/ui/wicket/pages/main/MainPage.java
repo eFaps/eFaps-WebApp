@@ -404,8 +404,12 @@ public class MainPage
                             .getParameterValue(MainPage.HEIGTH_PARAMETERNAME);
             if (height.toString() != null) {
                 final WebClientInfo asd = (WebClientInfo) Session.get().getClientInfo();
-                asd.getProperties().setBrowserWidth(Integer.parseInt(width.toString()));
-                asd.getProperties().setBrowserHeight(Integer.parseInt(height.toString()));
+                if (!width.toString().isEmpty()) {
+                    asd.getProperties().setBrowserWidth(Integer.parseInt(width.toString()));
+                }
+                if (!height.toString().isEmpty()) {
+                    asd.getProperties().setBrowserHeight(Integer.parseInt(height.toString()));
+                }
             }
         }
 
