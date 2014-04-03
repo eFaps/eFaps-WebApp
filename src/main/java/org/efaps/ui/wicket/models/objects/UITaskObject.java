@@ -42,14 +42,18 @@ import org.efaps.admin.ui.Form;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.admin.user.Role;
 import org.efaps.bpm.BPM;
+import org.efaps.ci.CIAdminUser;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
+import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.PrintQuery;
+import org.efaps.db.QueryBuilder;
+import org.efaps.db.SelectBuilder;
 import org.efaps.ui.wicket.models.cell.FieldConfiguration;
 import org.efaps.ui.wicket.models.field.UIField;
 import org.efaps.ui.wicket.models.field.UIGroup;
 import org.efaps.ui.wicket.models.field.UISnippletField;
-import org.efaps.ui.wicket.models.task.DelegateRole;
+import org.efaps.ui.wicket.models.task.DelegatePerson;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 import org.efaps.util.EFapsException;
@@ -101,7 +105,7 @@ public class UITaskObject
     /**
      * Delegate Roles allowed.
      */
-    private List<DelegateRole> delegates;
+    private List<DelegatePerson> delegates;
 
     /**
      * Status of the related task.
@@ -289,10 +293,28 @@ public class UITaskObject
         checkAccess();
         final boolean ret = this.operations.isEmpty() ? true : this.operations.contains(Operation.Delegate);
         if (ret && this.delegates == null) {
-            this.delegates  = new ArrayList<DelegateRole>();
+            this.delegates = new ArrayList<DelegatePerson>();
             final List<Role> roles = BPM.getDelegates4Task(getUITaskSummary().getTaskSummary());
-            for (final Role role  :roles) {
-                this.delegates.add(new DelegateRole(role));
+            for (final Role role : roles) {
+                final QueryBuilder queryBldr = new QueryBuilder(CIAdminUser.Person2Role);
+                queryBldr.addWhereAttrEqValue(CIAdminUser.Person2Role.UserToLink, role.getId());
+                final MultiPrintQuery multi = queryBldr.getPrint();
+                final SelectBuilder selUUID = SelectBuilder.get().linkto(CIAdminUser.Person2Role.UserFromLink)
+                                .attribute(CIAdminUser.Person.UUID);
+                final SelectBuilder selName = SelectBuilder.get().linkto(CIAdminUser.Person2Role.UserFromLink)
+                                .attribute(CIAdminUser.Person.Name);
+                final SelectBuilder selLastName = SelectBuilder.get().linkto(CIAdminUser.Person2Role.UserFromLink)
+                                .attribute(CIAdminUser.Person.LastName);
+                final SelectBuilder selFistName = SelectBuilder.get().linkto(CIAdminUser.Person2Role.UserFromLink)
+                                .attribute(CIAdminUser.Person.FirstName);
+                multi.addSelect(selUUID, selName, selLastName, selFistName);
+                multi.executeWithoutAccessCheck();
+                while (multi.next()) {
+                    this.delegates.add(new DelegatePerson(UUID.fromString(multi.<String>getSelect(selUUID)),
+                                    multi.<String>getSelect(selName),
+                                    multi.<String>getSelect(selFistName),
+                                    multi.<String>getSelect(selLastName)));
+                }
             }
         }
         return ret && !this.delegates.isEmpty();
@@ -324,7 +346,7 @@ public class UITaskObject
      * @return List of DelegateRoles.
      * @throws EFapsException on erro
      */
-    public List<? extends DelegateRole> getDelegateRoles()
+    public List<? extends DelegatePerson> getDelegateRoles()
         throws EFapsException
     {
         isDelegate();

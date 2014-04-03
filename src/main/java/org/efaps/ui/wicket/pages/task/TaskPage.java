@@ -48,7 +48,7 @@ import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.field.UIGroup;
 import org.efaps.ui.wicket.models.objects.UITaskObject;
-import org.efaps.ui.wicket.models.task.DelegateRole;
+import org.efaps.ui.wicket.models.task.DelegatePerson;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
@@ -169,9 +169,9 @@ public class TaskPage
                 }
                 form.add(new Button("delegate", new DelegateLink(Button.LINKID, _taskObjModel, form, _pageReference),
                                 delegate, Button.ICON.ADD.getReference()));
-                final DropDownChoice<DelegateRole> choice = new DropDownChoice<DelegateRole>("delegateChoice",
-                                DelegateRole.getModel(), _taskObjModel.getObject().getDelegateRoles(),
-                                new DelegateRoleRendere());
+                final DropDownChoice<DelegatePerson> choice = new DropDownChoice<DelegatePerson>("delegateChoice",
+                                DelegatePerson.getModel(), _taskObjModel.getObject().getDelegateRoles(),
+                                new DelegatePersonRenderer());
                 form.add(choice);
                 choice.setOutputMarkupPlaceholderTag(true);
                 choice.setVisible(false);
@@ -549,12 +549,12 @@ public class TaskPage
                 protected void onSubmit(final AjaxRequestTarget _target)
                 {
                     try {
-                        DelegateRole selected = null;
+                        DelegatePerson selected = null;
                         if (_model.getObject().getDelegateRoles().size() > 1) {
                             final ComponentHierarchyIterator modalIter = getPage().visitChildren(DropDownChoice.class);
                             if (modalIter.hasNext()) {
                                 final DropDownChoice<?> choice = (DropDownChoice<?>) modalIter.next();
-                                final DelegateRole roleObj = (DelegateRole) choice.getDefaultModelObject();
+                                final DelegatePerson roleObj = (DelegatePerson) choice.getDefaultModelObject();
                                 if (roleObj.getUuid() == null) {
                                     choice.setVisible(true);
                                     _target.add(choice);
@@ -583,8 +583,8 @@ public class TaskPage
     /**
      * Render the Roles.
      */
-    public static class DelegateRoleRendere
-        implements IChoiceRenderer<DelegateRole>
+    public static class DelegatePersonRenderer
+        implements IChoiceRenderer<DelegatePerson>
     {
         /**
          * Needed for serialization.
@@ -592,13 +592,13 @@ public class TaskPage
         private static final long serialVersionUID = 1L;
 
         @Override
-        public Object getDisplayValue(final DelegateRole _object)
+        public Object getDisplayValue(final DelegatePerson _object)
         {
-            return _object.getName();
+            return _object.getLastName() + ", " + _object.getFirstName();
         }
 
         @Override
-        public String getIdValue(final DelegateRole _object,
+        public String getIdValue(final DelegatePerson _object,
                                  final int _index)
         {
             return Integer.valueOf(_index).toString();
