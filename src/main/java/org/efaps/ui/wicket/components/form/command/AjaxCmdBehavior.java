@@ -144,7 +144,9 @@ public class AjaxCmdBehavior
                 for (final String keyString : map.keySet()) {
                     // if the map contains a key that is not defined in this class
                     // it is assumed to be the name of a field
-                    if (!(EFapsKey.FIELDUPDATE_JAVASCRIPT.getKey().equals(keyString))) {
+                    if (!(EFapsKey.FIELDUPDATE_JAVASCRIPT.getKey().equals(keyString))
+                                    && !(EFapsKey.FIELDUPDATE_USEID.getKey().equals(keyString))
+                                    && !(EFapsKey.FIELDUPDATE_USEIDX.getKey().equals(keyString))) {
                         js.append("eFapsSetFieldValue(").append(i).append(",'")
                             .append(keyString).append("',")
                             .append(map.get(keyString).contains("Array(") ? "" : "'")
