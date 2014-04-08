@@ -24,13 +24,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.markup.html.basic.Label;
 import org.efaps.admin.datamodel.ui.UIValue;
 import org.efaps.db.Instance;
+import org.efaps.ui.wicket.components.values.LabelField;
 import org.efaps.ui.wicket.models.AbstractInstanceObject;
 import org.efaps.ui.wicket.models.cell.FieldConfiguration;
 import org.efaps.ui.wicket.models.field.factories.BitEnumUIFactory;
 import org.efaps.ui.wicket.models.field.factories.BooleanUIFactory;
+import org.efaps.ui.wicket.models.field.factories.DateTimeUIFactory;
 import org.efaps.ui.wicket.models.field.factories.DateUIFactory;
 import org.efaps.ui.wicket.models.field.factories.DecimalUIFactory;
 import org.efaps.ui.wicket.models.field.factories.EnumUIFactory;
@@ -39,6 +40,7 @@ import org.efaps.ui.wicket.models.field.factories.JaxbUIFactory;
 import org.efaps.ui.wicket.models.field.factories.LinkWithRangesUIFactory;
 import org.efaps.ui.wicket.models.field.factories.NumberUIFactory;
 import org.efaps.ui.wicket.models.field.factories.StringUIFactory;
+import org.efaps.ui.wicket.models.field.factories.UserUIFactory;
 import org.efaps.ui.wicket.models.objects.AbstractUIModeObject;
 import org.efaps.util.EFapsException;
 
@@ -66,8 +68,10 @@ public abstract class AbstractUIField
         AbstractUIField.FACTORIES.add(LinkWithRangesUIFactory.get());
         AbstractUIField.FACTORIES.add(BooleanUIFactory.get());
         AbstractUIField.FACTORIES.add(DateUIFactory.get());
+        AbstractUIField.FACTORIES.add(DateTimeUIFactory.get());
         AbstractUIField.FACTORIES.add(DecimalUIFactory.get());
         AbstractUIField.FACTORIES.add(NumberUIFactory.get());
+        AbstractUIField.FACTORIES.add(UserUIFactory.get());
         AbstractUIField.FACTORIES.add(EnumUIFactory.get());
         AbstractUIField.FACTORIES.add(BitEnumUIFactory.get());
         AbstractUIField.FACTORIES.add(JaxbUIFactory.get());
@@ -222,7 +226,7 @@ public abstract class AbstractUIField
         }
 
         if (ret == null) {
-            ret = new Label(_wicketId, "No Factory was applied successfully");
+            ret = new LabelField(_wicketId, "No Factory was applied successfully", this.fieldConfiguration, "NONE");
         }
         return ret;
     }
