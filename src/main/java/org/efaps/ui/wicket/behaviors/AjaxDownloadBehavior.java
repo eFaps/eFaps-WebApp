@@ -74,14 +74,12 @@ public class AjaxDownloadBehavior
     {
         final File file = ((EFapsSession) getComponent().getSession()).getFile();
         if (file != null && file.exists()) {
-
             String url = getCallbackUrl().toString();
-
             if (this.addAntiCache) {
                 url = url + (url.contains("?") ? "&" : "?");
                 url = url + "antiCache=" + System.currentTimeMillis();
             }
-            _target.prependJavaScript("top.window.location.href='" + url + "';");
+            _target.prependJavaScript("top.document.getElementById('downloadFrame').setAttribute('src','" + url + "');");
         }
     }
 

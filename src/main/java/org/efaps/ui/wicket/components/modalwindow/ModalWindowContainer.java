@@ -146,7 +146,6 @@ public class ModalWindowContainer
         }
     }
 
-
     /**
      * Method creates a JavaScript to reload the parent page.
      *
