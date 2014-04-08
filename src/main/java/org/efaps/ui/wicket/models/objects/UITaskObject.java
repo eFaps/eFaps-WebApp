@@ -203,7 +203,6 @@ public class UITaskObject
                         }
                         uiField = new UISnippletField(getInstance().getKey(), this,
                                         new FieldConfiguration(field.getId()));
-                        uiGroup.add(uiField);
                         ((UISnippletField) uiField).setHtml(html.toString());
                     }
                     if (uiField == null) {
