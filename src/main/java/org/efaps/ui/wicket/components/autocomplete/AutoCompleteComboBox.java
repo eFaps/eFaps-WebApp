@@ -33,6 +33,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
 import org.efaps.ui.wicket.behaviors.SetSelectedRowBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.AutoCompleteBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.AutoCompleteBehavior.AutoCompleteField;
@@ -75,11 +76,27 @@ public class AutoCompleteComboBox
         super(_wicketId, Model.<UITableCell>of(_model));
         final UITableCell uiAbstractCell = (UITableCell) getDefaultModelObject();
         final String fieldName = uiAbstractCell.getName();
-
-        this.add(new AutoCompleteBehavior());
+        final AutoCompleteBehavior autocomplete = new AutoCompleteBehavior();
+        this.add(autocomplete);
 
         if (_selectRow) {
             this.add(new SetSelectedRowBehavior(fieldName));
+        }
+        if (uiAbstractCell.isFieldUpdate()) {
+            final AjaxFieldUpdateBehavior fieldUpdate = new AjaxFieldUpdateBehavior("onchange", _model) {
+
+                /** Needed for serialization. */
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                protected String getComponentMarkupId()
+                {
+                    return getMarkupId() + "_hidden";
+                }
+            };
+            fieldUpdate.setDojoCall(true);
+            this.add(fieldUpdate);
+            autocomplete.addFieldUpdate(fieldUpdate);
         }
     }
     @Override

@@ -36,7 +36,7 @@ import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.admin.ui.field.Field.Display;
 import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
 import org.efaps.ui.wicket.components.LabelComponent;
-import org.efaps.ui.wicket.components.autocomplete.AutoCompleteField;
+import org.efaps.ui.wicket.components.autocomplete.AutoCompleteComboBox;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.editor.EditorPanel;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
@@ -122,7 +122,7 @@ public class ValueCellPanel
                 final Component label;
                 // check for AutoComplete field
                 if (uiFormCell.isAutoComplete() && uiFormCell.getDisplay().equals(Display.EDITABLE)) {
-                    label = new AutoCompleteField("label", _model, false);
+                    label = new AutoCompleteComboBox("label", _model, false);
                 } else {
                     label = new LabelComponent("label",
                                     new Model<String>(uiFormCell.getCellValue())).setOutputMarkupId(true);

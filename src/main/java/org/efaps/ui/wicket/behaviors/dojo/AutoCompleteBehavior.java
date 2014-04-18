@@ -47,6 +47,7 @@ import org.apache.wicket.resource.CoreLibrariesContributor;
 import org.apache.wicket.util.lang.Args;
 import org.apache.wicket.util.string.Strings;
 import org.efaps.admin.dbproperty.DBProperties;
+import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
 import org.efaps.ui.wicket.util.EFapsKey;
 
 /**
@@ -67,6 +68,8 @@ public class AutoCompleteBehavior
      * Settings for this AutoComplete.
      */
     private final AutoCompleteSettings settings = new AutoCompleteSettings();
+
+    private AjaxFieldUpdateBehavior fieldUpdate;
 
     /**
      * Bind this handler to the given component.
@@ -124,8 +127,8 @@ public class AutoCompleteBehavior
                         "\";", "wicket-ajax-base-url"));
 
         final StringBuilder js2 = new StringBuilder()
-                        .append("require([\"efaps/AjaxStore\",\"efaps/AutoComplete\",\"dojo/domReady!\"],")
-                        .append(" function(AjaxStore, AutoComplete){")
+                        .append("require([\"efaps/AjaxStore\",\"efaps/AutoComplete\",\"dojo/on\",\"dojo/domReady!\"],")
+                        .append(" function(AjaxStore, AutoComplete, on){")
                         .append("var ph=\"")
                         .append(DBProperties.getProperty(AutoCompleteBehavior.class.getName() + ".PlaceHolder"))
                         .append("\"\n")
@@ -155,8 +158,14 @@ public class AutoCompleteBehavior
 
         js2.append("callbackUrl:\"" + getCallbackUrl() + "\"," +
                         "        searchAttr: \"name\"\n" +
-                        "    }, \"").append(_component.getMarkupId()).append("\");")
-                        .append("});");
+                        "    }, \"").append(_component.getMarkupId()).append("\");");
+
+        js2.append("on(comboBox, 'change', function() {");
+        js2.append(this.fieldUpdate.getCallbackScript4Dojo()) ;
+                        js2.append("});");
+
+        js2.append("});");
+
 
         final StringBuilder js = new StringBuilder().append("require([\"dojo/ready\"]);")
                         .append("dojo.ready(function() {")
@@ -395,5 +404,13 @@ public class AutoCompleteBehavior
         {
             return this.target.getPage();
         }
+    }
+
+    /**
+     * @param _fieldUpdate
+     */
+    public void addFieldUpdate(final AjaxFieldUpdateBehavior _fieldUpdate)
+    {
+        this.fieldUpdate = _fieldUpdate;
     }
 }

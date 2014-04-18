@@ -71,6 +71,11 @@ public class AjaxFieldUpdateBehavior
     private final IModel<?> model;
 
     /**
+     * Is the callback beeing executed from dojo.
+     */
+    private boolean dojoCall = false;
+
+    /**
      * @param _event event that this behavior should be executed on;
      */
     public AjaxFieldUpdateBehavior(final String _event)
@@ -201,4 +206,49 @@ public class AjaxFieldUpdateBehavior
     {
         onSubmit(_target);
     }
+
+    /**
+     * @return
+     */
+    public CharSequence getCallbackScript4Dojo()
+    {
+        final CharSequence ajaxAttributes = renderAjaxAttributes(getComponent());
+        return "Wicket.Ajax.ajax(" + ajaxAttributes + ");";
+    }
+
+    @Override
+    protected CharSequence getCallbackScript(final Component component)
+    {
+        String ret;
+        if (isDojoCall()) {
+            ret= "";
+        } else {
+            final CharSequence ajaxAttributes = renderAjaxAttributes(component);
+            ret = "Wicket.Ajax.ajax(" + ajaxAttributes + ");";
+        }
+        return ret;
+    }
+
+
+    /**
+     * Getter method for the instance variable {@link #dojoCall}.
+     *
+     * @return value of instance variable {@link #dojoCall}
+     */
+    public boolean isDojoCall()
+    {
+        return this.dojoCall;
+    }
+
+
+    /**
+     * Setter method for instance variable {@link #dojoCall}.
+     *
+     * @param _dojoCall value for instance variable {@link #dojoCall}
+     */
+    public void setDojoCall(final boolean _dojoCall)
+    {
+        this.dojoCall = _dojoCall;
+    }
+
 }
