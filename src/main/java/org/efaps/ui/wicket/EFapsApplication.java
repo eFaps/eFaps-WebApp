@@ -32,6 +32,7 @@ import org.apache.wicket.Application;
 import org.apache.wicket.Component;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.Session;
+import org.apache.wicket.ajax.XmlAjaxResponse;
 import org.apache.wicket.application.AbstractClassResolver;
 import org.apache.wicket.application.CompoundClassResolver;
 import org.apache.wicket.application.DefaultClassResolver;
@@ -47,12 +48,16 @@ import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.Response;
 import org.apache.wicket.request.component.IRequestableComponent;
+import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.http.WebRequest;
 import org.apache.wicket.resource.DynamicJQueryResourceReference;
+import org.apache.wicket.response.filter.IResponseFilter;
+import org.apache.wicket.util.string.AppendingStringBuffer;
 import org.efaps.admin.AppConfigHandler;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.jaas.AppAccessHandler;
 import org.efaps.ui.filter.AbstractFilter;
+import org.efaps.ui.wicket.behaviors.dojo.AutoCompleteBehavior.ACAjaxRequestTarget;
 import org.efaps.ui.wicket.pages.error.UnexpectedErrorPage;
 import org.efaps.ui.wicket.pages.login.LoginPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
@@ -165,6 +170,22 @@ public class EFapsApplication
             }
         });
         this.connectionRegistry = new ConnectionRegistry();
+
+        getRequestCycleSettings().addResponseFilter(new IResponseFilter()
+        {
+            @Override
+            public AppendingStringBuffer filter(final AppendingStringBuffer _responseBuffer)
+            {
+                AppendingStringBuffer ret;
+                if (RequestCycle.get().getActiveRequestHandler() instanceof ACAjaxRequestTarget) {
+                    ret = new AppendingStringBuffer().append(_responseBuffer.subSequence(0,
+                                    _responseBuffer.length() - XmlAjaxResponse.END_ROOT_ELEMENT.length()));
+                } else {
+                    ret = _responseBuffer;
+                }
+                return ret;
+            }
+        });
     }
 
     /**
