@@ -212,19 +212,17 @@ public class AjaxFieldUpdateBehavior
      */
     public CharSequence getCallbackScript4Dojo()
     {
-        final CharSequence ajaxAttributes = renderAjaxAttributes(getComponent());
-        return "Wicket.Ajax.ajax(" + ajaxAttributes + ");";
+        return super.getCallbackScript(getComponent());
     }
 
     @Override
-    protected CharSequence getCallbackScript(final Component component)
+    protected CharSequence getCallbackScript(final Component _component)
     {
-        String ret;
+        CharSequence ret;
         if (isDojoCall()) {
             ret= "";
         } else {
-            final CharSequence ajaxAttributes = renderAjaxAttributes(component);
-            ret = "Wicket.Ajax.ajax(" + ajaxAttributes + ");";
+            ret = super.getCallbackScript(_component);
         }
         return ret;
     }

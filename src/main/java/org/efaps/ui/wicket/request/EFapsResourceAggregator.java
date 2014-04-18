@@ -32,6 +32,7 @@ import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.html.DecoratingHeaderResponse;
 import org.efaps.admin.program.bundle.BundleMaker;
 import org.efaps.admin.program.bundle.TempFileBundle;
+import org.efaps.ui.wicket.behaviors.dojo.AutoCompleteHeaderItem;
 import org.efaps.ui.wicket.behaviors.dojo.OnDojoReadyHeaderItem;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
@@ -61,6 +62,11 @@ public class EFapsResourceAggregator
     private final List<OnDojoReadyHeaderItem> dojoReadyItems = new ArrayList<OnDojoReadyHeaderItem>();
 
     /**
+    * List of HeaderItems that will be rendered in on dojo ready script.
+    */
+   private final List<AutoCompleteHeaderItem> autoCompleteItems = new ArrayList<AutoCompleteHeaderItem>();
+
+    /**
      * List of HeaderItems that will be rendered file using the eFaps kernel.
      */
     private final List<AbstractEFapsHeaderItem> eFapsHeaderItems = new ArrayList<AbstractEFapsHeaderItem>();
@@ -86,6 +92,8 @@ public class EFapsResourceAggregator
             this.dojoReadyItems.add((OnDojoReadyHeaderItem) _item);
         } else if (_item instanceof AbstractEFapsHeaderItem) {
             this.eFapsHeaderItems.add((AbstractEFapsHeaderItem) _item);
+        } else if (_item instanceof AutoCompleteHeaderItem) {
+            this.autoCompleteItems.add((AutoCompleteHeaderItem) _item);
         } else {
             getRealResponse().render(_item);
         }
@@ -99,6 +107,7 @@ public class EFapsResourceAggregator
     {
         renderCombinedEventScripts();
         renderEFapsHeaderItems();
+        renderCombinedAutoCompleteScripts();
         super.close();
     }
 
@@ -162,6 +171,26 @@ public class EFapsResourceAggregator
 
         if (combinedScript.length() > 0) {
             getRealResponse().render(OnDojoReadyHeaderItem.forScript(combinedScript.append("\n").toString()));
+        }
+    }
+
+
+    /**
+     * Combines all DOM ready and onLoad scripts and renders them as 2 script
+     * tags.
+     */
+    private void renderCombinedAutoCompleteScripts()
+    {
+        final StringBuilder combinedScript = new StringBuilder();
+
+        for (final AutoCompleteHeaderItem curItem : this.autoCompleteItems) {
+            combinedScript.append("\n");
+            combinedScript.append(curItem.getJavaScript());
+            combinedScript.append(";");
+        }
+
+        if (combinedScript.length() > 0) {
+            getRealResponse().render(AutoCompleteHeaderItem.forScript(combinedScript.append("\n").toString()));
         }
     }
 }

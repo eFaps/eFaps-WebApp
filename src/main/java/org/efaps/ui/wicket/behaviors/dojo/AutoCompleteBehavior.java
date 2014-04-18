@@ -38,7 +38,6 @@ import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.ILogData;
 import org.apache.wicket.request.IRequestCycle;
-import org.apache.wicket.request.Url;
 import org.apache.wicket.request.component.IRequestablePage;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.http.WebResponse;
@@ -46,7 +45,6 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.resource.CoreLibrariesContributor;
 import org.apache.wicket.util.lang.Args;
 import org.apache.wicket.util.string.Strings;
-import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
 import org.efaps.ui.wicket.util.EFapsKey;
 
@@ -116,63 +114,47 @@ public class AutoCompleteBehavior
     public void renderHead(final Component _component,
                            final IHeaderResponse _response)
     {
-
         super.renderHead(_component, _response);
+        // add wicket ajax to be sure that is is included
         CoreLibrariesContributor.contributeAjax(this.component.getApplication(), _response);
 
-        final RequestCycle requestCycle = this.component.getRequestCycle();
-        final Url baseUrl = requestCycle.getUrlRenderer().getBaseUrl();
-        final CharSequence ajaxBaseUrl = Strings.escapeMarkup(baseUrl.toString());
-        _response.render(JavaScriptHeaderItem.forScript("Wicket.Ajax.baseUrl=\"" + ajaxBaseUrl +
-                        "\";", "wicket-ajax-base-url"));
+        final CharSequence ajaxBaseUrl = Strings.escapeMarkup(this.component.getRequestCycle().getUrlRenderer()
+                        .getBaseUrl().toString());
+        _response.render(JavaScriptHeaderItem.forScript("Wicket.Ajax.baseUrl=\"" + ajaxBaseUrl
+                        + "\";", "wicket-ajax-base-url"));
 
-        final StringBuilder js2 = new StringBuilder()
-                        .append("require([\"efaps/AjaxStore\",\"efaps/AutoComplete\",\"dojo/on\",\"dojo/domReady!\"],")
-                        .append(" function(AjaxStore, AutoComplete, on){")
-                        .append("var ph=\"")
-                        .append(DBProperties.getProperty(AutoCompleteBehavior.class.getName() + ".PlaceHolder"))
-                        .append("\"\n")
-                        .append("var stateStore= new AjaxStore();")
-                        .append("var comboBox = new AutoComplete({\n" +
-                                        "        id: \"").append(_component.getMarkupId()).append("\",\n" +
-                                        "        name: \"").append(((AutoCompleteField) _component).getFieldName())
-                        .append("\",\n" +
-                                        "        value: \"\",\n" +
-                                        "        store: stateStore,\n");
-        js2.append("hasDownArrow:").append(this.settings.isHasDownArrow()).append(",");
+        final String comboBoxId = "cb" + _component.getMarkupId();
+        final StringBuilder js = new StringBuilder()
+            .append("var ").append(comboBoxId).append(" = new AutoComplete({")
+            .append("id:\"").append(_component.getMarkupId()).append("\",")
+            .append("name:\"").append(((AutoCompleteField) _component).getFieldName()).append("\",")
+            .append("value: \"\",")
+            .append("placeHolder:ph,")
+            .append("store: as,")
+            .append("callbackUrl:\"" + getCallbackUrl() + "\",");
 
-        if (this.settings.getMinInputLength() > 1) {
-            js2.append("minInputLength:").append(this.settings.getMinInputLength()).append(",");
+        if (!this.settings.isHasDownArrow()) {
+            js.append("hasDownArrow:").append(this.settings.isHasDownArrow()).append(",");
         }
-
+        if (this.settings.getMinInputLength() > 1) {
+            js.append("minInputLength:").append(this.settings.getMinInputLength()).append(",");
+        }
         if (this.settings.getSearchDelay() != 200) {
-            js2.append("searchDelay:").append(this.settings.getSearchDelay()).append(",");
+            js.append("searchDelay:").append(this.settings.getSearchDelay()).append(",");
         }
 
         if (!"p".equals(this.settings.getParamName())) {
-            js2.append("paramName:\"").append(this.settings.getParamName()).append("\",");
+            js.append("paramName:\"").append(this.settings.getParamName()).append("\",");
         }
 
-        js2.append("placeHolder:ph,");
+        js.append("searchAttr: \"name\"}, \"").append(_component.getMarkupId()).append("\");\n");
 
-
-        js2.append("callbackUrl:\"" + getCallbackUrl() + "\"," +
-                        "        searchAttr: \"name\"\n" +
-                        "    }, \"").append(_component.getMarkupId()).append("\");");
-
-        js2.append("on(comboBox, 'change', function() {");
-        js2.append(this.fieldUpdate.getCallbackScript4Dojo()) ;
-                        js2.append("});");
-
-        js2.append("});");
-
-
-        final StringBuilder js = new StringBuilder().append("require([\"dojo/ready\"]);")
-                        .append("dojo.ready(function() {")
-                        .append(js2)
-                        .append(";});");
-
-        _response.render(JavaScriptHeaderItem.forScript(js.toString(), "js_" + _component.getMarkupId()));
+        if (this.fieldUpdate != null) {
+            js.append("on(").append(comboBoxId).append(", 'change', function() {")
+                .append(this.fieldUpdate.getCallbackScript4Dojo())
+                .append("});");
+        }
+        _response.render(AutoCompleteHeaderItem.forScript(js.toString()));
     }
 
     public interface AutoCompleteField

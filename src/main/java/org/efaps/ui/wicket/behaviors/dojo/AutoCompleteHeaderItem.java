@@ -29,6 +29,7 @@ import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.request.Response;
 import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.settings.IJavaScriptLibrarySettings;
+import org.efaps.admin.dbproperty.DBProperties;
 
 /**
  * TODO comment!
@@ -36,7 +37,7 @@ import org.apache.wicket.settings.IJavaScriptLibrarySettings;
  * @author The eFaps Team
  * @version $Id$
  */
-public class OnDojoReadyHeaderItem
+public class AutoCompleteHeaderItem
     extends HeaderItem
 {
 
@@ -53,7 +54,7 @@ public class OnDojoReadyHeaderItem
     /**
      * @param _javaScript Javascript for the header to add
      */
-    public OnDojoReadyHeaderItem(final CharSequence _javaScript)
+    public AutoCompleteHeaderItem(final CharSequence _javaScript)
     {
         this.javaScript = _javaScript;
     }
@@ -62,21 +63,21 @@ public class OnDojoReadyHeaderItem
      * @param _javaScript Javascript for the header to add
      * @return new OnDojoReadyHeaderItem
      */
-    public static OnDojoReadyHeaderItem forScript(final CharSequence _javaScript)
+    public static AutoCompleteHeaderItem forScript(final CharSequence _javaScript)
     {
-        return new OnDojoReadyHeaderItem(_javaScript);
+        return new AutoCompleteHeaderItem(_javaScript);
     }
 
     @Override
     public Iterable<?> getRenderTokens()
     {
-        return Collections.singletonList("javascript-dojoready-" + getJavaScript());
+        return Collections.singletonList("javascript-autocomplete-" + getJavaScript());
     }
 
     @Override
     public String toString()
     {
-        return "OnDojoReadyHeaderItem(" + getJavaScript() + ")";
+        return "AutoCompleteHeaderItem(" + getJavaScript() + ")";
     }
 
     @Override
@@ -90,11 +91,17 @@ public class OnDojoReadyHeaderItem
     @Override
     public void render(final Response _response)
     {
-        final StringBuilder js = new StringBuilder()
-                        .append("require([\"dojo/ready\"]);")
-                        .append("dojo.ready(function() {")
+        final StringBuilder js = new StringBuilder().append("require([\"dojo/ready\"]);")
+                        .append("dojo.ready(function() {\n")
+                        .append("require([\"efaps/AjaxStore\",\"efaps/AutoComplete\",\"dojo/on\",\"dojo/domReady!\"],")
+                        .append(" function(AjaxStore, AutoComplete, on){\n")
+                        .append("var ph=\"")
+                        .append(DBProperties.getProperty(AutoCompleteBehavior.class.getName() + ".PlaceHolder"))
+                        .append("\";\n")
+                        .append("var as= new AjaxStore();\n")
                         .append(getJavaScript())
-                        .append(";});");
+                        .append("});\n")
+                        .append("});\n");
         JavaScriptUtils.writeJavaScript(_response, js);
     }
 
@@ -110,8 +117,8 @@ public class OnDojoReadyHeaderItem
     public boolean equals(final Object _obj)
     {
         boolean ret;
-        if (_obj instanceof OnDojoReadyHeaderItem) {
-            ret =  ((OnDojoReadyHeaderItem) _obj).getJavaScript().equals(getJavaScript());
+        if (_obj instanceof AutoCompleteHeaderItem) {
+            ret =  ((AutoCompleteHeaderItem) _obj).getJavaScript().equals(getJavaScript());
         } else {
             ret = super.equals(_obj);
         }
