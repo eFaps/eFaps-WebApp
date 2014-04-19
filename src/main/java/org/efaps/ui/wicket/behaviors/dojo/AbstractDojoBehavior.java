@@ -31,6 +31,7 @@ import org.apache.wicket.markup.head.HeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.IReferenceHeaderItem;
 import org.apache.wicket.markup.head.PriorityHeaderItem;
+import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.IRequestHandler;
 import org.apache.wicket.request.Response;
 import org.apache.wicket.request.cycle.RequestCycle;
@@ -40,8 +41,12 @@ import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.util.string.Strings;
+import org.efaps.db.Context;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
+import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class renders the Links for the JavaScripts in the Head for Behaviors
@@ -84,6 +89,11 @@ public abstract class AbstractDojoBehavior
     public static final JavaScriptResourceReference JS_DOJO = new JavaScriptResourceReference(
                     AbstractDojoBehavior.class,
                     "dojo/dojo.js");
+
+    /**
+     * Logger.
+     */
+    private static final Logger LOG =  LoggerFactory.getLogger(AbstractDojoBehavior.class);
 
     /**
      * Needed for serialization.
@@ -209,6 +219,17 @@ public abstract class AbstractDojoBehavior
             _response.write(url.substring(0, url.lastIndexOf("/")));
             _response.write("\",");
             _response.write("async:true,");
+
+            if (WebApplication.get().getDebugSettings().isAjaxDebugModeEnabled()) {
+                _response.write("isDebug:true,");
+            }
+            _response.write("locale:\"");
+            try {
+                _response.write(Context.getThreadContext().getLocale().toLanguageTag());
+            } catch (final EFapsException e) {
+                AbstractDojoBehavior.LOG.warn("Could not set correct locale for Dojo");
+            }
+            _response.write("\",");
             _response.write("parseOnLoad: true");
             _response.write(" };");
             _response.write("</script>");
