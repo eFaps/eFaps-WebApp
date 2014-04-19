@@ -85,17 +85,7 @@ public class AutoCompleteComboBox
             this.add(new SetSelectedRowBehavior(fieldName));
         }
         if (uiAbstractCell.isFieldUpdate()) {
-            final AjaxFieldUpdateBehavior fieldUpdate = new AjaxFieldUpdateBehavior("onchange", _model) {
-
-                /** Needed for serialization. */
-                private static final long serialVersionUID = 1L;
-
-                @Override
-                protected String getComponentMarkupId()
-                {
-                    return getMarkupId() + "_hidden";
-                }
-            };
+            final AjaxFieldUpdateBehavior fieldUpdate = new AjaxFieldUpdateBehavior("domready", _model);
             fieldUpdate.setDojoCall(true);
             this.add(fieldUpdate);
             autocomplete.addFieldUpdate(fieldUpdate);

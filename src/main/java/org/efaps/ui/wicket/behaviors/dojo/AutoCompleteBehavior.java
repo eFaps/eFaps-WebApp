@@ -163,12 +163,12 @@ public class AutoCompleteBehavior
 
         js.append("searchAttr: \"name\"}, \"").append(_component.getMarkupId()).append("\");\n");
 
-        js.append("on(").append(comboBoxId).append(", 'change', function() {")
+        js.append("on(").append(comboBoxId).append(", 'change', function() {\n")
              .append("var label=").append(comboBoxId).append(".item.label;")
              .append("if (!(label === undefined || label === null)) {")
              .append(comboBoxId).append(".item.name=label;")
              .append(comboBoxId).append(".set(\"item\",").append(comboBoxId).append(".item);")
-              .append("}");
+              .append("}\n");
         if (this.fieldUpdate != null) {
             js.append(this.fieldUpdate.getCallbackScript4Dojo());
         }

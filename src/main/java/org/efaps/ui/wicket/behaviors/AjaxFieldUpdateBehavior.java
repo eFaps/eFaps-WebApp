@@ -215,12 +215,13 @@ public class AjaxFieldUpdateBehavior
         return super.getCallbackScript(getComponent());
     }
 
+
     @Override
     protected CharSequence getCallbackScript(final Component _component)
     {
         CharSequence ret;
         if (isDojoCall()) {
-            ret= "";
+            ret = "";
         } else {
             ret = super.getCallbackScript(_component);
         }
