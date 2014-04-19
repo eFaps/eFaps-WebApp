@@ -38,7 +38,7 @@ import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
 import org.efaps.ui.wicket.behaviors.ExpandTextareaBehavior;
 import org.efaps.ui.wicket.behaviors.SetSelectedRowBehavior;
 import org.efaps.ui.wicket.components.LabelComponent;
-import org.efaps.ui.wicket.components.autocomplete.AutoCompleteField;
+import org.efaps.ui.wicket.components.autocomplete.AutoCompleteComboBox;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
 import org.efaps.ui.wicket.components.picker.AjaxPickerLink;
 import org.efaps.ui.wicket.components.table.cell.AjaxLoadInTargetLink.ScriptTarget;
@@ -113,7 +113,7 @@ public class CellPanel
             // the label must be added to have in all columns the same number of rows
             Component label;
             if (uiTableCell.isAutoComplete()) {
-                label = new AutoCompleteField("label", _model, false);
+                label = new AutoCompleteComboBox("label", _model, false);
             } else {
                 label = new LabelComponent("label", uiTableCell.getCellValue());
             }
@@ -125,7 +125,7 @@ public class CellPanel
             add(new WebMarkupContainer("link").setVisible(false));
             add(new WebMarkupContainer("icon").setVisible(false));
             add(new WebComponent("numbering").setVisible(false));
-            final AutoCompleteField label = new AutoCompleteField("label", _model, true);
+            final AutoCompleteComboBox label = new AutoCompleteComboBox("label", _model, true);
             add(label);
             if (uiTableCell.isValuePicker()) {
                 this.add(new AjaxPickerLink("valuePicker", _model, label));

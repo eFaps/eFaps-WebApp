@@ -46,6 +46,8 @@ import org.apache.wicket.resource.CoreLibrariesContributor;
 import org.apache.wicket.util.lang.Args;
 import org.apache.wicket.util.string.Strings;
 import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
+import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.util.EFapsKey;
 
 /**
@@ -58,6 +60,12 @@ public class AutoCompleteBehavior
     extends AbstractDojoBehavior
     implements IBehaviorListener
 {
+    /**
+     * Reference to the stylesheet.
+     */
+    public static final EFapsContentReference CSS = new EFapsContentReference(AutoCompleteBehavior.class,
+                    "AutoComplete.css");
+
 
     /** the component that this handler is bound to. */
     private Component component;
@@ -123,6 +131,8 @@ public class AutoCompleteBehavior
         _response.render(JavaScriptHeaderItem.forScript("Wicket.Ajax.baseUrl=\"" + ajaxBaseUrl
                         + "\";", "wicket-ajax-base-url"));
 
+        _response.render(AbstractEFapsHeaderItem.forCss(AutoCompleteBehavior.CSS));
+
         final String comboBoxId = "cb" + _component.getMarkupId();
         final StringBuilder js = new StringBuilder()
             .append("var ").append(comboBoxId).append(" = new AutoComplete({")
@@ -133,6 +143,10 @@ public class AutoCompleteBehavior
             .append("store: as,")
             .append("callbackUrl:\"" + getCallbackUrl() + "\",");
 
+        final int size = ((AutoCompleteField) _component).getWidth();
+        if (size > 0) {
+            js.append("style:\"width:").append(size).append("em\",");
+        }
         if (!this.settings.isHasDownArrow()) {
             js.append("hasDownArrow:").append(this.settings.isHasDownArrow()).append(",");
         }
@@ -149,11 +163,17 @@ public class AutoCompleteBehavior
 
         js.append("searchAttr: \"name\"}, \"").append(_component.getMarkupId()).append("\");\n");
 
+        js.append("on(").append(comboBoxId).append(", 'change', function() {")
+             .append("var label=").append(comboBoxId).append(".item.label;")
+             .append("if (!(label === undefined || label === null)) {")
+             .append(comboBoxId).append(".item.name=label;")
+             .append(comboBoxId).append(".set(\"item\",").append(comboBoxId).append(".item);")
+              .append("}");
         if (this.fieldUpdate != null) {
-            js.append("on(").append(comboBoxId).append(", 'change', function() {")
-                .append(this.fieldUpdate.getCallbackScript4Dojo())
-                .append("});");
+            js.append(this.fieldUpdate.getCallbackScript4Dojo());
         }
+        js.append("\n});");
+
         _response.render(AutoCompleteHeaderItem.forScript(js.toString()));
     }
 
@@ -166,6 +186,8 @@ public class AutoCompleteBehavior
         String getFieldName();
 
         Iterator<Map<String, String>> getChoices(final String _input);
+
+        int getWidth();
     }
 
     @Override
@@ -206,9 +228,14 @@ public class AutoCompleteBehavior
                 final String choice = map.get(EFapsKey.AUTOCOMPLETE_CHOICE.getKey()) != null
                                 ? map.get(EFapsKey.AUTOCOMPLETE_CHOICE.getKey())
                                 : map.get(EFapsKey.AUTOCOMPLETE_VALUE.getKey());
+                final String value = map.get(EFapsKey.AUTOCOMPLETE_VALUE.getKey());
+
                 final JSONObject object = new JSONObject();
                 object.put("id", key);
                 object.put("name", choice);
+                if (!choice.equals(value)) {
+                    object.put("label", value);
+                }
                 jsonArray.put(object);
             }
             _target.appendJSON(jsonArray.toString());

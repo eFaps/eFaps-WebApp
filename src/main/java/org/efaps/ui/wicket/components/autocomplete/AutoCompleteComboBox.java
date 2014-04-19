@@ -33,10 +33,12 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.ui.field.Field;
 import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
 import org.efaps.ui.wicket.behaviors.SetSelectedRowBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.AutoCompleteBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.AutoCompleteBehavior.AutoCompleteField;
+import org.efaps.ui.wicket.models.cell.UIFormCell;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.util.EFapsException;
@@ -106,9 +108,6 @@ public class AutoCompleteComboBox
         final UITableCell uiAbstractCell = (UITableCell) getDefaultModelObject();
         super.onComponentTag(_tag);
 
-//        if (this.cols > 0) {
-//            _tag.put("size", this.cols);
-//        }
         if (uiAbstractCell.getParent().isEditMode() || uiAbstractCell.getParent().isCreateMode()) {
             _tag.put("value", uiAbstractCell.getCellTitle());
         }
@@ -121,8 +120,6 @@ public class AutoCompleteComboBox
         final UITableCell uiAbstractCell = (UITableCell) getDefaultModelObject();
         return uiAbstractCell.getName();
     }
-
-
 
     /**
      * Method to get the values from the esjp.
@@ -152,5 +149,19 @@ public class AutoCompleteComboBox
             AutoCompleteComboBox.LOG.error("Error in getChoice()", e);
         }
         return retList.iterator();
+    }
+
+    @Override
+    public int getWidth()
+    {
+        final UITableCell uiObject = (UITableCell) getDefaultModelObject();
+        int ret = 0;
+        if (uiObject instanceof UIFormCell) {
+            final Field field = Field.get(uiObject.getFieldId());
+            if (field != null && field.getCols() > 0) {
+                ret = field.getCols();
+            }
+        }
+        return ret;
     }
 }

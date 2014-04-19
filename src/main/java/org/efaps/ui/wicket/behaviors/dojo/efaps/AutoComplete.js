@@ -12,6 +12,7 @@ define("efaps/AutoComplete", [
     return declare("efaps.AutoComplete", [FilteringSelect], {
         // summary:
         // Auto-completing text box
+        baseClass: "dijitTextBox dijitComboBox eFapsAutoComplete",
 
         callbackUrl: "",
 
