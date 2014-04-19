@@ -3,8 +3,9 @@ define("efaps/AutoComplete", [
     "dojo/_base/lang", // lang.clone lang.hitch
     "dojo/string", // string.substitute
     "dojo/when",
-    "dijit/form/FilteringSelect"
-], function(declare, lang, string, when, FilteringSelect){
+    "dijit/form/FilteringSelect",
+    "dojo/dom-style"
+], function(declare, lang, string, when, FilteringSelect, domStyle){
 
     // module:
     // efaps/AutoComplete
@@ -20,9 +21,12 @@ define("efaps/AutoComplete", [
 
         paramName: "p",
 
+        indicatorId: "eFapsVeil",
+
         _startSearch: function(/*String*/ text){
 
             if (text.length >= this.minInputLength) {
+                domStyle.set(this.indicatorId, "display", "");
                 // summary:
                 //      Starts a search for elements matching key (key=="" means to return all items),
                 //      and calls _openResultList() when the search completes, to display the results.
@@ -97,10 +101,12 @@ define("efaps/AutoComplete", [
                                         }
                                     };
                                     _this.onSearch(res, query, options);
+                                    domStyle.set(_this.indicatorId, "display", "none");
                                 });
                             }
                         }, function(err){
                             _this._fetchHandle = null;
+                            domStyle.set(_this.indicatorId, "display", "none");
                             if(!_this._cancelingQuery){ // don't treat canceled query as an error
                                 console.error(_this.declaredClass + ' ' + err.toString());
                             }
