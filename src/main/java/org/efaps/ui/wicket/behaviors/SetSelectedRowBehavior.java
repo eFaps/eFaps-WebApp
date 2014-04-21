@@ -36,12 +36,12 @@ public class SetSelectedRowBehavior
     /**
      * Name of the hidden input for the field name.
      */
-    public static final String INPUT_NAME = "eFapsRowSelectedName";
+    public static final String INPUT_NAME = "eFapsRSN";
 
     /**
      * Name of the hidden input for the row number.
      */
-    public static final String INPUT_ROW = "eFapsRowSelectedRow";
+    public static final String INPUT_ROW = "eFapsRSR";
 
     /**
      *
@@ -72,25 +72,25 @@ public class SetSelectedRowBehavior
                                final ComponentTag _tag)
     {
         super.onComponentTag(_component, _tag);
-        _tag.put("onfocus", getJavaScript());
+        _tag.put("onfocus", getJavaScript("this"));
     }
 
     /**
      * @return get the Javascript
      */
-    private String getJavaScript()
+    public String getJavaScript(final String _element)
     {
-        final StringBuilder ret = new StringBuilder();
-        ret.append(" this.form.").append(SetSelectedRowBehavior.INPUT_NAME).append(".value='").append(this.name)
-                .append("';")
-            .append(" c=this.form.elements[this.name];")
-            .append(" if(typeof(c.length)=='undefined'){")
-            .append(" this.form.").append(SetSelectedRowBehavior.INPUT_ROW).append(".value=0;")
-            .append(" }else{")
-            .append(" for (var i = 0; i < c.length; i++) {")
-            .append(" if (c[i]==this) {")
-            .append(" this.form.").append(SetSelectedRowBehavior.INPUT_ROW).append(".value=i;")
-            .append(" break;}}}");
+        final StringBuilder ret = new StringBuilder()
+            .append(" var f=").append(_element).append(".form;\n")
+            .append(" f.").append(SetSelectedRowBehavior.INPUT_NAME).append(".value='").append(this.name).append("';\n")
+            .append(" c=f.elements[").append(_element).append(".name];\n")
+            .append(" if(typeof(c.length)=='undefined'){\n")
+            .append(" f.").append(SetSelectedRowBehavior.INPUT_ROW).append(".value=0;\n")
+            .append(" }else{\n")
+            .append(" for (var i = 0; i < c.length; i++) {\n")
+            .append(" if (c[i]==").append(_element).append(") {\n")
+            .append(" f.").append(SetSelectedRowBehavior.INPUT_ROW).append(".value=i;\n")
+            .append(" break;}}}\n");
         return ret.toString();
     }
 

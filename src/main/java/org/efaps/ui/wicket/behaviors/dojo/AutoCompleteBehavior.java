@@ -46,6 +46,7 @@ import org.apache.wicket.resource.CoreLibrariesContributor;
 import org.apache.wicket.util.lang.Args;
 import org.apache.wicket.util.string.Strings;
 import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
+import org.efaps.ui.wicket.behaviors.SetSelectedRowBehavior;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.util.EFapsKey;
@@ -61,10 +62,39 @@ public class AutoCompleteBehavior
     implements IBehaviorListener
 {
     /**
+     * Interface the component using the behavior must implement.
+     */
+    public interface AutoCompleteField
+    {
+
+        /**
+         * @return field name
+         */
+        String getFieldName();
+
+        /**
+         * @param _input the choices
+         * @return new Iteratro
+         */
+        Iterator<Map<String, String>> getChoices(final String _input);
+
+        /**
+         * @return width of the field
+         */
+        int getWidth();
+    }
+
+    /**
      * Reference to the stylesheet.
      */
     public static final EFapsContentReference CSS = new EFapsContentReference(AutoCompleteBehavior.class,
                     "AutoComplete.css");
+
+
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
 
     /** the component that this handler is bound to. */
@@ -75,6 +105,9 @@ public class AutoCompleteBehavior
      */
     private final AutoCompleteSettings settings = new AutoCompleteSettings();
 
+    /**
+     * The related fieldUpdate behavior.
+     */
     private AjaxFieldUpdateBehavior fieldUpdate;
 
     /**
@@ -112,11 +145,6 @@ public class AutoCompleteBehavior
     {
         return this.component;
     }
-
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
 
     @Override
     public void renderHead(final Component _component,
@@ -174,20 +202,14 @@ public class AutoCompleteBehavior
         }
         js.append("\n});");
 
+        if (!_component.getBehaviors(SetSelectedRowBehavior.class).isEmpty()) {
+            js.append("on(").append(comboBoxId).append(", 'focus', function() {\n")
+                .append(_component.getBehaviors(
+                                SetSelectedRowBehavior.class).get(0).getJavaScript("this.valueNode"))
+                .append("\n});");
+        }
+
         _response.render(AutoCompleteHeaderItem.forScript(js.toString()));
-    }
-
-    public interface AutoCompleteField
-    {
-
-        /**
-         * @return
-         */
-        String getFieldName();
-
-        Iterator<Map<String, String>> getChoices(final String _input);
-
-        int getWidth();
     }
 
     @Override
@@ -257,6 +279,14 @@ public class AutoCompleteBehavior
             throw new IllegalArgumentException("Behavior must be bound to a component to create the URL");
         }
         return getComponent().urlFor(this, IBehaviorListener.INTERFACE, new PageParameters());
+    }
+
+    /**
+     * @param _fieldUpdate fieldUpdate to add
+     */
+    public void addFieldUpdate(final AjaxFieldUpdateBehavior _fieldUpdate)
+    {
+        this.fieldUpdate = _fieldUpdate;
     }
 
     public static class ACAjaxRequestTarget
@@ -413,13 +443,5 @@ public class AutoCompleteBehavior
         {
             return this.target.getPage();
         }
-    }
-
-    /**
-     * @param _fieldUpdate
-     */
-    public void addFieldUpdate(final AjaxFieldUpdateBehavior _fieldUpdate)
-    {
-        this.fieldUpdate = _fieldUpdate;
     }
 }
