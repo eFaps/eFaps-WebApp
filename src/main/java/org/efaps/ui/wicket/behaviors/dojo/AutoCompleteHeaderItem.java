@@ -91,17 +91,7 @@ public class AutoCompleteHeaderItem
     @Override
     public void render(final Response _response)
     {
-        final StringBuilder js = new StringBuilder().append("require([\"dojo/ready\"]);")
-                        .append("dojo.ready(function() {\n")
-                        .append("require([\"efaps/AjaxStore\",\"efaps/AutoComplete\",\"dojo/on\",\"dojo/domReady!\"],")
-                        .append(" function(AjaxStore, AutoComplete, on){\n")
-                        .append("var ph=\"")
-                        .append(DBProperties.getProperty(AutoCompleteBehavior.class.getName() + ".PlaceHolder"))
-                        .append("\";\n")
-                        .append("var as= new AjaxStore();\n")
-                        .append(getJavaScript())
-                        .append("});\n")
-                        .append("});\n");
+        final CharSequence js = AutoCompleteHeaderItem.writeJavaScript(getJavaScript(), true);
         JavaScriptUtils.writeJavaScript(_response, js);
     }
 
@@ -129,5 +119,32 @@ public class AutoCompleteHeaderItem
     public int hashCode()
     {
         return getJavaScript().hashCode();
+    }
+
+    /**
+     * @param _append
+     * @return
+     */
+    public static CharSequence writeJavaScript(final CharSequence _charSequence,
+                                               final boolean _ready)
+    {
+        final StringBuilder js = new StringBuilder();
+        if (_ready) {
+            js.append("require([\"dojo/ready\"]);").append("dojo.ready(function() {\n");
+        }
+
+        js.append("require([\"efaps/AjaxStore\",\"efaps/AutoComplete\",\"dojo/on\",\"dojo/domReady!\"],")
+            .append(" function(AjaxStore, AutoComplete, on){\n")
+            .append("var ph=\"")
+            .append(DBProperties.getProperty(AutoCompleteBehavior.class.getName() + ".PlaceHolder"))
+            .append("\";\n")
+            .append("var as= new AjaxStore();\n")
+            .append(_charSequence)
+            .append("});\n");
+
+        if (_ready) {
+            js.append("});\n");
+        }
+        return js;
     }
 }

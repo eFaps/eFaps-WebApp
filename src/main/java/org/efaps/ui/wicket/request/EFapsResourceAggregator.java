@@ -25,11 +25,13 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.apache.wicket.ajax.AjaxRequestHandler;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.HeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.html.DecoratingHeaderResponse;
+import org.apache.wicket.request.cycle.RequestCycle;
 import org.efaps.admin.program.bundle.BundleMaker;
 import org.efaps.admin.program.bundle.TempFileBundle;
 import org.efaps.ui.wicket.behaviors.dojo.AutoCompleteHeaderItem;
@@ -64,7 +66,7 @@ public class EFapsResourceAggregator
     /**
     * List of HeaderItems that will be rendered in on dojo ready script.
     */
-   private final List<AutoCompleteHeaderItem> autoCompleteItems = new ArrayList<AutoCompleteHeaderItem>();
+    private final List<AutoCompleteHeaderItem> autoCompleteItems = new ArrayList<AutoCompleteHeaderItem>();
 
     /**
      * List of HeaderItems that will be rendered file using the eFaps kernel.
@@ -108,6 +110,7 @@ public class EFapsResourceAggregator
         renderCombinedEventScripts();
         renderEFapsHeaderItems();
         renderCombinedAutoCompleteScripts();
+
         super.close();
     }
 
@@ -190,7 +193,12 @@ public class EFapsResourceAggregator
         }
 
         if (combinedScript.length() > 0) {
-            getRealResponse().render(AutoCompleteHeaderItem.forScript(combinedScript.append("\n").toString()));
+            if (RequestCycle.get().getActiveRequestHandler() instanceof AjaxRequestHandler) {
+                ((AjaxRequestHandler) RequestCycle.get().getActiveRequestHandler())
+                    .appendJavaScript(AutoCompleteHeaderItem.writeJavaScript(combinedScript.append("\n"), false));
+            } else {
+                getRealResponse().render(AutoCompleteHeaderItem.forScript(combinedScript.append("\n").toString()));
+            }
         }
     }
 }
