@@ -82,14 +82,14 @@ public class SetSelectedRowBehavior
     {
         final StringBuilder ret = new StringBuilder()
             .append(" var f=").append(_element).append(".form;\n")
-            .append(" f.").append(SetSelectedRowBehavior.INPUT_NAME).append(".value='").append(this.name).append("';\n")
-            .append(" c=f.elements[").append(_element).append(".name];\n")
-            .append(" if(typeof(c.length)=='undefined'){\n")
-            .append(" f.").append(SetSelectedRowBehavior.INPUT_ROW).append(".value=0;\n")
-            .append(" }else{\n")
-            .append(" for (var i = 0; i < c.length; i++) {\n")
-            .append(" if (c[i]==").append(_element).append(") {\n")
-            .append(" f.").append(SetSelectedRowBehavior.INPUT_ROW).append(".value=i;\n")
+            .append(" f.").append(SetSelectedRowBehavior.INPUT_NAME).append(".value='").append(this.name).append("';")
+            .append(" c=f.elements[").append(_element).append(".name];")
+            .append(" if(typeof(c.length)=='undefined'){")
+            .append(" f.").append(SetSelectedRowBehavior.INPUT_ROW).append(".value=0;")
+            .append(" }else{")
+            .append(" for (var i = 0; i < c.length; i++) {")
+            .append(" if (c[i]==").append(_element).append(") {")
+            .append(" f.").append(SetSelectedRowBehavior.INPUT_ROW).append(".value=i;")
             .append(" break;}}}\n");
         return ret.toString();
     }

@@ -207,19 +207,19 @@ public class AutoCompleteBehavior
 
         js.append("searchAttr: \"name\"}, \"").append(_component.getMarkupId()).append("\");\n");
 
-        js.append("on(").append(comboBoxId).append(", 'change', function() {\n")
+        js.append("on(").append(comboBoxId).append(", 'change', function() {")
              .append("var label=").append(comboBoxId).append(".item.label;")
              .append("if (!(label === undefined || label === null)) {")
              .append(comboBoxId).append(".item.name=label;")
              .append(comboBoxId).append(".set(\"item\",").append(comboBoxId).append(".item);")
-              .append("}\n");
+              .append("}");
         if (this.fieldUpdate != null) {
             js.append(this.fieldUpdate.getCallbackScript4Dojo());
         }
         js.append("\n});");
 
         if (!_component.getBehaviors(SetSelectedRowBehavior.class).isEmpty()) {
-            js.append("on(").append(comboBoxId).append(", 'focus', function() {\n")
+            js.append("on(").append(comboBoxId).append(", 'focus', function() {")
                 .append(_component.getBehaviors(
                                 SetSelectedRowBehavior.class).get(0).getJavaScript("this.valueNode"))
                 .append("\n});");
