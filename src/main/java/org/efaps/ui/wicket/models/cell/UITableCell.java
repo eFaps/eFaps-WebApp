@@ -34,6 +34,7 @@ import org.efaps.admin.ui.field.Field;
 import org.efaps.admin.ui.field.FieldPicker;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
+import org.efaps.ui.wicket.models.cell.AutoCompleteSettings.EditValue;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.util.EFapsException;
@@ -170,7 +171,10 @@ public class UITableCell
                         }
                     }
                 }
-
+                final String value4EditStr = event.getProperty("Value4Edit");
+                if (value4EditStr != null) {
+                    this.autoCompleteSetting.setValue4Edit(EditValue.valueOf(value4EditStr));
+                }
             }
         }
         this.fieldUpdate = _fieldValue.getField().hasEvents(EventType.UI_FIELD_UPDATE);

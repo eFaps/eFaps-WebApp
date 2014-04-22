@@ -27,6 +27,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.LabelComponent;
+import org.efaps.ui.wicket.components.autocomplete.AutoCompleteComboBox;
 import org.efaps.ui.wicket.components.autocomplete.AutoCompleteField;
 import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.models.cell.UIFormCellCmd;
@@ -67,7 +68,7 @@ public class CommandCellPanel
 
         if (uiObject.isAutoComplete()
                         && (_formmodel.isCreateMode() || _formmodel.isCreateMode() || _formmodel.isSearchMode())) {
-            auto = new AutoCompleteField("autocomplete", _model, false);
+            auto = new AutoCompleteComboBox("autocomplete", _model, false);
             add2Auto = true;
         } else {
             auto = new WebComponent("autocomplete").setVisible(false);

@@ -33,10 +33,12 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.db.Instance;
 import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
 import org.efaps.ui.wicket.behaviors.SetSelectedRowBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.AutoCompleteBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.AutoCompleteBehavior.AutoCompleteField;
+import org.efaps.ui.wicket.models.cell.AutoCompleteSettings.EditValue;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.util.EFapsException;
@@ -51,7 +53,8 @@ import org.slf4j.LoggerFactory;
  * @version $Id$
  */
 public class AutoCompleteComboBox
-    extends TextField<UITableCell> implements AutoCompleteField
+    extends TextField<UITableCell>
+    implements AutoCompleteField
 {
 
     /**
@@ -65,9 +68,9 @@ public class AutoCompleteComboBox
     private static final long serialVersionUID = 1L;
 
     /**
-     * @param _string
-     * @param _model
-     * @param _b
+     * @param _wicketId     wicket id for this component
+     * @param _model        model for this component
+     * @param _selectRow    add selected row behavior
      */
     public AutoCompleteComboBox(final String _wicketId,
                                 final IModel<?> _model,
@@ -90,17 +93,13 @@ public class AutoCompleteComboBox
             autocomplete.addFieldUpdate(fieldUpdate);
         }
     }
+
     @Override
     protected void onComponentTag(final ComponentTag _tag)
     {
         _tag.setName("input");
-        final UITableCell uiAbstractCell = (UITableCell) getDefaultModelObject();
         super.onComponentTag(_tag);
-
-        if (uiAbstractCell.getParent().isEditMode() || uiAbstractCell.getParent().isCreateMode()) {
-            _tag.put("value", uiAbstractCell.getCellTitle());
-        }
-        _tag.append("class", "eFapsAutoComplete", " ");
+        _tag.put("value", "");
     }
 
     /**
@@ -133,4 +132,49 @@ public class AutoCompleteComboBox
         return retList.iterator();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getItemValue()
+    {
+        String ret = null;
+        try {
+            final UITableCell uiAbstractCell = (UITableCell) getDefaultModelObject();
+            if ((uiAbstractCell.getParent().isEditMode() || uiAbstractCell.getParent().isCreateMode())
+                            && !EditValue.NONE.equals(uiAbstractCell.getAutoCompleteSetting().getValue4Edit())) {
+                final Instance instance = uiAbstractCell.getInstance();
+                if (instance != null && instance.isValid()) {
+                    switch (uiAbstractCell.getAutoCompleteSetting().getValue4Edit()) {
+                        case OID:
+                            ret = instance.getOid();
+                            break;
+                        case ID:
+                            ret = String.valueOf(instance.getId());
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+        } catch (final EFapsException e) {
+            AutoCompleteComboBox.LOG.error("Error in getItemValue()", e);
+        }
+        return ret;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getItemLabel()
+    {
+        String ret = null;
+        final UITableCell uiAbstractCell = (UITableCell) getDefaultModelObject();
+        if ((uiAbstractCell.getParent().isEditMode() || uiAbstractCell.getParent().isCreateMode())
+                        && !EditValue.NONE.equals(uiAbstractCell.getAutoCompleteSetting().getValue4Edit())) {
+            ret = uiAbstractCell.getCellValue();
+        }
+        return ret;
+    }
 }

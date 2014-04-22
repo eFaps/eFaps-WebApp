@@ -73,6 +73,10 @@ public class AutoCompleteBehavior
          * @return new Iteratro
          */
         Iterator<Map<String, String>> getChoices(final String _input);
+
+        String getItemValue();
+
+        String getItemLabel();
     }
 
     /**
@@ -170,10 +174,17 @@ public class AutoCompleteBehavior
             .append("var ").append(comboBoxId).append(" = new AutoComplete({")
             .append("id:\"").append(_component.getMarkupId()).append("\",")
             .append("name:\"").append(this.settings.getFieldName()).append("\",")
-            .append("value: \"\",")
             .append("placeHolder:ph,")
             .append("store: as,")
+            .append("value: \"\",")
             .append("callbackUrl:\"" + getCallbackUrl() + "\",");
+
+        final String id = ((AutoCompleteField) _component).getItemValue();
+        if (id != null) {
+            final String label = ((AutoCompleteField) _component).getItemLabel();
+            js.append("item: { id:\"").append(id).append("\", name:\"").append(label)
+                .append("\", label:\"").append(label) .append("\"},");
+        }
 
         if (this.settings.getWidth() > 0) {
             js.append("style:\"width:").append(this.settings.getWidth()).append("em\",");

@@ -35,6 +35,20 @@ import java.util.Set;
 public class AutoCompleteSettings
     implements Serializable
 {
+
+    /**
+     * Editvalue definition.
+     */
+    public enum EditValue
+    {
+        /** Use the ID. */
+        ID,
+        /** Use the OID. (Default) */
+        OID,
+        /** Don't set the value for edit. */
+        NONE;
+    }
+
     /**
      *
      */
@@ -80,6 +94,11 @@ public class AutoCompleteSettings
      * WIdth of the rendered field.
      */
     private int width = 0;
+
+    /**
+     * Edit value definition.
+     */
+    private EditValue value4Edit = EditValue.OID;
 
     /**
      * Name of the extra parameters that will be send via GET.
@@ -258,5 +277,25 @@ public class AutoCompleteSettings
     public void setMaxValueLength(final int _maxValueLength)
     {
         this.maxValueLength = _maxValueLength;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #value4Edit}.
+     *
+     * @return value of instance variable {@link #value4Edit}
+     */
+    public EditValue getValue4Edit()
+    {
+        return this.value4Edit;
+    }
+
+    /**
+     * Setter method for instance variable {@link #value4Edit}.
+     *
+     * @param _value4Edit value for instance variable {@link #value4Edit}
+     */
+    public void setValue4Edit(final EditValue _value4Edit)
+    {
+        this.value4Edit = _value4Edit;
     }
 }
