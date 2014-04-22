@@ -130,7 +130,7 @@ public class AjaxFieldUpdateBehavior
         } else {
             uiObject = (UITableCell) this.model.getObject();
         }
-        final List<Map<String, String>> values = new ArrayList<Map<String, String>>();
+        final List<Map<String, Object>> values = new ArrayList<Map<String, Object>>();
         try {
             final AbstractUIPageObject pageObject = (AbstractUIPageObject) (getComponent().getPage()
                             .getDefaultModelObject());
@@ -140,7 +140,7 @@ public class AjaxFieldUpdateBehavior
                 final Object ob = aReturn.get(ReturnValues.VALUES);
                 if (ob instanceof List) {
                     @SuppressWarnings("unchecked")
-                    final List<Map<String, String>> list = (List<Map<String, String>>) ob;
+                    final List<Map<String, Object>> list = (List<Map<String, Object>>) ob;
                     values.addAll(list);
                 }
             }
@@ -149,7 +149,7 @@ public class AjaxFieldUpdateBehavior
         }
         final StringBuilder js = new StringBuilder();
         int i = 0;
-        for (final Map<String, String> map : values) {
+        for (final Map<String, Object> map : values) {
             if (map.size() > 0) {
                 final boolean useId = map.containsKey(EFapsKey.FIELDUPDATE_USEID.getKey());
                 final boolean useIdx = map.containsKey(EFapsKey.FIELDUPDATE_USEIDX.getKey());
@@ -168,10 +168,24 @@ public class AjaxFieldUpdateBehavior
                             js.append(map.get(EFapsKey.FIELDUPDATE_USEIDX.getKey()) == null ? i
                                             : map.get(EFapsKey.FIELDUPDATE_USEIDX.getKey()));
                         }
-                        js.append(",'").append(keyString).append("',")
-                            .append(map.get(keyString).contains("Array(") ? "" : "'")
-                            .append(map.get(keyString))
-                            .append(map.get(keyString).contains("Array(") ? "" : "'").append(");");
+                        js.append(",'").append(keyString).append("',");
+                        final Object value = map.get(keyString);
+                        final String strValue;
+                        final String strLabel;
+                        if (value instanceof String[] && ((String[]) value).length == 2) {
+                            strValue = ((String[]) value)[0];
+                            strLabel = ((String[]) value)[1];
+                        } else {
+                            strValue = String.valueOf(value);
+                            strLabel = null;
+                        }
+                        js.append(strValue.contains("Array(") ? "" : "'")
+                            .append(strValue)
+                            .append(strValue.contains("Array(") ? "" : "'");
+                        if (strLabel != null) {
+                            js.append(",'").append(strLabel).append("'");
+                        }
+                        js.append(");");
                     }
                 }
             }

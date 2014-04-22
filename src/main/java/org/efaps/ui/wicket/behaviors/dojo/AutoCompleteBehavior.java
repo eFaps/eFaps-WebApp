@@ -216,13 +216,13 @@ public class AutoCompleteBehavior
         if (this.fieldUpdate != null) {
             js.append(this.fieldUpdate.getCallbackScript4Dojo());
         }
-        js.append("\n});");
+        js.append("});\n");
 
         if (!_component.getBehaviors(SetSelectedRowBehavior.class).isEmpty()) {
             js.append("on(").append(comboBoxId).append(", 'focus', function() {")
                 .append(_component.getBehaviors(
                                 SetSelectedRowBehavior.class).get(0).getJavaScript("this.valueNode"))
-                .append("\n});");
+                .append("});\n");
         }
 
         _response.render(AutoCompleteHeaderItem.forScript(js.toString()));
