@@ -59,15 +59,6 @@ public class AutoCompleteHeaderItem
         this.javaScript = _javaScript;
     }
 
-    /**
-     * @param _javaScript Javascript for the header to add
-     * @return new OnDojoReadyHeaderItem
-     */
-    public static AutoCompleteHeaderItem forScript(final CharSequence _javaScript)
-    {
-        return new AutoCompleteHeaderItem(_javaScript);
-    }
-
     @Override
     public Iterable<?> getRenderTokens()
     {
@@ -95,14 +86,6 @@ public class AutoCompleteHeaderItem
         JavaScriptUtils.writeJavaScript(_response, js);
     }
 
-    /**
-     * @return the script that gets executed on the DOM ready event.
-     */
-    public CharSequence getJavaScript()
-    {
-        return this.javaScript;
-    }
-
     @Override
     public boolean equals(final Object _obj)
     {
@@ -122,8 +105,26 @@ public class AutoCompleteHeaderItem
     }
 
     /**
-     * @param _append
-     * @return
+     * @return the script that gets executed on the DOM ready event.
+     */
+    public CharSequence getJavaScript()
+    {
+        return this.javaScript;
+    }
+
+    /**
+     * @param _javaScript Javascript for the header to add
+     * @return new OnDojoReadyHeaderItem
+     */
+    public static AutoCompleteHeaderItem forScript(final CharSequence _javaScript)
+    {
+        return new AutoCompleteHeaderItem(_javaScript);
+    }
+
+    /**
+     * @param _charSequence to be wrapped
+     * @param _ready        add dojo ready
+     * @return CharSequence
      */
     public static CharSequence writeJavaScript(final CharSequence _charSequence,
                                                final boolean _ready)

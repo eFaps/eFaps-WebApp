@@ -40,10 +40,19 @@ public class AutoCompleteSettings
      */
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Show the down arrow.
+     */
     private boolean hasDownArrow = false;
 
+    /**
+     * Minimum input length for starting ther GET request.
+     */
     private int minInputLength = 1;
 
+    /**
+     * Name of the parameter.
+     */
     private String paramName = "p";
 
     /**
@@ -52,10 +61,19 @@ public class AutoCompleteSettings
      */
     private int searchDelay = 200;
 
+    /**
+     * Name of the field.
+     */
     private String fieldName;
 
+    /**
+     * WIdth of the rendered field.
+     */
     private int width = 0;
 
+    /**
+     * Name of the extra parameters that will be send via GET.
+     */
     private final Set<String> extraParameters = new HashSet<String>();
 
     /**
@@ -138,21 +156,7 @@ public class AutoCompleteSettings
         this.paramName = _parameterName;
     }
 
-    /**
-     * @return
-     */
-    public String getFieldName()
-    {
-        return this.fieldName;
-    }
 
-    /**
-     * @return
-     */
-    public int getWidth()
-    {
-        return this.width ;
-    }
 
     /**
      * Getter method for the instance variable {@link #extraParameters}.
@@ -182,5 +186,25 @@ public class AutoCompleteSettings
     public void setWidth(final int _width)
     {
         this.width = _width;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #fieldName}.
+     *
+     * @return value of instance variable {@link #fieldName}
+     */
+    public String getFieldName()
+    {
+        return this.fieldName;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #width}.
+     *
+     * @return value of instance variable {@link #width}
+     */
+    public int getWidth()
+    {
+        return this.width;
     }
 }

@@ -101,7 +101,11 @@ public class AutoCompleteBehavior
     private AjaxFieldUpdateBehavior fieldUpdate;
 
 
-    public AutoCompleteBehavior(final AutoCompleteSettings _settings) {
+    /**
+     * @param _settings settings for this behavior
+     */
+    public AutoCompleteBehavior(final AutoCompleteSettings _settings)
+    {
         if (_settings == null) {
             this.settings = new AutoCompleteSettings();
         } else {
@@ -311,20 +315,33 @@ public class AutoCompleteBehavior
         return this.settings;
     }
 
+    /**
+     * Request target wrapping the orginal target.
+     */
     public static class ACAjaxRequestTarget
         implements AjaxRequestTarget
     {
 
+        /**
+         * Original target.
+         */
         private final AjaxRequestTarget target;
+
+        /**
+         * The added json string.
+         */
         private String jsonString;
 
+        /**
+         * @param _target target to be wrapped
+         */
         public ACAjaxRequestTarget(final AjaxRequestTarget _target)
         {
             this.target = _target;
         }
 
         /**
-         * @param _string
+         * @param _json json to be appended
          */
         public void appendJSON(final String _json)
         {
