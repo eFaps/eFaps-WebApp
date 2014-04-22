@@ -47,6 +47,7 @@ import org.apache.wicket.util.lang.Args;
 import org.apache.wicket.util.string.Strings;
 import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
 import org.efaps.ui.wicket.behaviors.SetSelectedRowBehavior;
+import org.efaps.ui.wicket.models.cell.AutoCompleteSettings;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.util.EFapsKey;
@@ -66,22 +67,11 @@ public class AutoCompleteBehavior
      */
     public interface AutoCompleteField
     {
-
-        /**
-         * @return field name
-         */
-        String getFieldName();
-
         /**
          * @param _input the choices
          * @return new Iteratro
          */
         Iterator<Map<String, String>> getChoices(final String _input);
-
-        /**
-         * @return width of the field
-         */
-        int getWidth();
     }
 
     /**
@@ -103,12 +93,21 @@ public class AutoCompleteBehavior
     /**
      * Settings for this AutoComplete.
      */
-    private final AutoCompleteSettings settings = new AutoCompleteSettings();
+    private final AutoCompleteSettings settings;
 
     /**
      * The related fieldUpdate behavior.
      */
     private AjaxFieldUpdateBehavior fieldUpdate;
+
+
+    public AutoCompleteBehavior(final AutoCompleteSettings _settings) {
+        if (_settings == null) {
+            this.settings = new AutoCompleteSettings();
+        } else {
+            this.settings = _settings;
+        }
+    }
 
     /**
      * Bind this handler to the given component.
@@ -165,15 +164,14 @@ public class AutoCompleteBehavior
         final StringBuilder js = new StringBuilder()
             .append("var ").append(comboBoxId).append(" = new AutoComplete({")
             .append("id:\"").append(_component.getMarkupId()).append("\",")
-            .append("name:\"").append(((AutoCompleteField) _component).getFieldName()).append("\",")
+            .append("name:\"").append(this.settings.getFieldName()).append("\",")
             .append("value: \"\",")
             .append("placeHolder:ph,")
             .append("store: as,")
             .append("callbackUrl:\"" + getCallbackUrl() + "\",");
 
-        final int size = ((AutoCompleteField) _component).getWidth();
-        if (size > 0) {
-            js.append("style:\"width:").append(size).append("em\",");
+        if (this.settings.getWidth() > 0) {
+            js.append("style:\"width:").append(this.settings.getWidth()).append("em\",");
         }
         if (!this.settings.isHasDownArrow()) {
             js.append("hasDownArrow:").append(this.settings.isHasDownArrow()).append(",");
@@ -187,6 +185,20 @@ public class AutoCompleteBehavior
 
         if (!"p".equals(this.settings.getParamName())) {
             js.append("paramName:\"").append(this.settings.getParamName()).append("\",");
+        }
+
+        if (!this.settings.getExtraParameters().isEmpty()) {
+            js.append("extraParameters:[");
+            boolean first = true;
+            for (final String ep : this.settings.getExtraParameters()) {
+                if (first) {
+                    first = false;
+                } else {
+                    js.append(",");
+                }
+                js.append("\"").append(ep).append("\"");
+            }
+            js.append("],");
         }
 
         js.append("searchAttr: \"name\"}, \"").append(_component.getMarkupId()).append("\");\n");
@@ -287,6 +299,16 @@ public class AutoCompleteBehavior
     public void addFieldUpdate(final AjaxFieldUpdateBehavior _fieldUpdate)
     {
         this.fieldUpdate = _fieldUpdate;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #settings}.
+     *
+     * @return value of instance variable {@link #settings}
+     */
+    public AutoCompleteSettings getSettings()
+    {
+        return this.settings;
     }
 
     public static class ACAjaxRequestTarget

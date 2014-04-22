@@ -33,12 +33,10 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
-import org.efaps.admin.ui.field.Field;
 import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
 import org.efaps.ui.wicket.behaviors.SetSelectedRowBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.AutoCompleteBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.AutoCompleteBehavior.AutoCompleteField;
-import org.efaps.ui.wicket.models.cell.UIFormCell;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.util.EFapsException;
@@ -78,7 +76,8 @@ public class AutoCompleteComboBox
         super(_wicketId, Model.<UITableCell>of(_model));
         final UITableCell uiAbstractCell = (UITableCell) getDefaultModelObject();
         final String fieldName = uiAbstractCell.getName();
-        final AutoCompleteBehavior autocomplete = new AutoCompleteBehavior();
+
+        final AutoCompleteBehavior autocomplete = new AutoCompleteBehavior(uiAbstractCell.getAutoCompleteSetting());
         this.add(autocomplete);
 
         if (_selectRow) {
@@ -102,13 +101,6 @@ public class AutoCompleteComboBox
             _tag.put("value", uiAbstractCell.getCellTitle());
         }
         _tag.append("class", "eFapsAutoComplete", " ");
-    }
-
-    @Override
-    public String getFieldName()
-    {
-        final UITableCell uiAbstractCell = (UITableCell) getDefaultModelObject();
-        return uiAbstractCell.getName();
     }
 
     /**
@@ -141,17 +133,4 @@ public class AutoCompleteComboBox
         return retList.iterator();
     }
 
-    @Override
-    public int getWidth()
-    {
-        final UITableCell uiObject = (UITableCell) getDefaultModelObject();
-        int ret = 0;
-        if (uiObject instanceof UIFormCell) {
-            final Field field = Field.get(uiObject.getFieldId());
-            if (field != null && field.getCols() > 0) {
-                ret = field.getCols();
-            }
-        }
-        return ret;
-    }
 }

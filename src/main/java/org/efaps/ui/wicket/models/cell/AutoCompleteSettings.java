@@ -19,9 +19,11 @@
  */
 
 
-package org.efaps.ui.wicket.behaviors.dojo;
+package org.efaps.ui.wicket.models.cell;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 
 /**
@@ -50,6 +52,12 @@ public class AutoCompleteSettings
      */
     private int searchDelay = 200;
 
+    private String fieldName;
+
+    private int width = 0;
+
+    private final Set<String> extraParameters = new HashSet<String>();
+
     /**
      * Getter method for the instance variable {@link #hasDownArrow}.
      *
@@ -59,7 +67,6 @@ public class AutoCompleteSettings
     {
         return this.hasDownArrow;
     }
-
 
     /**
      * Setter method for instance variable {@link #hasDownArrow}.
@@ -71,8 +78,6 @@ public class AutoCompleteSettings
         this.hasDownArrow = _hasDownArrow;
     }
 
-
-
     /**
      * Getter method for the instance variable {@link #minInputLength}.
      *
@@ -83,8 +88,6 @@ public class AutoCompleteSettings
         return this.minInputLength;
     }
 
-
-
     /**
      * Setter method for instance variable {@link #minInputLength}.
      *
@@ -94,8 +97,6 @@ public class AutoCompleteSettings
     {
         this.minInputLength = _minInputLength;
     }
-
-
 
     /**
      * Getter method for the instance variable {@link #searchDelay}.
@@ -135,5 +136,51 @@ public class AutoCompleteSettings
     public void setParamName(final String _parameterName)
     {
         this.paramName = _parameterName;
+    }
+
+    /**
+     * @return
+     */
+    public String getFieldName()
+    {
+        return this.fieldName;
+    }
+
+    /**
+     * @return
+     */
+    public int getWidth()
+    {
+        return this.width ;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #extraParameters}.
+     *
+     * @return value of instance variable {@link #extraParameters}
+     */
+    public Set<String> getExtraParameters()
+    {
+        return this.extraParameters;
+    }
+
+    /**
+     * Setter method for instance variable {@link #fieldName}.
+     *
+     * @param _fieldName value for instance variable {@link #fieldName}
+     */
+    public void setFieldName(final String _fieldName)
+    {
+        this.fieldName = _fieldName;
+    }
+
+    /**
+     * Setter method for instance variable {@link #width}.
+     *
+     * @param _width value for instance variable {@link #width}
+     */
+    public void setWidth(final int _width)
+    {
+        this.width = _width;
     }
 }

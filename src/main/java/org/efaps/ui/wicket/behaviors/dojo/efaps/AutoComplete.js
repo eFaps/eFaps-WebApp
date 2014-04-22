@@ -4,8 +4,9 @@ define("efaps/AutoComplete", [
     "dojo/string", // string.substitute
     "dojo/when",
     "dijit/form/FilteringSelect",
-    "dojo/dom-style"
-], function(declare, lang, string, when, FilteringSelect, domStyle){
+    "dojo/dom-style",
+    "dojo/dom-form"
+], function(declare, lang, string, when, FilteringSelect, domStyle, domForm){
 
     // module:
     // efaps/AutoComplete
@@ -22,6 +23,8 @@ define("efaps/AutoComplete", [
         paramName: "p",
 
         indicatorId: "eFapsVeil",
+
+        extraParameters: [],
 
         _startSearch: function(/*String*/ text){
 
@@ -55,15 +58,29 @@ define("efaps/AutoComplete", [
                     // Create a new query to prevent accidentally querying for a hidden
                     // value from FilteringSelect's keyField
                     query = lang.clone(this.query), // #5970
+
                     options = {
                         start: 0,
                         count: this.pageSize,
                         callbackUrl: this.callbackUrl,
-                        paramName: this.paramName
+                        paramName: this.paramName,
+                        ep: {}
                     },
                     qs = text, //string.substitute(this.queryExpr, [text.replace(/([\\\*\?])/g, "\\$1")]),
-                    q,
-                    startQuery = function(){
+                    q;
+
+                // read the extra parameters to post them also
+                if (this.extraParameters.length > 0) {
+                    var fieldObj = domForm.toObject(this.valueNode.form);
+                    for (var i = 0; i < this.extraParameters.length; i++) {
+                        var val = lang.getObject(this.extraParameters[i], false, fieldObj);
+                        if (val != null) {
+                            options.ep[this.extraParameters[i]] = val;
+                        }
+                    }
+                }
+
+                var startQuery = function(){
                         var resPromise = _this._fetchHandle = _this.store.query(query, options);
                         if(_this.disabled || _this.readOnly || (q !== _this._lastQuery)){
                             return;

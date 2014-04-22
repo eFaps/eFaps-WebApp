@@ -126,6 +126,11 @@ public class UIFormCell
         this.hideLabel = _fieldValue.getField().isHideLabel();
         this.rowSpan = _fieldValue.getField().getRowSpan();
         this.attrTypeName = _attrTypeName;
+        if (isAutoComplete()) {
+            if (_fieldValue.getField().getCols() > 0) {
+                getAutoCompleteSetting().setWidth(_fieldValue.getField().getCols());
+            }
+        }
     }
 
 

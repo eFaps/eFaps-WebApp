@@ -84,16 +84,6 @@ public class UITableCell
     private String cellTitle;
 
     /**
-     * Stores if the field has an esjp used for auto completion.
-     */
-    private boolean autoComplete;
-
-    /**
-     * Minimum input length on client side for the autocomplete field.
-     */
-    private int autoCompleteMinInputLength = 1;
-
-    /**
      * Stores if the field has an esjp used for the update of other fields.
      */
     private final boolean fieldUpdate;
@@ -123,6 +113,8 @@ public class UITableCell
      */
     private final boolean showNumbering;
 
+    private AutoCompleteSettings autoCompleteSetting;
+
     /**
      * Constructor.
      *
@@ -150,12 +142,28 @@ public class UITableCell
         this.cellTitle = _cellTitle == null ? _cellvalue : _cellTitle;
         this.icon = _icon;
         this.multiRows = _fieldValue.getField().getRows() > 1;
-        this.autoComplete = _fieldValue.getField().hasEvents(EventType.UI_FIELD_AUTOCOMPLETE);
-        if (this.autoComplete) {
+
+        if (_fieldValue.getField().hasEvents(EventType.UI_FIELD_AUTOCOMPLETE)) {
+            this.autoCompleteSetting = new AutoCompleteSettings();
+            this.autoCompleteSetting.setFieldName(getName());
             final List<EventDefinition> events = _fieldValue.getField().getEvents(EventType.UI_FIELD_AUTOCOMPLETE);
             for (final EventDefinition event : events) {
-                this.autoCompleteMinInputLength = event.getProperty("MinInputLength") == null
-                                ? 1 : Integer.valueOf(event.getProperty("MinInputLength"));
+                this.autoCompleteSetting.setMinInputLength(event.getProperty("MinInputLength") == null
+                                ? 1 : Integer.valueOf(event.getProperty("MinInputLength")));
+                final String ep = event.getProperty("ExtraParameter");
+                if (ep != null) {
+                    this.autoCompleteSetting.getExtraParameters().add(ep);
+                    for (int i = 1; i < 100; i++) {
+                        final String keyTmp = "ExtraParameter" + String.format("%02d", i);
+                        final String epTmp = event.getProperty(keyTmp);
+                        if (epTmp == null) {
+                            break;
+                        } else {
+                            this.autoCompleteSetting.getExtraParameters().add(epTmp);
+                        }
+                    }
+                }
+
             }
         }
         this.fieldUpdate = _fieldValue.getField().hasEvents(EventType.UI_FIELD_UPDATE);
@@ -346,18 +354,7 @@ public class UITableCell
      */
     public boolean isAutoComplete()
     {
-        return this.autoComplete;
-    }
-
-    /**
-     * Setter method for instance variable {@link #autoComplete}.
-     *
-     * @param _autoComplete value for instance variable {@link #autoComplete}
-     */
-
-    public void setAutoComplete(final boolean _autoComplete)
-    {
-        this.autoComplete = _autoComplete;
+        return this.autoCompleteSetting != null;
     }
 
     /**
@@ -373,26 +370,6 @@ public class UITableCell
         throws EFapsException
     {
         return executeEvents(EventType.UI_FIELD_AUTOCOMPLETE, _others, _uiID2Oid);
-    }
-
-    /**
-     * Getter method for the instance variable {@link #autoCompleteMinInputLength}.
-     *
-     * @return value of instance variable {@link #autoCompleteMinInputLength}
-     */
-    public int getAutoCompleteMinInputLength()
-    {
-        return this.autoCompleteMinInputLength;
-    }
-
-    /**
-     * Setter method for instance variable {@link #autoCompleteMinInputLength}.
-     *
-     * @param _autoCompleteMinInputLength value for instance variable {@link #autoCompleteMinInputLength}
-     */
-    public void setAutoCompleteMinInputLength(final int _autoCompleteMinInputLength)
-    {
-        this.autoCompleteMinInputLength = _autoCompleteMinInputLength;
     }
 
     /**
@@ -448,5 +425,25 @@ public class UITableCell
     public UIPicker getPicker()
     {
         return this.picker;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #autoCompleteSetting}.
+     *
+     * @return value of instance variable {@link #autoCompleteSetting}
+     */
+    public AutoCompleteSettings getAutoCompleteSetting()
+    {
+        return this.autoCompleteSetting;
+    }
+
+    /**
+     * Setter method for instance variable {@link #autoCompleteSetting}.
+     *
+     * @param _autoCompleteSetting value for instance variable {@link #autoCompleteSetting}
+     */
+    public void setAutoCompleteSetting(final AutoCompleteSettings _autoCompleteSetting)
+    {
+        this.autoCompleteSetting = _autoCompleteSetting;
     }
 }

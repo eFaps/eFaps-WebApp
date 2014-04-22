@@ -111,7 +111,20 @@ return declare("efaps.AjaxStore", base, {
                 self.deferred.resolve(res);
             } ]
         };
-        attrs.ep[paramName] = query.name.toString();
+        lang.setObject(paramName, query.name.toString(), options.ep);
+
+        var eps = [],epv,epn;
+        for (epn in options.ep) {
+            epv = options.ep[epn];
+            if (epv instanceof Array) {
+                for (var i = 0; i < epv.length; i++) {
+                    eps.push({name:epn,value: epv[i]});
+                }
+            } else {
+                eps.push({name:epn,value: epv});
+            }
+        }
+        attrs.ep = eps;
 
         this.deferred = new Deferred();
         Wicket.Ajax.ajax(attrs);
