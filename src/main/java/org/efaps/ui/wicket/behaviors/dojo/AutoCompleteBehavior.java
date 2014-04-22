@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.Page;
@@ -270,14 +271,22 @@ public class AutoCompleteBehavior
 
                 final JSONObject object = new JSONObject();
                 object.put("id", key);
-                object.put("name", choice);
+
+                if (this.settings.getMaxChoiceLength() > 0 && choice.length() > this.settings.getMaxChoiceLength()) {
+                    object.put("name", StringUtils.left(choice, this.settings.getMaxChoiceLength()) + "...");
+                } else {
+                    object.put("name", choice);
+                }
                 if (!choice.equals(value)) {
-                    object.put("label", value);
+                    if (this.settings.getMaxValueLength() > 0&& value.length() > this.settings.getMaxValueLength()) {
+                        object.put("label", StringUtils.left(value, this.settings.getMaxChoiceLength()) + "...");
+                    } else {
+                        object.put("label", value);
+                    }
                 }
                 jsonArray.put(object);
             }
             _target.appendJSON(jsonArray.toString());
-
         } catch (final JSONException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

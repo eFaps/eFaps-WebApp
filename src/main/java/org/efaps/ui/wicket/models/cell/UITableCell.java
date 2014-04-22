@@ -113,6 +113,9 @@ public class UITableCell
      */
     private final boolean showNumbering;
 
+    /**
+     * Settings for the AutoComplete.
+     */
     private AutoCompleteSettings autoCompleteSetting;
 
     /**
@@ -150,6 +153,10 @@ public class UITableCell
             for (final EventDefinition event : events) {
                 this.autoCompleteSetting.setMinInputLength(event.getProperty("MinInputLength") == null
                                 ? 1 : Integer.valueOf(event.getProperty("MinInputLength")));
+                this.autoCompleteSetting.setMaxChoiceLength(event.getProperty("MaxChoiceLength") == null
+                                ? -1 : Integer.valueOf(event.getProperty("MaxChoiceLength")));
+                this.autoCompleteSetting.setMaxValueLength(event.getProperty("MaxValueLength") == null
+                                ? -1 : Integer.valueOf(event.getProperty("MaxValueLength")));
                 final String ep = event.getProperty("ExtraParameter");
                 if (ep != null) {
                     this.autoCompleteSetting.getExtraParameters().add(ep);

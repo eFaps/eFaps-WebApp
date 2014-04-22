@@ -46,9 +46,19 @@ public class AutoCompleteSettings
     private boolean hasDownArrow = false;
 
     /**
-     * Minimum input length for starting ther GET request.
+     * Minimum input length for starting the GET request.
      */
     private int minInputLength = 1;
+
+    /**
+     * Max length for the Choice value.
+     */
+    private int maxChoiceLength = -1;
+
+    /**
+     * Max length for the Value value.
+     */
+    private int maxValueLength = -1;
 
     /**
      * Name of the parameter.
@@ -156,8 +166,6 @@ public class AutoCompleteSettings
         this.paramName = _parameterName;
     }
 
-
-
     /**
      * Getter method for the instance variable {@link #extraParameters}.
      *
@@ -206,5 +214,49 @@ public class AutoCompleteSettings
     public int getWidth()
     {
         return this.width;
+    }
+
+
+    /**
+     * Getter method for the instance variable {@link #maxChoiceLength}.
+     *
+     * @return value of instance variable {@link #maxChoiceLength}
+     */
+    public int getMaxChoiceLength()
+    {
+        return this.maxChoiceLength;
+    }
+
+
+    /**
+     * Setter method for instance variable {@link #maxChoiceLength}.
+     *
+     * @param _maxChoiceLength value for instance variable {@link #maxChoiceLength}
+     */
+    public void setMaxChoiceLength(final int _maxChoiceLength)
+    {
+        this.maxChoiceLength = _maxChoiceLength;
+    }
+
+
+    /**
+     * Getter method for the instance variable {@link #maxValueLength}.
+     *
+     * @return value of instance variable {@link #maxValueLength}
+     */
+    public int getMaxValueLength()
+    {
+        return this.maxValueLength;
+    }
+
+
+    /**
+     * Setter method for instance variable {@link #maxValueLength}.
+     *
+     * @param _maxValueLength value for instance variable {@link #maxValueLength}
+     */
+    public void setMaxValueLength(final int _maxValueLength)
+    {
+        this.maxValueLength = _maxValueLength;
     }
 }
