@@ -83,7 +83,7 @@ public class AutoCompleteSettings
      * Delay in milliseconds between when user types something
      * and we start searching based on that value.
      */
-    private int searchDelay = 200;
+    private int searchDelay = 500;
 
     /**
      * Name of the field.

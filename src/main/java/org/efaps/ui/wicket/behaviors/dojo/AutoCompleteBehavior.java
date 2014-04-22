@@ -74,8 +74,14 @@ public class AutoCompleteBehavior
          */
         Iterator<Map<String, String>> getChoices(final String _input);
 
+        /**
+         * @return the value for the current item
+         */
         String getItemValue();
 
+        /**
+         * @return the lable for the current item
+         */
         String getItemLabel();
     }
 
@@ -195,7 +201,7 @@ public class AutoCompleteBehavior
         if (this.settings.getMinInputLength() > 1) {
             js.append("minInputLength:").append(this.settings.getMinInputLength()).append(",");
         }
-        if (this.settings.getSearchDelay() != 200) {
+        if (this.settings.getSearchDelay() != 500) {
             js.append("searchDelay:").append(this.settings.getSearchDelay()).append(",");
         }
 
@@ -289,7 +295,7 @@ public class AutoCompleteBehavior
                     object.put("name", choice);
                 }
                 if (!choice.equals(value)) {
-                    if (this.settings.getMaxValueLength() > 0&& value.length() > this.settings.getMaxValueLength()) {
+                    if (this.settings.getMaxValueLength() > 0 && value.length() > this.settings.getMaxValueLength()) {
                         object.put("label", StringUtils.left(value, this.settings.getMaxChoiceLength()) + "...");
                     } else {
                         object.put("label", value);

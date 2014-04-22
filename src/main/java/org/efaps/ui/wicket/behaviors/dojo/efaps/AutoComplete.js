@@ -25,6 +25,8 @@ define("efaps/AutoComplete", [
         indicatorId: "eFapsVeil",
 
         extraParameters: [],
+        // overwrite the search delay default
+        searchDelay: 500,
 
         _startSearch: function(/*String*/ text){
 
