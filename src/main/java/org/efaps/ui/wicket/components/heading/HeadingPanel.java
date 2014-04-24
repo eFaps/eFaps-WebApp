@@ -131,7 +131,6 @@ public class HeadingPanel
         };
         container.add(span);
 
-
         final Component status = new WebComponent("status") {
 
             private static final long serialVersionUID = 1L;
@@ -141,7 +140,6 @@ public class HeadingPanel
             {
                 super.onComponentTag(_tag);
                 _tag.put("name", _headingmodel.getObject().getName());
-                _tag.put("id", "status_" + toggleId);
                 _tag.put("value", false);
             }
 
@@ -151,6 +149,7 @@ public class HeadingPanel
                 return _headingmodel.getObject().getLevel() > 0 && _headingmodel.getObject().isCollapsible();
             }
         };
+        status.setMarkupId("status_" + toggleId);
         container.add(status);
     }
 }
