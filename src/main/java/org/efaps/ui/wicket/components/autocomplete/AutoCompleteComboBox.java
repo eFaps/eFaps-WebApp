@@ -141,7 +141,7 @@ public class AutoCompleteComboBox
         String ret = null;
         try {
             final UITableCell uiAbstractCell = (UITableCell) getDefaultModelObject();
-            if ((uiAbstractCell.getParent().isEditMode() || uiAbstractCell.getParent().isCreateMode())
+            if (uiAbstractCell.getParent().isEditMode()
                             && !EditValue.NONE.equals(uiAbstractCell.getAutoCompleteSetting().getValue4Edit())) {
                 final Instance instance = uiAbstractCell.getInstance();
                 if (instance != null && instance.isValid()) {
