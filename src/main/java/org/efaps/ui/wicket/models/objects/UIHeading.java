@@ -41,7 +41,7 @@ public class UIHeading
     /**
      * instance variable to store the level of the Heading.
      */
-    private int level = 1;
+    private final int level;
 
     /**
      * Label.
@@ -54,6 +54,12 @@ public class UIHeading
     private final Boolean collapsed;
 
     /**
+     * Name.
+     */
+    private final String name;
+
+
+    /**
      * @param _label label to use
      */
     public UIHeading(final String _label)
@@ -61,6 +67,7 @@ public class UIHeading
         this.label = _label;
         this.level = 0;
         this.collapsed = null;
+        this.name = null;
     }
 
     /**
@@ -70,6 +77,7 @@ public class UIHeading
     {
         this.label = DBProperties.getProperty(_heading.getLabel());
         this.level = _heading.getLevel();
+        this.name = _heading.getName();
         if (_heading.getProperty("Collapsed") == null) {
             this.collapsed = null;
         } else {
@@ -97,12 +105,13 @@ public class UIHeading
         return this.label;
     }
 
+    /**
+     * @return is the heading collapsible
+     */
     public boolean isCollapsible()
     {
         return this.collapsed != null;
     }
-
-
 
     /**
      * Getter method for the instance variable {@link #collapsed}.
@@ -112,5 +121,15 @@ public class UIHeading
     public Boolean getCollapsed()
     {
         return this.collapsed;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #name}.
+     *
+     * @return value of instance variable {@link #name}
+     */
+    public String getName()
+    {
+        return this.name;
     }
 }

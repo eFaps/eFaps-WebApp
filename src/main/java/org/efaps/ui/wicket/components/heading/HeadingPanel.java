@@ -51,8 +51,7 @@ public class HeadingPanel
      * Constructor.
      *
      * @param _wicketId wicket id for this component
-     * @param _heading heading for this HeadingPanel
-     * @param _level level of the heading
+     * @param _headingmodel model for this heading
      */
     public HeadingPanel(final String _wicketId,
                         final Model<UIHeading> _headingmodel)
@@ -73,6 +72,7 @@ public class HeadingPanel
             .append("var add = true;\n")
             .append("var node = dom.byId(_nodeID);\n")
             .append("domClass.toggle(node, \"eFapsCollapsedSection\");\n")
+            .append("dom.byId(\"status_\" + _nodeID).value = domClass.contains(node, \"eFapsCollapsedSection\");")
             .append("query(node).nextAll().some(function(_node){\n")
             .append("if (add) {\n")
             .append("var x = query(\"div[class^='eFapsHeading']\", _node);\n")
@@ -97,7 +97,7 @@ public class HeadingPanel
     /**
      * Method to add the Component to this Panel.
      *
-     * @param _heading Heading to set.
+     * @param _headingmodel model of the heading.
      */
     public void addComponents(final Model<UIHeading> _headingmodel)
     {
@@ -130,5 +130,27 @@ public class HeadingPanel
             }
         };
         container.add(span);
+
+
+        final Component status = new WebComponent("status") {
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            protected void onComponentTag(final ComponentTag _tag)
+            {
+                super.onComponentTag(_tag);
+                _tag.put("name", _headingmodel.getObject().getName());
+                _tag.put("id", "status_" + toggleId);
+                _tag.put("value", false);
+            }
+
+            @Override
+            public boolean isVisible()
+            {
+                return _headingmodel.getObject().getLevel() > 0 && _headingmodel.getObject().isCollapsible();
+            }
+        };
+        container.add(status);
     }
 }
