@@ -81,7 +81,7 @@ public class AjaxPickerLink
     {
         super.onComponentTag(_tag);
         final UITableCell uiObject = (UITableCell) getDefaultModelObject();
-        _tag.put("title", uiObject.getPicker().getLabel());
+        _tag.put("title", uiObject == null ? "" : uiObject.getPicker().getLabel());
         _tag.put("class", "eFapsPickerLink");
     }
 

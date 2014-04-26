@@ -76,6 +76,7 @@ public class SetSelectedRowBehavior
     }
 
     /**
+     * @param _element elemtn the script is added to
      * @return get the Javascript
      */
     public String getJavaScript(final String _element)
@@ -83,7 +84,7 @@ public class SetSelectedRowBehavior
         final StringBuilder ret = new StringBuilder()
             .append(" var f=").append(_element).append(".form;\n")
             .append(" f.").append(SetSelectedRowBehavior.INPUT_NAME).append(".value='").append(this.name).append("';")
-            .append(" c=f.elements[").append(_element).append(".name];")
+            .append(" var c=f.elements[").append(_element).append(".name];")
             .append(" if(typeof(c.length)=='undefined'){")
             .append(" f.").append(SetSelectedRowBehavior.INPUT_ROW).append(".value=0;")
             .append(" }else{")
