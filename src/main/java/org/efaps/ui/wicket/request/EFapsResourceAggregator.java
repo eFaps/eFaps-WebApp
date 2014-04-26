@@ -30,6 +30,7 @@ import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.HeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
+import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.DecoratingHeaderResponse;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.efaps.admin.program.bundle.BundleMaker;
@@ -194,8 +195,8 @@ public class EFapsResourceAggregator
 
         if (combinedScript.length() > 0) {
             if (RequestCycle.get().getActiveRequestHandler() instanceof AjaxRequestHandler) {
-                ((AjaxRequestHandler) RequestCycle.get().getActiveRequestHandler())
-                    .appendJavaScript(AutoCompleteHeaderItem.writeJavaScript(combinedScript.append("\n"), false));
+                getRealResponse().render(new OnDomReadyHeaderItem(AutoCompleteHeaderItem.writeJavaScript(
+                                combinedScript.append("\n"), false)));
             } else {
                 getRealResponse().render(AutoCompleteHeaderItem.forScript(combinedScript.append("\n").toString()));
             }
