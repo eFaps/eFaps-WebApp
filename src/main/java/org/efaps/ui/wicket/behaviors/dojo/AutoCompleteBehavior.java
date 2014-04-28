@@ -177,8 +177,15 @@ public class AutoCompleteBehavior
 
         final String comboBoxId = "cb" + _component.getMarkupId();
         final StringBuilder js = new StringBuilder()
-            .append("var ").append(comboBoxId).append(" = new AutoComplete({")
-            .append("id:\"").append(_component.getMarkupId()).append("\",")
+            .append("var ").append(comboBoxId);
+
+        if (this.settings.isRequired()) {
+            js.append(" = new AutoComplete({");
+        } else {
+            js.append(" = new AutoSuggestion({");
+        }
+
+        js.append("id:\"").append(_component.getMarkupId()).append("\",")
             .append("name:\"").append(this.settings.getFieldName()).append("\",")
             .append("placeHolder:ph,")
             .append("store: as,")
@@ -225,16 +232,22 @@ public class AutoCompleteBehavior
 
         js.append("searchAttr: \"name\"}, \"").append(_component.getMarkupId()).append("\");\n");
 
-        js.append("on(").append(comboBoxId).append(", 'change', function() {")
-             .append("var label=").append(comboBoxId).append(".item.label;")
-             .append("if (!(label === undefined || label === null)) {")
-             .append(comboBoxId).append(".item.name=label;")
-             .append(comboBoxId).append(".set(\"item\",").append(comboBoxId).append(".item);")
-              .append("}");
-        if (this.fieldUpdate != null) {
-            js.append(this.fieldUpdate.getCallbackScript4Dojo());
+        if (this.settings.isRequired()) {
+            js.append("on(").append(comboBoxId).append(", 'change', function() {")
+                 .append("var label=").append(comboBoxId).append(".item.label;")
+                 .append("if (!(label === undefined || label === null)) {")
+                 .append(comboBoxId).append(".item.name=label;")
+                 .append(comboBoxId).append(".set(\"item\",").append(comboBoxId).append(".item);")
+                 .append("}");
+            if (this.fieldUpdate != null) {
+                js.append(this.fieldUpdate.getCallbackScript4Dojo());
+            }
+            js.append("});\n");
+        } else if (this.fieldUpdate != null) {
+            js.append("on(").append(comboBoxId).append(", 'change', function() {")
+                .append(this.fieldUpdate.getCallbackScript4Dojo())
+                .append("});\n");
         }
-        js.append("});\n");
 
         if (!_component.getBehaviors(SetSelectedRowBehavior.class).isEmpty()) {
             js.append("on(").append(comboBoxId).append(", 'focus', function() {")

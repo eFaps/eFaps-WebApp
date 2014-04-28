@@ -114,6 +114,11 @@ public class AutoCompleteSettings
     private final Set<String> extraParameters = new HashSet<String>();
 
     /**
+     * If required "AutoComplete" will be rendered, else "AutoSuggestion".
+     */
+    private boolean required = true;
+
+    /**
      * Getter method for the instance variable {@link #hasDownArrow}.
      *
      * @return value of instance variable {@link #hasDownArrow}
@@ -243,7 +248,6 @@ public class AutoCompleteSettings
         return this.width;
     }
 
-
     /**
      * Getter method for the instance variable {@link #maxChoiceLength}.
      *
@@ -253,7 +257,6 @@ public class AutoCompleteSettings
     {
         return this.maxChoiceLength;
     }
-
 
     /**
      * Setter method for instance variable {@link #maxChoiceLength}.
@@ -265,7 +268,6 @@ public class AutoCompleteSettings
         this.maxChoiceLength = _maxChoiceLength;
     }
 
-
     /**
      * Getter method for the instance variable {@link #maxValueLength}.
      *
@@ -275,7 +277,6 @@ public class AutoCompleteSettings
     {
         return this.maxValueLength;
     }
-
 
     /**
      * Setter method for instance variable {@link #maxValueLength}.
@@ -307,7 +308,6 @@ public class AutoCompleteSettings
         this.value4Edit = _value4Edit;
     }
 
-
     /**
      * Getter method for the instance variable {@link #maxResult}.
      *
@@ -318,7 +318,6 @@ public class AutoCompleteSettings
         return this.maxResult;
     }
 
-
     /**
      * Setter method for instance variable {@link #maxResult}.
      *
@@ -327,5 +326,25 @@ public class AutoCompleteSettings
     public void setMaxResult(final int _maxResult)
     {
         this.maxResult = _maxResult;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #required}.
+     *
+     * @return value of instance variable {@link #required}
+     */
+    public boolean isRequired()
+    {
+        return this.required;
+    }
+
+    /**
+     * Setter method for instance variable {@link #required}.
+     *
+     * @param _required value for instance variable {@link #required}
+     */
+    public void setRequired(final boolean _required)
+    {
+        this.required = _required;
     }
 }

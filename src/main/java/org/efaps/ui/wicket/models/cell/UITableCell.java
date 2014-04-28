@@ -161,23 +161,33 @@ public class UITableCell
                 if (event.getProperty("MaxResult") != null) {
                     this.autoCompleteSetting.setMaxResult(Integer.valueOf(event.getProperty("MaxResult")));
                 }
+                if (event.getProperty("HasDownArrow") != null) {
+                    this.autoCompleteSetting
+                                    .setHasDownArrow("true".equalsIgnoreCase(event.getProperty("HasDownArrow")));
+                }
+                if (event.getProperty("Required") != null) {
+                    this.autoCompleteSetting
+                                    .setRequired(!"false".equalsIgnoreCase(event.getProperty("Required")));
+                }
                 final String ep = event.getProperty("ExtraParameter");
                 if (ep != null) {
                     this.autoCompleteSetting.getExtraParameters().add(ep);
-                    for (int i = 1; i < 100; i++) {
-                        final String keyTmp = "ExtraParameter" + String.format("%02d", i);
-                        final String epTmp = event.getProperty(keyTmp);
-                        if (epTmp == null) {
-                            break;
-                        } else {
-                            this.autoCompleteSetting.getExtraParameters().add(epTmp);
-                        }
+                }
+                for (int i = 1; i < 100; i++) {
+                    final String keyTmp = "ExtraParameter" + String.format("%02d", i);
+                    final String epTmp = event.getProperty(keyTmp);
+                    if (epTmp == null) {
+                        break;
+                    } else {
+                        this.autoCompleteSetting.getExtraParameters().add(epTmp);
                     }
                 }
                 final String value4EditStr = event.getProperty("Value4Edit");
                 if (value4EditStr != null) {
                     this.autoCompleteSetting.setValue4Edit(EditValue.valueOf(value4EditStr));
                 }
+
+
             }
         }
         this.fieldUpdate = _fieldValue.getField().hasEvents(EventType.UI_FIELD_UPDATE);

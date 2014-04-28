@@ -134,8 +134,9 @@ public class AutoCompleteHeaderItem
             js.append("require([\"dojo/ready\"]);").append("dojo.ready(function() {\n");
         }
 
-        js.append("require([\"efaps/AjaxStore\",\"efaps/AutoComplete\",\"dojo/on\",\"dojo/domReady!\"],")
-            .append(" function(AjaxStore, AutoComplete, on){\n")
+        js.append("require([\"efaps/AjaxStore\",\"efaps/AutoComplete\",\"efaps/AutoSuggestion\", ")
+            .append("\"dojo/on\",\"dojo/domReady!\"],")
+            .append(" function(AjaxStore, AutoComplete, AutoSuggestion, on){\n")
             .append("var ph=\"")
             .append(DBProperties.getProperty(AutoCompleteBehavior.class.getName() + ".PlaceHolder"))
             .append("\";\n")
