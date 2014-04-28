@@ -25,6 +25,9 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.efaps.ui.wicket.util.Configuration;
+import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
+
 
 /**
  * TODO comment!
@@ -62,33 +65,33 @@ public class AutoCompleteSettings
     /**
      * Minimum input length for starting the GET request.
      */
-    private int minInputLength = 1;
+    private int minInputLength = Configuration.getAttributeAsInteger(ConfigAttribute.AUTOC_MININPUT);
 
     /**
      * Max length for the Choice value.
      */
-    private int maxChoiceLength = -1;
+    private int maxChoiceLength = Configuration.getAttributeAsInteger(ConfigAttribute.AUTOC_MAXCHOICE);
 
     /**
      * Max length for the Value value.
      */
-    private int maxValueLength = -1;
+    private int maxValueLength = Configuration.getAttributeAsInteger(ConfigAttribute.AUTOC_MAXVALUE);
 
     /**
      * Max Result shown in the Interface. To deactivate set to -1.
      */
-    private int maxResult = 500;
+    private int maxResult = Configuration.getAttributeAsInteger(ConfigAttribute.AUTOC_MAXRESULT);
 
     /**
      * Name of the parameter.
      */
-    private String paramName = "p";
+    private String paramName = Configuration.getAttribute(ConfigAttribute.AUTOC_PARAMNAME);
 
     /**
      * Delay in milliseconds between when user types something
      * and we start searching based on that value.
      */
-    private int searchDelay = 500;
+    private int searchDelay =  Configuration.getAttributeAsInteger(ConfigAttribute.AUTOC_SEARCHDELAY);
 
     /**
      * Name of the field.
@@ -96,7 +99,7 @@ public class AutoCompleteSettings
     private String fieldName;
 
     /**
-     * WIdth of the rendered field.
+     * Width of the rendered field.
      */
     private int width = 0;
 

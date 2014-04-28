@@ -164,4 +164,34 @@ public interface WebAppSettings
      * Integer: Maximum rows of session shown in the Session Table per Page. Default Value is 20.
      */
     String WEBSOCKET_MESSAGETABLE_MAX = "org.efaps.webapp.WebSocket.MessageTable.MaximumRows";
+
+    /**
+     * Integer: Maximum number of result shown in the DropDown of the AutoComlete. Default Value is 500.
+     */
+    String AUTOC_MAXRESULT = "org.efaps.webapp.AutoComplete.MaxResult";
+
+    /**
+     * Integer: Time in ms before the AutomComplete fires the Request. Default Value is 500.
+     */
+    String AUTOC_SEARCHDELAY = "org.efaps.webapp.AutoComplete.SearchDelay";
+
+    /**
+     * Integer: Maximum number of letters shown in the DropDown of the AutoComlete. Default Value is -1 (Deactivated).
+     */
+    String AUTOC_MAXCHOICE = "org.efaps.webapp.AutoComplete.MaxChoiceLength";
+
+    /**
+     * Integer: Maximum number of letters shown in the input. Default Value is -1 (Deactivated).
+     */
+    String AUTOC_MAXVALUE = "org.efaps.webapp.AutoComplete.XaxValueLength";
+
+    /**
+     * Integer: Maximum number of result shown in the DropDown of the AutoComlete. Default Value is 500.
+     */
+    String AUTOC_MININPUT = "org.efaps.webapp.AutoComplete.MinInputLength";
+    /**
+     * String:Name of the parameter. Defaults to "p".
+     */
+    String AUTOC_PARAMNAME = "org.efaps.webapp.AutoComplete.ParameterName";
+
 }

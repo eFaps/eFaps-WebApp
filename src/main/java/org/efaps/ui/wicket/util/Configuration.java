@@ -100,7 +100,19 @@ public final class Configuration
         /** */
         WEBSOCKET_SESSIONTABLE_MAX(false, true, WebAppSettings.WEBSOCKET_SESSIONTABLE_MAX, "20"),
         /** Websocket activated. */
-        CONMAN_ACTVATE(false, true, WebAppSettings.CONMAN_ACTIVATE, "true");
+        CONMAN_ACTVATE(false, true, WebAppSettings.CONMAN_ACTIVATE, "true"),
+        /** AutoComplete maximum result. */
+        AUTOC_MAXRESULT(false, true, WebAppSettings.AUTOC_MAXRESULT, "500"),
+        /** AutoComplete maximum choice length. */
+        AUTOC_MAXCHOICE(false, true, WebAppSettings.AUTOC_MAXCHOICE, "-1"),
+        /** AutoComplete maximum value length. */
+        AUTOC_MAXVALUE(false, true, WebAppSettings.AUTOC_MAXVALUE, "-1"),
+        /** AutoComplete minimum input length. */
+        AUTOC_MININPUT(false, true, WebAppSettings.AUTOC_MININPUT, "1"),
+        /** AutoComplete search delay. */
+        AUTOC_SEARCHDELAY(false, true, WebAppSettings.AUTOC_SEARCHDELAY, "500"),
+        /** AutoComplete search delay. */
+        AUTOC_PARAMNAME(false, true, WebAppSettings.AUTOC_PARAMNAME, "p");
 
         /**
          * Stores the key for this Attribute..
