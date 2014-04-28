@@ -202,36 +202,36 @@
         <dependency>
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-core</artifactId>
-            <version>6.14.0</version>
+            <version>6.15.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-extensions</artifactId>
-            <version>6.14.0</version>
+            <version>6.15.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-datetime</artifactId>
-            <version>6.14.0</version>
+            <version>6.15.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-devutils</artifactId>
-            <version>6.14.0</version>
+            <version>6.15.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-native-websocket-jetty9</artifactId>
-            <version>6.14.0</version>
+            <version>6.15.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-native-websocket-tomcat</artifactId>
-            <version>6.14.0</version>
+            <version>6.15.0</version>
         </dependency>
 
         <dependency>
