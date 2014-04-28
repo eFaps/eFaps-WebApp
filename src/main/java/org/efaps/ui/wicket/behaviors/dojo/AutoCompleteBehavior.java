@@ -276,7 +276,8 @@ public class AutoCompleteBehavior
 
         try {
             final JSONArray jsonArray = new JSONArray();
-            while (choices.hasNext()) {
+            int i = 0;
+            while (choices.hasNext() && (i < this.settings.getMaxResult() || this.settings.getMaxResult() == -1)) {
                 final Map<String, String> map = choices.next();
                 final String key = map.get(EFapsKey.AUTOCOMPLETE_KEY.getKey()) != null
                                 ? map.get(EFapsKey.AUTOCOMPLETE_KEY.getKey())
@@ -301,6 +302,14 @@ public class AutoCompleteBehavior
                         object.put("label", value);
                     }
                 }
+                jsonArray.put(object);
+                i++;
+            }
+            if (!(i < this.settings.getMaxResult() || this.settings.getMaxResult() == -1)) {
+                final JSONObject object = new JSONObject();
+                object.put("id", "MAXRESULT");
+                object.put("name", "...");
+                object.put("label", "...");
                 jsonArray.put(object);
             }
             _target.appendJSON(jsonArray.toString());

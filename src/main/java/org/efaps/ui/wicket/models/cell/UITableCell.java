@@ -158,6 +158,9 @@ public class UITableCell
                                 ? -1 : Integer.valueOf(event.getProperty("MaxChoiceLength")));
                 this.autoCompleteSetting.setMaxValueLength(event.getProperty("MaxValueLength") == null
                                 ? -1 : Integer.valueOf(event.getProperty("MaxValueLength")));
+                if (event.getProperty("MaxResult") != null) {
+                    this.autoCompleteSetting.setMaxResult(Integer.valueOf(event.getProperty("MaxResult")));
+                }
                 final String ep = event.getProperty("ExtraParameter");
                 if (ep != null) {
                     this.autoCompleteSetting.getExtraParameters().add(ep);

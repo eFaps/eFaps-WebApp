@@ -75,6 +75,11 @@ public class AutoCompleteSettings
     private int maxValueLength = -1;
 
     /**
+     * Max Result shown in the Interface. To deactivate set to -1.
+     */
+    private int maxResult = 500;
+
+    /**
      * Name of the parameter.
      */
     private String paramName = "p";
@@ -297,5 +302,27 @@ public class AutoCompleteSettings
     public void setValue4Edit(final EditValue _value4Edit)
     {
         this.value4Edit = _value4Edit;
+    }
+
+
+    /**
+     * Getter method for the instance variable {@link #maxResult}.
+     *
+     * @return value of instance variable {@link #maxResult}
+     */
+    public int getMaxResult()
+    {
+        return this.maxResult;
+    }
+
+
+    /**
+     * Setter method for instance variable {@link #maxResult}.
+     *
+     * @param _maxResult value for instance variable {@link #maxResult}
+     */
+    public void setMaxResult(final int _maxResult)
+    {
+        this.maxResult = _maxResult;
     }
 }
