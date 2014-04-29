@@ -21,6 +21,7 @@
 package org.efaps.ui.wicket.behaviors.dojo;
 
 import java.util.Collections;
+import java.util.EnumSet;
 
 import org.apache.wicket.Application;
 import org.apache.wicket.core.util.string.JavaScriptUtils;
@@ -40,7 +41,6 @@ import org.efaps.admin.dbproperty.DBProperties;
 public class AutoCompleteHeaderItem
     extends HeaderItem
 {
-
     /**
      *
      */
@@ -52,11 +52,19 @@ public class AutoCompleteHeaderItem
     private final CharSequence javaScript;
 
     /**
-     * @param _javaScript Javascript for the header to add
+     *  If true an 'AutoComplete' will be rendered, else an 'AutoSuggestion'.
      */
-    public AutoCompleteHeaderItem(final CharSequence _javaScript)
+    private final EnumSet<AutoCompleteBehavior.Type> types;
+
+    /**
+     * @param _javaScript Javascript for the header to add
+     * @param _types      enumset parameter for type setting
+     */
+    public AutoCompleteHeaderItem(final CharSequence _javaScript,
+                                  final EnumSet<AutoCompleteBehavior.Type> _types)
     {
         this.javaScript = _javaScript;
+        this.types = _types;
     }
 
     @Override
@@ -82,7 +90,7 @@ public class AutoCompleteHeaderItem
     @Override
     public void render(final Response _response)
     {
-        final CharSequence js = AutoCompleteHeaderItem.writeJavaScript(getJavaScript(), true);
+        final CharSequence js = AutoCompleteHeaderItem.writeJavaScript(getJavaScript(), this.types, true);
         JavaScriptUtils.writeJavaScript(_response, js);
     }
 
@@ -113,20 +121,34 @@ public class AutoCompleteHeaderItem
     }
 
     /**
-     * @param _javaScript Javascript for the header to add
-     * @return new OnDojoReadyHeaderItem
+     * Getter method for the instance variable {@link #types}.
+     *
+     * @return value of instance variable {@link #types}
      */
-    public static AutoCompleteHeaderItem forScript(final CharSequence _javaScript)
+    public EnumSet<AutoCompleteBehavior.Type> getTypes()
     {
-        return new AutoCompleteHeaderItem(_javaScript);
+        return this.types;
     }
 
     /**
-     * @param _charSequence to be wrapped
-     * @param _ready        add dojo ready
+     * @param _javaScript   Javascript for the header to add
+     * @param _types        enumset parameter for type setting
+     * @return new AutoCompleteHeaderItem
+     */
+    public static AutoCompleteHeaderItem forScript(final CharSequence _javaScript,
+                                                   final EnumSet<AutoCompleteBehavior.Type> _types)
+    {
+        return new AutoCompleteHeaderItem(_javaScript, _types);
+    }
+
+    /**
+     * @param _charSequence     to be wrapped
+     * @param _types            enumset parameter for type setting
+     * @param _ready            add dojo ready
      * @return CharSequence
      */
     public static CharSequence writeJavaScript(final CharSequence _charSequence,
+                                               final EnumSet<AutoCompleteBehavior.Type> _types,
                                                final boolean _ready)
     {
         final StringBuilder js = new StringBuilder();
@@ -134,9 +156,27 @@ public class AutoCompleteHeaderItem
             js.append("require([\"dojo/ready\"]);").append("dojo.ready(function() {\n");
         }
 
-        js.append("require([\"efaps/AjaxStore\",\"efaps/AutoComplete\",\"efaps/AutoSuggestion\", ")
-            .append("\"dojo/on\",\"dojo/domReady!\"],")
-            .append(" function(AjaxStore, AutoComplete, AutoSuggestion, on){\n")
+        js.append("require([\"efaps/AjaxStore\",");
+
+        if (_types.contains(AutoCompleteBehavior.Type.COMPLETE)) {
+            js.append("\"efaps/AutoComplete\",");
+        }
+        if (_types.contains(AutoCompleteBehavior.Type.SUGGESTION)) {
+            js.append("\"efaps/AutoSuggestion\", ");
+        }
+
+        js.append("\"dojo/on\",\"dojo/domReady!\"],")
+            .append(" function(AjaxStore,");
+
+        if (_types.contains(AutoCompleteBehavior.Type.COMPLETE)) {
+            js.append(" AutoComplete,");
+        }
+
+        if (_types.contains(AutoCompleteBehavior.Type.SUGGESTION)) {
+            js.append(" AutoSuggestion,");
+        }
+
+        js.append(" on){\n")
             .append("var ph=\"")
             .append(DBProperties.getProperty(AutoCompleteBehavior.class.getName() + ".PlaceHolder"))
             .append("\";\n")

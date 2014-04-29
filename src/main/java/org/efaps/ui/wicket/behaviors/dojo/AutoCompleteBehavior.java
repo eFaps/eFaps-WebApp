@@ -21,6 +21,7 @@
 package org.efaps.ui.wicket.behaviors.dojo;
 
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -63,6 +64,18 @@ public class AutoCompleteBehavior
     extends AbstractDojoBehavior
     implements IBehaviorListener
 {
+
+    /**
+     * Config types.
+     */
+    public enum Type
+    {
+        /** Render AutomComplete.*/
+        COMPLETE,
+        /** Render AutoSuggestion. */
+        SUGGESTION;
+    }
+
     /**
      * Interface the component using the behavior must implement.
      */
@@ -256,7 +269,8 @@ public class AutoCompleteBehavior
                 .append("});\n");
         }
 
-        _response.render(AutoCompleteHeaderItem.forScript(js.toString()));
+        _response.render(AutoCompleteHeaderItem.forScript(js.toString(),
+                        EnumSet.of(this.settings.isRequired() ? Type.COMPLETE : Type.SUGGESTION)));
     }
 
     @Override

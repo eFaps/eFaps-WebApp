@@ -23,6 +23,7 @@ package org.efaps.ui.wicket.request;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.List;
 
 import org.apache.wicket.ajax.AjaxRequestHandler;
@@ -35,6 +36,7 @@ import org.apache.wicket.markup.html.DecoratingHeaderResponse;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.efaps.admin.program.bundle.BundleMaker;
 import org.efaps.admin.program.bundle.TempFileBundle;
+import org.efaps.ui.wicket.behaviors.dojo.AutoCompleteBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.AutoCompleteHeaderItem;
 import org.efaps.ui.wicket.behaviors.dojo.OnDojoReadyHeaderItem;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
@@ -186,8 +188,13 @@ public class EFapsResourceAggregator
     private void renderCombinedAutoCompleteScripts()
     {
         final StringBuilder combinedScript = new StringBuilder();
-
+        final EnumSet<AutoCompleteBehavior.Type> types = EnumSet.noneOf(AutoCompleteBehavior.Type.class);
         for (final AutoCompleteHeaderItem curItem : this.autoCompleteItems) {
+            for (final AutoCompleteBehavior.Type type : curItem.getTypes()) {
+                if (!types.contains(type)) {
+                    types.add(type);
+                }
+            }
             combinedScript.append("\n");
             combinedScript.append(curItem.getJavaScript());
             combinedScript.append(";");
@@ -196,9 +203,10 @@ public class EFapsResourceAggregator
         if (combinedScript.length() > 0) {
             if (RequestCycle.get().getActiveRequestHandler() instanceof AjaxRequestHandler) {
                 getRealResponse().render(new OnDomReadyHeaderItem(AutoCompleteHeaderItem.writeJavaScript(
-                                combinedScript.append("\n"), false)));
+                                combinedScript.append("\n"), types, false)));
             } else {
-                getRealResponse().render(AutoCompleteHeaderItem.forScript(combinedScript.append("\n").toString()));
+                getRealResponse().render(
+                                AutoCompleteHeaderItem.forScript(combinedScript.append("\n").toString(), types));
             }
         }
     }
