@@ -52,6 +52,7 @@ import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.http.WebRequest;
 import org.apache.wicket.resource.DynamicJQueryResourceReference;
 import org.apache.wicket.response.filter.IResponseFilter;
+import org.apache.wicket.util.lang.Bytes;
 import org.apache.wicket.util.string.AppendingStringBuffer;
 import org.efaps.admin.AppConfigHandler;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
@@ -140,6 +141,9 @@ public class EFapsApplication
 
         getDebugSettings().setAjaxDebugModeEnabled(false);
         getDebugSettings().setDevelopmentUtilitiesEnabled(false);
+
+        getStoreSettings().setMaxSizePerSession(Bytes.megabytes(20));
+        getStoreSettings().setInmemoryCacheSize(5);
 
         getMarkupSettings().setStripWicketTags(true);
         getMarkupSettings().setStripComments(true);
