@@ -270,12 +270,12 @@ public class TaskPage
                 final WebMarkupContainer nonLabelField = new WebMarkupContainer("nonLabelField");
                 _item.add(labelField);
                 _item.add(nonLabelField);
-                if (uiField.getFieldConfiguration().isHideLabel()) {
-                    nonLabelField.add(uiField.getComponent("field"));
-                    labelField.setVisible(false);
-                } else {
+                if (uiField.getFieldConfiguration() != null && !uiField.getFieldConfiguration().isHideLabel()) {
                     labelField.add(uiField.getComponent("field"));
                     nonLabelField.setVisible(false);
+                } else {
+                    nonLabelField.add(uiField.getComponent("field"));
+                    labelField.setVisible(false);
                 }
             } catch (final EFapsException e) {
                 TaskPage.LOG.error("Catched error during population of a TaskPage", e);

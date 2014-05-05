@@ -32,6 +32,7 @@ import org.apache.wicket.model.Model;
 import org.efaps.admin.KernelSettings;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.ui.UIValue;
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Parameter.ParameterValues;
@@ -53,6 +54,7 @@ import org.efaps.ui.wicket.models.cell.FieldConfiguration;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.field.UIField;
 import org.efaps.ui.wicket.models.field.UIGroup;
+import org.efaps.ui.wicket.models.field.UIMessageField;
 import org.efaps.ui.wicket.models.field.UISnippletField;
 import org.efaps.ui.wicket.models.task.DelegatePerson;
 import org.efaps.ui.wicket.util.Configuration;
@@ -174,42 +176,49 @@ public class UITaskObject
                         print.addPhrase(field.getName(), field.getPhrase());
                     }
                 }
-                print.execute();
-
-                for (final Field field : form.getFields()) {
+                if (print.execute()) {
+                    for (final Field field : form.getFields()) {
+                        final UIGroup uiGroup = new UIGroup();
+                        this.groups.add(uiGroup);
+                        AbstractUIField uiField = null;
+                        Attribute attr = null;
+                        Object object = null;
+                        if (field.getAttribute() != null) {
+                            object = print.getAttribute(field.getAttribute());
+                            attr = getInstance().getType().getAttribute(field.getAttribute());
+                            uiField = new UIField(getInstance().getKey(), this, UIValue.get(field, attr, object));
+                        } else if (field.getSelect() != null) {
+                            object = print.getSelect(field.getSelect());
+                            attr = print.getAttribute4Select(field.getSelect());
+                            uiField = new UIField(getInstance().getKey(), this, UIValue.get(field, attr, object));
+                        } else if (field.getPhrase() != null) {
+                            object = print.getPhrase(field.getName());
+                            uiField = new UIField(getInstance().getKey(), this, UIValue.get(field, attr, object));
+                        } else if (field.hasEvents(EventType.UI_FIELD_VALUE)) {
+                            final StringBuilder html = new StringBuilder();
+                            final List<Return> returns = field.executeEvents(EventType.UI_FIELD_VALUE,
+                                            ParameterValues.INSTANCE, getInstance(),
+                                            ParameterValues.BPM_VALUES, values);
+                            for (final Return ret : returns) {
+                                html.append(ret.get(ReturnValues.SNIPLETT));
+                            }
+                            uiField = new UISnippletField(getInstance().getKey(), this,
+                                            new FieldConfiguration(field.getId()));
+                            ((UISnippletField) uiField).setHtml(html.toString());
+                        }
+                        if (uiField == null) {
+                            UITaskObject.LOG.error("No values for field '{}'", field);
+                        } else {
+                            uiGroup.add(uiField);
+                        }
+                    }
+                } else {
                     final UIGroup uiGroup = new UIGroup();
                     this.groups.add(uiGroup);
-                    AbstractUIField uiField = null;
-                    Attribute attr = null;
-                    Object object = null;
-                    if (field.getAttribute() != null) {
-                        object = print.getAttribute(field.getAttribute());
-                        attr = getInstance().getType().getAttribute(field.getAttribute());
-                        uiField = new UIField(getInstance().getKey(), this, UIValue.get(field, attr, object));
-                    } else if (field.getSelect() != null) {
-                        object = print.getSelect(field.getSelect());
-                        attr = print.getAttribute4Select(field.getSelect());
-                        uiField = new UIField(getInstance().getKey(), this, UIValue.get(field, attr, object));
-                    } else if (field.getPhrase() != null) {
-                        object = print.getPhrase(field.getName());
-                        uiField = new UIField(getInstance().getKey(), this, UIValue.get(field, attr, object));
-                    } else if (field.hasEvents(EventType.UI_FIELD_VALUE)) {
-                        final StringBuilder html = new StringBuilder();
-                        final List<Return> returns = field.executeEvents(EventType.UI_FIELD_VALUE,
-                                        ParameterValues.INSTANCE, getInstance(),
-                                        ParameterValues.BPM_VALUES, values);
-                        for (final Return ret : returns) {
-                            html.append(ret.get(ReturnValues.SNIPLETT));
-                        }
-                        uiField = new UISnippletField(getInstance().getKey(), this,
-                                        new FieldConfiguration(field.getId()));
-                        ((UISnippletField) uiField).setHtml(html.toString());
-                    }
-                    if (uiField == null) {
-                        UITaskObject.LOG.error("No values for field '{}'", field);
-                    } else {
-                        uiGroup.add(uiField);
-                    }
+                    final UISnippletField uiField = new UIMessageField(getInstance().getKey(), this);
+                    uiField.setHtml(DBProperties.getProperty(UITaskObject.class.getName()
+                                    + ".noObject"));
+                    uiGroup.add(uiField);
                 }
             }
         }

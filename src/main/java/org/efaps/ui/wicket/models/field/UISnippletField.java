@@ -69,6 +69,16 @@ public class UISnippletField
         this.html = _html;
     }
 
+    /**
+     * Getter method for the instance variable {@link #html}.
+     *
+     * @return value of instance variable {@link #html}
+     */
+    public String getHtml()
+    {
+        return this.html;
+    }
+
     @Override
     protected FieldConfiguration getNewFieldConfiguration()
         throws EFapsException
