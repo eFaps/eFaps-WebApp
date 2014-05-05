@@ -36,6 +36,7 @@ import org.apache.wicket.util.string.StringValue;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
 import org.efaps.ui.wicket.components.table.row.RowPanel;
 import org.efaps.ui.wicket.models.UIModel;
+import org.efaps.ui.wicket.models.objects.AbstractUIHeaderObject;
 import org.efaps.ui.wicket.models.objects.UIFieldTable;
 import org.efaps.ui.wicket.models.objects.UIRow;
 import org.efaps.ui.wicket.models.objects.UITable;
@@ -221,9 +222,7 @@ public class AjaxAddRemoveRowPanel
                             row.add(AttributeModifier.append("class", "eFapsTableRowOdd"));
                             row.setOutputMarkupId(true);
                             AjaxAddRemoveRowPanel.AjaxAddRow.this.rowsRep.add(row);
-                            // first execute javascript which creates a
-                            // placeholder
-                            // tag in markup for this item
+                            // first execute javascript which creates a  placeholder tag in markup for this item
                             final StringBuilder js = new StringBuilder();
                             js.append("var item=document.createElement('").append("tr").append("');")
                                 .append("item.id='").append(row.getMarkupId()).append("';")
@@ -234,7 +233,6 @@ public class AjaxAddRemoveRowPanel
                                                 ? rowId : AjaxAddRemoveRowPanel.this.getMarkupId()).append("'));");
                             _target.prependJavaScript(js.toString());
                             _target.add(row);
-
                         } catch (final EFapsException e) {
                             TablePanel.LOG.error("error in adding row", e);
                         }
@@ -244,6 +242,8 @@ public class AjaxAddRemoveRowPanel
                         _target.appendJavaScript(AjaxAddRemoveRowPanel.this.tableName
                                         + AjaxAddRemoveRowPanel.VAR_SUFFIX + "();");
                     }
+                    final int tableid = ((AbstractUIHeaderObject) _model.getObject()).getTableId();
+                    _target.appendJavaScript("positionTableColumns(eFapsTable" + tableid + ")");
                 }
 
                 /**
