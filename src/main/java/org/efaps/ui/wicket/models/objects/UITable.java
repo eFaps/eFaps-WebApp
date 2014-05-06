@@ -443,11 +443,14 @@ public class UITable
                     if (hidden) {
                         row.addHidden(new UIHiddenCell(this, fieldvalue, null, strValue));
                     } else {
-                        row.add(new UITableCell(this, fieldvalue, instance, strValue, htmlTitle, icon));
+                        final UITableCell cell = new UITableCell(this, fieldvalue, instance, strValue, htmlTitle, icon);
+                        if (cell.isAutoComplete()) {
+                            cell.setCellValue(fieldvalue.getStringValue(getMode()));
+                        }
+                        row.add(cell);
                     }
-                    // in case of edit mode an empty version of the first row
-                    // isw stored, and can be used
-                    // to create new rows
+                    // in case of edit mode an empty version of the first row is stored, and can be used to create
+                    // new rows
                     if (isEditMode() && first) {
                         final FieldValue fldVal = new FieldValue(field, attr);
                         final String cellvalue;
