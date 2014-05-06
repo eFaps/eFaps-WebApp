@@ -585,7 +585,9 @@ public class UIStructurBrowser
                         } else {
                             final UIStructurBrowserTableCell cell = new UIStructurBrowserTableCell(child, fieldvalue,
                                             instance, strValue, htmlTitle, icon);
-
+                            if (cell.isAutoComplete()) {
+                                cell.setCellValue(fieldvalue.getStringValue(getMode()));
+                            }
                             if (field.getName().equals(this.browserFieldName)) {
                                 child.setLabel(strValue);
                                 child.setAllowChildren(checkForAllowChildren(instance));

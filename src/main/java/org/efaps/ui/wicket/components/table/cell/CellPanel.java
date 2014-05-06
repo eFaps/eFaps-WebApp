@@ -43,6 +43,9 @@ import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
 import org.efaps.ui.wicket.components.picker.AjaxPickerLink;
 import org.efaps.ui.wicket.components.table.cell.AjaxLoadInTargetLink.ScriptTarget;
 import org.efaps.ui.wicket.components.tree.SetEditedBehavior;
+import org.efaps.ui.wicket.components.values.AbstractField;
+import org.efaps.ui.wicket.components.values.LabelField;
+import org.efaps.ui.wicket.models.cell.FieldConfiguration;
 import org.efaps.ui.wicket.models.cell.UIStructurBrowserTableCell;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.models.objects.AbstractUIHeaderObject;
@@ -111,9 +114,18 @@ public class CellPanel
             add(new WebComponent("numbering").setVisible(false));
             add(new WebMarkupContainer("valuePicker").setVisible(false));
             // the label must be added to have in all columns the same number of rows
-            Component label;
+            final Component label;
             if (uiTableCell.isAutoComplete()) {
-                label = new AutoCompleteComboBox("label", _model, false);
+                if ((_uitable.isCreateMode() || _uitable.isEditMode())
+                                && uiTableCell.getDisplay().equals(Display.EDITABLE)) {
+                    label = new AbstractField<String>("label", new FieldConfiguration(uiTableCell.getFieldId()))
+                    {
+                        private static final long serialVersionUID = 1L;
+                    };
+                } else {
+                    label = new LabelField("label", uiTableCell.getCellValue(),
+                                    new FieldConfiguration(uiTableCell.getFieldId()), null);
+                }
             } else {
                 label = new LabelComponent("label", uiTableCell.getCellValue());
             }

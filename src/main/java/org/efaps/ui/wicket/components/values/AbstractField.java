@@ -84,6 +84,19 @@ public abstract class AbstractField<T extends Serializable>
     }
 
     /**
+     * @param _wicketId wicket id for this component
+     * @param _config Config
+     */
+    public AbstractField(final String _wicketId,
+                         final FieldConfiguration _config)
+    {
+        super(_wicketId);
+        this.config = _config;
+        this.cellvalue = null;
+        setOutputMarkupId(true);
+    }
+
+    /**
      * Getter method for the instance variable {@link #config}.
      *
      * @return value of instance variable {@link #config}
