@@ -79,6 +79,11 @@ public class AjaxDownloadBehavior
                 url = url + (url.contains("?") ? "&" : "?");
                 url = url + "antiCache=" + System.currentTimeMillis();
             }
+            //since version 6.15 there might be a .. add the beginning that must be
+            //removed if the link comes from the main page
+            if (url.startsWith("..")) {
+                url = url.substring(1);
+            }
             _target.prependJavaScript("top.document.getElementById('downloadFrame').setAttribute('src','" + url + "');");
         }
     }
