@@ -90,7 +90,7 @@ public abstract class AbstractField<T extends Serializable>
     public AbstractField(final String _wicketId,
                          final FieldConfiguration _config)
     {
-        super(_wicketId);
+        super(_wicketId, Model.<T>of());
         this.config = _config;
         this.cellvalue = null;
         setOutputMarkupId(true);
