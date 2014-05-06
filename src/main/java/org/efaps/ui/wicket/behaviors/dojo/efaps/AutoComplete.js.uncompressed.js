@@ -28,6 +28,33 @@ define("efaps/AutoComplete", [
         // overwrite the search delay default
         searchDelay: 500,
 
+        _setBlurValue : function() {
+            // if the user clicks away from the textbox OR tabs away, set the value to the textbox value
+            // #4617:
+            // if value is now more choices or previous choices, revert the value
+            var newvalue = this.get('displayedValue');
+            if (newvalue.length == 0) {
+                this.valueNode.value="";
+            }
+            var pw = this.dropDown;
+            if (pw && (newvalue == pw._messages["previousMessage"] || newvalue == pw._messages["nextMessage"])) {
+                this._setValueAttr(this._lastValueReported, true);
+            } else if (typeof this.item == "undefined") {
+                // Update 'value' (ex: KY) according to
+                // currently displayed text
+                this.item = null;
+                this.set('displayedValue', newvalue);
+            } else {
+                if (this.value != this._lastValueReported) {
+                    this._handleOnChange(this.value, true);
+                }
+                this._refreshState();
+            }
+            // Remove aria-activedescendant since it may not be removed if they select with arrows then blur with mouse
+            this.focusNode.removeAttribute("aria-activedescendant");
+        },
+
+
         _startSearch: function(/*String*/ text){
 
             if (text.length >= this.minInputLength) {
