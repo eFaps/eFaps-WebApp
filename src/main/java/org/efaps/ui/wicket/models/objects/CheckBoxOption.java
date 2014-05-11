@@ -27,7 +27,9 @@ import java.util.List;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.IEnum;
 import org.efaps.admin.datamodel.ui.BitEnumUI;
+import org.efaps.admin.datamodel.ui.BooleanUI;
 import org.efaps.admin.datamodel.ui.IUIProvider;
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.util.EnumUtil;
@@ -70,23 +72,31 @@ public class CheckBoxOption
         final List<CheckBoxOption> ret = new ArrayList<CheckBoxOption>();
         if (_choices == null) {
             final Attribute attr = _field.getValue().getAttribute();
-            final IUIProvider uiProvider = attr.getAttributeType().getUIProvider();
+            final IUIProvider uiProvider;
+            if (attr == null) {
+                uiProvider = _field.getFieldConfiguration().getField().getUIProvider();
+            } else {
+                uiProvider = attr.getAttributeType().getUIProvider();
+            }
             if (uiProvider instanceof BitEnumUI) {
                 try {
                     final Class<?> clazz = Class.forName(attr.getClassName(), false, EFapsClassLoader.getInstance());
                     final Object[] consts = clazz.getEnumConstants();
                     for (final Object obj : consts) {
-                        final IEnum enumConst = ((IEnum) obj);
+                        final IEnum enumConst = (IEnum) obj;
                         ret.add(new CheckBoxOption(enumConst));
                     }
                 } catch (final ClassNotFoundException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
+            } else if (uiProvider instanceof BooleanUI) {
+                ret.add(new CheckBoxOption("true", DBProperties.getProperty(_field.getFieldConfiguration().getField()
+                                .getLabel())));
             }
         } else {
             for (final Object obj : _choices) {
-                final IEnum enumConst = ((IEnum) obj);
+                final IEnum enumConst = (IEnum) obj;
                 ret.add(new CheckBoxOption(enumConst));
             }
         }

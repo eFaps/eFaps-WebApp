@@ -39,6 +39,11 @@ import org.efaps.util.cache.CacheReloadException;
 public class FieldConfiguration
     implements Serializable
 {
+
+    public enum UIType {
+        DEFAULT,CHECKBOX;
+    }
+
     /**
      * Needed for serialization.
      */
@@ -125,5 +130,14 @@ public class FieldConfiguration
         }
 
         return DBProperties.getProperty(key);
+    }
+
+    /**
+     * @return
+     */
+    public UIType getUIType()
+    {
+        final String uiTypeStr = getField().getProperty("UIType");
+        return uiTypeStr == null ? UIType.DEFAULT : UIType.valueOf(uiTypeStr);
     }
 }

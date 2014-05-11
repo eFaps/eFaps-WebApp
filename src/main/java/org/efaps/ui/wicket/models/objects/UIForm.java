@@ -356,7 +356,6 @@ public class UIForm
                         uiclass.execute(getInstance());
                     }
                     addClassElements(uiclass, instanceKeys);
-
                 }
             }
         }
@@ -468,8 +467,9 @@ public class UIForm
                 final UIFormCellChart fieldChart = new UIFormCellChart(this, (FieldChart) _field, fieldInstance, label);
                 _row.add(fieldChart);
             } else {
-                // temp to decide what to do
-                if (attr != null && attr.getAttributeType().getUI() == null) {
+                // temp to decide what to do TODO remove in future
+                if ((attr != null && attr.getAttributeType().getUI() == null)
+                                || _field.getClassUI() == null && _field.getUIProvider() != null) {
                     evaluateUIProvider(_row, _query, _field, fieldInstance, label, attr);
                 } else {
                     evaluateField(_row, _query, _field, fieldInstance, label, attr);
@@ -811,7 +811,8 @@ public class UIForm
                         } else if (field instanceof FieldCommand) {
                             cell = new UIFormCellCmd(this, (FieldCommand) field, null, label);
                         } else {
-                            if (attr != null && attr.getAttributeType().getUI() == null) {
+                            if ((attr != null && attr.getAttributeType().getUI() == null)
+                                || (field.getClassUI() == null && field.getUIProvider() != null)) {
                                 cell = new UIField(null, this, UIValue.get(field, attr, null));
                             } else {
                                 cell = new UIFormCell(this, fieldvalue, strValue, "", label, attrTypeName);

@@ -20,13 +20,18 @@
 
 package org.efaps.ui.wicket.models.field.factories;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.datamodel.ui.BooleanUI;
 import org.efaps.ui.wicket.components.values.BooleanField;
+import org.efaps.ui.wicket.components.values.CheckBoxField;
+import org.efaps.ui.wicket.models.cell.FieldConfiguration;
+import org.efaps.ui.wicket.models.cell.FieldConfiguration.UIType;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.util.EFapsException;
 
@@ -65,10 +70,22 @@ public class BooleanUIFactory
     {
         Component ret = null;
         if (applies(_abstractUIField)) {
-            ret = new BooleanField(_wicketId, _abstractUIField.getValue().getDbValue(),
-                            Model.ofMap((Map<Object, Object>) _abstractUIField.getValue().getEditValue(
-                                            _abstractUIField.getParent().getMode())),
-                            _abstractUIField.getFieldConfiguration());
+            IModel<Map<Object, Object>> model;
+            final FieldConfiguration config = _abstractUIField.getFieldConfiguration();
+            final UIType uiType = config.getUIType();
+            if (uiType.equals(UIType.CHECKBOX)) {
+                ret = new CheckBoxField(_wicketId, Model.of(_abstractUIField), Collections.singletonList(null) , config);
+            } else {
+                if (_abstractUIField.getValue().getAttribute() == null) {
+                    //TODO missing yet
+                    model = null;
+                } else {
+                    model = Model.ofMap((Map<Object, Object>) _abstractUIField.getValue().getEditValue(
+                                    _abstractUIField.getParent().getMode()));
+                }
+                ret = new BooleanField(_wicketId, _abstractUIField.getValue().getDbValue(), model,
+                                _abstractUIField.getFieldConfiguration());
+            }
         }
         return ret;
     }
