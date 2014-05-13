@@ -21,7 +21,6 @@
 package org.efaps.ui.wicket.components.table.header;
 
 import org.apache.wicket.AttributeModifier;
-import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebComponent;
@@ -29,7 +28,6 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
 import org.efaps.admin.ui.AbstractCommand.SortDirection;
 import org.efaps.ui.wicket.models.objects.AbstractUIHeaderObject;
 import org.efaps.ui.wicket.models.objects.UITableHeader;
@@ -140,9 +138,6 @@ public class HeaderCellPanel
                                 + HeaderCellPanel.ICON_SORTDESC.getImageUrl() + ");"));
             }
 
-            if (uiTableHeader.isFilter()) {
-                sortlink.add(new AttributeAppender("style", new Model<String>("width:80%"), ";"));
-            }
             this.add(sortlink);
             final Label sortlabel = new Label("sortlabel", uiTableHeader.getLabel());
             sortlink.add(sortlabel);
