@@ -128,6 +128,9 @@ public class AutoCompleteComboBox
             }
         } catch (final EFapsException e) {
             AutoCompleteComboBox.LOG.error("Error in getChoice()", e);
+        }  catch (final Exception e) {
+            // not the prettiest way, but we must be sure to return the list iterator
+            AutoCompleteComboBox.LOG.error("Unexcpected error:", e);
         }
         return retList.iterator();
     }
