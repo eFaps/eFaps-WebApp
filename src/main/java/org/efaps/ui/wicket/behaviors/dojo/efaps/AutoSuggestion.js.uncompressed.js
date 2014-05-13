@@ -151,6 +151,9 @@ define("efaps/AutoSuggestion", [
                 // _lastQuery won't be set and their input gets rewritten
                 this._lastQuery = query[this.searchAttr] = q;
                 this._queryDeferHandle = this.defer(startQuery, this.searchDelay);
+            } else {
+                // no search was done but eventually the indicator is on
+                domStyle.set(this.indicatorId, "display", "none");
             }
         },
 
