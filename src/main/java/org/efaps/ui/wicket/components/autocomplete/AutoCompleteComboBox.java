@@ -53,19 +53,23 @@ import org.slf4j.LoggerFactory;
  * @version $Id$
  */
 public class AutoCompleteComboBox
-    extends TextField<UITableCell>
+    extends TextField<String>
     implements AutoCompleteField
 {
-
     /**
      * Logger.
      */
     private static final Logger LOG =  LoggerFactory.getLogger(AutoCompleteField.class);
 
     /**
-     *
+     * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * the cell this automcoplete belongs to.
+     */
+    private final UITableCell uiAbstractCell;
 
     /**
      * @param _wicketId     wicket id for this component
@@ -76,18 +80,20 @@ public class AutoCompleteComboBox
                                 final IModel<?> _model,
                                 final boolean _selectRow)
     {
-        super(_wicketId, Model.<UITableCell>of(_model));
-        final UITableCell uiAbstractCell = (UITableCell) getDefaultModelObject();
-        final String fieldName = uiAbstractCell.getName();
+        super(_wicketId, Model.of(""));
+        this.uiAbstractCell = (UITableCell) _model.getObject();
+        final String fieldName = this.uiAbstractCell.getName();
 
-        final AutoCompleteBehavior autocomplete = new AutoCompleteBehavior(uiAbstractCell.getAutoCompleteSetting());
+        final AutoCompleteBehavior autocomplete = new AutoCompleteBehavior(
+                        this.uiAbstractCell.getAutoCompleteSetting());
         this.add(autocomplete);
 
         if (_selectRow) {
             this.add(new SetSelectedRowBehavior(fieldName));
         }
-        if (uiAbstractCell.isFieldUpdate()) {
-            final AjaxFieldUpdateBehavior fieldUpdate = new AjaxFieldUpdateBehavior("domready", _model);
+        if (this.uiAbstractCell.isFieldUpdate()) {
+            final AjaxFieldUpdateBehavior fieldUpdate = new AjaxFieldUpdateBehavior("domready",
+                            Model.of((UITableCell) _model.getObject()));
             fieldUpdate.setDojoCall(true);
             this.add(fieldUpdate);
             autocomplete.addFieldUpdate(fieldUpdate);
@@ -114,12 +120,11 @@ public class AutoCompleteComboBox
     @Override
     public Iterator<Map<String, String>> getChoices(final String _input)
     {
-        final UITableCell uiObject = (UITableCell) getDefaultModelObject();
         final List<Map<String, String>> retList = new ArrayList<Map<String, String>>();
         try {
             final AbstractUIPageObject pageObject = (AbstractUIPageObject) (getPage().getDefaultModelObject());
             final Map<String, String> uiID2Oid = pageObject == null ? null : pageObject.getUiID2Oid();
-            final List<Return> returns = uiObject.getAutoCompletion(_input, uiID2Oid);
+            final List<Return> returns = this.uiAbstractCell.getAutoCompletion(_input, uiID2Oid);
             for (final Return aReturn : returns) {
                 final Object ob = aReturn.get(ReturnValues.VALUES);
                 if (ob instanceof List) {
@@ -128,9 +133,6 @@ public class AutoCompleteComboBox
             }
         } catch (final EFapsException e) {
             AutoCompleteComboBox.LOG.error("Error in getChoice()", e);
-        }  catch (final Exception e) {
-            // not the prettiest way, but we must be sure to return the list iterator
-            AutoCompleteComboBox.LOG.error("Unexcpected error:", e);
         }
         return retList.iterator();
     }
@@ -143,12 +145,11 @@ public class AutoCompleteComboBox
     {
         String ret = null;
         try {
-            final UITableCell uiAbstractCell = (UITableCell) getDefaultModelObject();
-            if (uiAbstractCell != null && uiAbstractCell.getParent().isEditMode()
-                            && !EditValue.NONE.equals(uiAbstractCell.getAutoCompleteSetting().getValue4Edit())) {
-                final Instance instance = uiAbstractCell.getInstance();
+            if (this.uiAbstractCell != null && this.uiAbstractCell.getParent().isEditMode()
+                            && !EditValue.NONE.equals(this.uiAbstractCell.getAutoCompleteSetting().getValue4Edit())) {
+                final Instance instance = this.uiAbstractCell.getInstance();
                 if (instance != null && instance.isValid()) {
-                    switch (uiAbstractCell.getAutoCompleteSetting().getValue4Edit()) {
+                    switch (this.uiAbstractCell.getAutoCompleteSetting().getValue4Edit()) {
                         case OID:
                             ret = instance.getOid();
                             break;
@@ -173,10 +174,9 @@ public class AutoCompleteComboBox
     public String getItemLabel()
     {
         String ret = null;
-        final UITableCell uiAbstractCell = (UITableCell) getDefaultModelObject();
-        if ((uiAbstractCell.getParent().isEditMode() || uiAbstractCell.getParent().isCreateMode())
-                        && !EditValue.NONE.equals(uiAbstractCell.getAutoCompleteSetting().getValue4Edit())) {
-            ret = uiAbstractCell.getCellValue();
+        if ((this.uiAbstractCell.getParent().isEditMode() || this.uiAbstractCell.getParent().isCreateMode())
+                        && !EditValue.NONE.equals(this.uiAbstractCell.getAutoCompleteSetting().getValue4Edit())) {
+            ret = this.uiAbstractCell.getCellValue();
         }
         return ret;
     }
