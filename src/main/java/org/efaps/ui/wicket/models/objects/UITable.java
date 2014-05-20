@@ -451,7 +451,7 @@ public class UITable
                     }
                     // in case of edit mode an empty version of the first row is stored, and can be used to create
                     // new rows
-                    if (isEditMode() && first) {
+                    if (isEditable() && first) {
                         final FieldValue fldVal = new FieldValue(field, attr);
                         final String cellvalue;
                         final String cellTitle;
