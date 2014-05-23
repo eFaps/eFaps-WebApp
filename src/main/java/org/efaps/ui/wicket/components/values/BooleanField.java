@@ -30,6 +30,8 @@ import org.apache.wicket.markup.html.form.RadioGroup;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.util.visit.IVisit;
+import org.apache.wicket.util.visit.IVisitor;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.models.cell.FieldConfiguration;
 import org.efaps.ui.wicket.request.EFapsRequestParametersAdapter;
@@ -119,12 +121,23 @@ public class BooleanField
     public void convertValue(final EFapsRequestParametersAdapter _parameters)
         throws EFapsException
     {
-        final RadioGroup<?> group = (RadioGroup<?>) visitChildren(RadioGroup.class).next();
-        if (group.getDefaultModelObject() == Boolean.TRUE) {
-            _parameters.addParameterValue(getFieldConfiguration().getName(), "true");
-        } else {
-            _parameters.addParameterValue(getFieldConfiguration().getName(), "false");
-        }
+        visitChildren(RadioGroup.class, new IVisitor<RadioGroup<?>, Void>() {
+
+            @Override
+            public void component(final RadioGroup<?> _group,
+                                  final IVisit<Void> _visit)
+            {
+                try {
+                    if (_group.getDefaultModelObject() == Boolean.TRUE) {
+                        _parameters.addParameterValue(getFieldConfiguration().getName(), "true");
+                    } else {
+                        _parameters.addParameterValue(getFieldConfiguration().getName(), "false");
+                    }
+                } catch (final EFapsException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }});
     }
 
     /**

@@ -41,7 +41,8 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.RefreshingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.util.iterator.ComponentHierarchyIterator;
+import org.apache.wicket.util.visit.IVisit;
+import org.apache.wicket.util.visit.IVisitor;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
 import org.efaps.ui.wicket.components.values.IValueConverter;
@@ -305,24 +306,30 @@ public class SetDataGrid
             setDefaultFormProcessing(false);
         }
 
-
         @Override
         protected void onSubmit(final AjaxRequestTarget _target,
                                 final Form<?> _form)
         {
             final SetDataGrid grid = findParent(SetDataGrid.class);
             final UIFormCellSet cellSet = (UIFormCellSet) grid.getDefaultModelObject();
-            final ComponentHierarchyIterator iter = grid.visitChildren();
-            while (iter.hasNext()) {
-                final Component component = iter.next();
-                if (component instanceof IValueConverter) {
-                    final FormContainer frmContainer = findParent(FormContainer.class);
-                    frmContainer.removeValueConverter((IValueConverter) component);
+
+            visitChildren(new IVisitor<Component, Void>()
+            {
+
+                @Override
+                public void component(final Component _component,
+                                      final IVisit<Void> _visit)
+                {
+                    if (_component instanceof IValueConverter) {
+                        final FormContainer frmContainer = findParent(FormContainer.class);
+                        frmContainer.removeValueConverter((IValueConverter) _component);
+                    }
+                    if (_component instanceof IFormModelUpdateListener) {
+                        ((IFormModelUpdateListener) _component).updateModel();
+                    }
                 }
-                if (component instanceof IFormModelUpdateListener) {
-                    ((IFormModelUpdateListener) component).updateModel();
-                }
-            }
+            });
+
             try {
                 cellSet.addNewRow();
             } catch (final EFapsException e) {
@@ -358,17 +365,21 @@ public class SetDataGrid
         public void onClick(final AjaxRequestTarget _target)
         {
             final SetDataGrid grid = findParent(SetDataGrid.class);
-            final RefreshingView<?> repeater = findParent(RefreshingView.class);
-
             final UIFormCellSet cellSet = (UIFormCellSet) grid.getDefaultModelObject();
-            final ComponentHierarchyIterator iter = repeater.visitChildren();
-            while (iter.hasNext()) {
-                final Component component = iter.next();
-                if (component instanceof IValueConverter) {
-                    final FormContainer frmContainer = findParent(FormContainer.class);
-                    frmContainer.removeValueConverter((IValueConverter) component);
+
+            visitChildren(new IVisitor<Component, Void>()
+            {
+
+                @Override
+                public void component(final Component _component,
+                                      final IVisit<Void> _visit)
+                {
+                    if (_component instanceof IValueConverter) {
+                        final FormContainer frmContainer = findParent(FormContainer.class);
+                        frmContainer.removeValueConverter((IValueConverter) _component);
+                    }
                 }
-            }
+            });
             cellSet.getRows().remove(getDefaultModelObject());
             _target.add(grid);
         }

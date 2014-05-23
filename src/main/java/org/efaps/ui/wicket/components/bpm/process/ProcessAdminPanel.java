@@ -30,7 +30,8 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.data.IDataProvider;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.util.iterator.ComponentHierarchyIterator;
+import org.apache.wicket.util.visit.IVisit;
+import org.apache.wicket.util.visit.IVisitor;
 import org.efaps.ui.wicket.components.bpm.AbstractSortableProvider;
 import org.efaps.ui.wicket.models.objects.UIProcessInstanceLog;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
@@ -83,18 +84,25 @@ public class ProcessAdminPanel
             @Override
             protected void onUpdate(final AjaxRequestTarget _target)
             {
-                final ComponentHierarchyIterator iter = getPage().visitChildren(AjaxFallbackDefaultDataTable.class);
-                while (iter.hasNext()) {
-                    final AjaxFallbackDefaultDataTable<?, ?> table = (AjaxFallbackDefaultDataTable<?, ?>) iter.next();
-                    final IDataProvider<?> provider = table.getDataProvider();
-                    if (provider instanceof ProcessInstanceProvider) {
-                        ((ProcessInstanceProvider) provider).setProcessId(getComponent()
-                                        .getDefaultModelObjectAsString());
-                        ((ProcessInstanceProvider) provider).requery();
-                        _target.add(table);
-                        break;
-                    }
-                }
+
+                visitChildren(AjaxFallbackDefaultDataTable.class,
+                                new IVisitor<AjaxFallbackDefaultDataTable<?, ?>, Void>()
+                        {
+
+                            @Override
+                            public void component(final AjaxFallbackDefaultDataTable<?, ?> _table,
+                                                  final IVisit<Void> _visit)
+                            {
+                                final IDataProvider<?> provider = _table.getDataProvider();
+                                if (provider instanceof ProcessInstanceProvider) {
+                                    ((ProcessInstanceProvider) provider).setProcessId(getComponent()
+                                                    .getDefaultModelObjectAsString());
+                                    ((ProcessInstanceProvider) provider).requery();
+                                    _target.add(_table);
+                                    _visit.stop();
+                                }
+                            }
+                        });
             }
         });
         form.add(dropDown);

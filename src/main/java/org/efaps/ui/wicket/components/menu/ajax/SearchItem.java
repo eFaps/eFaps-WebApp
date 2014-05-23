@@ -25,7 +25,8 @@ import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.util.iterator.ComponentHierarchyIterator;
+import org.apache.wicket.util.visit.IVisit;
+import org.apache.wicket.util.visit.IVisitor;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.heading.HeadingPanel;
 import org.efaps.ui.wicket.models.objects.UIForm;
@@ -91,19 +92,6 @@ public class SearchItem
         protected void onSubmit(final AjaxRequestTarget _target)
         {
             try {
-                FormContainer form = null;
-                HeadingPanel heading = null;
-                final ComponentHierarchyIterator formVisitor = getPage().visitChildren(FormContainer.class);
-                form = (FormContainer) formVisitor.next();
-                _target.add(form);
-
-                final ComponentHierarchyIterator headingVisitor = getPage().visitChildren(HeadingPanel.class);
-                heading = (HeadingPanel) headingVisitor.next();
-                _target.add(heading);
-
-                heading.removeAll();
-                form.removeAll();
-
                 final UIMenuItem menuitem = (UIMenuItem) getComponent().getDefaultModelObject();
 
                 final UIForm uiform = (UIForm) getPage().getDefaultModelObject();
@@ -111,8 +99,37 @@ public class SearchItem
                 uiform.setCommandUUID(menuitem.getCommandUUID());
                 uiform.setFormUUID(uiform.getCommand().getTargetForm().getUUID());
                 uiform.execute();
-                heading.addComponents(Model.of(new UIHeading(uiform.getTitle())));
-                FormPage.updateFormContainer(getPage(), form, uiform);
+
+                visitChildren(FormContainer.class, new IVisitor<FormContainer, Void>()
+                {
+
+                    @Override
+                    public void component(final FormContainer _form,
+                                          final IVisit<Void> _visit)
+                    {
+                        _target.add(_form);
+                        _form.removeAll();
+                        try {
+                            FormPage.updateFormContainer(getPage(), _form, uiform);
+                        } catch (final EFapsException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
+                visitChildren(HeadingPanel.class, new IVisitor<HeadingPanel, Void>()
+                {
+
+                    @Override
+                    public void component(final HeadingPanel _heading,
+                                          final IVisit<Void> _visit)
+                    {
+                        _target.add(_heading);
+                        _heading.removeAll();
+                        _heading.addComponents(Model.of(new UIHeading(uiform.getTitle())));
+                    }
+                });
             } catch (final EFapsException e) {
                 throw new RestartResponseException(new ErrorPage(e));
             }

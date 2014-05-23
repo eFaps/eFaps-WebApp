@@ -35,7 +35,6 @@ import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.ILinkListener;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.util.iterator.ComponentHierarchyIterator;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import org.efaps.ui.wicket.behaviors.update.IRemoteUpdateListener;
@@ -243,19 +242,24 @@ public class MenuTree
                 old = true;
                 child.setSelected(true);
                 menuItem.setSelected(false);
-                final ComponentHierarchyIterator iterator = visitChildren(MenuItem.class);
-                while (iterator.hasNext()) {
-                    final Component comp = iterator.next();
-                    final Object object = comp.getDefaultModelObject();
-                    if (object != null && object instanceof UIMenuItem) {
-                        if (((UIMenuItem) object).isSelected()) {
-                            _target.add(getSelected());
-                            setSelected(comp);
-                            _target.add(getSelected());
-                            break;
+                visitChildren(MenuItem.class, new IVisitor<MenuItem, Void>()
+                {
+
+                    @Override
+                    public void component(final MenuItem _comp,
+                                          final IVisit<Void> _visit)
+                    {
+                        final Object object = _comp.getDefaultModelObject();
+                        if (object != null && object instanceof UIMenuItem) {
+                            if (((UIMenuItem) object).isSelected()) {
+                                _target.add(getSelected());
+                                setSelected(_comp);
+                                _target.add(getSelected());
+                                _visit.stop();
+                            }
                         }
                     }
-                }
+                });
                 break;
             }
         }
@@ -290,14 +294,19 @@ public class MenuTree
         if (nested) {
             expand(ancestor);
             ancestor.setSelected(true);
-            final ComponentHierarchyIterator visitor = visitChildren(MenuItem.class);
-            while (visitor.hasNext()) {
-                final Component component = visitor.next();
-                if (component.getDefaultModelObject().equals(ancestor)) {
-                    setSelected(component);
-                    break;
+            visitChildren(MenuItem.class, new IVisitor<MenuItem, Void>()
+            {
+
+                @Override
+                public void component(final MenuItem _comp,
+                                      final IVisit<Void> _visit)
+                {
+                    if (_comp.getDefaultModelObject().equals(ancestor)) {
+                        setSelected(_comp);
+                        _visit.stop();
+                    }
                 }
-            }
+            });
         } else {
             expand(ancestor);
         }

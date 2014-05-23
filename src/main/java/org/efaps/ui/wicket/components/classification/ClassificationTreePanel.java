@@ -27,7 +27,8 @@ import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.util.iterator.ComponentHierarchyIterator;
+import org.apache.wicket.util.visit.IVisit;
+import org.apache.wicket.util.visit.IVisitor;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.button.Button;
@@ -136,17 +137,24 @@ public class ClassificationTreePanel
             if (ClassificationTreePanel.this.changed) {
                 final Page page = getPage();
                 final UIForm uiform = (UIForm) page.getDefaultModelObject();
-                final ComponentHierarchyIterator visitor = page.visitChildren(FormContainer.class);
 
-                final FormContainer form = (FormContainer) visitor.next();
-                form.removeAll();
-                try {
-                    uiform.updateClassElements((UIClassification) getDefaultModelObject());
-                    FormPage.updateFormContainer(page, form, uiform);
-                } catch (final EFapsException e) {
-                    throw new RestartResponseException(new ErrorPage(e));
-                }
-                _target.add(form);
+                visitChildren(FormContainer.class, new IVisitor<FormContainer, Void>()
+                {
+
+                    @Override
+                    public void component(final FormContainer _form,
+                                          final IVisit<Void> _visit)
+                    {
+                        _form.removeAll();
+                        try {
+                            uiform.updateClassElements((UIClassification) getDefaultModelObject());
+                            FormPage.updateFormContainer(page, _form, uiform);
+                        } catch (final EFapsException e) {
+                            throw new RestartResponseException(new ErrorPage(e));
+                        }
+                        _target.add(_form);
+                    }
+                });
             }
         }
     }

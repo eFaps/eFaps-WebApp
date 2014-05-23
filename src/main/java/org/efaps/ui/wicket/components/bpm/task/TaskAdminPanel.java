@@ -28,6 +28,8 @@ import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFal
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.util.visit.IVisit;
+import org.apache.wicket.util.visit.IVisitor;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.components.bpm.AbstractSortableProvider;
 import org.efaps.ui.wicket.components.bpm.task.AdminTaskSummaryProvider.Query;
@@ -108,12 +110,20 @@ public class TaskAdminPanel
         @Override
         public void onClick(final AjaxRequestTarget _target)
         {
-            final AjaxFallbackDefaultDataTable<?, ?> table = (AjaxFallbackDefaultDataTable<?, ?>) getPage()
-                            .visitChildren(AjaxFallbackDefaultDataTable.class).next();
-            final AdminTaskSummaryProvider provider = (AdminTaskSummaryProvider) table.getDataProvider();
-            provider.setQuery(this.query);
-            provider.requery();
-            _target.add(table);
+
+            visitChildren(AjaxFallbackDefaultDataTable.class, new IVisitor<AjaxFallbackDefaultDataTable<?, ?>, Void>()
+            {
+
+                @Override
+                public void component(final AjaxFallbackDefaultDataTable<?, ?> _table,
+                                      final IVisit<Void> _visit)
+                {
+                    final AdminTaskSummaryProvider provider = (AdminTaskSummaryProvider) _table.getDataProvider();
+                    provider.setQuery(UpdateTableLink.this.query);
+                    provider.requery();
+                    _target.add(_table);
+                }
+            });
         }
 
         @Override
