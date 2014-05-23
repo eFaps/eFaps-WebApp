@@ -38,7 +38,8 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.RefreshingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.util.iterator.ComponentHierarchyIterator;
+import org.apache.wicket.util.visit.IVisit;
+import org.apache.wicket.util.visit.IVisitor;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.bpm.BPM;
 import org.efaps.db.Context;
@@ -551,17 +552,24 @@ public class TaskPage
                     try {
                         DelegatePerson selected = null;
                         if (_model.getObject().getDelegateRoles().size() > 1) {
-                            final ComponentHierarchyIterator modalIter = getPage().visitChildren(DropDownChoice.class);
-                            if (modalIter.hasNext()) {
-                                final DropDownChoice<?> choice = (DropDownChoice<?>) modalIter.next();
-                                final DelegatePerson roleObj = (DelegatePerson) choice.getDefaultModelObject();
-                                if (roleObj.getUuid() == null) {
-                                    choice.setVisible(true);
-                                    _target.add(choice);
-                                } else {
-                                    selected = roleObj;
-                                }
-                            }
+                            selected = visitChildren(DropDownChoice.class,
+                                            new IVisitor<DropDownChoice<?>, DelegatePerson>()
+                                {
+
+                                    @Override
+                                    public void component(final DropDownChoice<?> _choice,
+                                                          final IVisit<DelegatePerson> _visit)
+                                    {
+                                        final DelegatePerson roleObj = (DelegatePerson) _choice
+                                                        .getDefaultModelObject();
+                                        if (roleObj.getUuid() == null) {
+                                            _choice.setVisible(true);
+                                            _target.add(_choice);
+                                        } else {
+                                            _visit.stop(roleObj);
+                                        }
+                                    }
+                                });
                         } else {
                             selected = _model.getObject().getDelegateRoles().get(0);
                         }
