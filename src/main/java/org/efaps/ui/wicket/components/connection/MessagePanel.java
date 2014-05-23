@@ -33,7 +33,8 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.ws.IWebSocketSettings;
 import org.apache.wicket.protocol.ws.api.IWebSocketConnection;
 import org.apache.wicket.protocol.ws.api.WebSocketPushBroadcaster;
-import org.apache.wicket.util.iterator.ComponentHierarchyIterator;
+import org.apache.wicket.util.visit.IVisit;
+import org.apache.wicket.util.visit.IVisitor;
 import org.efaps.ui.wicket.EFapsApplication;
 import org.efaps.ui.wicket.components.bpm.AbstractSortableProvider;
 import org.efaps.ui.wicket.components.connection.MessageTablePanel.CheckBoxPanel;
@@ -85,24 +86,39 @@ public class MessagePanel
             protected void onAfterSubmit(final AjaxRequestTarget _target,
                                          final Form<?> _form)
             {
-                @SuppressWarnings("unchecked")
-                final TextArea<String> txt = (TextArea<String>) _form.visitChildren(TextArea.class).next();
-                final String msg = txt.getDefaultModelObjectAsString();
-                if (!msg.isEmpty()) {
-                    final ComponentHierarchyIterator iter = _form.visitChildren(CheckBox.class);
-                    while (iter.hasNext()) {
-                        final CheckBox checkBox = (CheckBox) iter.next();
-                        final Boolean selected = (Boolean) checkBox.getDefaultModelObject();
-                        if (selected) {
-                            final CheckBoxPanel panel = (CheckBoxPanel) checkBox.getParent();
-                            final UIUser user = (UIUser) panel.getDefaultModelObject();
-                            final List<IWebSocketConnection> conns = EFapsApplication.get().getConnectionRegistry()
-                                            .getConnections4User(user.getUserName());
-                            for (final IWebSocketConnection conn : conns) {
-                                conn.sendMessage(new PushMsg(msg));
+                final StringBuilder msg = new StringBuilder();
+                _form.visitChildren(TextArea.class, new IVisitor<TextArea<String>, Void>()
+                {
+                    @Override
+                    public void component(final TextArea<String> _textArea,
+                                          final IVisit<Void> _visit)
+                    {
+                        _textArea.setEscapeModelStrings(false);
+                        msg.append(_textArea.getDefaultModelObjectAsString());
+                        _visit.stop();
+                    }
+                });
+
+                if (msg.length() > 0) {
+                    _form.visitChildren(CheckBox.class, new IVisitor<CheckBox, Void>()
+                    {
+
+                        @Override
+                        public void component(final CheckBox _checkBox,
+                                              final IVisit<Void> _visit)
+                        {
+                            final Boolean selected = (Boolean) _checkBox.getDefaultModelObject();
+                            if (selected) {
+                                final CheckBoxPanel panel = (CheckBoxPanel) _checkBox.getParent();
+                                final UIUser user = (UIUser) panel.getDefaultModelObject();
+                                final List<IWebSocketConnection> conns = EFapsApplication.get().getConnectionRegistry()
+                                                .getConnections4User(user.getUserName());
+                                for (final IWebSocketConnection conn : conns) {
+                                    conn.sendMessage(new PushMsg(msg.toString()));
+                                }
                             }
                         }
-                    }
+                    });
                 }
             }
         };
@@ -117,14 +133,26 @@ public class MessagePanel
             protected void onAfterSubmit(final AjaxRequestTarget _target,
                                          final Form<?> _form)
             {
-                @SuppressWarnings("unchecked")
-                final TextArea<String> txt = (TextArea<String>) _form.visitChildren(TextArea.class).next();
-                final String msg = txt.getDefaultModelObjectAsString();
-                if (!msg.isEmpty()) {
+
+                final StringBuilder msg = new StringBuilder();
+                _form.visitChildren(TextArea.class, new IVisitor<TextArea<String>, Void>()
+                {
+
+                    @Override
+                    public void component(final TextArea<String> _textArea,
+                                          final IVisit<Void> _visit)
+                    {
+                        _textArea.setEscapeModelStrings(false);
+                        msg.append(_textArea.getDefaultModelObjectAsString());
+                        _visit.stop();
+                    }
+                });
+
+                if (msg.length() > 0) {
                     final IWebSocketSettings webSocketSettings = IWebSocketSettings.Holder.get(getApplication());
                     final WebSocketPushBroadcaster broadcaster =
                                     new WebSocketPushBroadcaster(webSocketSettings.getConnectionRegistry());
-                    broadcaster.broadcastAll(EFapsApplication.get(), new PushMsg(msg));
+                    broadcaster.broadcastAll(EFapsApplication.get(), new PushMsg(msg.toString()));
                 }
             }
         };

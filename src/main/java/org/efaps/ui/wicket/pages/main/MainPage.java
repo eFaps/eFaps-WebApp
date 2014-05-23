@@ -263,7 +263,7 @@ public class MainPage
             add(socketMsgContainer);
             if (Configuration.getAttributeAsBoolean(ConfigAttribute.WEBSOCKET_ACTVATE)) {
                 socketMsgContainer.setOutputMarkupPlaceholderTag(true);
-                this.socketMsg = new Label("socketMsg", "none yet");
+                this.socketMsg = new Label("socketMsg", "none yet").setEscapeModelStrings(false);
                 this.socketMsg.setOutputMarkupPlaceholderTag(true);
                 this.socketMsg.add(new WebSocketBehavior()
                 {
