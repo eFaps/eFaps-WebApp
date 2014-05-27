@@ -506,7 +506,8 @@ public class UIForm
         } else if (_field.getPhrase() != null) {
             value = _print.getPhrase(_field.getName());
         }
-        final UIField uiField = new UIField(getInstance().getKey(), this, UIValue.get(_field, _attr, value));
+        final UIField uiField = new UIField(getInstance().getKey(), this, UIValue.get(_field, _attr, value)
+                        .setInstance(_fieldInstance).setClassObject(this));
         _row.add(uiField);
     }
 
@@ -813,7 +814,7 @@ public class UIForm
                         } else {
                             if ((attr != null && attr.getAttributeType().getUI() == null)
                                 || (field.getClassUI() == null && field.getUIProvider() != null)) {
-                                cell = new UIField(null, this, UIValue.get(field, attr, null));
+                                cell = new UIField(null, this, UIValue.get(field, attr, null).setClassObject(this));
                             } else {
                                 cell = new UIFormCell(this, fieldvalue, strValue, "", label, attrTypeName);
                                 if (isSearchMode()) {

@@ -112,8 +112,9 @@ public class FieldConfiguration
     }
 
     /**
-     * @param _abstractUIField
-     * @return
+     * @param _abstractUIField field object this labelconfig belongs to
+     * @return the label for the UserInterface
+     * @throws CacheReloadException on error
      */
     public String getLabel(final AbstractUIField _abstractUIField)
         throws CacheReloadException
@@ -128,12 +129,11 @@ public class FieldConfiguration
         } else {
             key = getField().getLabel();
         }
-
         return DBProperties.getProperty(key);
     }
 
     /**
-     * @return
+     * @return the UIType
      */
     public UIType getUIType()
     {

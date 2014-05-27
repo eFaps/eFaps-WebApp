@@ -20,6 +20,7 @@
 
 package org.efaps.ui.wicket.models.field.factories;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -70,21 +71,17 @@ public class BooleanUIFactory
     {
         Component ret = null;
         if (applies(_abstractUIField)) {
-            IModel<Map<Object, Object>> model;
             final FieldConfiguration config = _abstractUIField.getFieldConfiguration();
             final UIType uiType = config.getUIType();
             if (uiType.equals(UIType.CHECKBOX)) {
-                ret = new CheckBoxField(_wicketId, Model.of(_abstractUIField), Collections.singletonList(null) , config);
+                ret = new CheckBoxField(_wicketId, Model.of(_abstractUIField), Collections.singletonList(null), config);
             } else {
-                if (_abstractUIField.getValue().getAttribute() == null) {
-                    //TODO missing yet
-                    model = null;
-                } else {
-                    model = Model.ofMap((Map<Object, Object>) _abstractUIField.getValue().getEditValue(
-                                    _abstractUIField.getParent().getMode()));
-                }
-                ret = new BooleanField(_wicketId, _abstractUIField.getValue().getDbValue(), model,
-                                _abstractUIField.getFieldConfiguration());
+                final IModel<Map<Object, Object>> model = Model.ofMap((Map<Object, Object>) _abstractUIField.getValue()
+                                .getEditValue(_abstractUIField.getParent().getMode()));
+                final Serializable value = _abstractUIField.getValue().getDbValue();
+                ret = new BooleanField(_wicketId, value, model,
+                                _abstractUIField.getFieldConfiguration(),
+                                _abstractUIField.getFieldConfiguration().getLabel(_abstractUIField));
             }
         }
         return ret;

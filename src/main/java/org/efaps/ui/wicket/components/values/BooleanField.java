@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.ILabelProvider;
 import org.apache.wicket.markup.html.form.Radio;
 import org.apache.wicket.markup.html.form.RadioGroup;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -45,7 +46,7 @@ import org.efaps.util.EFapsException;
  */
 public class BooleanField
     extends Panel
-    implements IValueConverter, IFieldConfig
+    implements IValueConverter, IFieldConfig, ILabelProvider<String>
 {
 
     /**
@@ -59,19 +60,27 @@ public class BooleanField
     private final FieldConfiguration fieldConfiguration;
 
     /**
+     * Label for this field.
+     */
+    private final String label;
+
+    /**
      * @param _wicketId wicket id for this component
      * @param _value value of this component
      * @param _choices choices
      * @param _fieldConfiguration configuration for this field
+     * @param _label label for this field
      */
     public BooleanField(final String _wicketId,
                         final Object _value,
                         final IModel<Map<Object, Object>> _choices,
-                        final FieldConfiguration _fieldConfiguration)
+                        final FieldConfiguration _fieldConfiguration,
+                        final String _label)
     {
         super(_wicketId);
         setOutputMarkupId(true);
         this.fieldConfiguration = _fieldConfiguration;
+        this.label = _label;
         final RadioGroup<Boolean> radioGroup = new RadioGroup<Boolean>("radioGroup");
         if (_value == null) {
             radioGroup.setDefaultModel(new Model<Boolean>());
@@ -147,5 +156,17 @@ public class BooleanField
     public FieldConfiguration getFieldConfig()
     {
         return this.fieldConfiguration;
+    }
+
+    @Override
+    public IModel<String> getLabel()
+    {
+        IModel<String> ret;
+        if (this.label == null) {
+            ret = Model.of(getFieldConfig().getLabel());
+        } else {
+            ret = Model.of(this.label);
+        }
+        return ret;
     }
 }
