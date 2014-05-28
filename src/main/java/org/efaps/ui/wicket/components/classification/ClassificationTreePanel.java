@@ -50,9 +50,8 @@ import org.efaps.util.cache.CacheReloadException;
 public class ClassificationTreePanel
     extends Panel
 {
-
     /**
-     *
+     * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
 
@@ -62,11 +61,15 @@ public class ClassificationTreePanel
     private static final EFapsContentReference CSS = new EFapsContentReference(ClassificationPath.class,
                     "ClassificationTree.css");
 
+    /**
+     * Register if model was changed or not.
+     */
     private boolean changed = false;
 
     /**
      * @param _wicketId wicket id for this component
      * @param _model model for this component
+     * @throws CacheReloadException on error
      */
     public ClassificationTreePanel(final String _wicketId,
                                    final IModel<UIClassification> _model)
@@ -138,7 +141,7 @@ public class ClassificationTreePanel
                 final Page page = getPage();
                 final UIForm uiform = (UIForm) page.getDefaultModelObject();
 
-                visitChildren(FormContainer.class, new IVisitor<FormContainer, Void>()
+                page.visitChildren(FormContainer.class, new IVisitor<FormContainer, Void>()
                 {
 
                     @Override
