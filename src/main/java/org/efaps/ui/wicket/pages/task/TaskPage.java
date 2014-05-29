@@ -552,7 +552,7 @@ public class TaskPage
                     try {
                         DelegatePerson selected = null;
                         if (_model.getObject().getDelegateRoles().size() > 1) {
-                            selected = visitChildren(DropDownChoice.class,
+                            selected = getPage().visitChildren(DropDownChoice.class,
                                             new IVisitor<DropDownChoice<?>, DelegatePerson>()
                                 {
 
