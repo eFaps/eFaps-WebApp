@@ -39,6 +39,7 @@ import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.Command;
 import org.efaps.db.Context;
+import org.efaps.ui.wicket.behaviors.KeepAliveBehavior;
 import org.efaps.ui.wicket.components.bpm.task.AssignedTaskSummaryProvider;
 import org.efaps.ui.wicket.components.bpm.task.OwnedTaskSummaryProvider;
 import org.efaps.ui.wicket.components.bpm.task.TaskTablePanel;
@@ -86,6 +87,7 @@ public class DashboardPage
         throws EFapsException
     {
         super();
+        add(new KeepAliveBehavior());
         final SystemConfiguration config = EFapsSystemConfiguration.get();
         boolean used = false;
         final boolean active = config != null

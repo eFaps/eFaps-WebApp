@@ -32,6 +32,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
+import org.efaps.ui.wicket.behaviors.KeepAliveBehavior;
 import org.efaps.ui.wicket.behaviors.SetMessageStatusBehavior;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.footer.FooterPanel;
@@ -165,6 +166,8 @@ public abstract class AbstractContentPage
         throws EFapsException
     {
         this.form = _form;
+        add(new KeepAliveBehavior());
+
         // set the title for the Page
         add(new Label("pageTitle", DBProperties.getProperty("Logo.Version.Label")));
 
