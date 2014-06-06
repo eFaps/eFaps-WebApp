@@ -20,6 +20,7 @@
 
 package org.efaps.ui.wicket;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -30,6 +31,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -48,6 +51,9 @@ import org.apache.wicket.util.collections.ConcurrentHashSet;
 import org.apache.wicket.util.lang.Generics;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.db.Context;
+import org.efaps.ui.wicket.behaviors.KeepAliveBehavior;
+import org.efaps.ui.wicket.util.Configuration;
+import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,6 +109,20 @@ public class ConnectionRegistry
             };
 
     /**
+     * MetaDataKey for the last Request Time of a Session.
+     */
+    private static final MetaDataKey<ConcurrentMap<String, Long>> KEEPALIVE =
+                    new MetaDataKey<ConcurrentMap<String, Long>>()
+            {
+                private static final long serialVersionUID = 1L;
+            };
+
+    /**
+     * Used to store if the KeepAlive threat was started.
+     */
+    private boolean keepAlive = false;
+
+    /**
      * @param _sessionID sessionId to be check for invalid
      * @return true if valid, else false
      */
@@ -143,6 +163,30 @@ public class ConnectionRegistry
             }
         }
         lastactive.put(_sessionID, _date.getTime());
+        ConnectionRegistry.LOG.debug("Register Activity for Session: {}", _sessionID);
+    }
+
+    /**
+     * @param _sessionID    id of the session the keep alive belongs to
+     * @param _date         time to register
+     */
+    public void registerKeepAlive(final String _sessionID,
+                                  final Date _date)
+    {
+        ConcurrentMap<String, Long> keepalive = Session.get().getApplication()
+                        .getMetaData(ConnectionRegistry.KEEPALIVE);
+
+        if (keepalive == null) {
+            synchronized (ConnectionRegistry.KEEPALIVE) {
+                keepalive = Session.get().getApplication().getMetaData(ConnectionRegistry.KEEPALIVE);
+                if (keepalive == null) {
+                    keepalive = Generics.<String, Long>newConcurrentHashMap();
+                    Session.get().getApplication().setMetaData(ConnectionRegistry.KEEPALIVE, keepalive);
+                }
+            }
+        }
+        keepalive.put(_sessionID, _date.getTime());
+        ConnectionRegistry.LOG.debug("Register KeepAlive for Session: {}", _sessionID);
     }
 
     /**
@@ -163,6 +207,7 @@ public class ConnectionRegistry
             }
         }
         invalidated.add(_sessionID);
+        ConnectionRegistry.LOG.debug("Marked Session: {} as invalid", _sessionID);
     }
 
     /**
@@ -250,12 +295,12 @@ public class ConnectionRegistry
 
     /**
      * @param _userName login of the user
-     * @param _sessionId    SessionId assigned
+     * @param _sessionID    SessionId assigned
      */
     protected void setUser(final String _userName,
-                           final String _sessionId)
+                           final String _sessionID)
     {
-        ConnectionRegistry.LOG.debug("register user: '{}', session: '{}'", _userName, _sessionId);
+        ConnectionRegistry.LOG.debug("register user: '{}', session: '{}'", _userName, _sessionID);
         ConcurrentMap<String, ConcurrentHashSet<String>> user2session = Session.get().getApplication()
                         .getMetaData(ConnectionRegistry.USER2SESSION);
 
@@ -279,21 +324,22 @@ public class ConnectionRegistry
                 }
             }
         }
-        sessions.add(_sessionId);
-        registerLogin4History(_userName, _sessionId);
+        sessions.add(_sessionID);
+        ConnectionRegistry.LOG.debug("Added User '{}' for Session: {}", _userName, _sessionID);
+        registerLogin4History(_userName, _sessionID);
     }
 
     /**
-     * @param _sessionId    Sessionid the message belongs to
+     * @param _sessionID    Sessionid the message belongs to
      * @param _key          key the message belongs to
      */
-    public void addMsgConnection(final String _sessionId,
+    public void addMsgConnection(final String _sessionID,
                                  final IKey _key)
     {
+        initKeepAlive();
         ConcurrentMap<String, IKey> session2key = Session.get().getApplication()
                         .getMetaData(ConnectionRegistry.SESSION2KEY);
         if (session2key == null) {
-
             synchronized (ConnectionRegistry.SESSION2KEY) {
                 session2key = Session.get().getApplication().getMetaData(ConnectionRegistry.SESSION2KEY);
                 if (session2key == null) {
@@ -302,7 +348,8 @@ public class ConnectionRegistry
                 }
             }
         }
-        session2key.put(_sessionId, _key);
+        session2key.put(_sessionID, _key);
+        ConnectionRegistry.LOG.debug("Added Message Connection for Session: {}", _sessionID);
     }
 
     /**
@@ -316,28 +363,35 @@ public class ConnectionRegistry
     }
 
     /**
-     * @param _login        login of the user to be remved for the registry
-     * @param _sessionId    id to be removed
-     * @param _application  Application taht contains the mapping
+     * @param _login        login of the user to be removed for the registry
+     * @param _sessionID    id to be removed
+     * @param _application  Application that contains the mapping
      */
     protected void removeUser(final String _login,
-                              final String _sessionId,
+                              final String _sessionID,
                               final Application _application)
     {
-        ConnectionRegistry.LOG.debug("remove user: '{}', session: '{}'", _login, _sessionId);
+        ConnectionRegistry.LOG.debug("remove user: '{}', session: '{}'", _login, _sessionID);
         ConcurrentMap<String, ConcurrentHashSet<String>> user2session = _application.getMetaData(
                         ConnectionRegistry.USER2SESSION);
         synchronized (ConnectionRegistry.USER2SESSION) {
             user2session = _application.getMetaData(ConnectionRegistry.USER2SESSION);
             if (user2session != null) {
                 final ConcurrentHashSet<String> sessions = user2session.get(_login);
-                sessions.remove(_sessionId);
+                sessions.remove(_sessionID);
                 if (sessions.isEmpty()) {
                     user2session.remove(_login);
                 }
             }
         }
-        registerLogout4History(_login, _sessionId);
+        synchronized (ConnectionRegistry.KEEPALIVE) {
+            final ConcurrentMap<String, Long> keepalive = _application.getMetaData(ConnectionRegistry.KEEPALIVE);
+            if (keepalive != null) {
+                keepalive.remove(_sessionID);
+            }
+        }
+        ConnectionRegistry.LOG.debug("Removed User '{}' for Session: {}", _login, _sessionID);
+        registerLogout4History(_login, _sessionID);
     }
 
     /**
@@ -413,7 +467,6 @@ public class ConnectionRegistry
         return ret;
     }
 
-
     /**
      * @return list of all registered Users
      */
@@ -458,5 +511,78 @@ public class ConnectionRegistry
             ret = Collections.unmodifiableMap(lastactive);
         }
         return ret;
+    }
+
+    /**
+     * Send the KeepAlive.
+     * @param _application Application the KeepAlive will be send for
+     */
+    public void sendKeepAlive(final Application _application)
+    {
+        final long reference = new Date().getTime();
+        final ConcurrentMap<String, IKey> sessionId2key = _application.getMetaData(ConnectionRegistry.SESSION2KEY);
+        final ConcurrentMap<String, Long> keepalive = _application.getMetaData(ConnectionRegistry.KEEPALIVE);
+        if (keepalive != null) {
+            for (final Entry<String, Long> entry : keepalive.entrySet()) {
+                if (reference - entry.getValue() > 10000) {
+                    final IKey key = sessionId2key.get(entry.getKey());
+                    if (key != null) {
+                        final IWebSocketConnectionRegistry registry = IWebSocketSettings.Holder.get(
+                                        _application).getConnectionRegistry();
+                        final IWebSocketConnection conn = registry.getConnection(_application, entry.getKey(), key);
+                        if (conn != null) {
+                            try {
+                                conn.sendMessage(KeepAliveBehavior.MSG);
+                                ConnectionRegistry.LOG.debug("Send KeepAlive for Session: {}", entry.getKey());
+                            } catch (final IOException e) {
+                                ConnectionRegistry.LOG.error("Catched error", e);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Init the KeepAlive mechanism.
+     */
+    private void initKeepAlive()
+    {
+        if (!this.keepAlive) {
+            this.keepAlive = true;
+            final KeepAliveTask keepAliveTask = new KeepAliveTask(EFapsApplication.get().getApplicationKey());
+            final Timer timer = new Timer(true);
+            // every two minutes
+            timer.scheduleAtFixedRate(keepAliveTask, 0 * 1000,
+                            Configuration.getAttributeAsInteger(ConfigAttribute.WEBSOCKET_KASP) * 1000);
+        }
+    }
+
+    /**
+     * task to send the keep alive messages.
+     */
+    private class KeepAliveTask
+        extends TimerTask
+    {
+        /**
+         * Key to the application this task belong to.
+         */
+        private final String applicationKey;
+
+        /**
+         * @param _applicationKey key to the application this task belong to
+         */
+        public KeepAliveTask(final String _applicationKey)
+        {
+            this.applicationKey = _applicationKey;
+        }
+
+        @Override
+        public void run()
+        {
+            final EFapsApplication app = (EFapsApplication) Application.get(this.applicationKey);
+            app.getConnectionRegistry().sendKeepAlive(app);
+        }
     }
 }

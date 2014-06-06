@@ -28,170 +28,179 @@ package org.efaps.ui.wicket.util;
  */
 public interface WebAppSettings
 {
+    /**
+     * Basic key.
+     */
+    String BASEKEY = "org.efaps.webapp.";
 
     /**
      * Integer. Duration (in seconds) of a eFapsStaticContent
      * in the Cache of the Browser, before it will be retrieved again
      * from the eFaps-DataBase. Default Value is 3600.
      */
-    String CACHE_DURATION = "org.efaps.webapp.StaticContentCacheDuration";
+    String CACHE_DURATION = WebAppSettings.BASEKEY + "StaticContentCacheDuration";
 
     /**
      * String. UUID of a form that will be used in case that there is no form found for the task page.
      */
-    String BPM_DEFAULTTASKFROM = "org.efaps.webapp.BPM.DefaultTaskForm";
+    String BPM_DEFAULTTASKFROM = WebAppSettings.BASEKEY + "BPM.DefaultTaskForm";
 
     /**
      * Integer: Number of items in the Recent Links menu. Default Value is 5.
      */
-    String RECENT_CACHE_SIZE = "org.efaps.webapp.RecentCacheSize";
+    String RECENT_CACHE_SIZE = WebAppSettings.BASEKEY + "RecentCacheSize";
 
     /**
      * Integer: Max Length of the Label inside the Recent Link. Default Value is 25.
      */
-    String RECENT_LINKMAX = "org.efaps.webapp.RecentLinkMaxLenght";
+    String RECENT_LINKMAX = WebAppSettings.BASEKEY + "RecentLinkMaxLenght";
 
     /**
      * String (human, windows). StyelSheet for the Classification Tree. Default
      * Value "human".
      */
-    String CLASSTREE_CLASS = "org.efaps.webapp.ClassificationTreeStyleSheet";
+    String CLASSTREE_CLASS = WebAppSettings.BASEKEY + "ClassificationTreeStyleSheet";
 
     /**
      * Properties. Expand state for the Tree. Setting the default expand state
      * of the Tree for Classifications. e.g. Products_Class=false means that the
      * tree will not be expanded. DefaultValue is true.
      */
-    String CLASSTREE_EXPAND = "org.efaps.webapp.ClassificationTreeExpandState";
+    String CLASSTREE_EXPAND = WebAppSettings.BASEKEY + "ClassificationTreeExpandState";
 
     /**
      * String (tundra,claro,nihilo,soria). Name of the main stylesheet for dojo.
      * Default Value "tundra".
      */
-    String DOJO_CLASS = "org.efaps.webapp.DojoMainStylesheet";
+    String DOJO_CLASS = WebAppSettings.BASEKEY + "DojoMainStylesheet";
 
     /**
      * String (w_blue,w_silver). Name of the main stylesheet for dojo modal
      * window. Default Value "w_silver".
      */
-    String DOJO_MODALCLASS = "org.efaps.webapp.DojoModalStylesheet";
+    String DOJO_MODALCLASS = WebAppSettings.BASEKEY + "DojoModalStylesheet";
 
     /**
      * String. Position of the horizontal splitter. Default value: 200.
      */
-    String SPLITTERPOSHORIZONTAL = "org.efaps.webapp.PositionOfHorizontalSplitter";
+    String SPLITTERPOSHORIZONTAL = WebAppSettings.BASEKEY + "PositionOfHorizontalSplitter";
 
     /**
      * String. Position of the vertical splitter. Default value: 50%.
      */
-    String SPLITTERPOSVERTICAL = "org.efaps.webapp.PositionOfVerticalSplitter";
+    String SPLITTERPOSVERTICAL = WebAppSettings.BASEKEY + "PositionOfVerticalSplitter";
 
     /**
      * String (human, windows). StyleSheet for the Structur Browser Tree.
      * Default value: windows
      */
-    String STRUCTREE_CLASS = "org.efaps.webapp.StructurTreeStyleSheet";
+    String STRUCTREE_CLASS = WebAppSettings.BASEKEY + "StructurTreeStyleSheet";
 
     /**
      * String (human, windows). StyleSheet for the Structur Browser Tree.
      * Default value: human
      */
-    String STRUCBRWSRTREE_CLASS = "org.efaps.webapp.StructurBrowserTreeStyleSheet";
+    String STRUCBRWSRTREE_CLASS = WebAppSettings.BASEKEY + "StructurBrowserTreeStyleSheet";
 
     /**
      * Boolean (true/false). Display the oid of the current object behind the title.
      */
-    String SHOW_OID = "org.efaps.webapp.ShowOID";
+    String SHOW_OID = WebAppSettings.BASEKEY + "ShowOID";
 
     /**
      * String: UUID of the MainToolBar used.
      */
-    String TOOLBAR = "org.efaps.webapp.MainToolBar";
+    String TOOLBAR = WebAppSettings.BASEKEY + "MainToolBar";
 
     /**
      * Integer: Maximum rows of task shown in the task Table per Page. Default Value is 8.
      */
-    String DASHBOARD_ASSIGNEDTASK_MAX = "org.efaps.webapp.DashBoard.AssignedTaskTable.MaximumRows";
+    String DASHBOARD_ASSIGNEDTASK_MAX = WebAppSettings.BASEKEY + "DashBoard.AssignedTaskTable.MaximumRows";
 
     /**
      * Boolean: Allow the User to activate deactivate the AutoUpdate. Default true.
      */
-    String DASHBOARD_ASSIGNEDTASK_AU = "org.efaps.webapp.DashBoard.AssignedTable.UserAutoUpdate";
+    String DASHBOARD_ASSIGNEDTASK_AU = WebAppSettings.BASEKEY + "DashBoard.AssignedTable.UserAutoUpdate";
 
     /**
      * Integer: Time in seconds for an AutoUpdate. To deactivate AutoUpdate set to 0. Default Value 30 Seconds.
      */
-    String DASHBOARD_ASSIGNED_AUTIME = "org.efaps.webapp.DashBoard.AssignedTaskTable.AutoUpdateDuration";
+    String DASHBOARD_ASSIGNED_AUTIME = WebAppSettings.BASEKEY + "DashBoard.AssignedTaskTable.AutoUpdateDuration";
 
     /**
      * Integer: Maximum rows of task shown in the task Table per Page. Default Value is 8.
      */
-    String DASHBOARD_OWNEDTASK_MAX = "org.efaps.webapp.DashBoard.OwnedTaskTable.MaximumRows";
+    String DASHBOARD_OWNEDTASK_MAX = WebAppSettings.BASEKEY + "DashBoard.OwnedTaskTable.MaximumRows";
 
     /**
      * Boolean: Allow the User to activate deactivate the AutoUpdate. Default true.
      */
-    String DASHBOARD_OWNEDTASK_AU = "org.efaps.webapp.DashBoard.OwnedTaskTable.UserAutoUpdate";
+    String DASHBOARD_OWNEDTASK_AU = WebAppSettings.BASEKEY + "DashBoard.OwnedTaskTable.UserAutoUpdate";
 
     /**
      * Integer: Time in seconds for an AutoUpdate. To deactivate AutoUpdate set to 0. Default Value 30 Seconds.
      */
-    String DASHBOARD_OWNEDTASK_AUTIME = "org.efaps.webapp.DashBoard.OwnedTaskTable.AutoUpdateDuration";
+    String DASHBOARD_OWNEDTASK_AUTIME = WebAppSettings.BASEKEY + "DashBoard.OwnedTaskTable.AutoUpdateDuration";
 
     /**
      * DBProperties: Esjp to be used as PanelXY. panel11, panel12, panel21, panel22, panel31, panel32
      * In case that BPM is activated the BMP allways will use panel11
      *
      */
-    String DASHBOARD_PANELS = "org.efaps.webapp.DashBoard.Panels";
+    String DASHBOARD_PANELS = WebAppSettings.BASEKEY + "DashBoard.Panels";
 
     /**
      * Boolean (true/false): Activate the websocket/push management. Default: true
      */
-    String CONMAN_ACTIVATE = "org.efaps.webapp.ConnectionManagement.activate";
+    String CONMAN_ACTIVATE = WebAppSettings.BASEKEY + "ConnectionManagement.activate";
 
     /**
      * Boolean (true/false): Activate the websocket/push management. Default: true
      */
-    String WEBSOCKET_ACTIVATE = "org.efaps.webapp.WebSocket.activate";
+    String WEBSOCKET_ACTIVATE = WebAppSettings.BASEKEY + "WebSocket.activate";
 
     /**
      * Integer: Maximum rows of session shown in the Session Table per Page. Default Value is 20.
      */
-    String WEBSOCKET_SESSIONTABLE_MAX = "org.efaps.webapp.WebSocket.SessionTable.MaximumRows";
+    String WEBSOCKET_SESSIONTABLE_MAX = WebAppSettings.BASEKEY + "WebSocket.SessionTable.MaximumRows";
 
     /**
      * Integer: Maximum rows of session shown in the Session Table per Page. Default Value is 20.
      */
-    String WEBSOCKET_MESSAGETABLE_MAX = "org.efaps.webapp.WebSocket.MessageTable.MaximumRows";
+    String WEBSOCKET_MESSAGETABLE_MAX = WebAppSettings.BASEKEY + "WebSocket.MessageTable.MaximumRows";
+
+    /**
+     * Integer: Activate the websocket/push management. Default: true
+     */
+    String WEBSOCKET_KASP = WebAppSettings.BASEKEY + "WebSocket.KeepAliveSendPeriod";
 
     /**
      * Integer: Maximum number of result shown in the DropDown of the AutoComlete. Default Value is 500.
      */
-    String AUTOC_MAXRESULT = "org.efaps.webapp.AutoComplete.MaxResult";
+    String AUTOC_MAXRESULT = WebAppSettings.BASEKEY + "AutoComplete.MaxResult";
 
     /**
      * Integer: Time in ms before the AutomComplete fires the Request. Default Value is 500.
      */
-    String AUTOC_SEARCHDELAY = "org.efaps.webapp.AutoComplete.SearchDelay";
+    String AUTOC_SEARCHDELAY = WebAppSettings.BASEKEY + "AutoComplete.SearchDelay";
 
     /**
      * Integer: Maximum number of letters shown in the DropDown of the AutoComlete. Default Value is -1 (Deactivated).
      */
-    String AUTOC_MAXCHOICE = "org.efaps.webapp.AutoComplete.MaxChoiceLength";
+    String AUTOC_MAXCHOICE = WebAppSettings.BASEKEY + "AutoComplete.MaxChoiceLength";
 
     /**
      * Integer: Maximum number of letters shown in the input. Default Value is -1 (Deactivated).
      */
-    String AUTOC_MAXVALUE = "org.efaps.webapp.AutoComplete.XaxValueLength";
+    String AUTOC_MAXVALUE = WebAppSettings.BASEKEY + "AutoComplete.XaxValueLength";
 
     /**
      * Integer: Maximum number of result shown in the DropDown of the AutoComlete. Default Value is 500.
      */
-    String AUTOC_MININPUT = "org.efaps.webapp.AutoComplete.MinInputLength";
+    String AUTOC_MININPUT = WebAppSettings.BASEKEY + "AutoComplete.MinInputLength";
     /**
      * String:Name of the parameter. Defaults to "p".
      */
-    String AUTOC_PARAMNAME = "org.efaps.webapp.AutoComplete.ParameterName";
+    String AUTOC_PARAMNAME = WebAppSettings.BASEKEY + "AutoComplete.ParameterName";
 
 }

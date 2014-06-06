@@ -20,6 +20,7 @@
 
 package org.efaps.ui.wicket;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -38,6 +39,7 @@ import org.apache.wicket.application.CompoundClassResolver;
 import org.apache.wicket.application.DefaultClassResolver;
 import org.apache.wicket.authorization.Action;
 import org.apache.wicket.authorization.IAuthorizationStrategy;
+import org.apache.wicket.event.IEvent;
 import org.apache.wicket.javascript.DefaultJavaScriptCompressor;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.IHeaderResponseDecorator;
@@ -45,6 +47,8 @@ import org.apache.wicket.markup.html.IPackageResourceGuard;
 import org.apache.wicket.markup.html.SecurePackageResourceGuard;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
+import org.apache.wicket.protocol.ws.api.event.WebSocketTextPayload;
+import org.apache.wicket.protocol.ws.api.message.TextMessage;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.Response;
 import org.apache.wicket.request.component.IRequestableComponent;
@@ -58,6 +62,7 @@ import org.efaps.admin.AppConfigHandler;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.jaas.AppAccessHandler;
 import org.efaps.ui.filter.AbstractFilter;
+import org.efaps.ui.wicket.behaviors.KeepAliveBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.AutoCompleteBehavior.ACAjaxRequestTarget;
 import org.efaps.ui.wicket.pages.error.UnexpectedErrorPage;
 import org.efaps.ui.wicket.pages.login.LoginPage;
@@ -237,6 +242,20 @@ public class EFapsApplication
     public static EFapsApplication get()
     {
         return (EFapsApplication) Application.get();
+    }
+
+    @Override
+    public void onEvent(final IEvent<?> _event)
+    {
+        if (_event.getPayload() instanceof WebSocketTextPayload) {
+            final WebSocketTextPayload wsEvent = (WebSocketTextPayload) _event.getPayload();
+            if (wsEvent != null) {
+                final TextMessage msg = wsEvent.getMessage();
+                if (KeepAliveBehavior.MSG.equals(msg.getText())) {
+                    getConnectionRegistry().registerKeepAlive(Session.get().getId(), new Date());
+                }
+            }
+        }
     }
 
     /**

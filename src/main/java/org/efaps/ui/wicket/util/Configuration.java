@@ -95,6 +95,8 @@ public final class Configuration
         BPM_DEFAULTTASKFROM(false, true, WebAppSettings.BPM_DEFAULTTASKFROM, "c34e35ad-93ed-4190-887d-5be9a2302edf"),
          /** Websocket activated. */
         WEBSOCKET_ACTVATE(false, true, WebAppSettings.WEBSOCKET_ACTIVATE, "true"),
+        /** Websocket KeepAlive period. */
+        WEBSOCKET_KASP(false, true, WebAppSettings.WEBSOCKET_KASP, "180"),
         /** */
         WEBSOCKET_MESSAGETABLE_MAX(false, true, WebAppSettings.WEBSOCKET_MESSAGETABLE_MAX, "20"),
         /** */
