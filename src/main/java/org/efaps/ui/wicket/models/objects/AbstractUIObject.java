@@ -352,7 +352,7 @@ public abstract class AbstractUIObject
     }
 
     /**
-     * This method retrieves the Value for the Titel from the eFaps Database.
+     * This method retrieves the Value for the Title from the eFaps Database.
      *
      * @return Value of the Title
      * @throws Exception
@@ -361,7 +361,10 @@ public abstract class AbstractUIObject
     {
         String title = "";
         try {
-            title = DBProperties.getProperty(this.getCommand().getName() + ".Title");
+            final String key = this.getCommand().getTargetTitle() == null
+                            ? this.getCommand().getName() + ".Title"
+                            : this.getCommand().getTargetTitle();
+            title = DBProperties.getProperty(key);
             if ((title != null) && (getInstance() != null)) {
                 final PrintQuery print = new PrintQuery(getInstance());
                 final ValueParser parser = new ValueParser(new StringReader(title));
@@ -580,7 +583,7 @@ public abstract class AbstractUIObject
     /**
      * Setter method for instance variable {@link #picker}.
      *
-     * @param _picker value for instance variable {@link #picker}
+     * @param _uiObject value for instance variable {@link #picker}
      */
     public void setPicker(final ICmdUIObject _uiObject)
     {
