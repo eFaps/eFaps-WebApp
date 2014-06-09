@@ -97,6 +97,8 @@ public final class Configuration
         WEBSOCKET_ACTVATE(false, true, WebAppSettings.WEBSOCKET_ACTIVATE, "true"),
         /** Websocket KeepAlive period. */
         WEBSOCKET_KASP(false, true, WebAppSettings.WEBSOCKET_KASP, "180"),
+        /** Websocket KeepAlive Threshold Criteria. */
+        WEBSOCKET_KATH(false, true, WebAppSettings.WEBSOCKET_KATH, "300"),
         /** */
         WEBSOCKET_MESSAGETABLE_MAX(false, true, WebAppSettings.WEBSOCKET_MESSAGETABLE_MAX, "20"),
         /** */

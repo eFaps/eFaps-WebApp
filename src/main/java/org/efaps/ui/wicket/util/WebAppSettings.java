@@ -175,6 +175,11 @@ public interface WebAppSettings
     String WEBSOCKET_KASP = WebAppSettings.BASEKEY + "WebSocket.KeepAliveSendPeriod";
 
     /**
+     * Integer: Activate the websocket/push management. Default: true
+     */
+    String WEBSOCKET_KATH = WebAppSettings.BASEKEY + "WebSocket.KeepAliveThreshold";
+
+    /**
      * Integer: Maximum number of result shown in the DropDown of the AutoComlete. Default Value is 500.
      */
     String AUTOC_MAXRESULT = WebAppSettings.BASEKEY + "AutoComplete.MaxResult";

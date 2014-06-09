@@ -524,7 +524,8 @@ public class ConnectionRegistry
         final ConcurrentMap<String, Long> keepalive = _application.getMetaData(ConnectionRegistry.KEEPALIVE);
         if (keepalive != null) {
             for (final Entry<String, Long> entry : keepalive.entrySet()) {
-                if (reference - entry.getValue() > 10000) {
+                if (reference - entry.getValue() >
+                        Configuration.getAttributeAsInteger(ConfigAttribute.WEBSOCKET_KATH) * 1000) {
                     final IKey key = sessionId2key.get(entry.getKey());
                     if (key != null) {
                         final IWebSocketConnectionRegistry registry = IWebSocketSettings.Holder.get(
