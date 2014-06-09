@@ -313,7 +313,7 @@ public class SetDataGrid
             final SetDataGrid grid = findParent(SetDataGrid.class);
             final UIFormCellSet cellSet = (UIFormCellSet) grid.getDefaultModelObject();
 
-            visitChildren(new IVisitor<Component, Void>()
+            grid.visitChildren(new IVisitor<Component, Void>()
             {
 
                 @Override
@@ -366,8 +366,8 @@ public class SetDataGrid
         {
             final SetDataGrid grid = findParent(SetDataGrid.class);
             final UIFormCellSet cellSet = (UIFormCellSet) grid.getDefaultModelObject();
-
-            visitChildren(new IVisitor<Component, Void>()
+			final RefreshingView<?> repeater = findParent(RefreshingView.class);
+            repeater.visitChildren(new IVisitor<Component, Void>()
             {
 
                 @Override
