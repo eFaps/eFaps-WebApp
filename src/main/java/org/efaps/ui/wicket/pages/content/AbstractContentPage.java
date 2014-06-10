@@ -42,6 +42,7 @@ import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
+import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIHeading;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.models.objects.UISearchItem;
@@ -180,7 +181,8 @@ public abstract class AbstractContentPage
 
         UIModel<UIMenuItem> model = null;
         if (uiObject.getMode() == TargetMode.SEARCH
-                        && uiObject.getCallingCommandUUID() != null) {
+                        && uiObject.getCallingCommandUUID() != null
+                        && uiObject instanceof UIForm) {
             model = new UIModel<UIMenuItem>(new UISearchItem(uiObject.getCallingCommand()
                                             .getTargetSearch().getUUID()));
         } else if (uiObject.getCommand().getTargetMenu() != null) {

@@ -63,12 +63,9 @@ public class SearchSubmitLink
         super.setDefaultModel(_model);
     }
 
-    /**
-     * This method is executed when the form is submitted.
-     */
     @Override
-    protected void onSubmit(final AjaxRequestTarget target,
-                            final Form<?> form)
+    protected void onSubmit(final AjaxRequestTarget _target,
+                            final Form<?> _form)
     {
         super.onSubmit();
         final AbstractUIPageObject uiObject = (AbstractUIPageObject) getDefaultModelObject();
@@ -95,13 +92,10 @@ public class SearchSubmitLink
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink#onError(org.apache.wicket.ajax.AjaxRequestTarget, org.apache.wicket.markup.html.form.Form)
-     */
     @Override
     protected void onError(final AjaxRequestTarget _target,
                            final Form<?> _form)
     {
-        // TODO Auto-generated method stub
+        // Nothing must be done
     }
 }

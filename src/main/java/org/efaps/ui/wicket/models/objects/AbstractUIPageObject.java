@@ -32,6 +32,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.ui.AbstractCommand;
+import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.Command;
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
@@ -133,6 +134,8 @@ public abstract class AbstractUIPageObject
                 final AbstractCommand trgCmd = cmd.getTargetCommand();
                 this.targetCmdUUID = trgCmd.getUUID();
                 this.targetCmdRevise = trgCmd.isTargetCmdRevise();
+            } else if (TargetMode.SEARCH.equals(getMode())) {
+                this.targetCmdRevise = cmd.isTargetCmdRevise();
             }
             this.isTargetShowFile = cmd.isTargetShowFile();
             this.helpTarget = cmd.getTargetHelp();

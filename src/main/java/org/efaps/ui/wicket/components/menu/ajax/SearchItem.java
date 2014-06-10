@@ -18,24 +18,20 @@
  * Last Changed By: $Author$
  */
 
-
 package org.efaps.ui.wicket.components.menu.ajax;
 
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
-import org.apache.wicket.util.visit.IVisit;
-import org.apache.wicket.util.visit.IVisitor;
-import org.efaps.ui.wicket.components.FormContainer;
-import org.efaps.ui.wicket.components.heading.HeadingPanel;
+import org.efaps.ui.wicket.models.FormModel;
 import org.efaps.ui.wicket.models.objects.UIForm;
-import org.efaps.ui.wicket.models.objects.UIHeading;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
+import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO comment!
@@ -47,18 +43,22 @@ public class SearchItem
     extends AbstractItem
 {
     /**
-    *
-    */
-   private static final long serialVersionUID = 1L;
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(SearchItem.class);
 
     /**
-     * @param _id
-     * @param _model
+     * @param _wicketId wicket id of this component
+     * @param _model model for this component
      */
-    public SearchItem(final String _id,
+    public SearchItem(final String _wicketId,
                       final IModel<UIMenuItem> _model)
     {
-        super(_id, _model);
+        super(_wicketId, _model);
         add(new SearchSubmitBehavior());
     }
 
@@ -93,43 +93,13 @@ public class SearchItem
         {
             try {
                 final UIMenuItem menuitem = (UIMenuItem) getComponent().getDefaultModelObject();
-
                 final UIForm uiform = (UIForm) getPage().getDefaultModelObject();
                 uiform.resetModel();
                 uiform.setCommandUUID(menuitem.getCommandUUID());
                 uiform.setFormUUID(uiform.getCommand().getTargetForm().getUUID());
                 uiform.execute();
-
-                visitChildren(FormContainer.class, new IVisitor<FormContainer, Void>()
-                {
-
-                    @Override
-                    public void component(final FormContainer _form,
-                                          final IVisit<Void> _visit)
-                    {
-                        _target.add(_form);
-                        _form.removeAll();
-                        try {
-                            FormPage.updateFormContainer(getPage(), _form, uiform);
-                        } catch (final EFapsException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
-                    }
-                });
-
-                visitChildren(HeadingPanel.class, new IVisitor<HeadingPanel, Void>()
-                {
-
-                    @Override
-                    public void component(final HeadingPanel _heading,
-                                          final IVisit<Void> _visit)
-                    {
-                        _target.add(_heading);
-                        _heading.removeAll();
-                        _heading.addComponents(Model.of(new UIHeading(uiform.getTitle())));
-                    }
-                });
+                getRequestCycle().setResponsePage(new FormPage(new FormModel(uiform),
+                                ((AbstractContentPage) getPage()).getModalWindow()));
             } catch (final EFapsException e) {
                 throw new RestartResponseException(new ErrorPage(e));
             }
