@@ -222,18 +222,20 @@ public class UIForm
     protected void evaluate4Instance()
         throws EFapsException
     {
-        final List<Return> returns = getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
-                        ParameterValues.INSTANCE, getInstance(),
-                        ParameterValues.PARAMETERS, Context.getThreadContext().getParameters(),
-                        ParameterValues.CLASS, this);
-        for (final Return ret : returns) {
-            if (ret.contains(ReturnValues.INSTANCE)) {
-                final Object object = ret.get(ReturnValues.INSTANCE);
-                if (object != null && object instanceof Instance && ((Instance) object).isValid()) {
-                    setInstanceKey(((Instance) object).getOid());
-                } else {
-                    UIForm.LOG.error("The esjp called by Command '{}' must return a valid instance",
-                                    getCommand().getName());
+        if (!isSearchMode()) {
+            final List<Return> returns = getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
+                            ParameterValues.INSTANCE, getInstance(),
+                            ParameterValues.PARAMETERS, Context.getThreadContext().getParameters(),
+                            ParameterValues.CLASS, this);
+            for (final Return ret : returns) {
+                if (ret.contains(ReturnValues.INSTANCE)) {
+                    final Object object = ret.get(ReturnValues.INSTANCE);
+                    if (object != null && object instanceof Instance && ((Instance) object).isValid()) {
+                        setInstanceKey(((Instance) object).getOid());
+                    } else {
+                        UIForm.LOG.error("The esjp called by Command '{}' must return a valid instance",
+                                        getCommand().getName());
+                    }
                 }
             }
         }
