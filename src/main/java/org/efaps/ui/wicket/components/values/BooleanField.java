@@ -37,6 +37,8 @@ import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.models.cell.FieldConfiguration;
 import org.efaps.ui.wicket.request.EFapsRequestParametersAdapter;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO comment!
@@ -53,6 +55,11 @@ public class BooleanField
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(BooleanField.class);
 
     /**
      * Configuration for this field.
@@ -130,23 +137,24 @@ public class BooleanField
     public void convertValue(final EFapsRequestParametersAdapter _parameters)
         throws EFapsException
     {
-        visitChildren(RadioGroup.class, new IVisitor<RadioGroup<?>, Void>() {
+        visitChildren(RadioGroup.class, new IVisitor<RadioGroup<?>, Void>()
+        {
 
             @Override
             public void component(final RadioGroup<?> _group,
                                   final IVisit<Void> _visit)
             {
                 try {
-                    if (_group.getDefaultModelObject() == Boolean.TRUE) {
+                    if (_group.getDefaultModelObject().equals(Boolean.TRUE)) {
                         _parameters.addParameterValue(getFieldConfiguration().getName(), "true");
                     } else {
                         _parameters.addParameterValue(getFieldConfiguration().getName(), "false");
                     }
                 } catch (final EFapsException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    BooleanField.LOG.error("Catched error during vist", e);
                 }
-            }});
+            }
+        });
     }
 
     /**
