@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
+import org.efaps.admin.AppConfigHandler;
 import org.efaps.admin.user.Person;
 import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
@@ -46,9 +47,8 @@ import org.slf4j.LoggerFactory;
 public class FileServlet
     extends HttpServlet
 {
-
     /**
-     * Name of the temp folder.
+     * Name of the folder inside the "official" temporary folder.
      */
     public static final String TMPFOLDERNAME = "eFapsUserDepTemp";
 
@@ -66,13 +66,13 @@ public class FileServlet
      * Search for the requested file in the folder corresponding to the user of the context.
      *
      * @param _req request variable
-     * @param _res response variable
+     * @param _resp response variable
      * @throws ServletException on error
      */
     @Override
     protected void doGet(final HttpServletRequest _req,
                          final HttpServletResponse _resp)
-        throws ServletException, IOException
+        throws ServletException
     {
         String fileName = _req.getRequestURI();
         fileName = fileName.substring(fileName.lastIndexOf('/') + 1);
@@ -94,16 +94,28 @@ public class FileServlet
         } catch (final EFapsException e) {
             FileServlet.LOG.error("EFapsException", e);
             throw new ServletException(e);
+        } catch (final IOException e) {
+            FileServlet.LOG.error("IOException", e);
+            throw new ServletException(e);
         }
     }
 
+    /**
+     * @param _personId personid
+     * @param _fileName name of the file
+     * @return the file if found
+     * @throws IOException on error
+     */
     private File getFile(final Long _personId,
                          final String _fileName)
         throws IOException
     {
-        final File temp = File.createTempFile("eFaps", ".tmp");
-        final File tmpfld = temp.getParentFile();
-        temp.delete();
+        File tmpfld = AppConfigHandler.get().getTempFolder();
+        if (tmpfld == null) {
+            final File temp = File.createTempFile("eFaps", ".tmp");
+            tmpfld = temp.getParentFile();
+            temp.delete();
+        }
         final File storeFolder = new File(tmpfld, FileServlet.TMPFOLDERNAME);
         final NumberFormat formater = NumberFormat.getInstance();
         formater.setMinimumIntegerDigits(8);
@@ -114,5 +126,4 @@ public class FileServlet
         }
         return new File(userFolder, _fileName);
     }
-
 }

@@ -121,6 +121,10 @@ public class EFapsApplication
                 map.put(param.getKey(), configTmp);
             }
         }
+        if (!map.containsKey(AppConfigHandler.Parameter.TEMPFOLDER.getKey())) {
+            map.put(AppConfigHandler.Parameter.TEMPFOLDER.getKey(),
+                            getStoreSettings().getFileStoreFolder().toURI().toString());
+        }
         AppConfigHandler.init(map);
 
         super.init();
