@@ -110,20 +110,20 @@ public class TaskAdminPanel
         @Override
         public void onClick(final AjaxRequestTarget _target)
         {
-
-            visitChildren(AjaxFallbackDefaultDataTable.class, new IVisitor<AjaxFallbackDefaultDataTable<?, ?>, Void>()
-            {
-
-                @Override
-                public void component(final AjaxFallbackDefaultDataTable<?, ?> _table,
-                                      final IVisit<Void> _visit)
+            getPage().visitChildren(AjaxFallbackDefaultDataTable.class,
+                            new IVisitor<AjaxFallbackDefaultDataTable<?, ?>, Void>()
                 {
-                    final AdminTaskSummaryProvider provider = (AdminTaskSummaryProvider) _table.getDataProvider();
-                    provider.setQuery(UpdateTableLink.this.query);
-                    provider.requery();
-                    _target.add(_table);
-                }
-            });
+
+                    @Override
+                    public void component(final AjaxFallbackDefaultDataTable<?, ?> _table,
+                                          final IVisit<Void> _visit)
+                    {
+                        final AdminTaskSummaryProvider provider = (AdminTaskSummaryProvider) _table.getDataProvider();
+                        provider.setQuery(UpdateTableLink.this.query);
+                        provider.requery();
+                        _target.add(_table);
+                    }
+                });
         }
 
         @Override

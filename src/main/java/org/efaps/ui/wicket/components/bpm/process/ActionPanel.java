@@ -77,7 +77,7 @@ public class ActionPanel
             {
                 final UIProcessInstanceLog processinstance = (UIProcessInstanceLog) getDefaultModelObject();
                 if (processinstance != null) {
-                    visitChildren(AjaxFallbackDefaultDataTable.class,
+                    getPage().visitChildren(AjaxFallbackDefaultDataTable.class,
                                     new IVisitor<AjaxFallbackDefaultDataTable<?, ?>, Void>()
                             {
 

@@ -84,8 +84,7 @@ public class ProcessAdminPanel
             @Override
             protected void onUpdate(final AjaxRequestTarget _target)
             {
-
-                visitChildren(AjaxFallbackDefaultDataTable.class,
+                getPage().visitChildren(AjaxFallbackDefaultDataTable.class,
                                 new IVisitor<AjaxFallbackDefaultDataTable<?, ?>, Void>()
                         {
 
@@ -118,7 +117,6 @@ public class ProcessAdminPanel
         final VariableTablePanel variableTable = new VariableTablePanel("variableTable", _pageReference,
                         new VariableInstanceProvider());
         form.add(variableTable);
-
     }
 
     @Override
