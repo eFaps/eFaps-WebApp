@@ -162,27 +162,28 @@ public class FooterPanel
         } else if (uiObject.isSearchMode()) {
             label = getLabel(uiObject.getCommand().getName(), "Search");
         }
-
+        boolean prevAdded = false;
         if (uiObject.hasTargetCmd()) {
             final Button button = new Button("createeditsearch",
                             new AjaxSubmitCloseLink(Button.LINKID, uiObject, _form),
                             label, Button.ICON.NEXT.getReference());
-            this.add(button);
+            add(button);
         } else if ((uiObject.isSubmit() && uiObject instanceof UITable) || !uiObject.isSearchMode()) {
             final Button button = new Button("createeditsearch",
                             new AjaxSubmitCloseLink(Button.LINKID, uiObject, _form),
                             label, Button.ICON.ACCEPT.getReference());
-            this.add(button);
+            add(button);
         } else if (uiObject.isSearchMode() && uiObject instanceof UIForm) {
             final Button button = new Button("createeditsearch", new SearchSubmitLink(Button.LINKID, _model, _form),
                             label, Button.ICON.NEXT.getReference());
-            this.add(button);
+            add(button);
         } else {
             closelabelkey = "Close";
             label = getLabel(uiObject.getCommand().getName(), "Revise");
             final Button button = new Button("createeditsearch", new AjaxReviseLink(Button.LINKID, uiObject),
                             label, Button.ICON.PREVIOUS.getReference());
             add(button);
+            prevAdded = true;
         }
 
         if (_modalWindow == null) {
@@ -193,7 +194,7 @@ public class FooterPanel
                             closelabelkey), Button.ICON.CANCEL.getReference()));
         }
 
-        if (uiObject.isPartOfWizardCall() && uiObject.isRenderRevise()) {
+        if (uiObject.isPartOfWizardCall() && uiObject.isRenderRevise() && !prevAdded) {
             label = getLabel(uiObject.getCommand().getName(), "Revise");
             final Button prev = new Button("prev", new AjaxReviseLink(Button.LINKID, uiObject),
                             label, Button.ICON.PREVIOUS.getReference());
