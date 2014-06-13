@@ -21,17 +21,23 @@
 package org.efaps.ui.wicket.pages.error;
 
 import java.text.MessageFormat;
+import java.util.Date;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.datetime.markup.html.basic.DateLabel;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
+import org.apache.wicket.model.Model;
+import org.efaps.admin.KernelSettings;
 import org.efaps.admin.dbproperty.DBProperties;
-import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.admin.user.Role;
+import org.efaps.db.Context;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,6 +86,8 @@ public class ErrorPage
         String errorId = "";
         String errorAdvanced = "";
 
+        add(DateLabel.forDateStyle("date", Model.of(new Date()), "FF"));
+
         if (_exception instanceof EFapsException) {
             final EFapsException eFapsException = (EFapsException) _exception;
             errorKey = eFapsException.getClassName().getName() + "." + eFapsException.getId();
@@ -103,6 +111,7 @@ public class ErrorPage
      // set the title for the Page
         add(new Label("pageTitle", DBProperties.getProperty("ErrorPage.Titel")));
 
+        add(new Label("dateLabel", DBProperties.getProperty("ErrorPage.Date.Label")));
 
         add(new Label("errorIDLabel", DBProperties.getProperty("ErrorPage.Id.Label")));
         add(new Label("errorID", errorId));
@@ -146,8 +155,14 @@ public class ErrorPage
 
         ajaxlink.add(new Label("opencloseLabel", "more").setOutputMarkupId(true));
 
-        if (!(errorAdvanced.length() > 0)) {
-            ajaxlink.setVisible(false);
+        try {
+            if (!(errorAdvanced.length() > 0)
+                            && Context.getThreadContext().getPerson()
+                                            .isAssigned(Role.get(KernelSettings.USER_ROLE_ADMINISTRATION))) {
+                ajaxlink.setVisible(false);
+            }
+        } catch (final EFapsException e) {
+            ErrorPage.LOG.error("Catched Exception", _exception);
         }
 
         this.add(advanced);
@@ -162,20 +177,12 @@ public class ErrorPage
 
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.wicket.Page#isErrorPage()
-     */
     @Override
     public boolean isErrorPage()
     {
         return true;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.wicket.Component#isVersioned()
-     */
     @Override
     public boolean isVersioned()
     {
@@ -188,6 +195,4 @@ public class ErrorPage
         super.renderHead(_response);
         _response.render(AbstractEFapsHeaderItem.forCss(ErrorPage.CSS));
     }
-
-
 }

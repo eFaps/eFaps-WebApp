@@ -1,5 +1,5 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <!--
 
   Copyright 2003 - 2014 The eFaps Team
@@ -16,40 +16,56 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 
-  Author:          jmox
+  Author:          The eFaps Team
   Revision:        $Rev$
   Last Changed:    $Date$
   Last Changed By: $Author$
 
 -->
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-    <head>
-        <title wicket:id="pageTitle"></title>
-    </head>
+<html xmlns:wicket="http://wicket.apache.org">
+<head>
+<title wicket:id="pageTitle"></title>
+</head>
 <body>
-  <table class="eFapsErrorTable">
-   <tr>
-     <td class="eFapsErrorLabel"><span wicket:id="errorIDLabel"></span></td>
-     <td class="eFapsErrorText"><span wicket:id="errorID"></span></td>
-   </tr>
-   <tr>
-     <td class="eFapsErrorLabel">
-       <span wicket:id="errorMsgLabel"></span>
-       <a wicket:id="openclose"><span wicket:id="opencloseLabel">more</span></a>
-     </td>
-     <td class="eFapsErrorText">
-       <span wicket:id="errorMsg"></span>
-       <div wicket:id="advanced">
-         <span wicket:id="advancedMsg"></span>
-       </div>
-     </td>
-   </tr>
-   <tr>
-     <td class="eFapsErrorLabel"><span wicket:id="errorActLabel"></span></td>
-     <td class="eFapsErrorText"><span wicket:id="errorAct"></span></td>
-   </tr>
-   </table>
+    <table class="eFapsErrorTable">
+        <tr>
+            <td class="eFapsErrorLabel">
+                <span wicket:id="dateLabel"></span>
+           </td>
+           <td class="eFapsErrorText">
+                <span wicket:id="date"></span>
+           </td>
+        </tr>
+        <tr>
+            <td class="eFapsErrorLabel">
+                <span wicket:id="errorIDLabel"></span>
+           </td>
+           <td class="eFapsErrorText">
+                <span wicket:id="errorID"></span>
+           </td>
+        </tr>
+        <tr>
+            <td class="eFapsErrorLabel">
+                <span wicket:id="errorMsgLabel"></span>
+                <a wicket:id="openclose"><span wicket:id="opencloseLabel">more</span></a>
+            </td>
+            <td class="eFapsErrorText">
+                <span wicket:id="errorMsg"></span>
+                <div wicket:id="advanced">
+                    <span wicket:id="advancedMsg"></span>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="eFapsErrorLabel">
+                <span wicket:id="errorActLabel"></span>
+            </td>
+            <td class="eFapsErrorText">
+                <span wicket:id="errorAct"></span>
+            </td>
+        </tr>
+    </table>
 </body>
 </html>
 

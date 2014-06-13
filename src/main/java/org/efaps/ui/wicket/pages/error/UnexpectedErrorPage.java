@@ -40,7 +40,9 @@ import org.apache.wicket.request.http.WebResponse;
 public class UnexpectedErrorPage
     extends AbstractErrorPage
 {
-
+    /**
+     * Needed foer serialization.
+     */
     private static final long serialVersionUID = 1L;
 
     /**
@@ -53,8 +55,8 @@ public class UnexpectedErrorPage
     }
 
     @Override
-    protected void setHeaders(final WebResponse response)
+    protected void setHeaders(final WebResponse _response)
     {
-        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        _response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
 }
