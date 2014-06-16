@@ -83,8 +83,8 @@ public class StringUIFactory
     protected String getReadOnlyValue(final AbstractUIField _abstractUIField)
         throws EFapsException
     {
-        return String.valueOf(_abstractUIField.getValue().getReadOnlyValue(
-                        _abstractUIField.getParent().getMode()));
+        final Object ret = _abstractUIField.getValue().getReadOnlyValue(_abstractUIField.getParent().getMode());
+        return ret == null ? "" : String.valueOf(ret);
     }
 
     /**
