@@ -1253,7 +1253,7 @@ public class UITable
          */
         public DateTime getDateFrom()
         {
-            return this.dateFrom;
+            return this.dateFrom ==  null ? new DateTime() : this.dateFrom;
         }
 
         /**
@@ -1263,7 +1263,7 @@ public class UITable
          */
         public DateTime getDateTo()
         {
-            return this.dateTo;
+            return this.dateTo == null ? new DateTime() : this.dateTo;
         }
 
         /**

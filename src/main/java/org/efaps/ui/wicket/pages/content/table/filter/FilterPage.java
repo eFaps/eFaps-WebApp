@@ -20,9 +20,11 @@
 
 package org.efaps.ui.wicket.pages.content.table.filter;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.wicket.Component;
@@ -38,8 +40,9 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.util.iterator.ComponentHierarchyIterator;
 import org.apache.wicket.util.string.StringValue;
+import org.apache.wicket.util.visit.IVisit;
+import org.apache.wicket.util.visit.IVisitor;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.field.Filter;
 import org.efaps.ui.wicket.components.FormContainer;
@@ -65,7 +68,6 @@ import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
-
 /**
  * @author The eFaps Team
  * @version $Id:FilterPage.java 1491 2007-10-15 23:40:43Z jmox $
@@ -246,27 +248,41 @@ public class FilterPage
                         modal.close(_target);
                     } else if (_uitableHeader.getFilterType().equals(FilterType.TEXT)) {
                         final FreeTextPanel freeTextPanel = (FreeTextPanel) panel;
-                        final ComponentHierarchyIterator iter = freeTextPanel.visitChildren(TextField.class);
-                        String from = null;
-                        while (iter.hasNext()) {
-                            final Component comp = iter.next();
-                            @SuppressWarnings("unchecked")
-                            final TextField<String> stringFilter = (TextField<String>) comp;
-                            from = stringFilter.getDefaultModelObjectAsString();
-                        }
 
-                        final ComponentHierarchyIterator iter2 = freeTextPanel.visitChildren(CheckBox.class);
-                        boolean expertMode = false;
-                        boolean ignoreCase = false;
-                        while (iter2.hasNext()) {
-                            final Component comp = iter2.next();
-                            final CheckBox checkBox = (CheckBox) comp;
-                            if ("expertMode".equals(checkBox.getId())) {
-                                expertMode = (boolean) checkBox.getDefaultModelObject();
-                            } else {
-                                ignoreCase = (boolean) checkBox.getDefaultModelObject();
+                        final String from = freeTextPanel.visitChildren(TextField.class,
+                                        new IVisitor<TextField<?>, String>()
+                            {
+                                @Override
+                                public void component(final TextField<?> _object,
+                                                      final IVisit<String> _visit)
+                                {
+                                    @SuppressWarnings("unchecked")
+                                    final TextField<String> stringFilter = (TextField<String>) _object;
+                                    _visit.stop(stringFilter.getDefaultModelObjectAsString());
+                                }
+                            });
+
+                        final Map<String, Boolean> modes = new HashMap<String, Boolean>();
+                        modes.put("expertMode", false);
+                        modes.put("ignoreCase", false);
+
+                        freeTextPanel.visitChildren(CheckBox.class, new IVisitor<CheckBox, Void>()
+                        {
+                            @Override
+                            public void component(final CheckBox _object,
+                                                  final IVisit<Void> _visit)
+                            {
+                                if ("expertMode".equals(_object.getId())) {
+                                    modes.put("expertMode", (boolean) _object.getDefaultModelObject());
+                                } else {
+                                    modes.put("ignoreCase", (boolean) _object.getDefaultModelObject());
+                                }
                             }
-                        }
+                        });
+
+                        final boolean expertMode = modes.get("expertMode");
+                        final boolean ignoreCase = modes.get("ignoreCase");
+
                         uiTable.addFilterTextLike(_uitableHeader, from, expertMode, ignoreCase);
                         modal.setWindowClosedCallback(new UpdateParentCallback(FilterPage.this.pageReference,
                                         modal, _uitableHeader.getFilter().getBase().equals(Filter.Base.DATABASE)));
