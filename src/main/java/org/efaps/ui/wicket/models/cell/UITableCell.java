@@ -148,6 +148,11 @@ public class UITableCell
         this.multiRows = _fieldValue.getField().getRows() > 1;
 
         if (_fieldValue.getField().hasEvents(EventType.UI_FIELD_AUTOCOMPLETE)) {
+            if (_fieldValue.getValue() == null) {
+                setCellValue("");
+            } else {
+                setCellValue(String.valueOf(_fieldValue.getValue()));
+            }
             this.autoCompleteSetting = new AutoCompleteSettings();
             this.autoCompleteSetting.setFieldName(getName());
             final List<EventDefinition> events = _fieldValue.getField().getEvents(EventType.UI_FIELD_AUTOCOMPLETE);

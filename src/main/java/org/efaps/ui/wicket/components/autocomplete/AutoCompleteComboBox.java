@@ -160,6 +160,11 @@ public class AutoCompleteComboBox
                             break;
                     }
                 }
+            } else if (this.uiAbstractCell != null
+                            && (this.uiAbstractCell.getParent().isEditMode()
+                                            || this.uiAbstractCell.getParent().isCreateMode())
+                            && !this.uiAbstractCell.getAutoCompleteSetting().isRequired()) {
+                ret = this.uiAbstractCell.getCellValue();
             }
         } catch (final EFapsException e) {
             AutoCompleteComboBox.LOG.error("Error in getItemValue()", e);
