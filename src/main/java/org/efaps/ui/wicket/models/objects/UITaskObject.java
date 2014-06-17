@@ -320,8 +320,13 @@ public class UITaskObject
             this.delegates = new ArrayList<DelegatePerson>();
             final List<Role> roles = BPM.getDelegates4Task(getUITaskSummary().getTaskSummary());
             for (final Role role : roles) {
+                final QueryBuilder attrQueryBldr = new QueryBuilder(CIAdminUser.Person);
+                attrQueryBldr.addWhereAttrEqValue(CIAdminUser.Person.Status, true);
+
                 final QueryBuilder queryBldr = new QueryBuilder(CIAdminUser.Person2Role);
                 queryBldr.addWhereAttrEqValue(CIAdminUser.Person2Role.UserToLink, role.getId());
+                queryBldr.addWhereAttrEqValue(CIAdminUser.Person2Role.UserFromLink,
+                                attrQueryBldr.getAttributeQuery(CIAdminUser.Person.ID));
                 final MultiPrintQuery multi = queryBldr.getPrint();
                 final SelectBuilder selUUID = SelectBuilder.get().linkto(CIAdminUser.Person2Role.UserFromLink)
                                 .attribute(CIAdminUser.Person.UUID);
