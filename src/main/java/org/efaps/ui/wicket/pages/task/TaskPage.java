@@ -89,9 +89,11 @@ public class TaskPage
     /**
      * @param _taskObjModel model for the page
      * @param _pageReference page Reference
+     * @param _adminMode open page in admin mode
      */
     public TaskPage(final IModel<UITaskObject> _taskObjModel,
-                    final PageReference _pageReference)
+                    final PageReference _pageReference,
+                    final boolean _adminMode)
     {
         super(_taskObjModel);
         add(new AbstractDojoBehavior()
@@ -132,7 +134,7 @@ public class TaskPage
         form.add(groupRepeater);
 
         try {
-            if (_taskObjModel.getObject().isComplete()) {
+            if (_taskObjModel.getObject().isComplete() || _adminMode) {
                 String aprove = DBProperties.getProperty(_taskObjModel.getObject().getKey() + ".approve", false);
                 if (aprove == null) {
                     aprove = DBProperties.getProperty("org.efaps.ui.wicket.pages.task.TaskPage.default.Button.approve");
@@ -144,7 +146,7 @@ public class TaskPage
                 form.add(new WebMarkupContainer("aprove").setVisible(false));
             }
 
-            if (_taskObjModel.getObject().isFail()) {
+            if (_taskObjModel.getObject().isFail() || _adminMode) {
                 String reject = DBProperties.getProperty(_taskObjModel.getObject().getKey() + ".reject", false);
                 if (reject == null) {
                     reject = DBProperties.getProperty("org.efaps.ui.wicket.pages.task.TaskPage.default.Button.reject");
@@ -155,7 +157,7 @@ public class TaskPage
                 form.add(new WebMarkupContainer("reject").setVisible(false));
             }
 
-            if (_taskObjModel.getObject().isClaim()) {
+            if (_taskObjModel.getObject().isClaim() || _adminMode) {
                 String claim = DBProperties.getProperty(_taskObjModel.getObject().getKey() + ".claim", false);
                 if (claim == null) {
                     claim = DBProperties.getProperty("org.efaps.ui.wicket.pages.task.TaskPage.default.Button.claim");
@@ -185,7 +187,7 @@ public class TaskPage
                 form.add(new WebMarkupContainer("delegateChoice").setVisible(false));
             }
 
-            if (_taskObjModel.getObject().isRelease()) {
+            if (_taskObjModel.getObject().isRelease() || _adminMode) {
                 String release = DBProperties.getProperty(_taskObjModel.getObject().getKey() + ".release", false);
                 if (release == null) {
                     release = DBProperties
@@ -197,7 +199,7 @@ public class TaskPage
                 form.add(new WebMarkupContainer("release").setVisible(false));
             }
 
-            if (_taskObjModel.getObject().isStop()) {
+            if (_taskObjModel.getObject().isStop() || _adminMode) {
                 String release = DBProperties.getProperty(_taskObjModel.getObject().getKey() + ".stop", false);
                 if (release == null) {
                     release = DBProperties
@@ -209,7 +211,7 @@ public class TaskPage
                 form.add(new WebMarkupContainer("stop").setVisible(false));
             }
 
-            if (_taskObjModel.getObject().isExit()) {
+            if (_taskObjModel.getObject().isExit() || _adminMode) {
                 String release = DBProperties.getProperty(_taskObjModel.getObject().getKey() + ".exit", false);
                 if (release == null) {
                     release = DBProperties
@@ -333,7 +335,7 @@ public class TaskPage
                     } catch (final EFapsException e) {
                         TaskPage.LOG.error("Catched error during execute of a task", e);
                     } catch (final PermissionDeniedException e) {
-                        TaskPage.LOG.error("Catched error during execute of a task", e);
+                        TaskPage.LOG.warn("Catched error during execute of a task", e);
                         error(DBProperties.getProperty(TaskPage.class.getName() + ".NoAccess"));
                         _target.addChildren(getPage(), FeedbackPanel.class);
                     }
@@ -428,7 +430,7 @@ public class TaskPage
                     } catch (final EFapsException e) {
                         TaskPage.LOG.error("Catched error during claiming of a task", e);
                     } catch (final PermissionDeniedException e) {
-                        TaskPage.LOG.error("Catched error during execute of a task", e);
+                        TaskPage.LOG.warn("Catched error during execute of a task", e);
                         error(DBProperties.getProperty(TaskPage.class.getName() + ".NoAccess"));
                         _target.addChildren(getPage(), FeedbackPanel.class);
                     }
@@ -477,7 +479,7 @@ public class TaskPage
                     } catch (final EFapsException e) {
                         TaskPage.LOG.error("Catched error during claiming of a task", e);
                     } catch (final PermissionDeniedException e) {
-                        TaskPage.LOG.error("Catched error during execute of a task", e);
+                        TaskPage.LOG.warn("Catched error during execute of a task", e);
                         error(DBProperties.getProperty(TaskPage.class.getName() + ".NoAccess"));
                         _target.addChildren(getPage(), FeedbackPanel.class);
                     }
@@ -526,7 +528,7 @@ public class TaskPage
                     } catch (final EFapsException e) {
                         TaskPage.LOG.error("Catched error during claiming of a task", e);
                     } catch (final PermissionDeniedException e) {
-                        TaskPage.LOG.error("Catched error during execute of a task", e);
+                        TaskPage.LOG.warn("Catched error during execute of a task", e);
                         error(DBProperties.getProperty(TaskPage.class.getName() + ".NoAccess"));
                         _target.addChildren(getPage(), FeedbackPanel.class);
                     }
@@ -601,7 +603,7 @@ public class TaskPage
                     } catch (final EFapsException e) {
                         TaskPage.LOG.error("Catched error during delegation of a task", e);
                     } catch (final PermissionDeniedException e) {
-                        TaskPage.LOG.error("Catched error during execute of a task", e);
+                        TaskPage.LOG.warn("Catched error during execute of a task", e);
                         error(DBProperties.getProperty(TaskPage.class.getName() + ".NoAccess"));
                         _target.addChildren(getPage(), FeedbackPanel.class);
                     }

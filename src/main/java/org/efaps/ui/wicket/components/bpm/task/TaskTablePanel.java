@@ -41,6 +41,8 @@ import org.efaps.ui.wicket.models.objects.UITaskSummary;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -59,6 +61,10 @@ public class TaskTablePanel
     public static final EFapsContentReference CSS = new EFapsContentReference(AbstractSortableProvider.class,
                     "BPM.css");
 
+    /**
+     * Logger for this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(TaskTablePanel.class);
 
     /**
      * Needed for serialization.
@@ -96,7 +102,12 @@ public class TaskTablePanel
                                      final String _componentId,
                                      final IModel<UITaskSummary> _rowModel)
             {
-                _cellItem.add(new ActionPanel(_componentId, _rowModel, _pageReference));
+                try {
+                    _cellItem.add(new ActionPanel(_componentId, _rowModel, _pageReference,
+                                    TaskTablePanel.this.dataProvider.isAdmin()));
+                } catch (final EFapsException e) {
+                    TaskTablePanel.LOG.error("Catched error on population", e);
+                }
             }
 
             @Override

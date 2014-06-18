@@ -25,6 +25,7 @@ import java.util.List;
 import org.efaps.bpm.BPM;
 import org.efaps.ui.wicket.models.objects.UITaskSummary;
 import org.efaps.ui.wicket.util.Configuration;
+import org.efaps.util.EFapsException;
 
 
 /**
@@ -76,5 +77,15 @@ public class OwnedTaskSummaryProvider
     public int getRowsPerPage()
     {
         return Configuration.getAttributeAsInteger(Configuration.ConfigAttribute.BOARD_OWNEDTASK_MAX);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isAdmin()
+        throws EFapsException
+    {
+        return false;
     }
 }

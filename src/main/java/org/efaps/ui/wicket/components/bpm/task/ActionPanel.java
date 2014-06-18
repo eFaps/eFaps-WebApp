@@ -43,7 +43,8 @@ import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.ui.wicket.pages.task.TaskPage;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.CacheReloadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO comment!
@@ -61,13 +62,20 @@ public class ActionPanel
     private static final long serialVersionUID = 1L;
 
     /**
+     * Logger for this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(ActionPanel.class);
+
+    /**
      * @param _wicketID component id
      * @param _model model for contact
      * @param _pageReference reference to the calling page
+     * @param _adminMode admin mode activated
      */
     public ActionPanel(final String _wicketID,
                        final IModel<UITaskSummary> _model,
-                       final PageReference _pageReference)
+                       final PageReference _pageReference,
+                       final boolean _adminMode)
     {
         super(_wicketID, _model);
         final AjaxLink<UITaskSummary> select = new AjaxLink<UITaskSummary>("select", _model)
@@ -91,13 +99,9 @@ public class ActionPanel
                         Page page = null;
                         try {
                             page = new TaskPage(UITaskObject.getModelForTask(_model.getObject()),
-                                            _pageReference);
-                        } catch (final CacheReloadException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        } catch (final EFapsException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
+                                            _pageReference, _adminMode);
+                        }  catch (final EFapsException e) {
+                            ActionPanel.LOG.error("Catched error on pagecreation.", e);
                         }
                         return page;
                     }

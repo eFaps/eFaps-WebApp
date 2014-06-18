@@ -23,11 +23,11 @@ package org.efaps.ui.wicket.components.bpm.task;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.UUID;
 
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.efaps.admin.KernelSettings;
 import org.efaps.admin.user.Role;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.components.bpm.AbstractSortableProvider;
@@ -134,7 +134,13 @@ public abstract class AbstractTaskSummaryProvider
         // Administration Role
         return Configuration.getAttributeAsBoolean(Configuration.ConfigAttribute.SHOW_OID)
                         && Context.getThreadContext().getPerson()
-                                        .isAssigned(Role.get(UUID
-                                                        .fromString("1d89358d-165a-4689-8c78-fc625d37aacd")));
+                                        .isAssigned(Role.get(KernelSettings.USER_ROLE_ADMINISTRATION));
     }
+
+    /**
+     * @return true if admin mode is enabled
+     * @throws EFapsException on error
+     */
+    public abstract boolean isAdmin() throws EFapsException;
+
 }

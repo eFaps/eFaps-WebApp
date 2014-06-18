@@ -23,9 +23,13 @@ package org.efaps.ui.wicket.components.bpm.task;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.efaps.admin.KernelSettings;
+import org.efaps.admin.user.Role;
 import org.efaps.bpm.BPM;
 import org.efaps.bpm.task.TaskAdminstration;
+import org.efaps.db.Context;
 import org.efaps.ui.wicket.models.objects.UITaskSummary;
+import org.efaps.util.EFapsException;
 import org.kie.api.task.model.TaskSummary;
 
 
@@ -33,8 +37,7 @@ import org.kie.api.task.model.TaskSummary;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id: AdminTaskSummaryProvider.java 9938 2013-08-02 19:17:19Z
- *          jan@moxter.net $
+ * @version $Id$
  */
 public class AdminTaskSummaryProvider
     extends AbstractTaskSummaryProvider
@@ -163,5 +166,15 @@ public class AdminTaskSummaryProvider
     public boolean showOid()
     {
         return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isAdmin()
+        throws EFapsException
+    {
+        return Context.getThreadContext().getPerson().isAssigned(Role.get(KernelSettings.USER_ROLE_ADMINISTRATION));
     }
 }
