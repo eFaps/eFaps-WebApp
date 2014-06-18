@@ -34,6 +34,7 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.RefreshingView;
 import org.apache.wicket.model.IModel;
@@ -55,6 +56,7 @@ import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
+import org.jbpm.services.task.exception.PermissionDeniedException;
 import org.kie.api.task.model.TaskSummary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,9 +96,11 @@ public class TaskPage
         super(_taskObjModel);
         add(new AbstractDojoBehavior()
         {
-
             private static final long serialVersionUID = 1L;
         });
+
+        add(new FeedbackPanel("feedback").setOutputMarkupId(true));
+
         final Form<TaskSummary> form = new Form<TaskSummary>("form");
         add(form);
 
@@ -316,19 +320,23 @@ public class TaskPage
                 @Override
                 protected void onEvent(final AjaxRequestTarget _target)
                 {
-                    final ModalWindowContainer modal = ((MainPage) _pageReference.getPage()).getModal();
-                    modal.setReloadChild(true);
-
                     final Map<String, Object> values = new HashMap<String, Object>();
                     try {
                         BPM.executeTask(((UITaskObject) getComponent().getDefaultModelObject()).getUITaskSummary()
                                         .getTaskSummary(),
                                         _decision, values);
                         Context.save();
+
+                        final ModalWindowContainer modal = ((MainPage) _pageReference.getPage()).getModal();
+                        modal.setReloadChild(true);
+                        modal.close(_target);
                     } catch (final EFapsException e) {
                         TaskPage.LOG.error("Catched error during execute of a task", e);
+                    } catch (final PermissionDeniedException e) {
+                        TaskPage.LOG.error("Catched error during execute of a task", e);
+                        error(DBProperties.getProperty(TaskPage.class.getName() + ".NoAccess"));
+                        _target.addChildren(getPage(), FeedbackPanel.class);
                     }
-                    modal.close(_target);
                 }
             });
         }
@@ -364,17 +372,17 @@ public class TaskPage
                 @Override
                 protected void onEvent(final AjaxRequestTarget _target)
                 {
-                    final ModalWindowContainer modal = ((MainPage) _pageReference.getPage()).getModal();
-                    modal.setReloadChild(true);
-
                     try {
                         BPM.claimTask(((UITaskObject) getComponent().getDefaultModelObject()).getUITaskSummary()
                                         .getTaskSummary());
                         Context.save();
+                        final ModalWindowContainer modal = ((MainPage) _pageReference.getPage()).getModal();
+                        modal.setReloadChild(true);
+                        modal.close(_target);
                     } catch (final EFapsException e) {
                         TaskPage.LOG.error("Catched error during claiming of a task", e);
                     }
-                    modal.close(_target);
+
                 }
             });
         }
@@ -410,17 +418,21 @@ public class TaskPage
                 @Override
                 protected void onEvent(final AjaxRequestTarget _target)
                 {
-                    final ModalWindowContainer modal = ((MainPage) _pageReference.getPage()).getModal();
-                    modal.setReloadChild(true);
-
                     try {
                         BPM.stopTask(((UITaskObject) getComponent().getDefaultModelObject()).getUITaskSummary()
                                         .getTaskSummary());
                         Context.save();
+                        final ModalWindowContainer modal = ((MainPage) _pageReference.getPage()).getModal();
+                        modal.setReloadChild(true);
+                        modal.close(_target);
                     } catch (final EFapsException e) {
                         TaskPage.LOG.error("Catched error during claiming of a task", e);
+                    } catch (final PermissionDeniedException e) {
+                        TaskPage.LOG.error("Catched error during execute of a task", e);
+                        error(DBProperties.getProperty(TaskPage.class.getName() + ".NoAccess"));
+                        _target.addChildren(getPage(), FeedbackPanel.class);
                     }
-                    modal.close(_target);
+
                 }
             });
         }
@@ -455,17 +467,20 @@ public class TaskPage
                 @Override
                 protected void onEvent(final AjaxRequestTarget _target)
                 {
-                    final ModalWindowContainer modal = ((MainPage) _pageReference.getPage()).getModal();
-                    modal.setReloadChild(true);
-
                     try {
                         BPM.exitTask(((UITaskObject) getComponent().getDefaultModelObject()).getUITaskSummary()
                                         .getTaskSummary());
                         Context.save();
+                        final ModalWindowContainer modal = ((MainPage) _pageReference.getPage()).getModal();
+                        modal.setReloadChild(true);
+                        modal.close(_target);
                     } catch (final EFapsException e) {
                         TaskPage.LOG.error("Catched error during claiming of a task", e);
+                    } catch (final PermissionDeniedException e) {
+                        TaskPage.LOG.error("Catched error during execute of a task", e);
+                        error(DBProperties.getProperty(TaskPage.class.getName() + ".NoAccess"));
+                        _target.addChildren(getPage(), FeedbackPanel.class);
                     }
-                    modal.close(_target);
                 }
             });
         }
@@ -501,17 +516,20 @@ public class TaskPage
                 @Override
                 protected void onEvent(final AjaxRequestTarget _target)
                 {
-                    final ModalWindowContainer modal = ((MainPage) _pageReference.getPage()).getModal();
-                    modal.setReloadChild(true);
-
                     try {
+                        final ModalWindowContainer modal = ((MainPage) _pageReference.getPage()).getModal();
+                        modal.setReloadChild(true);
+                        modal.close(_target);
                         BPM.releaseTask(((UITaskObject) getComponent().getDefaultModelObject()).getUITaskSummary()
                                         .getTaskSummary());
                         Context.save();
                     } catch (final EFapsException e) {
                         TaskPage.LOG.error("Catched error during claiming of a task", e);
+                    } catch (final PermissionDeniedException e) {
+                        TaskPage.LOG.error("Catched error during execute of a task", e);
+                        error(DBProperties.getProperty(TaskPage.class.getName() + ".NoAccess"));
+                        _target.addChildren(getPage(), FeedbackPanel.class);
                     }
-                    modal.close(_target);
                 }
             });
         }
@@ -582,6 +600,10 @@ public class TaskPage
                         }
                     } catch (final EFapsException e) {
                         TaskPage.LOG.error("Catched error during delegation of a task", e);
+                    } catch (final PermissionDeniedException e) {
+                        TaskPage.LOG.error("Catched error during execute of a task", e);
+                        error(DBProperties.getProperty(TaskPage.class.getName() + ".NoAccess"));
+                        _target.addChildren(getPage(), FeedbackPanel.class);
                     }
                 }
             });

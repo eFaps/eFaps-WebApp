@@ -325,7 +325,7 @@ public class UITaskObject
 
                 final QueryBuilder queryBldr = new QueryBuilder(CIAdminUser.Person2Role);
                 queryBldr.addWhereAttrEqValue(CIAdminUser.Person2Role.UserToLink, role.getId());
-                queryBldr.addWhereAttrEqValue(CIAdminUser.Person2Role.UserFromLink,
+                queryBldr.addWhereAttrInQuery(CIAdminUser.Person2Role.UserFromLink,
                                 attrQueryBldr.getAttributeQuery(CIAdminUser.Person.ID));
                 final MultiPrintQuery multi = queryBldr.getPrint();
                 final SelectBuilder selUUID = SelectBuilder.get().linkto(CIAdminUser.Person2Role.UserFromLink)
