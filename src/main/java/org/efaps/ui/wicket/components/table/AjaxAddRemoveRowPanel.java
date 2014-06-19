@@ -285,20 +285,30 @@ public class AjaxAddRemoveRowPanel
                         .append("var ").append(AjaxAddRemoveRowPanel.this.tableName)
                             .append(AjaxAddRemoveRowPanel.VAR_SUFFIX).append(";\n")
                         .append("var ").append(AjaxAddRemoveRowPanel.FUNCTION_PREFIX)
-                            .append(AjaxAddRemoveRowPanel.this.tableName).append("=function(_")
-                            .append(AjaxAddRemoveRowPanel.FUNCTION_ROWCOUNT)
-                            .append(",").append(AjaxAddRemoveRowPanel.VAR_SUFFIX)
-                            .append(",_").append(AjaxAddRemoveRowPanel.FUNCTION_ROWDID).append(") {\n")
-                        .append(AjaxAddRemoveRowPanel.this.tableName).append(AjaxAddRemoveRowPanel.VAR_SUFFIX)
-                            .append("=").append(AjaxAddRemoveRowPanel.VAR_SUFFIX).append(";\n")
-                        .append("var eFapsAjaxCall=").append(getCallbackFunction(
+                            .append(AjaxAddRemoveRowPanel.this.tableName).append("=function(_nrc,_sh,_rId) {\n")
+                        .append("var call=").append(getCallbackFunction(
                                 CallbackParameter.explicit(AjaxAddRemoveRowPanel.FUNCTION_ROWCOUNT),
                                 CallbackParameter.explicit(AjaxAddRemoveRowPanel.FUNCTION_SUCCESSHANDLER),
-                                CallbackParameter.explicit(AjaxAddRemoveRowPanel.FUNCTION_ROWDID))).append("\n")
-                        .append(" eFapsAjaxCall(_").append(AjaxAddRemoveRowPanel.FUNCTION_ROWCOUNT)
-                            .append(",jQuery.isFunction(").append(AjaxAddRemoveRowPanel.this.tableName)
-                            .append(AjaxAddRemoveRowPanel.VAR_SUFFIX)
-                            .append("),_").append(AjaxAddRemoveRowPanel.FUNCTION_ROWDID).append(");\n")
+                                CallbackParameter.explicit(AjaxAddRemoveRowPanel.FUNCTION_ROWDID)))
+                         .append("if (jQuery.isFunction(_sh)) {\n")
+                         .append(AjaxAddRemoveRowPanel.this.tableName).append(AjaxAddRemoveRowPanel.VAR_SUFFIX)
+                            .append("=function() {\n")
+                         .append("_sh();\n")
+                         .append("require([\"dojo/topic\"], function(topic){\n")
+                            .append("topic.publish(\"eFaps/addRow/")
+                                .append(AjaxAddRemoveRowPanel.this.tableName).append("\");\n")
+                            .append("})\n")
+                         .append("}\n")
+                         .append("} else {\n")
+                         .append(AjaxAddRemoveRowPanel.this.tableName).append(AjaxAddRemoveRowPanel.VAR_SUFFIX)
+                            .append("=function() {\n")
+                         .append("require([\"dojo/topic\"], function(topic){\n")
+                            .append("topic.publish(\"eFaps/addRow/")
+                                .append(AjaxAddRemoveRowPanel.this.tableName).append("\");\n")
+                            .append("})\n")
+                            .append("}\n")
+                         .append("}\n")
+                                .append("call(_nrc,true,_rId);\n")
                         .append("}");
                     return js;
                 }
