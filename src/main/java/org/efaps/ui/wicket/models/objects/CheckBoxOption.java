@@ -63,7 +63,10 @@ public class CheckBoxOption
     }
 
     /**
-     * @param _choices
+     * @param _field    field this option belongs to
+     * @param _choices choiced to be rendered
+     * @return new List of choices
+     * @throws EFapsException on error
      */
     public static List<CheckBoxOption> getChoices(final AbstractUIField _field,
                                                   final List<Object> _choices)

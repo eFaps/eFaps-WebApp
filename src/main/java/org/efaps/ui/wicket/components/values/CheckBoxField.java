@@ -21,12 +21,13 @@
 
 package org.efaps.ui.wicket.components.values;
 
-import java.io.Serializable;
 import java.util.List;
 
 import org.apache.wicket.markup.html.form.CheckBoxMultipleChoice;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.model.Model;
+import org.efaps.admin.datamodel.ui.BooleanUI;
+import org.efaps.admin.datamodel.ui.IUIProvider;
 import org.efaps.ui.wicket.models.cell.FieldConfiguration;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.objects.CheckBoxOption;
@@ -57,6 +58,9 @@ public class CheckBoxField
     private static final Logger LOG = LoggerFactory.getLogger(CheckBoxField.class);
 
 
+    /**
+     * Configuration of the underlying field.
+     */
     private final FieldConfiguration fieldConfig;
 
     /**
@@ -65,20 +69,26 @@ public class CheckBoxField
     private final AbstractUIField cellvalue;
 
     /**
-     * @param _id
-     * @param _choices
+     * @param _wicketId wicktId of this component
+     * @param _model    model for this component
+     * @param _choices  list of choices
+     * @param _fieldConfiguration configuration
      */
-    public CheckBoxField(final String _id,
+    public CheckBoxField(final String _wicketId,
                          final Model<AbstractUIField> _model,
                          final List<Object> _choices,
                          final FieldConfiguration _fieldConfiguration)
     {
-        super(_id);
+        super(_wicketId);
         this.fieldConfig  = _fieldConfiguration;
         this.cellvalue = _model.getObject();
-        final Serializable value = this.cellvalue.getValue().getDbValue();
         try {
-            if (value != null) {
+            final Object value = this.cellvalue.getValue().getEditValue(this.cellvalue.getParent().getMode());
+            final IUIProvider uiProvider = this.cellvalue.getValue().getUIProvider();
+            // not booleanUI and not null OR BooleanUI and true
+            if ((!(uiProvider instanceof BooleanUI) && value != null)
+                            || (uiProvider instanceof BooleanUI && value != null
+                            && (Boolean)  this.cellvalue.getValue().getDbValue())) {
                 setDefaultModel(Model.of(CheckBoxOption.getChoices(this.cellvalue, _choices)));
             } else {
                 setDefaultModel(new Model<String>());
@@ -86,8 +96,7 @@ public class CheckBoxField
             setChoices(CheckBoxOption.getChoices(this.cellvalue, null));
             setLabel(Model.of(_fieldConfiguration.getLabel(this.cellvalue)));
         } catch (final EFapsException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            CheckBoxField.LOG.error("Caught excpetion", e);
         }
         setChoiceRenderer(new ChoiceRenderer());
         setOutputMarkupId(true);

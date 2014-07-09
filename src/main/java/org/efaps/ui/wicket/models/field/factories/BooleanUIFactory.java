@@ -21,7 +21,6 @@
 package org.efaps.ui.wicket.models.field.factories;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -74,7 +73,7 @@ public class BooleanUIFactory
             final FieldConfiguration config = _abstractUIField.getFieldConfiguration();
             final UIType uiType = config.getUIType();
             if (uiType.equals(UIType.CHECKBOX)) {
-                ret = new CheckBoxField(_wicketId, Model.of(_abstractUIField), Collections.singletonList(null), config);
+                ret = new CheckBoxField(_wicketId, Model.of(_abstractUIField), null, config);
             } else {
                 final IModel<Map<Object, Object>> model = Model.ofMap((Map<Object, Object>) _abstractUIField.getValue()
                                 .getEditValue(_abstractUIField.getParent().getMode()));
