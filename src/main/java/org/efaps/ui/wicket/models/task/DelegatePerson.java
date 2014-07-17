@@ -89,7 +89,7 @@ public class DelegatePerson
     }
 
     /**
-     * Private Constructor for model reasons
+     * Private Constructor for model reasons.
      */
     private DelegatePerson()
     {

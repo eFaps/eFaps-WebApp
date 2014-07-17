@@ -21,6 +21,8 @@
 package org.efaps.ui.wicket.models.objects;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -345,6 +347,15 @@ public class UITaskObject
                                     multi.<String>getSelect(selLastName)));
                 }
             }
+            Collections.sort(this.delegates, new Comparator<DelegatePerson>()
+            {
+                @Override
+                public int compare(final DelegatePerson _o1,
+                                   final DelegatePerson _o2)
+                {
+                    return (_o1.getLastName() + _o1.getFirstName()).compareTo(_o2.getLastName() + _o2.getFirstName());
+                }
+            });
         }
         return ret && !this.delegates.isEmpty();
     }
