@@ -23,6 +23,7 @@ package org.efaps.ui.wicket.components.values;
 
 import java.util.List;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.wicket.markup.html.form.CheckBoxMultipleChoice;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.model.Model;
@@ -88,7 +89,7 @@ public class CheckBoxField
             // not booleanUI and not null OR BooleanUI and true
             if ((!(uiProvider instanceof BooleanUI) && value != null)
                             || (uiProvider instanceof BooleanUI && value != null
-                            && (Boolean)  this.cellvalue.getValue().getDbValue())) {
+                            && BooleanUtils.isTrue((Boolean) this.cellvalue.getValue().getDbValue()))) {
                 setDefaultModel(Model.of(CheckBoxOption.getChoices(this.cellvalue, _choices)));
             } else {
                 setDefaultModel(new Model<String>());
