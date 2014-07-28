@@ -91,10 +91,12 @@ public class AjaxDownloadBehavior
     /**
      * On request, respond with a ResourcStream.
      */
+    @Override
     public void onRequest()
     {
-        final ResourceStreamRequestHandler handler = new ResourceStreamRequestHandler(getResourceStream(),
-                        getFileName());
+        final String fileName = getFileName();
+        final IResourceStream stream = getResourceStream();
+        final ResourceStreamRequestHandler handler = new ResourceStreamRequestHandler(stream, fileName);
         handler.setContentDisposition(ContentDisposition.ATTACHMENT);
         getComponent().getRequestCycle().scheduleRequestHandlerAfterCurrent(handler);
     }
@@ -108,7 +110,7 @@ public class AjaxDownloadBehavior
      */
     protected String getFileName()
     {
-        final File file = ((EFapsSession) getComponent().getSession()).getFile();
+        final File file = EFapsSession.get().getFile();
         return file.getName();
     }
 
@@ -118,7 +120,9 @@ public class AjaxDownloadBehavior
      */
     protected IResourceStream getResourceStream()
     {
-        final File file = ((EFapsSession) getComponent().getSession()).getFile();
-        return new FileResourceStream(file);
+        final File file = EFapsSession.get().getFile();
+        final FileResourceStream ret = new FileResourceStream(file);
+        EFapsSession.get().setFile(null);
+        return ret;
     }
 }
