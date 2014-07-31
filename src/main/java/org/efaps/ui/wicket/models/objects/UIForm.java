@@ -258,7 +258,8 @@ public class UIForm
         // evaluate the Form to make the query
         final PrintQuery print = new PrintQuery(getInstance());
         for (final Field field : form.getFields()) {
-            if (field.hasAccess(getMode(), getInstance(), getCommand()) && !field.isNoneDisplay(getMode())) {
+            if (field.hasAccess(getMode(), getInstance(), getCommand(), getInstance())
+                            && !field.isNoneDisplay(getMode())) {
                 if (field.getSelect() != null) {
                     print.addSelect(field.getSelect());
                 } else if (field.getAttribute() != null) {
@@ -285,7 +286,8 @@ public class UIForm
             UIClassification uiclass = null;
             boolean firstTable = true;
             for (final Field field : form.getFields()) {
-                if (field.hasAccess(getMode(), getInstance(), getCommand()) && !field.isNoneDisplay(getMode())) {
+                if (field.hasAccess(getMode(), getInstance(), getCommand(), getInstance())
+                                && !field.isNoneDisplay(getMode())) {
                     if (field instanceof FieldGroup) {
                         final FieldGroup group = (FieldGroup) field;
                         // in case that the first field is a group the element must be initiated
@@ -440,7 +442,7 @@ public class UIForm
 
         Instance fieldInstance;
         if (_field.getSelectAlternateOID() != null
-                        && (_query.getSelect(_field.getSelectAlternateOID()) instanceof String)) {
+                        && _query.getSelect(_field.getSelectAlternateOID()) instanceof String) {
             fieldInstance = Instance.get(_query.<String>getSelect(_field.getSelectAlternateOID()));
         } else {
             fieldInstance = getInstance();
@@ -470,7 +472,7 @@ public class UIForm
                 _row.add(fieldChart);
             } else {
                 // temp to decide what to do TODO remove in future
-                if ((attr != null && attr.getAttributeType().getUI() == null)
+                if (attr != null && attr.getAttributeType().getUI() == null
                                 || _field.getClassUI() == null && _field.getUIProvider() != null) {
                     evaluateUIProvider(_row, _query, _field, fieldInstance, label, attr);
                 } else {
@@ -573,7 +575,7 @@ public class UIForm
                     icon = image.getUrl();
                 }
             }
-            final String uiType = (_attr != null) ? _attr.getAttributeType().getName() : "";
+            final String uiType = _attr != null ? _attr.getAttributeType().getName() : "";
             _row.add(new UIFormCell(this, fieldvalue, _fieldInstance, strValue, null, icon, _label, uiType));
         }
     }
@@ -718,7 +720,7 @@ public class UIForm
         UIClassification uiclass = null;
         boolean firstTable = true;
         for (final Field field : form.getFields()) {
-            if (field.hasAccess(getMode(), AbstractInstanceObject.getInstance4Create(type), getCommand())
+            if (field.hasAccess(getMode(), AbstractInstanceObject.getInstance4Create(type), getCommand(), getInstance())
                             && !field.isNoneDisplay(getMode())) {
                 if (field instanceof FieldGroup) {
                     final FieldGroup group = (FieldGroup) field;
@@ -814,8 +816,8 @@ public class UIForm
                         } else if (field instanceof FieldCommand) {
                             cell = new UIFormCellCmd(this, (FieldCommand) field, null, label);
                         } else {
-                            if ((attr != null && attr.getAttributeType().getUI() == null)
-                                || (field.getClassUI() == null && field.getUIProvider() != null)) {
+                            if (attr != null && attr.getAttributeType().getUI() == null
+                                || field.getClassUI() == null && field.getUIProvider() != null) {
                                 cell = new UIField(null, this, UIValue.get(field, attr, null).setClassObject(this));
                             } else {
                                 cell = new UIFormCell(this, fieldvalue, strValue, "", label, attrTypeName);

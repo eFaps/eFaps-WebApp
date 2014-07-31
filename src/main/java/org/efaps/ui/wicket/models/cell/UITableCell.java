@@ -208,8 +208,8 @@ public class UITableCell
                 final Menu menu = Menu.getTypeTreeMenu(_instance.getType());
                 if (menu != null && menu.hasAccess(getParent().getMode(), getInstance())
                             && (!((AbstractUIPageObject) _parent).getAccessMap().containsKey(getInstance())
-                                || (((AbstractUIPageObject) _parent).getAccessMap().containsKey(getInstance())
-                                && ((AbstractUIPageObject) _parent).getAccessMap().get(getInstance())))) {
+                                || ((AbstractUIPageObject) _parent).getAccessMap().containsKey(getInstance())
+                                && ((AbstractUIPageObject) _parent).getAccessMap().get(getInstance()))) {
                     this.reference = _fieldValue.getField().getReference();
                 } else if (_fieldValue.getField().getReference().contains("/servlet/checkout")) {
                     this.reference = _fieldValue.getField().getReference();
@@ -371,7 +371,9 @@ public class UITableCell
                             ParameterValues.OTHERS, _others,
                             ParameterValues.PARAMETERS, context.getParameters(),
                             ParameterValues.CLASS, this,
-                            ParameterValues.OIDMAP4UI, _uiID2Oid);
+                            ParameterValues.OIDMAP4UI, _uiID2Oid,
+                            ParameterValues.CALL_INSTANCE, getParent().getInstance(),
+                            ParameterValues.CALL_CMD, getParent().getCommand());
         }
         return ret;
     }
