@@ -55,6 +55,7 @@ public class PopupMenuPanel
     /**
      * @param _wicketId wicketId of this Panel
      * @param _model model for this Panel
+     * @throws CacheReloadException on error
      */
     public PopupMenuPanel(final String _wicketId,
                           final IModel<?> _model)
@@ -63,6 +64,12 @@ public class PopupMenuPanel
         this(_wicketId, _model, true);
     }
 
+    /**
+     * @param _wicketId wicketId of this Panel
+     * @param _model model for this Panel
+     * @param _isMenuBarItem part of the main menu bar or not
+     * @throws CacheReloadException on error
+     */
     public PopupMenuPanel(final String _wicketId,
                           final IModel<?> _model,
                           final boolean _isMenuBarItem)
@@ -89,7 +96,9 @@ public class PopupMenuPanel
                 super.onComponentTagBody(_markupStream, _openTag);
                 final UIMenuItem uiItem = (UIMenuItem) getDefaultModelObject();
                 final StringBuilder html = new StringBuilder();
-                if (!PopupMenuPanel.this.menuBarItem) {
+                if (PopupMenuPanel.this.menuBarItem && uiItem.getImage() != null) {
+                    html.append("<img src=\"/..").append(uiItem.getImage()).append("\" class=\"eFapsMenuImage\"/>");
+                } else if (!PopupMenuPanel.this.menuBarItem) {
                     if (uiItem.getImage() == null) {
                         html.append("<div class=\"eFapsMenuImagePlaceHolder\">").append("&nbsp;</div>");
                     } else {
