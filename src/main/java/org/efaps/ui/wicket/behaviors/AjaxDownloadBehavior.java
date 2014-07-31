@@ -22,8 +22,11 @@ package org.efaps.ui.wicket.behaviors;
 
 import java.io.File;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.behavior.AbstractAjaxBehavior;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.request.handler.resource.ResourceStreamRequestHandler;
 import org.apache.wicket.request.resource.ContentDisposition;
 import org.apache.wicket.util.resource.FileResourceStream;
@@ -50,6 +53,11 @@ public class AjaxDownloadBehavior
     private final boolean addAntiCache;
 
     /**
+     * Add the script to the page.
+     */
+    private boolean addScript2Page = false;
+
+    /**
      * Constructor using antichache.
      */
     public AjaxDownloadBehavior()
@@ -72,6 +80,19 @@ public class AjaxDownloadBehavior
      */
     public void initiate(final AjaxRequestTarget _target)
     {
+        final String url = getCallBackURL();
+        if (url != null) {
+            _target.prependJavaScript(
+                            "top.document.getElementById('downloadFrame').setAttribute('src','" + url + "');");
+        }
+    }
+
+    /**
+     * @return the callback url, null if no
+     */
+    protected String getCallBackURL()
+    {
+        String ret = null;
         final File file = ((EFapsSession) getComponent().getSession()).getFile();
         if (file != null && file.exists()) {
             String url = getCallbackUrl().toString();
@@ -84,8 +105,17 @@ public class AjaxDownloadBehavior
             if (url.startsWith("..")) {
                 url = url.substring(1);
             }
-            _target.prependJavaScript("top.document.getElementById('downloadFrame').setAttribute('src','" + url + "');");
+            ret = url;
         }
+        return ret;
+    }
+
+    /**
+     * Initiate the download.
+     */
+    public void initiate()
+    {
+        this.addScript2Page = true;
     }
 
     /**
@@ -124,5 +154,23 @@ public class AjaxDownloadBehavior
         final FileResourceStream ret = new FileResourceStream(file);
         EFapsSession.get().setFile(null);
         return ret;
+    }
+
+    @Override
+    public void renderHead(final Component _component,
+                           final IHeaderResponse _response)
+    {
+        super.renderHead(_component, _response);
+        if (this.addScript2Page) {
+            final String url = getCallBackURL();
+            if (url != null) {
+                final StringBuilder js = new StringBuilder()
+                    .append("top.document.getElementById('downloadFrame').setAttribute('src','")
+                    .append(url)
+                    .append("');");
+                _response.render(JavaScriptHeaderItem.forScript(js, AjaxDownloadBehavior.class.getName()));
+            }
+            this.addScript2Page = false;
+        }
     }
 }

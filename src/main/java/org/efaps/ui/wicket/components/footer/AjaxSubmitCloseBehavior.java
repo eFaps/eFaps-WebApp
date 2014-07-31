@@ -182,7 +182,7 @@ public class AjaxSubmitCloseBehavior
             }
             if (convertDateFieldValues(_target) && convertFieldValues(_target)
                             && checkForRequired(_target) && validateFieldValues(_target)
-                            && (validateForm(_target, others, classifications))) {
+                            && validateForm(_target, others, classifications)) {
                 if (executeEvents(_target, others, classifications)) {
                     // to be able to see the changes the context must be commited and reopened
                     ((EFapsSession) Session.get()).saveContext();
@@ -217,13 +217,16 @@ public class AjaxSubmitCloseBehavior
                         } else {
                             page = new FormPage(new FormModel((UIForm) newUIObject), modal);
                         }
+                        if (this.uiObject.getCommand().isTargetShowFile()) {
+                            page.getDownloadBehavior().initiate();
+                        }
                         getComponent().getPage().getRequestCycle().setResponsePage(page);
                     } else {
                         final FooterPanel footer = getComponent().findParent(FooterPanel.class);
                         // if inside a modal
                         if (this.uiObject.getCommand().getTarget() == Target.MODAL
-                                        || (this.uiObject.getCallingCommand() != null
-                                                && this.uiObject.getCallingCommand().getTarget() == Target.MODAL)) {
+                                        || this.uiObject.getCallingCommand() != null
+                                                && this.uiObject.getCallingCommand().getTarget() == Target.MODAL) {
                             footer.getModalWindow().setReloadChild(!this.uiObject.getCommand().isNoUpdateAfterCmd());
                             footer.getModalWindow().setTargetShowFile(this.uiObject.getCommand().isTargetShowFile());
                             footer.getModalWindow().close(_target, this.uiObject);
