@@ -391,7 +391,7 @@ public class UIMenuItem
     }
 
     private void addChild4Key(final String _key)
-        throws CacheReloadException
+        throws EFapsException
     {
         final String[] uuids = _key.split(UsageRegistry.SEP4UUID);
         final UUID toolbarUUID = UUID.fromString(Configuration.getAttribute(ConfigAttribute.TOOLBAR));
@@ -413,7 +413,7 @@ public class UIMenuItem
                 }
             }
         }
-        if (userItem != null) {
+        if (userItem != null && userItem.getCommand().hasAccess(getMode(), getInstance())) {
             labelBldr.append(userItem.getLabel());
             userItem.label = labelBldr.toString();
             userItem.key4UsageRegistry = _key;
