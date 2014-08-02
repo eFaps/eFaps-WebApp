@@ -34,6 +34,21 @@ public interface WebAppSettings
     String BASEKEY = "org.efaps.webapp.";
 
     /**
+     * Most used Menu for the User.
+     */
+    String USER_MENU = WebAppSettings.BASEKEY + "MostUsedMenus4User";
+
+    /**
+     * Most used Menu for the User.
+     */
+    String USER_MENUMENU = WebAppSettings.BASEKEY + "MenuCmd4UserMenu";
+
+    /**
+     * Most used Menu for the User.
+     */
+    String USER_MENUACT = WebAppSettings.BASEKEY + "ActivateUserMenu";
+
+    /**
      * Integer. Duration (in seconds) of a eFapsStaticContent
      * in the Cache of the Browser, before it will be retrieved again
      * from the eFaps-DataBase. Default Value is 3600.

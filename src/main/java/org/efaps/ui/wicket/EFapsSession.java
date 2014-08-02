@@ -49,7 +49,9 @@ import org.efaps.admin.user.UserAttributesSet;
 import org.efaps.db.Context;
 import org.efaps.jaas.LoginHandler;
 import org.efaps.ui.wicket.components.IRecent;
+import org.efaps.ui.wicket.components.menu.LinkItem;
 import org.efaps.ui.wicket.models.EmbeddedLink;
+import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
@@ -92,7 +94,7 @@ public class EFapsSession
      * @see #putIntoCache(String, Component)
      * @see #removeFromCache(String)
      */
-    private final Map<String, Component> componentcache = new HashMap<String, Component>();
+    private final Map<String, Component> componentcache = new HashMap<>();
 
     /**
      * This instance variable holds the Name of the logged in user. It is also
@@ -164,8 +166,13 @@ public class EFapsSession
                 this.recentStack.remove(0);
             }
         }
+        if (_recent instanceof LinkItem) {
+            final Object object = ((LinkItem) _recent).getDefaultModelObject();
+            if (object instanceof UIMenuItem) {
+                UsageRegistry.register(((UIMenuItem) object).getKey4UsageRegistry());
+            }
+        }
     }
-
 
     @Override
     public WebClientInfo getClientInfo()
@@ -289,8 +296,10 @@ public class EFapsSession
      */
     public final void logout()
     {
+
         if (this.sessionAttributes.containsKey(UserAttributesSet.CONTEXTMAPKEY)) {
             try {
+                UsageRegistry.store();
                 ((UserAttributesSet) this.sessionAttributes.get(UserAttributesSet.CONTEXTMAPKEY)).storeInDb();
                 AccessCache.clean4Person(Context.getThreadContext().getPersonId());
             } catch (final EFapsException e) {
@@ -537,6 +546,7 @@ public class EFapsSession
         /**
          * Not needed.
          */
+        @Override
         public void close()
         {
             // not needed yet
@@ -547,6 +557,7 @@ public class EFapsSession
          *
          * @return content type
          */
+        @Override
         public String getContentType()
         {
             return this.fileItem.getContentType();
@@ -558,6 +569,7 @@ public class EFapsSession
          * @return Inputstream
          * @throws IOException on error
          */
+        @Override
         public InputStream getInputStream() throws IOException
         {
             return this.fileItem.getInputStream();
@@ -568,6 +580,7 @@ public class EFapsSession
          *
          * @return name of the file item
          */
+        @Override
         public String getName()
         {
             return this.fileItem.getName();
@@ -578,6 +591,7 @@ public class EFapsSession
          *
          * @return name of the parameter
          */
+        @Override
         public String getParameterName()
         {
             return this.parameterName;
@@ -588,6 +602,7 @@ public class EFapsSession
          *
          * @return size in byte
          */
+        @Override
         public long getSize()
         {
             return this.fileItem.getSize();

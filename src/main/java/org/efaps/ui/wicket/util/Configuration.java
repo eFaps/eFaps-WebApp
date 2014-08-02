@@ -116,7 +116,13 @@ public final class Configuration
         /** AutoComplete search delay. */
         AUTOC_SEARCHDELAY(false, true, WebAppSettings.AUTOC_SEARCHDELAY, "500"),
         /** AutoComplete search delay. */
-        AUTOC_PARAMNAME(false, true, WebAppSettings.AUTOC_PARAMNAME, "p");
+        AUTOC_PARAMNAME(false, true, WebAppSettings.AUTOC_PARAMNAME, "p"),
+        /** Menus for the Users. */
+        USER_MENU(true, false, WebAppSettings.USER_MENU, ""),
+        /** UUID of the Menu/Command the UserMenu will be connected to. */
+        USER_MENUMENU(false, true, WebAppSettings.USER_MENUMENU, "f84814f4-1bc5-481e-b37c-6ae782b25a00"),
+        /** Activate the UserMenu Mechanism. */
+        USER_MENUACT(false, true, WebAppSettings.USER_MENUACT, "true");
 
         /**
          * Stores the key for this Attribute..

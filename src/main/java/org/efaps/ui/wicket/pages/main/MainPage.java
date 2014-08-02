@@ -53,6 +53,7 @@ import org.apache.wicket.protocol.ws.api.message.ConnectedMessage;
 import org.apache.wicket.protocol.ws.api.message.IWebSocketPushMessage;
 import org.apache.wicket.util.string.StringValue;
 import org.apache.wicket.util.time.Duration;
+import org.efaps.admin.KernelSettings;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.user.Role;
 import org.efaps.db.Context;
@@ -157,8 +158,8 @@ public class MainPage
         // add the debug bar for administration role, in case of an erro only log it
         Component debug = null;
         try {
-         // Administration
-            final Role role = Role.get(UUID.fromString("1d89358d-165a-4689-8c78-fc625d37aacd"));
+            // Administration
+            final Role role = Role.get(KernelSettings.USER_ROLE_ADMINISTRATION);
             if (role != null && Context.getThreadContext().getPerson().isAssigned(role)) {
                 debug = new DebugBar("debug");
             }

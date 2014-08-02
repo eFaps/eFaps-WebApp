@@ -31,13 +31,17 @@ import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractMenu;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.Image;
+import org.efaps.admin.ui.Menu;
 import org.efaps.beans.ValueList;
 import org.efaps.beans.valueparser.ParseException;
 import org.efaps.beans.valueparser.ValueParser;
 import org.efaps.db.Context;
 import org.efaps.db.PrintQuery;
+import org.efaps.ui.wicket.UsageRegistry;
 import org.efaps.ui.wicket.components.modalwindow.ICmdUIObject;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.ui.wicket.util.Configuration;
+import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
@@ -141,10 +145,15 @@ public class UIMenuItem
      */
     private UIMenuItem parent;
 
-     /**
+    /**
      * Is this model expanded.
      */
     private boolean expanded = false;
+
+    /**
+     * Key for the UsageRegistry;
+     */
+    private String key4UsageRegistry;
 
     /**
      * Constructor setting the UUID of this MenuItem.
@@ -369,8 +378,46 @@ public class UIMenuItem
                     }
                 }
             }
+            if (Configuration.getAttributeAsBoolean(ConfigAttribute.USER_MENUACT)
+                            && UUID.fromString(Configuration.getAttribute(ConfigAttribute.USER_MENUMENU)).equals(
+                                            getCommandUUID())) {
+                for (final String key : UsageRegistry.getKeyList()) {
+                    addChild4Key(key);
+                }
+            }
         } catch (final EFapsException e) {
             throw new RestartResponseException(new ErrorPage(e));
+        }
+    }
+
+    private void addChild4Key(final String _key)
+        throws CacheReloadException
+    {
+        final String[] uuids = _key.split(UsageRegistry.SEP4UUID);
+        final UUID toolbarUUID = UUID.fromString(Configuration.getAttribute(ConfigAttribute.TOOLBAR));
+        UIMenuItem userItem = null;
+        final StringBuilder labelBldr = new StringBuilder();
+        for (final String uuidStr : uuids) {
+            if (userItem == null) {
+                userItem = new UIMenuItem(UUID.fromString(uuidStr));
+            } else {
+                final UUID uuid = UUID.fromString(uuidStr);
+                if (!toolbarUUID.equals(uuid)) {
+                    final Menu menu = Menu.get(uuid);
+                    String labelTmp = menu.getLabelProperty();
+                    if (labelTmp.length() > 6) {
+                        labelTmp = labelTmp.substring(0, 6) + "..";
+                    }
+                    labelTmp = labelTmp + " - ";
+                    labelBldr.insert(0, labelTmp);
+                }
+            }
+        }
+        if (userItem != null) {
+            labelBldr.append(userItem.getLabel());
+            userItem.label = labelBldr.toString();
+            userItem.key4UsageRegistry = _key;
+            this.children.add(userItem);
         }
     }
 
@@ -612,4 +659,22 @@ public class UIMenuItem
         return (getParent() == null ? "" : getParent().getCommandUUID()) + "-" + getCommandUUID() + "-"
                         + UIMenuItem.USERSESSIONKEY;
     }
+
+    public String getKey4UsageRegistry()
+    {
+        if (this.key4UsageRegistry == null) {
+            final StringBuilder ret = new StringBuilder();
+            UIMenuItem parentTmp = this;
+            while (parentTmp != null) {
+                if (ret.length() > 0) {
+                    ret.append(UsageRegistry.SEP4UUID);
+                }
+                ret.append(parentTmp.getCommandUUID());
+                parentTmp = parentTmp.getParent();
+            }
+            this.key4UsageRegistry = ret.toString();
+        }
+        return this.key4UsageRegistry;
+    }
+
 }
