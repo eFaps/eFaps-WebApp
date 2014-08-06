@@ -23,6 +23,7 @@ package org.efaps.ui.wicket.components.picker;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow.PageCreator;
 import org.apache.wicket.model.IModel;
+import org.efaps.db.Context;
 import org.efaps.ui.wicket.components.button.AjaxButton;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowAjaxPageCreator;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
@@ -31,6 +32,7 @@ import org.efaps.ui.wicket.models.cell.UIPicker;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
+import org.efaps.util.EFapsException;
 
 /**
  * TODO comment!
@@ -54,7 +56,7 @@ public class AjaxPickerButton
     public AjaxPickerButton(final String _wicketId,
                             final IModel<UIFormCell> _model)
     {
-        super(_wicketId, _model, AjaxPickerLink.ICON, _model.getObject().getCellLabel());
+        super(_wicketId, _model, AjaxPickerLink.ICON, _model.getObject().getPicker().getLabel());
     }
 
     @Override
@@ -67,13 +69,19 @@ public class AjaxPickerButton
             modal = ((AbstractContentPage) getPage()).getModal();
         }
         modal.reset();
-        final UIPicker picker = ((UITableCell) getDefaultModelObject()).getPicker();
+        try {
+            final UIPicker picker = ((UITableCell) getDefaultModelObject()).getPicker();
+            picker.setParentParameters(Context.getThreadContext().getParameters());
+            final PageCreator pageCreator = new ModalWindowAjaxPageCreator(picker, modal);
+            modal.setPageCreator(pageCreator);
+            modal.setInitialHeight(picker.getWindowHeight());
+            modal.setInitialWidth(picker.getWindowWidth());
+            modal.setWindowClosedCallback(new PickerCallBack(null, getPage().getPageReference()));
+            modal.show(_target);
+        } catch (final EFapsException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
-        final PageCreator pageCreator = new ModalWindowAjaxPageCreator(picker, modal);
-        modal.setPageCreator(pageCreator);
-        modal.setInitialHeight(picker.getWindowHeight());
-        modal.setInitialWidth(picker.getWindowWidth());
-        modal.setWindowClosedCallback(new PickerCallBack(null, getPage().getPageReference()));
-        modal.show(_target);
     }
 }

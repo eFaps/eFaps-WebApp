@@ -28,6 +28,7 @@ import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.model.IModel;
+import org.efaps.db.Context;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowAjaxPageCreator;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.cell.UIPicker;
@@ -35,6 +36,7 @@ import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.util.EFapsException;
 
 /**
  * TODO comment!
@@ -155,15 +157,20 @@ public class AjaxPickerLink
                 modal = ((AbstractContentPage) getPage()).getModal();
             }
             modal.reset();
-            final UIPicker picker = ((UITableCell) getDefaultModelObject()).getPicker();
-            picker.setUserinterfaceId(this.targetMarkupId);
-
-            final PageCreator pageCreator = new ModalWindowAjaxPageCreator(picker, modal);
-            modal.setPageCreator(pageCreator);
-            modal.setInitialHeight(picker.getWindowHeight());
-            modal.setInitialWidth(picker.getWindowWidth());
-            modal.setWindowClosedCallback(new PickerCallBack(this.targetMarkupId, getPage().getPageReference()));
-            modal.show(_target);
+            try {
+                final UIPicker picker = ((UITableCell) getDefaultModelObject()).getPicker();
+                picker.setUserinterfaceId(this.targetMarkupId);
+                picker.setParentParameters(Context.getThreadContext().getParameters());
+                final PageCreator pageCreator = new ModalWindowAjaxPageCreator(picker, modal);
+                modal.setPageCreator(pageCreator);
+                modal.setInitialHeight(picker.getWindowHeight());
+                modal.setInitialWidth(picker.getWindowWidth());
+                modal.setWindowClosedCallback(new PickerCallBack(this.targetMarkupId, getPage().getPageReference()));
+                modal.show(_target);
+            } catch (final EFapsException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
     }
 

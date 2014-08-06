@@ -91,6 +91,8 @@ public class UIPicker
      */
     private Map<String, String> returnMap = new HashMap<String, String>();
 
+    private Map<String, String[]> parentParameters;
+
     /**
      * @param _field    fieldPicker this UIObject belongs to
      * @param _parent   parent field this fieldpicker belongs to
@@ -194,6 +196,7 @@ public class UIPicker
                 }
             }
             param.put(ParameterValues.PARAMETERS, Context.getThreadContext().getParameters());
+            param.put(ParameterValues.PARENTPARAMETERS, this.parentParameters);
             if (getInstance() != null) {
                 final String[] contextoid = { getInstanceKey() };
                 Context.getThreadContext().getParameters().put("oid", contextoid);
@@ -275,5 +278,13 @@ public class UIPicker
     public UITableCell getParent()
     {
         return this.parent;
+    }
+
+    /**
+     * @param _parameters
+     */
+    public void setParentParameters(final Map<String, String[]> _parameters)
+    {
+        this.parentParameters = _parameters;
     }
 }
