@@ -30,8 +30,8 @@ import org.apache.wicket.model.Model;
 import org.efaps.admin.datamodel.ui.BooleanUI;
 import org.efaps.ui.wicket.components.values.BooleanField;
 import org.efaps.ui.wicket.components.values.CheckBoxField;
+import org.efaps.ui.wicket.models.UIType;
 import org.efaps.ui.wicket.models.cell.FieldConfiguration;
-import org.efaps.ui.wicket.models.cell.FieldConfiguration.UIType;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.util.EFapsException;
 

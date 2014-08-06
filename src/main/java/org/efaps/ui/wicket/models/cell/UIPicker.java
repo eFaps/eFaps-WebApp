@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.apache.commons.lang3.EnumUtils;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Parameter.ParameterValues;
@@ -38,6 +39,7 @@ import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.components.modalwindow.ICmdUIObject;
 import org.efaps.ui.wicket.models.AbstractInstanceObject;
+import org.efaps.ui.wicket.models.UIType;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
@@ -117,6 +119,7 @@ public class UIPicker
      * @return the command underlying this picker
      * @throws CacheReloadException on error during access to command
      */
+    @Override
     public Command getCommand()
         throws CacheReloadException
     {
@@ -185,7 +188,7 @@ public class UIPicker
             if (_objectTuples != null) {
                 // add all parameters
                 for (int i = 0; i < _objectTuples.length; i += 2) {
-                    if (((i + 1) < _objectTuples.length) && (_objectTuples[i] instanceof ParameterValues)) {
+                    if (i + 1 < _objectTuples.length && _objectTuples[i] instanceof ParameterValues) {
                         param.put((ParameterValues) _objectTuples[i], _objectTuples[i + 1]);
                     }
                 }
@@ -241,7 +244,7 @@ public class UIPicker
     public Instance getInstanceFromManager()
         throws EFapsException
     {
-        return this.parent.getInstanceFromManager();
+        return getParent().getInstanceFromManager();
     }
 
     /**
@@ -251,6 +254,26 @@ public class UIPicker
     public boolean hasInstanceManager()
         throws CacheReloadException
     {
-        return this.parent.hasInstanceManager();
+        return getParent().hasInstanceManager();
+    }
+
+    /**
+     * @return
+     */
+    public boolean isButton()
+    {
+        UIType ret;
+        final String uiTypeStr = getParent().getField().getProperty("UIType");
+        if (EnumUtils.isValidEnum(UIType.class, uiTypeStr)) {
+            ret = UIType.valueOf(uiTypeStr);
+        } else {
+            ret = UIType.DEFAULT;
+        }
+        return ret.equals(UIType.BUTTON);
+    }
+
+    public UITableCell getParent()
+    {
+        return this.parent;
     }
 }

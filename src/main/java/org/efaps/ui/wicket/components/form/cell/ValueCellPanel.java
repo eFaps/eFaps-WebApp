@@ -40,6 +40,7 @@ import org.efaps.ui.wicket.components.autocomplete.AutoCompleteComboBox;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.editor.EditorPanel;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
+import org.efaps.ui.wicket.components.picker.AjaxPickerButton;
 import org.efaps.ui.wicket.components.picker.AjaxPickerLink;
 import org.efaps.ui.wicket.components.table.cell.AjaxMenuContentLink;
 import org.efaps.ui.wicket.components.table.cell.ContentContainerLink;
@@ -114,7 +115,7 @@ public class ValueCellPanel
                 this.add(dateField);
                 this.add(new WebComponent("valuePicker").setVisible(false));
             } else if ((_formmodel.isCreateMode() || _formmodel.isEditMode())
-                            && ("FormatedString".equals(uiFormCell.getTypeName()))
+                            && "FormatedString".equals(uiFormCell.getTypeName())
                             && uiFormCell.getDisplay().equals(Display.EDITABLE)) {
                 this.add(new EditorPanel("label", _model));
                 this.add(new WebComponent("valuePicker").setVisible(false));
@@ -133,7 +134,12 @@ public class ValueCellPanel
                 this.add(label);
                 // check if valuePicker must be addes
                 if (uiFormCell.isValuePicker() && uiFormCell.getDisplay().equals(Display.EDITABLE)) {
-                    this.add(new AjaxPickerLink("valuePicker", _model, label));
+                    if (uiFormCell.getPicker().isButton()) {
+                        label.setVisible(false);
+                        this.add(new AjaxPickerButton("valuePicker", _model));
+                    } else {
+                        this.add(new AjaxPickerLink("valuePicker", _model, label));
+                    }
                 } else {
                     this.add(new WebComponent("valuePicker").setVisible(false));
                 }
