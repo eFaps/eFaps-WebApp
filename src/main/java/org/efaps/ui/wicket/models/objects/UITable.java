@@ -238,6 +238,8 @@ public class UITable
 
         final List<Return> ret = getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
                         ParameterValues.INSTANCE, getInstance(),
+                        ParameterValues.PARAMETERS, Context.getThreadContext().getParameters(),
+                        ParameterValues.CLASS, this,
                         ParameterValues.OTHERS, dataBasefilters);
         List<Instance> lists = null;
         if (ret.size() < 1) {

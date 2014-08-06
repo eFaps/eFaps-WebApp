@@ -120,7 +120,7 @@ public class ActionPanel
                     private static final long serialVersionUID = 1L;
 
                     @Override
-                    public void onClick(final AjaxRequestTarget _target)
+                    public void onSubmit(final AjaxRequestTarget _target)
                     {
                         final UIProcessInstanceLog processinstance = (UIProcessInstanceLog) getDefaultModelObject();
                         BPM.abortProcessInstance(processinstance.getProcessInstanceId());

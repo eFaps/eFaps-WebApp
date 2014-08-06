@@ -23,10 +23,11 @@ package org.efaps.ui.wicket.components.button;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.IAjaxIndicatorAware;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
@@ -164,13 +165,13 @@ public abstract class AjaxButton<T>
      *
      * @param _target AjaxRequestTarget
      */
-    public abstract void onClick(final AjaxRequestTarget _target);
+    public abstract void onSubmit(final AjaxRequestTarget _target);
 
     /**
      * Underlying link.
      */
     public static class ButtonLink<T>
-        extends AjaxLink<T>
+        extends WebMarkupContainer
         implements IAjaxIndicatorAware
     {
 
@@ -203,11 +204,21 @@ public abstract class AjaxButton<T>
         {
             return "eFapsVeil";
         }
-
         @Override
-        public void onClick(final AjaxRequestTarget _target)
+        protected void onInitialize()
         {
-            ((AjaxButton<?>) getParent()).onClick(_target);
+            super.onInitialize();
+
+            add(new AjaxFormSubmitBehavior("click")
+            {
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                protected void onSubmit(final AjaxRequestTarget _target)
+                {
+                    findParent(AjaxButton.class).onSubmit(_target);
+                }
+            });
         }
     }
 

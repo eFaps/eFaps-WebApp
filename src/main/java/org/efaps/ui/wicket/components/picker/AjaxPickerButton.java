@@ -58,7 +58,7 @@ public class AjaxPickerButton
     }
 
     @Override
-    public void onClick(final AjaxRequestTarget _target)
+    public void onSubmit(final AjaxRequestTarget _target)
     {
         ModalWindowContainer modal;
         if (getPage() instanceof MainPage) {
