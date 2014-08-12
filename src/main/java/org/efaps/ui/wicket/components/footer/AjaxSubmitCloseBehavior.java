@@ -331,7 +331,7 @@ public class AjaxSubmitCloseBehavior
         final StringBuilder html = new StringBuilder()
                         .append("<table class=\"eFapsValidateFieldValuesTable\">");
         for (final FeedbackMessage msg : msgs) {
-            msg.getReporter().add(AttributeModifier.append("class", "eFapsFormLabelInvalidValue"));
+            msg.getReporter().add(AttributeModifier.append("class", "invalid"));
             _target.add(msg.getReporter());
             Serializable warn = null;
             if (msg.getMessage() instanceof ValidationErrorFeedback) {
@@ -344,10 +344,10 @@ public class AjaxSubmitCloseBehavior
             }
             String label = "";
             if (msg.getReporter() instanceof IFieldConfig) {
-                label = ((IFieldConfig) msg.getReporter()).getFieldConfig().getLabel();
+                label = ((IFieldConfig) msg.getReporter()).getFieldConfig().getLabel( );
             }
             html.append("<tr><td>").append(label).append(":</td><td>")
-            .append(warn).append("</td></tr>");
+                .append(warn).append("</td></tr>");
         }
         html.append("</table>");
         showDialog(_target, html.toString(), true, false);

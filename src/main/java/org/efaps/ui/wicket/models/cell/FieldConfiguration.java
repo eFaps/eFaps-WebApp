@@ -53,6 +53,11 @@ public class FieldConfiguration
     private final long fieldId;
 
     /**
+     * Label for the related field.
+     */
+    private String label;
+
+    /**
      * @param _fieldId id of the field
      */
     public FieldConfiguration(final long _fieldId)
@@ -98,7 +103,17 @@ public class FieldConfiguration
      */
     public String getLabel()
     {
-        return DBProperties.getProperty(getField().getLabel());
+        String ret;
+        if (this.label == null) {
+            if (getField().getLabel() == null) {
+                ret = "";
+            } else {
+               ret =  DBProperties.getProperty(getField().getLabel());
+            }
+        } else {
+            ret = this.label;
+        }
+        return ret;
     }
 
     /**
@@ -127,7 +142,8 @@ public class FieldConfiguration
         } else {
             key = getField().getLabel();
         }
-        return DBProperties.getProperty(key);
+        this.label = DBProperties.getProperty(key);
+        return this.label;
     }
 
     /**
