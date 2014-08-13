@@ -23,8 +23,10 @@ package org.efaps.ui.wicket.components.menu.ajax;
 import java.io.File;
 import java.util.List;
 
+import org.apache.wicket.Page;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.handler.EmptyRequestHandler;
 import org.efaps.admin.event.Parameter.ParameterValues;
@@ -32,9 +34,14 @@ import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.ui.wicket.EFapsSession;
+import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
+import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
+import org.efaps.ui.wicket.pages.content.AbstractContentPage;
+import org.efaps.ui.wicket.pages.dialog.DialogPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.util.EFapsException;
 
 /**
@@ -91,16 +98,46 @@ public class ExecItem
         @Override
         protected void onEvent(final AjaxRequestTarget _target)
         {
-            final UIMenuItem model = (UIMenuItem) getComponent().getDefaultModelObject();
+            final UIMenuItem uiMenuItem = (UIMenuItem) getComponent().getDefaultModelObject();
             AbstractCommand command = null;
             try {
-                command = model.getCommand();
-                final List<Return> rets = model.executeEvents(ParameterValues.OTHERS, this);
-                if (command.isTargetShowFile()) {
-                    final Object object = rets.get(0).get(ReturnValues.VALUES);
-                    if (object instanceof File) {
-                        ((EFapsSession) getComponent().getSession()).setFile((File) object);
-                        ((AbstractMergePage) getPage()).getDownloadBehavior().initiate(_target);
+                command = uiMenuItem.getCommand();
+                if (uiMenuItem.isAskUser()) {
+                    final ModalWindowContainer modal;
+                    if (super.getComponent().getPage() instanceof MainPage) {
+                        modal = ((MainPage) super.getComponent().getPage()).getModal();
+                    } else {
+                        modal = ((AbstractContentPage) super.getComponent().getPage()).getModal();
+                    }
+                    modal.setPageCreator(new ModalWindow.PageCreator()
+                    {
+
+                        private static final long serialVersionUID = 1L;
+
+                        @Override
+                        public Page createPage()
+                        {
+                            Page page = null;
+                            try {
+                                page = new DialogPage(getPage().getPageReference(),
+                                                new UIModel<UIMenuItem>(uiMenuItem), null);
+                            } catch (final EFapsException e) {
+                                page = new ErrorPage(e);
+                            }
+                            return page;
+                        }
+                    });
+                    modal.setInitialHeight(150);
+                    modal.setInitialWidth(350);
+                    modal.show(_target);
+                } else {
+                    final List<Return> rets = uiMenuItem.executeEvents(ParameterValues.OTHERS, this);
+                    if (command.isTargetShowFile()) {
+                        final Object object = rets.get(0).get(ReturnValues.VALUES);
+                        if (object instanceof File) {
+                            ((EFapsSession) getComponent().getSession()).setFile((File) object);
+                            ((AbstractMergePage) getPage()).getDownloadBehavior().initiate(_target);
+                        }
                     }
                 }
             } catch (final EFapsException e) {
