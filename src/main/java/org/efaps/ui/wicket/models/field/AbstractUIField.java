@@ -186,7 +186,13 @@ public abstract class AbstractUIField
     protected FieldConfiguration getNewFieldConfiguration()
         throws EFapsException
     {
-        return new FieldConfiguration(getValue().getField().getId());
+        FieldConfiguration ret;
+        if (getValue() == null) {
+            ret = null;
+        } else {
+            ret = new FieldConfiguration(getValue().getField().getId());
+        }
+        return ret;
     }
 
     /**

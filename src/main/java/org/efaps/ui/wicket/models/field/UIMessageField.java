@@ -24,6 +24,7 @@ package org.efaps.ui.wicket.models.field;
 import org.apache.wicket.Component;
 import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.components.values.SnippletField;
+import org.efaps.ui.wicket.models.cell.FieldConfiguration;
 import org.efaps.ui.wicket.models.objects.AbstractUIModeObject;
 import org.efaps.util.EFapsException;
 
@@ -51,7 +52,7 @@ public class UIMessageField
                           final AbstractUIModeObject _parent)
         throws EFapsException
     {
-        super(_instanceKey, _parent, null);
+        super(_instanceKey, _parent, (FieldConfiguration) null);
     }
 
     @Override
