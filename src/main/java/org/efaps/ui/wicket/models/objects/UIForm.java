@@ -771,8 +771,16 @@ public class UIForm
                         this.elements.add(new Element(UIForm.ElementType.FORM, formelement));
                         addNew = false;
                     }
-                    final String fieldAttrName = field.getAttribute();
-                    final Attribute attr = type != null ? type.getAttribute(fieldAttrName) : null;
+                    final Attribute attr;
+                    if (field.getAttribute() == null && field.getSelect() != null && type != null) {
+                        final PrintQuery print = new PrintQuery(getInstance4Create(type));
+                        print.addSelect(field.getSelect());
+                        print.dryRun();
+                        attr = print.getAttribute4Select(field.getSelect());
+                    } else {
+                        attr = type != null ? type.getAttribute(field.getAttribute()) : null;
+                    }
+
 
                     String label;
                     if (field.getLabel() != null) {
@@ -796,7 +804,7 @@ public class UIForm
                             if (type == null) {
                                 ((UIFormCellSet) cell).addHeader(new UISetColumnHeader(field.getLabel(), null, field));
                             } else {
-                                final AttributeSet set = AttributeSet.find(type.getName(), fieldAttrName);
+                                final AttributeSet set = AttributeSet.find(type.getName(), field.getAttribute());
                                 for (final String attrName : ((FieldSet) field).getOrder()) {
                                     final Attribute child = set.getAttribute(attrName);
                                     final UISetColumnHeader column = new UISetColumnHeader(field.getLabel(), child,
