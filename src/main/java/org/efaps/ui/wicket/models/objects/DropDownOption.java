@@ -21,6 +21,10 @@
 package org.efaps.ui.wicket.models.objects;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.efaps.IOption;
 
 /**
  * TODO comment!
@@ -32,6 +36,7 @@ public class DropDownOption
     extends AbstractOption
     implements Serializable
 {
+
     /**
      *
      */
@@ -41,5 +46,29 @@ public class DropDownOption
                           final String _label)
     {
         super(_value, _label);
+    }
+
+    public DropDownOption(final String _value,
+                          final String _label,
+                          final boolean _selected)
+    {
+        super(_value, _label);
+        setSelected(_selected);
+    }
+
+    public static List<DropDownOption> getChoices(final Object _object)
+    {
+        final List<DropDownOption> ret = new ArrayList<>();
+        if (_object instanceof List) {
+            for (final Object obj : (List<?>) _object) {
+                if (obj instanceof IOption) {
+                    final IOption option = (IOption) obj;
+
+                    ret.add(new DropDownOption(String.valueOf(option.getValue()), option.getLabel(), option
+                                    .isSelected()));
+                }
+            }
+        }
+        return ret;
     }
 }

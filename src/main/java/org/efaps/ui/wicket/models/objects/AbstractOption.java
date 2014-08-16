@@ -18,11 +18,11 @@
  * Last Changed By: $Author$
  */
 
-
 package org.efaps.ui.wicket.models.objects;
 
 import java.io.Serializable;
 
+import org.efaps.IOption;
 
 /**
  * TODO comment!
@@ -31,8 +31,9 @@ import java.io.Serializable;
  * @version $Id$
  */
 public abstract class AbstractOption
-    implements Serializable
+    implements Serializable, IOption
 {
+
     /**
      *
      */
@@ -40,6 +41,8 @@ public abstract class AbstractOption
 
     private String label;
     private String value;
+
+    private boolean selected = false;
 
     public AbstractOption(final String _value,
                           final String _label)
@@ -49,6 +52,7 @@ public abstract class AbstractOption
         this.value = _value;
     }
 
+    @Override
     public String getLabel()
     {
         return this.label;
@@ -59,6 +63,7 @@ public abstract class AbstractOption
         this.label = _label;
     }
 
+    @Override
     public String getValue()
     {
         return this.value;
@@ -69,4 +74,24 @@ public abstract class AbstractOption
         this.value = _value;
     }
 
+    /**
+     * Getter method for the instance variable {@link #selected}.
+     *
+     * @return value of instance variable {@link #selected}
+     */
+    @Override
+    public boolean isSelected()
+    {
+        return this.selected;
+    }
+
+    /**
+     * Setter method for instance variable {@link #selected}.
+     *
+     * @param _selected value for instance variable {@link #selected}
+     */
+    public void setSelected(final boolean _selected)
+    {
+        this.selected = _selected;
+    }
 }

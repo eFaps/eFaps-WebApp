@@ -40,6 +40,7 @@ import org.efaps.ui.wicket.models.field.factories.JaxbUIFactory;
 import org.efaps.ui.wicket.models.field.factories.LinkWithRangesUIFactory;
 import org.efaps.ui.wicket.models.field.factories.NumberUIFactory;
 import org.efaps.ui.wicket.models.field.factories.StringUIFactory;
+import org.efaps.ui.wicket.models.field.factories.UITypeUIFactory;
 import org.efaps.ui.wicket.models.field.factories.UserUIFactory;
 import org.efaps.ui.wicket.models.objects.AbstractUIModeObject;
 import org.efaps.util.EFapsException;
@@ -75,6 +76,7 @@ public abstract class AbstractUIField
         AbstractUIField.FACTORIES.add(EnumUIFactory.get());
         AbstractUIField.FACTORIES.add(BitEnumUIFactory.get());
         AbstractUIField.FACTORIES.add(JaxbUIFactory.get());
+        AbstractUIField.FACTORIES.add(UITypeUIFactory.get());
     }
     /**
      * Configuration of the related field.

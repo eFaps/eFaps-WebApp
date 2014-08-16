@@ -22,9 +22,7 @@ package org.efaps.ui.wicket.models.field;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.model.Model;
-import org.efaps.admin.datamodel.ui.UIValue;
 import org.efaps.ui.wicket.components.values.SnippletField;
-import org.efaps.ui.wicket.models.UIType;
 import org.efaps.ui.wicket.models.cell.FieldConfiguration;
 import org.efaps.ui.wicket.models.objects.AbstractUIModeObject;
 import org.efaps.util.EFapsException;
@@ -61,27 +59,6 @@ public class UISnippletField
     {
         super(_instanceKey, _parent, null);
         setFieldConfiguration(_config);
-    }
-
-    /**
-     * @param _object
-     * @param _uiForm
-     * @param _config
-     * @param _setClassObject
-     */
-    public UISnippletField(final String _instanceKey,
-                           final AbstractUIModeObject _parent,
-                           final UIValue _uiValue)
-        throws EFapsException
-    {
-        super(_instanceKey, _parent, _uiValue);
-        if (UIType.SNIPPLET.equals(getFieldConfiguration().getUIType())) {
-            if (editable()) {
-                setHtml(String.valueOf(getValue().getEditValue(getParent().getMode())));
-            } else {
-                setHtml(String.valueOf(getValue().getReadOnlyValue(getParent().getMode())));
-            }
-        }
     }
 
     /**

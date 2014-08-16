@@ -37,5 +37,7 @@ public enum UIType
     /** Render CheckBox (applies for Booleans).*/
     CHECKBOX,
     /** A raw unformatted snipplet from the underlying field*/
-    SNIPPLET;
+    SNIPPLET,
+    /** Render a DropDownBox. */
+    DROPDOWN;
 }

@@ -103,6 +103,30 @@ public class DropDownField
         setChoiceRenderer(new ChoiceRenderer());
     }
 
+    public DropDownField(final String _wicketId,
+                         final Model<AbstractUIField> _model,
+                         final List<DropDownOption> _choices)
+    {
+        super(_wicketId);
+        this.cellvalue = _model.getObject();
+        this.config = this.cellvalue.getFieldConfiguration();
+        for (final DropDownOption choice : _choices) {
+            if (choice.isSelected()) {
+                setDefaultModel(Model.of(choice));
+                break;
+            }
+        }
+        if (getDefaultModel() == null) {
+            if (_choices.isEmpty()) {
+                setDefaultModel(new Model<String>());
+            } else {
+                setDefaultModel(Model.of(_choices.get(0)));
+            }
+        }
+        setChoices(_choices);
+        setChoiceRenderer(new ChoiceRenderer());
+    }
+
     @Override
     protected void onComponentTag(final ComponentTag _tag)
     {
@@ -177,6 +201,12 @@ public class DropDownField
                             String.valueOf(entry.getValue())));
         }
         return list;
+    }
+
+    @Override
+    public IModel<String> getLabel()
+    {
+        return  Model.of(getFieldConfig().getLabel());
     }
 
     /**

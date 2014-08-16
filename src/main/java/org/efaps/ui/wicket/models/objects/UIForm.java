@@ -68,7 +68,6 @@ import org.efaps.ui.wicket.models.cell.UIFormCellSet;
 import org.efaps.ui.wicket.models.cell.UIHiddenCell;
 import org.efaps.ui.wicket.models.cell.UISetColumnHeader;
 import org.efaps.ui.wicket.models.field.UIField;
-import org.efaps.ui.wicket.models.field.UISnippletField;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
@@ -816,12 +815,11 @@ public class UIForm
                             cell = new UIFormCellCmd(this, (FieldCommand) field, null, label);
                         } else {
                             if (attr != null && attr.getAttributeType().getUI() == null
-                                || field.getClassUI() == null && field.getUIProvider() != null) {
+                                || field.getClassUI() == null && field.getUIProvider() != null
+                                || attr == null && field.getClassUI() == null && field.getUIProvider() == null) {
+
                                 cell = new UIField(null, this, UIValue.get(field, attr, null).setClassObject(this));
-                            } else if (attr == null && field.getClassUI() == null && field.getUIProvider() == null){
-                                    cell = new UISnippletField(null, this, UIValue.get(field, attr, null)
-                                                    .setClassObject(this));
-                            } else {
+                            }  else {
                                 final FieldValue fieldvalue = getFieldValue(field, attr);
                                 final String strValue = getStringValue(fieldvalue);
                                 cell = new UIFormCell(this, fieldvalue, strValue, "", label, attrTypeName);
