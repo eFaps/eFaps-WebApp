@@ -51,8 +51,8 @@ public class FieldPanel
     private static final long serialVersionUID = 1L;
 
    /**
-     * @param _wicketId
-     * @param _model
+     * @param _wicketId wicketId for this component
+     * @param _model    model for this component
      */
     public FieldPanel(final String _wicketId,
                       final IModel<AbstractUIField> _model)

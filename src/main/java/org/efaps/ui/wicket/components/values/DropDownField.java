@@ -80,7 +80,7 @@ public class DropDownField
 
     /**
      * @param _wicketId     wicket id for this component
-      *@param _model        Model for this component
+     * @param _model        Model for this component
      * @param _choices    Choices for the dropdowns
      * @param _fieldConfiguration    Configurationobject for this component.
      */
@@ -103,6 +103,11 @@ public class DropDownField
         setChoiceRenderer(new ChoiceRenderer());
     }
 
+    /**
+     * @param _wicketId     wicket id for this component
+     * @param _model        Model for this component
+     * @param _choices    Choices for the dropdowns
+     */
     public DropDownField(final String _wicketId,
                          final Model<AbstractUIField> _model,
                          final List<DropDownOption> _choices)
@@ -125,6 +130,13 @@ public class DropDownField
         }
         setChoices(_choices);
         setChoiceRenderer(new ChoiceRenderer());
+    }
+
+    @Override
+    protected CharSequence getDefaultChoice(final String _selectedValue)
+    {
+        // do not set a default choice, because the esjp must do that
+        return "";
     }
 
     @Override
