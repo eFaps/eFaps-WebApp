@@ -22,9 +22,15 @@ package org.efaps.ui.wicket.models.field;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.wicket.Component;
 import org.efaps.admin.datamodel.ui.UIValue;
+import org.efaps.admin.event.EventType;
+import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.event.Return;
+import org.efaps.admin.ui.field.Field;
+import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.components.values.LabelField;
 import org.efaps.ui.wicket.models.AbstractInstanceObject;
@@ -43,6 +49,7 @@ import org.efaps.ui.wicket.models.field.factories.StringUIFactory;
 import org.efaps.ui.wicket.models.field.factories.UITypeUIFactory;
 import org.efaps.ui.wicket.models.field.factories.UserUIFactory;
 import org.efaps.ui.wicket.models.objects.AbstractUIModeObject;
+import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.util.EFapsException;
 
 /**
@@ -238,6 +245,30 @@ public abstract class AbstractUIField
         }
         return ret;
     }
+
+    public List<Return> executeEvents(final EventType _eventType,
+                                      final Object _others,
+                                      final Map<String, String> _uiID2Oid)
+        throws EFapsException
+    {
+        List<Return> ret = new ArrayList<Return>();
+        final Field field = getFieldConfiguration().getField();
+        if (field.hasEvents(_eventType)) {
+            final Context context = Context.getThreadContext();
+            final String[] contextoid = { getInstanceKey() };
+            context.getParameters().put("oid", contextoid);
+            ret = field.executeEvents(_eventType,
+                            ParameterValues.INSTANCE, getInstance(),
+                            ParameterValues.OTHERS, _others,
+                            ParameterValues.PARAMETERS, context.getParameters(),
+                            ParameterValues.CLASS, this,
+                            ParameterValues.OIDMAP4UI, _uiID2Oid,
+                            ParameterValues.CALL_INSTANCE, getParent().getInstance(),
+                            ParameterValues.CALL_CMD, ((AbstractUIObject) getParent()).getCommand());
+        }
+        return ret;
+    }
+
 
     @Override
     public String toString()

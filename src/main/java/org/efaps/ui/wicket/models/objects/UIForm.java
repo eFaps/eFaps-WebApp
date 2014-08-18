@@ -818,7 +818,8 @@ public class UIForm
                                 || field.getClassUI() == null && field.getUIProvider() != null
                                 || attr == null && field.getClassUI() == null && field.getUIProvider() == null) {
 
-                                cell = new UIField(null, this, UIValue.get(field, attr, null).setClassObject(this));
+                                cell = new UIField(null, this, UIValue.get(field, attr, null).setClassObject(this)
+                                                .setInstance(getInstance()).setCallInstance(getInstance()));
                             }  else {
                                 final FieldValue fieldvalue = getFieldValue(field, attr);
                                 final String strValue = getStringValue(fieldvalue);

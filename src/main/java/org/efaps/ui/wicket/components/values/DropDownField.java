@@ -32,6 +32,9 @@ import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.datamodel.ui.UIValue;
+import org.efaps.admin.event.EventDefinition;
+import org.efaps.admin.event.EventType;
+import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
 import org.efaps.ui.wicket.models.cell.CellSetValue;
 import org.efaps.ui.wicket.models.cell.FieldConfiguration;
 import org.efaps.ui.wicket.models.cell.UIFormCellSet;
@@ -130,6 +133,15 @@ public class DropDownField
         }
         setChoices(_choices);
         setChoiceRenderer(new ChoiceRenderer());
+        if (this.cellvalue.getFieldConfiguration().getField().hasEvents(EventType.UI_FIELD_UPDATE)) {
+            final List<EventDefinition> events =
+                            this.cellvalue.getFieldConfiguration().getField().getEvents(EventType.UI_FIELD_UPDATE);
+            String eventName = "onchange";
+            for (final EventDefinition event : events) {
+               eventName = event.getProperty("Event") == null ? "onchange" : event.getProperty("Event");
+            }
+            add(new AjaxFieldUpdateBehavior(eventName, Model.of(this.cellvalue)));
+        }
     }
 
     @Override

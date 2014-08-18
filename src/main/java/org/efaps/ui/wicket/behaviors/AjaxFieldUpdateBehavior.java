@@ -29,9 +29,11 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.model.IModel;
+import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.ui.wicket.models.cell.UITableCell;
+import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
@@ -124,29 +126,51 @@ public class AjaxFieldUpdateBehavior
     @Override
     protected void onSubmit(final AjaxRequestTarget _target)
     {
-        final UITableCell uiObject;
+        final Object uiObject;
         if (this.model == null) {
-            uiObject = (UITableCell) getComponent().getDefaultModelObject();
+            uiObject = getComponent().getDefaultModelObject();
         } else {
-            uiObject = (UITableCell) this.model.getObject();
+            uiObject = this.model.getObject();
         }
         final List<Map<String, Object>> values = new ArrayList<Map<String, Object>>();
-        try {
-            final AbstractUIPageObject pageObject = (AbstractUIPageObject) (getComponent().getPage()
-                            .getDefaultModelObject());
-            final Map<String, String> uiID2Oid = pageObject == null ? null : pageObject.getUiID2Oid();
-            final List<Return> returns = uiObject.getFieldUpdate(getComponent().getMarkupId(), uiID2Oid);
-            for (final Return aReturn : returns) {
-                final Object ob = aReturn.get(ReturnValues.VALUES);
-                if (ob instanceof List) {
-                    @SuppressWarnings("unchecked")
-                    final List<Map<String, Object>> list = (List<Map<String, Object>>) ob;
-                    values.addAll(list);
+        if (uiObject instanceof UITableCell) {
+            try {
+                final AbstractUIPageObject pageObject = (AbstractUIPageObject) getComponent().getPage()
+                                .getDefaultModelObject();
+                final Map<String, String> uiID2Oid = pageObject == null ? null : pageObject.getUiID2Oid();
+                final List<Return> returns = ((UITableCell) uiObject).getFieldUpdate(getComponent().getMarkupId(),
+                                uiID2Oid);
+                for (final Return aReturn : returns) {
+                    final Object ob = aReturn.get(ReturnValues.VALUES);
+                    if (ob instanceof List) {
+                        @SuppressWarnings("unchecked")
+                        final List<Map<String, Object>> list = (List<Map<String, Object>>) ob;
+                        values.addAll(list);
+                    }
                 }
+            } catch (final EFapsException e) {
+                AjaxFieldUpdateBehavior.LOG.error("onSubmit", e);
             }
-        } catch (final EFapsException e) {
-            AjaxFieldUpdateBehavior.LOG.error("onSubmit", e);
+        } else {
+            try {
+                final AbstractUIPageObject pageObject = (AbstractUIPageObject) getComponent().getPage()
+                                .getDefaultModelObject();
+                final Map<String, String> uiID2Oid = pageObject == null ? null : pageObject.getUiID2Oid();
+                final List<Return> returns = ((AbstractUIField) uiObject).executeEvents(EventType.UI_FIELD_UPDATE,
+                                getComponent().getMarkupId(), uiID2Oid);
+                for (final Return aReturn : returns) {
+                    final Object ob = aReturn.get(ReturnValues.VALUES);
+                    if (ob instanceof List) {
+                        @SuppressWarnings("unchecked")
+                        final List<Map<String, Object>> list = (List<Map<String, Object>>) ob;
+                        values.addAll(list);
+                    }
+                }
+            } catch (final EFapsException e) {
+                AjaxFieldUpdateBehavior.LOG.error("onSubmit", e);
+            }
         }
+
         final StringBuilder js = new StringBuilder();
         int i = 0;
         for (final Map<String, Object> map : values) {
@@ -156,11 +180,11 @@ public class AjaxFieldUpdateBehavior
                 for (final String keyString : map.keySet()) {
                     // if the map contains a key that is not defined in this class
                     // it is assumed to be the name of a field
-                    if (!(EFapsKey.FIELDUPDATE_JAVASCRIPT.getKey().equals(keyString))
-                                    && !(EFapsKey.FIELDUPDATE_USEID.getKey().equals(keyString))
-                                    && !(EFapsKey.FIELDUPDATE_USEIDX.getKey().equals(keyString))) {
+                    if (!EFapsKey.FIELDUPDATE_JAVASCRIPT.getKey().equals(keyString)
+                                    && !EFapsKey.FIELDUPDATE_USEID.getKey().equals(keyString)
+                                    && !EFapsKey.FIELDUPDATE_USEIDX.getKey().equals(keyString)) {
                         js.append("eFapsSetFieldValue(");
-                        if (useId || (values.size() == 1 && !useIdx)) {
+                        if (useId || values.size() == 1 && !useIdx) {
                             js.append("'").append(map.get(EFapsKey.FIELDUPDATE_USEID.getKey()) == null
                                             ? getComponentMarkupId()
                                             : map.get(EFapsKey.FIELDUPDATE_USEID.getKey())).append("'");
