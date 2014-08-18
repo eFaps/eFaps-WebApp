@@ -23,6 +23,7 @@ package org.efaps.ui.wicket.models;
 import java.io.Serializable;
 
 import org.efaps.admin.program.esjp.EFapsClassLoader;
+import org.efaps.api.ui.IEsjpSnipplet;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

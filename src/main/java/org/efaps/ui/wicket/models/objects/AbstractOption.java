@@ -22,7 +22,7 @@ package org.efaps.ui.wicket.models.objects;
 
 import java.io.Serializable;
 
-import org.efaps.IOption;
+import org.efaps.api.ui.IOption;
 
 /**
  * TODO comment!

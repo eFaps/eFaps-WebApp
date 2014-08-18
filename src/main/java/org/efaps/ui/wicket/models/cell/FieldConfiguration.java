@@ -26,7 +26,7 @@ import java.io.Serializable;
 import org.apache.commons.lang3.EnumUtils;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.field.Field;
-import org.efaps.ui.wicket.models.UIType;
+import org.efaps.api.ui.UIType;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
