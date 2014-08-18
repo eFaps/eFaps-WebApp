@@ -182,6 +182,11 @@
             <artifactId>efaps-kernel</artifactId>
             <version>3.2.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>org.efaps</groupId>
+            <artifactId>efaps-api</artifactId>
+            <version>3.2.0-SNAPSHOT</version>
+        </dependency>
 
         <!-- to define a higher version (needed from another tool) -->
         <dependency>
