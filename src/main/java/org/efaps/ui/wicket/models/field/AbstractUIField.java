@@ -41,12 +41,13 @@ import org.efaps.ui.wicket.models.field.factories.DateTimeUIFactory;
 import org.efaps.ui.wicket.models.field.factories.DateUIFactory;
 import org.efaps.ui.wicket.models.field.factories.DecimalUIFactory;
 import org.efaps.ui.wicket.models.field.factories.EnumUIFactory;
+import org.efaps.ui.wicket.models.field.factories.HRefFactory;
 import org.efaps.ui.wicket.models.field.factories.IComponentFactory;
 import org.efaps.ui.wicket.models.field.factories.JaxbUIFactory;
 import org.efaps.ui.wicket.models.field.factories.LinkWithRangesUIFactory;
 import org.efaps.ui.wicket.models.field.factories.NumberUIFactory;
 import org.efaps.ui.wicket.models.field.factories.StringUIFactory;
-import org.efaps.ui.wicket.models.field.factories.UITypeUIFactory;
+import org.efaps.ui.wicket.models.field.factories.UITypeFactory;
 import org.efaps.ui.wicket.models.field.factories.UserUIFactory;
 import org.efaps.ui.wicket.models.objects.AbstractUIModeObject;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
@@ -72,6 +73,7 @@ public abstract class AbstractUIField
     private static final List<IComponentFactory> FACTORIES = new ArrayList<IComponentFactory>();
 
     static {
+        AbstractUIField.FACTORIES.add(HRefFactory.get());
         AbstractUIField.FACTORIES.add(StringUIFactory.get());
         AbstractUIField.FACTORIES.add(LinkWithRangesUIFactory.get());
         AbstractUIField.FACTORIES.add(BooleanUIFactory.get());
@@ -83,7 +85,7 @@ public abstract class AbstractUIField
         AbstractUIField.FACTORIES.add(EnumUIFactory.get());
         AbstractUIField.FACTORIES.add(BitEnumUIFactory.get());
         AbstractUIField.FACTORIES.add(JaxbUIFactory.get());
-        AbstractUIField.FACTORIES.add(UITypeUIFactory.get());
+        AbstractUIField.FACTORIES.add(UITypeFactory.get());
     }
     /**
      * Configuration of the related field.

@@ -56,12 +56,12 @@ public class StringUIFactory
      */
     @Override
     public Component getEditable(final String _wicketId,
-                                 final AbstractUIField _abstractUIField)
+                                 final AbstractUIField _uiField)
         throws EFapsException
     {
         Component ret = null;
-        if (_abstractUIField.getValue().getUIProvider() instanceof StringUI) {
-            ret = new StringField(_wicketId, Model.of(_abstractUIField), _abstractUIField.getFieldConfiguration());
+        if (applies(_uiField)) {
+            ret = new StringField(_wicketId, Model.of(_uiField), _uiField.getFieldConfiguration());
         }
         return ret;
     }
@@ -70,20 +70,20 @@ public class StringUIFactory
      * {@inheritDoc}
      */
     @Override
-    protected boolean applies(final AbstractUIField _abstractUIField)
+    protected boolean applies(final AbstractUIField _uiField)
         throws EFapsException
     {
-        return _abstractUIField.getValue().getUIProvider() instanceof StringUI;
+        return _uiField.getValue().getUIProvider() instanceof StringUI;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected String getReadOnlyValue(final AbstractUIField _abstractUIField)
+    protected String getReadOnlyValue(final AbstractUIField _uiField)
         throws EFapsException
     {
-        final Object ret = _abstractUIField.getValue().getReadOnlyValue(_abstractUIField.getParent().getMode());
+        final Object ret = _uiField.getValue().getReadOnlyValue(_uiField.getParent().getMode());
         return ret == null ? "" : String.valueOf(ret);
     }
 

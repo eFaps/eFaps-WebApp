@@ -514,7 +514,7 @@ public class UIForm
         } else if (_field.getPhrase() != null) {
             value = _print.getPhrase(_field.getName());
         }
-        final UIField uiField = new UIField(getInstance().getKey(), this, UIValue.get(_field, _attr, value)
+        final UIField uiField = new UIField(_fieldInstance.getKey(), this, UIValue.get(_field, _attr, value)
                         .setInstance(_fieldInstance).setClassObject(this));
         _row.add(uiField);
     }

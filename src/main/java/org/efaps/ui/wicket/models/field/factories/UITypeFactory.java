@@ -38,7 +38,7 @@ import org.efaps.util.cache.CacheReloadException;
  * @version $Id$
  */
 // CHECKSTYLE:OFF
-public class UITypeUIFactory
+public class UITypeFactory
     implements IComponentFactory
 // CHECKSTYLE:ON
 {
@@ -46,7 +46,7 @@ public class UITypeUIFactory
     /**
      * Factory Instance.
      */
-    private static UITypeUIFactory FACTORY;
+    private static UITypeFactory FACTORY;
 
     @Override
     public Component getEditable(final String _wicketId,
@@ -113,9 +113,9 @@ public class UITypeUIFactory
      */
     public static IComponentFactory get()
     {
-        if (UITypeUIFactory.FACTORY == null) {
-            UITypeUIFactory.FACTORY = new UITypeUIFactory();
+        if (UITypeFactory.FACTORY == null) {
+            UITypeFactory.FACTORY = new UITypeFactory();
         }
-        return UITypeUIFactory.FACTORY;
+        return UITypeFactory.FACTORY;
     }
 }
