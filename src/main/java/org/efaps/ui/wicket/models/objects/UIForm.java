@@ -478,10 +478,10 @@ public class UIForm
                 _row.add(fieldChart);
             } else {
                 // temp to decide what to do TODO remove in future
-                if (attr != null && attr.getAttributeType().getUI() == null
-                                || _field.getClassUI() == null && _field.getUIProvider() != null
-                                || attr.getAttributeType().getUI() != null
-                                    && (attr.getAttributeType().getUI() instanceof TypeUI
+                if (_field.getClassUI() == null && _field.getUIProvider() != null
+                                || attr != null && attr.getAttributeType().getUI() == null
+                                || attr != null && attr.getAttributeType().getUI() != null
+                                  && (attr.getAttributeType().getUI() instanceof TypeUI
                                     || attr.getAttributeType().getUI() instanceof UserUI)) {
                     evaluateUIProvider(_row, _query, _field, fieldInstance, label, attr);
                 } else {
