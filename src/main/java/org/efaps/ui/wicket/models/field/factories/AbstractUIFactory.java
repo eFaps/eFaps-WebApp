@@ -21,6 +21,9 @@
 package org.efaps.ui.wicket.models.field.factories;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.model.Model;
+import org.efaps.admin.ui.Image;
+import org.efaps.ui.wicket.components.values.IconLabelField;
 import org.efaps.ui.wicket.components.values.LabelField;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.util.EFapsException;
@@ -39,14 +42,25 @@ public abstract class AbstractUIFactory
      */
     @Override
     public Component getReadOnly(final String _wicketId,
-                                 final AbstractUIField _abstractUIField)
+                                 final AbstractUIField _uiField)
         throws EFapsException
     {
         Component ret = null;
-        if (applies(_abstractUIField)) {
-            ret = new LabelField(_wicketId, getReadOnlyValue(_abstractUIField),
-                            _abstractUIField.getFieldConfiguration(),
-                            _abstractUIField.getFieldConfiguration().getLabel(_abstractUIField));
+        if (applies(_uiField)) {
+            String icon = _uiField.getFieldConfiguration().getField().getIcon();
+            if (icon == null && _uiField.getInstance() != null
+                            && _uiField.getFieldConfiguration().getField().isShowTypeIcon()
+                            && _uiField.getInstance().getType() != null) {
+                final Image image = Image.getTypeIcon(_uiField.getInstance().getType());
+                if (image != null) {
+                    icon = image.getUrl();
+                }
+            }
+            if (icon == null) {
+                ret = new LabelField(_wicketId, Model.of(getReadOnlyValue(_uiField)), _uiField);
+            } else {
+                ret = new IconLabelField(_wicketId, Model.of(_uiField), getReadOnlyValue(_uiField), icon);
+            }
         }
         return ret;
     }

@@ -23,7 +23,9 @@ package org.efaps.ui.wicket.models.field.factories;
 import org.apache.wicket.Component;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
+import org.efaps.admin.ui.Image;
 import org.efaps.admin.ui.Menu;
+import org.efaps.ui.wicket.components.links.IconMenuContentAjaxLink;
 import org.efaps.ui.wicket.components.links.MenuContentAjaxLink;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
@@ -85,7 +87,31 @@ public class HRefFactory
                                             _uiField.getInstance())
                                             && ((AbstractUIPageObject) _uiField.getParent()).getAccessMap().get(
                                                             _uiField.getInstance()))) {
-                ret = new MenuContentAjaxLink(_wicketId, Model.of(_uiField));
+                String icon = _uiField.getFieldConfiguration().getField().getIcon();
+                if (icon == null && _uiField.getInstance() != null
+                                && _uiField.getFieldConfiguration().getField().isShowTypeIcon()
+                                && _uiField.getInstance().getType() != null) {
+                    final Image image = Image.getTypeIcon(_uiField.getInstance().getType());
+                    if (image != null) {
+                        icon = image.getUrl();
+                    }
+                }
+                String content = null;
+                for (final IComponentFactory factory : _uiField.getFactories()) {
+                    if (factory instanceof AbstractUIFactory) {
+                        final AbstractUIFactory uiFactory = (AbstractUIFactory) factory;
+                        if (uiFactory.applies(_uiField)) {
+                            content = uiFactory.getReadOnlyValue(_uiField);
+                            break;
+                        }
+                    }
+                }
+
+                if (icon == null) {
+                    ret = new MenuContentAjaxLink(_wicketId, Model.of(_uiField), content);
+                } else {
+                    ret = new IconMenuContentAjaxLink(_wicketId, Model.of(_uiField), content, icon);
+                }
             }
         }
         return ret;

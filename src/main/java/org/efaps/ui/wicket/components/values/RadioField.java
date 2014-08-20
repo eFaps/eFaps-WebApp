@@ -74,7 +74,7 @@ public class RadioField
                 setDefaultModel(new Model<String>());
             }
             setChoices(RadioOption.getChoices(this.cellvalue));
-            setLabel(Model.of(_fieldConfiguration.getLabel(this.cellvalue)));
+            setLabel(Model.of(this.cellvalue.getLabel()));
         } catch (final EFapsException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

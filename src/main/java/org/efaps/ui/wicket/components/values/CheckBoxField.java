@@ -87,15 +87,15 @@ public class CheckBoxField
             final Object value = this.cellvalue.getValue().getEditValue(this.cellvalue.getParent().getMode());
             final IUIProvider uiProvider = this.cellvalue.getValue().getUIProvider();
             // not booleanUI and not null OR BooleanUI and true
-            if ((!(uiProvider instanceof BooleanUI) && value != null)
-                            || (uiProvider instanceof BooleanUI && value != null
-                            && BooleanUtils.isTrue((Boolean) this.cellvalue.getValue().getDbValue()))) {
+            if (!(uiProvider instanceof BooleanUI) && value != null
+                            || uiProvider instanceof BooleanUI && value != null
+                            && BooleanUtils.isTrue((Boolean) this.cellvalue.getValue().getDbValue())) {
                 setDefaultModel(Model.of(CheckBoxOption.getChoices(this.cellvalue, _choices)));
             } else {
                 setDefaultModel(new Model<String>());
             }
             setChoices(CheckBoxOption.getChoices(this.cellvalue, null));
-            setLabel(Model.of(_fieldConfiguration.getLabel(this.cellvalue)));
+            setLabel(Model.of(this.cellvalue.getLabel()));
         } catch (final EFapsException e) {
             CheckBoxField.LOG.error("Caught excpetion", e);
         }
@@ -109,6 +109,7 @@ public class CheckBoxField
      *
      * @return value of instance variable {@link #fieldConfiguration}
      */
+    @Override
     public FieldConfiguration getFieldConfig()
     {
         return this.fieldConfig;

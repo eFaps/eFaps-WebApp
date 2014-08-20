@@ -25,7 +25,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.model.Model;
 import org.efaps.admin.datamodel.ui.UIValue;
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
@@ -47,6 +49,7 @@ import org.efaps.ui.wicket.models.field.factories.JaxbUIFactory;
 import org.efaps.ui.wicket.models.field.factories.LinkWithRangesUIFactory;
 import org.efaps.ui.wicket.models.field.factories.NumberUIFactory;
 import org.efaps.ui.wicket.models.field.factories.StringUIFactory;
+import org.efaps.ui.wicket.models.field.factories.TypeUIFactory;
 import org.efaps.ui.wicket.models.field.factories.UITypeFactory;
 import org.efaps.ui.wicket.models.field.factories.UserUIFactory;
 import org.efaps.ui.wicket.models.objects.AbstractUIModeObject;
@@ -82,11 +85,13 @@ public abstract class AbstractUIField
         AbstractUIField.FACTORIES.add(DecimalUIFactory.get());
         AbstractUIField.FACTORIES.add(NumberUIFactory.get());
         AbstractUIField.FACTORIES.add(UserUIFactory.get());
+        AbstractUIField.FACTORIES.add(TypeUIFactory.get());
         AbstractUIField.FACTORIES.add(EnumUIFactory.get());
         AbstractUIField.FACTORIES.add(BitEnumUIFactory.get());
         AbstractUIField.FACTORIES.add(JaxbUIFactory.get());
         AbstractUIField.FACTORIES.add(UITypeFactory.get());
     }
+
     /**
      * Configuration of the related field.
      */
@@ -180,6 +185,34 @@ public abstract class AbstractUIField
     }
 
     /**
+     * @return the label for the UserInterface
+     * @throws CacheReloadException on error
+     */
+    public String getLabel()
+        throws EFapsException
+    {
+        String key;
+        if (getFieldConfiguration() != null) {
+            if (getFieldConfiguration().getField().getLabel() == null) {
+                if (getValue() != null && getValue().getAttribute() != null) {
+                    if (getInstanceKey() != null) {
+                        key = getInstance().getType().getName() + "/" + getValue().getAttribute().getName() + ".Label";
+                    } else {
+                        key = getValue().getAttribute().getLabelKey();
+                    }
+                } else {
+                    key = FieldConfiguration.class.getName() + ".NoLabel";
+                }
+            } else {
+                key = getFieldConfiguration().getField().getLabel();
+            }
+        } else {
+            key = FieldConfiguration.class.getName() + ".NoLabel";
+        }
+        return DBProperties.getProperty(key);
+    }
+
+    /**
      * Setter method for instance variable {@link #fieldConfiguration}.
      *
      * @param _fieldConfiguration value for instance variable {@link #fieldConfiguration}
@@ -217,7 +250,7 @@ public abstract class AbstractUIField
     /**
      * @return the List of Factories used for this Field on construction of the component.
      */
-    protected List<IComponentFactory> getFactories()
+    public List<IComponentFactory> getFactories()
     {
         return AbstractUIField.FACTORIES;
     }
@@ -243,7 +276,8 @@ public abstract class AbstractUIField
         }
 
         if (ret == null) {
-            ret = new LabelField(_wicketId, "No Factory was applied successfully", this.fieldConfiguration, "NONE");
+            ret = new LabelField(_wicketId, Model.of("No Factory was applied successfully"),
+                            this.fieldConfiguration, "NONE");
         }
         return ret;
     }

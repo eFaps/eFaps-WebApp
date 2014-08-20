@@ -26,6 +26,7 @@ import org.apache.wicket.markup.html.form.ILabelProvider;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.models.cell.FieldConfiguration;
+import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,11 +41,11 @@ public class LabelField
     extends Label
     implements ILabelProvider<String>
 {
+
     /**
      * Logging instance used in this class.
      */
     private static final Logger LOG = LoggerFactory.getLogger(LabelField.class);
-
 
     /**
      * Needed for serialization.
@@ -62,17 +63,29 @@ public class LabelField
     private final String label;
 
     /**
-     * @param _wicketId             wicketid
-     * @param _readOnlyValue        read only value
-     * @param _fieldConfiguration   FieldConfiguration for this labelField
-     * @param _label                label for the Field
+     * @param _wicketId
+     * @param _uiField
      */
     public LabelField(final String _wicketId,
-                      final String _readOnlyValue,
+                      final Model<?> _readOnlyValue,
+                      final AbstractUIField _uiField)
+        throws EFapsException
+    {
+        this(_wicketId, _readOnlyValue, _uiField.getFieldConfiguration(), _uiField.getLabel());
+    }
+
+    /**
+     * @param _wicketId wicketid
+     * @param _readOnlyValue read only value
+     * @param _fieldConfiguration FieldConfiguration for this labelField
+     * @param _label label for the Field
+     */
+    public LabelField(final String _wicketId,
+                      final Model<?> _readOnlyValue,
                       final FieldConfiguration _fieldConfiguration,
                       final String _label)
     {
-        super(_wicketId, Model.of(_readOnlyValue));
+        super(_wicketId, _readOnlyValue);
         this.fieldConfiguration = _fieldConfiguration;
         this.label = _label;
     }

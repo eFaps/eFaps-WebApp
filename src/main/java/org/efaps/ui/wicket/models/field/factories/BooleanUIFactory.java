@@ -80,7 +80,7 @@ public class BooleanUIFactory
                 final Serializable value = _abstractUIField.getValue().getDbValue();
                 ret = new BooleanField(_wicketId, value, model,
                                 _abstractUIField.getFieldConfiguration(),
-                                _abstractUIField.getFieldConfiguration().getLabel(_abstractUIField));
+                                _abstractUIField.getLabel());
             }
         }
         return ret;

@@ -77,17 +77,24 @@ public class MenuContentAjaxLink
     private static final Logger LOG = LoggerFactory.getLogger(MenuContentAjaxLink.class);
 
     /**
+     * Content for this link.
+     */
+    private final String content;
+
+    /**
      * Constructor.
      *
      * @param _wicketId wicket id of this component
      * @param _model model for thid component
      */
     public MenuContentAjaxLink(final String _wicketId,
-                               final IModel<AbstractUIField> _model)
+                               final IModel<AbstractUIField> _model,
+                               final String _content)
     {
         super(_wicketId, _model);
         this.add(new AjaxMenuContentBehavior());
         this.add(new UpdateMenuBehavior(this));
+        this.content = _content;
     }
 
     /**
@@ -100,13 +107,23 @@ public class MenuContentAjaxLink
         return ((AbstractUIField) getDefaultModelObject()).getFieldConfiguration();
     }
 
+    /**
+     * Getter method for the instance variable {@link #content}.
+     *
+     * @return value of instance variable {@link #content}
+     */
+    protected String getContent()
+    {
+        return this.content;
+    }
+
     @Override
     public IModel<String> getLabel()
     {
         String ret = "NONE";
         try {
-            ret = getConfig().getLabel((AbstractUIField) getDefaultModelObject());
-        } catch (final CacheReloadException e) {
+            ret = ((AbstractUIField) getDefaultModelObject()).getLabel();
+        } catch (final EFapsException e) {
             LOG.error("Catched error on evaluating label: {}", this);
         }
         return Model.of(ret);
@@ -123,6 +140,15 @@ public class MenuContentAjaxLink
         super.onComponentTag(_tag);
         _tag.setName("a");
         _tag.put("href", "#");
+        onComponentTagInternal(_tag);
+    }
+
+    /**
+     * Add to the tag.
+     * @param _tag tag to write
+     */
+    protected void onComponentTagInternal(final ComponentTag _tag)
+    {
         try {
             _tag.put("name", getConfig().getName());
             _tag.append("style", "text-align:" + getConfig().getAlign(), ";");
@@ -140,8 +166,12 @@ public class MenuContentAjaxLink
     {
         Object ret = null;
         try {
-            final AbstractUIField uiField = (AbstractUIField) getDefaultModelObject();
-            ret = uiField.getValue().getReadOnlyValue(uiField.getParent().getMode());
+            if (this.content == null) {
+                final AbstractUIField uiField = (AbstractUIField) getDefaultModelObject();
+                ret = uiField.getValue().getReadOnlyValue(uiField.getParent().getMode());
+            } else {
+                ret = this.content;
+            }
         } catch (final EFapsException e) {
             LOG.error("Catched error on setting tag body for: {}", this);
         }

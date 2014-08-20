@@ -123,7 +123,7 @@ public class CellPanel
                         private static final long serialVersionUID = 1L;
                     };
                 } else {
-                    label = new LabelField("label", uiTableCell.getCellValue(),
+                    label = new LabelField("label", Model.of(uiTableCell.getCellValue()),
                                     new FieldConfiguration(uiTableCell.getFieldId()), null);
                 }
             } else {
@@ -160,7 +160,7 @@ public class CellPanel
             WebMarkupContainer celllink;
             // no link if edit, print or create or there is no definition
             if (uiTableCell.getReference() == null
-                            || (_uitable.isCreateMode() || _uitable.isEditMode() || _uitable.isPrintMode())) {
+                            || _uitable.isCreateMode() || _uitable.isEditMode() || _uitable.isPrintMode()) {
                 celllink = new WebMarkupContainer("link");
                 celllink.setVisible(false);
             } else {

@@ -27,9 +27,7 @@ import org.apache.commons.lang3.EnumUtils;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.api.ui.UIType;
-import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.CacheReloadException;
 
 
 /**
@@ -122,28 +120,6 @@ public class FieldConfiguration
     public boolean isHideLabel()
     {
         return getField().isHideLabel();
-    }
-
-    /**
-     * @param _abstractUIField field object this labelconfig belongs to
-     * @return the label for the UserInterface
-     * @throws CacheReloadException on error
-     */
-    public String getLabel(final AbstractUIField _abstractUIField)
-        throws CacheReloadException
-    {
-        String key;
-        if (getField().getLabel() == null) {
-            if (_abstractUIField.getValue() != null && _abstractUIField.getValue().getAttribute() != null) {
-                key = _abstractUIField.getValue().getAttribute().getLabelKey();
-            } else {
-                key = FieldConfiguration.class.getName() + ".NoLabel";
-            }
-        } else {
-            key = getField().getLabel();
-        }
-        this.label = DBProperties.getProperty(key);
-        return this.label;
     }
 
     /**
