@@ -67,11 +67,6 @@ public class DropDownField
     private static final Logger LOG = LoggerFactory.getLogger(DropDownField.class);
 
     /**
-     *  Configurationobject for this component.
-     */
-    private final FieldConfiguration config;
-
-    /**
      * value of this field.
      */
     private final AbstractUIField cellvalue;
@@ -89,8 +84,7 @@ public class DropDownField
      */
     public DropDownField(final String _wicketId,
                          final Model<AbstractUIField> _model,
-                         final IModel<Map<Object, Object>> _choices,
-                         final FieldConfiguration _fieldConfiguration)
+                         final IModel<Map<Object, Object>> _choices)
     {
         super(_wicketId);
         setOutputMarkupId(true);
@@ -101,7 +95,6 @@ public class DropDownField
         } else {
             setDefaultModel(new Model<String>());
         }
-        this.config = _fieldConfiguration;
         setChoices(DropDownField.getSelectChoices(_choices.getObject()));
         setChoiceRenderer(new ChoiceRenderer());
     }
@@ -117,7 +110,6 @@ public class DropDownField
     {
         super(_wicketId);
         this.cellvalue = _model.getObject();
-        this.config = this.cellvalue.getFieldConfiguration();
         for (final DropDownOption choice : _choices) {
             if (choice.isSelected()) {
                 setDefaultModel(Model.of(choice));
@@ -155,7 +147,7 @@ public class DropDownField
     protected void onComponentTag(final ComponentTag _tag)
     {
         _tag.setName("select");
-        _tag.append("style", "text-align:" + this.config.getAlign(), ";");
+        _tag.append("style", "text-align:" + getFieldConfig().getAlign(), ";");
         super.onComponentTag(_tag);
     }
 
@@ -164,7 +156,7 @@ public class DropDownField
     {
         String ret = "";
         try {
-            ret = this.config.getName();
+            ret = getFieldConfig().getName();
         } catch (final EFapsException e) {
             DropDownField.LOG.error("EFapsException", e);
         }
@@ -198,8 +190,7 @@ public class DropDownField
             this.cellvalue.setValue(UIValue.get(this.cellvalue.getValue().getField(), this.cellvalue.getValue()
                             .getAttribute(), ((DropDownOption) getDefaultModelObject()).getValue()));
         } catch (final CacheReloadException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            DropDownField.LOG.error("EFapsException", e);
         }
     }
 
@@ -209,7 +200,7 @@ public class DropDownField
     @Override
     public FieldConfiguration getFieldConfig()
     {
-        return this.config;
+        return this.cellvalue.getFieldConfiguration();
     }
 
 
@@ -230,7 +221,13 @@ public class DropDownField
     @Override
     public IModel<String> getLabel()
     {
-        return  Model.of(getFieldConfig().getLabel());
+        String ret = null;
+        try {
+            ret = this.cellvalue.getLabel();
+        } catch (final EFapsException e) {
+            DropDownField.LOG.error("EFapsException", e);
+        }
+        return  Model.of(ret);
     }
 
     /**

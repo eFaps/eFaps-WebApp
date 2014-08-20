@@ -65,8 +65,7 @@ public class LinkWithRangesUIFactory
         if (applies(_abstractUIField)) {
             ret = new DropDownField(_wicketId, Model.of(_abstractUIField),
                             Model.ofMap((Map<Object, Object>) _abstractUIField.getValue().getEditValue(
-                                            _abstractUIField.getParent().getMode())),
-                            _abstractUIField.getFieldConfiguration());
+                                            _abstractUIField.getParent().getMode())));
         }
         return ret;
     }
