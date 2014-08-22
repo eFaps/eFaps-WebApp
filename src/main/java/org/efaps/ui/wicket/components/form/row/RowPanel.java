@@ -143,6 +143,10 @@ public class RowPanel
             } else if (object instanceof AbstractUIField) {
                 final FieldPanel field = new FieldPanel(cellRepeater.newChildId(), Model.of((AbstractUIField) object));
                 field.add(AttributeModifier.replace("colspan", 2));
+                if (((AbstractUIField) object).getFieldConfiguration().getRowSpan() > 0) {
+                    field.add(AttributeModifier.replace("rowspan",
+                                    ((AbstractUIField) object).getFieldConfiguration().getRowSpan()));
+                }
                 cellRepeater.add(field);
             }
         }

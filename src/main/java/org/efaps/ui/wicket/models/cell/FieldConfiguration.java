@@ -90,6 +90,14 @@ public class FieldConfiguration
     }
 
     /**
+     * @return the alignment of the field
+     */
+    public int getRowSpan()
+    {
+        return getField().getRowSpan();
+    }
+
+    /**
      * @return the size of the field
      */
     public int getSize()
