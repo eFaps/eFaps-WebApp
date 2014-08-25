@@ -31,6 +31,7 @@ import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
+import org.efaps.ui.wicket.pages.dialog.DialogPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 
@@ -77,6 +78,7 @@ public class ModalWindowAjaxPageCreator
      *
      * @return new Page
      */
+    @Override
     public Page createPage()
     {
         Page ret = null;
@@ -84,8 +86,16 @@ public class ModalWindowAjaxPageCreator
             if (this.uiObject.getCommand().getTargetTable() == null) {
                 final UIForm uiform = new UIForm(this.uiObject.getCommand().getUUID(), this.uiObject.getInstanceKey());
                 uiform.setPicker(this.uiObject);
-                ret = new FormPage(new FormModel(uiform), this.modalWindow, this.modalWindow.getPage()
-                                .getPageReference());
+                if (!uiform.isInitialized()) {
+                    uiform.execute();
+                }
+                if (uiform.getElements().isEmpty()) {
+                    ret = new DialogPage(this.modalWindow.getPage().getPageReference(),
+                                    uiform.getCommand().getName() + ".InvalidInstance", false, false);
+                } else {
+                    ret = new FormPage(new FormModel(uiform), this.modalWindow, this.modalWindow.getPage()
+                                    .getPageReference());
+                }
             } else {
                 if (this.uiObject.getCommand().getTargetStructurBrowserField() == null) {
                     final UITable uitable = new UITable(this.uiObject.getCommand().getUUID(),

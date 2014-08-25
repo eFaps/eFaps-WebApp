@@ -201,14 +201,15 @@ public class UIForm
     {
         try {
             // evaluate now to give the chance to change the mode
-            evaluate4Instance();
-            if (isCreateMode() || isSearchMode()) {
-                execute4NoInstance();
-            } else {
-                if (getInstance() == null) {
+            if (evaluate4Instance()) {
+                if (isCreateMode() || isSearchMode()) {
                     execute4NoInstance();
                 } else {
-                    execute4Instance();
+                    if (getInstance() == null) {
+                        execute4NoInstance();
+                    } else {
+                        execute4Instance();
+                    }
                 }
             }
         } catch (final EFapsException e) {
@@ -223,26 +224,30 @@ public class UIForm
      *
      * @throws EFapsException on error
      */
-    protected void evaluate4Instance()
+    protected boolean evaluate4Instance()
         throws EFapsException
     {
+        boolean ret = false;
         if (!isSearchMode()) {
             final List<Return> returns = getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
                             ParameterValues.INSTANCE, getInstance(),
                             ParameterValues.PARAMETERS, Context.getThreadContext().getParameters(),
                             ParameterValues.CLASS, this);
-            for (final Return ret : returns) {
-                if (ret.contains(ReturnValues.INSTANCE)) {
-                    final Object object = ret.get(ReturnValues.INSTANCE);
+            for (final Return retu : returns) {
+                if (retu.contains(ReturnValues.INSTANCE)) {
+                    final Object object = retu.get(ReturnValues.INSTANCE);
                     if (object != null && object instanceof Instance && ((Instance) object).isValid()) {
                         setInstanceKey(((Instance) object).getOid());
                     } else {
                         UIForm.LOG.error("The esjp called by Command '{}' must return a valid instance",
                                         getCommand().getName());
                     }
+                } else {
+                    ret = false;
                 }
             }
         }
+        return ret;
     }
 
     /**
