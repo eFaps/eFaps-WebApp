@@ -227,7 +227,7 @@ public class UIForm
     protected boolean evaluate4Instance()
         throws EFapsException
     {
-        boolean ret = false;
+        boolean ret = true;
         if (!isSearchMode()) {
             final List<Return> returns = getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
                             ParameterValues.INSTANCE, getInstance(),
