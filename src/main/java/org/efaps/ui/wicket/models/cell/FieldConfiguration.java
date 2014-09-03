@@ -104,6 +104,15 @@ public class FieldConfiguration
     {
         return getField().getCols();
     }
+
+    /**
+     * @return the rows of the field
+     */
+    public int getRows()
+    {
+        return getField().getRows();
+    }
+
     /**
      * @return the label of this field
      */

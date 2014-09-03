@@ -23,8 +23,12 @@
 <html xmlns:wicket>
     <wicket:panel xmlns:wicket="http://wicket.apache.org">
         <span wicket:id="radioGroup">
-            <input type="radio" wicket:id="choice1"/><label wicket:id="label1" >label1</label>
-            <input type="radio" wicket:id="choice2"/><label wicket:id="label2">label2</label>
+            <span class="boolean">
+                <input type="radio" wicket:id="choice1"/><label wicket:id="label1" >label1</label>
+            </span>
+            <span class="boolean">
+                <input type="radio" wicket:id="choice2"/><label wicket:id="label2">label2</label>
+            </span>
         </span>
     </wicket:panel>
 </html>

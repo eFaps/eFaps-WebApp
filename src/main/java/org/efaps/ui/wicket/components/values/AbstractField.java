@@ -23,6 +23,7 @@ package org.efaps.ui.wicket.components.values;
 import java.io.Serializable;
 
 import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.html.form.ILabelProvider;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.models.cell.FieldConfiguration;
@@ -40,7 +41,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractField<T extends Serializable>
     extends TextField<T>
-    implements IFieldConfig, IUIField
+    implements IFieldConfig, IUIField, ILabelProvider<String>
 {
 
     /**
@@ -81,6 +82,7 @@ public abstract class AbstractField<T extends Serializable>
         this.cellvalue = _model.getObject();
         this.add(new Validator<T>(this));
         setOutputMarkupId(true);
+        setLabel(Model.of(this.cellvalue.getLabel()));
     }
 
     /**
@@ -93,6 +95,7 @@ public abstract class AbstractField<T extends Serializable>
         super(_wicketId, Model.<T>of());
         this.config = _config;
         this.cellvalue = null;
+        setLabel(Model.of(_config.getLabel()));
         setOutputMarkupId(true);
     }
 
@@ -111,6 +114,7 @@ public abstract class AbstractField<T extends Serializable>
      *
      * @return value of instance variable {@link #cellvalue}
      */
+    @Override
     public AbstractUIField getCellvalue()
     {
         return this.cellvalue;

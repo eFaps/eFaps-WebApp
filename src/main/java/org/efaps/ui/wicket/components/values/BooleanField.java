@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.ILabelProvider;
 import org.apache.wicket.markup.html.form.Radio;
@@ -101,13 +102,35 @@ public class BooleanField
         final Radio<Boolean> radio1 = new Radio<Boolean>("choice1", Model.of((Boolean) first.getValue()));
         radio1.setLabel(Model.of((String) first.getKey()));
         radioGroup.add(radio1);
-        radioGroup.add(new Label("label1", Model.of((String) first.getKey())));
+        final String markupId1 = radio1.getMarkupId(true);
+        radioGroup.add(new Label("label1", Model.of((String) first.getKey())){
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            protected void onComponentTag(final ComponentTag _tag)
+            {
+                super.onComponentTag(_tag);
+                _tag.put("for", markupId1);
+            }
+        });
 
         final Entry<Object, Object> second = iter.next();
         final Radio<Boolean> radio2 = new Radio<Boolean>("choice2", Model.of((Boolean) second.getValue()));
         radio2.setLabel(Model.of((String) second.getKey()));
         radioGroup.add(radio2);
-        radioGroup.add(new Label("label2", Model.of((String) second.getKey())));
+        final String markupId2 = radio2.getMarkupId(true);
+        radioGroup.add(new Label("label2", Model.of((String) second.getKey())) {
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            protected void onComponentTag(final ComponentTag _tag)
+            {
+                super.onComponentTag(_tag);
+                _tag.put("for", markupId2);
+            }
+        });
     }
 
     /**

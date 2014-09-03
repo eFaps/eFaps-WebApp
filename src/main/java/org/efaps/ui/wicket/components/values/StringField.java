@@ -21,6 +21,7 @@
 
 package org.efaps.ui.wicket.components.values;
 
+import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.datamodel.ui.UIValue;
 import org.efaps.ui.wicket.models.cell.CellSetValue;
@@ -58,7 +59,6 @@ public class StringField
      */
     private boolean converted = false;
 
-
     /**
      * @param _wicketId wicket id for this component
      * @param _model    model for this componet
@@ -71,6 +71,20 @@ public class StringField
         throws EFapsException
     {
         super(_wicketId, _model, _config);
+        setRequired(_config.getField().isRequired());
+    }
+
+    @Override
+    protected void onComponentTag(final ComponentTag _tag)
+    {
+        super.onComponentTag(_tag);
+        final int rows = getConfig().getRows();
+        if (rows > 1) {
+            _tag.setName("textarea");
+            _tag.put("rows", rows);
+            _tag.put("cols", getConfig().getSize());
+            _tag.remove("size");
+        }
     }
 
     @Override
