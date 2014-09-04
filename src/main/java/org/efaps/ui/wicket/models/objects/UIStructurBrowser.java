@@ -145,7 +145,7 @@ public class UIStructurBrowser
      * Static part of the key to get the Information stored in the session
      * in relation to this StruturBrowser.
      */
-    public static final String USERSESSIONKEY = "eFapsUIStructurBrowser";
+    public static final String USERSESSIONKEY = UIStructurBrowser.class.getName() + ".SessionKey";
 
     /**
      * Logging instance used in this class.
@@ -350,7 +350,7 @@ public class UIStructurBrowser
         throws EFapsException
     {
         final AbstractCommand command = getCommand();
-        if ((command != null) && (command.getTargetTable() != null)) {
+        if (command != null && command.getTargetTable() != null) {
             setTableUUID(command.getTargetTable().getUUID());
             this.browserFieldName = command.getTargetStructurBrowserField();
             setShowCheckBoxes(command.isTargetShowCheckBoxes());

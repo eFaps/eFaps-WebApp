@@ -149,4 +149,10 @@ public class UIFieldStructurBrowser
     {
         return getFieldDisplay(getMode()).equals(Display.EDITABLE) && (isCreateMode() || isEditMode());
     }
+
+    @Override
+    public String getCacheKey()
+    {
+        return super.getCommandUUID() + "-" + this.fieldTabelId + "-" + UIStructurBrowser.USERSESSIONKEY;
+    }
 }
