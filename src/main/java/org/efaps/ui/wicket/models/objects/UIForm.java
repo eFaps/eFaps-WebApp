@@ -487,6 +487,7 @@ public class UIForm
                 // temp to decide what to do TODO remove in future
                 if (_field.getClassUI() == null && _field.getUIProvider() != null
                                 || attr != null && attr.getAttributeType().getUI() == null
+                                || attr == null && _field.getClassUI() == null && _field.getUIProvider() == null
                                 || attr != null && attr.getAttributeType().getUI() != null
                                   && (attr.getAttributeType().getUI() instanceof TypeUI
                                     || attr.getAttributeType().getUI() instanceof UserUI)) {
