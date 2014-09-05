@@ -32,6 +32,8 @@ import org.efaps.admin.datamodel.attributetype.DecimalType;
 import org.efaps.admin.datamodel.attributetype.IntegerType;
 import org.efaps.admin.datamodel.attributetype.LongType;
 import org.efaps.admin.datamodel.attributetype.RealType;
+import org.efaps.admin.datamodel.ui.DecimalUI;
+import org.efaps.admin.datamodel.ui.IUIProvider;
 import org.efaps.admin.datamodel.ui.UIValue;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.models.cell.CellSetValue;
@@ -93,24 +95,30 @@ public class NumberField
         }
         final String[] value = getInputAsArray();
         try {
-            IConverter<? extends Number> converter = LongConverter.INSTANCE;
-            if (value != null && value.length > 0 && value[i] != null
-                            && getCellvalue().getValue().getAttribute() != null) {
-                final IAttributeType attrType = getCellvalue().getValue().getAttribute().getAttributeType()
-                                .getDbAttrType();
-                if (attrType instanceof LongType) {
-                    converter = LongConverter.INSTANCE;
-                } else if (attrType instanceof IntegerType) {
-                    converter = IntegerConverter.INSTANCE;
-                } else if (attrType instanceof RealType) {
-                    converter = DoubleConverter.INSTANCE;
-                } else if (attrType instanceof DecimalType) {
-                    converter = new BigDecimalConverter();
+            if (value != null && value.length > 0 && value[i] != null) {
+                IConverter<? extends Number> converter = LongConverter.INSTANCE;
+                if (getCellvalue().getValue().getAttribute() != null) {
+                    final IAttributeType attrType = getCellvalue().getValue().getAttribute().getAttributeType()
+                                    .getDbAttrType();
+                    if (attrType instanceof LongType) {
+                        converter = LongConverter.INSTANCE;
+                    } else if (attrType instanceof IntegerType) {
+                        converter = IntegerConverter.INSTANCE;
+                    } else if (attrType instanceof RealType) {
+                        converter = DoubleConverter.INSTANCE;
+                    } else if (attrType instanceof DecimalType) {
+                        converter = new BigDecimalConverter();
+                    }
+                } else if (getFieldConfig().getField().getUIProvider() != null) {
+                    final IUIProvider uiprovider = getFieldConfig().getField().getUIProvider();
+                    if (uiprovider instanceof DecimalUI) {
+                        converter = new BigDecimalConverter();
+                    }
                 }
+                setConvertedInput(converter.convertToObject(value[i], Context.getThreadContext().getLocale()));
             }
-            setConvertedInput(converter.convertToObject(value[i], Context.getThreadContext().getLocale()));
         } catch (final ConversionException e) {
-            error(newValidationError(e));
+            error(newValidationError(e).getErrorMessage(new ErrorMessageResource()));
         } catch (final CacheReloadException e) {
             NumberField.LOG.error("Catched error on convertInput", e);
         } catch (final EFapsException e) {

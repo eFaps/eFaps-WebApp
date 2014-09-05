@@ -21,11 +21,15 @@
 package org.efaps.ui.wicket.components.values;
 
 import java.io.Serializable;
+import java.util.List;
 
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.form.ILabelProvider;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.Model;
+import org.efaps.admin.event.EventDefinition;
+import org.efaps.admin.event.EventType;
+import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
 import org.efaps.ui.wicket.models.cell.FieldConfiguration;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.util.EFapsException;
@@ -83,6 +87,15 @@ public abstract class AbstractField<T extends Serializable>
         this.add(new Validator<T>(this));
         setOutputMarkupId(true);
         setLabel(Model.of(this.cellvalue.getLabel()));
+
+        if (_config.getField().hasEvents(EventType.UI_FIELD_UPDATE)) {
+            final List<EventDefinition> events = _config.getField().getEvents(EventType.UI_FIELD_UPDATE);
+            String eventName = "onchange";
+            for (final EventDefinition event : events) {
+               eventName = event.getProperty("Event") == null ? "onchange" : event.getProperty("Event");
+            }
+            add(new AjaxFieldUpdateBehavior(eventName, Model.of(this.cellvalue)));
+        }
     }
 
     /**

@@ -20,21 +20,33 @@
 
 package org.efaps.ui.wicket.behaviors;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
+import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.feedback.FeedbackCollector;
+import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.html.form.ValidationErrorFeedback;
 import org.apache.wicket.model.IModel;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
+import org.efaps.ui.wicket.components.values.ErrorMessageResource;
+import org.efaps.ui.wicket.components.values.IFieldConfig;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
+import org.efaps.ui.wicket.pages.content.AbstractContentPage;
+import org.efaps.ui.wicket.pages.dialog.DialogPage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.util.EFapsKey;
@@ -117,6 +129,50 @@ public class AjaxFieldUpdateBehavior
     @Override
     protected void onError(final AjaxRequestTarget _target)
     {
+        final FeedbackCollector collector = new FeedbackCollector(getForm().getPage());
+        final List<FeedbackMessage> msgs = collector.collect();
+        final StringBuilder html = new StringBuilder()
+                        .append("<table class=\"eFapsValidateFieldValuesTable\">");
+        for (final FeedbackMessage msg : msgs) {
+            msg.getReporter().add(AttributeModifier.append("class", "invalid"));
+            _target.add(msg.getReporter());
+            Serializable warn = null;
+            if (msg.getMessage() instanceof ValidationErrorFeedback) {
+                // look if a message was set
+                warn = ((ValidationErrorFeedback) msg.getMessage()).getMessage();
+                // still no message, create one
+                if (warn == null) {
+                    warn = ((ValidationErrorFeedback) msg.getMessage()).getError().getErrorMessage(
+                                    new ErrorMessageResource());
+                }
+            }
+            String label = "";
+            if (msg.getReporter() instanceof IFieldConfig) {
+                label = ((IFieldConfig) msg.getReporter()).getFieldConfig().getLabel();
+            }
+            html.append("<tr><td>").append(label).append(":</td><td>")
+                            .append(warn).append("</td></tr>");
+        }
+        html.append("</table>");
+
+        final ModalWindowContainer modal = ((AbstractContentPage) getComponent().getPage()).getModal();
+
+        modal.setInitialWidth(350);
+        modal.setInitialHeight(200);
+
+        modal.setPageCreator(new ModalWindow.PageCreator()
+        {
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public Page createPage()
+            {
+                return new DialogPage(((AbstractContentPage) getComponent().getPage()).getPageReference(),
+                                html.toString(), true, false);
+            }
+        });
+        modal.show(_target);
     }
 
     /**
@@ -232,20 +288,6 @@ public class AjaxFieldUpdateBehavior
     }
 
     /**
-     * Overwritten to deactivate the visit of all other components and the
-     * setting of model objects. This would lead to
-     * an error, because this component does not have a model.
-     *
-     * @see org.apache.wicket.ajax.form.AjaxFormSubmitBehavior#onEvent(org.apache.wicket.ajax.AjaxRequestTarget)
-     * @param _target AjaxRequestTarget
-     */
-    @Override
-    protected void onEvent(final AjaxRequestTarget _target)
-    {
-        onSubmit(_target);
-    }
-
-    /**
      * @return
      */
     public CharSequence getCallbackScript4Dojo()
@@ -266,7 +308,6 @@ public class AjaxFieldUpdateBehavior
         return ret;
     }
 
-
     /**
      * Getter method for the instance variable {@link #dojoCall}.
      *
@@ -277,7 +318,6 @@ public class AjaxFieldUpdateBehavior
         return this.dojoCall;
     }
 
-
     /**
      * Setter method for instance variable {@link #dojoCall}.
      *
@@ -287,5 +327,4 @@ public class AjaxFieldUpdateBehavior
     {
         this.dojoCall = _dojoCall;
     }
-
 }

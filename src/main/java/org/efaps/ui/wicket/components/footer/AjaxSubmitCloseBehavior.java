@@ -46,12 +46,10 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.ValidationErrorFeedback;
 import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.util.string.StringValue;
-import org.apache.wicket.validation.IErrorMessageSource;
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.IUIProvider;
 import org.efaps.admin.datamodel.ui.UIValue;
-import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
@@ -65,6 +63,7 @@ import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.form.FormPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
+import org.efaps.ui.wicket.components.values.ErrorMessageResource;
 import org.efaps.ui.wicket.components.values.IFieldConfig;
 import org.efaps.ui.wicket.components.values.IValueConverter;
 import org.efaps.ui.wicket.models.AbstractInstanceObject;
@@ -746,20 +745,5 @@ public class AjaxSubmitCloseBehavior
     {
         final CharSequence ajaxAttributes = renderAjaxAttributes(getComponent());
         return "new Wicket.Ajax.Call().ajax(" + ajaxAttributes + ");";
-    }
-
-
-    /**
-     * Resource for Messages based on DBProperties.
-     */
-    public static class ErrorMessageResource
-        implements IErrorMessageSource
-    {
-        @Override
-        public String getMessage(final String _key,
-                                 final Map<String, Object> _vars)
-        {
-            return DBProperties.getProperty(_key);
-        }
     }
 }
