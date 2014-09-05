@@ -78,13 +78,14 @@ public class UIPicker
     /**
      * The parent UIObject.
      */
-    private final UITableCell parent;
+    private final AbstractInstanceObject parent;
 
     /**
      * Was the event already executed.
      */
     private boolean executed = false;
 
+    private UIType uiType;
 
     /**
      * Map returned by the esjp.
@@ -99,12 +100,19 @@ public class UIPicker
      * @throws CacheReloadException on error during access to command
      */
     public UIPicker(final FieldPicker _field,
-                    final UITableCell _parent)
+                    final AbstractInstanceObject _parent)
         throws CacheReloadException
     {
         this.cmdUUID = _field.getCommand().getUUID();
         this.label = _field.getCommand().getLabelProperty();
         this.parent = _parent;
+        final String uiTypeStr = _field.getProperty("UIType");
+        if (EnumUtils.isValidEnum(UIType.class, uiTypeStr)) {
+            this.uiType = UIType.valueOf(uiTypeStr);
+        } else {
+            this.uiType = UIType.DEFAULT;
+        }
+
     }
 
     /**
@@ -255,7 +263,7 @@ public class UIPicker
      */
     @Override
     public boolean hasInstanceManager()
-        throws CacheReloadException
+        throws EFapsException
     {
         return getParent().hasInstanceManager();
     }
@@ -265,17 +273,10 @@ public class UIPicker
      */
     public boolean isButton()
     {
-        UIType ret;
-        final String uiTypeStr = getParent().getField().getProperty("UIType");
-        if (EnumUtils.isValidEnum(UIType.class, uiTypeStr)) {
-            ret = UIType.valueOf(uiTypeStr);
-        } else {
-            ret = UIType.DEFAULT;
-        }
-        return ret.equals(UIType.BUTTON);
+       return UIType.BUTTON.equals(this.uiType);
     }
 
-    public UITableCell getParent()
+    public AbstractInstanceObject getParent()
     {
         return this.parent;
     }

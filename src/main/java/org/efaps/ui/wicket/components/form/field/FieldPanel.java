@@ -21,10 +21,16 @@
 
 package org.efaps.ui.wicket.components.form.field;
 
+import org.apache.wicket.Component;
+import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
+import org.efaps.ui.wicket.components.picker.AjaxPickerButton;
+import org.efaps.ui.wicket.components.picker.AjaxPickerLink;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
+import org.efaps.ui.wicket.models.field.IPickable;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,19 +67,30 @@ public class FieldPanel
 
         final AbstractUIField uiField = _model.getObject();
         try {
+            final boolean hideLabel = uiField.hideLabel();
+
             final WebMarkupContainer labelField = new WebMarkupContainer("labelField");
             final WebMarkupContainer nonLabelField = new WebMarkupContainer("nonLabelField");
-            add(labelField);
-            add(nonLabelField);
-            if (uiField.getFieldConfiguration().isHideLabel()) {
-                nonLabelField.add(uiField.getComponent("field"));
-                labelField.setVisible(false);
+            add(labelField.setVisible(!hideLabel));
+            add(nonLabelField.setVisible(hideLabel));
+
+            final WebMarkupContainer container = hideLabel ? nonLabelField : labelField;
+
+            final Component field = uiField.getComponent("field");
+            container.add(field);
+
+            if (uiField.hasPicker()) {
+                if (uiField.getPicker().isButton()) {
+                    field.setVisible(false);
+                    container.add(new AjaxPickerButton("valuePicker", Model.of((IPickable) _model.getObject())));
+                } else {
+                    container.add(new AjaxPickerLink("valuePicker", Model.of((IPickable) _model.getObject()), field));
+                }
             } else {
-                labelField.add(uiField.getComponent("field"));
-                nonLabelField.setVisible(false);
+                container.add(new WebComponent("valuePicker").setVisible(false));
             }
         } catch (final EFapsException e) {
-            FieldPanel.LOG.error("Catched error during population of a TaskPage", e);
+            FieldPanel.LOG.error("Catched error during population of a FieldPanel", e);
         }
     }
 }

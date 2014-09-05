@@ -45,6 +45,7 @@ import org.efaps.ui.wicket.components.picker.AjaxPickerLink;
 import org.efaps.ui.wicket.components.table.cell.AjaxMenuContentLink;
 import org.efaps.ui.wicket.components.table.cell.ContentContainerLink;
 import org.efaps.ui.wicket.models.cell.UIFormCell;
+import org.efaps.ui.wicket.models.field.IPickable;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.util.EFapsException;
 
@@ -136,9 +137,9 @@ public class ValueCellPanel
                 if (uiFormCell.isValuePicker() && uiFormCell.getDisplay().equals(Display.EDITABLE)) {
                     if (uiFormCell.getPicker().isButton()) {
                         label.setVisible(false);
-                        this.add(new AjaxPickerButton("valuePicker", _model));
+                        this.add(new AjaxPickerButton("valuePicker", Model.of((IPickable) _model.getObject())));
                     } else {
-                        this.add(new AjaxPickerLink("valuePicker", _model, label));
+                        this.add(new AjaxPickerLink("valuePicker",  Model.of((IPickable) _model.getObject()), label));
                     }
                 } else {
                     this.add(new WebComponent("valuePicker").setVisible(false));

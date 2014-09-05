@@ -35,6 +35,7 @@ import org.efaps.admin.ui.field.FieldPicker;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.models.cell.AutoCompleteSettings.EditValue;
+import org.efaps.ui.wicket.models.field.IPickable;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.util.EFapsException;
@@ -50,6 +51,7 @@ import org.efaps.util.cache.CacheReloadException;
  */
 public class UITableCell
     extends AbstractUICell
+    implements IPickable
 {
 
     /**
@@ -453,6 +455,7 @@ public class UITableCell
      *
      * @return value of instance variable {@link #picker}
      */
+    @Override
     public UIPicker getPicker()
     {
         return this.picker;

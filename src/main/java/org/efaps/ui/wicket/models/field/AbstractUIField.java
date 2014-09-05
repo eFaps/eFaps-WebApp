@@ -37,6 +37,7 @@ import org.efaps.db.Instance;
 import org.efaps.ui.wicket.components.values.LabelField;
 import org.efaps.ui.wicket.models.AbstractInstanceObject;
 import org.efaps.ui.wicket.models.cell.FieldConfiguration;
+import org.efaps.ui.wicket.models.cell.UIPicker;
 import org.efaps.ui.wicket.models.field.factories.BitEnumUIFactory;
 import org.efaps.ui.wicket.models.field.factories.BooleanUIFactory;
 import org.efaps.ui.wicket.models.field.factories.DateTimeUIFactory;
@@ -64,6 +65,7 @@ import org.efaps.util.EFapsException;
  */
 public abstract class AbstractUIField
     extends AbstractInstanceObject
+    implements IPickable
 {
     /**
      * Needed for serialization.
@@ -106,6 +108,11 @@ public abstract class AbstractUIField
      * UserInterface Value.
      */
     private UIValue value;
+
+    /**
+     * Picker related to this field.
+     */
+    private UIPicker picker;
 
     /**
      * @param _instanceKey key to the instance
@@ -305,6 +312,42 @@ public abstract class AbstractUIField
         return ret;
     }
 
+    /**
+     * Getter method for the instance variable {@link #picker}.
+     *
+     * @return value of instance variable {@link #picker}
+     */
+    @Override
+    public UIPicker getPicker()
+    {
+        return this.picker;
+    }
+
+    /**
+     * Setter method for instance variable {@link #picker}.
+     *
+     * @param _picker value for instance variable {@link #picker}
+     */
+    public void setPicker(final UIPicker _picker)
+    {
+        this.picker = _picker;
+    }
+
+    /**
+     * @return true if a picker is assigned else false;
+     */
+    public boolean hasPicker()
+    {
+        return getPicker() != null;
+    }
+
+    /**
+     *
+     */
+    public boolean hideLabel()
+    {
+       return hasPicker() && getPicker().isButton() || getFieldConfiguration().isHideLabel();
+    }
 
     @Override
     public String toString()

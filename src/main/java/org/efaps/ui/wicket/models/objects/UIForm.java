@@ -56,6 +56,7 @@ import org.efaps.admin.ui.field.FieldClassification;
 import org.efaps.admin.ui.field.FieldCommand;
 import org.efaps.admin.ui.field.FieldGroup;
 import org.efaps.admin.ui.field.FieldHeading;
+import org.efaps.admin.ui.field.FieldPicker;
 import org.efaps.admin.ui.field.FieldSet;
 import org.efaps.admin.ui.field.FieldTable;
 import org.efaps.db.Context;
@@ -68,6 +69,7 @@ import org.efaps.ui.wicket.models.cell.UIFormCellChart;
 import org.efaps.ui.wicket.models.cell.UIFormCellCmd;
 import org.efaps.ui.wicket.models.cell.UIFormCellSet;
 import org.efaps.ui.wicket.models.cell.UIHiddenCell;
+import org.efaps.ui.wicket.models.cell.UIPicker;
 import org.efaps.ui.wicket.models.cell.UISetColumnHeader;
 import org.efaps.ui.wicket.models.field.UIField;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
@@ -823,6 +825,11 @@ public class UIForm
                             }
                         } else if (field instanceof FieldCommand) {
                             cell = new UIFormCellCmd(this, (FieldCommand) field, null, label);
+                        } else if (field instanceof FieldPicker) {
+                            cell = new UIField(null, this, UIValue.get(field, attr, null).setClassObject(this)
+                                            .setInstance(getInstance()).setCallInstance(getInstance()));
+                            final UIPicker picker = new UIPicker((FieldPicker) field, cell);
+                            ((UIField) cell).setPicker(picker);
                         } else {
                             if (attr != null && attr.getAttributeType().getUI() == null
                                 || field.getClassUI() == null && field.getUIProvider() != null

@@ -32,11 +32,13 @@ import org.efaps.db.Context;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowAjaxPageCreator;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.cell.UIPicker;
-import org.efaps.ui.wicket.models.cell.UITableCell;
+import org.efaps.ui.wicket.models.field.IPickable;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO comment!
@@ -60,12 +62,18 @@ public class AjaxPickerLink
     private static final long serialVersionUID = 1L;
 
     /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(AjaxPickerButton.class);
+
+
+    /**
      * @param _wicketId         wicket id of this component
      * @param _model            model for this component
      * @param _targetComponent  component used as the target for this Picker
      */
     public AjaxPickerLink(final String _wicketId,
-                          final IModel<?> _model,
+                          final IModel<IPickable> _model,
                           final Component _targetComponent)
     {
         super(_wicketId, _model);
@@ -82,7 +90,7 @@ public class AjaxPickerLink
     protected void onComponentTag(final ComponentTag _tag)
     {
         super.onComponentTag(_tag);
-        final UITableCell uiObject = (UITableCell) getDefaultModelObject();
+        final IPickable uiObject = (IPickable) getDefaultModelObject();
         _tag.put("title", uiObject == null ? "" : uiObject.getPicker().getLabel());
         _tag.put("class", "eFapsPickerLink");
     }
@@ -99,8 +107,7 @@ public class AjaxPickerLink
     {
         super.onComponentTagBody(_markupStream, _openTag);
         final StringBuilder html = new StringBuilder();
-        html.append("<img alt=\"\" src=\"")
-                        .append(AjaxPickerLink.ICON.getImageUrl()).append("\"/>");
+        html.append("<img alt=\"\" src=\"").append(AjaxPickerLink.ICON.getImageUrl()).append("\"/>");
         replaceComponentTagBody(_markupStream, _openTag, html);
     }
 
@@ -158,7 +165,7 @@ public class AjaxPickerLink
             }
             modal.reset();
             try {
-                final UIPicker picker = ((UITableCell) getDefaultModelObject()).getPicker();
+                final UIPicker picker = ((IPickable) getDefaultModelObject()).getPicker();
                 picker.setUserinterfaceId(this.targetMarkupId);
                 picker.setParentParameters(Context.getThreadContext().getParameters());
                 final PageCreator pageCreator = new ModalWindowAjaxPageCreator(picker, modal);
@@ -168,10 +175,8 @@ public class AjaxPickerLink
                 modal.setWindowClosedCallback(new PickerCallBack(this.targetMarkupId, getPage().getPageReference()));
                 modal.show(_target);
             } catch (final EFapsException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                LOG.error("Error on submit", e);
             }
         }
     }
-
 }

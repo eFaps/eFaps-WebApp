@@ -27,12 +27,13 @@ import org.efaps.db.Context;
 import org.efaps.ui.wicket.components.button.AjaxButton;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowAjaxPageCreator;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
-import org.efaps.ui.wicket.models.cell.UIFormCell;
 import org.efaps.ui.wicket.models.cell.UIPicker;
-import org.efaps.ui.wicket.models.cell.UITableCell;
+import org.efaps.ui.wicket.models.field.IPickable;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO comment!
@@ -41,7 +42,7 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  */
 public class AjaxPickerButton
-    extends AjaxButton<UIFormCell>
+    extends AjaxButton<IPickable>
 {
 
     /**
@@ -50,11 +51,16 @@ public class AjaxPickerButton
     private static final long serialVersionUID = 1L;
 
     /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(AjaxPickerButton.class);
+
+    /**
      * @param _wicketId
      * @param _model
      */
     public AjaxPickerButton(final String _wicketId,
-                            final IModel<UIFormCell> _model)
+                            final IModel<IPickable> _model)
     {
         super(_wicketId, _model, AjaxPickerLink.ICON, _model.getObject().getPicker().getLabel());
     }
@@ -70,7 +76,7 @@ public class AjaxPickerButton
         }
         modal.reset();
         try {
-            final UIPicker picker = ((UITableCell) getDefaultModelObject()).getPicker();
+            final UIPicker picker = ((IPickable) getDefaultModelObject()).getPicker();
             picker.setParentParameters(Context.getThreadContext().getParameters());
             final PageCreator pageCreator = new ModalWindowAjaxPageCreator(picker, modal);
             modal.setPageCreator(pageCreator);
@@ -79,8 +85,7 @@ public class AjaxPickerButton
             modal.setWindowClosedCallback(new PickerCallBack(null, getPage().getPageReference()));
             modal.show(_target);
         } catch (final EFapsException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error("Error on submit", e);
         }
 
     }
