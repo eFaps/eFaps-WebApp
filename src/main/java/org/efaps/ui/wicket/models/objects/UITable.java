@@ -112,6 +112,8 @@ public class UITable
      */
     private UIRow emptyRow;
 
+    private boolean enforceSorted = false;
+
     /**
      * Constructor setting the uuid and Key of the instance.
      *
@@ -189,6 +191,7 @@ public class UITable
                 setSortKeyInternal(command.getTargetTableSortKey());
                 setSortDirection(command.getTargetTableSortDirection());
             }
+            setEnforceSorted("true".equalsIgnoreCase(command.getProperty("TargetEnforceSorted")));
 
             setShowCheckBoxes(command.isTargetShowCheckBoxes());
             // get the User specific Attributes if exist overwrite the defaults
@@ -358,6 +361,7 @@ public class UITable
                 i++;
             }
         }
+        multi.setEnforceSorted(isEnforceSorted());
         multi.execute();
 
         if (!altOIDSel.isEmpty()) {
@@ -826,6 +830,26 @@ public class UITable
         }
         setSize(ret.size());
         return ret;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #enforceSorted}.
+     *
+     * @return value of instance variable {@link #enforceSorted}
+     */
+    public boolean isEnforceSorted()
+    {
+        return this.enforceSorted;
+    }
+
+    /**
+     * Setter method for instance variable {@link #enforceSorted}.
+     *
+     * @param _enforceSorted value for instance variable {@link #enforceSorted}
+     */
+    public void setEnforceSorted(final boolean _enforceSorted)
+    {
+        this.enforceSorted = _enforceSorted;
     }
 
     /**

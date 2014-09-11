@@ -74,6 +74,7 @@ public class UIFieldTable
      */
     private boolean firstTable = true;
 
+
     /**
      * @param _commanduuid uuid of the command
      * @param _instanceKey key to the instance
@@ -91,6 +92,7 @@ public class UIFieldTable
         this.name = _fieldTable.getName();
         setShowCheckBoxes(_fieldTable.isTargetShowCheckBoxes());
         setDnD(!"true".equalsIgnoreCase(_fieldTable.getProperty("TargetDeactivateDnD")));
+        setEnforceSorted("true".equalsIgnoreCase(_fieldTable.getProperty("TargetEnforceSorted")));
         try {
             if (Context.getThreadContext().containsUserAttribute(getCacheKey(UserCacheKey.SORTKEY))) {
                 setSortKey(Context.getThreadContext().getUserAttribute(getCacheKey(UserCacheKey.SORTKEY)));
