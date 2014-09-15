@@ -71,6 +71,17 @@ public class HRefFactory
      * {@inheritDoc}
      */
     @Override
+    public Component getHidden(final String _wicketId,
+                               final AbstractUIField _abstractUIField)
+        throws EFapsException
+    {
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Component getReadOnly(final String _wicketId,
                                  final AbstractUIField _uiField)
         throws EFapsException

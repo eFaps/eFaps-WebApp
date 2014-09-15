@@ -21,6 +21,7 @@
 package org.efaps.ui.wicket.components.values;
 
 import java.io.Serializable;
+import java.util.List;
 
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.RadioChoice;
@@ -82,6 +83,31 @@ public class RadioField
         setChoiceRenderer(new ChoiceRenderer());
         setOutputMarkupId(true);
         setRequired(_fieldConfiguration.getField().isRequired());
+    }
+
+    /**
+     * @param _wicketId
+     * @param _of
+     * @param _choices
+     */
+    public RadioField(final String _wicketId,
+                      final Model<AbstractUIField> _model,
+                      final List<RadioOption> _radios)
+    {
+        super(_wicketId);
+        this.cellvalue = _model.getObject();
+        this.fieldConfig = this.cellvalue.getFieldConfiguration();
+        try {
+            setDefaultModel(new Model<String>());
+            setChoices(_radios);
+            setLabel(Model.of(this.cellvalue.getLabel()));
+        } catch (final EFapsException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        setChoiceRenderer(new ChoiceRenderer());
+        setOutputMarkupId(true);
+        setRequired(this.fieldConfig.getField().isRequired());
     }
 
     @Override

@@ -42,7 +42,7 @@ import org.efaps.ui.wicket.components.tree.StructurBrowserTreeTablePanel;
 import org.efaps.ui.wicket.models.FormModel;
 import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.UIModel;
-import org.efaps.ui.wicket.models.cell.UIHiddenCell;
+import org.efaps.ui.wicket.models.field.IHidden;
 import org.efaps.ui.wicket.models.objects.UIClassification;
 import org.efaps.ui.wicket.models.objects.UIFieldForm;
 import org.efaps.ui.wicket.models.objects.UIFieldStructurBrowser;
@@ -242,7 +242,7 @@ public class FormPage
             // EditorPanel.prepare(_page);
         }
         // the hidden cells must be marked as not added yet.
-        for (final UIHiddenCell cell : _uiForm.getHiddenCells()) {
+        for (final IHidden cell : _uiForm.getHidden()) {
             cell.setAdded(false);
         }
         int i = 0;

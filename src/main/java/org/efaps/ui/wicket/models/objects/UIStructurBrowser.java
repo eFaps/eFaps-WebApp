@@ -60,6 +60,7 @@ import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.PrintQuery;
 import org.efaps.ui.wicket.models.cell.UIHiddenCell;
 import org.efaps.ui.wicket.models.cell.UIStructurBrowserTableCell;
+import org.efaps.ui.wicket.models.field.IHidden;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 import org.efaps.util.RequestHandler;
@@ -193,7 +194,7 @@ public class UIStructurBrowser
     /**
      * Holds the hidden columns in case of a TableTree.
      */
-    private final List<UIHiddenCell> hidden = new ArrayList<UIHiddenCell>();
+    private final List<IHidden> hidden = new ArrayList<>();
 
     /**
      * Holds the label of the Node which will be presented in the GUI.
@@ -620,7 +621,8 @@ public class UIStructurBrowser
      *
      * @return value of instance variable {@link #hidden}
      */
-    public List<UIHiddenCell> getHidden()
+    @Override
+    public List<IHidden> getHidden()
     {
         return this.hidden;
     }

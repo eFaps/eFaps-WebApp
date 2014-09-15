@@ -20,7 +20,10 @@
 
 package org.efaps.ui.wicket.models.cell;
 
+import org.apache.wicket.Component;
 import org.efaps.admin.datamodel.ui.FieldValue;
+import org.efaps.ui.wicket.components.LabelComponent;
+import org.efaps.ui.wicket.models.field.IHidden;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 
 /**
@@ -31,6 +34,7 @@ import org.efaps.ui.wicket.models.objects.AbstractUIObject;
  */
 public class UIHiddenCell
     extends AbstractUICell
+    implements IHidden
 {
 
     /**
@@ -62,6 +66,7 @@ public class UIHiddenCell
      *
      * @return value of instance variable {@link #added}
      */
+    @Override
     public boolean isAdded()
     {
         return this.added;
@@ -72,8 +77,16 @@ public class UIHiddenCell
      *
      * @param _added value for instance variable {@link #added}
      */
-    public void setAdded(final boolean _added)
+    @Override
+    public IHidden setAdded(final boolean _added)
     {
         this.added = _added;
+        return this;
+    }
+
+    @Override
+    public Component getComponent(final String _wicketId)
+    {
+        return new LabelComponent(_wicketId, getCellValue());
     }
 }

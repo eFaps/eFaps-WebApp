@@ -66,6 +66,17 @@ public abstract class AbstractUIFactory
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Component getHidden(final String _wicketId,
+                               final AbstractUIField _abstractUIField)
+        throws EFapsException
+    {
+        return null;
+    }
+
+    /**
      * @param _abstractUIField AbstractUIField the component is wanted for
      * @return true if this factory applies to the given Field, else false
      * @throws EFapsException on error
@@ -80,4 +91,5 @@ public abstract class AbstractUIFactory
      */
     protected abstract String getReadOnlyValue(final AbstractUIField _abstractUIField)
         throws EFapsException;
+
 }

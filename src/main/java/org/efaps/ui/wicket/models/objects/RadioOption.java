@@ -29,6 +29,7 @@ import org.efaps.admin.datamodel.IEnum;
 import org.efaps.admin.datamodel.ui.EnumUI;
 import org.efaps.admin.datamodel.ui.IUIProvider;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
+import org.efaps.api.ui.IOption;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.util.EnumUtil;
 import org.efaps.util.EFapsException;
@@ -65,6 +66,15 @@ public class RadioOption
         super(Integer.valueOf(_enum.getInt()).toString(), EnumUtil.getUILabel(_enum));
     }
 
+    public RadioOption(final String _value,
+                       final String _label,
+                       final boolean _selected)
+    {
+        super(_value, _label);
+        setSelected(_selected);
+    }
+
+
     /**
      * @param _choices
      */
@@ -79,12 +89,27 @@ public class RadioOption
                 final Class<?> clazz = Class.forName(attr.getClassName(), false, EFapsClassLoader.getInstance());
                 final Object[] consts = clazz.getEnumConstants();
                 for (final Object obj : consts) {
-                    final IEnum enumConst = ((IEnum) obj);
+                    final IEnum enumConst = (IEnum) obj;
                     ret.add(new RadioOption(enumConst));
                 }
             } catch (final ClassNotFoundException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
+            }
+        }
+        return ret;
+    }
+
+    public static List<RadioOption> getChoices(final Object _object)
+    {
+        final List<RadioOption> ret = new ArrayList<>();
+        if (_object instanceof List) {
+            for (final Object obj : (List<?>) _object) {
+                if (obj instanceof IOption) {
+                    final IOption option = (IOption) obj;
+                    ret.add(new RadioOption(String.valueOf(option.getValue()), option.getLabel(), option
+                                    .isSelected()));
+                }
             }
         }
         return ret;

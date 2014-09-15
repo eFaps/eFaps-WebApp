@@ -192,7 +192,7 @@ public class UIForm
     {
         setInitialized(false);
         this.elements.clear();
-        getHiddenCells().clear();
+        getHidden().clear();
     }
 
     /**
@@ -469,9 +469,21 @@ public class UIForm
             } else if (_field.getPhrase() != null) {
                 value = _query.getPhrase(_field.getName());
             }
-            final FieldValue fieldvalue = new FieldValue(_field, attr, value, fieldInstance, getInstance(), null, this);
-            final String strValue = fieldvalue.getHiddenHtml(getMode());
-            addHidden(new UIHiddenCell(this, fieldvalue, null, strValue));
+            // temp to decide what to do TODO remove in future
+            if (_field.getClassUI() == null && _field.getUIProvider() != null
+                            || attr != null && attr.getAttributeType().getUI() == null
+                            || attr == null && _field.getClassUI() == null && _field.getUIProvider() == null
+                            || attr != null && attr.getAttributeType().getUI() != null
+                            && (attr.getAttributeType().getUI() instanceof TypeUI
+                            || attr.getAttributeType().getUI() instanceof UserUI)) {
+                addHidden(evaluateUIProvider(_row, _query, _field, fieldInstance, label, attr));
+            } else {
+
+                final FieldValue fieldvalue = new FieldValue(_field, attr, value, fieldInstance, getInstance(), null,
+                                this);
+                final String strValue = fieldvalue.getHiddenHtml(getMode());
+                addHidden(new UIHiddenCell(this, fieldvalue, null, strValue));
+            }
             ret = false;
         } else {
             // fieldset
@@ -491,7 +503,7 @@ public class UIForm
                                 || attr != null && attr.getAttributeType().getUI() != null
                                   && (attr.getAttributeType().getUI() instanceof TypeUI
                                     || attr.getAttributeType().getUI() instanceof UserUI)) {
-                    evaluateUIProvider(_row, _query, _field, fieldInstance, label, attr);
+                    _row.add(evaluateUIProvider(_row, _query, _field, fieldInstance, label, attr));
                 } else {
                     evaluateField(_row, _query, _field, fieldInstance, label, attr);
                 }
@@ -511,12 +523,12 @@ public class UIForm
      * @param _attr attribute for the Field
      * @throws EFapsException on error
      */
-    private void evaluateUIProvider(final FormRow _row,
-                                    final PrintQuery _print,
-                                    final Field _field,
-                                    final Instance _fieldInstance,
-                                    final String _label,
-                                    final Attribute _attr)
+    private UIField evaluateUIProvider(final FormRow _row,
+                                       final PrintQuery _print,
+                                       final Field _field,
+                                       final Instance _fieldInstance,
+                                       final String _label,
+                                       final Attribute _attr)
         throws EFapsException
     {
         Object value = null;
@@ -529,7 +541,7 @@ public class UIForm
         }
         final UIField uiField = new UIField(_fieldInstance.getKey(), this, UIValue.get(_field, _attr, value)
                         .setInstance(_fieldInstance).setClassObject(this));
-        _row.add(uiField);
+        return uiField;
     }
 
     /**
@@ -793,7 +805,6 @@ public class UIForm
                         attr = type != null ? type.getAttribute(field.getAttribute()) : null;
                     }
 
-
                     String label;
                     if (field.getLabel() != null) {
                         label = field.getLabel();
@@ -806,8 +817,17 @@ public class UIForm
                     final String attrTypeName = attr != null ? attr.getAttributeType().getName() : null;
 
                     if (field.isHiddenDisplay(getMode())) {
-                        final FieldValue fieldvalue = getFieldValue(field, attr);
-                        addHidden(new UIHiddenCell(this, fieldvalue, null, getStringValue(fieldvalue)));
+                        if (attr != null && attr.getAttributeType().getUI() == null
+                                        || field.getClassUI() == null && field.getUIProvider() != null
+                                        || attr == null && field.getClassUI() == null && field.getUIProvider() == null) {
+                            final UIField uiField = new UIField(null, this, UIValue.get(field, attr, null)
+                                            .setClassObject(this)
+                                            .setInstance(getInstance()).setCallInstance(getInstance()));
+                            addHidden(uiField);
+                        } else {
+                            final FieldValue fieldvalue = getFieldValue(field, attr);
+                            addHidden(new UIHiddenCell(this, fieldvalue, null, getStringValue(fieldvalue)));
+                        }
                     } else {
                         final AbstractInstanceObject cell;
                         if (field instanceof FieldSet) {

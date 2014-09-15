@@ -40,15 +40,14 @@ import org.apache.wicket.model.Model;
 import org.efaps.admin.datamodel.ui.DateTimeUI;
 import org.efaps.admin.datamodel.ui.DateUI;
 import org.efaps.admin.ui.field.Field.Display;
-import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.table.cell.CellPanel;
 import org.efaps.ui.wicket.components.table.row.RowId;
 import org.efaps.ui.wicket.models.AbstractInstanceObject;
 import org.efaps.ui.wicket.models.UIModel;
-import org.efaps.ui.wicket.models.cell.UIHiddenCell;
 import org.efaps.ui.wicket.models.cell.UIStructurBrowserTableCell;
 import org.efaps.ui.wicket.models.cell.UITableCell;
+import org.efaps.ui.wicket.models.field.IHidden;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.models.objects.UITableHeader;
@@ -133,6 +132,7 @@ public class SubElement
 
             private static final long serialVersionUID = 1L;
 
+            @Override
             public <S> Iterator<Item<S>> getItems(final IItemFactory<S> _factory,
                                                   final Iterator<IModel<S>> _newModels,
                                                   final Iterator<Item<S>> _existingItems)
@@ -272,13 +272,12 @@ public class SubElement
             cell.add(AttributeModifier.append("class", "eFapsSTBRWtmp"));
         }
 
-
         _item.add(SubElement.this.tree.newSubtree("subtree", model));
 
         final RepeatingView hiddenRepeater = new RepeatingView("hiddenRepeater");
         _item.add(hiddenRepeater);
-        for (final UIHiddenCell cell : strucBrws.getHidden()) {
-            hiddenRepeater.add(new LabelComponent(hiddenRepeater.newChildId(), cell.getCellValue()));
+        for (final IHidden cell : strucBrws.getHidden()) {
+            hiddenRepeater.add(cell.getComponent(hiddenRepeater.newChildId()));
         }
 
         _item.add(new RowId("rowId", Model.of((AbstractInstanceObject) strucBrws)));
@@ -323,6 +322,7 @@ public class SubElement
         /**
          * not implemented.
          */
+        @Override
         public void remove()
         {
             throw new UnsupportedOperationException();
@@ -332,6 +332,7 @@ public class SubElement
          * has this iterator a further element.
          * @return true if next element
          */
+        @Override
         public boolean hasNext()
         {
             return this.children.hasNext();
@@ -341,6 +342,7 @@ public class SubElement
          * Get the next element.
          * @return Model
          */
+        @Override
         public IModel<UIStructurBrowser> next()
         {
             return SubElement.this.tree.getProvider().model(this.children.next());

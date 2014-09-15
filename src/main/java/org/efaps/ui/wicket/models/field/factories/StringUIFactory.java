@@ -66,6 +66,15 @@ public class StringUIFactory
         return ret;
     }
 
+    @Override
+    public Component getHidden(final String _wicketId,
+                               final AbstractUIField _abstractUIField)
+        throws EFapsException
+    {
+        //TODO
+        return null;
+    }
+
     /**
      * {@inheritDoc}
      */

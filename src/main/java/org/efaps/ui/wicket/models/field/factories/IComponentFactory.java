@@ -55,4 +55,15 @@ public interface IComponentFactory
                           final AbstractUIField _abstractUIField)
         throws EFapsException;
 
+    /**
+     * Get an hidden component.
+     * @param _wicketId wicket if for the component
+     * @param _abstractUIField field use for the component
+     * @return the component
+     * @throws EFapsException on error
+     */
+    Component getHidden(final String _wicketId,
+                        final AbstractUIField _abstractUIField)
+        throws EFapsException;
+
 }

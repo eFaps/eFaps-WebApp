@@ -74,6 +74,17 @@ public class LinkWithRangesUIFactory
      * {@inheritDoc}
      */
     @Override
+    public Component getHidden(final String _wicketId,
+                               final AbstractUIField _abstractUIField)
+        throws EFapsException
+    {
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     protected boolean applies(final AbstractUIField _abstractUIField)
         throws EFapsException
     {

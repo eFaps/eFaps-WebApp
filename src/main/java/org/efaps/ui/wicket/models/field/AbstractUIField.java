@@ -65,7 +65,7 @@ import org.efaps.util.EFapsException;
  */
 public abstract class AbstractUIField
     extends AbstractInstanceObject
-    implements IPickable
+    implements IPickable, IHidden
 {
     /**
      * Needed for serialization.
@@ -113,6 +113,8 @@ public abstract class AbstractUIField
      * Picker related to this field.
      */
     private UIPicker picker;
+
+    private boolean added;
 
     /**
      * @param _instanceKey key to the instance
@@ -255,6 +257,14 @@ public abstract class AbstractUIField
     }
 
     /**
+     * @return is this value editable
+     */
+    public boolean hidden()
+    {
+        return getValue().getField().isHiddenDisplay(getParent().getMode());
+    }
+
+    /**
      * @return the List of Factories used for this Field on construction of the component.
      */
     public List<IComponentFactory> getFactories()
@@ -267,12 +277,15 @@ public abstract class AbstractUIField
      * @return Component
      * @throws EFapsException on error
      */
+    @Override
     public Component getComponent(final String _wicketId)
         throws EFapsException
     {
         Component ret = null;
         for (final IComponentFactory factory : getFactories()) {
-            if (editable()) {
+            if (hidden()) {
+                ret = factory.getHidden(_wicketId, this);
+            } else if (editable()) {
                 ret = factory.getEditable(_wicketId, this);
             } else {
                 ret = factory.getReadOnly(_wicketId, this);
@@ -353,5 +366,18 @@ public abstract class AbstractUIField
     public String toString()
     {
         return getValue().toString();
+    }
+
+     @Override
+    public IHidden setAdded(final boolean _added)
+    {
+         this.added = _added;
+        return this;
+    }
+
+    @Override
+    public boolean isAdded()
+    {
+        return this.added;
     }
 }

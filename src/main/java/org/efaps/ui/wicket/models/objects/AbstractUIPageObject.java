@@ -36,7 +36,7 @@ import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.Command;
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
-import org.efaps.ui.wicket.models.cell.UIHiddenCell;
+import org.efaps.ui.wicket.models.field.IHidden;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 
@@ -70,7 +70,7 @@ public abstract class AbstractUIPageObject
     /**
      * A list of cells that will be rendered hidden in tht page.
      */
-    private final List<UIHiddenCell> hiddenCells = new ArrayList<UIHiddenCell>();
+    private final List<IHidden> hidden = new ArrayList<>();
 
     /**
      * Map of instance with access definition.
@@ -161,9 +161,9 @@ public abstract class AbstractUIPageObject
      *
      * @return value of instance variable {@link #hiddenCells}
      */
-    public List<UIHiddenCell> getHiddenCells()
+    public List<IHidden> getHidden()
     {
-        return this.hiddenCells;
+        return this.hidden;
     }
 
     /**
@@ -171,9 +171,9 @@ public abstract class AbstractUIPageObject
      *
      * @param _hiddenCell cell to add
      */
-    public void addHidden(final UIHiddenCell _hiddenCell)
+    public void addHidden(final IHidden _hiddenCell)
     {
-        this.hiddenCells.add(_hiddenCell);
+        this.hidden.add(_hiddenCell);
     }
 
     /**

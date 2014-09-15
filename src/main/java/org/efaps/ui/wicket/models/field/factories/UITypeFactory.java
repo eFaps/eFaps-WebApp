@@ -25,9 +25,11 @@ import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.components.values.DropDownField;
+import org.efaps.ui.wicket.components.values.RadioField;
 import org.efaps.ui.wicket.components.values.SnippletField;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.objects.DropDownOption;
+import org.efaps.ui.wicket.models.objects.RadioOption;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 
@@ -70,6 +72,12 @@ public class UITypeFactory
                                     .getEditValue(_uiField.getParent().getMode()));
                     ret = new DropDownField(_wicketId, Model.of(_uiField), choices);
                     break;
+                case RADIO:
+                    final List<RadioOption> radios = RadioOption.getChoices(_uiField.getValue()
+                                    .getEditValue(_uiField.getParent().getMode()));
+                    ret = new RadioField(_wicketId, Model.of(_uiField), radios);
+                    break;
+
                 default:
                     break;
             }
@@ -102,10 +110,34 @@ public class UITypeFactory
         return ret;
     }
 
-    protected boolean applies(final AbstractUIField _abstractUIField)
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Component getHidden(final String _wicketId,
+                               final AbstractUIField _uiField)
+        throws EFapsException
+    {
+        Component ret = null;
+        if (applies(_uiField)) {
+            switch (_uiField.getFieldConfiguration().getUIType()) {
+                case SNIPPLET:
+                    final String html = String.valueOf(_uiField.getValue().getReadOnlyValue(
+                                    _uiField.getParent().getMode()));
+                    ret = new SnippletField(_wicketId, Model.of(html), null);
+                    break;
+                default:
+                    break;
+            }
+        }
+        return ret;
+    }
+
+    protected boolean applies(final AbstractUIField _uiField)
         throws CacheReloadException
     {
-        return _abstractUIField.getValue().getUIProvider() == null;
+        return  _uiField.getValue().getUIProvider() == null
+                        && _uiField.getFieldConfiguration().getUIType() != null;
     }
 
     /**
