@@ -25,6 +25,7 @@ import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.autocomplete.AutoCompleteComboBox;
@@ -82,9 +83,7 @@ public class CommandCellPanel
             if (uiObject.getButtonIcon() != null) {
                 reference =  Button.ICON.valueOf(uiObject.getButtonIcon()).getReference();
             }
-            add(new Button("execute", new AjaxExecuteLink(Button.LINKID, _form, uiObject),
-                                                          uiObject.getCellLabel(),
-                                                          reference));
+            add(new AjaxExecuteLink("execute", Model.of(uiObject),reference, uiObject.getCellLabel()));
         } else {
             add(new WebComponent("execute").setVisible(false));
 

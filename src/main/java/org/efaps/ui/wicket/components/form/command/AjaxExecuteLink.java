@@ -25,15 +25,14 @@ import java.util.Map;
 
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.model.Model;
+import org.apache.wicket.model.IModel;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
-import org.efaps.ui.wicket.components.FormContainer;
+import org.efaps.ui.wicket.components.button.AjaxButton;
 import org.efaps.ui.wicket.models.cell.UIFormCellCmd;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
 
 /**
@@ -43,7 +42,7 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  */
 public class AjaxExecuteLink
-    extends AjaxSubmitLink
+    extends AjaxButton<UIFormCellCmd>
 {
     /**
     * Needed for serialization.
@@ -56,11 +55,11 @@ public class AjaxExecuteLink
      * @param _uiObject uiobjetc for this component
      */
     public AjaxExecuteLink(final String _wicketId,
-                           final FormContainer _form,
-                           final UIFormCellCmd _uiObject)
+                           final IModel<UIFormCellCmd> _model,
+                           final EFapsContentReference _reference,
+                           final String _label)
     {
-        super(_wicketId, _form);
-        setDefaultModel(new Model<UIFormCellCmd>(_uiObject));
+        super(_wicketId, _model, _reference, _label);
     }
 
     /**
@@ -68,13 +67,12 @@ public class AjaxExecuteLink
      * @param _form     form
      */
     @Override
-    protected void onSubmit(final AjaxRequestTarget _target,
-                            final Form<?> _form)
+    public void onSubmit(final AjaxRequestTarget _target)
     {
         final UIFormCellCmd uiObject = (UIFormCellCmd) getDefaultModelObject();
         final StringBuilder snip = new StringBuilder();
         try {
-            final AbstractUIPageObject pageObject = (AbstractUIPageObject) (getPage().getDefaultModelObject());
+            final AbstractUIPageObject pageObject = (AbstractUIPageObject) getPage().getDefaultModelObject();
             final Map<String, String> uiID2Oid = pageObject == null ? null : pageObject.getUiID2Oid();
             final List<Return> returns = uiObject.executeEvents(null, uiID2Oid);
             for (final Return oneReturn : returns) {
@@ -86,12 +84,5 @@ public class AjaxExecuteLink
             throw new RestartResponseException(new ErrorPage(e));
         }
         _target.appendJavaScript(snip.toString());
-    }
-
-    @Override
-    protected void onError(final AjaxRequestTarget _target,
-                           final Form<?> _form)
-    {
-        // Nothing to do
     }
 }
