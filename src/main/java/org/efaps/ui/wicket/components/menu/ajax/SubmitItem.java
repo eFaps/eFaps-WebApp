@@ -20,6 +20,7 @@
 
 package org.efaps.ui.wicket.components.menu.ajax;
 
+import java.io.File;
 import java.util.List;
 
 import org.apache.wicket.Page;
@@ -31,7 +32,10 @@ import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.util.string.StringValue;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.event.Return;
+import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractCommand;
+import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.FormModel;
 import org.efaps.ui.wicket.models.TableModel;
@@ -40,6 +44,7 @@ import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.models.objects.UITable;
+import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
@@ -131,6 +136,7 @@ public class SubmitItem
 
                             private static final long serialVersionUID = 1L;
 
+                            @Override
                             public Page createPage()
                             {
                                 Page page = null;
@@ -150,34 +156,46 @@ public class SubmitItem
                     } else {
                         final AbstractCommand command = ((UIMenuItem) super.getComponent().getDefaultModelObject())
                                         .getCommand();
-
+                        boolean updatePage = true;
                         if (command.hasEvents(EventType.UI_COMMAND_EXECUTE)) {
                             try {
+                                List<Return> rets;
                                 if (oidValues != null) {
-                                    command.executeEvents(EventType.UI_COMMAND_EXECUTE, ParameterValues.OTHERS, oids);
+                                    rets = command.executeEvents(EventType.UI_COMMAND_EXECUTE, ParameterValues.OTHERS,
+                                                    oids);
                                 } else {
-                                    command.executeEvents(EventType.UI_COMMAND_EXECUTE);
+                                    rets = command.executeEvents(EventType.UI_COMMAND_EXECUTE);
+                                }
+                                if (command.isTargetShowFile() && rets != null && !rets.isEmpty()) {
+                                    final Object object = rets.get(0).get(ReturnValues.VALUES);
+                                    if (object instanceof File) {
+                                        ((EFapsSession) getComponent().getSession()).setFile((File) object);
+                                        ((AbstractMergePage) getPage()).getDownloadBehavior().initiate(_target);
+                                        updatePage = false;
+                                    }
                                 }
                             } catch (final EFapsException e) {
                                 throw new RestartResponseException(new ErrorPage(e));
                             }
                         }
-                        final AbstractUIObject uiObject = (AbstractUIObject) getPage().getDefaultModelObject();
-                        uiObject.resetModel();
+                        if (updatePage) {
+                            final AbstractUIObject uiObject = (AbstractUIObject) getPage().getDefaultModelObject();
+                            uiObject.resetModel();
 
-                        Page page = null;
-                        try {
-                            if (uiObject instanceof UITable) {
-                                page = new TablePage(new TableModel((UITable) uiObject),
-                                                ((AbstractContentPage) getPage()).getCalledByPageReference());
-                            } else if (uiObject instanceof UIForm) {
-                                page = new FormPage(new FormModel((UIForm) uiObject),
-                                                ((AbstractContentPage) getPage()).getCalledByPageReference());
+                            Page page = null;
+                            try {
+                                if (uiObject instanceof UITable) {
+                                    page = new TablePage(new TableModel((UITable) uiObject),
+                                                    ((AbstractContentPage) getPage()).getCalledByPageReference());
+                                } else if (uiObject instanceof UIForm) {
+                                    page = new FormPage(new FormModel((UIForm) uiObject),
+                                                    ((AbstractContentPage) getPage()).getCalledByPageReference());
+                                }
+                            } catch (final EFapsException e) {
+                                page = new ErrorPage(e);
                             }
-                        } catch (final EFapsException e) {
-                            page = new ErrorPage(e);
+                            setResponsePage(page);
                         }
-                        setResponsePage(page);
                     }
                 } else {
                     final ModalWindowContainer modal;
@@ -190,6 +208,7 @@ public class SubmitItem
 
                         private static final long serialVersionUID = 1L;
 
+                        @Override
                         public Page createPage()
                         {
                             return new DialogPage(getPage().getPageReference(), "SubmitSelectedRows.fail"
