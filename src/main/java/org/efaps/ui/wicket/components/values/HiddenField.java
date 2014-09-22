@@ -51,6 +51,8 @@ public class HiddenField
         throws EFapsException
     {
         super(_wicketId, _config);
+        setModel(Model.of((String) _model.getObject().getValue().getHiddenValue(
+                        _model.getObject().getParent().getMode())));
     }
 
     @Override
