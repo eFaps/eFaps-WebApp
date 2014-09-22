@@ -23,6 +23,7 @@ package org.efaps.ui.wicket.models.field.factories;
 import org.apache.wicket.Component;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.datamodel.ui.StringUI;
+import org.efaps.ui.wicket.components.values.HiddenField;
 import org.efaps.ui.wicket.components.values.StringField;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.util.EFapsException;
@@ -68,11 +69,14 @@ public class StringUIFactory
 
     @Override
     public Component getHidden(final String _wicketId,
-                               final AbstractUIField _abstractUIField)
+                               final AbstractUIField _uiField)
         throws EFapsException
     {
-        //TODO
-        return null;
+        Component ret = null;
+        if (applies(_uiField)) {
+            ret = new HiddenField(_wicketId, Model.of(_uiField), _uiField.getFieldConfiguration());
+        }
+        return ret;
     }
 
     /**
