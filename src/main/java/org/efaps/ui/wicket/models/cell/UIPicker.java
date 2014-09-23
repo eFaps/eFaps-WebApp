@@ -85,13 +85,19 @@ public class UIPicker
      */
     private boolean executed = false;
 
+    /**
+     * UItype used.
+     */
     private UIType uiType;
 
     /**
      * Map returned by the esjp.
      */
-    private Map<String, String> returnMap = new HashMap<String, String>();
+    private Map<String, Object> returnMap = new HashMap<>();
 
+    /**
+     * Parameter map.
+     */
     private Map<String, String[]> parentParameters;
 
     /**
@@ -212,7 +218,7 @@ public class UIPicker
                 param.put(ParameterValues.INSTANCE, getInstance());
             }
             ret = getCommand().executeEvents(EventType.UI_PICKER, param);
-            this.returnMap = (Map<String, String>) ret.get(0).get(ReturnValues.VALUES);
+            this.returnMap = (Map<String, Object>) ret.get(0).get(ReturnValues.VALUES);
         }
         return ret;
     }
@@ -243,7 +249,7 @@ public class UIPicker
      *
      * @return value of instance variable {@link #returnMap}
      */
-    public Map<String, String> getReturnMap()
+    public Map<String, Object> getReturnMap()
     {
         return this.returnMap;
     }

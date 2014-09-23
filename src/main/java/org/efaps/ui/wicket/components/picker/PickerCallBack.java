@@ -23,6 +23,7 @@ package org.efaps.ui.wicket.components.picker;
 
 import java.util.Map;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -81,11 +82,10 @@ public class PickerCallBack
             final UIPicker picker = pageObject.getPicker();
             pageObject.setPicker(null);
             if (picker.isExecuted()) {
-                final Map<String, String> map = picker.getReturnMap();
+                final Map<String, Object> map = picker.getReturnMap();
                 final boolean escape = escape(map);
                 final StringBuilder js = new StringBuilder();
-
-                final String value = map.get(EFapsKey.PICKER_VALUE.getKey());
+                final String value = (String) map.get(EFapsKey.PICKER_VALUE.getKey());
                 if (value != null) {
                     js.append("require(['dojo/dom'], function(dom){\n")
                         .append("dom.byId('").append(this.targetMarkupId).append("').value ='")
@@ -98,15 +98,29 @@ public class PickerCallBack
                     if (!(EFapsKey.PICKER_JAVASCRIPT.getKey().equals(keyString)
                                     || EFapsKey.PICKER_DEACTIVATEESCAPE.getKey().equals(keyString)
                                     || EFapsKey.PICKER_VALUE.getKey().equals(keyString))) {
-                        if (map.get(keyString).contains("Array(")) {
-                            js.append("eFapsSetFieldValue('").append(this.targetMarkupId).append("','")
-                                            .append(keyString).append("',").append(map.get(keyString)).append(");");
+                        final Object valueObj = map.get(keyString);
+                        final String strValue;
+                        final String strLabel;
+                        if (valueObj instanceof String[] && ((String[]) valueObj).length == 2) {
+                            strValue = escape ? StringEscapeUtils.escapeEcmaScript(((String[]) valueObj)[0])
+                                            : ((String[]) valueObj)[0];
+                            strLabel = escape ? StringEscapeUtils.escapeEcmaScript(((String[]) valueObj)[1])
+                                            : ((String[]) valueObj)[1];
                         } else {
-                            js.append("eFapsSetFieldValue('").append(this.targetMarkupId).append("','")
-                                .append(keyString).append("','")
-                                .append(escape  ? StringEscapeUtils.escapeEcmaScript(map.get(keyString))
-                                                            : map.get(keyString)).append("');");
+                            strValue = escape ? StringEscapeUtils.escapeEcmaScript(String.valueOf(valueObj)) : String
+                                            .valueOf(valueObj);
+                            strLabel = null;
                         }
+
+                        js.append("eFapsSetFieldValue('").append(this.targetMarkupId).append("','")
+                            .append(keyString).append("',")
+                            .append(strValue.contains("Array(") ? "" : "'")
+                                        .append(strValue)
+                                        .append(strValue.contains("Array(") ? "" : "'");
+                        if (strLabel != null) {
+                            js.append(",'").append(strLabel).append("'");
+                        }
+                        js.append(");");
                     }
                 }
                 if (map.containsKey(EFapsKey.PICKER_JAVASCRIPT.getKey())) {
@@ -125,15 +139,15 @@ public class PickerCallBack
      * @param _map map to be checked
      * @return boolean
      */
-    private boolean escape(final Map<String, String> _map)
+    private boolean escape(final Map<String, Object> _map)
     {
         boolean ret = true;
         if (_map.containsKey(EFapsKey.PICKER_DEACTIVATEESCAPE.getKey())) {
-            final String value = _map.get(EFapsKey.PICKER_DEACTIVATEESCAPE.getKey());
+            final Object value = _map.get(EFapsKey.PICKER_DEACTIVATEESCAPE.getKey());
             if (value == null) {
                 ret = false;
             } else {
-                ret = !"true".equalsIgnoreCase(EFapsKey.PICKER_DEACTIVATEESCAPE.getKey());
+                ret = BooleanUtils.toBoolean(EFapsKey.PICKER_DEACTIVATEESCAPE.getKey());
             }
         }
         return ret;
