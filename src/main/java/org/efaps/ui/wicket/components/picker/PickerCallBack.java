@@ -102,13 +102,16 @@ public class PickerCallBack
                         final String strValue;
                         final String strLabel;
                         if (valueObj instanceof String[] && ((String[]) valueObj).length == 2) {
-                            strValue = escape ? StringEscapeUtils.escapeEcmaScript(((String[]) valueObj)[0])
+                            strValue = escape && !((String[]) valueObj)[0].contains("Array(")
+                                            ? StringEscapeUtils.escapeEcmaScript(((String[]) valueObj)[0])
                                             : ((String[]) valueObj)[0];
-                            strLabel = escape ? StringEscapeUtils.escapeEcmaScript(((String[]) valueObj)[1])
+                            strLabel = escape && !((String[]) valueObj)[0].contains("Array(")
+                                            ? StringEscapeUtils.escapeEcmaScript(((String[]) valueObj)[1])
                                             : ((String[]) valueObj)[1];
                         } else {
-                            strValue = escape ? StringEscapeUtils.escapeEcmaScript(String.valueOf(valueObj)) : String
-                                            .valueOf(valueObj);
+                            strValue = escape && !String.valueOf(valueObj).contains("Array(")
+                                            ? StringEscapeUtils.escapeEcmaScript(String.valueOf(valueObj))
+                                            : String.valueOf(valueObj);
                             strLabel = null;
                         }
 
