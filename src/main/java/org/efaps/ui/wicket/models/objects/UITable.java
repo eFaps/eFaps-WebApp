@@ -399,7 +399,7 @@ public class UITable
             try {
                 final Object alternateObj = _multi.getSelect(_field.getSelectAlternateOID());
                 if (alternateObj instanceof String) {
-                    Instance.get((String) alternateObj);
+                    ret = Instance.get((String) alternateObj);
                 } else if (alternateObj instanceof Instance) {
                     ret = (Instance) alternateObj;
                 }
