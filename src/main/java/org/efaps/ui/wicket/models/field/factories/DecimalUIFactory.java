@@ -35,13 +35,15 @@ import org.efaps.util.EFapsException;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
+ * @version $Id: DecimalUIFactory.java 11692 2014-01-14 19:54:16Z jan@moxter.net
+ *          $
  */
 // CHECKSTYLE:OFF
-public class DecimalUIFactory
-extends StringUIFactory
+public final class DecimalUIFactory
+    extends StringUIFactory
 // CHECKSTYLE:ON
 {
+
     /**
      * Factory Instance.
      */
@@ -73,7 +75,7 @@ extends StringUIFactory
      * {@inheritDoc}
      */
     @Override
-    protected boolean applies(final AbstractUIField _abstractUIField)
+    public boolean applies(final AbstractUIField _abstractUIField)
         throws EFapsException
     {
         return _abstractUIField.getValue().getUIProvider() instanceof DecimalUI;
@@ -98,6 +100,35 @@ extends StringUIFactory
             strValue = formatter.format(valueTmp);
         }
         return strValue;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getKey()
+    {
+        return DecimalUIFactory.class.getName();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getPickListValue(final AbstractUIField _uiField)
+        throws EFapsException
+    {
+        return getReadOnlyValue(_uiField);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Comparable<?> getCompareValue(final AbstractUIField _uiField)
+        throws EFapsException
+    {
+        return (Comparable<?>) _uiField.getValue().getReadOnlyValue(_uiField.getParent().getMode());
     }
 
     /**

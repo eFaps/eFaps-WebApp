@@ -26,7 +26,7 @@ import java.util.List;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.models.AbstractInstanceObject;
 import org.efaps.ui.wicket.models.cell.UIHiddenCell;
-import org.efaps.ui.wicket.models.cell.UITableCell;
+import org.efaps.ui.wicket.models.field.IFilterable;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 
@@ -39,6 +39,7 @@ import org.efaps.util.cache.CacheReloadException;
 public class UIRow
     extends AbstractInstanceObject
 {
+
     /**
      * Needed for serialization.
      */
@@ -47,23 +48,22 @@ public class UIRow
     /**
      * The instance variable stores the values for the table.
      *
-     * @see #getValues
      */
-    private final List<UITableCell> values = new ArrayList<UITableCell>();
+    private final List<IFilterable> cells = new ArrayList<>();
 
     /**
      * This list contains the hidden cells for this row.
      */
-    private final List<UIHiddenCell> hidden = new ArrayList<UIHiddenCell>();
+    private final List<UIHiddenCell> hidden = new ArrayList<>();
 
     /**
      * Parent of this row.
      */
     private final AbstractUIObject parent;
 
-
     /**
      * Constructor used in case that no instances are given. e.g. on create.
+     *
      * @param _parent Parent object of this row
      */
     public UIRow(final AbstractUIObject _parent)
@@ -73,10 +73,12 @@ public class UIRow
 
     /**
      * The constructor creates a new instance of class Row.
+     *
      * @param _parent Parent object of this row
      * @param _instanceKeys string with all oids for this row
      */
-    public UIRow(final AbstractUIObject _parent, final String _instanceKeys)
+    public UIRow(final AbstractUIObject _parent,
+                 final String _instanceKeys)
     {
         super(_instanceKeys);
         this.parent = _parent;
@@ -86,12 +88,12 @@ public class UIRow
      * The instance method adds a new attribute value (from instance
      * {@link AttributeTypeInterface}) to the values.
      *
-     * @param _cellmodel cell model to add
+     * @param _instObj cell model to add
      * @see #values
      */
-    public void add(final UITableCell _cellmodel)
+    public void add(final IFilterable _instObj)
     {
-        this.values.add(_cellmodel);
+        this.cells.add(_instObj);
     }
 
     /**
@@ -122,7 +124,7 @@ public class UIRow
      */
     public int getSize()
     {
-        return getValues().size();
+        return getCells().size();
     }
 
     /**
@@ -131,11 +133,10 @@ public class UIRow
      * @return value of values variable {@link #values}
      * @see #values
      */
-    public List<UITableCell> getValues()
+    public List<IFilterable> getCells()
     {
-        return this.values;
+        return this.cells;
     }
-
 
     /**
      * Getter method for the instance variable {@link #parent}.

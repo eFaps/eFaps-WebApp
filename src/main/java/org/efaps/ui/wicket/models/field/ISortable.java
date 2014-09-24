@@ -21,9 +21,6 @@
 
 package org.efaps.ui.wicket.models.field;
 
-import java.io.Serializable;
-
-import org.efaps.ui.wicket.models.cell.UIPicker;
 
 
 /**
@@ -32,13 +29,11 @@ import org.efaps.ui.wicket.models.cell.UIPicker;
  * @author The eFaps Team
  * @version $Id$
  */
-public interface IPickable
-    extends Serializable
+public interface ISortable
+    extends Comparable<ISortable>
 {
-
     /**
-     * @return picker model
+     * @return the compare value
      */
-    UIPicker getPicker();
-
+    Comparable<?> getCompareValue();
 }

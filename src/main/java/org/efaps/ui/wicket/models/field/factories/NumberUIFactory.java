@@ -31,13 +31,15 @@ import org.efaps.util.EFapsException;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
+ * @version $Id: NumberUIFactory.java 14033 2014-09-15 21:44:25Z jan@moxter.net
+ *          $
  */
 // CHECKSTYLE:OFF
-public class NumberUIFactory
+public final class NumberUIFactory
     extends StringUIFactory
 // CHECKSTYLE:ON
 {
+
     /**
      * Factory Instance.
      */
@@ -80,7 +82,7 @@ public class NumberUIFactory
      * {@inheritDoc}
      */
     @Override
-    protected boolean applies(final AbstractUIField _abstractUIField)
+    public boolean applies(final AbstractUIField _abstractUIField)
         throws EFapsException
     {
         return _abstractUIField.getValue().getUIProvider() instanceof NumberUI;
@@ -102,6 +104,35 @@ public class NumberUIFactory
             strValue = valueTmp == null ? "" : String.valueOf(valueTmp);
         }
         return strValue;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getKey()
+    {
+        return NumberUIFactory.class.getName();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getPickListValue(final AbstractUIField _uiField)
+        throws EFapsException
+    {
+        return getReadOnlyValue(_uiField);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Comparable<?> getCompareValue(final AbstractUIField _uiField)
+        throws EFapsException
+    {
+        return (Comparable<?>) _uiField.getValue().getReadOnlyValue(_uiField.getParent().getMode());
     }
 
     /**

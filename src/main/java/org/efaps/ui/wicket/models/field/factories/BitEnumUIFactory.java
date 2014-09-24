@@ -18,7 +18,6 @@
  * Last Changed By: $Author$
  */
 
-
 package org.efaps.ui.wicket.models.field.factories;
 
 import java.util.List;
@@ -32,17 +31,17 @@ import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.util.EnumUtil;
 import org.efaps.util.EFapsException;
 
-
 /**
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
+ * @version $Id: BitEnumUIFactory.java 11692 2014-01-14 19:54:16Z jan@moxter.net
+ *          $
  */
-//CHECKSTYLE:OFF
-public class BitEnumUIFactory
+// CHECKSTYLE:OFF
+public final class BitEnumUIFactory
     extends AbstractUIFactory
-//CHECKSTYLE:ON
+// CHECKSTYLE:ON
 {
 
     /**
@@ -69,7 +68,8 @@ public class BitEnumUIFactory
         Component ret = null;
         if (applies(_abstractUIField)) {
             ret = new CheckBoxField(_wicketId, Model.of(_abstractUIField),
-                       (List<Object>) _abstractUIField.getValue().getEditValue(_abstractUIField.getParent().getMode()),
+                            (List<Object>) _abstractUIField.getValue().getEditValue(
+                                            _abstractUIField.getParent().getMode()),
                             _abstractUIField.getFieldConfiguration());
         }
         return ret;
@@ -79,7 +79,7 @@ public class BitEnumUIFactory
      * {@inheritDoc}
      */
     @Override
-    protected boolean applies(final AbstractUIField _abstractUIField)
+    public boolean applies(final AbstractUIField _abstractUIField)
         throws EFapsException
     {
         return _abstractUIField.getValue().getUIProvider() instanceof BitEnumUI;
@@ -89,23 +89,53 @@ public class BitEnumUIFactory
      * {@inheritDoc}
      */
     @Override
-    protected String getReadOnlyValue(final AbstractUIField _abstractUIField)
+    protected String getReadOnlyValue(final AbstractUIField _uiField)
         throws EFapsException
     {
-        final StringBuilder ret = new StringBuilder();
-        final Object valueTmp = _abstractUIField.getValue().getReadOnlyValue(_abstractUIField.getParent().getMode());
+        final StringBuilder bldr = new StringBuilder();
+        final Object valueTmp = _uiField.getValue().getReadOnlyValue(_uiField.getParent().getMode());
         if (valueTmp instanceof List) {
             boolean first = true;
             for (final Object obj : (List<?>) valueTmp) {
                 if (first) {
                     first = false;
                 } else {
-                    ret.append(", ");
+                    bldr.append(", ");
                 }
-                ret.append(EnumUtil.getUILabel((IEnum) obj));
+                bldr.append(EnumUtil.getUILabel((IEnum) obj));
             }
         }
-        return ret.toString();
+        final String ret = bldr.toString();
+        return ret;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getKey()
+    {
+        return BitEnumUIFactory.class.getName();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getPickListValue(final AbstractUIField _uiField)
+        throws EFapsException
+    {
+        return getReadOnlyValue(_uiField);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Comparable<String> getCompareValue(final AbstractUIField _uiField)
+        throws EFapsException
+    {
+        return getReadOnlyValue(_uiField);
     }
 
     /**

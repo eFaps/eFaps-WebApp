@@ -38,7 +38,7 @@ import org.joda.time.format.DateTimeFormatter;
  * @version $Id$
  */
 // CHECKSTYLE:OFF
-public class DateUIFactory
+public final class DateUIFactory
     extends AbstractUIFactory
 // CHECKSTYLE:ON
 {
@@ -75,7 +75,7 @@ public class DateUIFactory
      * {@inheritDoc}
      */
     @Override
-    protected boolean applies(final AbstractUIField _abstractUIField)
+    public boolean applies(final AbstractUIField _abstractUIField)
         throws EFapsException
     {
         return _abstractUIField.getValue().getUIProvider() instanceof DateUI;
@@ -100,6 +100,35 @@ public class DateUIFactory
             strValue = dateTmp.toString(formatter.withLocale(Context.getThreadContext().getLocale()));
         }
         return strValue;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getKey()
+    {
+        return DateUIFactory.class.getName();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getPickListValue(final AbstractUIField _uiField)
+        throws EFapsException
+    {
+        return getReadOnlyValue(_uiField);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Comparable<?> getCompareValue(final AbstractUIField _uiField)
+        throws EFapsException
+    {
+        return (Comparable<?>) _uiField.getValue().getReadOnlyValue(_uiField.getParent().getMode());
     }
 
     /**

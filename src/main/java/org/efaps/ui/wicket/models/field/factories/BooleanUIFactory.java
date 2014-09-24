@@ -24,6 +24,7 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -39,10 +40,11 @@ import org.efaps.util.EFapsException;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
+ * @version $Id: BooleanUIFactory.java 13749 2014-08-20 00:14:33Z jan@moxter.net
+ *          $
  */
 // CHECKSTYLE:OFF
-public class BooleanUIFactory
+public final class BooleanUIFactory
     extends AbstractUIFactory
 // CHECKSTYLE:ON
 {
@@ -65,22 +67,20 @@ public class BooleanUIFactory
     @SuppressWarnings("unchecked")
     @Override
     public Component getEditable(final String _wicketId,
-                                 final AbstractUIField _abstractUIField)
+                                 final AbstractUIField _uiField)
         throws EFapsException
     {
         Component ret = null;
-        if (applies(_abstractUIField)) {
-            final FieldConfiguration config = _abstractUIField.getFieldConfiguration();
+        if (applies(_uiField)) {
+            final FieldConfiguration config = _uiField.getFieldConfiguration();
             final UIType uiType = config.getUIType();
             if (uiType.equals(UIType.CHECKBOX)) {
-                ret = new CheckBoxField(_wicketId, Model.of(_abstractUIField), null, config);
+                ret = new CheckBoxField(_wicketId, Model.of(_uiField), null, config);
             } else {
-                final IModel<Map<Object, Object>> model = Model.ofMap((Map<Object, Object>) _abstractUIField.getValue()
-                                .getEditValue(_abstractUIField.getParent().getMode()));
-                final Serializable value = _abstractUIField.getValue().getDbValue();
-                ret = new BooleanField(_wicketId, value, model,
-                                _abstractUIField.getFieldConfiguration(),
-                                _abstractUIField.getLabel());
+                final IModel<Map<Object, Object>> model = Model.ofMap((Map<Object, Object>) _uiField.getValue()
+                                .getEditValue(_uiField.getParent().getMode()));
+                final Serializable value = _uiField.getValue().getDbValue();
+                ret = new BooleanField(_wicketId, value, model, _uiField.getFieldConfiguration(), _uiField.getLabel());
             }
         }
         return ret;
@@ -90,10 +90,10 @@ public class BooleanUIFactory
      * {@inheritDoc}
      */
     @Override
-    protected boolean applies(final AbstractUIField _abstractUIField)
+    public boolean applies(final AbstractUIField _uiField)
         throws EFapsException
     {
-        return _abstractUIField.getValue().getUIProvider() instanceof BooleanUI;
+        return _uiField.getValue().getUIProvider() instanceof BooleanUI;
     }
 
     /**
@@ -101,21 +101,47 @@ public class BooleanUIFactory
      */
     @SuppressWarnings("unchecked")
     @Override
-    protected String getReadOnlyValue(final AbstractUIField _abstractUIField)
+    protected String getReadOnlyValue(final AbstractUIField _uiField)
         throws EFapsException
     {
         String strValue = "";
-        if (_abstractUIField.getValue().getDbValue() != null) {
-            final Map<Object, Object> map = (Map<Object, Object>) _abstractUIField.getValue()
-                            .getReadOnlyValue(_abstractUIField.getParent().getMode());
+        if (_uiField.getValue().getDbValue() != null) {
+            final Map<Object, Object> map = (Map<Object, Object>) _uiField.getValue()
+                            .getReadOnlyValue(_uiField.getParent().getMode());
             for (final Entry<Object, Object> entry : map.entrySet()) {
-                if (entry.getValue().equals(_abstractUIField.getValue().getDbValue())) {
+                if (entry.getValue().equals(_uiField.getValue().getDbValue())) {
                     strValue = (String) entry.getKey();
                     break;
                 }
             }
         }
         return strValue;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getKey()
+    {
+        return BooleanUIFactory.class.getName();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getPickListValue(final AbstractUIField _uiField)
+        throws EFapsException
+    {
+        return getReadOnlyValue(_uiField);
+    }
+
+    @Override
+    public Comparable<?> getCompareValue(final AbstractUIField _uiField)
+        throws EFapsException
+    {
+        return BooleanUtils.toBooleanDefaultIfNull((Boolean) _uiField.getValue().getDbValue(), false);
     }
 
     /**

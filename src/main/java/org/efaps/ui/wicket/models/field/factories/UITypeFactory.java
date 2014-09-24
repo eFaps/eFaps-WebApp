@@ -40,7 +40,7 @@ import org.efaps.util.cache.CacheReloadException;
  * @version $Id$
  */
 // CHECKSTYLE:OFF
-public class UITypeFactory
+public final class UITypeFactory
     implements IComponentFactory
 // CHECKSTYLE:ON
 {
@@ -133,11 +133,40 @@ public class UITypeFactory
         return ret;
     }
 
-    protected boolean applies(final AbstractUIField _uiField)
+    @Override
+    public boolean applies(final AbstractUIField _uiField)
         throws CacheReloadException
     {
         return  _uiField.getValue().getUIProvider() == null
                         && _uiField.getFieldConfiguration().getUIType() != null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getKey()
+    {
+        return UITypeFactory.class.getName();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getPickListValue(final AbstractUIField _uiField)
+    {
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Comparable<?> getCompareValue(final AbstractUIField _uiField)
+        throws EFapsException
+    {
+        return null;
     }
 
     /**

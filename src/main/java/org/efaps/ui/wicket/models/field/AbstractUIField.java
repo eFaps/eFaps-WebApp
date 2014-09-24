@@ -21,9 +21,11 @@
 package org.efaps.ui.wicket.models.field;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.datamodel.ui.UIValue;
@@ -65,7 +67,7 @@ import org.efaps.util.EFapsException;
  */
 public abstract class AbstractUIField
     extends AbstractInstanceObject
-    implements IPickable, IHidden
+    implements IPickable, IHidden, IFilterable
 {
     /**
      * Needed for serialization.
@@ -75,23 +77,23 @@ public abstract class AbstractUIField
     /**
      * The factories used to construct the components.
      */
-    private static final List<IComponentFactory> FACTORIES = new ArrayList<IComponentFactory>();
+    private static final Map<String, IComponentFactory> FACTORIES = new LinkedHashMap<>();
 
     static {
-        AbstractUIField.FACTORIES.add(HRefFactory.get());
-        AbstractUIField.FACTORIES.add(StringUIFactory.get());
-        AbstractUIField.FACTORIES.add(LinkWithRangesUIFactory.get());
-        AbstractUIField.FACTORIES.add(BooleanUIFactory.get());
-        AbstractUIField.FACTORIES.add(DateUIFactory.get());
-        AbstractUIField.FACTORIES.add(DateTimeUIFactory.get());
-        AbstractUIField.FACTORIES.add(DecimalUIFactory.get());
-        AbstractUIField.FACTORIES.add(NumberUIFactory.get());
-        AbstractUIField.FACTORIES.add(UserUIFactory.get());
-        AbstractUIField.FACTORIES.add(TypeUIFactory.get());
-        AbstractUIField.FACTORIES.add(EnumUIFactory.get());
-        AbstractUIField.FACTORIES.add(BitEnumUIFactory.get());
-        AbstractUIField.FACTORIES.add(JaxbUIFactory.get());
-        AbstractUIField.FACTORIES.add(UITypeFactory.get());
+        AbstractUIField.FACTORIES.put(HRefFactory.get().getKey(), HRefFactory.get());
+        AbstractUIField.FACTORIES.put(StringUIFactory.get().getKey(), StringUIFactory.get());
+        AbstractUIField.FACTORIES.put(LinkWithRangesUIFactory.get().getKey(), LinkWithRangesUIFactory.get());
+        AbstractUIField.FACTORIES.put(BooleanUIFactory.get().getKey(), BooleanUIFactory.get());
+        AbstractUIField.FACTORIES.put(DateUIFactory.get().getKey(), DateUIFactory.get());
+        AbstractUIField.FACTORIES.put(DateTimeUIFactory.get().getKey(), DateTimeUIFactory.get());
+        AbstractUIField.FACTORIES.put(DecimalUIFactory.get().getKey(), DecimalUIFactory.get());
+        AbstractUIField.FACTORIES.put(NumberUIFactory.get().getKey(), NumberUIFactory.get());
+        AbstractUIField.FACTORIES.put(UserUIFactory.get().getKey(), UserUIFactory.get());
+        AbstractUIField.FACTORIES.put(TypeUIFactory.get().getKey(), TypeUIFactory.get());
+        AbstractUIField.FACTORIES.put(EnumUIFactory.get().getKey(), EnumUIFactory.get());
+        AbstractUIField.FACTORIES.put(BitEnumUIFactory.get().getKey(), BitEnumUIFactory.get());
+        AbstractUIField.FACTORIES.put(JaxbUIFactory.get().getKey(), JaxbUIFactory.get());
+        AbstractUIField.FACTORIES.put(UITypeFactory.get().getKey(), UITypeFactory.get());
     }
 
     /**
@@ -114,7 +116,20 @@ public abstract class AbstractUIField
      */
     private UIPicker picker;
 
+    /**
+     * Already added.
+     */
     private boolean added;
+
+    /**
+     * Factory applied for this field.
+     */
+    private String factoryKey;
+
+    /**
+     * Value as shown for a picklist.
+     */
+    private String pickListValue;
 
     /**
      * @param _instanceKey key to the instance
@@ -267,7 +282,7 @@ public abstract class AbstractUIField
     /**
      * @return the List of Factories used for this Field on construction of the component.
      */
-    public List<IComponentFactory> getFactories()
+    public Map<String, IComponentFactory> getFactories()
     {
         return AbstractUIField.FACTORIES;
     }
@@ -282,7 +297,11 @@ public abstract class AbstractUIField
         throws EFapsException
     {
         Component ret = null;
-        for (final IComponentFactory factory : getFactories()) {
+        final IComponentFactory factory = getFactory();
+        if (factory == null) {
+            ret = new LabelField(_wicketId, Model.of("No Factory was applied successfully"),
+                            this.fieldConfiguration, "NONE");
+        } else {
             if (hidden()) {
                 ret = factory.getHidden(_wicketId, this);
             } else if (editable()) {
@@ -290,14 +309,6 @@ public abstract class AbstractUIField
             } else {
                 ret = factory.getReadOnly(_wicketId, this);
             }
-            if (ret != null) {
-                break;
-            }
-        }
-
-        if (ret == null) {
-            ret = new LabelField(_wicketId, Model.of("No Factory was applied successfully"),
-                            this.fieldConfiguration, "NONE");
         }
         return ret;
     }
@@ -379,5 +390,95 @@ public abstract class AbstractUIField
     public boolean isAdded()
     {
         return this.added;
+    }
+
+    @Override
+    public boolean belongsTo(final Long _fieldId)
+    {
+        return getFieldConfiguration().getField().getId() == _fieldId;
+    }
+
+    @Override
+    public String getPickListValue()
+        throws EFapsException
+    {
+        if (this.pickListValue == null) {
+            this.pickListValue = getFactory().getPickListValue(this);
+        }
+        return this.pickListValue;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Comparable<?> getCompareValue()
+    {
+        Comparable<?> ret = null;
+        try {
+            ret = getFactory().getCompareValue(this);
+        } catch (final EFapsException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return ret;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int compareTo(final ISortable _arg0)
+    {
+         return ObjectUtils.compare(getCompareValue(), _arg0.getCompareValue());
+    }
+
+    /**
+     * Getter method for the instance variable {@link #factory}.
+     *
+     * @return value of instance variable {@link #factory}
+     */
+    public IComponentFactory getFactory()
+        throws EFapsException
+    {
+        if (getFactoryKey() == null) {
+            for (final IComponentFactory factory : getFactories().values()) {
+                if (factory.applies(this)) {
+                    setFactory(factory);
+                    break;
+                }
+            }
+        }
+        return getFactories().get(getFactoryKey());
+    }
+
+    /**
+     * Setter method for instance variable {@link #factory}.
+     *
+     * @param _factory value for instance variable {@link #factory}
+     */
+    public void setFactory(final IComponentFactory _factory)
+    {
+        this.factoryKey = _factory.getKey();
+    }
+
+    /**
+     * Getter method for the instance variable {@link #factoryKey}.
+     *
+     * @return value of instance variable {@link #factoryKey}
+     */
+    public String getFactoryKey()
+    {
+        return this.factoryKey;
+    }
+
+    /**
+     * Setter method for instance variable {@link #pickListValue}.
+     *
+     * @param _pickListValue value for instance variable {@link #pickListValue}
+     */
+    public void setPickListValue(final String _pickListValue)
+    {
+        this.pickListValue = _pickListValue;
     }
 }

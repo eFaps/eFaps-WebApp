@@ -208,21 +208,23 @@ public class AjaxAddRemoveRowPanel
                                     .getParameterValue(AjaxAddRemoveRowPanel.FUNCTION_SUCCESSHANDLER);
                     final int count = Integer.parseInt(newRows.toString());
                     final UITable uitable = (UITable) getDefaultModelObject();
-                    final UIRow uirow = uitable.getEmptyRow() != null
-                                    ? uitable.getEmptyRow() : uitable.getValues().get(0);
-                    final TablePanel tablepanel = getComponent().findParent(TablePanel.class);
+                    try {
+                        final UIRow uirow = uitable.getEmptyRow() != null
+                                        ? uitable.getEmptyRow() : uitable.getValues().get(0);
+                        final TablePanel tablepanel = getComponent().findParent(TablePanel.class);
 
-                    for (int i = 0; i < count; i++) {
-                        // create the new repeater item and add it to the
-                        // repeater
-                        RowPanel row;
-                        try {
+                        for (int i = 0; i < count; i++) {
+                            // create the new repeater item and add it to the
+                            // repeater
+                            RowPanel row;
+
                             row = new RowPanel(AjaxAddRemoveRowPanel.AjaxAddRow.this.rowsRep.newChildId(),
                                             new UIModel<UIRow>(uirow), tablepanel, false, 0);
                             row.add(AttributeModifier.append("class", "eFapsTableRowOdd"));
                             row.setOutputMarkupId(true);
                             AjaxAddRemoveRowPanel.AjaxAddRow.this.rowsRep.add(row);
-                            // first execute javascript which creates a  placeholder tag in markup for this item
+                            // first execute javascript which creates a
+                            // placeholder tag in markup for this item
                             final StringBuilder js = new StringBuilder();
                             js.append("var item=document.createElement('").append("tr").append("');")
                                 .append("item.id='").append(row.getMarkupId()).append("';")
@@ -230,12 +232,14 @@ public class AjaxAddRemoveRowPanel
                                 .append("').insertBefore(item, Wicket.$('")
                                 .append(rowId != null && rowId.toString().length() > 0
                                                 && !rowId.toString().equalsIgnoreCase("null")
-                                                ? rowId : AjaxAddRemoveRowPanel.this.getMarkupId()).append("'));");
+                                                            ? rowId : AjaxAddRemoveRowPanel.this.getMarkupId())
+                                            .append("'));");
                             _target.prependJavaScript(js.toString());
                             _target.add(row);
-                        } catch (final EFapsException e) {
-                            TablePanel.LOG.error("error in adding row", e);
+
                         }
+                    } catch (final EFapsException e) {
+                        TablePanel.LOG.error("error in adding row", e);
                     }
                     if (!sucesshandler.isNull() && !sucesshandler.isEmpty()
                                     && "true".equalsIgnoreCase(sucesshandler.toString())) {

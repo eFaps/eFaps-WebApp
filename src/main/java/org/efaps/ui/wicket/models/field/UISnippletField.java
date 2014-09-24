@@ -88,4 +88,24 @@ public class UISnippletField
         }
         return new SnippletField(_wicketId, Model.of(this.html), label);
     }
+
+    /* (non-Javadoc)
+     * @see org.efaps.ui.wicket.models.field.ISortable#getCompareValue()
+     */
+    @Override
+    public Comparable<?> getCompareValue()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(final ISortable _o)
+    {
+        // TODO Auto-generated method stub
+        return 0;
+    }
 }

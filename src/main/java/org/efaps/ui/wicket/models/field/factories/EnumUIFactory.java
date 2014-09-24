@@ -36,7 +36,7 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  */
 // CHECKSTYLE:OFF
-public class EnumUIFactory
+public final class EnumUIFactory
     extends AbstractUIFactory
 // CHECKSTYLE:ON
 {
@@ -58,14 +58,14 @@ public class EnumUIFactory
      */
     @Override
     public Component getEditable(final String _wicketId,
-                                 final AbstractUIField _abstractUIField)
+                                 final AbstractUIField _uiField)
         throws EFapsException
     {
         Component ret = null;
-        if (applies(_abstractUIField)) {
-            ret = new RadioField(_wicketId, Model.of(_abstractUIField), _abstractUIField.getValue().getEditValue(
-                                            _abstractUIField.getParent().getMode()),
-                            _abstractUIField.getFieldConfiguration());
+        if (applies(_uiField)) {
+            ret = new RadioField(_wicketId, Model.of(_uiField), _uiField.getValue().getEditValue(
+                            _uiField.getParent().getMode()),
+                            _uiField.getFieldConfiguration());
         }
         return ret;
     }
@@ -74,22 +74,52 @@ public class EnumUIFactory
      * {@inheritDoc}
      */
     @Override
-    protected boolean applies(final AbstractUIField _abstractUIField)
+    public boolean applies(final AbstractUIField _uiField)
         throws EFapsException
     {
-        return _abstractUIField.getValue().getUIProvider() instanceof EnumUI;
+        return _uiField.getValue().getUIProvider() instanceof EnumUI;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected String getReadOnlyValue(final AbstractUIField _abstractUIField)
+    protected String getReadOnlyValue(final AbstractUIField _uiField)
         throws EFapsException
     {
-        final Object valueTmp = _abstractUIField.getValue()
-                        .getReadOnlyValue(_abstractUIField.getParent().getMode());
-        return valueTmp == null ? null : EnumUtil.getUILabel((IEnum) valueTmp);
+        final Object valueTmp = _uiField.getValue()
+                        .getReadOnlyValue(_uiField.getParent().getMode());
+        final String ret = valueTmp == null ? null : EnumUtil.getUILabel((IEnum) valueTmp);
+        return ret;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getKey()
+    {
+        return EnumUIFactory.class.getName();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getPickListValue(final AbstractUIField _uiField)
+        throws EFapsException
+    {
+        return getReadOnlyValue(_uiField);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Comparable<String> getCompareValue(final AbstractUIField _uiField)
+        throws EFapsException
+    {
+        return getReadOnlyValue(_uiField);
     }
 
     /**

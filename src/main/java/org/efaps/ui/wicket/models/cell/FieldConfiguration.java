@@ -106,6 +106,14 @@ public class FieldConfiguration
     }
 
     /**
+     * @return the size of the field
+     */
+    public boolean isFixedWidth()
+    {
+        return getField().isFixedWidth();
+    }
+
+    /**
      * @return the rows of the field
      */
     public int getRows()

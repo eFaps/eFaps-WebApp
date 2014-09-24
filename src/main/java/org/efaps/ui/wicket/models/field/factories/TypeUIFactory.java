@@ -33,7 +33,7 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  */
 // CHECKSTYLE:OFF
-public class TypeUIFactory
+public final class TypeUIFactory
     extends AbstractUIFactory
 // CHECKSTYLE:ON
 {
@@ -76,7 +76,7 @@ public class TypeUIFactory
      * {@inheritDoc}
      */
     @Override
-    protected boolean applies(final AbstractUIField _uiField)
+    public boolean applies(final AbstractUIField _uiField)
         throws EFapsException
     {
         return _uiField.getValue().getUIProvider() instanceof TypeUI;
@@ -94,6 +94,35 @@ public class TypeUIFactory
             ret = ((Type) ret).getLabel();
         }
         return ret == null ? "" : String.valueOf(ret);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getKey()
+    {
+        return TypeUIFactory.class.getName();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getPickListValue(final AbstractUIField _uiField)
+        throws EFapsException
+    {
+        return getReadOnlyValue(_uiField);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Comparable<?> getCompareValue(final AbstractUIField _uiField)
+        throws EFapsException
+    {
+        return getReadOnlyValue(_uiField);
     }
 
     /**

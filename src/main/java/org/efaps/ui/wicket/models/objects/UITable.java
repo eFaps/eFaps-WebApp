@@ -38,7 +38,10 @@ import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Status;
 import org.efaps.admin.datamodel.Status.StatusGroup;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.datamodel.ui.BitEnumUI;
+import org.efaps.admin.datamodel.ui.EnumUI;
 import org.efaps.admin.datamodel.ui.FieldValue;
+import org.efaps.admin.datamodel.ui.UIValue;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter.ParameterValues;
@@ -54,6 +57,9 @@ import org.efaps.db.Instance;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.ui.wicket.models.cell.UIHiddenCell;
 import org.efaps.ui.wicket.models.cell.UITableCell;
+import org.efaps.ui.wicket.models.field.IFilterable;
+import org.efaps.ui.wicket.models.field.ISortable;
+import org.efaps.ui.wicket.models.field.UIField;
 import org.efaps.ui.wicket.models.objects.UITableHeader.FilterType;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.util.FilterDefault;
@@ -449,28 +455,8 @@ public class UITable
                     }  else if (field.getPhrase() != null) {
                         value = _multi.getPhrase(field.getName());
                     }
-                    final FieldValue fieldvalue = new FieldValue(field, attr, value, rowInstance, getInstance(),
-                                    new ArrayList<Instance>(_multi.getInstanceList()), this);
-                    String htmlTitle = null;
-                    boolean hidden = false;
-                    if (isPrintMode()) {
-                        strValue = fieldvalue.getStringValue(getMode());
-                    } else {
-                        if ((isCreateMode() || isEditMode()) && field.isEditableDisplay(getMode())) {
-                            strValue = fieldvalue.getEditHtml(getMode());
-                            htmlTitle = fieldvalue.getStringValue(getMode());
-                        } else if (field.isHiddenDisplay(getMode())) {
-                            strValue = fieldvalue.getHiddenHtml(getMode());
-                            hidden = true;
-                        } else {
-                            strValue = fieldvalue.getReadOnlyHtml(getMode());
-                            htmlTitle = fieldvalue.getStringValue(getMode());
-                        }
-                    }
 
-                    if (strValue == null) {
-                        strValue = "";
-                    }
+                    boolean hidden = false;
                     String icon = field.getIcon();
                     if (field.isShowTypeIcon()) {
                         final Image image = Image.getTypeIcon(instance.getType());
@@ -478,14 +464,46 @@ public class UITable
                             icon = image.getUrl();
                         }
                     }
-                    if (hidden) {
-                        row.addHidden(new UIHiddenCell(this, fieldvalue, null, strValue));
+
+                    if (attr != null && attr.getAttributeType().getUIProvider() != null
+                                    && (attr.getAttributeType().getUIProvider() instanceof EnumUI
+                                    || attr.getAttributeType().getUIProvider() instanceof BitEnumUI)) {
+                        final UIField uiField = new UIField(instance.getKey(), this, UIValue.get(field, attr, value)
+                                        .setInstance(instance).setClassObject(this));
+                        row.add(uiField);
                     } else {
-                        final UITableCell cell = new UITableCell(this, fieldvalue, instance, strValue, htmlTitle, icon);
-                        if (cell.isAutoComplete()) {
-                            cell.setCellValue(fieldvalue.getStringValue(getMode()));
+                        final FieldValue fieldvalue = new FieldValue(field, attr, value, rowInstance, getInstance(),
+                                        new ArrayList<Instance>(_multi.getInstanceList()), this);
+                        String htmlTitle = null;
+                        if (isPrintMode()) {
+                            strValue = fieldvalue.getStringValue(getMode());
+                        } else {
+                            if ((isCreateMode() || isEditMode()) && field.isEditableDisplay(getMode())) {
+                                strValue = fieldvalue.getEditHtml(getMode());
+                                htmlTitle = fieldvalue.getStringValue(getMode());
+                            } else if (field.isHiddenDisplay(getMode())) {
+                                strValue = fieldvalue.getHiddenHtml(getMode());
+                                hidden = true;
+                            } else {
+                                strValue = fieldvalue.getReadOnlyHtml(getMode());
+                                htmlTitle = fieldvalue.getStringValue(getMode());
+                            }
                         }
-                        row.add(cell);
+
+                        if (strValue == null) {
+                            strValue = "";
+                        }
+
+                        if (hidden) {
+                            row.addHidden(new UIHiddenCell(this, fieldvalue, null, strValue));
+                        } else {
+                            final UITableCell cell = new UITableCell(this, fieldvalue, instance, strValue, htmlTitle,
+                                            icon);
+                            if (cell.isAutoComplete()) {
+                                cell.setCellValue(fieldvalue.getStringValue(getMode()));
+                            }
+                            row.add(cell);
+                        }
                     }
                     // in case of edit mode an empty version of the first row is stored, and can be used to create
                     // new rows
@@ -597,8 +615,6 @@ public class UITable
             sort();
         }
     }
-
-
 
     /**
      * Method used to evaluate the type for this table from the connected
@@ -763,14 +779,13 @@ public class UITable
      * @param _uitableHeader UitableHeader this filter belongs to
      * @return List of Values
      */
-    public List<String> getFilterPickList(final UITableHeader _uitableHeader)
+    public List<String> getFilterPickList(final UITableHeader _uitableHeader) throws EFapsException
     {
         final List<String> ret = new ArrayList<String>();
         for (final UIRow rowmodel : this.values) {
-            final List<UITableCell> cells = rowmodel.getValues();
-            for (final UITableCell cell : cells) {
-                if (cell.getFieldId() == _uitableHeader.getFieldId()) {
-                    final String value = cell.getCellTitle();
+            for (final IFilterable cell : rowmodel.getCells()) {
+                if (cell.belongsTo(_uitableHeader.getFieldId())) {
+                    final String value = cell.getPickListValue();
                     if (!ret.contains(value)) {
                         ret.add(value);
                     }
@@ -839,7 +854,7 @@ public class UITable
      * @see #values
      * @see #setValues
      */
-    public List<UIRow> getValues()
+    public List<UIRow> getValues() throws EFapsException
     {
         List<UIRow> ret = new ArrayList<UIRow>();
         if (isFiltered()) {
@@ -964,25 +979,9 @@ public class UITable
                     public int compare(final UIRow _rowModel1,
                                        final UIRow _rowModel2)
                     {
-
-                        FieldValue fValue1 = null;
-                        FieldValue fValue2 = null;
-                        try {
-                            final UITableCell cellModel1 = _rowModel1.getValues().get(index);
-                            fValue1 = new FieldValue(getTable().getFields().get(index), cellModel1
-                                            .getUiClass(), cellModel1.getCompareValue() != null ? cellModel1
-                                            .getCompareValue()
-                                            : cellModel1.getCellValue());
-
-                            final UITableCell cellModel2 = _rowModel2.getValues().get(index);
-                            fValue2 = new FieldValue(getTable().getFields().get(index), cellModel2
-                                            .getUiClass(), cellModel2.getCompareValue() != null ? cellModel2
-                                            .getCompareValue()
-                                            : cellModel2.getCellValue());
-                        } catch (final CacheReloadException e) {
-                            UITable.LOG.error("Error during sorting for table", e);
-                        }
-                        return fValue1.compareTo(fValue2);
+                        final ISortable cellModel1 = _rowModel1.getCells().get(index);
+                        final ISortable cellModel2 = _rowModel2.getCells().get(index);
+                        return cellModel1.compareTo(cellModel2);
                     }
                 });
                 if (getSortDirection() == SortDirection.DESCENDING) {
@@ -1273,16 +1272,15 @@ public class UITable
          * @return false if the row must be shown to the user, true if the row
          *         must be filtered
          */
-        public boolean filterRow(final UIRow _uiRow)
+        public boolean filterRow(final UIRow _uiRow) throws EFapsException
         {
             boolean ret = false;
             if (this.headerFieldId > 0
                             && Field.get(this.headerFieldId).getFilter().getBase().equals(Filter.Base.MEMORY)) {
-                final List<UITableCell> cells = _uiRow.getValues();
-                for (final UITableCell cell : cells) {
-                    if (cell.getFieldId() == this.headerFieldId) {
+                for (final IFilterable cell : _uiRow.getCells()) {
+                    if (cell.belongsTo(this.headerFieldId)) {
                         if (this.filterList != null) {
-                            final String value = cell.getCellTitle();
+                            final String value = cell.getPickListValue();
                             if (!this.filterList.contains(value)) {
                                 ret = true;
                             }

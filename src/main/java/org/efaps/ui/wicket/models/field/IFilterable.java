@@ -18,13 +18,9 @@
  * Last Changed By: $Author$
  */
 
-
 package org.efaps.ui.wicket.models.field;
 
-import java.io.Serializable;
-
-import org.efaps.ui.wicket.models.cell.UIPicker;
-
+import org.efaps.util.EFapsException;
 
 /**
  * TODO comment!
@@ -32,13 +28,20 @@ import org.efaps.ui.wicket.models.cell.UIPicker;
  * @author The eFaps Team
  * @version $Id$
  */
-public interface IPickable
-    extends Serializable
+public interface IFilterable
+    extends ISortable
 {
 
     /**
-     * @return picker model
+     * @param _fieldId id of the field to be checked for
+     * @return true if this filterable belongs to the given header
      */
-    UIPicker getPicker();
+    boolean belongsTo(final Long _fieldId);
 
+    /**
+     * @return value for the picklist
+     * @throws EFapsException on error
+     */
+    String getPickListValue()
+        throws EFapsException;
 }

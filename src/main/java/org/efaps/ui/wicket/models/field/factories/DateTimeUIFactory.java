@@ -35,10 +35,11 @@ import org.joda.time.format.DateTimeFormatter;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
+ * @version $Id: DateTimeUIFactory.java 12415 2014-04-08 16:48:28Z
+ *          jan@moxter.net $
  */
 // CHECKSTYLE:OFF
-public class DateTimeUIFactory
+public final class DateTimeUIFactory
     extends AbstractUIFactory
 // CHECKSTYLE:ON
 {
@@ -75,7 +76,7 @@ public class DateTimeUIFactory
      * {@inheritDoc}
      */
     @Override
-    protected boolean applies(final AbstractUIField _abstractUIField)
+    public boolean applies(final AbstractUIField _abstractUIField)
         throws EFapsException
     {
         return _abstractUIField.getValue().getUIProvider() instanceof DateTimeUI;
@@ -88,7 +89,6 @@ public class DateTimeUIFactory
     protected String getReadOnlyValue(final AbstractUIField _abstractUIField)
         throws EFapsException
     {
-
         String strValue = "";
         final Object valueTmp = _abstractUIField.getValue()
                         .getReadOnlyValue(_abstractUIField.getParent().getMode());
@@ -100,6 +100,35 @@ public class DateTimeUIFactory
             strValue = dateTmp.toString(formatter.withLocale(Context.getThreadContext().getLocale()));
         }
         return strValue;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getKey()
+    {
+        return DateTimeUIFactory.class.getName();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getPickListValue(final AbstractUIField _uiField)
+        throws EFapsException
+    {
+        return getReadOnlyValue(_uiField);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Comparable<?> getCompareValue(final AbstractUIField _uiField)
+        throws EFapsException
+    {
+        return (Comparable<?>) _uiField.getValue().getReadOnlyValue(_uiField.getParent().getMode());
     }
 
     /**

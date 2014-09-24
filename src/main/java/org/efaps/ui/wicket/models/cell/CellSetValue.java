@@ -21,6 +21,7 @@
 package org.efaps.ui.wicket.models.cell;
 
 import org.efaps.admin.datamodel.ui.UIValue;
+import org.efaps.ui.wicket.models.field.ISortable;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.util.EFapsException;
 
@@ -85,5 +86,25 @@ public class CellSetValue
     public UIFormCellSet getCellSet()
     {
         return this.cellSet;
+    }
+
+    /* (non-Javadoc)
+     * @see org.efaps.ui.wicket.models.field.ISortable#getCompareValue()
+     */
+    @Override
+    public Comparable<?> getCompareValue()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(final ISortable _o)
+    {
+        // TODO Auto-generated method stub
+        return 0;
     }
 }

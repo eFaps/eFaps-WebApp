@@ -20,9 +20,6 @@
 
 package org.efaps.ui.wicket.components.table.row;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -37,11 +34,14 @@ import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.table.AjaxAddRemoveRowPanel;
 import org.efaps.ui.wicket.components.table.TablePanel;
 import org.efaps.ui.wicket.components.table.cell.CellPanel;
+import org.efaps.ui.wicket.components.table.field.FieldPanel;
 import org.efaps.ui.wicket.models.AbstractInstanceObject;
 import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.cell.UIHiddenCell;
 import org.efaps.ui.wicket.models.cell.UITableCell;
+import org.efaps.ui.wicket.models.field.AbstractUIField;
+import org.efaps.ui.wicket.models.field.IFilterable;
 import org.efaps.ui.wicket.models.objects.UIRow;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.models.objects.UITableHeader;
@@ -62,11 +62,11 @@ public class RowPanel
     private static final long serialVersionUID = 1L;
 
     /**
-     * @param _wicketId         wicket id for this component
-     * @param _model            model for this component
-     * @param _tablePanel       tablepanel this row is in
-     * @param _updateListMenu   must the listmenu be updated
-     * @param _idx              index of the current row
+     * @param _wicketId wicket id for this component
+     * @param _model model for this component
+     * @param _tablePanel tablepanel this row is in
+     * @param _updateListMenu must the listmenu be updated
+     * @param _idx index of the current row
      * @throws EFapsException on error
      *
      */
@@ -97,7 +97,7 @@ public class RowPanel
         }
         if (uiTable.isEditable()) {
             final AjaxAddRemoveRowPanel remove = new AjaxAddRemoveRowPanel(cellRepeater.newChildId(),
-                                                                           new TableModel(uiTable), this);
+                            new TableModel(uiTable), this);
             remove.setOutputMarkupId(true);
             remove.add(AttributeModifier.append("class", "eFapsTableRemoveRowCell eFapsTableCellClear"));
             cellRepeater.add(remove);
@@ -105,43 +105,50 @@ public class RowPanel
             firstCell = true;
         }
 
-        final Map<String, Component> name2comp = new HashMap<String, Component>();
+        for (final IFilterable filterable : uirow.getCells()) {
+            Component cell = null;
+            boolean fixedWidth = false;
+            if (filterable instanceof UITableCell) {
+                final UITableCell uiCell = (UITableCell) filterable;
+                if (uiTable.isEditable() && uiCell.getDisplay().equals(Display.EDITABLE)
+                                && (uiCell.getUiClass() instanceof DateUI
+                                || uiCell.getUiClass() instanceof DateTimeUI)) {
 
-        for (final UITableCell uiCell : uirow.getValues()) {
-            Component cell;
-            if (uiTable.isEditable() && uiCell.getDisplay().equals(Display.EDITABLE)
-                            && (uiCell.getUiClass() instanceof DateUI || uiCell.getUiClass() instanceof DateTimeUI)) {
-
-                final UITableHeader header = uiTable.getHeader4Id(uiCell.getFieldId());
-                final String label;
-                if (header == null) {
-                    label = "";
+                    final UITableHeader header = uiTable.getHeader4Id(uiCell.getFieldId());
+                    final String label;
+                    if (header == null) {
+                        label = "";
+                    } else {
+                        label = header.getLabel();
+                    }
+                    cell = new DateTimePanel("label", uiCell.getCompareValue(), uiCell.getName(), label,
+                                    uiCell.getUiClass() instanceof DateTimeUI,
+                                    uiCell.getField().getCols());
                 } else {
-                    label = header.getLabel();
+                    cell = new CellPanel(cellRepeater.newChildId(), new UIModel<UITableCell>(uiCell),
+                                    _updateListMenu, uiTable, _idx);
                 }
-                cell = new DateTimePanel("label", uiCell.getCompareValue(), uiCell.getName(), label,
-                                uiCell.getUiClass() instanceof DateTimeUI,
-                                uiCell.getField().getCols());
-            } else {
-                cell = new CellPanel(cellRepeater.newChildId(), new UIModel<UITableCell>(uiCell),
-                                                      _updateListMenu, uiTable, _idx);
+                fixedWidth = uiCell.isFixedWidth();
+            } else if (filterable instanceof AbstractUIField) {
+                fixedWidth = ((AbstractUIField) filterable).getFieldConfiguration().isFixedWidth();
+                cell = new FieldPanel(cellRepeater.newChildId(), Model.of((AbstractUIField) filterable));
             }
             cell.setOutputMarkupId(true);
-            if (uiCell.isFixedWidth()) {
+            if (fixedWidth) {
                 if (firstCell) {
                     firstCell = false;
-                    cell.add(AttributeModifier.append("class",  "eFapsTableFirstCell eFapsTableCell"
+                    cell.add(AttributeModifier.append("class", "eFapsTableFirstCell eFapsTableCell"
                                     + " eFapsCellFixedWidth" + i));
                 } else {
-                    cell.add(AttributeModifier.append("class",  "eFapsTableCell eFapsCellFixedWidth" + i));
+                    cell.add(AttributeModifier.append("class", "eFapsTableCell eFapsCellFixedWidth" + i));
                 }
             } else {
                 if (firstCell) {
                     firstCell = false;
-                    cell.add(AttributeModifier.append("class",  "eFapsTableFirstCell eFapsTableCell"
+                    cell.add(AttributeModifier.append("class", "eFapsTableFirstCell eFapsTableCell"
                                     + " eFapsCellWidth" + i));
                 } else {
-                    cell.add(AttributeModifier.append("class",  "eFapsTableCell eFapsCellWidth" + i));
+                    cell.add(AttributeModifier.append("class", "eFapsTableCell eFapsCellWidth" + i));
                 }
             }
             if (cellRepeater.size() < 1) {
@@ -149,7 +156,6 @@ public class RowPanel
             }
             cellRepeater.add(cell);
             i++;
-            name2comp.put(uiCell.getName(), cell);
         }
 
         final RepeatingView hiddenRepeater = new RepeatingView("hiddenRepeater");

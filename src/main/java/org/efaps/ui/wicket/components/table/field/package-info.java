@@ -18,27 +18,10 @@
  * Last Changed By: $Author$
  */
 
-
-package org.efaps.ui.wicket.models.field;
-
-import java.io.Serializable;
-
-import org.efaps.ui.wicket.models.cell.UIPicker;
-
-
 /**
- * TODO comment!
+ * Field element.
  *
  * @author The eFaps Team
  * @version $Id$
  */
-public interface IPickable
-    extends Serializable
-{
-
-    /**
-     * @return picker model
-     */
-    UIPicker getPicker();
-
-}
+package org.efaps.ui.wicket.components.table.field;

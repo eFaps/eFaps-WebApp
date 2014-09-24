@@ -28,42 +28,77 @@ import org.efaps.util.EFapsException;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
+ * @version $Id: IComponentFactory.java 14033 2014-09-15 21:44:25Z
+ *          jan@moxter.net $
  */
 public interface IComponentFactory
 {
 
     /**
      * Get an editable component.
+     *
      * @param _wicketId wicket if for the component
-     * @param _abstractUIField field use for the component
+     * @param _uiField field use for the component
      * @return the component
      * @throws EFapsException on error
      */
     Component getEditable(final String _wicketId,
-                          final AbstractUIField _abstractUIField)
+                          final AbstractUIField _uiField)
         throws EFapsException;
 
     /**
-     *  Get an read only component.
+     * Get an read only component.
+     *
      * @param _wicketId wicket if for the component
-     * @param _abstractUIField field use for the component
+     * @param _uiField field use for the component
      * @return the component
      * @throws EFapsException on error
      */
     Component getReadOnly(final String _wicketId,
-                          final AbstractUIField _abstractUIField)
+                          final AbstractUIField _uiField)
         throws EFapsException;
 
     /**
      * Get an hidden component.
+     *
      * @param _wicketId wicket if for the component
-     * @param _abstractUIField field use for the component
+     * @param _uiField field used for the component
      * @return the component
      * @throws EFapsException on error
      */
     Component getHidden(final String _wicketId,
-                        final AbstractUIField _abstractUIField)
+                        final AbstractUIField _uiField)
         throws EFapsException;
+
+    /**
+     * Get key to this Factory.
+     *
+     * @return key to this Factory
+     */
+    String getKey();
+
+    /**
+     * @param _uiField field used
+     * @return value for the picklist
+     * @throws EFapsException on error
+     */
+    String getPickListValue(final AbstractUIField _uiField)
+        throws EFapsException;
+
+    /**
+     * @param __uiField field used
+     * @return comparable
+     * @throws EFapsException on error
+     */
+    Comparable<?> getCompareValue(final AbstractUIField _uiField)
+        throws EFapsException;
+
+    /**
+     * @param __uiField field used
+     * @return comparable
+     * @throws EFapsException on error
+     */
+    boolean applies(final AbstractUIField _abstractUIField)
+                    throws EFapsException;
 
 }

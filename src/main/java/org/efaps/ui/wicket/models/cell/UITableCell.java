@@ -35,7 +35,9 @@ import org.efaps.admin.ui.field.FieldPicker;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.models.cell.AutoCompleteSettings.EditValue;
+import org.efaps.ui.wicket.models.field.IFilterable;
 import org.efaps.ui.wicket.models.field.IPickable;
+import org.efaps.ui.wicket.models.field.ISortable;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.util.EFapsException;
@@ -51,7 +53,7 @@ import org.efaps.util.cache.CacheReloadException;
  */
 public class UITableCell
     extends AbstractUICell
-    implements IPickable
+    implements IPickable, IFilterable
 {
 
     /**
@@ -273,9 +275,10 @@ public class UITableCell
      *
      * @return value of instance variable {@link #compareValue}
      */
-    public Object getCompareValue()
+    @Override
+    public Comparable<?> getCompareValue()
     {
-        return this.compareValue;
+        return (Comparable<?>) this.compareValue;
     }
 
     /**
@@ -480,4 +483,31 @@ public class UITableCell
     {
         this.autoCompleteSetting = _autoCompleteSetting;
     }
+
+    @Override
+    public boolean belongsTo(final Long _fieldId)
+    {
+        return _fieldId == getFieldId();
+    }
+
+    @Override
+    public String getPickListValue()
+    {
+        return getCellTitle();
+    }
+
+    @Override
+    public int compareTo(final ISortable _sortable)
+    {
+        int ret = 0;
+        if (_sortable instanceof UITableCell) {
+            final FieldValue fValue1 = new FieldValue(getField(), getUiClass(),
+                            getCompareValue() != null ? getCompareValue() : getCellValue());
+            final UITableCell cell = (UITableCell) _sortable;
+            final FieldValue fValue2 = new FieldValue(cell.getField(), cell.getUiClass(),
+                            cell.getCompareValue() != null ? cell.getCompareValue() : cell.getCellValue());
+            ret = fValue1.compareTo(fValue2);
+        }
+        return ret;
+    };
 }

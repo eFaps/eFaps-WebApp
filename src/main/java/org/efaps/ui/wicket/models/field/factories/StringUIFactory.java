@@ -32,7 +32,8 @@ import org.efaps.util.EFapsException;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
+ * @version $Id: StringUIFactory.java 14076 2014-09-22 19:22:26Z jan@moxter.net
+ *          $
  */
 // CHECKSTYLE:OFF
 public class StringUIFactory
@@ -83,7 +84,7 @@ public class StringUIFactory
      * {@inheritDoc}
      */
     @Override
-    protected boolean applies(final AbstractUIField _uiField)
+    public boolean applies(final AbstractUIField _uiField)
         throws EFapsException
     {
         return _uiField.getValue().getUIProvider() instanceof StringUI;
@@ -96,8 +97,37 @@ public class StringUIFactory
     protected String getReadOnlyValue(final AbstractUIField _uiField)
         throws EFapsException
     {
-        final Object ret = _uiField.getValue().getReadOnlyValue(_uiField.getParent().getMode());
-        return ret == null ? "" : String.valueOf(ret);
+        final Object obj = _uiField.getValue().getReadOnlyValue(_uiField.getParent().getMode());
+        return obj == null ? "" : String.valueOf(obj);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getKey()
+    {
+        return StringUIFactory.class.getName();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getPickListValue(final AbstractUIField _uiField)
+        throws EFapsException
+    {
+        return getReadOnlyValue(_uiField);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Comparable<?> getCompareValue(final AbstractUIField _uiField)
+        throws EFapsException
+    {
+        return getReadOnlyValue(_uiField);
     }
 
     /**

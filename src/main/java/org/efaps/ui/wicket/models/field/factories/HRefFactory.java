@@ -87,9 +87,7 @@ public class HRefFactory
         throws EFapsException
     {
         Component ret = null;
-        if (TargetMode.VIEW.equals(_uiField.getParent().getMode())
-                        && _uiField.getFieldConfiguration().getField().getReference() != null
-                        && _uiField.getInstanceKey() != null) {
+        if (applies(_uiField)) {
             final Menu menu = Menu.getTypeTreeMenu(_uiField.getInstance().getType());
             if (menu != null && menu.hasAccess(_uiField.getParent().getMode(), _uiField.getInstance())
                             && (!((AbstractUIPageObject) _uiField.getParent()).getAccessMap().containsKey(
@@ -108,7 +106,7 @@ public class HRefFactory
                     }
                 }
                 String content = null;
-                for (final IComponentFactory factory : _uiField.getFactories()) {
+                for (final IComponentFactory factory : _uiField.getFactories().values()) {
                     if (factory instanceof AbstractUIFactory) {
                         final AbstractUIFactory uiFactory = (AbstractUIFactory) factory;
                         if (uiFactory.applies(_uiField)) {
@@ -126,6 +124,51 @@ public class HRefFactory
             }
         }
         return ret;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getKey()
+    {
+        return HRefFactory.class.getName();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getPickListValue(final AbstractUIField _uiField)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.efaps.ui.wicket.models.field.factories.IComponentFactory#getCompareValue
+     * (org.efaps.ui.wicket.models.field.AbstractUIField)
+     */
+    @Override
+    public Comparable<?> getCompareValue(final AbstractUIField _uiField)
+        throws EFapsException
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean applies(final AbstractUIField _uiField)
+        throws EFapsException
+    {
+        return TargetMode.VIEW.equals(_uiField.getParent().getMode())
+                        && _uiField.getFieldConfiguration().getField().getReference() != null
+                        && _uiField.getInstanceKey() != null;
     }
 
     /**

@@ -33,13 +33,15 @@ import org.efaps.util.EFapsException;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
+ * @version $Id: LinkWithRangesUIFactory.java 14033 2014-09-15 21:44:25Z
+ *          jan@moxter.net $
  */
 // CHECKSTYLE:OFF
-public class LinkWithRangesUIFactory
+public final class LinkWithRangesUIFactory
     extends AbstractUIFactory
 // CHECKSTYLE:ON
 {
+
     /**
      * Factory Instance.
      */
@@ -85,7 +87,7 @@ public class LinkWithRangesUIFactory
      * {@inheritDoc}
      */
     @Override
-    protected boolean applies(final AbstractUIField _abstractUIField)
+    public boolean applies(final AbstractUIField _abstractUIField)
         throws EFapsException
     {
         return _abstractUIField.getValue().getUIProvider() instanceof LinkWithRangesUI;
@@ -106,6 +108,35 @@ public class LinkWithRangesUIFactory
             strValue = String.valueOf(map.get(_abstractUIField.getValue().getDbValue()));
         }
         return strValue;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getKey()
+    {
+        return LinkWithRangesUIFactory.class.getName();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getPickListValue(final AbstractUIField _uiField)
+        throws EFapsException
+    {
+        return getReadOnlyValue(_uiField);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Comparable<?> getCompareValue(final AbstractUIField _uiField)
+        throws EFapsException
+    {
+        return getReadOnlyValue(_uiField);
     }
 
     /**

@@ -18,7 +18,6 @@
  * Last Changed By: $Author$
  */
 
-
 package org.efaps.ui.wicket.models.field.factories;
 
 import java.util.HashMap;
@@ -35,18 +34,18 @@ import org.efaps.admin.user.Person.AttrName;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.util.EFapsException;
 
-
 /**
  * TODO comment!
  *
  * @author The eFaps Team
  * @version $Id$
  */
-//CHECKSTYLE:OFF
-public class UserUIFactory
+// CHECKSTYLE:OFF
+public final class UserUIFactory
     extends AbstractUIFactory
-//CHECKSTYLE:ON
+// CHECKSTYLE:ON
 {
+
     /**
      * Factory Instance.
      */
@@ -68,7 +67,7 @@ public class UserUIFactory
     }
 
     @Override
-    protected boolean applies(final AbstractUIField _abstractUIField)
+    public boolean applies(final AbstractUIField _abstractUIField)
         throws EFapsException
     {
         return _abstractUIField.getValue().getUIProvider() instanceof UserUI;
@@ -92,13 +91,43 @@ public class UserUIFactory
                 values.put(attr.name(), person.getAttrValue(attr));
             }
             final StrSubstitutor sub = new StrSubstitutor(values);
-            strValue =  sub.replace(display);
+            strValue = sub.replace(display);
         } else if (valueTmp instanceof AbstractUserObject) {
             final AbstractUserObject userObj = (AbstractUserObject) valueTmp;
             strValue = userObj.getName();
         }
         return strValue;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getKey()
+    {
+        return UserUIFactory.class.getName();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getPickListValue(final AbstractUIField _uiField)
+        throws EFapsException
+    {
+        return getReadOnlyValue(_uiField);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Comparable<?> getCompareValue(final AbstractUIField _uiField)
+        throws EFapsException
+    {
+        return getReadOnlyValue(_uiField);
+    }
+
     /**
      * @return IComponentFactory instance
      */

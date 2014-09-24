@@ -56,10 +56,12 @@ public abstract class AbstractUIFactory
                     icon = image.getUrl();
                 }
             }
+            final String readonly = getReadOnlyValue(_uiField);
+            _uiField.setPickListValue(readonly);
             if (icon == null) {
-                ret = new LabelField(_wicketId, Model.of(getReadOnlyValue(_uiField)), _uiField);
+                ret = new LabelField(_wicketId, Model.of(readonly), _uiField);
             } else {
-                ret = new IconLabelField(_wicketId, Model.of(_uiField), getReadOnlyValue(_uiField), icon);
+                ret = new IconLabelField(_wicketId, Model.of(_uiField), readonly, icon);
             }
         }
         return ret;
@@ -77,19 +79,10 @@ public abstract class AbstractUIFactory
     }
 
     /**
-     * @param _abstractUIField AbstractUIField the component is wanted for
-     * @return true if this factory applies to the given Field, else false
-     * @throws EFapsException on error
-     */
-    protected abstract boolean applies(final AbstractUIField _abstractUIField)
-        throws EFapsException;
-
-    /**
      * @param _abstractUIField  AbstractUIField the component is wanted for
      * @return String value used for a LabelField
      * @throws EFapsException on error
      */
     protected abstract String getReadOnlyValue(final AbstractUIField _abstractUIField)
         throws EFapsException;
-
 }
