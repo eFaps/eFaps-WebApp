@@ -379,6 +379,44 @@ public class UITable
     }
 
     /**
+     * @param _multi multiprint
+     * @param _field field the instance is wanted for
+     * @return instance for the field
+     * @throws EFapsException on erro
+     */
+    private Instance evaluateFieldInstance(final MultiPrintQuery _multi,
+                                           final Field _field)
+        throws EFapsException
+    {
+        Instance ret = _multi.getCurrentInstance();
+        if (_field.getSelectAlternateOID() != null) {
+            try {
+                final Object alternateObj = _multi.getSelect(_field.getSelectAlternateOID());
+                if (alternateObj instanceof String) {
+                    Instance.get((String) alternateObj);
+                } else if (alternateObj instanceof Instance) {
+                    ret = (Instance) alternateObj;
+                }
+            } catch (final ClassCastException e) {
+                UITable.LOG.error("Field '{}' has invalid SelectAlternateOID value", _field);
+            }
+        } else if (_field.hasEvents(EventType.UI_FIELD_ALTINST)) {
+            final List<Return> retTmps = _field.executeEvents(EventType.UI_FIELD_ALTINST,
+                            ParameterValues.INSTANCE, ret,
+                            ParameterValues.CALL_INSTANCE, getInstance(),
+                            ParameterValues.REQUEST_INSTANCES,_multi.getInstanceList(),
+                            ParameterValues.PARAMETERS, Context.getThreadContext().getParameters(),
+                            ParameterValues.CLASS, this);
+            for (final Return retTmp : retTmps) {
+                if (retTmp.contains(ReturnValues.INSTANCE) && retTmp.get(ReturnValues.INSTANCE) != null) {
+                    ret = (Instance) retTmp.get(ReturnValues.INSTANCE);
+                }
+            }
+        }
+        return ret;
+    }
+
+    /**
      * @param _multi Query
      * @param _fields Fields
      * @throws EFapsException on error
@@ -389,23 +427,15 @@ public class UITable
     {
         boolean first = true;
         while (_multi.next()) {
-            Instance instance = _multi.getCurrentInstance();
-            final UIRow row = new UIRow(this, instance.getKey());
+            final Instance rowInstance = _multi.getCurrentInstance();
+            final UIRow row = new UIRow(this, rowInstance.getKey());
 
             String strValue = "";
             if (isEditMode() && first) {
                 this.emptyRow = new UIRow(this);
             }
             for (final Field field : _fields) {
-                if (field.getSelectAlternateOID() != null) {
-                    try {
-                        instance = Instance.get(_multi.<String> getSelect(field.getSelectAlternateOID()));
-                    } catch (final ClassCastException e) {
-                        UITable.LOG.error("Field '{}' has invalid SelectAlternateOID value", field);
-                    }
-                } else {
-                    instance = _multi.getCurrentInstance();
-                }
+                final Instance instance = evaluateFieldInstance(_multi, field);
                 if (field.hasAccess(getMode(), instance, getCommand(), getInstance())
                                 && !field.isNoneDisplay(getMode())) {
                     Object value = null;
@@ -419,7 +449,7 @@ public class UITable
                     }  else if (field.getPhrase() != null) {
                         value = _multi.getPhrase(field.getName());
                     }
-                    final FieldValue fieldvalue = new FieldValue(field, attr, value, instance, getInstance(),
+                    final FieldValue fieldvalue = new FieldValue(field, attr, value, rowInstance, getInstance(),
                                     new ArrayList<Instance>(_multi.getInstanceList()), this);
                     String htmlTitle = null;
                     boolean hidden = false;
