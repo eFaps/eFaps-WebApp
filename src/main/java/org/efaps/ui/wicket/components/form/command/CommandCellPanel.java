@@ -32,6 +32,7 @@ import org.efaps.ui.wicket.components.autocomplete.AutoCompleteComboBox;
 import org.efaps.ui.wicket.components.autocomplete.AutoCompleteField;
 import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.models.cell.UIFormCellCmd;
+import org.efaps.ui.wicket.models.field.IAutoComplete;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 
@@ -69,7 +70,7 @@ public class CommandCellPanel
 
         if (uiObject.isAutoComplete()
                         && (_formmodel.isCreateMode() || _formmodel.isCreateMode() || _formmodel.isSearchMode())) {
-            auto = new AutoCompleteComboBox("autocomplete", _model, false);
+            auto = new AutoCompleteComboBox("autocomplete", Model.of((IAutoComplete) _model.getObject()), false);
             add2Auto = true;
         } else {
             auto = new WebComponent("autocomplete").setVisible(false);

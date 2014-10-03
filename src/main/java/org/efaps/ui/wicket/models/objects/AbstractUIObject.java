@@ -365,7 +365,7 @@ public abstract class AbstractUIObject
                             ? this.getCommand().getName() + ".Title"
                             : this.getCommand().getTargetTitle();
             title = DBProperties.getProperty(key);
-            if ((title != null) && (getInstance() != null)) {
+            if (title != null && getInstance() != null) {
                 final PrintQuery print = new PrintQuery(getInstance());
                 final ValueParser parser = new ValueParser(new StringReader(title));
                 final ValueList list = parser.ExpressionString();
@@ -391,61 +391,6 @@ public abstract class AbstractUIObject
                             "Error reading the Title")));
         } // CHECKSTYLE:ON
         return title;
-    }
-
-    /**
-     * Method to check if mode is create.
-     *
-     * @see #mode
-     * @return true if mode is create
-     */
-    public boolean isCreateMode()
-    {
-        return getMode() == TargetMode.CREATE;
-    }
-
-    /**
-     * Method to check if mode is edit.
-     *
-     * @see #mode
-     * @return true if mode is edit
-     */
-    public boolean isEditMode()
-    {
-        return getMode() == TargetMode.EDIT;
-    }
-
-    /**
-     * Method to check if mode is search.
-     *
-     * @see #mode
-     * @return true if mode is search
-     */
-    public boolean isSearchMode()
-    {
-        return getMode() == TargetMode.SEARCH;
-    }
-
-    /**
-     * Method to check if mode is view.
-     *
-     * @see #mode
-     * @return true if mode is view
-     */
-    public boolean isViewMode()
-    {
-        return getMode() == TargetMode.VIEW || getMode() == TargetMode.UNKNOWN;
-    }
-
-    /**
-     * Method to check if mode is view.
-     *
-     * @see #mode
-     * @return true if mode is print
-     */
-    public boolean isPrintMode()
-    {
-        return getMode() == TargetMode.PRINT;
     }
 
     /**
@@ -538,7 +483,7 @@ public abstract class AbstractUIObject
             if (_objectTuples != null) {
                 // add all parameters
                 for (int i = 0; i < _objectTuples.length; i += 2) {
-                    if (((i + 1) < _objectTuples.length) && (_objectTuples[i] instanceof ParameterValues)) {
+                    if (i + 1 < _objectTuples.length && _objectTuples[i] instanceof ParameterValues) {
                         param.put((ParameterValues) _objectTuples[i], _objectTuples[i + 1]);
                     }
                 }

@@ -30,6 +30,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.datamodel.ui.UIValue;
 import org.efaps.admin.dbproperty.DBProperties;
+import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
@@ -38,8 +39,11 @@ import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.components.values.LabelField;
 import org.efaps.ui.wicket.models.AbstractInstanceObject;
+import org.efaps.ui.wicket.models.cell.AutoCompleteSettings;
+import org.efaps.ui.wicket.models.cell.AutoCompleteSettings.EditValue;
 import org.efaps.ui.wicket.models.cell.FieldConfiguration;
 import org.efaps.ui.wicket.models.cell.UIPicker;
+import org.efaps.ui.wicket.models.field.factories.AutoCompleteFactory;
 import org.efaps.ui.wicket.models.field.factories.BitEnumUIFactory;
 import org.efaps.ui.wicket.models.field.factories.BooleanUIFactory;
 import org.efaps.ui.wicket.models.field.factories.DateTimeUIFactory;
@@ -67,7 +71,7 @@ import org.efaps.util.EFapsException;
  */
 public abstract class AbstractUIField
     extends AbstractInstanceObject
-    implements IPickable, IHidden, IFilterable
+    implements IPickable, IHidden, IFilterable, IAutoComplete
 {
     /**
      * Needed for serialization.
@@ -81,6 +85,7 @@ public abstract class AbstractUIField
 
     static {
         AbstractUIField.FACTORIES.put(HRefFactory.get().getKey(), HRefFactory.get());
+        AbstractUIField.FACTORIES.put(AutoCompleteFactory.get().getKey(), AutoCompleteFactory.get());
         AbstractUIField.FACTORIES.put(StringUIFactory.get().getKey(), StringUIFactory.get());
         AbstractUIField.FACTORIES.put(LinkWithRangesUIFactory.get().getKey(), LinkWithRangesUIFactory.get());
         AbstractUIField.FACTORIES.put(BooleanUIFactory.get().getKey(), BooleanUIFactory.get());
@@ -132,6 +137,11 @@ public abstract class AbstractUIField
     private String pickListValue;
 
     /**
+     * Settings for the AutoComplete.
+     */
+    private AutoCompleteSettings autoCompleteSetting;
+
+    /**
      * @param _instanceKey key to the instance
      * @param _parent       parent object
      * @param _value        value
@@ -149,10 +159,65 @@ public abstract class AbstractUIField
     }
 
     /**
+     * Getter method for the instance variable {@link #autoCompleteSetting}.
+     *
+     * @return value of instance variable {@link #autoCompleteSetting}
+     */
+    @Override
+    public AutoCompleteSettings getAutoCompleteSetting()
+    {
+        if (this.autoCompleteSetting == null && isAutoComplete()) {
+            this.autoCompleteSetting = new AutoCompleteSettings();
+
+            this.autoCompleteSetting.setFieldName(getFieldConfiguration().getField().getName());
+            final List<EventDefinition> events = getFieldConfiguration().getField().getEvents(
+                            EventType.UI_FIELD_AUTOCOMPLETE);
+            for (final EventDefinition event : events) {
+                this.autoCompleteSetting.setMinInputLength(event.getProperty("MinInputLength") == null
+                                ? 1 : Integer.valueOf(event.getProperty("MinInputLength")));
+                this.autoCompleteSetting.setMaxChoiceLength(event.getProperty("MaxChoiceLength") == null
+                                ? -1 : Integer.valueOf(event.getProperty("MaxChoiceLength")));
+                this.autoCompleteSetting.setMaxValueLength(event.getProperty("MaxValueLength") == null
+                                ? -1 : Integer.valueOf(event.getProperty("MaxValueLength")));
+                if (event.getProperty("MaxResult") != null) {
+                    this.autoCompleteSetting.setMaxResult(Integer.valueOf(event.getProperty("MaxResult")));
+                }
+                if (event.getProperty("HasDownArrow") != null) {
+                    this.autoCompleteSetting
+                                    .setHasDownArrow("true".equalsIgnoreCase(event.getProperty("HasDownArrow")));
+                }
+                if (event.getProperty("Required") != null) {
+                    this.autoCompleteSetting
+                                    .setRequired(!"false".equalsIgnoreCase(event.getProperty("Required")));
+                }
+                final String ep = event.getProperty("ExtraParameter");
+                if (ep != null) {
+                    this.autoCompleteSetting.getExtraParameters().add(ep);
+                }
+                for (int i = 1; i < 100; i++) {
+                    final String keyTmp = "ExtraParameter" + String.format("%02d", i);
+                    final String epTmp = event.getProperty(keyTmp);
+                    if (epTmp == null) {
+                        break;
+                    } else {
+                        this.autoCompleteSetting.getExtraParameters().add(epTmp);
+                    }
+                }
+                final String value4EditStr = event.getProperty("Value4Edit");
+                if (value4EditStr != null) {
+                    this.autoCompleteSetting.setValue4Edit(EditValue.valueOf(value4EditStr));
+                }
+            }
+        }
+        return this.autoCompleteSetting;
+    }
+
+    /**
      * Getter method for the instance variable {@link #parent}.
      *
      * @return value of instance variable {@link #parent}
      */
+    @Override
     public AbstractUIModeObject getParent()
     {
         return this.parent;
@@ -480,5 +545,34 @@ public abstract class AbstractUIField
     public void setPickListValue(final String _pickListValue)
     {
         this.pickListValue = _pickListValue;
+    }
+
+    /**
+     * @return
+     */
+    public boolean isAutoComplete()
+    {
+        return getFieldConfiguration().getField().hasEvents(EventType.UI_FIELD_AUTOCOMPLETE);
+    }
+
+    @Override
+    public boolean isFieldUpdate()
+    {
+        return getFieldConfiguration().getField().hasEvents(EventType.UI_FIELD_UPDATE);
+    }
+
+    @Override
+    public List<Return> getAutoCompletion(final String _input,
+                                          final Map<String, String> _uiID2Oid)
+        throws EFapsException
+    {
+        return executeEvents(EventType.UI_FIELD_AUTOCOMPLETE, _input, _uiID2Oid);
+    }
+
+    @Override
+    public String getAutoCompleteValue()
+        throws EFapsException
+    {
+        return String.valueOf(getValue().getReadOnlyValue(getParent().getMode()));
     }
 }

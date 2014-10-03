@@ -39,7 +39,7 @@ import org.efaps.ui.wicket.behaviors.SetSelectedRowBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.AutoCompleteBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.AutoCompleteBehavior.AutoCompleteField;
 import org.efaps.ui.wicket.models.cell.AutoCompleteSettings.EditValue;
-import org.efaps.ui.wicket.models.cell.UITableCell;
+import org.efaps.ui.wicket.models.field.IAutoComplete;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
@@ -69,7 +69,7 @@ public class AutoCompleteComboBox
     /**
      * the cell this automcoplete belongs to.
      */
-    private final UITableCell uiAbstractCell;
+    private final IAutoComplete autoComplete;
 
     /**
      * @param _wicketId     wicket id for this component
@@ -77,26 +77,28 @@ public class AutoCompleteComboBox
      * @param _selectRow    add selected row behavior
      */
     public AutoCompleteComboBox(final String _wicketId,
-                                final IModel<?> _model,
+                                final IModel<IAutoComplete> _model,
                                 final boolean _selectRow)
     {
         super(_wicketId, Model.of(""));
-        this.uiAbstractCell = (UITableCell) _model.getObject();
-        final String fieldName = this.uiAbstractCell.getName();
-
-        final AutoCompleteBehavior autocomplete = new AutoCompleteBehavior(
-                        this.uiAbstractCell.getAutoCompleteSetting());
-        this.add(autocomplete);
+        this.autoComplete = _model.getObject();
+        try {
+            setLabel(Model.of(this.autoComplete.getLabel()));
+        } catch (final EFapsException e) {
+            AutoCompleteComboBox.LOG.error("Error in setting of label)", e);
+        }
+        final AutoCompleteBehavior acBehavior = new AutoCompleteBehavior(this.autoComplete.getAutoCompleteSetting());
+        this.add(acBehavior);
 
         if (_selectRow) {
-            this.add(new SetSelectedRowBehavior(fieldName));
+            this.add(new SetSelectedRowBehavior(this.autoComplete.getAutoCompleteSetting().getFieldName()));
         }
-        if (this.uiAbstractCell.isFieldUpdate()) {
+        if (this.autoComplete.isFieldUpdate()) {
             final AjaxFieldUpdateBehavior fieldUpdate = new AjaxFieldUpdateBehavior("domready",
-                            Model.of((UITableCell) _model.getObject()));
+                            Model.of(_model.getObject()));
             fieldUpdate.setDojoCall(true);
             this.add(fieldUpdate);
-            autocomplete.addFieldUpdate(fieldUpdate);
+            acBehavior.addFieldUpdate(fieldUpdate);
         }
     }
 
@@ -122,9 +124,9 @@ public class AutoCompleteComboBox
     {
         final List<Map<String, String>> retList = new ArrayList<Map<String, String>>();
         try {
-            final AbstractUIPageObject pageObject = (AbstractUIPageObject) (getPage().getDefaultModelObject());
+            final AbstractUIPageObject pageObject = (AbstractUIPageObject) getPage().getDefaultModelObject();
             final Map<String, String> uiID2Oid = pageObject == null ? null : pageObject.getUiID2Oid();
-            final List<Return> returns = this.uiAbstractCell.getAutoCompletion(_input, uiID2Oid);
+            final List<Return> returns = this.autoComplete.getAutoCompletion(_input, uiID2Oid);
             for (final Return aReturn : returns) {
                 final Object ob = aReturn.get(ReturnValues.VALUES);
                 if (ob instanceof List) {
@@ -145,11 +147,11 @@ public class AutoCompleteComboBox
     {
         String ret = null;
         try {
-            if (this.uiAbstractCell != null && this.uiAbstractCell.getParent().isEditMode()
-                            && !EditValue.NONE.equals(this.uiAbstractCell.getAutoCompleteSetting().getValue4Edit())) {
-                final Instance instance = this.uiAbstractCell.getInstance();
+            if (this.autoComplete != null && this.autoComplete.getParent().isEditMode()
+                            && !EditValue.NONE.equals(this.autoComplete.getAutoCompleteSetting().getValue4Edit())) {
+                final Instance instance = this.autoComplete.getInstance();
                 if (instance != null && instance.isValid()) {
-                    switch (this.uiAbstractCell.getAutoCompleteSetting().getValue4Edit()) {
+                    switch (this.autoComplete.getAutoCompleteSetting().getValue4Edit()) {
                         case OID:
                             ret = instance.getOid();
                             break;
@@ -160,11 +162,11 @@ public class AutoCompleteComboBox
                             break;
                     }
                 }
-            } else if (this.uiAbstractCell != null
-                            && (this.uiAbstractCell.getParent().isEditMode()
-                                            || this.uiAbstractCell.getParent().isCreateMode())
-                            && !this.uiAbstractCell.getAutoCompleteSetting().isRequired()) {
-                ret = this.uiAbstractCell.getCellValue();
+            } else if (this.autoComplete != null
+                            && (this.autoComplete.getParent().isEditMode()
+                                            || this.autoComplete.getParent().isCreateMode())
+                            && !this.autoComplete.getAutoCompleteSetting().isRequired()) {
+                ret = this.autoComplete.getAutoCompleteValue();
             }
         } catch (final EFapsException e) {
             AutoCompleteComboBox.LOG.error("Error in getItemValue()", e);
@@ -179,9 +181,13 @@ public class AutoCompleteComboBox
     public String getItemLabel()
     {
         String ret = null;
-        if ((this.uiAbstractCell.getParent().isEditMode() || this.uiAbstractCell.getParent().isCreateMode())
-                        && !EditValue.NONE.equals(this.uiAbstractCell.getAutoCompleteSetting().getValue4Edit())) {
-            ret = this.uiAbstractCell.getCellValue();
+        if ((this.autoComplete.getParent().isEditMode() || this.autoComplete.getParent().isCreateMode())
+                        && !EditValue.NONE.equals(this.autoComplete.getAutoCompleteSetting().getValue4Edit())) {
+            try {
+                ret = this.autoComplete.getAutoCompleteValue();
+            } catch (final EFapsException e) {
+                AutoCompleteComboBox.LOG.error("Error in getItemValue()", e);
+            }
         }
         return ret;
     }

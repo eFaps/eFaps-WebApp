@@ -48,6 +48,7 @@ import org.efaps.ui.wicket.components.values.LabelField;
 import org.efaps.ui.wicket.models.cell.FieldConfiguration;
 import org.efaps.ui.wicket.models.cell.UIStructurBrowserTableCell;
 import org.efaps.ui.wicket.models.cell.UITableCell;
+import org.efaps.ui.wicket.models.field.IAutoComplete;
 import org.efaps.ui.wicket.models.field.IPickable;
 import org.efaps.ui.wicket.models.objects.AbstractUIHeaderObject;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
@@ -138,7 +139,8 @@ public class CellPanel
             add(new WebMarkupContainer("link").setVisible(false));
             add(new WebMarkupContainer("icon").setVisible(false));
             add(new WebComponent("numbering").setVisible(false));
-            final AutoCompleteComboBox label = new AutoCompleteComboBox("label", _model, true);
+            final AutoCompleteComboBox label = new AutoCompleteComboBox("label",
+                            Model.of((IAutoComplete) _model.getObject()), true);
             add(label);
             if (uiTableCell.isValuePicker()) {
                 this.add(new AjaxPickerLink("valuePicker",  Model.of((IPickable) _model.getObject()), label));

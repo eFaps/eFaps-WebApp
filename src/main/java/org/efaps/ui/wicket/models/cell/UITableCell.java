@@ -35,6 +35,7 @@ import org.efaps.admin.ui.field.FieldPicker;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.models.cell.AutoCompleteSettings.EditValue;
+import org.efaps.ui.wicket.models.field.IAutoComplete;
 import org.efaps.ui.wicket.models.field.IFilterable;
 import org.efaps.ui.wicket.models.field.IPickable;
 import org.efaps.ui.wicket.models.field.ISortable;
@@ -53,7 +54,7 @@ import org.efaps.util.cache.CacheReloadException;
  */
 public class UITableCell
     extends AbstractUICell
-    implements IPickable, IFilterable
+    implements IPickable, IFilterable, IAutoComplete
 {
 
     /**
@@ -394,25 +395,11 @@ public class UITableCell
     }
 
     /**
-     * Method to get the auto completion event.
-     *
-     * @param _others object to be passed to the executed event
-     * @param _uiID2Oid mapping of UserInterface Id and OID
-     * @return List of Returns
-     * @throws EFapsException on error
-     */
-    public List<Return> getAutoCompletion(final Object _others,
-                                          final Map<String, String> _uiID2Oid)
-        throws EFapsException
-    {
-        return executeEvents(EventType.UI_FIELD_AUTOCOMPLETE, _others, _uiID2Oid);
-    }
-
-    /**
      * Getter method for instance variable {@link #fieldUpdate}.
      *
      * @return value of instance variable {@link #fieldUpdate}
      */
+    @Override
     public boolean isFieldUpdate()
     {
         return this.fieldUpdate;
@@ -469,6 +456,7 @@ public class UITableCell
      *
      * @return value of instance variable {@link #autoCompleteSetting}
      */
+    @Override
     public AutoCompleteSettings getAutoCompleteSetting()
     {
         return this.autoCompleteSetting;
@@ -509,5 +497,28 @@ public class UITableCell
             ret = fValue1.compareTo(fValue2);
         }
         return ret;
+    }
+
+    @Override
+    public List<Return> getAutoCompletion(final String _input,
+                                          final Map<String, String> _uiID2Oid)
+        throws EFapsException
+    {
+        return executeEvents(EventType.UI_FIELD_AUTOCOMPLETE, _input, _uiID2Oid);
     };
+
+    @Override
+    public String getAutoCompleteValue()
+        throws EFapsException
+    {
+        return getCellValue();
+    }
+
+    @Override
+    public String getLabel()
+        throws EFapsException
+    {
+        // unused
+        return null;
+    }
 }

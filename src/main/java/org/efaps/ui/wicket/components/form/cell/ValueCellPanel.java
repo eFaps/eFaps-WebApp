@@ -45,6 +45,7 @@ import org.efaps.ui.wicket.components.picker.AjaxPickerLink;
 import org.efaps.ui.wicket.components.table.cell.AjaxMenuContentLink;
 import org.efaps.ui.wicket.components.table.cell.ContentContainerLink;
 import org.efaps.ui.wicket.models.cell.UIFormCell;
+import org.efaps.ui.wicket.models.field.IAutoComplete;
 import org.efaps.ui.wicket.models.field.IPickable;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.util.EFapsException;
@@ -124,7 +125,7 @@ public class ValueCellPanel
                 final Component label;
                 // check for AutoComplete field
                 if (uiFormCell.isAutoComplete() && uiFormCell.getDisplay().equals(Display.EDITABLE)) {
-                    label = new AutoCompleteComboBox("label", _model, false);
+                    label = new AutoCompleteComboBox("label", Model.of((IAutoComplete) _model.getObject()), false);
                 } else {
                     label = new LabelComponent("label",
                                     new Model<String>(uiFormCell.getCellValue())).setOutputMarkupId(true);

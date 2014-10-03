@@ -85,4 +85,60 @@ public abstract class AbstractUIModeObject
     {
         this.mode = _mode;
     }
+
+    /**
+     * Method to check if mode is create.
+     *
+     * @see #mode
+     * @return true if mode is create
+     */
+    public boolean isCreateMode()
+    {
+        return getMode() == TargetMode.CREATE;
+    }
+
+    /**
+     * Method to check if mode is edit.
+     *
+     * @see #mode
+     * @return true if mode is edit
+     */
+    public boolean isEditMode()
+    {
+        return getMode() == TargetMode.EDIT;
+    }
+
+    /**
+     * Method to check if mode is search.
+     *
+     * @see #mode
+     * @return true if mode is search
+     */
+    public boolean isSearchMode()
+    {
+        return getMode() == TargetMode.SEARCH;
+    }
+
+    /**
+     * Method to check if mode is view.
+     *
+     * @see #mode
+     * @return true if mode is view
+     */
+    public boolean isViewMode()
+    {
+        return getMode() == TargetMode.VIEW || getMode() == TargetMode.UNKNOWN;
+    }
+
+    /**
+     * Method to check if mode is view.
+     *
+     * @see #mode
+     * @return true if mode is print
+     */
+    public boolean isPrintMode()
+    {
+        return getMode() == TargetMode.PRINT;
+    }
+
 }
