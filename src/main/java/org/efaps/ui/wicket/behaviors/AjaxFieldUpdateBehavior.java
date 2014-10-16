@@ -90,6 +90,11 @@ public class AjaxFieldUpdateBehavior
     private boolean dojoCall = false;
 
     /**
+     * Activate/Deactivate ErrorHandling.
+     */
+    private final boolean errorHandling;
+
+    /**
      * @param _event event that this behavior should be executed on;
      */
     public AjaxFieldUpdateBehavior(final String _event)
@@ -104,8 +109,20 @@ public class AjaxFieldUpdateBehavior
     public AjaxFieldUpdateBehavior(final String _event,
                                    final IModel<?> _model)
     {
+        this(_event, _model, true);
+    }
+
+    /**
+     * @param _event event that this behavior should be executed on;
+     * @param _model model that willbe used on submit
+     */
+    public AjaxFieldUpdateBehavior(final String _event,
+                                   final IModel<?> _model,
+                                   final boolean _errorHandling)
+    {
         super(_event);
         this.model = _model;
+        this.errorHandling = _errorHandling;
     }
 
     /**
@@ -129,51 +146,66 @@ public class AjaxFieldUpdateBehavior
     @Override
     protected void onError(final AjaxRequestTarget _target)
     {
-        final FeedbackCollector collector = new FeedbackCollector(getForm().getPage());
-        final List<FeedbackMessage> msgs = collector.collect();
-        final StringBuilder html = new StringBuilder()
-                        .append("<table class=\"eFapsValidateFieldValuesTable\">");
-        for (final FeedbackMessage msg : msgs) {
-            msg.getReporter().add(AttributeModifier.append("class", "invalid"));
-            _target.add(msg.getReporter());
-            Serializable warn = null;
-            if (msg.getMessage() instanceof ValidationErrorFeedback) {
-                // look if a message was set
-                warn = ((ValidationErrorFeedback) msg.getMessage()).getMessage();
-                // still no message, create one
-                if (warn == null) {
-                    warn = ((ValidationErrorFeedback) msg.getMessage()).getError().getErrorMessage(
-                                    new ErrorMessageResource());
+        if (this.errorHandling) {
+            final FeedbackCollector collector = new FeedbackCollector(getForm().getPage());
+            final List<FeedbackMessage> msgs = collector.collect();
+            final StringBuilder html = new StringBuilder()
+                            .append("<table class=\"eFapsValidateFieldValuesTable\">");
+            for (final FeedbackMessage msg : msgs) {
+                msg.getReporter().add(AttributeModifier.append("class", "invalid"));
+                _target.add(msg.getReporter());
+                Serializable warn = null;
+                if (msg.getMessage() instanceof ValidationErrorFeedback) {
+                    // look if a message was set
+                    warn = ((ValidationErrorFeedback) msg.getMessage()).getMessage();
+                    // still no message, create one
+                    if (warn == null) {
+                        warn = ((ValidationErrorFeedback) msg.getMessage()).getError().getErrorMessage(
+                                        new ErrorMessageResource());
+                    }
                 }
+                String label = "";
+                if (msg.getReporter() instanceof IFieldConfig) {
+                    label = ((IFieldConfig) msg.getReporter()).getFieldConfig().getLabel();
+                }
+                html.append("<tr><td>").append(label).append(":</td><td>")
+                                .append(warn).append("</td></tr>");
             }
-            String label = "";
-            if (msg.getReporter() instanceof IFieldConfig) {
-                label = ((IFieldConfig) msg.getReporter()).getFieldConfig().getLabel();
-            }
-            html.append("<tr><td>").append(label).append(":</td><td>")
-                            .append(warn).append("</td></tr>");
-        }
-        html.append("</table>");
+            html.append("</table>");
 
-        final ModalWindowContainer modal = ((AbstractContentPage) getComponent().getPage()).getModal();
+            final ModalWindowContainer modal = ((AbstractContentPage) getComponent().getPage()).getModal();
 
-        modal.setInitialWidth(350);
-        modal.setInitialHeight(200);
+            modal.setInitialWidth(350);
+            modal.setInitialHeight(200);
 
-        modal.setPageCreator(new ModalWindow.PageCreator()
-        {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public Page createPage()
+            modal.setPageCreator(new ModalWindow.PageCreator()
             {
-                return new DialogPage(((AbstractContentPage) getComponent().getPage()).getPageReference(),
-                                html.toString(), true, false);
-            }
-        });
-        modal.show(_target);
+
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                public Page createPage()
+                {
+                    return new DialogPage(((AbstractContentPage) getComponent().getPage()).getPageReference(),
+                                    html.toString(), true, false);
+                }
+            });
+            modal.show(_target);
+        }
     }
+
+    @Override
+    public boolean getDefaultProcessing()
+    {
+        final boolean ret;
+        if (this.errorHandling) {
+            ret = super.getDefaultProcessing();
+        } else {
+            ret = false;
+        }
+        return ret;
+    }
+
 
     /**
      * @see org.apache.wicket.ajax.form.AjaxFormSubmitBehavior#onSubmit(org.apache.wicket.ajax.AjaxRequestTarget)
@@ -288,7 +320,7 @@ public class AjaxFieldUpdateBehavior
     }
 
     /**
-     * @return
+     * @return charequence
      */
     public CharSequence getCallbackScript4Dojo()
     {

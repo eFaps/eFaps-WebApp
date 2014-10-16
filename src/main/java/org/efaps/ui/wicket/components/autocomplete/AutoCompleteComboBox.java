@@ -95,7 +95,7 @@ public class AutoCompleteComboBox
         }
         if (this.autoComplete.isFieldUpdate()) {
             final AjaxFieldUpdateBehavior fieldUpdate = new AjaxFieldUpdateBehavior("domready",
-                            Model.of(_model.getObject()));
+                            Model.of(_model.getObject()), false);
             fieldUpdate.setDojoCall(true);
             this.add(fieldUpdate);
             acBehavior.addFieldUpdate(fieldUpdate);
@@ -190,5 +190,11 @@ public class AutoCompleteComboBox
             }
         }
         return ret;
+    }
+
+    @Override
+    public String getInputName()
+    {
+        return this.autoComplete.getAutoCompleteSetting().getFieldName();
     }
 }
