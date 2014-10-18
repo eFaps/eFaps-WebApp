@@ -82,8 +82,7 @@ public class AjaxDownloadBehavior
     {
         final String url = getCallBackURL();
         if (url != null) {
-            _target.prependJavaScript(
-                            "top.document.getElementById('downloadFrame').setAttribute('src','" + url + "');");
+            _target.prependJavaScript(getCallBackScript(url));
         }
     }
 
@@ -164,13 +163,33 @@ public class AjaxDownloadBehavior
         if (this.addScript2Page) {
             final String url = getCallBackURL();
             if (url != null) {
-                final StringBuilder js = new StringBuilder()
-                    .append("top.document.getElementById('downloadFrame').setAttribute('src','")
-                    .append(url)
-                    .append("');");
-                _response.render(JavaScriptHeaderItem.forScript(js, AjaxDownloadBehavior.class.getName()));
+                _response.render(JavaScriptHeaderItem.forScript(getCallBackScript(url),
+                                AjaxDownloadBehavior.class.getName()));
             }
             this.addScript2Page = false;
         }
+    }
+
+    /**
+     * Script that searches for an existing iframe to use it for the download of the frame.
+     * If it does not exist it will be created.
+     * @return the callback script
+     */
+    protected String getCallBackScript(final String _url)
+    {
+        final StringBuilder js = new StringBuilder()
+            .append("require(['dojo/_base/window','dojo/dom','dojo/dom-construct'], ")
+                .append("function (win, dom, domConstruct) {\n" )
+            .append("win.withDoc(top.dojo.doc, function () {\n" )
+            .append("var node = dom.byId('downloadFrame');\n" )
+            .append("if (node == null) {\n")
+            .append("node = domConstruct.place('<iframe id=\"downloadFrame\" src=\"about:blank\" ")
+                .append("style=\"position: absolute; left: 1px; top: 1px; height: 1px; width: 1px; ")
+                .append("visibility: hidden\">', win.body());\n")
+            .append("}\n")
+            .append("node.src='").append(_url).append("';")
+            .append("});\n")
+            .append("});");
+        return js.toString();
     }
 }

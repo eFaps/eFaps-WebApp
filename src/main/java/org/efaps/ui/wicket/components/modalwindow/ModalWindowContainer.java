@@ -195,22 +195,18 @@ public class ModalWindowContainer
                 if (calledByPageRef != null && calledByPageRef.getPage() instanceof ContentContainerPage && !tree) {
                     final String panelId = ((ContentContainerPage) calledByPageRef.getPage()).getCenterPanelId();
                     javascript.append("require([\"dojo/dom-construct\"], function(domConstruct){")
-                        .append("var mainFrame = top.dojo.doc.getElementById(\"")
-                            .append(MainPage.IFRAME_ID).append("\").contentWindow;")
-                        .append("mainFrame.dijit.registry.byId(\"").append(panelId)
+                        .append("var mF = top.dojo.doc.getElementById(\"").append(MainPage.IFRAME_ID).append("\");")
+                        .append("if (mF != null) {")
+                        .append("mF.contentWindow.dijit.registry.byId(\"").append(panelId)
                         .append("\").set(\"content\",")
                             .append(" domConstruct.create(\"iframe\", {")
                                 .append("\"src\": \"").append(url)
                                 .append("\",\"style\": \"border: 0; width: 100%; height: 99%\"}")
-                            .append("))")
+                            .append(")); ")
+                        .append("mF.contentWindow.").append(MenuUpdateBehavior.FUNCTION_NAME).append("(\"")
+                        .append(MenuUpdateBehavior.PARAMETERKEY4UPDATE).append("\");")
+                        .append("}")
                         .append("});");
-
-                    javascript.append("var frameWin = top.dojo.doc.getElementById(\"").append(MainPage.IFRAME_ID)
-                        .append("\").contentWindow;")
-                        .append(" frameWin.")
-                        .append(MenuUpdateBehavior.FUNCTION_NAME).append("(\"")
-                        .append(MenuUpdateBehavior.PARAMETERKEY4UPDATE)
-                        .append("\");");
                 } else {
                     javascript.append("require([\"dojo/dom-construct\"], function(domConstruct){")
                         .append(" top.dijit.registry.byId(\"mainPanel\").set(\"content\",")
