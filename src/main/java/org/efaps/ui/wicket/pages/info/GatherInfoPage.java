@@ -58,7 +58,9 @@ public class GatherInfoPage
     private static final EFapsContentReference CSS = new EFapsContentReference(GatherInfoPage.class,
                     "GatherInfoPage.css");
 
-
+    /**
+     * Info form.
+     */
     private BrowserInfoForm browserInfoForm;
 
     /**
@@ -97,7 +99,7 @@ public class GatherInfoPage
 
         add(new Label("label", DBProperties.getProperty("gatherInfoPage.message")).setEscapeModelStrings(false));
 
-        this.browserInfoForm =new BrowserInfoForm("postback")
+        this.browserInfoForm = new BrowserInfoForm("postback")
         {
             private static final long serialVersionUID = 1L;
 
