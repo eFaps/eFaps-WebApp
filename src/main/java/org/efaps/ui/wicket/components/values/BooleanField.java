@@ -168,7 +168,7 @@ public class BooleanField
                                   final IVisit<Void> _visit)
             {
                 try {
-                    if (_group.getDefaultModelObject().equals(Boolean.TRUE)) {
+                    if (Boolean.TRUE.equals( _group.getDefaultModelObject())) {
                         _parameters.addParameterValue(getFieldConfiguration().getName(), "true");
                     } else {
                         _parameters.addParameterValue(getFieldConfiguration().getName(), "false");
