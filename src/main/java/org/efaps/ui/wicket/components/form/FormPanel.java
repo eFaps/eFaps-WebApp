@@ -42,6 +42,7 @@ import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIForm.FormElement;
 import org.efaps.ui.wicket.models.objects.UIForm.FormRow;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
+import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
@@ -118,6 +119,8 @@ public class FormPanel
                 if (callPage instanceof MainPage) {
                     menuUpdate = false;
                 }
+            } else {
+                menuUpdate = !(_page instanceof FormPage);
             }
         }
         for (final EmbeddedLink link : links) {

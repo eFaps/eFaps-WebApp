@@ -127,13 +127,16 @@ public class LinkItem
         _openComponent.getPage();
         if (command.getTargetTable() != null) {
             if (command.getTargetStructurBrowserField() != null) {
-                final StructurBrowserPage page = new StructurBrowserPage(model.getCommandUUID(), model
-                                .getInstanceKey());
+                final StructurBrowserPage page = new StructurBrowserPage(model.getCommandUUID(),
+                                model.getInstanceKey());
                 setResponsePage(page);
             } else {
                 final TablePage page = new TablePage(model.getCommandUUID(), model.getInstanceKey());
                 setResponsePage(page);
             }
+        } else if (command.getTargetForm() != null) {
+            final FormPage page = new FormPage(model.getCommandUUID(), model.getInstanceKey());
+            setResponsePage(page);
         }
     }
 
@@ -152,14 +155,7 @@ public class LinkItem
         return label;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see
-     * org.apache.wicket.markup.html.link.AbstractLink#onComponentTagBody(org
-     * .apache.wicket.markup.MarkupStream,
-     * org.apache.wicket.markup.ComponentTag)
-     */
-    @Override
+     @Override
     public void onComponentTagBody(final MarkupStream _markupStream,
                                    final ComponentTag _openTag)
     {
@@ -174,11 +170,6 @@ public class LinkItem
         replaceComponentTagBody(_markupStream, _openTag, html);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.wicket.markup.html.link.Link#getOnClickScript(java.lang.
-     * CharSequence)
-     */
     @Override
     protected CharSequence getOnClickScript(final CharSequence _url)
     {
