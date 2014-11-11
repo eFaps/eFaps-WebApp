@@ -277,6 +277,7 @@ public abstract class AbstractUIField
      * @return the label for the UserInterface
      * @throws CacheReloadException on error
      */
+    @Override
     public String getLabel()
         throws EFapsException
     {
@@ -574,5 +575,21 @@ public abstract class AbstractUIField
         throws EFapsException
     {
         return String.valueOf(getValue().getReadOnlyValue(getParent().getMode()));
+    }
+
+    @Override
+    public Instance getInstance()
+        throws EFapsException
+    {
+        Instance ret;
+        // in case of an autocomplete in editmode give the chance to set the instance
+        if (isAutoComplete() && getParent().isEditMode() && editable()
+                        && getFieldConfiguration().getField().hasEvents(EventType.UI_FIELD_VALUE)) {
+            getValue().getEditValue(getParent().getMode());
+            ret = getValue().getInstance();
+        } else {
+            ret = super.getInstance();
+        }
+        return ret;
     }
 }
