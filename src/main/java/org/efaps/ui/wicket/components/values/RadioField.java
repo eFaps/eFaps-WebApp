@@ -98,7 +98,16 @@ public class RadioField
         this.cellvalue = _model.getObject();
         this.fieldConfig = this.cellvalue.getFieldConfiguration();
         try {
-            setDefaultModel(new Model<String>());
+            Model<?> model = null;
+            if (_radios != null) {
+                for (final RadioOption option : _radios) {
+                    if (option.isSelected()) {
+                        model = Model.of(option);
+                        break;
+                    }
+                }
+            }
+            setDefaultModel(model == null ? new Model<String>() : model);
             setChoices(_radios);
             setLabel(Model.of(this.cellvalue.getLabel()));
         } catch (final EFapsException e) {
