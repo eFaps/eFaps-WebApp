@@ -92,7 +92,7 @@ public abstract class AbstractField<T extends Serializable>
             final List<EventDefinition> events = _config.getField().getEvents(EventType.UI_FIELD_UPDATE);
             String eventName = "onchange";
             for (final EventDefinition event : events) {
-               eventName = event.getProperty("Event") == null ? "onchange" : event.getProperty("Event");
+                eventName = event.getProperty("Event") == null ? "onchange" : event.getProperty("Event");
             }
             add(new AjaxFieldUpdateBehavior(eventName, Model.of(this.cellvalue)));
         }
@@ -139,6 +139,11 @@ public abstract class AbstractField<T extends Serializable>
         _tag.setName("input");
         _tag.append("style", "text-align:" + getConfig().getAlign(), ";");
         _tag.put("size", getConfig().getSize());
+
+        if (getInputType() != null) {
+            _tag.put("type", getInputType());
+        }
+
         super.onComponentTag(_tag);
     }
 

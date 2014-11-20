@@ -140,4 +140,10 @@ public class NumberField
             NumberField.LOG.error("Catched error on updateModel", e);
         }
     }
+
+    @Override
+    protected String getInputType()
+    {
+        return "number";
+    }
 }

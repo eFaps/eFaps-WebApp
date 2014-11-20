@@ -86,13 +86,13 @@ public abstract class AbstractUIField
     static {
         AbstractUIField.FACTORIES.put(HRefFactory.get().getKey(), HRefFactory.get());
         AbstractUIField.FACTORIES.put(AutoCompleteFactory.get().getKey(), AutoCompleteFactory.get());
+        AbstractUIField.FACTORIES.put(NumberUIFactory.get().getKey(), NumberUIFactory.get());
         AbstractUIField.FACTORIES.put(StringUIFactory.get().getKey(), StringUIFactory.get());
         AbstractUIField.FACTORIES.put(LinkWithRangesUIFactory.get().getKey(), LinkWithRangesUIFactory.get());
         AbstractUIField.FACTORIES.put(BooleanUIFactory.get().getKey(), BooleanUIFactory.get());
         AbstractUIField.FACTORIES.put(DateUIFactory.get().getKey(), DateUIFactory.get());
         AbstractUIField.FACTORIES.put(DateTimeUIFactory.get().getKey(), DateTimeUIFactory.get());
         AbstractUIField.FACTORIES.put(DecimalUIFactory.get().getKey(), DecimalUIFactory.get());
-        AbstractUIField.FACTORIES.put(NumberUIFactory.get().getKey(), NumberUIFactory.get());
         AbstractUIField.FACTORIES.put(UserUIFactory.get().getKey(), UserUIFactory.get());
         AbstractUIField.FACTORIES.put(TypeUIFactory.get().getKey(), TypeUIFactory.get());
         AbstractUIField.FACTORIES.put(EnumUIFactory.get().getKey(), EnumUIFactory.get());
