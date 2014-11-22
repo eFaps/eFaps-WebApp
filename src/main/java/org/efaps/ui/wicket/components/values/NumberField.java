@@ -20,6 +20,7 @@
 
 package org.efaps.ui.wicket.components.values;
 
+import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.convert.ConversionException;
 import org.apache.wicket.util.convert.IConverter;
@@ -27,6 +28,7 @@ import org.apache.wicket.util.convert.converter.BigDecimalConverter;
 import org.apache.wicket.util.convert.converter.DoubleConverter;
 import org.apache.wicket.util.convert.converter.IntegerConverter;
 import org.apache.wicket.util.convert.converter.LongConverter;
+import org.apache.wicket.util.value.IValueMap;
 import org.efaps.admin.datamodel.IAttributeType;
 import org.efaps.admin.datamodel.attributetype.DecimalType;
 import org.efaps.admin.datamodel.attributetype.IntegerType;
@@ -71,6 +73,11 @@ public class NumberField
     private boolean converted = false;
 
     /**
+     * Any step should be set.
+     */
+    private boolean any;
+
+    /**
      * @param _wicketId wicket id for this component
      * @param _model model for this componet
      * @param _config Config
@@ -82,6 +89,18 @@ public class NumberField
         throws EFapsException
     {
         super(_wicketId, _model, _config);
+        if (getCellvalue().getValue().getAttribute() != null) {
+            final IAttributeType attrType = getCellvalue().getValue().getAttribute().getAttributeType()
+                            .getDbAttrType();
+            if (attrType instanceof DecimalType) {
+                this.any = true;
+            }
+        } else if (getFieldConfig().getField().getUIProvider() != null) {
+            final IUIProvider uiprovider = getFieldConfig().getField().getUIProvider();
+            if (uiprovider instanceof DecimalUI) {
+                this.any = true;
+            }
+        }
     }
 
     @Override
@@ -138,6 +157,37 @@ public class NumberField
                             .getAttribute(), getDefaultModelObject()));
         } catch (final CacheReloadException e) {
             NumberField.LOG.error("Catched error on updateModel", e);
+        }
+    }
+
+    @Override
+    protected void onComponentTag(final ComponentTag tag)
+    {
+        super.onComponentTag(tag);
+
+        final IValueMap attributes = tag.getAttributes();
+        final String minimum = getFieldConfig().getField().getProperty("minimum");
+        if (minimum != null)
+        {
+            attributes.put("min", minimum);
+        } else {
+            attributes.remove("min");
+        }
+        final String maximum = getFieldConfig().getField().getProperty("maximum");
+        if (maximum != null)
+        {
+            attributes.put("max", maximum);
+        } else {
+            attributes.remove("max");
+        }
+        final String step = getFieldConfig().getField().getProperty("step");
+        if (step != null)
+        {
+            attributes.put("step", step);
+        } else if (this.any) {
+            attributes.put("step", "any");
+        } else {
+            attributes.remove("step");
         }
     }
 
