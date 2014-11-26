@@ -89,6 +89,7 @@ public class NumberField
         throws EFapsException
     {
         super(_wicketId, _model, _config);
+        setRequired(_config.getField().isRequired());
         if (getCellvalue().getValue().getAttribute() != null) {
             final IAttributeType attrType = getCellvalue().getValue().getAttribute().getAttributeType()
                             .getDbAttrType();
