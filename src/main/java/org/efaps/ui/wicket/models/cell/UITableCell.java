@@ -32,6 +32,7 @@ import org.efaps.admin.event.Return;
 import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.admin.ui.field.FieldPicker;
+import org.efaps.api.ui.IOption;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.models.cell.AutoCompleteSettings.EditValue;
@@ -519,6 +520,14 @@ public class UITableCell
         throws EFapsException
     {
         // unused
+        return null;
+    }
+
+    @Override
+    public List<IOption> getTokens()
+        throws EFapsException
+    {
+       //unused
         return null;
     }
 }

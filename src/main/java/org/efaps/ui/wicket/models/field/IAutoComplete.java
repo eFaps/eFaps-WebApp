@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.efaps.admin.event.Return;
+import org.efaps.api.ui.IOption;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.models.cell.AutoCompleteSettings;
 import org.efaps.ui.wicket.models.objects.AbstractUIModeObject;
@@ -80,6 +81,12 @@ public interface IAutoComplete
      * @return
      */
     String getLabel()
+        throws EFapsException;
+
+    /**
+     * @return
+     */
+    List<IOption> getTokens()
         throws EFapsException;
 
 }

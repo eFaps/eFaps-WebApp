@@ -21,6 +21,7 @@
 package org.efaps.ui.wicket.models.field;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,7 @@ import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.ui.field.Field;
+import org.efaps.api.ui.IOption;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.behaviors.dojo.AutoCompleteBehavior;
@@ -583,6 +585,22 @@ public abstract class AbstractUIField
         throws EFapsException
     {
         return String.valueOf(getValue().getReadOnlyValue(getParent().getMode()));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<IOption> getTokens()
+        throws EFapsException
+    {
+        final List<IOption> ret = new ArrayList<>();
+        if (isAutoComplete() && getParent().isEditMode() && editable()
+                        && getFieldConfiguration().getField().hasEvents(EventType.UI_FIELD_VALUE)) {
+            final Object obj = getValue().getEditValue(getParent().getMode());
+            if (obj instanceof List<?>) {
+                ret.addAll((Collection<? extends IOption>) obj);
+            }
+        }
+        return ret;
     }
 
     @Override

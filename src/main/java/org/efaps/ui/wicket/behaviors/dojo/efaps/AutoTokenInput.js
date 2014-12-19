@@ -171,29 +171,15 @@ define("efaps/AutoTokenInput", [
                 this._announceOption(target);
 
                 if (typeof this.item != undefined) {
-                    var newValue
+                    var newLabel;
                     if (this.item["label"] != undefined) {
-                        newValue = this.item["label"].toString();
+                        newLabel = this.item["label"].toString();
                     } else {
-                        newValue = this.item[this.searchAttr].toString();
+                        newLabel = this.item[this.searchAttr].toString();
                     }
-                    // add a new item
-                    var li = domConstruct.place("<li></li>", this._tokenNode);
-                    domConstruct.create("p", {
-                        innerHTML: newValue
-                    }, li);
-                    var removeButton = domConstruct.create("span", {
-                        innerHTML: "x"
-                    }, li);
-                    on.once(removeButton, "click", function(evt){
-                        var tbl = evt.target.parentNode;
-                        domConstruct.destroy(tbl);
-                    });
-                    domConstruct.create("input", {
-                        type: "hidden",
-                        value: this.item["id"].toString(),
-                        name: this.name
-                    }, li);
+                    var newValue = this.item["id"].toString();
+
+                    this.addToken(newValue, newLabel);
                     // set the actual box to empty
                     this._autoCompleteText("");
                 }
@@ -203,6 +189,26 @@ define("efaps/AutoTokenInput", [
             // Remove aria-activedescendant since the drop down is no loner visible
             // after closeDropDown() but _announceOption() adds it back in
             this.focusNode.removeAttribute("aria-activedescendant");
+        },
+
+        addToken: function(/*String*/ _value, /*String*/ _label) {
+            // add a new item
+            var li = domConstruct.place("<li></li>", this._tokenNode);
+            domConstruct.create("p", {
+                innerHTML: _label
+            }, li);
+            var removeButton = domConstruct.create("span", {
+                innerHTML: "x"
+            }, li);
+            on.once(removeButton, "click", function(evt){
+                var tbl = evt.target.parentNode;
+                domConstruct.destroy(tbl);
+            });
+            domConstruct.create("input", {
+                type: "hidden",
+                value: _value,
+                name: this.name
+            }, li);
         },
 
         // The constructor

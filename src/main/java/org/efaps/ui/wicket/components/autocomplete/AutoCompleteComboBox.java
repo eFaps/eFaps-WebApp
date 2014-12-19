@@ -33,6 +33,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.api.ui.IOption;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
 import org.efaps.ui.wicket.behaviors.SetSelectedRowBehavior;
@@ -196,5 +197,20 @@ public class AutoCompleteComboBox
     public String getInputName()
     {
         return this.autoComplete.getAutoCompleteSetting().getFieldName();
+    }
+
+    @Override
+    public List<IOption> getTokens()
+    {
+        final List<IOption> ret = new ArrayList<>();
+        if ((this.autoComplete.getParent().isEditMode() || this.autoComplete.getParent().isCreateMode())
+                        && !EditValue.NONE.equals(this.autoComplete.getAutoCompleteSetting().getValue4Edit())) {
+            try {
+                ret.addAll(this.autoComplete.getTokens());
+            } catch (final EFapsException e) {
+                AutoCompleteComboBox.LOG.error("Error in getItemValue()", e);
+            }
+        }
+        return ret;
     }
 }

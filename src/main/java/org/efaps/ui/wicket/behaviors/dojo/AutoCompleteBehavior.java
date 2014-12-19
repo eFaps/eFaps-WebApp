@@ -23,8 +23,10 @@ package org.efaps.ui.wicket.behaviors.dojo;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
@@ -47,6 +49,7 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.resource.CoreLibrariesContributor;
 import org.apache.wicket.util.lang.Args;
 import org.apache.wicket.util.string.Strings;
+import org.efaps.api.ui.IOption;
 import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
 import org.efaps.ui.wicket.behaviors.SetSelectedRowBehavior;
 import org.efaps.ui.wicket.models.cell.AutoCompleteSettings;
@@ -98,6 +101,11 @@ public class AutoCompleteBehavior
          * @return the lable for the current item
          */
         String getItemLabel();
+
+        /**
+         * @return list of tokens
+         */
+        List<IOption> getTokens();
     }
 
     /**
@@ -213,11 +221,17 @@ public class AutoCompleteBehavior
             .append("value: \"\",")
             .append("callbackUrl:\"" + getCallbackUrl() + "\",");
 
-        final String id = ((AutoCompleteField) _component).getItemValue();
-        if (id != null) {
-            final String label = ((AutoCompleteField) _component).getItemLabel();
-            js.append("item: { id:\"").append(id).append("\", name:\"").append(label)
-                .append("\", label:\"").append(label) .append("\"},");
+        switch (this.settings.getAutoType()) {
+            case TOKEN:
+                break;
+            default:
+                final String id = ((AutoCompleteField) _component).getItemValue();
+                if (id != null) {
+                    final String label = ((AutoCompleteField) _component).getItemLabel();
+                    js.append("item: { id:\"").append(id).append("\", name:\"").append(label)
+                        .append("\", label:\"").append(label) .append("\"},");
+                }
+                break;
         }
 
         if (this.settings.getWidth() > 0) {
@@ -276,7 +290,14 @@ public class AutoCompleteBehavior
                                 SetSelectedRowBehavior.class).get(0).getJavaScript("this.valueNode"))
                 .append("});\n");
         }
-
+        if (Type.TOKEN.equals(this.settings.getAutoType())) {
+            final List<IOption> tokens = ((AutoCompleteField) _component).getTokens();
+            for (final IOption token : tokens) {
+                js.append(comboBoxId).append(".addToken(\"")
+                    .append(StringEscapeUtils.escapeEcmaScript(token.getValue().toString())).append("\",\"")
+                    .append(StringEscapeUtils.escapeEcmaScript(token.getLabel())).append("\");\n");
+            }
+        }
         _response.render(AutoCompleteHeaderItem.forScript(js.toString(), EnumSet.of(this.settings.getAutoType())));
     }
 
