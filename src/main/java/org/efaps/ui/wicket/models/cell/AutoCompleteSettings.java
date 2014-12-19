@@ -25,6 +25,8 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.efaps.ui.wicket.behaviors.dojo.AutoCompleteBehavior;
+import org.efaps.ui.wicket.behaviors.dojo.AutoCompleteBehavior.Type;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 
@@ -117,6 +119,11 @@ public class AutoCompleteSettings
      * If required "AutoComplete" will be rendered, else "AutoSuggestion".
      */
     private boolean required = true;
+
+    /**
+     * The AutoComplete Type
+     */
+    private AutoCompleteBehavior.Type autoType;
 
     /**
      * Getter method for the instance variable {@link #hasDownArrow}.
@@ -346,5 +353,32 @@ public class AutoCompleteSettings
     public void setRequired(final boolean _required)
     {
         this.required = _required;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #autoType}.
+     *
+     * @return value of instance variable {@link #autoType}
+     */
+    public AutoCompleteBehavior.Type getAutoType()
+    {
+        if (this.autoType == null) {
+            if (isRequired()) {
+                setAutoType(Type.COMPLETE);
+            } else {
+                setAutoType(Type.SUGGESTION);
+            }
+        }
+        return this.autoType;
+    }
+
+    /**
+     * Setter method for instance variable {@link #autoType}.
+     *
+     * @param _autoType value for instance variable {@link #autoType}
+     */
+    public void setAutoType(final AutoCompleteBehavior.Type _autoType)
+    {
+        this.autoType = _autoType;
     }
 }

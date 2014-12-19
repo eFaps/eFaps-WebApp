@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.EnumUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.datamodel.ui.UIValue;
@@ -37,6 +38,7 @@ import org.efaps.admin.event.Return;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
+import org.efaps.ui.wicket.behaviors.dojo.AutoCompleteBehavior;
 import org.efaps.ui.wicket.components.values.LabelField;
 import org.efaps.ui.wicket.models.AbstractInstanceObject;
 import org.efaps.ui.wicket.models.cell.AutoCompleteSettings;
@@ -190,19 +192,25 @@ public abstract class AbstractUIField
                     this.autoCompleteSetting
                                     .setRequired(!"false".equalsIgnoreCase(event.getProperty("Required")));
                 }
+
+                if (event.getProperty("AutoType") != null) {
+                    this.autoCompleteSetting.setAutoType(EnumUtils.getEnum(AutoCompleteBehavior.Type.class,
+                                    event.getProperty("AutoType")));
+                }
+
+                // add the ExtraParameter definitions
                 final String ep = event.getProperty("ExtraParameter");
                 if (ep != null) {
                     this.autoCompleteSetting.getExtraParameters().add(ep);
                 }
-                for (int i = 1; i < 100; i++) {
-                    final String keyTmp = "ExtraParameter" + String.format("%02d", i);
-                    final String epTmp = event.getProperty(keyTmp);
-                    if (epTmp == null) {
-                        break;
-                    } else {
-                        this.autoCompleteSetting.getExtraParameters().add(epTmp);
-                    }
+                int i = 1;
+                String keyTmp = "ExtraParameter" + String.format("%02d", i);
+                while(event.getProperty(keyTmp) != null) {
+                    this.autoCompleteSetting.getExtraParameters().add(event.getProperty(keyTmp));
+                    i++;
+                    keyTmp = "ExtraParameter" + String.format("%02d", i);
                 }
+
                 final String value4EditStr = event.getProperty("Value4Edit");
                 if (value4EditStr != null) {
                     this.autoCompleteSetting.setValue4Edit(EditValue.valueOf(value4EditStr));

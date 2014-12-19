@@ -164,6 +164,9 @@ public class AutoCompleteHeaderItem
         if (_types.contains(AutoCompleteBehavior.Type.SUGGESTION)) {
             js.append("\"efaps/AutoSuggestion\", ");
         }
+        if (_types.contains(AutoCompleteBehavior.Type.TOKEN)) {
+            js.append("\"efaps/AutoTokenInput\", ");
+        }
 
         js.append("\"dojo/on\",\"dojo/domReady!\"],")
             .append(" function(AjaxStore,");
@@ -174,6 +177,10 @@ public class AutoCompleteHeaderItem
 
         if (_types.contains(AutoCompleteBehavior.Type.SUGGESTION)) {
             js.append(" AutoSuggestion,");
+        }
+
+        if (_types.contains(AutoCompleteBehavior.Type.TOKEN)) {
+            js.append(" AutoTokenInput,");
         }
 
         js.append(" on){\n")

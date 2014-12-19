@@ -73,7 +73,9 @@ public class AutoCompleteBehavior
         /** Render AutomComplete.*/
         COMPLETE,
         /** Render AutoSuggestion. */
-        SUGGESTION;
+        SUGGESTION,
+        /** Render AutoTokenInput. */
+        TOKEN;
     }
 
     /**
@@ -192,10 +194,16 @@ public class AutoCompleteBehavior
         final StringBuilder js = new StringBuilder()
             .append("var ").append(comboBoxId);
 
-        if (this.settings.isRequired()) {
-            js.append(" = new AutoComplete({");
-        } else {
-            js.append(" = new AutoSuggestion({");
+        switch (this.settings.getAutoType()) {
+            case SUGGESTION:
+                js.append(" = new AutoSuggestion({");
+                break;
+            case TOKEN:
+                js.append(" = new AutoTokenInput({");
+                break;
+            default:
+                js.append(" = new AutoComplete({");
+                break;
         }
 
         js.append("id:\"").append(_component.getMarkupId()).append("\",")
@@ -245,7 +253,7 @@ public class AutoCompleteBehavior
 
         js.append("searchAttr: \"name\"}, \"").append(_component.getMarkupId()).append("\");\n");
 
-        if (this.settings.isRequired()) {
+        if (this.settings.isRequired() && !Type.TOKEN.equals(this.settings.getAutoType())) {
             js.append("on(").append(comboBoxId).append(", 'change', function() {")
                  .append("var label=").append(comboBoxId).append(".item.label;")
                  .append("if (!(label === undefined || label === null)) {")
@@ -269,8 +277,7 @@ public class AutoCompleteBehavior
                 .append("});\n");
         }
 
-        _response.render(AutoCompleteHeaderItem.forScript(js.toString(),
-                        EnumSet.of(this.settings.isRequired() ? Type.COMPLETE : Type.SUGGESTION)));
+        _response.render(AutoCompleteHeaderItem.forScript(js.toString(), EnumSet.of(this.settings.getAutoType())));
     }
 
     @Override
