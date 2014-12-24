@@ -210,7 +210,9 @@ define("efaps/AutoTokenInput", [
                 name: this.name
             }, li);
         },
-
+        clear: function() {
+            domConstruct.empty(this._tokenNode);
+        },
         // The constructor
         constructor: function(args){
             declare.safeMixin(this,args);
