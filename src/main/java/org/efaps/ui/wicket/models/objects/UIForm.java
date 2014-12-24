@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.util.io.IClusterable;
 import org.efaps.admin.datamodel.Attribute;
@@ -62,6 +63,7 @@ import org.efaps.admin.ui.field.FieldTable;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.PrintQuery;
+import org.efaps.db.SelectBuilder;
 import org.efaps.ui.wicket.models.AbstractInstanceObject;
 import org.efaps.ui.wicket.models.cell.CellSetValue;
 import org.efaps.ui.wicket.models.cell.UIFormCell;
@@ -252,6 +254,16 @@ public class UIForm
         return ret;
     }
 
+    private String getBaseSelect4MsgPhrase(final Field _field)
+    {
+        String ret = "";
+        if (_field.getSelectAlternateOID() != null) {
+            ret = StringUtils.removeEnd(_field.getSelectAlternateOID(), ".oid");
+        }
+        return ret;
+    }
+
+
     /**
      * Method to execute the form in case that a instance is existing.
      *
@@ -278,6 +290,8 @@ public class UIForm
                     print.addAttribute(field.getAttribute());
                 } else if (field.getPhrase() != null) {
                     print.addPhrase(field.getName(), field.getPhrase());
+                }  else if (field.getMsgPhrase() != null) {
+                    print.addMsgPhrase(new SelectBuilder(getBaseSelect4MsgPhrase(field)), field.getMsgPhrase());
                 }
                 if (field.getSelectAlternateOID() != null) {
                     print.addSelect(field.getSelectAlternateOID());
@@ -538,6 +552,8 @@ public class UIForm
             value = _print.<Object>getSelect(_field.getSelect());
         } else if (_field.getPhrase() != null) {
             value = _print.getPhrase(_field.getName());
+        } else if (_field.getMsgPhrase() != null) {
+            value = _print.getMsgPhrase(new SelectBuilder(getBaseSelect4MsgPhrase(_field)), _field.getMsgPhrase());
         }
         final UIField uiField = new UIField(_fieldInstance.getKey(), this, UIValue.get(_field, _attr, value)
                         .setInstance(_fieldInstance).setClassObject(this));
@@ -570,6 +586,8 @@ public class UIForm
             value = _query.<Object>getSelect(_field.getSelect());
         } else if (_field.getPhrase() != null) {
             value = _query.getPhrase(_field.getName());
+        } else if (_field.getMsgPhrase() != null) {
+            value = _query.getMsgPhrase(new SelectBuilder(getBaseSelect4MsgPhrase(_field)), _field.getMsgPhrase());
         }
 
         final FieldValue fieldvalue = new FieldValue(_field, _attr, value, _fieldInstance, getInstance(), null, this,
