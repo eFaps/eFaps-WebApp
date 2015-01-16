@@ -31,6 +31,7 @@ import org.efaps.admin.datamodel.ui.BooleanUI;
 import org.efaps.admin.datamodel.ui.IUIProvider;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
+import org.efaps.api.ui.IOption;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.util.EnumUtil;
 import org.efaps.util.EFapsException;
@@ -45,6 +46,7 @@ public class CheckBoxOption
     extends AbstractOption
     implements Serializable
 {
+
     /**
      *
      */
@@ -53,9 +55,16 @@ public class CheckBoxOption
     public CheckBoxOption(final String _value,
                           final String _label)
     {
-        super(_value, _label);
+        this(_value, _label, false);
     }
 
+    public CheckBoxOption(final String _value,
+                          final String _label,
+                          final boolean _selected)
+    {
+        super(_value, _label);
+        setSelected(_selected);
+    }
 
     public CheckBoxOption(final IEnum _enum)
     {
@@ -63,7 +72,7 @@ public class CheckBoxOption
     }
 
     /**
-     * @param _field    field this option belongs to
+     * @param _field field this option belongs to
      * @param _choices choiced to be rendered
      * @return new List of choices
      * @throws EFapsException on error
@@ -99,9 +108,33 @@ public class CheckBoxOption
             }
         } else {
             for (final Object obj : _choices) {
-                final IEnum enumConst = (IEnum) obj;
-                ret.add(new CheckBoxOption(enumConst));
+                if (obj instanceof IEnum) {
+                    final IEnum enumConst = (IEnum) obj;
+                    ret.add(new CheckBoxOption(enumConst));
+                } else if (obj instanceof IOption) {
+                    final IOption option = (IOption) obj;
+                    ret.add(new CheckBoxOption(String.valueOf(option.getValue()), option.getLabel(), option
+                                    .isSelected()));
+                }
             }
+        }
+        return ret;
+    }
+
+    /**
+     * @param _field field this option belongs to
+     * @param _object object used for rendering
+     * @return new List of choices
+     * @throws EFapsException on error
+     */
+    @SuppressWarnings("unchecked")
+    public static List<CheckBoxOption> getChoices(final AbstractUIField _field,
+                                                  final Object _object)
+        throws EFapsException
+    {
+        List<CheckBoxOption> ret = new ArrayList<>();
+        if (_object instanceof List) {
+            ret = getChoices(_field, (List<Object>) _object);
         }
         return ret;
     }

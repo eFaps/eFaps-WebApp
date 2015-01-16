@@ -24,10 +24,12 @@ import java.util.List;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.model.Model;
+import org.efaps.ui.wicket.components.values.CheckBoxField;
 import org.efaps.ui.wicket.components.values.DropDownField;
 import org.efaps.ui.wicket.components.values.RadioField;
 import org.efaps.ui.wicket.components.values.SnippletField;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
+import org.efaps.ui.wicket.models.objects.CheckBoxOption;
 import org.efaps.ui.wicket.models.objects.DropDownOption;
 import org.efaps.ui.wicket.models.objects.RadioOption;
 import org.efaps.util.EFapsException;
@@ -77,7 +79,11 @@ public final class UITypeFactory
                                     .getEditValue(_uiField.getParent().getMode()));
                     ret = new RadioField(_wicketId, Model.of(_uiField), radios);
                     break;
-
+                case CHECKBOX:
+                    final List<CheckBoxOption> checkBoxes = CheckBoxOption.getChoices(_uiField,
+                                    _uiField.getValue().getEditValue(_uiField.getParent().getMode()));
+                    ret = new CheckBoxField(_wicketId, Model.of(_uiField), checkBoxes);
+                    break;
                 default:
                     break;
             }

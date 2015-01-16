@@ -18,7 +18,6 @@
  * Last Changed By: $Author$
  */
 
-
 package org.efaps.ui.wicket.components.values;
 
 import java.util.List;
@@ -35,7 +34,6 @@ import org.efaps.ui.wicket.models.objects.CheckBoxOption;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 /**
  * TODO comment!
@@ -58,7 +56,6 @@ public class CheckBoxField
      */
     private static final Logger LOG = LoggerFactory.getLogger(CheckBoxField.class);
 
-
     /**
      * Configuration of the underlying field.
      */
@@ -71,8 +68,8 @@ public class CheckBoxField
 
     /**
      * @param _wicketId wicktId of this component
-     * @param _model    model for this component
-     * @param _choices  list of choices
+     * @param _model model for this component
+     * @param _choices list of choices
      * @param _fieldConfiguration configuration
      */
     public CheckBoxField(final String _wicketId,
@@ -81,7 +78,7 @@ public class CheckBoxField
                          final FieldConfiguration _fieldConfiguration)
     {
         super(_wicketId);
-        this.fieldConfig  = _fieldConfiguration;
+        this.fieldConfig = _fieldConfiguration;
         this.cellvalue = _model.getObject();
         try {
             final Object value = this.cellvalue.getValue().getEditValue(this.cellvalue.getParent().getMode());
@@ -102,6 +99,40 @@ public class CheckBoxField
         setChoiceRenderer(new ChoiceRenderer());
         setOutputMarkupId(true);
         setRequired(_fieldConfiguration.getField().isRequired());
+    }
+
+    /**
+     * @param _wicketId
+     * @param _of
+     * @param _choices
+     */
+    public CheckBoxField(final String _wicketId,
+                         final Model<AbstractUIField> _model,
+                         final List<CheckBoxOption> _checkBoxes)
+    {
+        super(_wicketId);
+        this.cellvalue = _model.getObject();
+        this.fieldConfig = this.cellvalue.getFieldConfiguration();
+        try {
+            Model<?> model = null;
+            if (_checkBoxes != null) {
+                for (final CheckBoxOption option : _checkBoxes) {
+                    if (option.isSelected()) {
+                        model = Model.of(option);
+                        break;
+                    }
+                }
+            }
+            setDefaultModel(model == null ? new Model<String>() : model);
+            setChoices(_checkBoxes);
+            setLabel(Model.of(this.cellvalue.getLabel()));
+        } catch (final EFapsException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        setChoiceRenderer(new ChoiceRenderer());
+        setOutputMarkupId(true);
+        setRequired(this.fieldConfig.getField().isRequired());
     }
 
     /**
@@ -127,13 +158,13 @@ public class CheckBoxField
         return ret;
     }
 
-
     /**
      * The renderer for this checkbox.
      */
     public final class ChoiceRenderer
         implements IChoiceRenderer<CheckBoxOption>
     {
+
         /**
          * Needed for serialization.
          */
