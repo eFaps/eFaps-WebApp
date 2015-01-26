@@ -41,6 +41,7 @@ import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
+import org.apache.wicket.markup.head.PriorityHeaderItem;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
@@ -307,10 +308,10 @@ public class MainPage
         super.renderHead(_response);
         _response.render(AbstractEFapsHeaderItem.forCss(MainPage.CSS));
         final StringBuilder js = new StringBuilder();
-        js.append("  if(top!=self) {\n")
-            .append("    top.location = self.location;\n")
+        js.append("  if (top.location != location) {\n")
+            .append("    top.location.href = document.location.href;\n")
             .append("  }\n");
-        _response.render(JavaScriptHeaderItem.forScript(js, MainPage.class.getName()));
+        _response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forScript(js, MainPage.class.getName())));
     }
 
     /**

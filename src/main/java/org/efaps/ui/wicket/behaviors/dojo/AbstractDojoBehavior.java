@@ -214,7 +214,7 @@ public abstract class AbstractDojoBehavior
         {
             final String url = getUrl();
             _response.write("<script type=\"text/javascript\"> ");
-            _response.write(" dojoConfig = {");
+            _response.write(" var dojoConfig = {");
             _response.write("baseUrl:\"");
             _response.write(url.substring(0, url.lastIndexOf("/")));
             _response.write("\",");
