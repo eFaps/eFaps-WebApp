@@ -51,7 +51,7 @@ public class LinkElementHtmlHandler
         EFapsSession.get().addEmbededLink(link);
 
         final StringBuilder html = new StringBuilder();
-        html.append("<div style=\"position:absolute;left:")
+        html.append("<div style=\"left:")
             .append(_element.getX()).append("px;top:").append(_element.getY())
             .append("px;width:").append(_element.getWidth()).append("px;height:")
             .append(_element.getWidth()).append("px;\">")
