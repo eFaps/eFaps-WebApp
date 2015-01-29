@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.util.io.IClusterable;
 import org.efaps.admin.datamodel.Attribute;
@@ -253,16 +252,6 @@ public class UIForm
         }
         return ret;
     }
-
-    private String getBaseSelect4MsgPhrase(final Field _field)
-    {
-        String ret = "";
-        if (_field.getSelectAlternateOID() != null) {
-            ret = StringUtils.removeEnd(_field.getSelectAlternateOID(), ".oid");
-        }
-        return ret;
-    }
-
 
     /**
      * Method to execute the form in case that a instance is existing.

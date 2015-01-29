@@ -55,6 +55,7 @@ import org.efaps.admin.ui.field.Filter;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.MultiPrintQuery;
+import org.efaps.db.SelectBuilder;
 import org.efaps.ui.wicket.models.cell.UIHiddenCell;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.models.field.IFilterable;
@@ -315,6 +316,8 @@ public class UITable
                         multi.addAttribute(field.getAttribute());
                     } else if (field.getPhrase() != null) {
                         multi.addPhrase(field.getName(), field.getPhrase());
+                    } else if (field.getMsgPhrase() != null) {
+                        multi.addMsgPhrase(new SelectBuilder(getBaseSelect4MsgPhrase(field)), field.getMsgPhrase());
                     }
                     if (field.getSelectAlternateOID() != null) {
                         multi.addSelect(field.getSelectAlternateOID());
@@ -454,6 +457,9 @@ public class UITable
                         attr = _multi.getAttribute4Attribute(field.getAttribute());
                     }  else if (field.getPhrase() != null) {
                         value = _multi.getPhrase(field.getName());
+                    }  else if (field.getMsgPhrase() != null) {
+                        value = _multi.getMsgPhrase(new SelectBuilder(getBaseSelect4MsgPhrase(field)),
+                                        field.getMsgPhrase());
                     }
 
                     boolean hidden = false;

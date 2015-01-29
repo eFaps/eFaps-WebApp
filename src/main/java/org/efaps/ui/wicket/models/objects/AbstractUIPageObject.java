@@ -29,12 +29,14 @@ import java.util.Random;
 import java.util.UUID;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.Command;
 import org.efaps.admin.ui.Menu;
+import org.efaps.admin.ui.field.Field;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.models.field.IHidden;
 import org.efaps.util.EFapsException;
@@ -404,6 +406,19 @@ public abstract class AbstractUIPageObject
     {
         final String ret = RandomStringUtils.randomAlphanumeric(8);
         getUiID2Oid().put(ret, _oid);
+        return ret;
+    }
+
+    /**
+     * @param _field Field the Base select will be evaluated for
+     * @return base select
+     */
+    protected String getBaseSelect4MsgPhrase(final Field _field)
+    {
+        String ret = "";
+        if (_field.getSelectAlternateOID() != null) {
+            ret = StringUtils.removeEnd(_field.getSelectAlternateOID(), ".oid");
+        }
         return ret;
     }
 }
