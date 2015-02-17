@@ -36,6 +36,8 @@ import org.apache.wicket.Page;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.attributes.AjaxCallListener;
+import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow.WindowClosedCallback;
@@ -150,6 +152,18 @@ public class AjaxSubmitCloseBehavior
     {
         this.validated = _validated;
     }
+
+    @Override
+    protected void updateAjaxAttributes(final AjaxRequestAttributes _attributes)
+    {
+        super.updateAjaxAttributes(_attributes);
+        _attributes.getAjaxCallListeners().add(new AjaxCallListener().onBefore(new StringBuilder()
+            .append("require([\"dojo/topic\"], function(topic){\n")
+            .append("topic.publish(\"eFaps/submitClose")
+            .append("\");\n")
+            .append("})\n")));
+    }
+
 
     /**
      * On submit the action must be done.
