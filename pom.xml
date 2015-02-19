@@ -122,59 +122,116 @@
                 </file>
             </activation>
             <build>
-            <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>wagon-maven-plugin</artifactId>
-                <version>1.0</version>
-                <executions>
-                    <execution>
-                        <id>download-dojo</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>download-single</goal>
-                        </goals>
-                        <configuration>
-                            <serverId>dojotoolkit</serverId>
-                            <url>http://download.dojotoolkit.org/release-${dojo.version}</url>
-                            <fromFile>dojo-release-${dojo.version}.tar.gz</fromFile>
-                            <toDir>lib</toDir>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.7</version>
-                <executions>
-                    <execution>
-                        <id>unpack</id>
-                        <configuration>
-                            <target>
-                                <untar compression="gzip"
-                                    src="lib/dojo-release-${dojo.version}.tar.gz"
-                                    dest="src/main/java/org/efaps/ui/wicket/behaviors/dojo" >
-                                    <cutdirsmapper dirs="1" />
-                                </untar>
-                            </target>
-                        </configuration>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                      </execution>
-                </executions>
-            </plugin>
-        </plugins>
-        </build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>wagon-maven-plugin</artifactId>
+                        <version>1.0</version>
+                        <executions>
+                            <execution>
+                                <id>download-dojo</id>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>download-single</goal>
+                                </goals>
+                                <configuration>
+                                    <serverId>dojotoolkit</serverId>
+                                    <url>http://download.dojotoolkit.org/release-${dojo.version}</url>
+                                    <fromFile>dojo-release-${dojo.version}.tar.gz</fromFile>
+                                    <toDir>lib</toDir>
+                                </configuration>
+                            </execution>
+                       </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>1.7</version>
+                        <executions>
+                            <execution>
+                                <id>unpack-dojo</id>
+                                <configuration>
+                                    <target>
+                                        <untar compression="gzip"
+                                            src="lib/dojo-release-${dojo.version}.tar.gz"
+                                            dest="src/main/java/org/efaps/ui/wicket/behaviors/dojo" >
+                                            <cutdirsmapper dirs="1" />
+                                        </untar>
+                                    </target>
+                                </configuration>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                              </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <properties>
+                <!-- Must be set on the file missing also -->
+                <gridx.version>1.3.7</gridx.version>
+            </properties>
+            <id>gridx-install</id>
+            <activation>
+                <file>
+                    <!-- doe not work with properties therfore it must be set including the dojo version -->
+                    <missing>lib/gridx-1.3.7.tar.gz</missing>
+                </file>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>wagon-maven-plugin</artifactId>
+                        <version>1.0</version>
+                        <executions>
+                            <execution>
+                                <id>download-gridx</id>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>download-single</goal>
+                                </goals>
+                                <configuration>
+                                    <serverId>gridx</serverId>
+                                    <url>https://github.com/oria/gridx/archive/</url>
+                                    <fromFile>v${gridx.version}.tar.gz</fromFile>
+                                    <toFile>lib/gridx-${gridx.version}.tar.gz</toFile>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>1.7</version>
+                        <executions>
+                            <execution>
+                                <id>unpack-gridx</id>
+                                <configuration>
+                                    <target>
+                                        <untar compression="gzip"
+                                            src="lib/gridx-${gridx.version}.tar.gz"
+                                            dest="src/main/java/org/efaps/ui/wicket/behaviors/dojo/gridx" >
+                                            <cutdirsmapper dirs="1" />
+                                        </untar>
+                                    </target>
+                                </configuration>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                              </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
+
     <build>
-
-
-
-
         <!-- required that the template files for wicket are copied -->
         <resources>
             <resource>
