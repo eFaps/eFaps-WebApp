@@ -129,7 +129,7 @@ public class ValueCellPanel
                 } else {
                     label = new LabelComponent("label",
                                     new Model<String>(uiFormCell.getCellValue())).setOutputMarkupId(true);
-                    if (uiFormCell.isFieldUpdate()) {
+                    if (uiFormCell.isFieldUpdate() && uiFormCell.getDisplay().equals(Display.EDITABLE)) {
                         label.add(new AjaxFieldUpdateBehavior(uiFormCell.getFieldUpdateEvent(), _model));
                     }
                 }
