@@ -72,7 +72,6 @@ import org.efaps.ui.wicket.models.AbstractInstanceObject;
 import org.efaps.ui.wicket.models.FormModel;
 import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.cell.UIFormCell;
-import org.efaps.ui.wicket.models.cell.UIFormCellSet;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.models.field.IFilterable;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
@@ -248,10 +247,6 @@ public class AjaxSubmitCloseBehavior
                         footer.setSuccess(true);
                     }
                 }
-            } else {
-                // in the case that validation did not pass the indexes for
-                // CellSets must be reseted
-                resetSetCounter();
             }
         } catch (final EFapsException e) {
             final ModalWindowContainer modal = ((AbstractContentPage) getComponent().getPage()).getModal();
@@ -338,7 +333,6 @@ public class AjaxSubmitCloseBehavior
     @Override
     protected void onError(final AjaxRequestTarget _target)
     {
-        resetSetCounter();
         final FeedbackCollector collector = new FeedbackCollector(getForm().getPage());
         final List<FeedbackMessage> msgs = collector.collect();
         final ErrorMessageResource msgResource = new ErrorMessageResource();
@@ -368,38 +362,7 @@ public class AjaxSubmitCloseBehavior
     }
 
 
-    /**
-     * Reset the counters for sets.
-     */
-    private void resetSetCounter()
-    {
-        if (this.uiObject instanceof UIForm) {
-            for (final Element element : ((UIForm) this.uiObject).getElements()) {
-                if (element.getType().equals(ElementType.FORM)) {
-                    for (final FormRow row : ((UIForm.FormElement) element.getElement()).getRowModels()) {
-                        for (final AbstractInstanceObject cell : row.getValues()) {
-                            if (cell instanceof UIFormCellSet) {
-                                ((UIFormCellSet) cell).resetIndex();
-                            }
-                        }
-                    }
-                } else if (element.getType().equals(ElementType.SUBFORM)) {
-                    for (final Element nElement : ((UIFieldForm) element.getElement()).getElements()) {
-                        if (nElement.getType().equals(ElementType.FORM)) {
-                            for (final FormRow row : ((UIForm.FormElement) nElement.getElement())
-                                            .getRowModels()) {
-                                for (final AbstractInstanceObject cell : row.getValues()) {
-                                    if (cell instanceof UIFormCellSet) {
-                                        ((UIFormCellSet) cell).resetIndex();
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
+
 
     /**
      * Execute the events which are related to CommandAbstract calling the Form.

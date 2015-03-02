@@ -34,6 +34,7 @@ import org.apache.wicket.core.util.string.JavaScriptUtils;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.IFormSubmitter;
 import org.apache.wicket.protocol.http.servlet.MultipartServletWebRequest;
 import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.util.string.StringValue;
@@ -43,7 +44,14 @@ import org.efaps.ui.wicket.EFapsSession.FileParameter;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.date.IDateListener;
 import org.efaps.ui.wicket.components.values.IValueConverter;
+import org.efaps.ui.wicket.models.AbstractInstanceObject;
+import org.efaps.ui.wicket.models.cell.UIFormCellSet;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
+import org.efaps.ui.wicket.models.objects.UIFieldForm;
+import org.efaps.ui.wicket.models.objects.UIForm;
+import org.efaps.ui.wicket.models.objects.UIForm.Element;
+import org.efaps.ui.wicket.models.objects.UIForm.ElementType;
+import org.efaps.ui.wicket.models.objects.UIForm.FormRow;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 
@@ -164,6 +172,7 @@ public class FormContainer
      *
      * @param _dateTimePanel date picker
      */
+    @Override
     public void addDateComponent(final DateTimePanel _dateTimePanel)
     {
         this.dateComponents.add(_dateTimePanel);
@@ -174,6 +183,7 @@ public class FormContainer
      *
      * @return instance variable {@link #dateComponents}
      */
+    @Override
     public Set<DateTimePanel> getDateComponents()
     {
         return this.dateComponents;
@@ -242,4 +252,46 @@ public class FormContainer
         }
         return ret;
     }
+
+    @Override
+    public void process(final IFormSubmitter _submittingComponent)
+    {
+        super.process(_submittingComponent);
+        // it must be ensured that the counter for sets is rested or we have big problems
+        resetSetCounter();
+    }
+
+
+   /**
+    * Reset the counters for sets.
+    */
+   private void resetSetCounter()
+   {
+       if (getPage().getDefaultModelObject() instanceof UIForm) {
+           for (final Element element : ((UIForm) getPage().getDefaultModelObject()).getElements()) {
+               if (element.getType().equals(ElementType.FORM)) {
+                   for (final FormRow row : ((UIForm.FormElement) element.getElement()).getRowModels()) {
+                       for (final AbstractInstanceObject cell : row.getValues()) {
+                           if (cell instanceof UIFormCellSet) {
+                               ((UIFormCellSet) cell).resetIndex();
+                           }
+                       }
+                   }
+               } else if (element.getType().equals(ElementType.SUBFORM)) {
+                   for (final Element nElement : ((UIFieldForm) element.getElement()).getElements()) {
+                       if (nElement.getType().equals(ElementType.FORM)) {
+                           for (final FormRow row : ((UIForm.FormElement) nElement.getElement())
+                                           .getRowModels()) {
+                               for (final AbstractInstanceObject cell : row.getValues()) {
+                                   if (cell instanceof UIFormCellSet) {
+                                       ((UIFormCellSet) cell).resetIndex();
+                                   }
+                               }
+                           }
+                       }
+                   }
+               }
+           }
+       }
+   }
 }
