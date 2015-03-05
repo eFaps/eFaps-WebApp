@@ -85,7 +85,7 @@ public class PickerPanel
             final UITable table = (UITable) tableHeader.getUiHeaderObject();
             this.pickList = table.getFilterPickList(tableHeader);
             final TableFilter filter = table.getFilter(tableHeader);
-            if (filter != null) {
+            if (filter != null && filter.getFilterList() != null) {
                 this.selected = filter.getFilterList();
             } else {
                 this.selected = SetUtils.EMPTY_SET;
