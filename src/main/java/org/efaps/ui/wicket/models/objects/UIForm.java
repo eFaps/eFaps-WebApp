@@ -59,6 +59,7 @@ import org.efaps.admin.ui.field.FieldHeading;
 import org.efaps.admin.ui.field.FieldPicker;
 import org.efaps.admin.ui.field.FieldSet;
 import org.efaps.admin.ui.field.FieldTable;
+import org.efaps.api.ui.UIType;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.PrintQuery;
@@ -504,7 +505,8 @@ public class UIForm
                                 || attr != null && attr.getAttributeType().getUI() == null
                                 || attr == null && _field.getClassUI() == null && _field.getUIProvider() == null
                                 || attr != null && attr.getAttributeType().getUI() != null
-                                  && (attr.getAttributeType().getUI() instanceof TypeUI
+                                  && (_field.getProperty(UIType.class.getSimpleName()) != null
+                                    || attr.getAttributeType().getUI() instanceof TypeUI
                                     || attr.getAttributeType().getUI() instanceof UserUI)) {
                     _row.add(evaluateUIProvider(_row, _query, _field, fieldInstance, label, attr));
                 } else {
