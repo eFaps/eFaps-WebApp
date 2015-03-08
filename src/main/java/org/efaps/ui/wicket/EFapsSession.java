@@ -53,6 +53,7 @@ import org.efaps.ui.wicket.components.menu.LinkItem;
 import org.efaps.ui.wicket.models.EmbeddedLink;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.ui.wicket.request.EFapsRequest;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 import org.efaps.util.EFapsException;
@@ -385,26 +386,27 @@ public class EFapsSession
             try {
                 if (!Context.isTMActive()) {
                     final ServletWebRequest request = (ServletWebRequest) RequestCycle.get().getRequest();
-
-                    final Map<String, String[]> parameters = new HashMap<String, String[]>();
-                    final IRequestParameters reqPara = request.getRequestParameters();
-                    for (final String name : reqPara.getParameterNames()) {
-                        final List<StringValue> values = reqPara.getParameterValues(name);
-                        final String[] valArray = new String[values.size()];
-                        int i = 0;
-                        for (final StringValue value : values) {
-                            valArray[i] = value.toString();
-                            i++;
+                    if (request instanceof EFapsRequest) {
+                        final Map<String, String[]> parameters = new HashMap<String, String[]>();
+                        final IRequestParameters reqPara = request.getRequestParameters();
+                        for (final String name : reqPara.getParameterNames()) {
+                            final List<StringValue> values = reqPara.getParameterValues(name);
+                            final String[] valArray = new String[values.size()];
+                            int i = 0;
+                            for (final StringValue value : values) {
+                                valArray[i] = value.toString();
+                                i++;
+                            }
+                            parameters.put(name, valArray);
                         }
-                        parameters.put(name, valArray);
-                    }
 
-                    Context.begin(this.userName, super.getLocale(), this.sessionAttributes, parameters, null,
-                                    true);
-                    // set the locale in the context and in the session
-                    setLocale(Context.getThreadContext().getLocale());
-                    setAttribute(UserAttributesSet.CONTEXTMAPKEY, Context.getThreadContext().getUserAttributes());
-                    Context.getThreadContext().setPath(request.getContextPath());
+                        Context.begin(this.userName, super.getLocale(), this.sessionAttributes, parameters, null,
+                                        true);
+                        // set the locale in the context and in the session
+                        setLocale(Context.getThreadContext().getLocale());
+                        setAttribute(UserAttributesSet.CONTEXTMAPKEY, Context.getThreadContext().getUserAttributes());
+                        Context.getThreadContext().setPath(request.getContextPath());
+                    }
                 }
             } catch (final EFapsException e) {
                 EFapsSession.LOG.error("could not initialise the context", e);
