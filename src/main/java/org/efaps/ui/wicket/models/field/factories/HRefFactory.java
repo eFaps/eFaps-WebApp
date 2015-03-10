@@ -88,39 +88,30 @@ public class HRefFactory
     {
         Component ret = null;
         if (applies(_uiField)) {
-            final Menu menu = Menu.getTypeTreeMenu(_uiField.getInstance().getType());
-            if (menu != null && menu.hasAccess(_uiField.getParent().getMode(), _uiField.getInstance())
-                            && (!((AbstractUIPageObject) _uiField.getParent()).getAccessMap().containsKey(
-                                            _uiField.getInstance())
-                            || ((AbstractUIPageObject) _uiField.getParent()).getAccessMap().containsKey(
-                                            _uiField.getInstance())
-                                            && ((AbstractUIPageObject) _uiField.getParent()).getAccessMap().get(
-                                                            _uiField.getInstance()))) {
-                String icon = _uiField.getFieldConfiguration().getField().getIcon();
-                if (icon == null && _uiField.getInstance() != null
-                                && _uiField.getFieldConfiguration().getField().isShowTypeIcon()
-                                && _uiField.getInstance().getType() != null) {
-                    final Image image = Image.getTypeIcon(_uiField.getInstance().getType());
-                    if (image != null) {
-                        icon = image.getUrl();
+            String icon = _uiField.getFieldConfiguration().getField().getIcon();
+            if (icon == null && _uiField.getInstance() != null
+                            && _uiField.getFieldConfiguration().getField().isShowTypeIcon()
+                            && _uiField.getInstance().getType() != null) {
+                final Image image = Image.getTypeIcon(_uiField.getInstance().getType());
+                if (image != null) {
+                    icon = image.getUrl();
+                }
+            }
+            String content = null;
+            for (final IComponentFactory factory : _uiField.getFactories().values()) {
+                if (factory instanceof AbstractUIFactory) {
+                    final AbstractUIFactory uiFactory = (AbstractUIFactory) factory;
+                    if (uiFactory.applies(_uiField)) {
+                        content = uiFactory.getReadOnlyValue(_uiField);
+                        break;
                     }
                 }
-                String content = null;
-                for (final IComponentFactory factory : _uiField.getFactories().values()) {
-                    if (factory instanceof AbstractUIFactory) {
-                        final AbstractUIFactory uiFactory = (AbstractUIFactory) factory;
-                        if (uiFactory.applies(_uiField)) {
-                            content = uiFactory.getReadOnlyValue(_uiField);
-                            break;
-                        }
-                    }
-                }
+            }
 
-                if (icon == null) {
-                    ret = new MenuContentAjaxLink(_wicketId, Model.of(_uiField), content);
-                } else {
-                    ret = new IconMenuContentAjaxLink(_wicketId, Model.of(_uiField), content, icon);
-                }
+            if (icon == null) {
+                ret = new MenuContentAjaxLink(_wicketId, Model.of(_uiField), content);
+            } else {
+                ret = new IconMenuContentAjaxLink(_wicketId, Model.of(_uiField), content, icon);
             }
         }
         return ret;
@@ -141,21 +132,16 @@ public class HRefFactory
     @Override
     public String getPickListValue(final AbstractUIField _uiField)
     {
-        // TODO Auto-generated method stub
         return null;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see
-     * org.efaps.ui.wicket.models.field.factories.IComponentFactory#getCompareValue
-     * (org.efaps.ui.wicket.models.field.AbstractUIField)
+    /**
+     * {@inheritDoc}
      */
     @Override
     public Comparable<?> getCompareValue(final AbstractUIField _uiField)
         throws EFapsException
     {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -168,7 +154,20 @@ public class HRefFactory
     {
         return TargetMode.VIEW.equals(_uiField.getParent().getMode())
                         && _uiField.getFieldConfiguration().getField().getReference() != null
-                        && _uiField.getInstanceKey() != null;
+                        && _uiField.getInstanceKey() != null && hasAccess2Menu(_uiField);
+    }
+
+    private boolean hasAccess2Menu(final AbstractUIField _uiField)
+        throws EFapsException
+    {
+        final Menu menu = Menu.getTypeTreeMenu(_uiField.getInstance().getType());
+        return menu != null && menu.hasAccess(_uiField.getParent().getMode(), _uiField.getInstance())
+                        && (!((AbstractUIPageObject) _uiField.getParent()).getAccessMap().containsKey(
+                                        _uiField.getInstance())
+                        || ((AbstractUIPageObject) _uiField.getParent()).getAccessMap().containsKey(
+                                        _uiField.getInstance())
+                                        && ((AbstractUIPageObject) _uiField.getParent()).getAccessMap().get(
+                                                        _uiField.getInstance()));
     }
 
     /**
