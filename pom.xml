@@ -29,7 +29,7 @@
     <parent>
         <groupId>org.efaps</groupId>
         <artifactId>efaps-parent</artifactId>
-        <version>3.2.0</version>
+        <version>3.2.1-SNAPSHOT</version>
     </parent>
     <packaging>jar</packaging>
     <artifactId>efaps-webapp</artifactId>
@@ -87,7 +87,7 @@
         <connection>scm:git:git://github.com/eFaps/eFaps-WebApp.git</connection>
         <developerConnection>scm:git:git@github.com:eFaps/eFaps-WebApp.git</developerConnection>
         <url>https://github.com/eFaps/eFaps-WebApp/</url>
-        <tag>V3.2.0</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <distributionManagement>
@@ -258,12 +258,12 @@
         <dependency>
             <groupId>org.efaps</groupId>
             <artifactId>efaps-kernel</artifactId>
-            <version>3.2.0</version>
+            <version>3.2.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.efaps</groupId>
             <artifactId>efaps-api</artifactId>
-            <version>3.2.0</version>
+            <version>3.2.1-SNAPSHOT</version>
         </dependency>
 
         <dependency>
