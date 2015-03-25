@@ -85,9 +85,10 @@
     </issueManagement>
 
     <scm>
-        <connection>scm:svn:http://efaps.googlecode.com/svn/eFaps-WebApp/trunk</connection>
-        <developerConnection>scm:svn:https://efaps.googlecode.com/svn/eFaps-WebApp/trunk</developerConnection>
-        <url>http://efaps.googlecode.com/svn/eFaps-WebApp</url>
+        <connection>scm:git:git://github.com/eFaps/eFaps-WebApp.git</connection>
+        <developerConnection>scm:git:git@github.com:eFaps/eFaps-WebApp.git</developerConnection>
+        <url>https://github.com/eFaps/eFaps-WebApp/</url>
+        <tag>HEAD</tag>
     </scm>
 
     <distributionManagement>
