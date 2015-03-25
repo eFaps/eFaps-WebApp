@@ -23,14 +23,13 @@
 
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.efaps</groupId>
         <artifactId>efaps-parent</artifactId>
-        <version>3.2.0-SNAPSHOT</version>
+        <version>3.2.0</version>
     </parent>
     <packaging>jar</packaging>
     <artifactId>efaps-webapp</artifactId>
@@ -88,7 +87,7 @@
         <connection>scm:git:git://github.com/eFaps/eFaps-WebApp.git</connection>
         <developerConnection>scm:git:git@github.com:eFaps/eFaps-WebApp.git</developerConnection>
         <url>https://github.com/eFaps/eFaps-WebApp/</url>
-        <tag>HEAD</tag>
+        <tag>V3.2.0</tag>
     </scm>
 
     <distributionManagement>
@@ -153,9 +152,7 @@
                                 <id>unpack-dojo</id>
                                 <configuration>
                                     <target>
-                                        <untar compression="gzip"
-                                            src="lib/dojo-release-${dojo.version}.tar.gz"
-                                            dest="src/main/java/org/efaps/ui/wicket/behaviors/dojo" >
+                                        <untar compression="gzip" src="lib/dojo-release-${dojo.version}.tar.gz" dest="src/main/java/org/efaps/ui/wicket/behaviors/dojo">
                                             <cutdirsmapper dirs="1" />
                                         </untar>
                                     </target>
@@ -213,9 +210,7 @@
                                 <id>unpack-gridx</id>
                                 <configuration>
                                     <target>
-                                        <untar compression="gzip"
-                                            src="lib/gridx-${gridx.version}.tar.gz"
-                                            dest="src/main/java/org/efaps/ui/wicket/behaviors/dojo/gridx" >
+                                        <untar compression="gzip" src="lib/gridx-${gridx.version}.tar.gz" dest="src/main/java/org/efaps/ui/wicket/behaviors/dojo/gridx">
                                             <cutdirsmapper dirs="1" />
                                         </untar>
                                     </target>
@@ -263,12 +258,12 @@
         <dependency>
             <groupId>org.efaps</groupId>
             <artifactId>efaps-kernel</artifactId>
-            <version>3.2.0-SNAPSHOT</version>
+            <version>3.2.0</version>
         </dependency>
         <dependency>
             <groupId>org.efaps</groupId>
             <artifactId>efaps-api</artifactId>
-            <version>3.2.0-SNAPSHOT</version>
+            <version>3.2.0</version>
         </dependency>
 
         <dependency>
