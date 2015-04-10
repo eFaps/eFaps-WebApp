@@ -121,7 +121,8 @@ public class RowPanel
                     } else {
                         label = header.getLabel();
                     }
-                    cell = new DateTimePanel("label", uiCell.getCompareValue(), uiCell.getName(), label,
+                    cell = new DateTimePanel(cellRepeater.newChildId(), uiCell.getCompareValue(), uiCell.getName(),
+                                    label,
                                     uiCell.getUiClass() instanceof DateTimeUI,
                                     uiCell.getField().getCols());
                 } else {
