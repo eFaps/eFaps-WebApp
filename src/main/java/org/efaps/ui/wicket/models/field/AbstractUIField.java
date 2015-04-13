@@ -386,6 +386,10 @@ public abstract class AbstractUIField
                 ret = factory.getReadOnly(_wicketId, this);
             }
         }
+        if (ret == null) {
+            throw new EFapsException(AbstractUIField.class, "factoryReturnsNoComponent",
+                            getFieldConfiguration().getField());
+        }
         return ret;
     }
 
