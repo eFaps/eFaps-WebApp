@@ -115,7 +115,8 @@ public class PickerCallBack
                             strLabel = null;
                         }
 
-                        js.append("eFapsSetFieldValue('").append(this.targetMarkupId).append("','")
+                        js.append("eFapsSetFieldValue(")
+                            .append(this.targetMarkupId == null ? 0 : "'" + this.targetMarkupId + "'").append(",'")
                             .append(keyString).append("',")
                             .append(strValue.contains("Array(") ? "" : "'")
                                         .append(strValue)
