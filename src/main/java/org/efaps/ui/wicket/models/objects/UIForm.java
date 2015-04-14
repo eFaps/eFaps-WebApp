@@ -499,6 +499,12 @@ public class UIForm
             } else if (_field instanceof FieldChart) {
                 final UIFormCellChart fieldChart = new UIFormCellChart(this, (FieldChart) _field, fieldInstance, label);
                 _row.add(fieldChart);
+            } else if (_field instanceof FieldPicker) {
+                final UIField cell = new UIField(null, this, UIValue.get(_field, attr, null).setClassObject(this)
+                                .setInstance(getInstance()).setCallInstance(getInstance()));
+                final UIPicker picker = new UIPicker((FieldPicker) _field, cell);
+                cell.setPicker(picker);
+                _row.add(cell);
             } else {
                 // temp to decide what to do TODO remove in future
                 if (_field.getClassUI() == null && _field.getUIProvider() != null
