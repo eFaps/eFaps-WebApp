@@ -763,6 +763,30 @@ public class UITable
     }
 
     /**
+     * Add a range to the filters of this UiTable.
+     *
+     * @param _uitableHeader UitableHeader this filter belongs to
+     * @param _from from value
+     * @param _to to value
+     * @throws EFapsException on error
+     *
+     */
+    public void addFilterParameters(final UITableHeader _uitableHeader,
+                                    final Map<String, String[]> _parameters)
+        throws EFapsException
+    {
+        final TableFilter filter = new TableFilter(_uitableHeader);
+        filter.setParameters(_parameters);
+        this.filters.put(_uitableHeader.getFieldName(), filter);
+        final UITableHeader orig = getHeader4Id(_uitableHeader.getFieldId());
+        if (orig != null) {
+            orig.setFilterApplied(true);
+        }
+        storeFilters();
+    }
+
+
+    /**
      * Method to get a Filter from the list of filters belonging to this
      * UITable.
      *
@@ -1083,6 +1107,11 @@ public class UITable
         private boolean ignoreCase = true;
 
         /**
+         * Contains interface parameters to be passed to the esjp.
+         */
+        private Map<String, String[]> parameters;
+
+        /**
          * Constructor is used for a database based filter in case that it is
          * required.
          */
@@ -1262,7 +1291,9 @@ public class UITable
         public Map<String, Object> getMap4esjp()
         {
             final Map<String, Object> ret = new HashMap<String, Object>();
-            if (this.filterList == null) {
+            if (getParameters() != null) {
+                ret.putAll(getParameters());
+            } else if (this.filterList == null) {
                 ret.put(UITable.TableFilter.FROM, this.from);
                 ret.put(UITable.TableFilter.TO, this.to);
                 ret.put(UITable.TableFilter.EXPERTMODE, isExpertMode());
@@ -1380,6 +1411,26 @@ public class UITable
         public boolean isIgnoreCase()
         {
             return this.ignoreCase;
+        }
+
+        /**
+         * Getter method for the instance variable {@link #parameters}.
+         *
+         * @return value of instance variable {@link #parameters}
+         */
+        public Map<String, String[]> getParameters()
+        {
+            return this.parameters;
+        }
+
+        /**
+         * Setter method for instance variable {@link #parameters}.
+         *
+         * @param _parameters value for instance variable {@link #parameters}
+         */
+        public void setParameters(final Map<String, String[]> _parameters)
+        {
+            this.parameters = _parameters;
         }
     }
 }

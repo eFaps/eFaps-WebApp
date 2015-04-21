@@ -24,20 +24,23 @@
 
 -->
 
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org">
-  <body wicket:id="body">
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:wicket="http://wicket.apache.org">
+<body wicket:id="body">
     <form wicket:id="eFapsForm" class="eFapsFilterForm">
-      <span wicket:id="filterPanel"></span>
-      <table class="eFapsFilterButtons">
-        <tr>
-          <td>
-            <div class="eFapsFilterSubmit" wicket:id="submitButton"></div>
-            <div class="eFapsFilterClear" wicket:id="clearButton"></div>
-            <div class="eFapsFilterCancel" wicket:id="closeButton"></div>
-          </td>
-        </tr>
-      </table>
+        <div class="eFapsFilterContent" wicket:id="filterPanel"></div>
+        <div class="eFapsFilterFooter">
+            <table class="eFapsFilterButtons">
+                <tr>
+                    <td>
+                        <div class="eFapsFilterSubmit" wicket:id="submitButton"></div>
+                        <div class="eFapsFilterClear" wicket:id="clearButton"></div>
+                        <div class="eFapsFilterCancel" wicket:id="closeButton"></div>
+                    </td>
+                </tr>
+            </table>
+        </div>
     </form>
-  </body>
+</body>
 </html>
 

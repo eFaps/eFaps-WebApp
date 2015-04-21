@@ -30,6 +30,7 @@ import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -49,6 +50,7 @@ import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.modalwindow.UpdateParentCallback;
 import org.efaps.ui.wicket.components.table.filter.ClassificationPanel;
+import org.efaps.ui.wicket.components.table.filter.FormFilterPanel;
 import org.efaps.ui.wicket.components.table.filter.FreeTextPanel;
 import org.efaps.ui.wicket.components.table.filter.PickerPanel;
 import org.efaps.ui.wicket.components.table.filter.StatusPanel;
@@ -60,18 +62,18 @@ import org.efaps.ui.wicket.models.objects.UIStatusSet;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.models.objects.UITableHeader;
 import org.efaps.ui.wicket.models.objects.UITableHeader.FilterValueType;
-import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.ui.wicket.util.ParameterUtil;
 import org.efaps.util.EFapsException;
 /**
  * @author The eFaps Team
  * @version $Id:FilterPage.java 1491 2007-10-15 23:40:43Z jmox $
  */
 public class FilterPage
-    extends AbstractMergePage
+    extends AbstractContentPage
 {
 
     /**
@@ -107,12 +109,19 @@ public class FilterPage
         switch (_uitableHeader.getFilter().getType()) {
             case CLASSIFICATION:
                 panel = new ClassificationPanel("filterPanel", Model.of(_uitableHeader));
+                panel.add(new AttributeAppender("class", new Model<String>(FilterType.CLASSIFICATION.toString()), " "));
                 break;
             case PICKLIST:
                 panel = new PickerPanel("filterPanel", Model.of(_uitableHeader));
+                panel.add(new AttributeAppender("class", new Model<String>(FilterType.PICKLIST.toString()), " "));
                 break;
             case STATUS:
                 panel = new StatusPanel("filterPanel", Model.of(_uitableHeader));
+                panel.add(new AttributeAppender("class", new Model<String>(FilterType.STATUS.toString()), " "));
+                break;
+            case FORM:
+                panel = new FormFilterPanel("filterPanel", Model.of(_uitableHeader), _pageReference);
+                panel.add(new AttributeAppender("class", new Model<String>(FilterType.FORM.toString()), " "));
                 break;
             default:
                 panel = new FreeTextPanel("filterPanel", Model.of(_uitableHeader));
@@ -148,9 +157,15 @@ public class FilterPage
                                 }
                             }
                         }
-
                     }
-                    if (_uitableHeader.getFilter().getType().equals(FilterType.PICKLIST)) {
+                    if (_uitableHeader.getFilter().getType().equals(FilterType.FORM)) {
+                        uiTable.addFilterParameters(_uitableHeader,
+                                        ParameterUtil.parameter2Map(getRequest().getRequestParameters()));
+                        modal.setWindowClosedCallback(new UpdateParentCallback(FilterPage.this.pageReference,
+                                        modal, true));
+                        modal.setUpdateParent(true);
+                        modal.close(_target);
+                    } else if (_uitableHeader.getFilter().getType().equals(FilterType.PICKLIST)) {
                         final List<StringValue> selection = getRequest().getRequestParameters()
                                         .getParameterValues(PickerPanel.CHECKBOXNAME);
 

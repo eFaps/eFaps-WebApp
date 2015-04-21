@@ -26,7 +26,6 @@ import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.html.link.ILinkListener;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.efaps.ui.wicket.pages.main.MainPage;
 
 
 /**
@@ -97,7 +96,7 @@ public class LazyIframeBehavior
             .append("\").set(\"content\", domConstruct.create(\"iframe\", {");
 
         if (this.frameMarkupId != null) {
-            js.append("\"id\": \"").append(MainPage.IFRAME_ID).append("\",");
+            js.append("\"id\": \"").append(this.frameMarkupId).append("\",");
         }
 
         js.append("\"src\": \"").append(_component.urlFor(ILinkListener.INTERFACE, new PageParameters()))

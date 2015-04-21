@@ -20,7 +20,9 @@
 
 package org.efaps.ui.wicket.util;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.util.string.StringValue;
@@ -33,6 +35,21 @@ import org.apache.wicket.util.string.StringValue;
  */
 public final class ParameterUtil
 {
+    /**
+     * Get an array for the StringValues.
+     *
+     * @param _parameters IRequestParameters
+     * @return always StringArray, if parameter does not exist an empty
+     *         StringArray
+     */
+    public static Map<String, String[]> parameter2Map(final IRequestParameters _parameters)
+    {
+        final Map<String, String[]> ret = new HashMap<>();
+        for (final String name : _parameters.getParameterNames()) {
+            ret.put(name, ParameterUtil.parameter2Array(_parameters, name));
+        }
+        return ret;
+    }
 
     /**
      * Get an array for the StringValues.

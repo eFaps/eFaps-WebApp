@@ -163,17 +163,19 @@ public abstract class AbstractUIObject
         throws CacheReloadException
     {
         this.openerId = _openerId;
-        final AbstractCommand command = getCommand(_commandUUID);
-        this.cmdUUID = command.getUUID();
-        setMode(command.getTargetMode());
-        this.target = command.getTarget();
-        this.submit = command.isSubmit();
-        if (command.getTargetSearch() != null && !(this instanceof UIMenuItem)) {
-            this.callingCmdUUID = this.cmdUUID;
-            this.cmdUUID = command.getTargetSearch().getDefaultCommand().getUUID();
-            setMode(TargetMode.SEARCH);
-            if (command.hasEvents(EventType.UI_COMMAND_EXECUTE)) {
-                this.submit = true;
+        if (_commandUUID != null) {
+            final AbstractCommand command = getCommand(_commandUUID);
+            this.cmdUUID = command.getUUID();
+            setMode(command.getTargetMode());
+            this.target = command.getTarget();
+            this.submit = command.isSubmit();
+            if (command.getTargetSearch() != null && !(this instanceof UIMenuItem)) {
+                this.callingCmdUUID = this.cmdUUID;
+                this.cmdUUID = command.getTargetSearch().getDefaultCommand().getUUID();
+                setMode(TargetMode.SEARCH);
+                if (command.hasEvents(EventType.UI_COMMAND_EXECUTE)) {
+                    this.submit = true;
+                }
             }
         }
     }

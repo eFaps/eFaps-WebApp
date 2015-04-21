@@ -178,11 +178,13 @@ public class UIForm
         throws CacheReloadException
     {
         super(_commandUUID, _instanceKey, _openerId);
-        final AbstractCommand command = super.getCommand();
-        if (command == null) {
-            this.formUUID = null;
-        } else if (command.getTargetForm() != null) {
-            this.formUUID = command.getTargetForm().getUUID();
+        if (_commandUUID != null) {
+            final AbstractCommand command = super.getCommand();
+            if (command == null) {
+                this.formUUID = null;
+            } else if (command.getTargetForm() != null) {
+                this.formUUID = command.getTargetForm().getUUID();
+            }
         }
     }
 
