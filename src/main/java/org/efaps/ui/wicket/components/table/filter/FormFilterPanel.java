@@ -58,6 +58,7 @@ public class FormFilterPanel
         try {
             final Command cmd = Command.get(cmdName);
             final UIForm uiform = new UIForm(cmd.getUUID(), null);
+            uiform.setCallingCommandUUID(_model.getObject().getUiHeaderObject().getCommand().getUUID());
             final FormContainer form = new FormContainer("form");
             add(form);
             FormPage.updateFormContainer(_pageReference.getPage(), form, uiform);
