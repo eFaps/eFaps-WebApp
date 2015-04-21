@@ -24,7 +24,7 @@ import java.io.Serializable;
 
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.api.ui.IEsjpSnipplet;
-import org.efaps.util.EFapsException;
+import org.efaps.util.EFapsBaseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,7 +66,7 @@ public class EsjpInvoker
     }
 
     public CharSequence getHtmlSnipplet()
-        throws EFapsException
+        throws EFapsBaseException
     {
         initialize();
         return this.snipplet.getHtmlSnipplet();
@@ -105,7 +105,7 @@ public class EsjpInvoker
         boolean ret = false;
         try {
             ret = this.snipplet.isVisible();
-        } catch (final EFapsException e) {
+        } catch (final EFapsBaseException e) {
             EsjpInvoker.LOG.error("EFapsException", e);
         }
         return ret;

@@ -52,6 +52,8 @@ import org.efaps.admin.ui.AbstractCommand.SortDirection;
 import org.efaps.admin.ui.Image;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.admin.ui.field.Filter;
+import org.efaps.api.ui.FilterBase;
+import org.efaps.api.ui.FilterType;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.MultiPrintQuery;
@@ -61,7 +63,7 @@ import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.models.field.IFilterable;
 import org.efaps.ui.wicket.models.field.ISortable;
 import org.efaps.ui.wicket.models.field.UIField;
-import org.efaps.ui.wicket.models.objects.UITableHeader.FilterType;
+import org.efaps.ui.wicket.models.objects.UITableHeader.FilterValueType;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.util.FilterDefault;
 import org.efaps.util.DateTimeUtil;
@@ -187,7 +189,7 @@ public class UITable
                         if ((field.getFilter().isRequired()
                                         || field.getFilter().getDefaultValue() != null
                                             && !field.getFilter().getDefaultValue().isEmpty())
-                                        && field.getFilter().getBase().equals(Filter.Base.DATABASE)) {
+                                        && field.getFilter().getBase().equals(FilterBase.DATABASE)) {
                             this.filters.put(field.getName(), new TableFilter());
                         }
                     }
@@ -238,7 +240,7 @@ public class UITable
             final Entry<String, TableFilter> entry = iter.next();
             if (entry.getValue().getUiTableHeader() == null
                            || entry.getValue().getUiTableHeader() != null
-                           && entry.getValue().getUiTableHeader().getFilter().getBase().equals(Filter.Base.DATABASE)) {
+                           && entry.getValue().getUiTableHeader().getFilter().getBase().equals(FilterBase.DATABASE)) {
                 final Map<String, Object> map = entry.getValue().getMap4esjp();
                 dataBasefilters.put(entry.getKey(), map);
             }
@@ -1068,7 +1070,7 @@ public class UITable
         /**
          * Type of the Filter.
          */
-        private final FilterType filterType;
+        private final FilterValueType filterType;
 
         /**
          * ExpertMode or not.
@@ -1104,9 +1106,9 @@ public class UITable
             this.filterType =  _uitableHeader.getFilterType();
             final Filter filter = _uitableHeader.getFilter();
 
-            if (Filter.Type.FREETEXT.equals(filter.getType())
+            if (FilterType.FREETEXT.equals(filter.getType())
                             && filter.getDefaultValue() != null) {
-                if (_uitableHeader.getFilterType().equals(FilterType.DATE)) {
+                if (_uitableHeader.getFilterType().equals(FilterValueType.DATE)) {
                     final String defValue = _uitableHeader.getFilter().getDefaultValue();
                     final String[] parts = defValue.split(":");
                     final String range = parts[0];
@@ -1138,7 +1140,7 @@ public class UITable
                             break;
                     }
                 }
-            } else if (Filter.Type.STATUS.equals(filter.getType())) {
+            } else if (FilterType.STATUS.equals(filter.getType())) {
                 if (filter.getDefaultValue() == null) {
                     this.filterList = Collections.EMPTY_SET;
                 } else {
@@ -1175,7 +1177,7 @@ public class UITable
             this.filterType = _uitableHeader.getFilterType();
             this.from = _from;
             this.to = _to;
-            if (_uitableHeader.getFilterType().equals(FilterType.DATE)) {
+            if (_uitableHeader.getFilterType().equals(FilterValueType.DATE)) {
                 this.dateFrom = DateTimeUtil.translateFromUI(_from);
                 this.dateTo = DateTimeUtil.translateFromUI(_to);
                 this.dateTo = this.dateTo == null ? null : this.dateTo.plusDays(1);
@@ -1282,7 +1284,7 @@ public class UITable
         {
             boolean ret = false;
             if (this.headerFieldId > 0
-                            && Field.get(this.headerFieldId).getFilter().getBase().equals(Filter.Base.MEMORY)) {
+                            && Field.get(this.headerFieldId).getFilter().getBase().equals(FilterBase.MEMORY)) {
                 for (final IFilterable cell : _uiRow.getCells()) {
                     if (cell.belongsTo(this.headerFieldId)) {
                         if (this.filterList != null) {
@@ -1290,7 +1292,7 @@ public class UITable
                             if (!this.filterList.contains(value)) {
                                 ret = true;
                             }
-                        } else if (this.filterType.equals(FilterType.DATE)) {
+                        } else if (this.filterType.equals(FilterValueType.DATE)) {
                             if (this.dateFrom == null || this.dateTo == null) {
                                 ret = true;
                             } else {

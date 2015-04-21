@@ -36,7 +36,7 @@ import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.models.objects.UITable.TableFilter;
 import org.efaps.ui.wicket.models.objects.UITableHeader;
-import org.efaps.ui.wicket.models.objects.UITableHeader.FilterType;
+import org.efaps.ui.wicket.models.objects.UITableHeader.FilterValueType;
 import org.efaps.util.EFapsException;
 import org.joda.time.DateTime;
 
@@ -75,9 +75,9 @@ public class FreeTextPanel
         super(_wicketId, _model);
         final UITableHeader tableHeader = (UITableHeader) super.getDefaultModelObject();
         final UITable uitable = (UITable) tableHeader.getUiHeaderObject();
-        final FilterType filterType = tableHeader.getFilterType();
+        final FilterValueType filterType = tableHeader.getFilterType();
 
-        if (filterType.equals(FilterType.TEXT)) {
+        if (filterType.equals(FilterValueType.TEXT)) {
             this.add(new Label("textFrom", DBProperties.getProperty("FilterPage.textFilter")));
             final IModel<String> model = new IModel<String>()
             {
@@ -129,7 +129,7 @@ public class FreeTextPanel
             this.add(new WebMarkupContainer("dateTo").setVisible(false));
             this.fromFieldName = "from";
 
-        } else if (filterType.equals(FilterType.DATE)) {
+        } else if (filterType.equals(FilterValueType.DATE)) {
             DateTime fromDate = null;
             DateTime toDate = null;
             final TableFilter filter = uitable.getFilter(tableHeader);
@@ -172,7 +172,7 @@ public class FreeTextPanel
             this.add(new WebMarkupContainer("from").setVisible(false));
             this.add(new WebMarkupContainer("to").setVisible(false));
             this.add(new WebMarkupContainer("options").setVisible(false));
-        } else if (filterType.equals(FilterType.INTEGER) || filterType.equals(FilterType.DECIMAL)) {
+        } else if (filterType.equals(FilterValueType.INTEGER) || filterType.equals(FilterValueType.DECIMAL)) {
             this.add(new Label("textFrom", DBProperties.getProperty("FilterPage.textFrom")));
             this.add(new Label("textTo", DBProperties.getProperty("FilterPage.textTo")));
             this.add(new TextField<Object>("from"));

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev:1491 $
- * Last Changed:    $Date:2007-10-15 18:40:43 -0500 (Mon, 15 Oct 2007) $
- * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.pages.content.table.filter;
@@ -44,7 +41,8 @@ import org.apache.wicket.util.string.StringValue;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import org.efaps.admin.dbproperty.DBProperties;
-import org.efaps.admin.ui.field.Filter;
+import org.efaps.api.ui.FilterBase;
+import org.efaps.api.ui.FilterType;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
@@ -61,7 +59,7 @@ import org.efaps.ui.wicket.models.objects.UIForm.ElementType;
 import org.efaps.ui.wicket.models.objects.UIStatusSet;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.models.objects.UITableHeader;
-import org.efaps.ui.wicket.models.objects.UITableHeader.FilterType;
+import org.efaps.ui.wicket.models.objects.UITableHeader.FilterValueType;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
@@ -152,7 +150,7 @@ public class FilterPage
                         }
 
                     }
-                    if (_uitableHeader.getFilter().getType().equals(Filter.Type.PICKLIST)) {
+                    if (_uitableHeader.getFilter().getType().equals(FilterType.PICKLIST)) {
                         final List<StringValue> selection = getRequest().getRequestParameters()
                                         .getParameterValues(PickerPanel.CHECKBOXNAME);
 
@@ -176,15 +174,15 @@ public class FilterPage
                             modal.setUpdateParent(false);
                         }
                         modal.close(_target);
-                    } else if (_uitableHeader.getFilter().getType().equals(Filter.Type.CLASSIFICATION)) {
+                    } else if (_uitableHeader.getFilter().getType().equals(FilterType.CLASSIFICATION)) {
                         final ClassificationPanel classPanel = (ClassificationPanel) panel;
                         final UIClassification uiClass = classPanel.getUiClassification();
                         uiTable.addFilterClassifcation(_uitableHeader, uiClass);
                         modal.setWindowClosedCallback(new UpdateParentCallback(FilterPage.this.pageReference,
-                                        modal, _uitableHeader.getFilter().getBase().equals(Filter.Base.DATABASE)));
+                                        modal, _uitableHeader.getFilter().getBase().equals(FilterBase.DATABASE)));
                         modal.setUpdateParent(true);
                         modal.close(_target);
-                    } else if (_uitableHeader.getFilter().getType().equals(Filter.Type.STATUS)) {
+                    } else if (_uitableHeader.getFilter().getType().equals(FilterType.STATUS)) {
                         final List<StringValue> selection = getRequest().getRequestParameters()
                                         .getParameterValues(StatusPanel.CHECKBOXNAME);
                         if (selection != null) {
@@ -202,13 +200,13 @@ public class FilterPage
                                 uiTable.addFilterList(_uitableHeader, filterList);
                             }
                             modal.setWindowClosedCallback(new UpdateParentCallback(FilterPage.this.pageReference,
-                                             modal, _uitableHeader.getFilter().getBase().equals(Filter.Base.DATABASE)));
+                                             modal, _uitableHeader.getFilter().getBase().equals(FilterBase.DATABASE)));
                             modal.setUpdateParent(true);
                         }  else {
                             modal.setUpdateParent(false);
                         }
                         modal.close(_target);
-                    } else if (_uitableHeader.getFilterType().equals(FilterType.DATE)) {
+                    } else if (_uitableHeader.getFilterType().equals(FilterValueType.DATE)) {
                         final FreeTextPanel freeTextPanel = (FreeTextPanel) panel;
                         final Iterator<? extends Component> iter = freeTextPanel.iterator();
                         String from = null;
@@ -243,10 +241,10 @@ public class FilterPage
                         }
                         uiTable.addFilterRange(_uitableHeader, from, to);
                         modal.setWindowClosedCallback(new UpdateParentCallback(FilterPage.this.pageReference,
-                                        modal, _uitableHeader.getFilter().getBase().equals(Filter.Base.DATABASE)));
+                                        modal, _uitableHeader.getFilter().getBase().equals(FilterBase.DATABASE)));
                         modal.setUpdateParent(true);
                         modal.close(_target);
-                    } else if (_uitableHeader.getFilterType().equals(FilterType.TEXT)) {
+                    } else if (_uitableHeader.getFilterType().equals(FilterValueType.TEXT)) {
                         final FreeTextPanel freeTextPanel = (FreeTextPanel) panel;
 
                         final String from = freeTextPanel.visitChildren(TextField.class,
@@ -285,7 +283,7 @@ public class FilterPage
 
                         uiTable.addFilterTextLike(_uitableHeader, from, expertMode, ignoreCase);
                         modal.setWindowClosedCallback(new UpdateParentCallback(FilterPage.this.pageReference,
-                                        modal, _uitableHeader.getFilter().getBase().equals(Filter.Base.DATABASE)));
+                                        modal, _uitableHeader.getFilter().getBase().equals(FilterBase.DATABASE)));
                         modal.setUpdateParent(true);
                         modal.close(_target);
                     }
@@ -323,7 +321,7 @@ public class FilterPage
                                     .getModal();
                     modal.setUpdateParent(true);
                     modal.setWindowClosedCallback(new UpdateParentCallback(FilterPage.this.pageReference,
-                                    modal, _uitableHeader.getFilter().getBase().equals(Filter.Base.DATABASE)));
+                                    modal, _uitableHeader.getFilter().getBase().equals(FilterBase.DATABASE)));
                     modal.close(_target);
                 }
             };

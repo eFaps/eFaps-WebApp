@@ -26,7 +26,7 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
 import org.efaps.ui.wicket.behaviors.dojo.AbstractDojoBehavior;
 import org.efaps.ui.wicket.models.EsjpInvoker;
-import org.efaps.util.EFapsException;
+import org.efaps.util.EFapsBaseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,7 +80,7 @@ public class EsjpComponent
         final EsjpInvoker invoker = (EsjpInvoker) getDefaultModelObject();
         try {
             replaceComponentTagBody(_markupStream, _openTag, invoker.getHtmlSnipplet());
-        } catch (final EFapsException e) {
+        } catch (final EFapsBaseException e) {
             EsjpComponent.LOG.error("EFapsException", e);
         }
     }

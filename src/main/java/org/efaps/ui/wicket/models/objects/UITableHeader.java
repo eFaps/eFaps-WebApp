@@ -32,6 +32,7 @@ import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.AbstractCommand.SortDirection;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.admin.ui.field.Filter;
+import org.efaps.api.ui.FilterType;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +52,7 @@ public class UITableHeader
     /**
      * Enum for the different types of filter.
      */
-    public static enum FilterType
+    public static enum FilterValueType
     {
         /** Date. */
         DATE,
@@ -83,7 +84,7 @@ public class UITableHeader
     /**
      * The type of the filter.
      */
-    private FilterType filterType = UITableHeader.FilterType.NONE;
+    private FilterValueType filterType = UITableHeader.FilterValueType.NONE;
 
     /**
      * has this header a fixed width.
@@ -144,7 +145,7 @@ public class UITableHeader
         this.uiHeaderObject = _uiHeaderObject;
         this.label = _field.getLabel();
         this.sortable = _field.isSortAble();
-        this.filter = !_field.getFilter().getType().equals(Filter.Type.NONE);
+        this.filter = !_field.getFilter().getType().equals(FilterType.NONE);
         setFilterApplied(_field.getFilter().isRequired());
         this.sortDirection = _sortdirection;
         this.width = _field.getWidth();
@@ -152,25 +153,25 @@ public class UITableHeader
         this.fieldId = _field.getId();
         this.attrId = _attr != null ? _attr.getId() : 0;
 
-        if (_field.getFilter().getType().equals(Filter.Type.FREETEXT)) {
+        if (_field.getFilter().getType().equals(FilterType.FREETEXT)) {
             IUIProvider uiProvider = _field.getUIProvider();
             if (uiProvider == null && _attr != null) {
                 uiProvider = _attr.getAttributeType().getUIProvider();
             }
             if (uiProvider != null) {
                 if (uiProvider instanceof StringUI) {
-                    this.filterType = UITableHeader.FilterType.TEXT;
+                    this.filterType = UITableHeader.FilterValueType.TEXT;
                 } else if (uiProvider instanceof NumberUI) {
-                    this.filterType = UITableHeader.FilterType.INTEGER;
+                    this.filterType = UITableHeader.FilterValueType.INTEGER;
                 } else if (uiProvider instanceof DecimalUI) {
-                    this.filterType = UITableHeader.FilterType.DECIMAL;
+                    this.filterType = UITableHeader.FilterValueType.DECIMAL;
                 } else if (uiProvider instanceof DateUI || uiProvider instanceof DateTimeUI) {
-                    this.filterType = UITableHeader.FilterType.DATE;
+                    this.filterType = UITableHeader.FilterValueType.DATE;
                 }
             }
         }
 
-        if (_field.getFilter().getType().equals(Filter.Type.FREETEXT) && _attr == null &&
+        if (_field.getFilter().getType().equals(FilterType.FREETEXT) && _attr == null &&
                         _field.getClassUI() == null) {
             UITableHeader.LOG.warn("ClassNameUI is require when the field has no attribute, Field:{}",
                             _field.getName());
@@ -284,7 +285,7 @@ public class UITableHeader
      *
      * @return value of instance variable {@link #filterType}
      */
-    public FilterType getFilterType()
+    public FilterValueType getFilterType()
     {
         return this.filterType;
     }
