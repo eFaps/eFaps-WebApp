@@ -37,6 +37,9 @@ import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.event.Return;
+import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.ui.wicket.behaviors.dojo.RequireBehavior;
 import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.components.footer.AjaxSubmitCloseBehavior;
@@ -96,13 +99,15 @@ public class DialogPage
 
         final String cmdName = menuItem.getCommand().getName();
 
-        this.add(new Label("textLabel", DBProperties.getProperty(cmdName + ".Question")));
+        add(new Label("textLabel", DBProperties.getProperty(cmdName + ".Question")).setOutputMarkupId(true));
 
-        this.add(new Button("submitButton", new AjaxSubmitLink(Button.LINKID, _model, _oids),
-                        DialogPage.getLabel(cmdName, "Submit"), Button.ICON.ACCEPT.getReference()));
+        add(new Button("submitButton", new AjaxSubmitLink(Button.LINKID, _model, _oids),
+                        DialogPage.getLabel(cmdName, "Submit"), Button.ICON.ACCEPT.getReference())
+                        .setOutputMarkupId(true));
 
-        this.add(new Button("closeButton", new AjaxCloseLink(Button.LINKID), DialogPage.getLabel(cmdName, "Cancel"),
+        add(new Button("closeButton", new AjaxCloseLink(Button.LINKID), DialogPage.getLabel(cmdName, "Cancel"),
                         Button.ICON.CANCEL.getReference()));
+        add(new RequireBehavior("dojo/query", "dojo/NodeList-dom"));
     }
 
     /**
@@ -271,6 +276,11 @@ public class DialogPage
         private final String[] oids;
 
         /**
+         * Form was validated.
+         */
+        private boolean validated = false;
+
+        /**
          * @param _wicketId wicket id of this component
          * @param _model model for this component
          * @param _oids oids
@@ -292,15 +302,98 @@ public class DialogPage
         {
             final UIMenuItem model = getModelObject();
             try {
-                model.executeEvents(ParameterValues.OTHERS, this.oids);
+                if (isValidated() || validate(_target)) {
+                    model.executeEvents(ParameterValues.OTHERS, this.oids);
+                    final ModalWindowContainer modal = ((AbstractContentPage) DialogPage.this.pageReference.getPage())
+                                    .getModal();
+                    modal.setWindowClosedCallback(new UpdateParentCallback(DialogPage.this.pageReference, modal));
+                    modal.setUpdateParent(true);
+                    modal.close(_target);
+                }
             } catch (final EFapsException e) {
                 throw new RestartResponseException(new ErrorPage(e));
             }
-            final ModalWindowContainer modal = ((AbstractContentPage) DialogPage.this.pageReference.getPage())
-                            .getModal();
-            modal.setWindowClosedCallback(new UpdateParentCallback(DialogPage.this.pageReference, modal));
-            modal.setUpdateParent(true);
-            modal.close(_target);
+        }
+
+        /**
+         * Executes the Validation-Events related to the CommandAbstract which
+         * called this Form.
+         *
+         * @param _target AjaxRequestTarget to be used in the case a ModalPage
+         *            should be called
+         * @return true if the Validation was valid, otherwise false
+         * @throws EFapsException on error
+         */
+        private boolean validate(final AjaxRequestTarget _target)
+            throws EFapsException
+        {
+            setValidated(true);
+            boolean ret = true;
+            boolean goOn = true;
+            final UIMenuItem menuItem = (UIMenuItem) getDefaultModelObject();
+            final List<Return> returns = menuItem.validate(ParameterValues.OTHERS, this.oids);
+            final StringBuilder bldr = new StringBuilder();
+            for (final Return oneReturn : returns) {
+                if (oneReturn.get(ReturnValues.VALUES) != null || oneReturn.get(ReturnValues.SNIPLETT) != null) {
+                    if (oneReturn.get(ReturnValues.VALUES) != null) {
+                        bldr.append(oneReturn.get(ReturnValues.VALUES));
+                    } else {
+                        bldr.append(oneReturn.get(ReturnValues.SNIPLETT));
+                    }
+                    ret = false;
+                    if (oneReturn.get(ReturnValues.TRUE) == null) {
+                        goOn = false;
+                    }
+                } else {
+                    if (oneReturn.get(ReturnValues.TRUE) == null) {
+                        ret = false;
+                        // that is the case if it is wrong configured!
+                    }
+                }
+            }
+            if (!ret) {
+                getPage().visitChildren(Label.class, new IVisitor<Label, Void>()
+                {
+                    @Override
+                    public void component(final Label _label,
+                                          final IVisit<Void> _visit)
+                    {
+                        final Component label = new Label("textLabel", bldr.toString()).setOutputMarkupId(true)
+                                        .setEscapeModelStrings(false);
+                        _label.replaceWith(label);
+                        _target.add(label);
+                        _visit.stop();
+                    }
+                });
+                if (!goOn) {
+                    final StringBuilder js = new StringBuilder()
+                        .append("require([\"dojo/query\", \"dojo/NodeList-dom\"], function(query){")
+                        .append(" query(\".eFapsWarnDialogButton1\").style(\"display\", \"none\");")
+                        .append(" });");
+                    _target.appendJavaScript(js);
+                }
+            }
+            return ret;
+        }
+
+        /**
+         * Getter method for the instance variable {@link #validated}.
+         *
+         * @return value of instance variable {@link #validated}
+         */
+        public boolean isValidated()
+        {
+            return this.validated;
+        }
+
+        /**
+         * Setter method for instance variable {@link #validated}.
+         *
+         * @param _validated value for instance variable {@link #validated}
+         */
+        public void setValidated(final boolean _validated)
+        {
+            this.validated = _validated;
         }
     }
 
