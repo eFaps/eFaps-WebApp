@@ -25,11 +25,17 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.UUID;
 
+import org.efaps.admin.event.EventType;
+import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.event.Return;
+import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractCommand.SortDirection;
 import org.efaps.admin.ui.Table;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.db.Context;
+import org.efaps.db.Instance;
+import org.efaps.db.MultiPrintQuery;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
@@ -628,4 +634,43 @@ public abstract class AbstractUIHeaderObject
      */
     public abstract void sort()
         throws EFapsException;
+
+
+    /**
+     * @param _multi multiprint
+     * @param _field field the instance is wanted for
+     * @return instance for the field
+     * @throws EFapsException on erro
+     */
+    protected Instance evaluateFieldInstance(final MultiPrintQuery _multi,
+                                             final Field _field)
+        throws EFapsException
+    {
+        Instance ret = _multi.getCurrentInstance();
+        if (_field.getSelectAlternateOID() != null) {
+            try {
+                final Object alternateObj = _multi.getSelect(_field.getSelectAlternateOID());
+                if (alternateObj instanceof String) {
+                    ret = Instance.get((String) alternateObj);
+                } else if (alternateObj instanceof Instance) {
+                    ret = (Instance) alternateObj;
+                }
+            } catch (final ClassCastException e) {
+                LOG.error("Field '{}' has invalid SelectAlternateOID value", _field);
+            }
+        } else if (_field.hasEvents(EventType.UI_FIELD_ALTINST)) {
+            final List<Return> retTmps = _field.executeEvents(EventType.UI_FIELD_ALTINST,
+                            ParameterValues.INSTANCE, ret,
+                            ParameterValues.CALL_INSTANCE, getInstance(),
+                            ParameterValues.REQUEST_INSTANCES,_multi.getInstanceList(),
+                            ParameterValues.PARAMETERS, Context.getThreadContext().getParameters(),
+                            ParameterValues.CLASS, this);
+            for (final Return retTmp : retTmps) {
+                if (retTmp.contains(ReturnValues.INSTANCE) && retTmp.get(ReturnValues.INSTANCE) != null) {
+                    ret = (Instance) retTmp.get(ReturnValues.INSTANCE);
+                }
+            }
+        }
+        return ret;
+    }
 }

@@ -534,15 +534,10 @@ public class UIStructurBrowser
                 final UIStructurBrowser child = getNewStructurBrowser(instance, this);
                 child.setDirection(_map.get(instance));
                 for (final Field field : getUserSortedColumns()) {
+                    instance = evaluateFieldInstance(multi, field);
                     if (field.hasAccess(getMode(), getInstance()) && !field.isNoneDisplay(getMode())) {
                         Object value = null;
                         attr = null;
-                        //the previous field might have set the different instance
-                        if (field.getSelectAlternateOID() == null) {
-                            instance = multi.getCurrentInstance();
-                        } else {
-                            instance = Instance.get(multi.<String>getSelect(field.getSelectAlternateOID()));
-                        }
                         if (field.getSelect() != null) {
                             value = multi.getSelect(field.getSelect());
                             attr = multi.getAttribute4Select(field.getSelect());

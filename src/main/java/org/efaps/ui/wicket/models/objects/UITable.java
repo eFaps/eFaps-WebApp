@@ -390,44 +390,6 @@ public class UITable
     }
 
     /**
-     * @param _multi multiprint
-     * @param _field field the instance is wanted for
-     * @return instance for the field
-     * @throws EFapsException on erro
-     */
-    private Instance evaluateFieldInstance(final MultiPrintQuery _multi,
-                                           final Field _field)
-        throws EFapsException
-    {
-        Instance ret = _multi.getCurrentInstance();
-        if (_field.getSelectAlternateOID() != null) {
-            try {
-                final Object alternateObj = _multi.getSelect(_field.getSelectAlternateOID());
-                if (alternateObj instanceof String) {
-                    ret = Instance.get((String) alternateObj);
-                } else if (alternateObj instanceof Instance) {
-                    ret = (Instance) alternateObj;
-                }
-            } catch (final ClassCastException e) {
-                UITable.LOG.error("Field '{}' has invalid SelectAlternateOID value", _field);
-            }
-        } else if (_field.hasEvents(EventType.UI_FIELD_ALTINST)) {
-            final List<Return> retTmps = _field.executeEvents(EventType.UI_FIELD_ALTINST,
-                            ParameterValues.INSTANCE, ret,
-                            ParameterValues.CALL_INSTANCE, getInstance(),
-                            ParameterValues.REQUEST_INSTANCES,_multi.getInstanceList(),
-                            ParameterValues.PARAMETERS, Context.getThreadContext().getParameters(),
-                            ParameterValues.CLASS, this);
-            for (final Return retTmp : retTmps) {
-                if (retTmp.contains(ReturnValues.INSTANCE) && retTmp.get(ReturnValues.INSTANCE) != null) {
-                    ret = (Instance) retTmp.get(ReturnValues.INSTANCE);
-                }
-            }
-        }
-        return ret;
-    }
-
-    /**
      * @param _multi Query
      * @param _fields Fields
      * @throws EFapsException on error
