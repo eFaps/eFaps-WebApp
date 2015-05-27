@@ -20,20 +20,12 @@
 
 package org.efaps.ui.wicket.models.field.factories;
 
-import java.util.List;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.datamodel.ui.StringUI;
-import org.efaps.ui.wicket.components.values.CheckBoxField;
-import org.efaps.ui.wicket.components.values.DropDownField;
 import org.efaps.ui.wicket.components.values.HiddenField;
-import org.efaps.ui.wicket.components.values.RadioField;
 import org.efaps.ui.wicket.components.values.StringField;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
-import org.efaps.ui.wicket.models.objects.CheckBoxOption;
-import org.efaps.ui.wicket.models.objects.DropDownOption;
-import org.efaps.ui.wicket.models.objects.RadioOption;
 import org.efaps.util.EFapsException;
 
 /**
@@ -72,23 +64,15 @@ public class StringUIFactory
         Component ret = null;
         if (applies(_uiField)) {
             switch (_uiField.getFieldConfiguration().getUIType()) {
-                case DROPDOWN:
-                    final List<DropDownOption> choices = DropDownOption.getChoices(_uiField.getValue()
-                                    .getEditValue(_uiField.getParent().getMode()));
-                    ret = new DropDownField(_wicketId, Model.of(_uiField), choices);
-                    break;
-                case RADIO:
-                    final List<RadioOption> radios = RadioOption.getChoices(_uiField.getValue()
-                                    .getEditValue(_uiField.getParent().getMode()));
-                    ret = new RadioField(_wicketId, Model.of(_uiField), radios);
-                    break;
-                case CHECKBOX:
-                    final List<CheckBoxOption> checkBoxes = CheckBoxOption.getChoices(_uiField,
-                                    _uiField.getValue().getEditValue(_uiField.getParent().getMode()));
-                    ret = new CheckBoxField(_wicketId, Model.of(_uiField), checkBoxes);
-                    break;
                 case DEFAULT:
                     ret = new StringField(_wicketId, Model.of(_uiField), _uiField.getFieldConfiguration());
+                    break;
+                case BUTTON:
+                case CHECKBOX:
+                case DROPDOWN:
+                case RADIO:
+                case SNIPPLET:
+                    ret = ((UITypeFactory) UITypeFactory.get()).getEditableComp(_wicketId, _uiField);
                     break;
                 default:
                     break;
