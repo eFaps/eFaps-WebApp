@@ -53,6 +53,7 @@ import org.efaps.ui.wicket.components.menu.LinkItem;
 import org.efaps.ui.wicket.models.EmbeddedLink;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.ui.wicket.request.EFapsMultipartRequest;
 import org.efaps.ui.wicket.request.EFapsRequest;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
@@ -386,7 +387,7 @@ public class EFapsSession
             try {
                 if (!Context.isTMActive()) {
                     final ServletWebRequest request = (ServletWebRequest) RequestCycle.get().getRequest();
-                    if (request instanceof EFapsRequest) {
+                    if (request instanceof EFapsRequest || request instanceof EFapsMultipartRequest) {
                         final Map<String, String[]> parameters = new HashMap<String, String[]>();
                         final IRequestParameters reqPara = request.getRequestParameters();
                         for (final String name : reqPara.getParameterNames()) {
@@ -411,9 +412,6 @@ public class EFapsSession
             } catch (final EFapsException e) {
                 EFapsSession.LOG.error("could not initialise the context", e);
                 throw new RestartResponseException(new ErrorPage(e));
-//            } catch (final FileUploadException e) {
-//                EFapsSession.LOG.error("could not initialise the context", e);
-//                throw new RestartResponseException(new ErrorPage(e));
             }
         }
     }
