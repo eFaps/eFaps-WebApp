@@ -79,7 +79,15 @@ public class MenuBarPanel
         } else {
             final UIMenuItem menuItem = (UIMenuItem) super.getDefaultModelObject();
 
-            final RepeatingView itemRepeater = new RepeatingView("itemRepeater");
+            final RepeatingView itemRepeater = new RepeatingView("itemRepeater") {
+
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                public String newChildId() {
+                    return _wicketId + "_" + super.newChildId();
+                }
+            };
             add(itemRepeater);
 
             for (final UIMenuItem childItem : menuItem.getChildren()) {
