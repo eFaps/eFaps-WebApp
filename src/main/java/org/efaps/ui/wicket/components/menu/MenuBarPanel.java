@@ -85,7 +85,7 @@ public class MenuBarPanel
 
                 @Override
                 public String newChildId() {
-                    return _wicketId + "_" + super.newChildId();
+                    return "1000" +  super.newChildId();
                 }
             };
             add(itemRepeater);
