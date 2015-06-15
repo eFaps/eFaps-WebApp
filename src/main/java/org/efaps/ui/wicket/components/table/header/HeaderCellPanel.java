@@ -33,6 +33,7 @@ import org.efaps.ui.wicket.models.objects.AbstractUIHeaderObject;
 import org.efaps.ui.wicket.models.objects.UITableHeader;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.ui.wicket.util.EFapsKey;
 
 /**
  * This class renders the Cells inside a Header, providing all necessary Links.
@@ -221,6 +222,7 @@ public class HeaderCellPanel
             super.onComponentTag(_tag);
             _tag.put("type", "checkbox");
             _tag.put("onClick", getScript());
+            _tag.put("name", EFapsKey.SELECTEALL_NAME.getKey());
         }
 
         /**

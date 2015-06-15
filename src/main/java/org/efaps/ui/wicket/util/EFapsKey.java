@@ -63,8 +63,12 @@ public enum EFapsKey {
     /** Key used as name for the hidden field that makes a row unique. */
     TABLEROW_NAME("eFapsTRID"),
     /** key used to store instances in a request. */
-    INSTANCE_CACHEKEY("eFapsInstancesInRequest");
+    INSTANCE_CACHEKEY("eFapsInstancesInRequest"),
 
+    /** Key used as name for the input that selects a row. */
+    SELECTEDROW_NAME("selectedRow"),
+    /** Key used as name for the input that marks all selected. */
+    SELECTEALL_NAME("selecteAll");
     /**
      * The actual string used as the key.
      */
