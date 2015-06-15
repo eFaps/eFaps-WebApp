@@ -277,6 +277,9 @@ public class FormPage
             } else if (element.getType().equals(ElementType.SUBFORM)) {
                 final UIFieldForm uiFieldForm = (UIFieldForm) element.getElement();
                 if (!uiFieldForm.isInitialized()) {
+                    if (uiFieldForm.getInstance() == null && uiFieldForm.isCreateMode()) {
+                        uiFieldForm.setInstanceKey(_uiForm.getInstanceKey());
+                    }
                     uiFieldForm.execute();
                 }
                 final List<Element> elements = uiFieldForm.getElements();
