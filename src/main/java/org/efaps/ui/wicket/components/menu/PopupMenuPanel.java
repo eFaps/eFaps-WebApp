@@ -30,6 +30,7 @@ import org.efaps.ui.wicket.behaviors.dojo.PopupMenuBarItemBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.PopupMenuItemBehavior;
 import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
+import org.efaps.ui.wicket.util.IdGenerator;
 import org.efaps.util.cache.CacheReloadException;
 
 /**
@@ -55,23 +56,27 @@ public class PopupMenuPanel
     /**
      * @param _wicketId wicketId of this Panel
      * @param _model model for this Panel
+     * @param _idGenerator helper for ids
      * @throws CacheReloadException on error
      */
     public PopupMenuPanel(final String _wicketId,
-                          final IModel<?> _model)
+                          final IModel<?> _model,
+                          final IdGenerator _idGenerator)
         throws CacheReloadException
     {
-        this(_wicketId, _model, true);
+        this(_wicketId, _model, _idGenerator, true);
     }
 
     /**
      * @param _wicketId wicketId of this Panel
      * @param _model model for this Panel
+     * @param _idGenerator helper for ids
      * @param _isMenuBarItem part of the main menu bar or not
      * @throws CacheReloadException on error
      */
     public PopupMenuPanel(final String _wicketId,
                           final IModel<?> _model,
+                          final IdGenerator _idGenerator,
                           final boolean _isMenuBarItem)
         throws CacheReloadException
     {
@@ -109,6 +114,6 @@ public class PopupMenuPanel
                 replaceComponentTagBody(_markupStream, _openTag, html);
             }
         });
-        add(new DropDownMenuPanel("menu", new UIModel<UIMenuItem>(menuItem)));
+        add(new DropDownMenuPanel("menu", new UIModel<UIMenuItem>(menuItem), _idGenerator));
     }
 }
