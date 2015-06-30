@@ -54,6 +54,8 @@ import org.apache.wicket.request.Response;
 import org.apache.wicket.request.component.IRequestableComponent;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.http.WebRequest;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.request.resource.IResource;
 import org.apache.wicket.resource.DynamicJQueryResourceReference;
 import org.apache.wicket.response.filter.IResponseFilter;
 import org.apache.wicket.util.lang.Bytes;
@@ -281,6 +283,7 @@ public class EFapsApplication
          * @param _action action to be checked
          * @return true
          */
+        @Override
         public boolean isActionAuthorized(final Component _component,
                                           final Action _action)
         {
@@ -309,6 +312,13 @@ public class EFapsApplication
                 }
             }
             return ret;
+        }
+
+        @Override
+        public boolean isResourceAuthorized(final IResource resource,
+                                            final PageParameters parameters)
+        {
+            return true;
         }
     }
 }
