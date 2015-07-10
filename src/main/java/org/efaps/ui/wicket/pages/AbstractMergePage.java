@@ -24,6 +24,7 @@ import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.html.TransparentWebMarkupContainer;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.model.IModel;
@@ -90,7 +91,7 @@ public abstract class AbstractMergePage
     {
         super(_model);
         add(this.downloadBehavior);
-        this.body = new WebMarkupContainer("body");
+        this.body = new TransparentWebMarkupContainer("body");
         this.body.add(AttributeModifier.append("class", Configuration.getAttribute(ConfigAttribute.DOJO_CLASS)));
         super.add(this.body);
 
