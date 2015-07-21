@@ -870,7 +870,8 @@ public class UIForm
                             ((UIField) cell).setPicker(picker);
                         } else {
                             if (attr != null && attr.getAttributeType().getUI() == null
-                                || field.getClassUI() == null && field.getUIProvider() != null
+                                || field.getClassUI() == null
+                                    && (field.getUIProvider() != null || field.getProperty("UIType") != null)
                                 || attr == null && field.getClassUI() == null && field.getUIProvider() == null) {
 
                                 cell = new UIField(null, this, UIValue.get(field, attr, null).setClassObject(this)

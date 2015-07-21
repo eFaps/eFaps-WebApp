@@ -57,12 +57,25 @@ public final class NumberUIFactory
      */
     @Override
     public Component getEditable(final String _wicketId,
-                                 final AbstractUIField _abstractUIField)
+                                 final AbstractUIField _uiField)
         throws EFapsException
     {
         Component ret = null;
-        if (applies(_abstractUIField)) {
-            ret = new NumberField(_wicketId, Model.of(_abstractUIField), _abstractUIField.getFieldConfiguration());
+        if (applies(_uiField)) {
+            switch (_uiField.getFieldConfiguration().getUIType()) {
+                case DEFAULT:
+                    ret = new NumberField(_wicketId, Model.of(_uiField), _uiField.getFieldConfiguration());
+                    break;
+                case BUTTON:
+                case CHECKBOX:
+                case DROPDOWN:
+                case RADIO:
+                case SNIPPLET:
+                    ret = ((UITypeFactory) UITypeFactory.get()).getEditableComp(_wicketId, _uiField);
+                    break;
+                default:
+                    break;
+            }
         }
         return ret;
     }
