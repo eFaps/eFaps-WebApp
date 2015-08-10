@@ -635,5 +635,23 @@ public class TaskPage
         {
             return Integer.valueOf(_index).toString();
         }
+
+        @Override
+        public DelegatePerson getObject(final String _id,
+                                        final IModel<? extends List<? extends DelegatePerson>> _choices)
+        {
+            DelegatePerson ret = null;
+            @SuppressWarnings("unchecked")
+            final List<DelegatePerson> choices = (List<DelegatePerson>) _choices.getObject();
+            for (int index = 0; index < choices.size(); index++) {
+                // Get next choice
+                final DelegatePerson choice = choices.get(index);
+                if (getIdValue(choice, index).equals(_id)) {
+                    ret = choice;
+                    break;
+                }
+            }
+            return ret;
+        }
     }
 }
