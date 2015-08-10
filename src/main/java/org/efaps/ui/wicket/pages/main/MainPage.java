@@ -217,7 +217,8 @@ public class MainPage
                       .fromString(Configuration.getAttribute(ConfigAttribute.TOOLBAR))))));
 
         // set the title for the Page
-        add(new Label("pageTitle", DBProperties.getProperty("Logo.Version.Label")));
+        add2Page(new Label("pageTitle", DBProperties.getProperty("Logo.Version.Label")));
+
         add(this.modal);
         add(new ResizeEventBehavior());
 
