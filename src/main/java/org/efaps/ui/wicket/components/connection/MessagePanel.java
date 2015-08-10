@@ -30,7 +30,7 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.protocol.ws.IWebSocketSettings;
+import org.apache.wicket.protocol.ws.WebSocketSettings;
 import org.apache.wicket.protocol.ws.api.IWebSocketConnection;
 import org.apache.wicket.protocol.ws.api.WebSocketPushBroadcaster;
 import org.apache.wicket.util.visit.IVisit;
@@ -149,7 +149,7 @@ public class MessagePanel
                 });
 
                 if (msg.length() > 0) {
-                    final IWebSocketSettings webSocketSettings = IWebSocketSettings.Holder.get(getApplication());
+                    final WebSocketSettings webSocketSettings = WebSocketSettings.Holder.get(getApplication());
                     final WebSocketPushBroadcaster broadcaster =
                                     new WebSocketPushBroadcaster(webSocketSettings.getConnectionRegistry());
                     broadcaster.broadcastAll(EFapsApplication.get(), new PushMsg(msg.toString()));
