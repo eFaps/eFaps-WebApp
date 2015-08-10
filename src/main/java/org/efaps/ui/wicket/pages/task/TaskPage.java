@@ -314,7 +314,7 @@ public class TaskPage
                             final boolean _decision)
         {
             super(_wicketId, _model);
-            add(new AjaxFormSubmitBehavior("onclick")
+            add(new AjaxFormSubmitBehavior("click")
             {
 
                 private static final long serialVersionUID = 1L;
@@ -366,7 +366,7 @@ public class TaskPage
                          final PageReference _pageReference)
         {
             super(_wicketId, _model);
-            add(new AjaxFormSubmitBehavior("onclick")
+            add(new AjaxFormSubmitBehavior("click")
             {
 
                 private static final long serialVersionUID = 1L;

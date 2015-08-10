@@ -87,7 +87,7 @@ public class ExecItem
          */
         public ExecBehavior()
         {
-            super("onclick");
+            super("click");
         }
 
         /**

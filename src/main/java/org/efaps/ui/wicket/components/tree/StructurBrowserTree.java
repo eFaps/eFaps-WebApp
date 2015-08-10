@@ -200,7 +200,7 @@ public class StructurBrowserTree
          */
         public ItemLinkBehavior()
         {
-            super("onclick");
+            super("click");
         }
 
         @Override

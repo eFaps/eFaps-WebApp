@@ -120,7 +120,7 @@ public class HeadingPanel
             protected void onComponentTag(final ComponentTag _tag)
             {
                 super.onComponentTag(_tag);
-                _tag.put("onclick", "toggleSection('" + toggleId + "');");
+                _tag.put("click", "toggleSection('" + toggleId + "');");
             }
 
             @Override

@@ -219,7 +219,7 @@ public class MenuItem
 
         public ItemBehavior()
         {
-            super("onclick");
+            super("click");
         }
 
         @Override

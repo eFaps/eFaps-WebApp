@@ -138,7 +138,7 @@ public class AjaxSubmitCloseBehavior
     public AjaxSubmitCloseBehavior(final AbstractUIPageObject _uiobject,
                                    final FormContainer _form)
     {
-        super(_form, "onclick");
+        super(_form, "click");
         this.uiObject = _uiobject;
     }
 

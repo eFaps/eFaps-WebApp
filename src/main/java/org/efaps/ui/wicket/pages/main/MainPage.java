@@ -362,7 +362,7 @@ public class MainPage
          */
         public ResizeEventBehavior()
         {
-            super("onResize");
+            super("resize");
         }
 
         /**
