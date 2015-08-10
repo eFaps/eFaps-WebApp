@@ -140,8 +140,8 @@ public abstract class AbstractField<T extends Serializable>
         _tag.append("style", "text-align:" + getConfig().getAlign(), ";");
         _tag.put("size", getConfig().getSize());
 
-        if (getInputType() != null) {
-            _tag.put("type", getInputType());
+        if (getInputTypes() != null) {
+            _tag.put("type", getInputTypes()[0]);
         }
 
         super.onComponentTag(_tag);

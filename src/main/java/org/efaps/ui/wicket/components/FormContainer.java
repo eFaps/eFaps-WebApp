@@ -28,17 +28,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.wicket.Component;
+import org.apache.commons.fileupload.FileItem;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
-import org.apache.wicket.core.util.string.JavaScriptUtils;
 import org.apache.wicket.markup.ComponentTag;
-import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.IFormSubmitter;
 import org.apache.wicket.protocol.http.servlet.MultipartServletWebRequest;
 import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.util.string.StringValue;
-import org.apache.wicket.util.upload.FileItem;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.EFapsSession.FileParameter;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
@@ -130,41 +127,6 @@ public class FormContainer
     public String getActionUrl()
     {
         return this.actionUrl;
-    }
-
-    /**
-     * If a default IFormSubmittingComponent was set on this form, this method
-     * will be called to render an extra field with an invisible style so that
-     * pressing enter in one of the textfields will do a form submit using
-     * this component.
-     * The method is overwritten to correct some script problems with the
-     * default behavior from Firefox, that actually sends and reloads the form.
-     *
-     * @param _markupStream The markup stream
-     * @param _openTag The open tag for the body
-     */
-    @Override
-    protected void appendDefaultButtonField(final MarkupStream _markupStream,
-                                            final ComponentTag _openTag)
-    {
-        final StringBuilder divBldr = new StringBuilder();
-        // div that is not visible (but not display:none either)
-        divBldr.append("<div style=\"width:0px;height:0px;position:absolute;left:-100px;top:-100px;overflow:hidden\">");
-
-        // add an empty textfield (otherwise IE doesn't work)
-        divBldr.append("<input type=\"text\" autocomplete=\"false\"/>");
-
-        final Component submittingComponent = (Component) getDefaultButton();
-        divBldr.append("<input type=\"submit\" onclick=\" var b=Wicket.$('");
-        divBldr.append(submittingComponent.getMarkupId());
-        divBldr.append("'); if (typeof(b.onclick) != 'undefined') " + "{ b.onclick();  }" + " \" ");
-        divBldr.append(" /></div>");
-        getResponse().write(divBldr);
-        // this trick prevents that the default behavior is executed
-        final StringBuilder bldr = new StringBuilder();
-        bldr.append("Wicket.Event.add(Wicket.$('").append(this.getMarkupId())
-            .append("'), 'submit', function (evt){ evt.preventDefault();});");
-        JavaScriptUtils.writeJavaScript(getResponse(), bldr.toString());
     }
 
     /**

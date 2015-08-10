@@ -63,8 +63,8 @@ public class HiddenField
     }
 
     @Override
-    protected String getInputType()
+    protected String[] getInputTypes()
     {
-        return "hidden";
+        return new String[] { "hidden" };
     }
 }

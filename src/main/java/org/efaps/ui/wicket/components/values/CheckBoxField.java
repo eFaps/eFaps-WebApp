@@ -25,6 +25,7 @@ import java.util.List;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.wicket.markup.html.form.CheckBoxMultipleChoice;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.datamodel.ui.BooleanUI;
 import org.efaps.admin.datamodel.ui.IUIProvider;
@@ -181,6 +182,24 @@ public class CheckBoxField
                                  final int _index)
         {
             return _object.getValue();
+        }
+
+        @Override
+        public CheckBoxOption getObject(final String _id,
+                                        final IModel<? extends List<? extends CheckBoxOption>> _choices)
+        {
+            CheckBoxOption ret = null;
+            final List<?> choices = _choices.getObject();
+            for (int index = 0; index < choices.size(); index++)
+            {
+                final CheckBoxOption choice = (CheckBoxOption) choices.get(index);
+                if (getIdValue(choice, index).equals(_id))
+                {
+                    ret =  choice;
+                    break;
+                }
+            }
+            return ret;
         }
     }
 

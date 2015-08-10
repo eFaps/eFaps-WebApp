@@ -88,7 +88,7 @@ public class StringField
     }
 
     @Override
-    protected void convertInput()
+    public void convertInput()
     {
         this.converted = true;
         int i = 0;
