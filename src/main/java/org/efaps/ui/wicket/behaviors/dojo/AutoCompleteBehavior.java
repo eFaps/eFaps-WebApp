@@ -32,13 +32,13 @@ import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.XmlAjaxResponse;
 import org.apache.wicket.ajax.json.JSONArray;
 import org.apache.wicket.ajax.json.JSONException;
 import org.apache.wicket.ajax.json.JSONObject;
 import org.apache.wicket.behavior.IBehaviorListener;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
+import org.apache.wicket.page.XmlPartialPageUpdate;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.ILogData;
 import org.apache.wicket.request.IRequestCycle;
@@ -477,7 +477,7 @@ public class AutoCompleteBehavior
             response.write("<json><![CDATA[");
             response.write(this.jsonString);
             response.write("]]></json>");
-            response.write(XmlAjaxResponse.END_ROOT_ELEMENT);
+            response.write(XmlPartialPageUpdate.END_ROOT_ELEMENT);
         }
 
         @Override

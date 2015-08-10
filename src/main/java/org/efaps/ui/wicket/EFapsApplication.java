@@ -33,7 +33,6 @@ import org.apache.wicket.Application;
 import org.apache.wicket.Component;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.Session;
-import org.apache.wicket.ajax.XmlAjaxResponse;
 import org.apache.wicket.application.AbstractClassResolver;
 import org.apache.wicket.application.CompoundClassResolver;
 import org.apache.wicket.application.DefaultClassResolver;
@@ -46,6 +45,7 @@ import org.apache.wicket.markup.html.IHeaderResponseDecorator;
 import org.apache.wicket.markup.html.IPackageResourceGuard;
 import org.apache.wicket.markup.html.SecurePackageResourceGuard;
 import org.apache.wicket.markup.html.WebPage;
+import org.apache.wicket.page.XmlPartialPageUpdate;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.ws.api.event.WebSocketTextPayload;
 import org.apache.wicket.protocol.ws.api.message.TextMessage;
@@ -194,7 +194,7 @@ public class EFapsApplication
                 AppendingStringBuffer ret;
                 if (RequestCycle.get().getActiveRequestHandler() instanceof ACAjaxRequestTarget) {
                     ret = new AppendingStringBuffer().append(_responseBuffer.subSequence(0,
-                                    _responseBuffer.length() - XmlAjaxResponse.END_ROOT_ELEMENT.length()));
+                                    _responseBuffer.length() - XmlPartialPageUpdate.END_ROOT_ELEMENT.length()));
                 } else {
                     ret = _responseBuffer;
                 }
