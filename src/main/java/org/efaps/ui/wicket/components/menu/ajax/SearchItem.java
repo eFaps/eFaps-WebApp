@@ -79,7 +79,7 @@ public class SearchItem
          */
         public SearchSubmitBehavior()
         {
-            super("onClick");
+            super("Click");
         }
 
         /**

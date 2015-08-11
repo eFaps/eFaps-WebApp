@@ -97,7 +97,7 @@ public class SubmitItem
          */
         public SubmitAndUpdateBehavior()
         {
-            super("onClick");
+            super("Click");
         }
 
         /**

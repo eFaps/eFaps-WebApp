@@ -127,7 +127,7 @@ public class OpenModalItem
          */
         public SubmitAndOpenModalBehavior()
         {
-            super("onClick");
+            super("Click");
         }
 
         /**

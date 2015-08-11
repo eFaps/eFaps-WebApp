@@ -55,8 +55,8 @@ import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
-import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
 
 /**
@@ -139,11 +139,13 @@ public class CompanyPage
 
             private static final long serialVersionUID = 1L;
 
+            @Override
             public String getDisplayValue(final CompanyObject _company)
             {
                 return _company.getName();
             }
 
+            @Override
             public IModel<CompanyObject> getModel(final CompanyObject _company)
             {
                 return new Model<CompanyObject>(_company);
@@ -268,7 +270,7 @@ public class CompanyPage
                               final Form<Object> _form)
         {
             super(_wicketId);
-            final AjaxFormSubmitBehavior behavior = new AjaxFormSubmitBehavior(_form, "onClick")
+            final AjaxFormSubmitBehavior behavior = new AjaxFormSubmitBehavior(_form, "Click")
             {
 
                 private static final long serialVersionUID = 1L;

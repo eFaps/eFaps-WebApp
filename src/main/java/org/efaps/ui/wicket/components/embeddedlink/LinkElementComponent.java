@@ -156,7 +156,7 @@ public class LinkElementComponent
          */
         public AjaxMenuContentBehavior()
         {
-            super("onClick");
+            super("Click");
         }
 
         @Override
