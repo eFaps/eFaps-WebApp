@@ -24,6 +24,7 @@ import org.apache.wicket.Page;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.core.request.handler.IPartialPageRequestHandler;
 import org.apache.wicket.core.request.handler.PageProvider;
 import org.apache.wicket.core.request.handler.RenderPageRequestHandler;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
@@ -125,7 +126,7 @@ public class ModalWindowContainer
      * @param _target AjaxRequestTarget
      */
     @Override
-    public void close(final AjaxRequestTarget _target)
+    public void close(final IPartialPageRequestHandler _target)
     {
         super.close(_target);
         closeInternal(_target, null);
@@ -135,7 +136,7 @@ public class ModalWindowContainer
      * @param _target AjaxRequestTarget
      * @param _uiObject uiObject of the page that was opened in the current modal
      */
-    private void closeInternal(final AjaxRequestTarget _target,
+    private void closeInternal(final IPartialPageRequestHandler _target,
                                final AbstractUIPageObject _uiObject)
     {
         if (this.targetShowFile) {

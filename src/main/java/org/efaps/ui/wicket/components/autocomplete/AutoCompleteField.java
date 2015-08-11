@@ -129,7 +129,7 @@ public class AutoCompleteField
         }
         final UITableCell uiObject = (UITableCell) this.model.getObject();
         if (uiObject.isFieldUpdate()) {
-            this.add(new AjaxFieldUpdateBehavior("onchange", this.model) {
+            this.add(new AjaxFieldUpdateBehavior("Change", this.model) {
 
                 /** Needed for serialization. */
                 private static final long serialVersionUID = 1L;

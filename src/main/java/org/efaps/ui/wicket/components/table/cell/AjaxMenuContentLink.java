@@ -164,7 +164,7 @@ public class AjaxMenuContentLink
          */
         public AjaxMenuContentBehavior()
         {
-            super("onClick");
+            super("Click");
         }
 
         @Override

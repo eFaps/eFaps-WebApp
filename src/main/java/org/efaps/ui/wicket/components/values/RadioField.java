@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.RadioChoice;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.datamodel.IEnum;
 import org.efaps.ui.wicket.models.cell.FieldConfiguration;
@@ -160,6 +161,24 @@ public class RadioField
                                  final int _index)
         {
             return _object.getValue();
+        }
+
+        @Override
+        public RadioOption getObject(final String _id,
+                                     final IModel<? extends List<? extends RadioOption>> _choices)
+        {
+            RadioOption ret = null;
+            final List<?> choices = _choices.getObject();
+            for (int index = 0; index < choices.size(); index++)
+            {
+                final RadioOption choice = (RadioOption) choices.get(index);
+                if (getIdValue(choice, index).equals(_id))
+                {
+                    ret =  choice;
+                    break;
+                }
+            }
+            return ret;
         }
     }
 }

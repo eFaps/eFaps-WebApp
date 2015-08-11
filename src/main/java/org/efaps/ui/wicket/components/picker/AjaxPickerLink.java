@@ -134,7 +134,7 @@ public class AjaxPickerLink
          */
         public AjaxOpenPickerBehavior(final String _targetMarkupId)
         {
-            super("onclick");
+            super("click");
             this.targetMarkupId = _targetMarkupId;
         }
 

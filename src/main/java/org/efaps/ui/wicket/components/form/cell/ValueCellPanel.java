@@ -128,7 +128,7 @@ public class ValueCellPanel
                     label = new AutoCompleteComboBox("label", Model.of((IAutoComplete) _model.getObject()), false);
                 } else {
                     label = new LabelComponent("label",
-                                    new Model<String>(uiFormCell.getCellValue())).setOutputMarkupId(true);
+                                    new Model<String>(uiFormCell.getCellValue()));
                     if (uiFormCell.isFieldUpdate() && uiFormCell.getDisplay().equals(Display.EDITABLE)) {
                         label.add(new AjaxFieldUpdateBehavior(uiFormCell.getFieldUpdateEvent(), _model));
                     }

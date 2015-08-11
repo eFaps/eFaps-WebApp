@@ -170,7 +170,7 @@ public abstract class AbstractContentPage
         add(new KeepAliveBehavior());
 
         // set the title for the Page
-        add(new Label("pageTitle", DBProperties.getProperty("Logo.Version.Label")));
+        add2Page(new Label("pageTitle", DBProperties.getProperty("Logo.Version.Label")));
 
         add(new SetMessageStatusBehavior());
 
@@ -266,6 +266,7 @@ public abstract class AbstractContentPage
     /**
      * @return the value of the markup id attribute of the indicating element
      */
+    @Override
     public String getAjaxIndicatorMarkupId()
     {
         return "eFapsVeil";

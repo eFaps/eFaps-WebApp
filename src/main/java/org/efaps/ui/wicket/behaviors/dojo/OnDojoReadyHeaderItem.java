@@ -25,10 +25,10 @@ import java.util.Collections;
 import org.apache.wicket.Application;
 import org.apache.wicket.core.util.string.JavaScriptUtils;
 import org.apache.wicket.markup.head.HeaderItem;
-import org.apache.wicket.markup.head.JavaScriptHeaderItem;
+import org.apache.wicket.markup.head.IReferenceHeaderItem;
 import org.apache.wicket.request.Response;
 import org.apache.wicket.request.resource.ResourceReference;
-import org.apache.wicket.settings.IJavaScriptLibrarySettings;
+import org.apache.wicket.settings.JavaScriptLibrarySettings;
 
 /**
  * TODO comment!
@@ -38,6 +38,7 @@ import org.apache.wicket.settings.IJavaScriptLibrarySettings;
  */
 public class OnDojoReadyHeaderItem
     extends HeaderItem
+    implements IReferenceHeaderItem
 {
 
     /**
@@ -80,14 +81,6 @@ public class OnDojoReadyHeaderItem
     }
 
     @Override
-    public Iterable<? extends HeaderItem> getDependencies()
-    {
-        final IJavaScriptLibrarySettings ajaxSettings = Application.get().getJavaScriptLibrarySettings();
-        final ResourceReference wicketEventReference = ajaxSettings.getWicketEventReference();
-        return Collections.singletonList(JavaScriptHeaderItem.forReference(wicketEventReference));
-    }
-
-    @Override
     public void render(final Response _response)
     {
         final StringBuilder js = new StringBuilder()
@@ -111,7 +104,7 @@ public class OnDojoReadyHeaderItem
     {
         boolean ret;
         if (_obj instanceof OnDojoReadyHeaderItem) {
-            ret =  ((OnDojoReadyHeaderItem) _obj).getJavaScript().equals(getJavaScript());
+            ret = ((OnDojoReadyHeaderItem) _obj).getJavaScript().equals(getJavaScript());
         } else {
             ret = super.equals(_obj);
         }
@@ -122,5 +115,12 @@ public class OnDojoReadyHeaderItem
     public int hashCode()
     {
         return getJavaScript().hashCode();
+    }
+
+    @Override
+    public ResourceReference getReference()
+    {
+        final JavaScriptLibrarySettings ajaxSettings = Application.get().getJavaScriptLibrarySettings();
+        return ajaxSettings.getWicketEventReference();
     }
 }

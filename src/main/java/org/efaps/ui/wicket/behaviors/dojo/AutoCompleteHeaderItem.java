@@ -26,10 +26,10 @@ import java.util.EnumSet;
 import org.apache.wicket.Application;
 import org.apache.wicket.core.util.string.JavaScriptUtils;
 import org.apache.wicket.markup.head.HeaderItem;
-import org.apache.wicket.markup.head.JavaScriptHeaderItem;
+import org.apache.wicket.markup.head.IReferenceHeaderItem;
 import org.apache.wicket.request.Response;
 import org.apache.wicket.request.resource.ResourceReference;
-import org.apache.wicket.settings.IJavaScriptLibrarySettings;
+import org.apache.wicket.settings.JavaScriptLibrarySettings;
 import org.efaps.admin.dbproperty.DBProperties;
 
 /**
@@ -40,6 +40,7 @@ import org.efaps.admin.dbproperty.DBProperties;
  */
 public class AutoCompleteHeaderItem
     extends HeaderItem
+    implements IReferenceHeaderItem
 {
     /**
      *
@@ -80,11 +81,10 @@ public class AutoCompleteHeaderItem
     }
 
     @Override
-    public Iterable<? extends HeaderItem> getDependencies()
+    public ResourceReference getReference()
     {
-        final IJavaScriptLibrarySettings ajaxSettings = Application.get().getJavaScriptLibrarySettings();
-        final ResourceReference wicketEventReference = ajaxSettings.getWicketEventReference();
-        return Collections.singletonList(JavaScriptHeaderItem.forReference(wicketEventReference));
+        final JavaScriptLibrarySettings ajaxSettings = Application.get().getJavaScriptLibrarySettings();
+        return ajaxSettings.getWicketEventReference();
     }
 
     @Override

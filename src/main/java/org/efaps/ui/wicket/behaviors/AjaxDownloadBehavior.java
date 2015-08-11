@@ -23,8 +23,8 @@ package org.efaps.ui.wicket.behaviors;
 import java.io.File;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.behavior.AbstractAjaxBehavior;
+import org.apache.wicket.core.request.handler.IPartialPageRequestHandler;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.request.handler.resource.ResourceStreamRequestHandler;
@@ -78,7 +78,7 @@ public class AjaxDownloadBehavior
      * Call this method to initiate the download.
      * @param _target Ajaxtarget
      */
-    public void initiate(final AjaxRequestTarget _target)
+    public void initiate(final IPartialPageRequestHandler _target)
     {
         final String url = getCallBackURL();
         if (url != null) {

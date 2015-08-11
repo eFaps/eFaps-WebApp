@@ -28,6 +28,7 @@ import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.core.request.handler.IPartialPageRequestHandler;
 import org.apache.wicket.extensions.markup.html.repeater.tree.NestedTree;
 import org.apache.wicket.extensions.markup.html.repeater.tree.Node;
 import org.apache.wicket.extensions.markup.html.repeater.tree.theme.HumanTheme;
@@ -380,7 +381,7 @@ public class MenuTree
 
     @Override
     public void updateNode(final UIMenuItem _menuItem,
-                           final AjaxRequestTarget _target)
+                           final IPartialPageRequestHandler _target)
     {
         if (_target != null) {
             final IModel<UIMenuItem> model = getProvider().model(_menuItem);

@@ -156,7 +156,7 @@ public class ClassificationPathPanel
          */
         public AjaxOpenClassTreeBehavior()
         {
-            super("onclick");
+            super("click");
         }
 
         /**

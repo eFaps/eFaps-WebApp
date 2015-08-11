@@ -105,7 +105,7 @@ public class NumberField
     }
 
     @Override
-    protected void convertInput()
+    public void convertInput()
     {
         this.converted = true;
         int i = 0;
@@ -193,8 +193,8 @@ public class NumberField
     }
 
     @Override
-    protected String getInputType()
+    protected String[] getInputTypes()
     {
-        return "number";
+        return new String[] { "number" };
     }
 }

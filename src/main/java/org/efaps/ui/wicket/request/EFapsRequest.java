@@ -22,12 +22,12 @@ package org.efaps.ui.wicket.request;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.fileupload.FileItemFactory;
+import org.apache.commons.fileupload.FileUploadException;
 import org.apache.wicket.protocol.http.servlet.MultipartServletWebRequest;
 import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
 import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.util.lang.Bytes;
-import org.apache.wicket.util.upload.FileItemFactory;
-import org.apache.wicket.util.upload.FileUploadException;
 
 /**
  * TODO comment!

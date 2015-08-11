@@ -83,7 +83,7 @@ public class AjaxCmdBehavior
     public AjaxCmdBehavior(final FormContainer _form,
                            final Component _targetComponent)
     {
-        super(_form, "onclick");
+        super(_form, "click");
         this.targetComponent = _targetComponent;
     }
 

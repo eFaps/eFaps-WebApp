@@ -92,7 +92,7 @@ public class SetCompanyItem
          */
         public OpenSetCompanyPageBehavior()
         {
-            super("onclick");
+            super("click");
         }
 
         /**
@@ -118,6 +118,7 @@ public class SetCompanyItem
 
                 private static final long serialVersionUID = 1L;
 
+                @Override
                 public void onClose(final AjaxRequestTarget _target)
                 {
                     if (SetCompanyItem.this.reload) {
@@ -132,6 +133,7 @@ public class SetCompanyItem
 
                 private static final long serialVersionUID = 1L;
 
+                @Override
                 public Page createPage()
                 {
                     return new CompanyPage(getPage().getPageReference());

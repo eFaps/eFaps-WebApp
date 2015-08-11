@@ -83,7 +83,7 @@ public class OpenModalItem
          */
         public OpenModalBehavior()
         {
-            super("onclick");
+            super("click");
         }
 
         /**
@@ -127,7 +127,7 @@ public class OpenModalItem
          */
         public SubmitAndOpenModalBehavior()
         {
-            super("onClick");
+            super("Click");
         }
 
         /**
@@ -172,6 +172,7 @@ public class OpenModalItem
                 {
                     private static final long serialVersionUID = 1L;
 
+                    @Override
                     public Page createPage()
                     {
                         return new DialogPage(modal.getPage().getPageReference(),

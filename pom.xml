@@ -283,32 +283,26 @@
         <!-- wicket -->
         <dependency>
             <groupId>org.apache.wicket</groupId>
-            <artifactId>wicket-core</artifactId>
-            <version>${wicket.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-extensions</artifactId>
-            <version>${wicket.version}</version>
+            <version>7.0.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-datetime</artifactId>
-            <version>${wicket.version}</version>
+            <version>7.0.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-devutils</artifactId>
-            <version>${wicket.version}</version>
+            <version>7.0.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-native-websocket-core</artifactId>
-            <version>${wicket.version}</version>
+            <version>7.0.0</version>
         </dependency>
 
         <dependency>

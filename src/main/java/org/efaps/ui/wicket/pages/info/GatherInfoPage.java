@@ -30,7 +30,9 @@ import org.apache.wicket.markup.html.pages.BrowserInfoForm;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.protocol.http.ClientProperties;
 import org.apache.wicket.protocol.http.WebApplication;
+import org.apache.wicket.protocol.http.WebSession;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
@@ -99,7 +101,18 @@ public class GatherInfoPage
 
         add(new Label("label", DBProperties.getProperty("gatherInfoPage.message")).setEscapeModelStrings(false));
 
-        this.browserInfoForm = new BrowserInfoForm("postback")
+        final IModel<ClientProperties> properties = new AbstractReadOnlyModel<ClientProperties>()
+        {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public ClientProperties getObject()
+            {
+                return WebSession.get().getClientInfo().getProperties();
+            }
+        };
+
+        this.browserInfoForm = new BrowserInfoForm("postback", properties)
         {
             private static final long serialVersionUID = 1L;
 

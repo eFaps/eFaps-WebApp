@@ -128,9 +128,9 @@ public class DropDownField
         if (this.cellvalue.getFieldConfiguration().getField().hasEvents(EventType.UI_FIELD_UPDATE)) {
             final List<EventDefinition> events =
                             this.cellvalue.getFieldConfiguration().getField().getEvents(EventType.UI_FIELD_UPDATE);
-            String eventName = "onchange";
+            String eventName = "Change";
             for (final EventDefinition event : events) {
-               eventName = event.getProperty("Event") == null ? "onchange" : event.getProperty("Event");
+               eventName = event.getProperty("Event") == null ? "Change" : event.getProperty("Event");
             }
             add(new AjaxFieldUpdateBehavior(eventName, Model.of(this.cellvalue)));
         }
@@ -164,7 +164,7 @@ public class DropDownField
     }
 
     @Override
-    protected void convertInput()
+    public void convertInput()
     {
         this.converted = true;
         int i = 0;
@@ -252,6 +252,24 @@ public class DropDownField
                                  final int _index)
         {
             return _object.getValue();
+        }
+
+        @Override
+        public DropDownOption getObject(final String _id,
+                                        final IModel<? extends List<? extends DropDownOption>> _choices)
+        {
+            DropDownOption ret = null;
+            final List<?> choices = _choices.getObject();
+            for (int index = 0; index < choices.size(); index++)
+            {
+                final DropDownOption choice = (DropDownOption) choices.get(index);
+                if (getIdValue(choice, index).equals(_id))
+                {
+                    ret =  choice;
+                    break;
+                }
+            }
+            return ret;
         }
     }
 }

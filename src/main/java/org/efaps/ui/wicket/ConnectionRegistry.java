@@ -41,7 +41,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.wicket.Application;
 import org.apache.wicket.MetaDataKey;
 import org.apache.wicket.Session;
-import org.apache.wicket.protocol.ws.IWebSocketSettings;
+import org.apache.wicket.protocol.ws.WebSocketSettings;
 import org.apache.wicket.protocol.ws.api.IWebSocketConnection;
 import org.apache.wicket.protocol.ws.api.registry.IKey;
 import org.apache.wicket.protocol.ws.api.registry.IWebSocketConnectionRegistry;
@@ -413,7 +413,7 @@ public class ConnectionRegistry
                 final String sessionId = iter.next();
                 final IKey key = sessionId2pageId.get(sessionId);
                 if (key != null) {
-                    final IWebSocketConnectionRegistry registry = IWebSocketSettings.Holder.get(EFapsApplication.get())
+                    final IWebSocketConnectionRegistry registry = WebSocketSettings.Holder.get(EFapsApplication.get())
                                     .getConnectionRegistry();
                     final IWebSocketConnection conn = registry.getConnection(EFapsApplication.get(), sessionId, key);
                     if (conn != null) {
@@ -443,7 +443,7 @@ public class ConnectionRegistry
         if (sessionIds.contains(_sessionId)) {
             final IKey key = sessionId2key.get(_sessionId);
             if (key != null) {
-                final IWebSocketConnectionRegistry registry = IWebSocketSettings.Holder.get(EFapsApplication.get())
+                final IWebSocketConnectionRegistry registry = WebSocketSettings.Holder.get(EFapsApplication.get())
                                 .getConnectionRegistry();
                 ret = registry.getConnection(EFapsApplication.get(), _sessionId, key);
             }
@@ -528,7 +528,7 @@ public class ConnectionRegistry
                         Configuration.getAttributeAsInteger(ConfigAttribute.WEBSOCKET_KATH) * 1000) {
                     final IKey key = sessionId2key.get(entry.getKey());
                     if (key != null) {
-                        final IWebSocketConnectionRegistry registry = IWebSocketSettings.Holder.get(
+                        final IWebSocketConnectionRegistry registry = WebSocketSettings.Holder.get(
                                         _application).getConnectionRegistry();
                         final IWebSocketConnection conn = registry.getConnection(_application, entry.getKey(), key);
                         if (conn != null) {

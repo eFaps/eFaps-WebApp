@@ -458,7 +458,7 @@ public class DateTimePanel
     }
 
     @Override
-    protected void convertInput()
+    public void convertInput()
     {
         if (getCellvalue() != null) {
             try {

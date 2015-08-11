@@ -27,6 +27,7 @@ import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.TransparentWebMarkupContainer;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
+import org.apache.wicket.markup.html.internal.HtmlHeaderContainer;
 import org.apache.wicket.model.IModel;
 import org.efaps.ui.wicket.behaviors.AjaxDownloadBehavior;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
@@ -115,9 +116,35 @@ public abstract class AbstractMergePage
         return this.downloadBehavior;
     }
 
+    /**
+     * Adds a child component to this container or to the body.
+     *
+     * @param _childs childrne to add
+     * @return the markup container
+     * @throws IllegalArgumentException             Thrown if a child with the same id is replaced by the add operation.
+     */
     @Override
     public MarkupContainer add(final Component... _childs)
     {
-        return this.body.add(_childs);
+        MarkupContainer ret = null;
+        for (final Component child : _childs) {
+            if (child instanceof HtmlHeaderContainer) {
+                ret = add2Page(child);
+            } else {
+                ret = this.body.add(_childs);
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * Add 2 page and not to the body tag.
+     *
+     * @param _child the child to add
+     * @return the markup container
+     */
+    protected MarkupContainer add2Page(final Component _child)
+    {
+        return super.add(_child);
     }
 }

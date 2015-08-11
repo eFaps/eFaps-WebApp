@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
+import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.wicket.Application;
 import org.apache.wicket.Component;
@@ -42,7 +43,6 @@ import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.util.string.StringValue;
-import org.apache.wicket.util.upload.FileItem;
 import org.efaps.admin.access.AccessCache;
 import org.efaps.admin.user.Person;
 import org.efaps.admin.user.UserAttributesSet;

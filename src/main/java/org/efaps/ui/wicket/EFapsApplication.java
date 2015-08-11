@@ -33,7 +33,6 @@ import org.apache.wicket.Application;
 import org.apache.wicket.Component;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.Session;
-import org.apache.wicket.ajax.XmlAjaxResponse;
 import org.apache.wicket.application.AbstractClassResolver;
 import org.apache.wicket.application.CompoundClassResolver;
 import org.apache.wicket.application.DefaultClassResolver;
@@ -46,6 +45,7 @@ import org.apache.wicket.markup.html.IHeaderResponseDecorator;
 import org.apache.wicket.markup.html.IPackageResourceGuard;
 import org.apache.wicket.markup.html.SecurePackageResourceGuard;
 import org.apache.wicket.markup.html.WebPage;
+import org.apache.wicket.page.XmlPartialPageUpdate;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.ws.api.event.WebSocketTextPayload;
 import org.apache.wicket.protocol.ws.api.message.TextMessage;
@@ -54,6 +54,8 @@ import org.apache.wicket.request.Response;
 import org.apache.wicket.request.component.IRequestableComponent;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.http.WebRequest;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.request.resource.IResource;
 import org.apache.wicket.resource.DynamicJQueryResourceReference;
 import org.apache.wicket.response.filter.IResponseFilter;
 import org.apache.wicket.util.lang.Bytes;
@@ -192,7 +194,7 @@ public class EFapsApplication
                 AppendingStringBuffer ret;
                 if (RequestCycle.get().getActiveRequestHandler() instanceof ACAjaxRequestTarget) {
                     ret = new AppendingStringBuffer().append(_responseBuffer.subSequence(0,
-                                    _responseBuffer.length() - XmlAjaxResponse.END_ROOT_ELEMENT.length()));
+                                    _responseBuffer.length() - XmlPartialPageUpdate.END_ROOT_ELEMENT.length()));
                 } else {
                     ret = _responseBuffer;
                 }
@@ -281,6 +283,7 @@ public class EFapsApplication
          * @param _action action to be checked
          * @return true
          */
+        @Override
         public boolean isActionAuthorized(final Component _component,
                                           final Action _action)
         {
@@ -309,6 +312,13 @@ public class EFapsApplication
                 }
             }
             return ret;
+        }
+
+        @Override
+        public boolean isResourceAuthorized(final IResource resource,
+                                            final PageParameters parameters)
+        {
+            return true;
         }
     }
 }
