@@ -171,7 +171,6 @@ public class AjaxCmdBehavior
             final MarkupContainer parent = this.targetComponent.getParent();
             final LabelComponent newComp = new LabelComponent(this.targetComponent.getId(), snip.toString());
             parent.addOrReplace(newComp);
-            newComp.setOutputMarkupId(true);
             this.targetComponent = newComp;
             _target.add(parent);
         } else {

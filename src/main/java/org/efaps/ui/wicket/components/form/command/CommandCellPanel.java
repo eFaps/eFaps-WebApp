@@ -88,8 +88,7 @@ public class CommandCellPanel
         } else {
             add(new WebComponent("execute").setVisible(false));
 
-            final Component targetBottom = new LabelComponent("targetBottom", "").setVisible(false)
-                .setOutputMarkupId(true);
+            final Component targetBottom = new LabelComponent("targetBottom", "").setVisible(false);
             command.setOutputMarkupId(true);
             command.add(targetBottom);
 
