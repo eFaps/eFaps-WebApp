@@ -53,7 +53,7 @@ public class SetEditedBehavior
                                final ComponentTag _tag)
     {
         super.onComponentTag(_component, _tag);
-        _tag.put("Change", "eFapsSetEdited(this);");
+        _tag.put("change", "eFapsSetEdited(this);");
     }
 
     /**

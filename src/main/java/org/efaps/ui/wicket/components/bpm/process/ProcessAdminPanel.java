@@ -76,7 +76,7 @@ public class ProcessAdminPanel
         final DropDownChoice<String> dropDown = new DropDownChoice<String>("processIds", Model.<String>of(),
                         UIProcessInstanceLog.getProcessIds());
         dropDown.setNullValid(true);
-        dropDown.add(new AjaxFormComponentUpdatingBehavior("Change")
+        dropDown.add(new AjaxFormComponentUpdatingBehavior("change")
         {
 
             private static final long serialVersionUID = 1L;

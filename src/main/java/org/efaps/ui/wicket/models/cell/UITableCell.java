@@ -205,7 +205,7 @@ public class UITableCell
         if (this.fieldUpdate) {
             final List<EventDefinition> events = _fieldValue.getField().getEvents(EventType.UI_FIELD_UPDATE);
             for (final EventDefinition event : events) {
-                this.fieldUpdateEvent = event.getProperty("Event") == null ? "Change" : event.getProperty("Event");
+                this.fieldUpdateEvent = event.getProperty("Event") == null ? "change" : event.getProperty("Event");
             }
         }
         // check if the user has access to the typemenu, if not set the reference to null

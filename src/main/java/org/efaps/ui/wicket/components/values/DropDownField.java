@@ -128,9 +128,9 @@ public class DropDownField
         if (this.cellvalue.getFieldConfiguration().getField().hasEvents(EventType.UI_FIELD_UPDATE)) {
             final List<EventDefinition> events =
                             this.cellvalue.getFieldConfiguration().getField().getEvents(EventType.UI_FIELD_UPDATE);
-            String eventName = "Change";
+            String eventName = "change";
             for (final EventDefinition event : events) {
-               eventName = event.getProperty("Event") == null ? "Change" : event.getProperty("Event");
+               eventName = event.getProperty("Event") == null ? "change" : event.getProperty("Event");
             }
             add(new AjaxFieldUpdateBehavior(eventName, Model.of(this.cellvalue)));
         }
