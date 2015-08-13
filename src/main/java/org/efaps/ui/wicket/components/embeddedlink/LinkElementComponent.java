@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.components.embeddedlink;
@@ -52,8 +49,6 @@ import org.efaps.util.cache.CacheReloadException;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id: LinkElementComponent.java 10059 2013-08-17 16:19:41Z
- *          jan@moxter.net $
  */
 public class LinkElementComponent
     extends WebMarkupContainer
@@ -156,7 +151,7 @@ public class LinkElementComponent
          */
         public AjaxMenuContentBehavior()
         {
-            super("Click");
+            super("click");
         }
 
         @Override

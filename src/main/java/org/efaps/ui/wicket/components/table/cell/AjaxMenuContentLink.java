@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev:1510 $
- * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
- * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.components.table.cell;
@@ -53,7 +50,6 @@ import org.efaps.util.cache.CacheReloadException;
  * StructurBrowserTable. Updates the menu and the page itself.
  *
  * @author The eFaps Team
- * @version $Id:AjaxLinkContainer.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class AjaxMenuContentLink
     extends WebMarkupContainer
@@ -164,7 +160,7 @@ public class AjaxMenuContentLink
          */
         public AjaxMenuContentBehavior()
         {
-            super("Click");
+            super("click");
         }
 
         @Override

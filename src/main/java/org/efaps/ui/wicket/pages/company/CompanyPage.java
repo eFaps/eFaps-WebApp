@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev:1490 $
- * Last Changed:    $Date:2007-10-15 18:04:02 -0500 (Mon, 15 Oct 2007) $
- * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.pages.company;
@@ -65,7 +62,6 @@ import org.efaps.util.EFapsException;
  * and written to the user properties.
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class CompanyPage
     extends AbstractMergePage
@@ -270,7 +266,7 @@ public class CompanyPage
                               final Form<Object> _form)
         {
             super(_wicketId);
-            final AjaxFormSubmitBehavior behavior = new AjaxFormSubmitBehavior(_form, "Click")
+            final AjaxFormSubmitBehavior behavior = new AjaxFormSubmitBehavior(_form, "click")
             {
 
                 private static final long serialVersionUID = 1L;
