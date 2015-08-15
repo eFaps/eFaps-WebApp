@@ -69,7 +69,7 @@ public class AjaxRemoveLink
     protected void updateAjaxAttributes(final AjaxRequestAttributes _attributes)
     {
         super.updateAjaxAttributes(_attributes);
-        final AjaxCallListener listener = (AjaxCallListener) _attributes.getAjaxCallListeners().get(0);
+        final AjaxCallListener listener = new AjaxCallListener();
         final StringBuilder js = new StringBuilder();
         final MenuTree menuTree = findParent(MenuTree.class);
         final String key = RandomStringUtils.randomAlphabetic(6);
@@ -84,5 +84,6 @@ public class AjaxRemoveLink
             .append("})); ")
             .append("});");
         listener.onBefore(js);
+        _attributes.getAjaxCallListeners().add(listener);
     }
 }
