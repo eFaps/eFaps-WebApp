@@ -93,7 +93,7 @@ public class CompanyPage
         this.calledByReference = _calledByReference;
 
         // set the title for the Page
-        add(new Label("pageTitle", DBProperties.getProperty("Logo.Version.Label")));
+        add2Page(new Label("pageTitle", DBProperties.getProperty("Logo.Version.Label")));
 
         add(new LabelComponent("title",
                         DBProperties.getProperty("org.efaps.ui.wicket.pages.company.title.Label")));
