@@ -259,6 +259,7 @@ public class EFapsApplication
                 final TextMessage msg = wsEvent.getMessage();
                 if (KeepAliveBehavior.MSG.equals(msg.getText())) {
                     getConnectionRegistry().registerKeepAlive(Session.get().getId(), new Date());
+                    _event.stop();
                 }
             }
         }
