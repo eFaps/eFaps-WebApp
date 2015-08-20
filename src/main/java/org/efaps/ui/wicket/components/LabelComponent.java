@@ -23,12 +23,14 @@ package org.efaps.ui.wicket.components;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.apache.wicket.ajax.AjaxRequestHandler;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.util.value.IValueMap;
 import org.efaps.admin.datamodel.ui.UIInterface;
 
@@ -71,7 +73,13 @@ public class LabelComponent
                           final IModel<?> _model)
     {
         super(_wicketId, _model);
-        setRenderBodyOnly(true);
+    }
+
+    @Override
+    protected void onBeforeRender()
+    {
+        setRenderBodyOnly(!(RequestCycle.get().getActiveRequestHandler() instanceof AjaxRequestHandler));
+        super.onBeforeRender();
     }
 
     /**
