@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,11 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
-
 
 package org.efaps.ui.wicket.behaviors;
 
@@ -28,12 +24,10 @@ import org.apache.wicket.markup.head.OnLoadHeaderItem;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 
-
 /**
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class KeepAliveBehavior
     extends Behavior
@@ -56,6 +50,9 @@ public class KeepAliveBehavior
             super.renderHead(_component, _response);
             _response.render(OnLoadHeaderItem.forScript(
                             "top.Wicket.WebSocket.send(\"" + KeepAliveBehavior.MSG + "\")"));
+        } else {
+            super.renderHead(_component, _response);
+            _response.render(OnLoadHeaderItem.forScript("top.document['eFapsCallHome']();"));
         }
     }
 }

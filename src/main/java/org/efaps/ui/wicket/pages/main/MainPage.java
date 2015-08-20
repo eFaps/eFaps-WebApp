@@ -28,6 +28,7 @@ import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.Page;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.Session;
+import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
@@ -221,6 +222,10 @@ public class MainPage
 
         add(this.modal);
         add(new ResizeEventBehavior());
+
+        if (!Configuration.getAttributeAsBoolean(ConfigAttribute.WEBSOCKET_ACTVATE)) {
+            add(new CallHomeBehavior());
+        }
 
         final WebMarkupContainer logo = new WebMarkupContainer("logo");
         headerPanel.add(logo);
@@ -421,6 +426,49 @@ public class MainPage
                                final IHeaderResponse _response)
         {
             _response.render(JavaScriptHeaderItem.forScript(getCallbackScript(), ResizeEventBehavior.class.getName()));
+        }
+    }
+
+    /**
+     * Event that calls regularly the server to maintain this page alive.
+     */
+    public class CallHomeBehavior
+        extends AbstractDefaultAjaxBehavior
+    {
+
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        protected CharSequence getCallbackScript(final Component _component)
+        {
+            final StringBuilder js = new StringBuilder()
+                .append("top.document['eFapsCallHome'] = function() {\n")
+                .append("var lastCall = top.document['eFapsCallHomeTime'];\n")
+                .append("if (lastCall) { \n")
+                .append("if ((new Date().getTime() - lastCall) > (5 * 60 * 1000)) {\n")
+                .append(getCallbackFunctionBody())
+                .append("}\n")
+                .append("} else {\n")
+                .append("top.document['eFapsCallHomeTime'] = new Date().getTime();\n")
+                .append("}\n")
+                .append("}\n");
+            return js.toString();
+        }
+
+        @Override
+        public void renderHead(final Component _component,
+                               final IHeaderResponse _response)
+        {
+            _response.render(JavaScriptHeaderItem.forScript(getCallbackScript(), CallHomeBehavior.class.getName()));
+        }
+
+        @Override
+        protected void respond(final AjaxRequestTarget _target)
+        {
+            _target.appendJavaScript("top.document['eFapsCallHomeTime'] = new Date().getTime();");
         }
     }
 }
