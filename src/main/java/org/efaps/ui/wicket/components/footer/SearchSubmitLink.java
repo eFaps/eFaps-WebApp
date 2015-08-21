@@ -67,7 +67,7 @@ public class SearchSubmitLink
     protected void onSubmit(final AjaxRequestTarget _target,
                             final Form<?> _form)
     {
-        super.onSubmit();
+        super.onSubmit(_target, _form);
         final AbstractUIPageObject uiObject = (AbstractUIPageObject) getDefaultModelObject();
         try {
             final UITable newTable = new UITable(uiObject.getCommandUUID(), uiObject.getInstanceKey(), uiObject
