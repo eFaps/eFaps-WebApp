@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev:1510 $
- * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
- * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.components;
@@ -23,14 +20,14 @@ package org.efaps.ui.wicket.components;
 import java.util.List;
 import java.util.Map.Entry;
 
-import org.apache.wicket.ajax.AjaxRequestHandler;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.IMarkupFragment;
+import org.apache.wicket.markup.MarkupException;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.util.value.IValueMap;
 import org.efaps.admin.datamodel.ui.UIInterface;
 
@@ -73,13 +70,7 @@ public class LabelComponent
                           final IModel<?> _model)
     {
         super(_wicketId, _model);
-    }
-
-    @Override
-    protected void onBeforeRender()
-    {
-        setRenderBodyOnly(!(RequestCycle.get().getActiveRequestHandler() instanceof AjaxRequestHandler));
-        super.onBeforeRender();
+        setRenderBodyOnly(true);
     }
 
     /**
@@ -120,5 +111,42 @@ public class LabelComponent
             value = value.replace(UIInterface.EFAPSTMPTAG, tagBldr);
         }
         super.replaceComponentTagBody(_markupStream, _openTag, value);
+    }
+
+    /**
+     * Method is overwritten to prevent the annoing warnings from Component to come up.
+     * The warning come up due to the reason that this component moves the tags from parent
+     * element to its child.
+     */
+    @Override
+    protected void onRender()
+    {
+        final IMarkupFragment markup = getMarkup();
+        if (markup == null) {
+            throw new MarkupException("Markup not found. Component: " + toString());
+        }
+
+        final MarkupStream markupStream = new MarkupStream(markup);
+
+        // Get mutable copy of next tag
+        final ComponentTag openTag = markupStream.getTag();
+        final ComponentTag tag = openTag.mutable();
+
+        // Call any tag handler
+        onComponentTag(tag);
+
+        // If we're an openclose tag
+        if (!tag.isOpenClose() && !tag.isOpen()) {
+            // We were something other than <tag> or <tag/>
+            markupStream.throwMarkupException("Method renderComponent called on bad markup element: " + tag);
+        }
+
+        if (tag.isOpenClose() && openTag.isOpen()) {
+            markupStream.throwMarkupException("You can not modify a open tag to open-close: " + tag);
+        }
+
+        markupStream.next();
+
+        getMarkupSourcingStrategy().onComponentTagBody(this, markupStream, tag);
     }
 }
