@@ -79,6 +79,7 @@ public class CheckBoxField
                          final FieldConfiguration _fieldConfiguration)
     {
         super(_wicketId);
+        setSuffix("<br/>");
         this.fieldConfig = _fieldConfiguration;
         this.cellvalue = _model.getObject();
         try {

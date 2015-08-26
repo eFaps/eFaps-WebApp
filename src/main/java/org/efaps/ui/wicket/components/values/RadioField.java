@@ -96,6 +96,7 @@ public class RadioField
                       final List<RadioOption> _radios)
     {
         super(_wicketId);
+        setSuffix("<br/>");
         this.cellvalue = _model.getObject();
         this.fieldConfig = this.cellvalue.getFieldConfiguration();
         try {
