@@ -435,7 +435,8 @@ public class UITable
                         }
                     }
 
-                    if (attr != null && attr.getAttributeType().getUIProvider() != null
+                    if (field.getClassUI() == null && field.getUIProvider() != null
+                                    || attr != null && attr.getAttributeType().getUIProvider() != null
                                     && (attr.getAttributeType().getUIProvider() instanceof EnumUI
                                     || attr.getAttributeType().getUIProvider() instanceof BitEnumUI)) {
                         final UIField uiField = new UIField(instance.getKey(), this, UIValue.get(field, attr, value)

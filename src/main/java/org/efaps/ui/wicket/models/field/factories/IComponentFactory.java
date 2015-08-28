@@ -101,4 +101,12 @@ public interface IComponentFactory
     boolean applies(final AbstractUIField _abstractUIField)
                     throws EFapsException;
 
+    /**
+     * @param __uiField field used
+     * @return comparable
+     * @throws EFapsException on error
+     */
+    String getStringValue(final AbstractUIField _uiField)
+        throws EFapsException;
+
 }

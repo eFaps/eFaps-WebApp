@@ -108,6 +108,13 @@ public class AutoCompleteFactory
     }
 
     @Override
+    public String getStringValue(final AbstractUIField _uiField)
+        throws EFapsException
+    {
+        return null;
+    }
+
+    @Override
     public boolean applies(final AbstractUIField _uiField)
         throws EFapsException
     {

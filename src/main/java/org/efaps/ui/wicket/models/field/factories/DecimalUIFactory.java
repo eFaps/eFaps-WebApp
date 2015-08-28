@@ -20,6 +20,7 @@
 
 package org.efaps.ui.wicket.models.field.factories;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
@@ -96,6 +97,12 @@ public final class DecimalUIFactory
                             .getLocale());
             if (_abstractUIField.getValue().getAttribute() != null) {
                 formatter.setMaximumFractionDigits(_abstractUIField.getValue().getAttribute().getScale());
+            }
+            if (valueTmp instanceof BigDecimal) {
+                final int scale = ((BigDecimal) valueTmp).scale();
+                if (formatter.getMinimumFractionDigits() < scale) {
+                    formatter.setMinimumFractionDigits(scale);
+                }
             }
             strValue = formatter.format(valueTmp);
         }

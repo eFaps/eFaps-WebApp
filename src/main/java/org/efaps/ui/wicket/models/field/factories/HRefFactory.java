@@ -117,6 +117,8 @@ public class HRefFactory
         return ret;
     }
 
+
+
     /**
      * {@inheritDoc}
      */
@@ -143,6 +145,26 @@ public class HRefFactory
         throws EFapsException
     {
         return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getStringValue(final AbstractUIField _uiField)
+        throws EFapsException
+    {
+        String ret = "";
+        for (final IComponentFactory factory : _uiField.getFactories().values()) {
+            if (factory instanceof AbstractUIFactory) {
+                final AbstractUIFactory uiFactory = (AbstractUIFactory) factory;
+                if (uiFactory.applies(_uiField)) {
+                    ret = uiFactory.getStringValue(_uiField);
+                    break;
+                }
+            }
+        }
+        return ret;
     }
 
     /**

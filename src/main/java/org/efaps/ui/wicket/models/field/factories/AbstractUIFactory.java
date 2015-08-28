@@ -79,6 +79,16 @@ public abstract class AbstractUIFactory
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getStringValue(final AbstractUIField _uiField)
+        throws EFapsException
+    {
+        return getReadOnlyValue(_uiField);
+    }
+
+    /**
      * @param _abstractUIField  AbstractUIField the component is wanted for
      * @return String value used for a LabelField
      * @throws EFapsException on error

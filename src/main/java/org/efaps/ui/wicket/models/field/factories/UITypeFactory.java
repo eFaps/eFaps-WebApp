@@ -185,6 +185,16 @@ public final class UITypeFactory
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getStringValue(final AbstractUIField _uiField)
+        throws EFapsException
+    {
+        return null;
+    }
+
+    /**
      * @return IComponentFactory instance
      */
     public static IComponentFactory get()
