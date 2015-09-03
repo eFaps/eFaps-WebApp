@@ -79,7 +79,9 @@ public class CheckBoxField
                          final FieldConfiguration _fieldConfiguration)
     {
         super(_wicketId);
-        setSuffix("<br/>");
+        if (_choices != null && _choices.size() > 1) {
+            setSuffix("<br/>");
+        }
         this.fieldConfig = _fieldConfiguration;
         this.cellvalue = _model.getObject();
         try {
@@ -113,6 +115,9 @@ public class CheckBoxField
                          final List<CheckBoxOption> _checkBoxes)
     {
         super(_wicketId);
+        if (_checkBoxes != null && _checkBoxes.size() > 1) {
+            setSuffix("<br/>");
+        }
         this.cellvalue = _model.getObject();
         this.fieldConfig = this.cellvalue.getFieldConfiguration();
         try {

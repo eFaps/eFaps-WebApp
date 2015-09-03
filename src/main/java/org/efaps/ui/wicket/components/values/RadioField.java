@@ -23,6 +23,7 @@ package org.efaps.ui.wicket.components.values;
 import java.io.Serializable;
 import java.util.List;
 
+import org.apache.wicket.markup.html.form.AbstractChoice;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.RadioChoice;
 import org.apache.wicket.model.IModel;
@@ -75,7 +76,10 @@ public class RadioField
             } else {
                 setDefaultModel(new Model<String>());
             }
-            setChoices(RadioOption.getChoices(this.cellvalue));
+            final AbstractChoice<RadioOption, RadioOption> choices = setChoices(RadioOption.getChoices(this.cellvalue));
+            if (choices != null && choices.size() > 1) {
+                setSuffix("<br/>");
+            }
             setLabel(Model.of(this.cellvalue.getLabel()));
         } catch (final EFapsException e) {
             // TODO Auto-generated catch block
@@ -96,7 +100,9 @@ public class RadioField
                       final List<RadioOption> _radios)
     {
         super(_wicketId);
-        setSuffix("<br/>");
+        if (_radios != null && _radios.size() > 1) {
+            setSuffix("<br/>");
+        }
         this.cellvalue = _model.getObject();
         this.fieldConfig = this.cellvalue.getFieldConfiguration();
         try {
