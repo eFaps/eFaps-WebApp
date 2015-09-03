@@ -20,6 +20,8 @@
 
 package org.efaps.ui.wicket.components.values;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.BooleanUtils;
@@ -93,7 +95,7 @@ public class CheckBoxField
                             && BooleanUtils.isTrue((Boolean) this.cellvalue.getValue().getDbValue())) {
                 setDefaultModel(Model.of(CheckBoxOption.getChoices(this.cellvalue, _choices)));
             } else {
-                setDefaultModel(new Model<String>());
+                setDefaultModel(Model.of(Collections.emptyList()));
             }
             setChoices(CheckBoxOption.getChoices(this.cellvalue, null));
             setLabel(Model.of(this.cellvalue.getLabel()));
@@ -121,16 +123,16 @@ public class CheckBoxField
         this.cellvalue = _model.getObject();
         this.fieldConfig = this.cellvalue.getFieldConfiguration();
         try {
-            Model<?> model = null;
+            final List<CheckBoxOption> selected = new ArrayList<>();
+            final IModel<?> model = Model.of(selected);
             if (_checkBoxes != null) {
                 for (final CheckBoxOption option : _checkBoxes) {
                     if (option.isSelected()) {
-                        model = Model.of(option);
-                        break;
+                        selected.add(option);
                     }
                 }
             }
-            setDefaultModel(model == null ? new Model<String>() : model);
+            setDefaultModel(model);
             setChoices(_checkBoxes);
             setLabel(Model.of(this.cellvalue.getLabel()));
         } catch (final EFapsException e) {
