@@ -66,6 +66,7 @@ import org.efaps.ui.wicket.models.field.factories.UserUIFactory;
 import org.efaps.ui.wicket.models.objects.AbstractUIModeObject;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * TODO comment!
@@ -144,6 +145,9 @@ public abstract class AbstractUIField
      * Settings for the AutoComplete.
      */
     private AutoCompleteSettings autoCompleteSetting;
+
+    /** The sort value. */
+    private Comparable<?> sortValue;
 
     /**
      * @param _instanceKey key to the instance
@@ -496,12 +500,25 @@ public abstract class AbstractUIField
     {
         Comparable<?> ret = null;
         try {
-            ret = getFactory().getCompareValue(this);
+            if (this.sortValue == null) {
+                ret = this.sortValue;
+            } else {
+                ret = getFactory().getCompareValue(this);
+            }
         } catch (final EFapsException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return ret;
+    }
+
+    @Override
+    public ISortable setCompareValue(final Object _object)
+    {
+        if (_object != null && _object instanceof Comparable) {
+            this.sortValue = (Comparable<?>) _object;
+        }
+        return this;
     }
 
     /**

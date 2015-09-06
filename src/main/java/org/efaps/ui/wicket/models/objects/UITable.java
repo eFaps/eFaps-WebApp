@@ -325,6 +325,13 @@ public class UITable
                         multi.addSelect(field.getSelectAlternateOID());
                         altOIDSel.add(field.getSelectAlternateOID());
                     }
+                    if (field.getProperty("SortSelect") != null) {
+                        multi.addSelect(field.getProperty("SortSelect") );
+                    } else if (field.getProperty("SortPhrase") != null) {
+                        multi.addPhrase(field.getProperty("SortPhrase"), field.getProperty("SortPhrase"));
+                    } else if (field.getProperty("SortMsgPhrase") != null) {
+                        multi.addMsgPhrase(field.getProperty("SortMsgPhrase"));
+                    }
                 }
                 if (field.getAttribute() != null && type != null) {
                     attr = type.getAttribute(field.getAttribute());
@@ -412,6 +419,7 @@ public class UITable
                 if (field.hasAccess(getMode(), instance, getCommand(), getInstance())
                                 && !field.isNoneDisplay(getMode())) {
                     Object value = null;
+                    Object sortValue = null;
                     Attribute attr = null;
                     if (field.getSelect() != null) {
                         value = _multi.<Object> getSelect(field.getSelect());
@@ -424,6 +432,13 @@ public class UITable
                     }  else if (field.getMsgPhrase() != null) {
                         value = _multi.getMsgPhrase(new SelectBuilder(getBaseSelect4MsgPhrase(field)),
                                         field.getMsgPhrase());
+                    }
+                    if (field.getProperty("SortSelect") != null) {
+                        sortValue = _multi.getSelect(field.getProperty("SortSelect") );
+                    } else if (field.getProperty("SortPhrase") != null) {
+                        sortValue = _multi.getPhrase(field.getProperty("SortPhrase"));
+                    } else if (field.getProperty("SortMsgPhrase") != null) {
+                        sortValue = _multi.getMsgPhrase(field.getProperty("SortMsgPhrase"));
                     }
 
                     boolean hidden = false;
@@ -441,6 +456,7 @@ public class UITable
                                     || attr.getAttributeType().getUIProvider() instanceof BitEnumUI)) {
                         final UIField uiField = new UIField(instance.getKey(), this, UIValue.get(field, attr, value)
                                         .setInstance(instance).setClassObject(this));
+                        uiField.setCompareValue(sortValue);
                         row.add(uiField);
                     } else {
                         final FieldValue fieldvalue = new FieldValue(field, attr, value, rowInstance, getInstance(),
@@ -470,6 +486,7 @@ public class UITable
                         } else {
                             final UITableCell cell = new UITableCell(this, fieldvalue, instance, strValue, htmlTitle,
                                             icon);
+                            cell.setCompareValue(sortValue);
                             if (cell.isAutoComplete()) {
                                 cell.setCellValue(fieldvalue.getStringValue(getMode()));
                             }

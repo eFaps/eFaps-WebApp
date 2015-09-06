@@ -73,7 +73,7 @@ public class UITableCell
      * by a query. The value is used for
      * comparisons and to be able to access the original value.
      */
-    private final Object compareValue;
+    private Object compareValue;
 
     /**
      * instance variable storing the icon of the field.
@@ -124,6 +124,9 @@ public class UITableCell
      * Settings for the AutoComplete.
      */
     private AutoCompleteSettings autoCompleteSetting;
+
+    /** The compare set from ui. */
+    private boolean compareSetFromUI;
 
     /**
      * Constructor.
@@ -197,8 +200,6 @@ public class UITableCell
                 if (value4EditStr != null) {
                     this.autoCompleteSetting.setValue4Edit(EditValue.valueOf(value4EditStr));
                 }
-
-
             }
         }
         this.fieldUpdate = _fieldValue.getField().hasEvents(EventType.UI_FIELD_UPDATE);
@@ -270,6 +271,16 @@ public class UITableCell
     public void setReference(final String _reference)
     {
         this.reference = _reference;
+    }
+
+    @Override
+    public ISortable setCompareValue(final Object _object)
+    {
+        if (_object != null && _object instanceof Comparable) {
+            this.compareValue = _object;
+            this.compareSetFromUI = true;
+        }
+        return this;
     }
 
     /**
@@ -490,12 +501,18 @@ public class UITableCell
     {
         int ret = 0;
         if (_sortable instanceof UITableCell) {
-            final FieldValue fValue1 = new FieldValue(getField(), getUiClass(),
-                            getCompareValue() != null ? getCompareValue() : getCellValue());
-            final UITableCell cell = (UITableCell) _sortable;
-            final FieldValue fValue2 = new FieldValue(cell.getField(), cell.getUiClass(),
-                            cell.getCompareValue() != null ? cell.getCompareValue() : cell.getCellValue());
-            ret = fValue1.compareTo(fValue2);
+            if (((UITableCell) _sortable).compareSetFromUI && this.compareSetFromUI) {
+                @SuppressWarnings("unchecked")
+                final Comparable<Object> obj = (Comparable<Object>) getCompareValue();
+                ret = obj.compareTo(((UITableCell) _sortable).getCompareValue());
+            } else {
+                final FieldValue fValue1 = new FieldValue(getField(), getUiClass(),
+                                getCompareValue() != null ? getCompareValue() : getCellValue());
+                final UITableCell cell = (UITableCell) _sortable;
+                final FieldValue fValue2 = new FieldValue(cell.getField(), cell.getUiClass(),
+                                cell.getCompareValue() != null ? cell.getCompareValue() : cell.getCellValue());
+                ret = fValue1.compareTo(fValue2);
+            }
         }
         return ret;
     }
