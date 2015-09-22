@@ -24,6 +24,7 @@ import java.io.Serializable;
 
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.api.ui.IEsjpSnipplet;
+import org.efaps.api.ui.IEsjpSnippletProvider;
 import org.efaps.util.EFapsBaseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,11 +52,19 @@ public class EsjpInvoker
     /**
      * ClassName of the esjp that will be invoked.
      */
-    private final String esjp;
+    private String esjp;
 
+    /** The init. */
     private boolean init = false;
 
+    /** The snipplet. */
     private IEsjpSnipplet snipplet;
+
+    /** The provider. */
+    private IEsjpSnippletProvider provider;
+
+    /** The key. */
+    private String key;
 
     /**
      * @param _esjp
@@ -63,6 +72,19 @@ public class EsjpInvoker
     public EsjpInvoker(final String _esjp)
     {
         this.esjp = _esjp;
+    }
+
+    /**
+     * Instantiates a new esjp invoker.
+     *
+     * @param _provider the _provider
+     * @param _key the _key
+     */
+    public EsjpInvoker(final IEsjpSnippletProvider _provider,
+                       final String _key)
+    {
+        this.provider = _provider;
+        this.key = _key;
     }
 
     public CharSequence getHtmlSnipplet()
@@ -79,9 +101,14 @@ public class EsjpInvoker
     {
         try {
             if (!this.init) {
-                final Class<?> clazz = Class.forName(this.esjp, false, EFapsClassLoader.getInstance());
-                this.snipplet = (IEsjpSnipplet) clazz.newInstance();
-                this.init = true;
+                if (this.esjp != null) {
+                    final Class<?> clazz = Class.forName(this.esjp, false, EFapsClassLoader.getInstance());
+                    this.snipplet = (IEsjpSnipplet) clazz.newInstance();
+                    this.init = true;
+                } else if (this.provider != null) {
+                    this.snipplet = this.provider.getEsjpSnipplet(this.key);
+                    this.init = true;
+                }
             }
         } catch (final ClassNotFoundException e) {
             EsjpInvoker.LOG.error("ClassNotFoundException", e);
@@ -110,5 +137,4 @@ public class EsjpInvoker
         }
         return ret;
     }
-
 }

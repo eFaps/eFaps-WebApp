@@ -88,7 +88,8 @@ public final class Configuration
         /** */
         BOARD_OWNEDTASK_AUTIME(false, true, WebAppSettings.DASHBOARD_OWNEDTASK_AUTIME, "30"),
         /** */
-        BOARD_PANELS(false, true, WebAppSettings.DASHBOARD_PANELS, ""),
+        BOARD_PROVIDER(false, true, WebAppSettings.DASHBOARD_PROVIDER,
+                        "org.efaps.esjp.common.dashboard.EsjpSnippletProvider"),
         /** MainToolBar. */
         TOOLBAR(false, true, WebAppSettings.TOOLBAR, "87001cc3-c45c-44de-b8f1-776df507f268"),
         /** Default form for Task to prevent errors. */

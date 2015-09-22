@@ -158,11 +158,9 @@ public interface WebAppSettings
     String DASHBOARD_OWNEDTASK_AUTIME = WebAppSettings.BASEKEY + "DashBoard.OwnedTaskTable.AutoUpdateDuration";
 
     /**
-     * DBProperties: Esjp to be used as PanelXY. panel11, panel12, panel21, panel22, panel31, panel32
-     * In case that BPM is activated the BMP allways will use panel11
-     *
+     * Class name.
      */
-    String DASHBOARD_PANELS = WebAppSettings.BASEKEY + "DashBoard.Panels";
+    String DASHBOARD_PROVIDER = WebAppSettings.BASEKEY + "DashBoard.Provider";
 
     /**
      * Boolean (true/false): Activate the websocket/push management. Default: true
