@@ -41,10 +41,11 @@ import org.efaps.admin.ui.Command;
 import org.efaps.api.ui.IEsjpSnippletProvider;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.behaviors.KeepAliveBehavior;
+import org.efaps.ui.wicket.behaviors.dojo.AbstractDojoBehavior;
 import org.efaps.ui.wicket.components.bpm.task.AssignedTaskSummaryProvider;
 import org.efaps.ui.wicket.components.bpm.task.OwnedTaskSummaryProvider;
 import org.efaps.ui.wicket.components.bpm.task.TaskTablePanel;
-import org.efaps.ui.wicket.components.dashboard.EsjpComponent;
+import org.efaps.ui.wicket.components.dashboard.DashboardPanel;
 import org.efaps.ui.wicket.models.EsjpInvoker;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
@@ -88,6 +89,10 @@ public class DashboardPage
         throws EFapsException
     {
         super();
+        add(new AbstractDojoBehavior()
+        {
+            private static final long serialVersionUID = 1L;
+        });
         add(new KeepAliveBehavior());
         final SystemConfiguration config = EFapsSystemConfiguration.get();
         boolean used = false;
@@ -164,16 +169,16 @@ public class DashboardPage
                 clazz = Class.forName(providerClass, false, EFapsClassLoader.getInstance());
                 final IEsjpSnippletProvider provider = (IEsjpSnippletProvider) clazz.newInstance();
                 if (!used) {
-                    add(new EsjpComponent("dashBoard11", Model.of(new EsjpInvoker(provider, "11"))));
+                    add(new DashboardPanel("dashBoard11", Model.of(new EsjpInvoker(provider, "11"))));
                 }
-                add(new EsjpComponent("dashBoard12", Model.of(new EsjpInvoker(provider, "12"))));
-                add(new EsjpComponent("dashBoard13", Model.of(new EsjpInvoker(provider, "13"))));
-                add(new EsjpComponent("dashBoard21", Model.of(new EsjpInvoker(provider, "21"))));
-                add(new EsjpComponent("dashBoard22", Model.of(new EsjpInvoker(provider, "22"))));
-                add(new EsjpComponent("dashBoard23", Model.of(new EsjpInvoker(provider, "23"))));
-                add(new EsjpComponent("dashBoard31", Model.of(new EsjpInvoker(provider, "31"))));
-                add(new EsjpComponent("dashBoard32", Model.of(new EsjpInvoker(provider, "32"))));
-                add(new EsjpComponent("dashBoard33", Model.of(new EsjpInvoker(provider, "33"))));
+                add(new DashboardPanel("dashBoard12", Model.of(new EsjpInvoker(provider, "12"))));
+                add(new DashboardPanel("dashBoard13", Model.of(new EsjpInvoker(provider, "13"))));
+                add(new DashboardPanel("dashBoard21", Model.of(new EsjpInvoker(provider, "21"))));
+                add(new DashboardPanel("dashBoard22", Model.of(new EsjpInvoker(provider, "22"))));
+                add(new DashboardPanel("dashBoard23", Model.of(new EsjpInvoker(provider, "23"))));
+                add(new DashboardPanel("dashBoard31", Model.of(new EsjpInvoker(provider, "31"))));
+                add(new DashboardPanel("dashBoard32", Model.of(new EsjpInvoker(provider, "32"))));
+                add(new DashboardPanel("dashBoard33", Model.of(new EsjpInvoker(provider, "33"))));
             } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
                 LOG.error("Could not find/instantiate Provider Class", e);
             }

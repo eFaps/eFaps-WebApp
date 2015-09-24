@@ -24,7 +24,6 @@ import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
-import org.efaps.ui.wicket.behaviors.dojo.AbstractDojoBehavior;
 import org.efaps.ui.wicket.models.EsjpInvoker;
 import org.efaps.util.EFapsBaseException;
 import org.slf4j.Logger;
@@ -59,11 +58,6 @@ public class EsjpComponent
                          final IModel<EsjpInvoker> _model)
     {
         super(_wicketId, _model);
-        add(new AbstractDojoBehavior()
-        {
-
-            private static final long serialVersionUID = 1L;
-        });
     }
 
     @Override
