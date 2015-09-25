@@ -371,27 +371,29 @@ public class ConnectionRegistry
                               final String _sessionID,
                               final Application _application)
     {
-        ConnectionRegistry.LOG.debug("remove user: '{}', session: '{}'", _login, _sessionID);
-        ConcurrentMap<String, ConcurrentHashSet<String>> user2session = _application.getMetaData(
-                        ConnectionRegistry.USER2SESSION);
-        synchronized (ConnectionRegistry.USER2SESSION) {
-            user2session = _application.getMetaData(ConnectionRegistry.USER2SESSION);
-            if (user2session != null) {
-                final ConcurrentHashSet<String> sessions = user2session.get(_login);
-                sessions.remove(_sessionID);
-                if (sessions.isEmpty()) {
-                    user2session.remove(_login);
+        if (_login != null) {
+            ConnectionRegistry.LOG.debug("remove user: '{}', session: '{}'", _login, _sessionID);
+            ConcurrentMap<String, ConcurrentHashSet<String>> user2session = _application.getMetaData(
+                            ConnectionRegistry.USER2SESSION);
+            synchronized (ConnectionRegistry.USER2SESSION) {
+                user2session = _application.getMetaData(ConnectionRegistry.USER2SESSION);
+                if (user2session != null) {
+                    final ConcurrentHashSet<String> sessions = user2session.get(_login);
+                    sessions.remove(_sessionID);
+                    if (sessions.isEmpty()) {
+                        user2session.remove(_login);
+                    }
                 }
             }
-        }
-        synchronized (ConnectionRegistry.KEEPALIVE) {
-            final ConcurrentMap<String, Long> keepalive = _application.getMetaData(ConnectionRegistry.KEEPALIVE);
-            if (keepalive != null) {
-                keepalive.remove(_sessionID);
+            synchronized (ConnectionRegistry.KEEPALIVE) {
+                final ConcurrentMap<String, Long> keepalive = _application.getMetaData(ConnectionRegistry.KEEPALIVE);
+                if (keepalive != null) {
+                    keepalive.remove(_sessionID);
+                }
             }
+            ConnectionRegistry.LOG.debug("Removed User '{}' for Session: {}", _login, _sessionID);
+            registerLogout4History(_login, _sessionID);
         }
-        ConnectionRegistry.LOG.debug("Removed User '{}' for Session: {}", _login, _sessionID);
-        registerLogout4History(_login, _sessionID);
     }
 
     /**

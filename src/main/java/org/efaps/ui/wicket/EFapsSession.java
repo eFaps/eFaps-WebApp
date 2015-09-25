@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -46,6 +47,7 @@ import org.apache.wicket.util.string.StringValue;
 import org.efaps.admin.access.AccessCache;
 import org.efaps.admin.user.Person;
 import org.efaps.admin.user.UserAttributesSet;
+import org.efaps.api.background.IExecutionBridge;
 import org.efaps.db.Context;
 import org.efaps.jaas.LoginHandler;
 import org.efaps.ui.wicket.components.IRecent;
@@ -87,6 +89,9 @@ public class EFapsSession
      * Logger for this class.
      */
     private static final Logger LOG = LoggerFactory.getLogger(EFapsSession.class);
+
+    /** The execution bridges. */
+    private List<IExecutionBridge> executionBridges = new ArrayList<>();
 
     /**
      * This instance Map is a Cache for Components, which must be able to be
@@ -155,6 +160,52 @@ public class EFapsSession
         super(_request);
         this.appKey = _appKey;
         this.stackSize = Configuration.getAttributeAsInteger(ConfigAttribute.RECENTCACHESIZE);
+    }
+
+    /**
+     * Adds the execution bridge.
+     *
+     * @param _bridge the _bridge
+     */
+    public synchronized void addExecutionBridge(final IExecutionBridge _bridge) {
+        bind();
+        this.executionBridges.add(_bridge);
+    }
+
+    /**
+     * Prune finished tasks.
+     */
+    public synchronized void  pruneFinishedTasks() {
+        final ArrayList<IExecutionBridge> nonFinishedBridges = new ArrayList<>();
+        for(final IExecutionBridge bridge: this.executionBridges) {
+            if (!bridge.isFinished()) {
+                nonFinishedBridges.add(bridge);
+            }
+        }
+        this.executionBridges = nonFinishedBridges;
+    }
+
+    /**
+     * Gets the tasks page.
+     *
+     * @param _start the _start
+     * @param _size the _size
+     * @return the tasks page
+     */
+    public Iterator<IExecutionBridge> getJobsPage(final int _start,
+                                                  final int _size)
+    {
+        final int min = Math.min(_size, this.executionBridges.size());
+        return new ArrayList<IExecutionBridge>(this.executionBridges.subList(_start, min)).iterator();
+    }
+
+    /**
+     * Count jobs.
+     *
+     * @return the long
+     */
+    public long countJobs() {
+        return this.executionBridges.size();
     }
 
     /**

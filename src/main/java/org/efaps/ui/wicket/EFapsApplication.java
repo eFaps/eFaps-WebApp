@@ -26,6 +26,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -62,6 +66,7 @@ import org.apache.wicket.util.lang.Bytes;
 import org.apache.wicket.util.string.AppendingStringBuffer;
 import org.efaps.admin.AppConfigHandler;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
+import org.efaps.api.background.IJob;
 import org.efaps.jaas.AppAccessHandler;
 import org.efaps.ui.filter.AbstractFilter;
 import org.efaps.ui.wicket.behaviors.KeepAliveBehavior;
@@ -88,6 +93,11 @@ public class EFapsApplication
      * Registry for the Connections of Users in this application.
      */
     private ConnectionRegistry connectionRegistry;
+
+    /** The executor service. */
+    private final ExecutorService executorService =  new ThreadPoolExecutor(10, 10,
+                    0L, TimeUnit.MILLISECONDS,
+                    new LinkedBlockingQueue<Runnable>());
 
     /**
      * @see org.apache.wicket.Application#getHomePage()
@@ -240,16 +250,6 @@ public class EFapsApplication
         return this.connectionRegistry;
     }
 
-    /**
-     * Get EFapsApplication for current thread.
-     *
-     * @return The current thread's Application
-     */
-    public static EFapsApplication get()
-    {
-        return (EFapsApplication) Application.get();
-    }
-
     @Override
     public void onEvent(final IEvent<?> _event)
     {
@@ -263,6 +263,41 @@ public class EFapsApplication
                 }
             }
         }
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        this.executorService.shutdown();
+        try {
+            if (!this.executorService.awaitTermination(2, TimeUnit.SECONDS)) {
+                this.executorService.shutdownNow();
+            }
+        } catch (final InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public ExecutionBridge launch(final IJob _job) {
+        // we are on WEB thread so services should be normally injected.
+        final ExecutionBridge bridge = new ExecutionBridge();
+        // register bridge on session
+        bridge.setJobName("EFapsJob-" + EFapsSession.get().countJobs() + 1);
+        EFapsSession.get().addExecutionBridge(bridge);
+        // run the task
+        this.executorService.execute(new JobRunnable(_job, bridge));
+        return bridge;
+    }
+
+
+    /**
+     * Get EFapsApplication for current thread.
+     *
+     * @return The current thread's Application
+     */
+    public static EFapsApplication get()
+    {
+        return (EFapsApplication) Application.get();
     }
 
     /**
