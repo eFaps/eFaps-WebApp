@@ -77,7 +77,7 @@ public class RadioField
                 setDefaultModel(new Model<String>());
             }
             final AbstractChoice<RadioOption, RadioOption> choices = setChoices(RadioOption.getChoices(this.cellvalue));
-            if (choices != null && choices.size() > 1) {
+            if (getChoices() != null && getChoices().size() > 1) {
                 setSuffix("<br/>");
             }
             setLabel(Model.of(this.cellvalue.getLabel()));

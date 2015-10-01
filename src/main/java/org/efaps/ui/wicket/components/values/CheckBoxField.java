@@ -81,9 +81,6 @@ public class CheckBoxField
                          final FieldConfiguration _fieldConfiguration)
     {
         super(_wicketId);
-        if (_choices != null && _choices.size() > 1) {
-            setSuffix("<br/>");
-        }
         this.fieldConfig = _fieldConfiguration;
         this.cellvalue = _model.getObject();
         try {
@@ -99,6 +96,9 @@ public class CheckBoxField
             }
             setChoices(CheckBoxOption.getChoices(this.cellvalue, null));
             setLabel(Model.of(this.cellvalue.getLabel()));
+            if (getChoices() != null && getChoices().size() > 1) {
+                setSuffix("<br/>");
+            }
         } catch (final EFapsException e) {
             CheckBoxField.LOG.error("Caught excpetion", e);
         }
