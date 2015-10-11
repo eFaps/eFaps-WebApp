@@ -91,7 +91,7 @@ public class EFapsSession
     private static final Logger LOG = LoggerFactory.getLogger(EFapsSession.class);
 
     /** The execution bridges. */
-    private List<IExecutionBridge> executionBridges = new ArrayList<>();
+    private List<IExecutionBridge> executionBridges = Collections.synchronizedList(new ArrayList<IExecutionBridge>());
 
     /**
      * This instance Map is a Cache for Components, which must be able to be
@@ -197,6 +197,29 @@ public class EFapsSession
     {
         final int min = Math.min(_size, this.executionBridges.size());
         return new ArrayList<IExecutionBridge>(this.executionBridges.subList(_start, min)).iterator();
+    }
+
+    /**
+     * Gets the bridge for job.
+     *
+     * @param _jobName the _job name
+     * @param _prune the _prune
+     * @return the bridge4 job
+     */
+    public IExecutionBridge getBridge4Job(final String _jobName,
+                                          final boolean _prune)
+    {
+        IExecutionBridge ret = null;
+        for (final IExecutionBridge bridge : this.executionBridges) {
+            if (bridge.getJobName().equals(_jobName)) {
+                ret = bridge;
+                if (_prune && ret.isFinished()) {
+                    this.executionBridges.remove(ret);
+                }
+                break;
+            }
+        }
+        return ret;
     }
 
     /**

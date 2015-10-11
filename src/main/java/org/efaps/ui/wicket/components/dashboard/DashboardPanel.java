@@ -30,7 +30,9 @@ import org.apache.wicket.request.IRequestHandler;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.handler.resource.ResourceReferenceRequestHandler;
 import org.apache.wicket.util.time.Duration;
+import org.efaps.api.background.IExecutionBridge;
 import org.efaps.ui.wicket.EFapsApplication;
+import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.ExecutionBridge;
 import org.efaps.ui.wicket.models.EsjpInvoker;
 
@@ -59,8 +61,8 @@ public class DashboardPanel
     // 2:ajax replacement completed
     private byte state = 0;
 
-    /** The bridge. */
-    private ExecutionBridge bridge;
+    /** The job name. */
+    private String jobName;
 
     /**
      * Instantiates a new panel.
@@ -84,12 +86,18 @@ public class DashboardPanel
             protected void onTimer(final AjaxRequestTarget _target)
             {
                 if (DashboardPanel.this.state < 2) {
-                    if (DashboardPanel.this.bridge != null && DashboardPanel.this.bridge.isFinished()) {
-                        final Component component = getLazyLoadComponent(LAZY_LOAD_COMPONENT_ID,
-                                        (String) DashboardPanel.this.bridge.getContent());
-                        DashboardPanel.this.replace(component);
-                        setState((byte) 2);
-                        stop(_target);
+                    if (DashboardPanel.this.jobName != null) {
+                        final IExecutionBridge bridge = EFapsSession.get().getBridge4Job(DashboardPanel.this.jobName,
+                                        true);
+                        if (bridge == null) {
+                            stop(_target);
+                        } else if (bridge.isFinished()) {
+                            final Component component = getLazyLoadComponent(LAZY_LOAD_COMPONENT_ID, (String) bridge
+                                            .getContent());
+                            DashboardPanel.this.replace(component);
+                            setState((byte) 2);
+                            stop(_target);
+                        }
                     }
                     setUpdateInterval(Duration.seconds(3));
                 }
@@ -138,7 +146,9 @@ public class DashboardPanel
         if (this.state == 0) {
             add(getLoadingComponent(LAZY_LOAD_COMPONENT_ID));
             setState((byte) 1);
-            this.bridge = EFapsApplication.get().launch(new DashboardJob((EsjpInvoker) getDefaultModelObject()));
+            final ExecutionBridge bridge = EFapsApplication.get().launch(new DashboardJob(
+                            (EsjpInvoker) getDefaultModelObject()));
+            this.jobName = bridge.getJobName();
         }
         super.onBeforeRender();
     }

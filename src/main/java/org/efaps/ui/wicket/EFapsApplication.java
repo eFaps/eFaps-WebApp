@@ -27,12 +27,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.wicket.Application;
 import org.apache.wicket.Component;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
@@ -97,7 +100,15 @@ public class EFapsApplication
     /** The executor service. */
     private final ExecutorService executorService =  new ThreadPoolExecutor(10, 10,
                     0L, TimeUnit.MILLISECONDS,
-                    new LinkedBlockingQueue<Runnable>());
+                    new LinkedBlockingQueue<Runnable>(),
+                    new ThreadFactory() {
+                        @Override
+                        public Thread newThread(final Runnable _r)
+                        {
+                            final Thread ret = Executors.defaultThreadFactory().newThread(_r);
+                            ret.setName("eFaps-Process-" + ret.getId());
+                            return ret;
+                        }});
 
     /**
      * @see org.apache.wicket.Application#getHomePage()
@@ -282,13 +293,13 @@ public class EFapsApplication
         // we are on WEB thread so services should be normally injected.
         final ExecutionBridge bridge = new ExecutionBridge();
         // register bridge on session
-        bridge.setJobName("EFapsJob-" + EFapsSession.get().countJobs() + 1);
+        bridge.setJobName("EFapsJob-" + EFapsSession.get().countJobs() + 1 + "-"
+                        + RandomStringUtils.randomAlphanumeric(4));
         EFapsSession.get().addExecutionBridge(bridge);
         // run the task
         this.executorService.execute(new JobRunnable(_job, bridge));
         return bridge;
     }
-
 
     /**
      * Get EFapsApplication for current thread.
