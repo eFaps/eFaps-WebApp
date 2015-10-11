@@ -33,8 +33,11 @@ import org.apache.wicket.util.time.Duration;
 import org.efaps.api.background.IExecutionBridge;
 import org.efaps.ui.wicket.EFapsApplication;
 import org.efaps.ui.wicket.EFapsSession;
-import org.efaps.ui.wicket.ExecutionBridge;
+import org.efaps.ui.wicket.background.ExecutionBridge;
 import org.efaps.ui.wicket.models.EsjpInvoker;
+import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Class DashboardPanel.
@@ -50,10 +53,14 @@ public class DashboardPanel
      */
     public static final String LAZY_LOAD_COMPONENT_ID = "content";
 
-    /**
-     *
-     */
+    /** */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * Logger for this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(DashboardPanel.class);
+
 
     // state,
     // 0:add loading component
@@ -146,9 +153,13 @@ public class DashboardPanel
         if (this.state == 0) {
             add(getLoadingComponent(LAZY_LOAD_COMPONENT_ID));
             setState((byte) 1);
-            final ExecutionBridge bridge = EFapsApplication.get().launch(new DashboardJob(
-                            (EsjpInvoker) getDefaultModelObject()));
-            this.jobName = bridge.getJobName();
+            try {
+                final ExecutionBridge bridge = EFapsApplication.get().launch(new DashboardJob(
+                                (EsjpInvoker) getDefaultModelObject()));
+                this.jobName = bridge.getJobName();
+            } catch (final EFapsException e) {
+                LOG.error("Catched error on startng background job.", e);
+            }
         }
         super.onBeforeRender();
     }

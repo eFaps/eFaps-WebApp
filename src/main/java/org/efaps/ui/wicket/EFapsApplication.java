@@ -70,8 +70,12 @@ import org.apache.wicket.util.string.AppendingStringBuffer;
 import org.efaps.admin.AppConfigHandler;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.api.background.IJob;
+import org.efaps.db.Context;
 import org.efaps.jaas.AppAccessHandler;
 import org.efaps.ui.filter.AbstractFilter;
+import org.efaps.ui.wicket.background.ExecutionBridge;
+import org.efaps.ui.wicket.background.JobContext;
+import org.efaps.ui.wicket.background.JobRunnable;
 import org.efaps.ui.wicket.behaviors.KeepAliveBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.AutoCompleteBehavior.ACAjaxRequestTarget;
 import org.efaps.ui.wicket.pages.error.UnexpectedErrorPage;
@@ -80,6 +84,7 @@ import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.ui.wicket.request.EFapsRequest;
 import org.efaps.ui.wicket.request.EFapsRequestCycleListener;
 import org.efaps.ui.wicket.request.EFapsResourceAggregator;
+import org.efaps.util.EFapsException;
 
 /**
  * This Class presents the WebApplication for eFaps using the Wicket-Framework. <br/>
@@ -289,12 +294,25 @@ public class EFapsApplication
         }
     }
 
-    public ExecutionBridge launch(final IJob _job) {
+    /**
+     * Launch a job.
+     *
+     * @param _job the _job
+     * @return the execution bridge
+     * @throws EFapsException on error
+     */
+    public ExecutionBridge launch(final IJob _job)
+        throws EFapsException
+    {
         // we are on WEB thread so services should be normally injected.
         final ExecutionBridge bridge = new ExecutionBridge();
         // register bridge on session
         bridge.setJobName("EFapsJob-" + EFapsSession.get().countJobs() + 1 + "-"
                         + RandomStringUtils.randomAlphanumeric(4));
+        bridge.setJobContext(new JobContext().setUserName(Context.getThreadContext().getPerson().getName()).setLocale(
+                        Context.getThreadContext().getLocale()).setCompanyUUID(Context.getThreadContext().getCompany()
+                                        .getUUID()));
+
         EFapsSession.get().addExecutionBridge(bridge);
         // run the task
         this.executorService.execute(new JobRunnable(_job, bridge));

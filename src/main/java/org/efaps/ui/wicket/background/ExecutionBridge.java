@@ -14,11 +14,12 @@
  * limitations under the License.
  *
  */
-package org.efaps.ui.wicket;
+package org.efaps.ui.wicket.background;
 
 import java.io.Serializable;
 
 import org.efaps.api.background.IExecutionBridge;
+import org.efaps.api.background.IJobContext;
 
 /**
  * The Class ExecutionBridge.
@@ -48,6 +49,8 @@ public class ExecutionBridge
     /** The content. */
     private Serializable content;
 
+    /** The job context. */
+    private IJobContext jobContext;
 
     /**
      * Instantiates a new execution bridge.
@@ -140,5 +143,21 @@ public class ExecutionBridge
     public void setContent(final Serializable _content)
     {
         this.content = _content;
+    }
+
+    @Override
+    public IJobContext getJobContext()
+    {
+        return this.jobContext;
+    }
+
+    /**
+     * Sets the job context.
+     *
+     * @param _jobContext the new job context
+     */
+    public void setJobContext(final IJobContext _jobContext)
+    {
+        this.jobContext = _jobContext;
     }
 }

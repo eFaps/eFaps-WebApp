@@ -18,7 +18,7 @@ package org.efaps.ui.wicket.components.dashboard;
 
 import org.efaps.api.background.IExecutionBridge;
 import org.efaps.api.background.IJob;
-import org.efaps.ui.wicket.ExecutionBridge;
+import org.efaps.ui.wicket.background.ExecutionBridge;
 import org.efaps.ui.wicket.models.EsjpInvoker;
 import org.efaps.util.EFapsBaseException;
 import org.slf4j.Logger;
@@ -32,7 +32,6 @@ import org.slf4j.LoggerFactory;
 public class DashboardJob
     implements IJob
 {
-
     /**
      *
      */

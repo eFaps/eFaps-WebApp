@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-package org.efaps.ui.wicket;
+package org.efaps.ui.wicket.background;
 
 import org.apache.wicket.Application;
 import org.apache.wicket.Session;
@@ -23,6 +23,7 @@ import org.efaps.admin.user.Company;
 import org.efaps.api.background.IExecutionBridge;
 import org.efaps.api.background.IJob;
 import org.efaps.db.Context;
+import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,10 +74,9 @@ public class JobRunnable
         try {
             ThreadContext.setApplication(this.application);
             ThreadContext.setSession(this.session);
-            final Company company = Context.getThreadContext().getCompany();
-            final String person = Context.getThreadContext().getPerson().getName();
-            final Context context = Context.begin(person, false);
-            context.setCompany(company);
+            final Context context = Context.begin(this.bridge.getJobContext().getUserName(),
+                            this.bridge.getJobContext().getLocale(), null, null, null, false);
+            context.setCompany(Company.get(this.bridge.getJobContext().getCompanyUUID()));
             this.job.execute(this.bridge);
             Context.commit(true);
         } catch (final EFapsException e) {
