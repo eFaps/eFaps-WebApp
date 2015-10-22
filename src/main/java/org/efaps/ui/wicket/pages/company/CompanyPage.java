@@ -43,6 +43,7 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.io.IClusterable;
+import org.efaps.admin.access.AccessCache;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.user.Company;
 import org.efaps.db.Context;
@@ -295,6 +296,7 @@ public class CompanyPage
                     final CompanyObject obj = (CompanyObject) comp.getDefaultModelObject();
                     try {
                         Context.getThreadContext().setUserAttribute(Context.CURRENTCOMPANY, obj.id);
+                        AccessCache.clean4Person(Context.getThreadContext().getPersonId());
                     } catch (final EFapsException e) {
                         throw new RestartResponseException(new ErrorPage(e));
                     }
