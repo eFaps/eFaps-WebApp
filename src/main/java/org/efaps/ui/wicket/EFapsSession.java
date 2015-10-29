@@ -476,7 +476,7 @@ public class EFapsSession
                         }
 
                         Context.begin(this.userName, super.getLocale(), this.sessionAttributes, parameters, null,
-                                        true);
+                                        Context.Inheritance.Inheritable);
                         // set the locale in the context and in the session
                         setLocale(Context.getThreadContext().getLocale());
                         setAttribute(UserAttributesSet.CONTEXTMAPKEY, Context.getThreadContext().getUserAttributes());

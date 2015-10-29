@@ -75,7 +75,7 @@ public class JobRunnable
             ThreadContext.setApplication(this.application);
             ThreadContext.setSession(this.session);
             final Context context = Context.begin(this.bridge.getJobContext().getUserName(),
-                            this.bridge.getJobContext().getLocale(), null, null, null, false);
+                            this.bridge.getJobContext().getLocale(), null, null, null, Context.Inheritance.Local);
             context.setCompany(Company.get(this.bridge.getJobContext().getCompanyUUID()));
             this.job.execute(this.bridge);
             Context.commit(true);
