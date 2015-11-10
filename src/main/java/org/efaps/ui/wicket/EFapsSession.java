@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Stack;
 
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.wicket.Application;
 import org.apache.wicket.Component;
@@ -466,11 +467,16 @@ public class EFapsSession
                         final IRequestParameters reqPara = request.getRequestParameters();
                         for (final String name : reqPara.getParameterNames()) {
                             final List<StringValue> values = reqPara.getParameterValues(name);
-                            final String[] valArray = new String[values.size()];
-                            int i = 0;
-                            for (final StringValue value : values) {
-                                valArray[i] = value.toString();
-                                i++;
+                            final String[] valArray;
+                            if (values == null) {
+                                valArray = ArrayUtils.EMPTY_STRING_ARRAY;
+                            } else {
+                                valArray = new String[values.size()];
+                                int i = 0;
+                                for (final StringValue value : values) {
+                                    valArray[i] = value.toString();
+                                    i++;
+                                }
                             }
                             parameters.put(name, valArray);
                         }
