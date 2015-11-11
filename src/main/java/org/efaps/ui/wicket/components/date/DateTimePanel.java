@@ -33,6 +33,7 @@ import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.string.StringValue;
 import org.efaps.admin.datamodel.ui.UIValue;
@@ -152,7 +153,7 @@ public class DateTimePanel
                         ? new DateTime(Context.getThreadContext().getChronology())
                         : (DateTime) _dateObject;
         this.fieldLabel = _fieldLabel;
-
+        setLabel(Model.of(this.fieldLabel));
         this.converter = new StyleDateConverter(false) {
 
             private static final long serialVersionUID = 1L;
@@ -637,5 +638,12 @@ public class DateTimePanel
     public String getFieldLabel()
     {
         return this.fieldLabel;
+    }
+
+    @Override
+    public IModel<String> getLabel()
+    {
+        // TODO Auto-generated method stub
+        return super.getLabel();
     }
 }
