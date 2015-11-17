@@ -26,9 +26,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.IFormSubmittingComponent;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.datamodel.ui.UIValue;
@@ -53,7 +55,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DropDownField
     extends DropDownChoice<DropDownOption>
-    implements IFieldConfig
+    implements IFieldConfig, IFormSubmittingComponent
 {
 
     /**
@@ -271,5 +273,32 @@ public class DropDownField
             }
             return ret;
         }
+    }
+
+    @Override
+    public boolean getDefaultFormProcessing()
+    {
+        return true;
+    }
+
+    @Override
+    public void onSubmit()
+    {
+    }
+
+    @Override
+    public void onAfterSubmit()
+    {
+    }
+
+    @Override
+    public void onError()
+    {
+    }
+
+    @Override
+    public Component setDefaultFormProcessing(final boolean _defaultFormProcessing)
+    {
+        return this;
     }
 }

@@ -35,6 +35,7 @@ import org.efaps.admin.datamodel.ui.DateUI;
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.admin.ui.field.Field.Display;
 import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
+import org.efaps.ui.wicket.behaviors.PreviousValueBehavior;
 import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.autocomplete.AutoCompleteComboBox;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
@@ -131,6 +132,7 @@ public class ValueCellPanel
                                     new Model<String>(uiFormCell.getCellValue()));
                     if (uiFormCell.isFieldUpdate() && uiFormCell.getDisplay().equals(Display.EDITABLE)) {
                         label.add(new AjaxFieldUpdateBehavior(uiFormCell.getFieldUpdateEvent(), _model));
+                        label.add(new PreviousValueBehavior().setCheck4Select(true));
                     }
                 }
                 this.add(label);

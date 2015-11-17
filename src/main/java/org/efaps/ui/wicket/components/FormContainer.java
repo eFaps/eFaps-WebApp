@@ -30,26 +30,32 @@ import java.util.Set;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
+import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior.AjaxFormSubmitter;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.IFormSubmitter;
 import org.apache.wicket.protocol.http.servlet.MultipartServletWebRequest;
 import org.apache.wicket.request.IRequestParameters;
+import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.util.string.StringValue;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.EFapsSession.FileParameter;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.date.IDateListener;
+import org.efaps.ui.wicket.components.values.DropDownField;
 import org.efaps.ui.wicket.components.values.IValueConverter;
 import org.efaps.ui.wicket.models.AbstractInstanceObject;
 import org.efaps.ui.wicket.models.cell.UIFormCellSet;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
+import org.efaps.ui.wicket.models.objects.DropDownOption;
 import org.efaps.ui.wicket.models.objects.UIFieldForm;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIForm.Element;
 import org.efaps.ui.wicket.models.objects.UIForm.ElementType;
 import org.efaps.ui.wicket.models.objects.UIForm.FormRow;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.ui.wicket.request.EFapsRequest;
+import org.efaps.ui.wicket.request.EFapsRequestParametersAdapter;
 import org.efaps.util.EFapsException;
 
 /**
@@ -218,11 +224,24 @@ public class FormContainer
     @Override
     public void process(final IFormSubmitter _submittingComponent)
     {
+        // for a dropdown add the previous value as a parameter
+        if (_submittingComponent instanceof AjaxFormSubmitter && ((AjaxFormSubmitter) _submittingComponent)
+                        .getFormSubmittingComponent() != null && ((AjaxFormSubmitter) _submittingComponent)
+                                        .getFormSubmittingComponent() instanceof DropDownField) {
+            final Object object = ((DropDownField) ((AjaxFormSubmitter) _submittingComponent)
+                            .getFormSubmittingComponent()).getDefaultModelObject();
+            if (object instanceof DropDownOption) {
+                final String key = ((DropDownField) ((AjaxFormSubmitter) _submittingComponent)
+                                .getFormSubmittingComponent()).getInputName();
+                ((EFapsRequestParametersAdapter) ((EFapsRequest) RequestCycle.get().getRequest())
+                                .getRequestParameters()).addParameterValue(key + "_eFapsPrevious",
+                                                ((DropDownOption) object).getValue());
+            }
+        }
         super.process(_submittingComponent);
         // it must be ensured that the counter for sets is rested or we have big problems
         resetSetCounter();
     }
-
 
    /**
     * Reset the counters for sets.

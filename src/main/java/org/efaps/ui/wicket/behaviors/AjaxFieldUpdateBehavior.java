@@ -206,7 +206,6 @@ public class AjaxFieldUpdateBehavior
         return ret;
     }
 
-
     /**
      * @see org.apache.wicket.ajax.form.AjaxFormSubmitBehavior#onSubmit(org.apache.wicket.ajax.AjaxRequestTarget)
      * @param _target AjaxRequestTarget
