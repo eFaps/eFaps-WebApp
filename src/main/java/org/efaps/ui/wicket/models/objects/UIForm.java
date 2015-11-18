@@ -874,7 +874,9 @@ public class UIForm
                                     && (field.getUIProvider() != null || field.getProperty("UIType") != null)
                                 || attr == null && field.getClassUI() == null && field.getUIProvider() == null) {
 
-                                cell = new UIField(null, this, UIValue.get(field, attr, null).setClassObject(this)
+                                cell = new UIField(null, this, UIValue.get(field, attr,
+                                                super.isPartOfWizardCall() ? getValue4Wizard(field.getName()) : null )
+                                                .setClassObject(this)
                                                 .setInstance(getInstance()).setCallInstance(getInstance()));
                             }  else {
                                 final FieldValue fieldvalue = getFieldValue(field, attr);
