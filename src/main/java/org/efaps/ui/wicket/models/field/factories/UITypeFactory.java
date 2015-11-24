@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.model.Model;
+import org.efaps.api.ui.UIType;
 import org.efaps.ui.wicket.components.picker.AjaxPickerButton;
 import org.efaps.ui.wicket.components.values.CheckBoxField;
 import org.efaps.ui.wicket.components.values.DropDownField;
@@ -152,8 +153,7 @@ public final class UITypeFactory
     public boolean applies(final AbstractUIField _uiField)
         throws CacheReloadException
     {
-        return  _uiField.getValue().getUIProvider() == null
-                        && _uiField.getFieldConfiguration().getUIType() != null;
+        return !UIType.DEFAULT.equals(_uiField.getFieldConfiguration().getUIType());
     }
 
     /**

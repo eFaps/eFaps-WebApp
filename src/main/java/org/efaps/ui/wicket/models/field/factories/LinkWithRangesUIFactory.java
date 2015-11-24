@@ -25,6 +25,7 @@ import java.util.Map;
 import org.apache.wicket.Component;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.datamodel.ui.LinkWithRangesUI;
+import org.efaps.api.ui.UIType;
 import org.efaps.ui.wicket.components.values.DropDownField;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.util.EFapsException;
@@ -87,10 +88,11 @@ public final class LinkWithRangesUIFactory
      * {@inheritDoc}
      */
     @Override
-    public boolean applies(final AbstractUIField _abstractUIField)
+    public boolean applies(final AbstractUIField _uiField)
         throws EFapsException
     {
-        return _abstractUIField.getValue().getUIProvider() instanceof LinkWithRangesUI;
+        return _uiField.getValue().getUIProvider() instanceof LinkWithRangesUI
+                        && UIType.DEFAULT.equals(_uiField.getFieldConfiguration().getUIType());
     }
 
     /**
