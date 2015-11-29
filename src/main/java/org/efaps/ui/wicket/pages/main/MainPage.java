@@ -448,7 +448,7 @@ public class MainPage
                 .append("top.document['eFapsCallHome'] = function() {\n")
                 .append("var lastCall = top.document['eFapsCallHomeTime'];\n")
                 .append("if (lastCall) { \n")
-                .append("if ((new Date().getTime() - lastCall) > (5 * 60 * 1000)) {\n")
+                .append("if ((new Date().getTime() - lastCall) > (2 * 60 * 1000)) {\n")
                 .append(getCallbackFunctionBody())
                 .append("}\n")
                 .append("} else {\n")
@@ -469,6 +469,8 @@ public class MainPage
         protected void respond(final AjaxRequestTarget _target)
         {
             _target.appendJavaScript("top.document['eFapsCallHomeTime'] = new Date().getTime();");
+            // touch the page to ensure that the pagemanager stores it to be accessible
+            getSession().getPageManager().touchPage(getPage());
         }
     }
 }
