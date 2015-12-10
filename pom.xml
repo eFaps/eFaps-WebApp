@@ -166,13 +166,13 @@
         <profile>
             <properties>
                 <!-- Must be set on the file missing also -->
-                <gridx.version>1.3.7</gridx.version>
+                <gridx.version>1.3.8</gridx.version>
             </properties>
             <id>gridx-install</id>
             <activation>
                 <file>
                     <!-- doe not work with properties therfore it must be set including the dojo version -->
-                    <missing>lib/gridx-1.3.7.tar.gz</missing>
+                    <missing>lib/gridx-1.3.8.tar.gz</missing>
                 </file>
             </activation>
             <build>
