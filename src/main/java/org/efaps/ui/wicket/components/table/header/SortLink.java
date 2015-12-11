@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev:1510 $
- * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
- * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.components.table.header;
@@ -23,6 +20,8 @@ package org.efaps.ui.wicket.components.table.header;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.util.visit.IVisit;
+import org.apache.wicket.util.visit.IVisitor;
 import org.efaps.admin.ui.AbstractCommand.SortDirection;
 import org.efaps.ui.wicket.models.objects.AbstractUIHeaderObject;
 import org.efaps.ui.wicket.models.objects.UIForm;
@@ -31,23 +30,31 @@ import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
+import org.efaps.ui.wicket.pages.content.table.filter.FilterPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class renders the SortLink for the Header.
  *
  * @author The eFaps Team
- * @version $Id:SortLinkContainer.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class SortLink
     extends Link<UITableHeader>
 {
 
     /**
-     * Needed foer serialization.
+     * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(SortLink.class);
 
     /**
      * @param _wicketId       wicket id
@@ -96,6 +103,23 @@ public class SortLink
                 page = new StructurBrowserPage(Model.of(uiHeaderObject),
                                 ((AbstractContentPage) getPage()).getModalWindow(),
                                 ((AbstractContentPage) getPage()).getCalledByPageReference());
+            } else if (getPage() instanceof FilterPage) {
+                page = (AbstractContentPage) getPage();
+                getPage().visitChildren(HeaderPanel.class, new IVisitor<HeaderPanel, HeaderPanel>()
+                {
+                    @Override
+                    public void component(final HeaderPanel _child,
+                                          final IVisit<HeaderPanel> _visit)
+                    {
+                        try {
+                            final HeaderPanel replacement = new HeaderPanel(_child.getId(), _child.getTablePanel(),
+                                            _child.getDefaultModel());
+                            _child.replaceWith(replacement);
+                        } catch (final CacheReloadException e) {
+                            LOG.error("Catched error: ", e);
+                        }
+                    }
+                });
             } else {
                 page = new FormPage(Model.of((UIForm) getPage().getDefaultModelObject()),
                                 ((AbstractContentPage) getPage()).getModalWindow(),
@@ -103,6 +127,7 @@ public class SortLink
             }
             getRequestCycle().setResponsePage(page);
         } catch (final EFapsException e) {
+            LOG.error("Catched error: ", e);
             getRequestCycle().setResponsePage(new ErrorPage(e));
         }
     }

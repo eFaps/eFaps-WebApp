@@ -96,7 +96,8 @@ public class HeaderPanel
     /**
      * The Panel the table resides in.
      */
-    private final Panel tablepanel;
+    private final Panel tablePanel;
+
 
     /**
      * Name of the table the Header belongs to.
@@ -127,7 +128,7 @@ public class HeaderPanel
         throws CacheReloadException
     {
         super(_wicketId, _model);
-        this.tablepanel = _panel;
+        this.tablePanel = _panel;
         final AbstractUIHeaderObject uitable = (AbstractUIHeaderObject) super.getDefaultModelObject();
         if (uitable instanceof UIFieldTable) {
             this.tableName = ((UIFieldTable) _model.getObject()).getName();
@@ -242,11 +243,21 @@ public class HeaderPanel
     }
 
     /**
+     * Gets the Panel the table resides in.
+     *
+     * @return the Panel the table resides in
+     */
+    public Panel getTablePanel()
+    {
+        return this.tablePanel;
+    }
+
+    /**
      * @return true it it is a structur browser
      */
     private boolean isStructurBrowser()
     {
-        return this.tablepanel instanceof StructurBrowserTreeTable;
+        return this.tablePanel instanceof StructurBrowserTreeTable;
     }
 
 
@@ -280,7 +291,7 @@ public class HeaderPanel
             .append("  var ").append(this.headerProperties).append(" = new headerProperties();\n  ")
             .append(this.headerProperties).append(".tableName = \"").append(this.tableName).append("\";\n  ")
             .append(this.headerProperties).append(".headerID = \"").append(this.getMarkupId()).append("\";\n  ")
-            .append(this.headerProperties + ".bodyID = \"").append(this.tablepanel.getMarkupId()).append("\";\n  ")
+            .append(this.headerProperties + ".bodyID = \"").append(this.tablePanel.getMarkupId()).append("\";\n  ")
             .append(this.headerProperties + ".modelID = ")
             .append(((AbstractUIHeaderObject) super.getDefaultModelObject()).getTableId()).append(";\n  ")
             .append(this.headerProperties).append(".storeColumnWidths = ")

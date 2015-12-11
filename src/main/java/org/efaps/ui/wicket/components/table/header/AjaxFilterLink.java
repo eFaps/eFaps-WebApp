@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.components.table.header;
@@ -38,7 +35,6 @@ import org.efaps.util.EFapsException;
  * Class renders a link that opens the form to filter the tables.
  *
  * @author The eFasp Team
- * @version $Id$
  */
 public class AjaxFilterLink
     extends AjaxLink<UITableHeader>
@@ -98,10 +94,12 @@ public class AjaxFilterLink
         private final UITableHeader uitableHeader;
 
         /**
+         * Instantiates a new filter page creator.
+         *
          * @param _pageReference refernce to the page will be opened in
          * @param _uiTableHeader uiTableheader belonging to this pagecreator
          */
-        public FilterPageCreator(final PageReference _pageReference,
+        FilterPageCreator(final PageReference _pageReference,
                                  final UITableHeader _uiTableHeader)
         {
             this.pageReference = _pageReference;
@@ -112,6 +110,7 @@ public class AjaxFilterLink
          * @see org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow.PageCreator#createPage()
          * @return Page
          */
+        @Override
         public Page createPage()
         {
             Page ret;

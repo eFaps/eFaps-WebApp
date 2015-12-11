@@ -87,21 +87,17 @@ public class FilterPage
     private static final EFapsContentReference CSS = new EFapsContentReference(FilterPage.class, "FilterPage.css");
 
     /**
-     * Refernce top the page.
-     */
-    private final PageReference pageReference;
-
-    /**
      * @param _pageReference reference to the page opening this filterpage
      * @param _uitableHeader uitablehaeder this FilterPage belongs to
      * @throws EFapsException on error
      */
+    @SuppressWarnings("checkstyle:methodlength")
     public FilterPage(final PageReference _pageReference,
                       final UITableHeader _uitableHeader)
         throws EFapsException
     {
         super(_pageReference.getPage().getDefaultModel());
-        this.pageReference = _pageReference;
+        setCalledByPageReference(_pageReference);
         final FormContainer form = new FormContainer("eFapsForm");
         this.add(form);
         final Panel panel;
@@ -138,9 +134,11 @@ public class FilterPage
                                     final Form<?> _form)
             {
                 try {
-                    final AbstractContentPage page = (AbstractContentPage) FilterPage.this.pageReference.getPage();
+                    final AbstractContentPage page = (AbstractContentPage) FilterPage.this.getCalledByPageReference()
+                                    .getPage();
                     final ModalWindowContainer modal = page.getModal();
-                    // to ensure that it is never null, set the wrong one and then analyze
+                    // to ensure that it is never null, set the wrong one and
+                    // then analyze
                     UITable uiTable = (UITable) _uitableHeader.getUiHeaderObject();
                     if (page.getDefaultModelObject() instanceof UITable) {
                         uiTable = (UITable) page.getDefaultModelObject();
@@ -161,8 +159,8 @@ public class FilterPage
                     if (_uitableHeader.getFilter().getType().equals(FilterType.FORM)) {
                         uiTable.addFilterParameters(_uitableHeader,
                                         ParameterUtil.parameter2Map(getRequest().getRequestParameters()));
-                        modal.setWindowClosedCallback(new UpdateParentCallback(FilterPage.this.pageReference,
-                                        modal, true));
+                        modal.setWindowClosedCallback(new UpdateParentCallback(FilterPage.this
+                                        .getCalledByPageReference(), modal, true));
                         modal.setUpdateParent(true);
                         modal.close(_target);
                     } else if (_uitableHeader.getFilter().getType().equals(FilterType.PICKLIST)) {
@@ -182,8 +180,8 @@ public class FilterPage
                                 }
                                 uiTable.addFilterList(_uitableHeader, filterList);
                             }
-                            modal.setWindowClosedCallback(new UpdateParentCallback(FilterPage.this.pageReference,
-                                            modal, false));
+                            modal.setWindowClosedCallback(new UpdateParentCallback(FilterPage.this
+                                            .getCalledByPageReference(), modal, false));
                             modal.setUpdateParent(true);
                         } else {
                             modal.setUpdateParent(false);
@@ -193,8 +191,9 @@ public class FilterPage
                         final ClassificationPanel classPanel = (ClassificationPanel) panel;
                         final UIClassification uiClass = classPanel.getUiClassification();
                         uiTable.addFilterClassifcation(_uitableHeader, uiClass);
-                        modal.setWindowClosedCallback(new UpdateParentCallback(FilterPage.this.pageReference,
-                                        modal, _uitableHeader.getFilter().getBase().equals(FilterBase.DATABASE)));
+                        modal.setWindowClosedCallback(new UpdateParentCallback(FilterPage.this
+                                        .getCalledByPageReference(), modal, _uitableHeader.getFilter().getBase().equals(
+                                                        FilterBase.DATABASE)));
                         modal.setUpdateParent(true);
                         modal.close(_target);
                     } else if (_uitableHeader.getFilter().getType().equals(FilterType.STATUS)) {
@@ -214,8 +213,9 @@ public class FilterPage
                                 }
                                 uiTable.addFilterList(_uitableHeader, filterList);
                             }
-                            modal.setWindowClosedCallback(new UpdateParentCallback(FilterPage.this.pageReference,
-                                             modal, _uitableHeader.getFilter().getBase().equals(FilterBase.DATABASE)));
+                            modal.setWindowClosedCallback(new UpdateParentCallback(FilterPage.this
+                                            .getCalledByPageReference(), modal, _uitableHeader.getFilter().getBase()
+                                                            .equals(FilterBase.DATABASE)));
                             modal.setUpdateParent(true);
                         }  else {
                             modal.setUpdateParent(false);
@@ -255,8 +255,9 @@ public class FilterPage
                             }
                         }
                         uiTable.addFilterRange(_uitableHeader, from, to);
-                        modal.setWindowClosedCallback(new UpdateParentCallback(FilterPage.this.pageReference,
-                                        modal, _uitableHeader.getFilter().getBase().equals(FilterBase.DATABASE)));
+                        modal.setWindowClosedCallback(new UpdateParentCallback(FilterPage.this
+                                        .getCalledByPageReference(), modal, _uitableHeader.getFilter().getBase().equals(
+                                                        FilterBase.DATABASE)));
                         modal.setUpdateParent(true);
                         modal.close(_target);
                     } else if (_uitableHeader.getFilterType().equals(FilterValueType.TEXT)) {
@@ -297,8 +298,9 @@ public class FilterPage
                         final boolean ignoreCase = modes.get("ignoreCase");
 
                         uiTable.addFilterTextLike(_uitableHeader, from, expertMode, ignoreCase);
-                        modal.setWindowClosedCallback(new UpdateParentCallback(FilterPage.this.pageReference,
-                                        modal, _uitableHeader.getFilter().getBase().equals(FilterBase.DATABASE)));
+                        modal.setWindowClosedCallback(new UpdateParentCallback(FilterPage.this
+                                        .getCalledByPageReference(), modal, _uitableHeader.getFilter().getBase().equals(
+                                                        FilterBase.DATABASE)));
                         modal.setUpdateParent(true);
                         modal.close(_target);
                     }
@@ -332,10 +334,10 @@ public class FilterPage
                     final UITable uiTable = (UITable) _pageReference.getPage().getDefaultModelObject();
                     uiTable.removeFilter(_uitableHeader);
                     _uitableHeader.setFilterApplied(false);
-                    final ModalWindowContainer modal = ((AbstractContentPage) FilterPage.this.pageReference.getPage())
-                                    .getModal();
+                    final ModalWindowContainer modal = ((AbstractContentPage) FilterPage.this.getCalledByPageReference()
+                                    .getPage()).getModal();
                     modal.setUpdateParent(true);
-                    modal.setWindowClosedCallback(new UpdateParentCallback(FilterPage.this.pageReference,
+                    modal.setWindowClosedCallback(new UpdateParentCallback(FilterPage.this.getCalledByPageReference(),
                                     modal, _uitableHeader.getFilter().getBase().equals(FilterBase.DATABASE)));
                     modal.close(_target);
                 }
@@ -352,8 +354,8 @@ public class FilterPage
             @Override
             public void onClick(final AjaxRequestTarget _target)
             {
-                final ModalWindowContainer modal = ((AbstractContentPage) FilterPage.this.pageReference.getPage())
-                                .getModal();
+                final ModalWindowContainer modal = ((AbstractContentPage) FilterPage.this.getCalledByPageReference()
+                                .getPage()).getModal();
                 modal.setUpdateParent(false);
                 modal.close(_target);
             }

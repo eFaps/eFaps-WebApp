@@ -27,8 +27,11 @@ import org.efaps.admin.ui.AbstractCommand.SortDirection;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.field.Field.Display;
 import org.efaps.admin.ui.field.FieldTable;
+import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Object used for a StructurBrowser nested in a Form.
@@ -45,6 +48,12 @@ public class UIFieldStructurBrowser
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(UIFieldStructurBrowser.class);
+
 
     /**
      * Id of the Field this Field Structur Browser belongs to.
@@ -116,6 +125,22 @@ public class UIFieldStructurBrowser
     {
         if (getCommand() == null) {
             super.initialise();
+        } else {
+            try {
+                if (Context.getThreadContext().containsUserAttribute(
+                                getCacheKey(UITable.UserCacheKey.SORTKEY))) {
+                    setSortKeyInternal(Context.getThreadContext().getUserAttribute(
+                                    getCacheKey(UITable.UserCacheKey.SORTKEY)));
+                }
+                if (Context.getThreadContext().containsUserAttribute(
+                                getCacheKey(UITable.UserCacheKey.SORTDIRECTION))) {
+                    setSortDirection(SortDirection.getEnum(Context.getThreadContext()
+                                    .getUserAttribute(getCacheKey(UITable.UserCacheKey.SORTDIRECTION))));
+                }
+            } catch (final EFapsException e) {
+                // we don't throw an error because this are only Usersettings
+                UIFieldStructurBrowser.LOG.error("error during the retrieve of UserAttributes", e);
+            }
         }
     }
 
