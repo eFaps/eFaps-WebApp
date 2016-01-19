@@ -52,6 +52,7 @@ import org.efaps.admin.ui.AbstractCommand.SortDirection;
 import org.efaps.admin.ui.Image;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.admin.ui.field.Filter;
+import org.efaps.api.ci.UITableFieldProperty;
 import org.efaps.api.ui.FilterBase;
 import org.efaps.api.ui.FilterType;
 import org.efaps.db.Context;
@@ -121,6 +122,7 @@ public class UITable
      */
     private UIRow emptyRow;
 
+    /** The enforce sorted. */
     private boolean enforceSorted = false;
 
     /**
@@ -325,12 +327,13 @@ public class UITable
                         multi.addSelect(field.getSelectAlternateOID());
                         altOIDSel.add(field.getSelectAlternateOID());
                     }
-                    if (field.getProperty("SortSelect") != null) {
-                        multi.addSelect(field.getProperty("SortSelect") );
-                    } else if (field.getProperty("SortPhrase") != null) {
-                        multi.addPhrase(field.getProperty("SortPhrase"), field.getProperty("SortPhrase"));
-                    } else if (field.getProperty("SortMsgPhrase") != null) {
-                        multi.addMsgPhrase(field.getProperty("SortMsgPhrase"));
+                    if (field.containsProperty(UITableFieldProperty.SORT_SELECT)) {
+                        multi.addSelect(field.getProperty(UITableFieldProperty.SORT_SELECT));
+                    } else if (field.containsProperty(UITableFieldProperty.SORT_PHRASE)) {
+                        multi.addPhrase(field.getProperty(UITableFieldProperty.SORT_PHRASE),
+                                        field.getProperty(UITableFieldProperty.SORT_PHRASE));
+                    } else if (field.containsProperty(UITableFieldProperty.SORT_MSG_PHRASE)) {
+                        multi.addMsgPhrase(field.getProperty(UITableFieldProperty.SORT_MSG_PHRASE));
                     }
                 }
                 if (field.getAttribute() != null && type != null) {
@@ -433,12 +436,12 @@ public class UITable
                         value = _multi.getMsgPhrase(new SelectBuilder(getBaseSelect4MsgPhrase(field)),
                                         field.getMsgPhrase());
                     }
-                    if (field.getProperty("SortSelect") != null) {
-                        sortValue = _multi.getSelect(field.getProperty("SortSelect") );
-                    } else if (field.getProperty("SortPhrase") != null) {
-                        sortValue = _multi.getPhrase(field.getProperty("SortPhrase"));
-                    } else if (field.getProperty("SortMsgPhrase") != null) {
-                        sortValue = _multi.getMsgPhrase(field.getProperty("SortMsgPhrase"));
+                    if (field.containsProperty(UITableFieldProperty.SORT_SELECT)) {
+                        sortValue = _multi.getSelect(field.getProperty(UITableFieldProperty.SORT_SELECT));
+                    } else if (field.containsProperty(UITableFieldProperty.SORT_PHRASE)) {
+                        sortValue = _multi.getPhrase(field.getProperty(UITableFieldProperty.SORT_PHRASE));
+                    } else if (field.containsProperty(UITableFieldProperty.SORT_MSG_PHRASE)) {
+                        sortValue = _multi.getMsgPhrase(field.getProperty(UITableFieldProperty.SORT_MSG_PHRASE));
                     }
 
                     boolean hidden = false;
@@ -746,10 +749,8 @@ public class UITable
      * Add a range to the filters of this UiTable.
      *
      * @param _uitableHeader UitableHeader this filter belongs to
-     * @param _from from value
-     * @param _to to value
+     * @param _parameters the parameters
      * @throws EFapsException on error
-     *
      */
     public void addFilterParameters(final UITableHeader _uitableHeader,
                                     final Map<String, String[]> _parameters)
@@ -790,8 +791,10 @@ public class UITable
      *
      * @param _uitableHeader UitableHeader this filter belongs to
      * @return List of Values
+     * @throws EFapsException on error
      */
-    public List<String> getFilterPickList(final UITableHeader _uitableHeader) throws EFapsException
+    public List<String> getFilterPickList(final UITableHeader _uitableHeader)
+        throws EFapsException
     {
         final List<String> ret = new ArrayList<String>();
         for (final UIRow rowmodel : this.values) {
@@ -862,11 +865,12 @@ public class UITable
      * This is the getter method for the instance variable {@link #values}.
      *
      * @return value of instance variable {@link #values}
-     * @throws EFapsException
      * @see #values
      * @see #setValues
+     * @throws EFapsException on error
      */
-    public List<UIRow> getValues() throws EFapsException
+    public List<UIRow> getValues()
+        throws EFapsException
     {
         List<UIRow> ret = new ArrayList<UIRow>();
         if (isFiltered()) {
@@ -1290,8 +1294,10 @@ public class UITable
          * @param _uiRow UIRow to filter
          * @return false if the row must be shown to the user, true if the row
          *         must be filtered
+         * @throws EFapsException on error
          */
-        public boolean filterRow(final UIRow _uiRow) throws EFapsException
+        public boolean filterRow(final UIRow _uiRow)
+            throws EFapsException
         {
             boolean ret = false;
             if (this.headerFieldId > 0
