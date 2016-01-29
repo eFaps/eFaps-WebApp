@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket;
@@ -84,6 +81,8 @@ import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.ui.wicket.request.EFapsRequest;
 import org.efaps.ui.wicket.request.EFapsRequestCycleListener;
 import org.efaps.ui.wicket.request.EFapsResourceAggregator;
+import org.efaps.ui.wicket.util.Configuration;
+import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 import org.efaps.util.EFapsException;
 
 /**
@@ -91,8 +90,7 @@ import org.efaps.util.EFapsException;
  * It is the first class which is instantiated from the WicketServlet. Here the
  * Sessions for each user a created and basic Settings are set.
  *
- * @author Jan Moxter
- * @version $Id$
+ * @author The eFaps Team
  */
 public class EFapsApplication
     extends WebApplication
@@ -103,17 +101,17 @@ public class EFapsApplication
     private ConnectionRegistry connectionRegistry;
 
     /** The executor service. */
-    private final ExecutorService executorService =  new ThreadPoolExecutor(10, 10,
-                    0L, TimeUnit.MILLISECONDS,
-                    new LinkedBlockingQueue<Runnable>(),
-                    new ThreadFactory() {
+    private final ExecutorService executorService = new ThreadPoolExecutor(10, 10, 0L, TimeUnit.MILLISECONDS,
+                    new LinkedBlockingQueue<Runnable>(), new ThreadFactory()
+                    {
                         @Override
                         public Thread newThread(final Runnable _r)
                         {
                             final Thread ret = Executors.defaultThreadFactory().newThread(_r);
                             ret.setName("eFaps-Process-" + ret.getId());
                             return ret;
-                        }});
+                        }
+                    });
 
     /**
      * @see org.apache.wicket.Application#getHomePage()
@@ -180,7 +178,8 @@ public class EFapsApplication
         getDebugSettings().setDevelopmentUtilitiesEnabled(false);
 
         getStoreSettings().setMaxSizePerSession(Bytes.megabytes(20));
-        getStoreSettings().setInmemoryCacheSize(5);
+        getStoreSettings().setInmemoryCacheSize(Configuration.getAttributeAsInteger(
+                        ConfigAttribute.STORE_INMEMORYCACHE));
 
         getMarkupSettings().setStripWicketTags(true);
         getMarkupSettings().setStripComments(true);
@@ -380,8 +379,8 @@ public class EFapsApplication
         }
 
         @Override
-        public boolean isResourceAuthorized(final IResource resource,
-                                            final PageParameters parameters)
+        public boolean isResourceAuthorized(final IResource _resource,
+                                            final PageParameters _parameters)
         {
             return true;
         }

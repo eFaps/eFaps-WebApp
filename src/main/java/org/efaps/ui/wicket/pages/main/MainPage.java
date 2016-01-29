@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev:1490 $
- * Last Changed:    $Date:2007-10-15 18:04:02 -0500 (Mon, 15 Oct 2007) $
- * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.pages.main;
@@ -97,7 +94,6 @@ import org.slf4j.LoggerFactory;
  * to provide the possibility to set a response into the hidden FRame.
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class MainPage
     extends AbstractMergePage
@@ -446,14 +442,19 @@ public class MainPage
         {
             final StringBuilder js = new StringBuilder()
                 .append("top.document['eFapsCallHome'] = function() {\n")
-                .append("var lastCall = top.document['eFapsCallHomeTime'];\n")
-                .append("if (lastCall) { \n")
-                .append("if ((new Date().getTime() - lastCall) > (2 * 60 * 1000)) {\n")
+                .append("   var lastCall = top.document['eFapsCallHomeTime'];\n")
+                .append("   if (lastCall) { \n")
+                .append("       top.document['eFapsCallHomeCount'] += 1;\n")
+                .append("       if ((new Date().getTime() - lastCall) > (2 * 60 * 1000) ")
+                        .append("|| top.document['eFapsCallHomeCount'] > ")
+                        .append(Configuration.getAttributeAsInteger(ConfigAttribute.STORE_INMEMORYCACHE) - 2)
+                        .append(") {\n")
                 .append(getCallbackFunctionBody())
-                .append("}\n")
-                .append("} else {\n")
-                .append("top.document['eFapsCallHomeTime'] = new Date().getTime();\n")
-                .append("}\n")
+                .append("       }\n")
+                .append("   } else {\n")
+                .append("       top.document['eFapsCallHomeTime'] = new Date().getTime();\n")
+                .append("       top.document['eFapsCallHomeCount'] = 1;\n")
+                .append("   }\n")
                 .append("}\n");
             return js.toString();
         }
@@ -469,6 +470,7 @@ public class MainPage
         protected void respond(final AjaxRequestTarget _target)
         {
             _target.appendJavaScript("top.document['eFapsCallHomeTime'] = new Date().getTime();");
+            _target.appendJavaScript("top.document['eFapsCallHomeCount'] = 1;");
             // touch the page to ensure that the pagemanager stores it to be accessible
             getSession().getPageManager().touchPage(getPage());
         }
