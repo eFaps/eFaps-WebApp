@@ -28,6 +28,7 @@ import java.util.UUID;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.db.Context;
+import org.efaps.ui.wicket.EFapsApplication;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
@@ -47,83 +48,91 @@ public final class Configuration
     private static final Logger LOG = LoggerFactory.getLogger(Configuration.class);
 
     /**
+     * Basic key.
+     */
+    private static String BASEKEY = "org.efaps.webapp.";
+
+    /**
      * Attribute enum.
      */
     public enum ConfigAttribute
     {
         /**  */
-        RECENTCACHESIZE(false, true, WebAppSettings.RECENT_CACHE_SIZE, "5"),
+        RECENTCACHESIZE(false, true, WebAppSettings.RECENT_CACHE_SIZE, "5", Integer.class),
         /**  */
-        RECENT_LINKMAX(false, true, WebAppSettings.RECENT_LINKMAX, "25"),
+        RECENT_LINKMAX(false, true, WebAppSettings.RECENT_LINKMAX, "25", Integer.class),
         /**  */
-        CACHE_DURATION(false, true, WebAppSettings.CACHE_DURATION, "3600"),
+        CACHE_DURATION(false, true, WebAppSettings.CACHE_DURATION, "3600", Integer.class),
         /** StyelSheet for the Classification Tree. (human, windows) */
-        CLASSTREE_CLASS(true, true, WebAppSettings.CLASSTREE_CLASS, "human"),
+        CLASSTREE_CLASS(true, true, WebAppSettings.CLASSTREE_CLASS, "human", String.class),
         /** Expand state for the Tree. */
-        CLASSTREE_EXPAND(false, true, WebAppSettings.CLASSTREE_EXPAND, ""),
+        CLASSTREE_EXPAND(false, true, WebAppSettings.CLASSTREE_EXPAND, "", Properties.class),
         /** Name of the main stylesheet for dojo. (tundra,claro,nihilo,soria) */
-        DOJO_CLASS(true, true, WebAppSettings.DOJO_CLASS, "tundra"),
+        DOJO_CLASS(true, true, WebAppSettings.DOJO_CLASS, "tundra", String.class),
         /** Name of the main stylesheet for dojo modal window. (w_blue,w_silver) */
-        DOJO_MODALCLASS(true, true, WebAppSettings.DOJO_MODALCLASS, "w_silver"),
+        DOJO_MODALCLASS(true, true, WebAppSettings.DOJO_MODALCLASS, "w_silver", String.class),
         /** position of the horizontal splitter. */
-        SPLITTERPOSHORIZONTAL(true, true, WebAppSettings.SPLITTERPOSHORIZONTAL, "200"),
+        SPLITTERPOSHORIZONTAL(true, true, WebAppSettings.SPLITTERPOSHORIZONTAL, "200", String.class),
         /** position of the vertical splitter. */
-        SPLITTERPOSVERTICAL(true, true, WebAppSettings.SPLITTERPOSVERTICAL, "50%"),
+        SPLITTERPOSVERTICAL(true, true, WebAppSettings.SPLITTERPOSVERTICAL, "50%", String.class),
         /** StyelSheet for the Structur Browser Tree. (human, windows) */
-        STRUCTREE_CLASS(true, true, WebAppSettings.STRUCTREE_CLASS, "windows"),
+        STRUCTREE_CLASS(true, true, WebAppSettings.STRUCTREE_CLASS, "windows", String.class),
         /** StyelSheet for the Structur Browser Tree. (human, windows) */
-        STRUCBRWSRTREE_CLASS(true, true, WebAppSettings.STRUCBRWSRTREE_CLASS, "human"),
+        STRUCBRWSRTREE_CLASS(true, true, WebAppSettings.STRUCBRWSRTREE_CLASS, "human", String.class),
         /** */
-        SHOW_OID(false, true, WebAppSettings.SHOW_OID, "false"),
+        SHOW_OID(false, true, WebAppSettings.SHOW_OID, "false", Boolean.class),
         /** */
-        BOARD_ASSIGNEDTASK_MAX(false, true, WebAppSettings.DASHBOARD_ASSIGNEDTASK_MAX, "8"),
+        BOARD_ASSIGNEDTASK_MAX(false, true, WebAppSettings.DASHBOARD_ASSIGNEDTASK_MAX, "8", Integer.class),
         /** */
-        BOARD_OWNEDTASK_MAX(false, true, WebAppSettings.DASHBOARD_OWNEDTASK_MAX, "8"),
+        BOARD_OWNEDTASK_MAX(false, true, WebAppSettings.DASHBOARD_OWNEDTASK_MAX, "8", Integer.class),
         /** */
-        BOARD_ASSIGNEDTASK_AU(false, true, WebAppSettings.DASHBOARD_ASSIGNEDTASK_AU, "true"),
+        BOARD_ASSIGNEDTASK_AU(false, true, WebAppSettings.DASHBOARD_ASSIGNEDTASK_AU, "true", Boolean.class),
         /** */
-        BOARD_OWNEDTASK_AU(false, true, WebAppSettings.DASHBOARD_OWNEDTASK_AU, "true"),
+        BOARD_OWNEDTASK_AU(false, true, WebAppSettings.DASHBOARD_OWNEDTASK_AU, "true", Boolean.class),
         /** */
-        BOARD_ASSIGNED_AUTIME(false, true, WebAppSettings.DASHBOARD_ASSIGNED_AUTIME, "30"),
+        BOARD_ASSIGNED_AUTIME(false, true, WebAppSettings.DASHBOARD_ASSIGNED_AUTIME, "30", Integer.class),
         /** */
-        BOARD_OWNEDTASK_AUTIME(false, true, WebAppSettings.DASHBOARD_OWNEDTASK_AUTIME, "30"),
+        BOARD_OWNEDTASK_AUTIME(false, true, WebAppSettings.DASHBOARD_OWNEDTASK_AUTIME, "30", Integer.class),
         /** */
         BOARD_PROVIDER(false, true, WebAppSettings.DASHBOARD_PROVIDER,
-                        "org.efaps.esjp.common.dashboard.DashboardProvider"),
+                        "org.efaps.esjp.common.dashboard.DashboardProvider", String.class),
         /** MainToolBar. */
-        TOOLBAR(false, true, WebAppSettings.TOOLBAR, "87001cc3-c45c-44de-b8f1-776df507f268"),
+        TOOLBAR(false, true, WebAppSettings.TOOLBAR, "87001cc3-c45c-44de-b8f1-776df507f268", String.class),
         /** Default form for Task to prevent errors. */
-        BPM_DEFAULTTASKFROM(false, true, WebAppSettings.BPM_DEFAULTTASKFROM, "c34e35ad-93ed-4190-887d-5be9a2302edf"),
+        BPM_DEFAULTTASKFROM(false, true, WebAppSettings.BPM_DEFAULTTASKFROM, "c34e35ad-93ed-4190-887d-5be9a2302edf",
+                        String.class),
          /** Websocket activated. */
-        WEBSOCKET_ACTVATE(false, true, WebAppSettings.WEBSOCKET_ACTIVATE, "true"),
+        WEBSOCKET_ACTVATE(false, true, WebAppSettings.WEBSOCKET_ACTIVATE, "true", Boolean.class),
         /** Websocket KeepAlive period. */
-        WEBSOCKET_KASP(false, true, WebAppSettings.WEBSOCKET_KASP, "180"),
+        WEBSOCKET_KASP(false, true, WebAppSettings.WEBSOCKET_KASP, "180", Integer.class),
         /** Websocket KeepAlive Threshold Criteria. */
-        WEBSOCKET_KATH(false, true, WebAppSettings.WEBSOCKET_KATH, "300"),
+        WEBSOCKET_KATH(false, true, WebAppSettings.WEBSOCKET_KATH, "300", Integer.class),
         /** */
-        WEBSOCKET_MESSAGETABLE_MAX(false, true, WebAppSettings.WEBSOCKET_MESSAGETABLE_MAX, "20"),
+        WEBSOCKET_MESSAGETABLE_MAX(false, true, WebAppSettings.WEBSOCKET_MESSAGETABLE_MAX, "20", Integer.class),
         /** */
-        WEBSOCKET_SESSIONTABLE_MAX(false, true, WebAppSettings.WEBSOCKET_SESSIONTABLE_MAX, "20"),
+        WEBSOCKET_SESSIONTABLE_MAX(false, true, WebAppSettings.WEBSOCKET_SESSIONTABLE_MAX, "20", Integer.class),
         /** Websocket activated. */
-        CONMAN_ACTVATE(false, true, WebAppSettings.CONMAN_ACTIVATE, "true"),
+        CONMAN_ACTVATE(false, true, WebAppSettings.CONMAN_ACTIVATE, "true", Boolean.class),
         /** AutoComplete maximum result. */
-        AUTOC_MAXRESULT(false, true, WebAppSettings.AUTOC_MAXRESULT, "500"),
+        AUTOC_MAXRESULT(false, true, WebAppSettings.AUTOC_MAXRESULT, "500", Integer.class),
         /** AutoComplete maximum choice length. */
-        AUTOC_MAXCHOICE(false, true, WebAppSettings.AUTOC_MAXCHOICE, "-1"),
+        AUTOC_MAXCHOICE(false, true, WebAppSettings.AUTOC_MAXCHOICE, "-1", Integer.class),
         /** AutoComplete maximum value length. */
-        AUTOC_MAXVALUE(false, true, WebAppSettings.AUTOC_MAXVALUE, "-1"),
+        AUTOC_MAXVALUE(false, true, WebAppSettings.AUTOC_MAXVALUE, "-1", Integer.class),
         /** AutoComplete minimum input length. */
-        AUTOC_MININPUT(false, true, WebAppSettings.AUTOC_MININPUT, "1"),
+        AUTOC_MININPUT(false, true, WebAppSettings.AUTOC_MININPUT, "1", Integer.class),
         /** AutoComplete search delay. */
-        AUTOC_SEARCHDELAY(false, true, WebAppSettings.AUTOC_SEARCHDELAY, "500"),
+        AUTOC_SEARCHDELAY(false, true, WebAppSettings.AUTOC_SEARCHDELAY, "500", Integer.class),
         /** AutoComplete search delay. */
-        AUTOC_PARAMNAME(false, true, WebAppSettings.AUTOC_PARAMNAME, "p"),
+        AUTOC_PARAMNAME(false, true, WebAppSettings.AUTOC_PARAMNAME, "p", String.class),
         /** Menus for the Users. */
-        USER_MENU(true, false, WebAppSettings.USER_MENU, ""),
+        USER_MENU(true, false, WebAppSettings.USER_MENU, "", String.class),
         /** UUID of the Menu/Command the UserMenu will be connected to. */
-        USER_MENUMENU(false, true, WebAppSettings.USER_MENUMENU, "f84814f4-1bc5-481e-b37c-6ae782b25a00"),
+        USER_MENUMENU(false, true, WebAppSettings.USER_MENUMENU, "f84814f4-1bc5-481e-b37c-6ae782b25a00", String.class),
         /** Activate the UserMenu Mechanism. */
-        USER_MENUACT(false, true, WebAppSettings.USER_MENUACT, "true");
+        USER_MENUACT(false, true, WebAppSettings.USER_MENUACT, "true", Boolean.class),
+        /** The store inmemorycache. Servlet only!!*/
+        STORE_INMEMORYCACHE(false, false, BASEKEY + "store.InMemoryCacheSize", "10", Integer.class);
 
         /**
          * Stores the key for this Attribute..
@@ -145,21 +154,29 @@ public final class Configuration
          */
         private final boolean user;
 
+        /** The type class. */
+        private final Class<?> attrClass;
+
         /**
+         * Instantiates a new config attribute.
+         *
          * @param _user Can be read from UserAttributes
          * @param _system Can be read form the SystemConfiguration
          * @param _key the key for this Attribute
          * @param _devaultValue The default Value
+         * @param _class the class
          */
-        private ConfigAttribute(final boolean _user,
-                                final boolean _system,
-                                final String _key,
-                                final String _devaultValue)
+        ConfigAttribute(final boolean _user,
+                        final boolean _system,
+                        final String _key,
+                        final String _devaultValue,
+                        final Class<?> _class)
         {
             this.system = _system;
             this.user = _user;
             this.key = _key;
             this.defaultvalue = _devaultValue;
+            this.attrClass = _class;
         }
 
         /**
@@ -170,6 +187,46 @@ public final class Configuration
         public String getKey()
         {
             return this.key;
+        }
+
+        /**
+         * Gets the default Value.
+         *
+         * @return the default Value
+         */
+        public String getDefaultvalue()
+        {
+            return this.defaultvalue;
+        }
+
+        /**
+         * Checks if is can be read form the SystemConfiguration.
+         *
+         * @return the can be read form the SystemConfiguration
+         */
+        public boolean isSystem()
+        {
+            return this.system;
+        }
+
+        /**
+         * Checks if is can be read from UserAttributes.
+         *
+         * @return the can be read from UserAttributes
+         */
+        public boolean isUser()
+        {
+            return this.user;
+        }
+
+        /**
+         * Gets the type class.
+         *
+         * @return the type class
+         */
+        public Class<?> getAttrClass()
+        {
+            return this.attrClass;
         }
 
         @Override
@@ -190,7 +247,7 @@ public final class Configuration
      * @return the WebApp Sytemconfiguration.
      * @throws CacheReloadException on error
      */
-    protected static SystemConfiguration getSysConfig()
+    public static SystemConfiguration getSysConfig()
         throws CacheReloadException
     {
         // WebApp-Configuration
@@ -241,6 +298,11 @@ public final class Configuration
             if (ret == null && _attribute.system) {
                 ret = Configuration.getFromConfig(_attribute);
             }
+            // if still null check for
+            if (ret == null) {
+                ret = EFapsApplication.get().getInitParameter(_attribute.getKey());
+            }
+
             if (ret == null) {
                 ret = _attribute.defaultvalue;
             }
