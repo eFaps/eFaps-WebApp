@@ -68,7 +68,7 @@ public class AjaxFilterLink
                                                                     (UITableHeader) getDefaultModelObject());
         modal.setPageCreator(pagecreator);
         modal.setInitialWidth(300);
-        modal.setTitle(DBProperties.getProperty("FilterPage.Title") + getModelObject().getLabel());
+        modal.setTitle(DBProperties.getProperty("FilterPage.Title") + " " + getModelObject().getLabel());
         modal.show(_target);
     }
 
