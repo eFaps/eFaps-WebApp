@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.models.field;
@@ -72,7 +69,6 @@ import org.efaps.util.cache.CacheReloadException;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public abstract class AbstractUIField
     extends AbstractInstanceObject
@@ -211,7 +207,7 @@ public abstract class AbstractUIField
                 }
                 int i = 1;
                 String keyTmp = "ExtraParameter" + String.format("%02d", i);
-                while(event.getProperty(keyTmp) != null) {
+                while (event.getProperty(keyTmp) != null) {
                     this.autoCompleteSetting.getExtraParameters().add(event.getProperty(keyTmp));
                     i++;
                     keyTmp = "ExtraParameter" + String.format("%02d", i);
@@ -298,9 +294,11 @@ public abstract class AbstractUIField
         String key;
         if (getFieldConfiguration() != null) {
             if (getFieldConfiguration().getField().getLabel() == null) {
+
                 if (getValue() != null && getValue().getAttribute() != null) {
-                    if (getInstanceKey() != null) {
-                        key = getInstance().getType().getName() + "/" + getValue().getAttribute().getName() + ".Label";
+                    if (getInstanceKey() != null
+                                && getInstance().getType().getAttribute(getValue().getAttribute().getName()) != null) {
+                        key = getInstance().getType().getAttribute(getValue().getAttribute().getName()).getLabelKey();
                     } else {
                         key = getValue().getAttribute().getLabelKey();
                     }
@@ -397,6 +395,15 @@ public abstract class AbstractUIField
         return ret;
     }
 
+    /**
+     * Execute events.
+     *
+     * @param _eventType the event type
+     * @param _others the others
+     * @param _uiID2Oid the ui i d2 oid
+     * @return the list< return>
+     * @throws EFapsException on error
+     */
     public List<Return> executeEvents(final EventType _eventType,
                                       final Object _others,
                                       final Map<String, String> _uiID2Oid)
@@ -450,11 +457,13 @@ public abstract class AbstractUIField
     }
 
     /**
+     * Hide label.
      *
+     * @return true, if successful
      */
     public boolean hideLabel()
     {
-       return hasPicker() && getPicker().isButton() || getFieldConfiguration().isHideLabel();
+        return hasPicker() && getPicker().isButton() || getFieldConfiguration().isHideLabel();
     }
 
     @Override
@@ -463,10 +472,10 @@ public abstract class AbstractUIField
         return getValue().toString();
     }
 
-     @Override
+    @Override
     public IHidden setAdded(final boolean _added)
     {
-         this.added = _added;
+        this.added = _added;
         return this;
     }
 
@@ -527,13 +536,14 @@ public abstract class AbstractUIField
     @Override
     public int compareTo(final ISortable _arg0)
     {
-         return ObjectUtils.compare(getCompareValue(), _arg0.getCompareValue());
+        return ObjectUtils.compare(getCompareValue(), _arg0.getCompareValue());
     }
 
     /**
      * Getter method for the instance variable {@link #factory}.
      *
      * @return value of instance variable {@link #factory}
+     * @throws EFapsException on error
      */
     public IComponentFactory getFactory()
         throws EFapsException
@@ -580,7 +590,9 @@ public abstract class AbstractUIField
     }
 
     /**
-     * @return
+     * Checks if is auto complete.
+     *
+     * @return true, if is auto complete
      */
     public boolean isAutoComplete()
     {

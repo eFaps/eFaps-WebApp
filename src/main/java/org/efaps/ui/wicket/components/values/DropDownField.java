@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.components.values;
@@ -51,7 +48,6 @@ import org.slf4j.LoggerFactory;
  * Render a DropDown Field.
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class DropDownField
     extends DropDownChoice<DropDownOption>
@@ -79,10 +75,11 @@ public class DropDownField
     private boolean converted = false;
 
     /**
+     * Instantiates a new drop down field.
+     *
      * @param _wicketId     wicket id for this component
      * @param _model        Model for this component
      * @param _choices    Choices for the dropdowns
-     * @param _fieldConfiguration    Configurationobject for this component.
      */
     public DropDownField(final String _wicketId,
                          final Model<AbstractUIField> _model,
@@ -132,7 +129,7 @@ public class DropDownField
                             this.cellvalue.getFieldConfiguration().getField().getEvents(EventType.UI_FIELD_UPDATE);
             String eventName = "change";
             for (final EventDefinition event : events) {
-               eventName = event.getProperty("Event") == null ? "change" : event.getProperty("Event");
+                eventName = event.getProperty("Event") == null ? "change" : event.getProperty("Event");
             }
             add(new AjaxFieldUpdateBehavior(eventName, Model.of(this.cellvalue)));
         }
@@ -232,6 +229,33 @@ public class DropDownField
         return  Model.of(ret);
     }
 
+    @Override
+    public boolean getDefaultFormProcessing()
+    {
+        return true;
+    }
+
+    @Override
+    public void onSubmit()
+    {
+    }
+
+    @Override
+    public void onAfterSubmit()
+    {
+    }
+
+    @Override
+    public void onError()
+    {
+    }
+
+    @Override
+    public Component setDefaultFormProcessing(final boolean _defaultFormProcessing)
+    {
+        return this;
+    }
+
     /**
      * The renderer for this dropdown.
      */
@@ -262,43 +286,14 @@ public class DropDownField
         {
             DropDownOption ret = null;
             final List<?> choices = _choices.getObject();
-            for (int index = 0; index < choices.size(); index++)
-            {
+            for (int index = 0; index < choices.size(); index++) {
                 final DropDownOption choice = (DropDownOption) choices.get(index);
-                if (getIdValue(choice, index).equals(_id))
-                {
-                    ret =  choice;
+                if (getIdValue(choice, index).equals(_id)) {
+                    ret = choice;
                     break;
                 }
             }
             return ret;
         }
-    }
-
-    @Override
-    public boolean getDefaultFormProcessing()
-    {
-        return true;
-    }
-
-    @Override
-    public void onSubmit()
-    {
-    }
-
-    @Override
-    public void onAfterSubmit()
-    {
-    }
-
-    @Override
-    public void onError()
-    {
-    }
-
-    @Override
-    public Component setDefaultFormProcessing(final boolean _defaultFormProcessing)
-    {
-        return this;
     }
 }

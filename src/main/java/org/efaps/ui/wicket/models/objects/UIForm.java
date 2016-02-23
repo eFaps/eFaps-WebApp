@@ -228,6 +228,7 @@ public class UIForm
      * This is a possibility to replace the current Instance for the form with
      * another one using an table evaluate esjp.
      *
+     * @return true, if successful
      * @throws EFapsException on error
      */
     protected boolean evaluate4Instance()
@@ -482,7 +483,7 @@ public class UIForm
                             || attr != null && attr.getAttributeType().getUI() != null
                             && (attr.getAttributeType().getUI() instanceof TypeUI
                             || attr.getAttributeType().getUI() instanceof UserUI)) {
-                addHidden(evaluateUIProvider(_row, _query, _field, fieldInstance, label, attr));
+                addHidden(evaluateUIProvider(_row, _query, _field, fieldInstance, attr));
             } else {
 
                 final FieldValue fieldvalue = new FieldValue(_field, attr, value, fieldInstance, getInstance(), null,
@@ -516,7 +517,7 @@ public class UIForm
                                   && (_field.getProperty(UIType.class.getSimpleName()) != null
                                     || attr.getAttributeType().getUI() instanceof TypeUI
                                     || attr.getAttributeType().getUI() instanceof UserUI)) {
-                    _row.add(evaluateUIProvider(_row, _query, _field, fieldInstance, label, attr));
+                    _row.add(evaluateUIProvider(_row, _query, _field, fieldInstance, attr));
                 } else {
                     evaluateField(_row, _query, _field, fieldInstance, label, attr);
                 }
@@ -532,15 +533,14 @@ public class UIForm
      * @param _print query containing the values
      * @param _field field the cell belongs to
      * @param _fieldInstance instance of the Field
-     * @param _label label for the Field
      * @param _attr attribute for the Field
+     * @return the UI field
      * @throws EFapsException on error
      */
     private UIField evaluateUIProvider(final FormRow _row,
                                        final PrintQuery _print,
                                        final Field _field,
                                        final Instance _fieldInstance,
-                                       final String _label,
                                        final Attribute _attr)
         throws EFapsException
     {
@@ -836,7 +836,8 @@ public class UIForm
                     if (field.isHiddenDisplay(getMode())) {
                         if (attr != null && attr.getAttributeType().getUI() == null
                                         || field.getClassUI() == null && field.getUIProvider() != null
-                                        || attr == null && field.getClassUI() == null && field.getUIProvider() == null) {
+                                        || attr == null && field.getClassUI() == null
+                                            && field.getUIProvider() == null) {
                             final UIField uiField = new UIField(null, this, UIValue.get(field, attr, null)
                                             .setClassObject(this)
                                             .setInstance(getInstance()).setCallInstance(getInstance()));
@@ -875,7 +876,7 @@ public class UIForm
                                 || attr == null && field.getClassUI() == null && field.getUIProvider() == null) {
 
                                 cell = new UIField(null, this, UIValue.get(field, attr,
-                                                super.isPartOfWizardCall() ? getValue4Wizard(field.getName()) : null )
+                                                super.isPartOfWizardCall() ? getValue4Wizard(field.getName()) : null)
                                                 .setClassObject(this)
                                                 .setInstance(getInstance()).setCallInstance(getInstance()));
                             }  else {

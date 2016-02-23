@@ -131,7 +131,7 @@ public class FieldConfiguration
             if (getField().getLabel() == null) {
                 ret = "";
             } else {
-               ret =  DBProperties.getProperty(getField().getLabel());
+                ret =  DBProperties.getProperty(getField().getLabel());
             }
         } else {
             ret = this.label;
@@ -160,5 +160,15 @@ public class FieldConfiguration
             ret = UIType.DEFAULT;
         }
         return ret;
+    }
+
+    /**
+     * Sets the label for the related field.
+     *
+     * @param _label the new label for the related field
+     */
+    public void setLabel(final String _label)
+    {
+        this.label = _label;
     }
 }

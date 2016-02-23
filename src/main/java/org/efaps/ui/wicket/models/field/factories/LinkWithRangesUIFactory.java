@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,29 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.models.field.factories;
 
-import java.util.Map;
+import java.util.List;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.datamodel.ui.LinkWithRangesUI;
+import org.efaps.api.ui.IOption;
 import org.efaps.api.ui.UIType;
 import org.efaps.ui.wicket.components.values.DropDownField;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
+import org.efaps.ui.wicket.models.objects.DropDownOption;
 import org.efaps.util.EFapsException;
 
 /**
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id: LinkWithRangesUIFactory.java 14033 2014-09-15 21:44:25Z
- *          jan@moxter.net $
  */
 // CHECKSTYLE:OFF
 public final class LinkWithRangesUIFactory
@@ -58,7 +55,6 @@ public final class LinkWithRangesUIFactory
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @Override
     public Component getEditable(final String _wicketId,
                                  final AbstractUIField _abstractUIField)
@@ -66,9 +62,8 @@ public final class LinkWithRangesUIFactory
     {
         Component ret = null;
         if (applies(_abstractUIField)) {
-            ret = new DropDownField(_wicketId, Model.of(_abstractUIField),
-                            Model.ofMap((Map<Object, Object>) _abstractUIField.getValue().getEditValue(
-                                            _abstractUIField.getParent().getMode())));
+            ret = new DropDownField(_wicketId, Model.of(_abstractUIField), DropDownOption.getChoices(_abstractUIField
+                            .getValue().getEditValue(_abstractUIField.getParent().getMode())));
         }
         return ret;
     }
@@ -105,9 +100,20 @@ public final class LinkWithRangesUIFactory
     {
         String strValue = "";
         if (_abstractUIField.getValue().getDbValue() != null) {
-            final Map<Object, Object> map = (Map<Object, Object>) _abstractUIField.getValue()
+            final List<IOption> values = (List<IOption>) _abstractUIField.getValue()
                             .getReadOnlyValue(_abstractUIField.getParent().getMode());
-            strValue = String.valueOf(map.get(_abstractUIField.getValue().getDbValue()));
+            if (values != null && !values.isEmpty()) {
+                if (values.size() == 1) {
+                    strValue = values.get(0).getLabel();
+                } else {
+                    for (final IOption option : values) {
+                        if (option.isSelected()) {
+                            strValue = option.getLabel();
+                            break;
+                        }
+                    }
+                }
+            }
         }
         return strValue;
     }
