@@ -297,17 +297,23 @@ public class EFapsApplication
      * Launch a job.
      *
      * @param _job the _job
+     * @param _jobName the _job name
      * @return the execution bridge
      * @throws EFapsException on error
      */
-    public ExecutionBridge launch(final IJob _job)
+    public ExecutionBridge launch(final IJob _job,
+                                  final String _jobName)
         throws EFapsException
     {
         // we are on WEB thread so services should be normally injected.
         final ExecutionBridge bridge = new ExecutionBridge();
         // register bridge on session
-        bridge.setJobName("EFapsJob-" + EFapsSession.get().countJobs() + 1 + "-"
+        if (_jobName == null) {
+            bridge.setJobName("EFapsJob-" + EFapsSession.get().countJobs() + 1 + "-"
                         + RandomStringUtils.randomAlphanumeric(4));
+        } else {
+            bridge.setJobName(_jobName);
+        }
         bridge.setJobContext(new JobContext().setUserName(Context.getThreadContext().getPerson().getName()).setLocale(
                         Context.getThreadContext().getLocale()).setCompanyUUID(Context.getThreadContext().getCompany()
                                         .getUUID()));

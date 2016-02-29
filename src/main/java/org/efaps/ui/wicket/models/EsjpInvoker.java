@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.models;
@@ -33,7 +30,6 @@ import org.slf4j.LoggerFactory;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class EsjpInvoker
     implements Serializable
@@ -67,7 +63,9 @@ public class EsjpInvoker
     private String key;
 
     /**
-     * @param _esjp
+     * Instantiates a new esjp invoker.
+     *
+     * @param _esjp the _esjp
      */
     public EsjpInvoker(final String _esjp)
     {
@@ -87,6 +85,12 @@ public class EsjpInvoker
         this.key = _key;
     }
 
+    /**
+     * Gets the html snipplet.
+     *
+     * @return the html snipplet
+     * @throws EFapsBaseException the e faps base exception
+     */
     public CharSequence getHtmlSnipplet()
         throws EFapsBaseException
     {
@@ -124,7 +128,9 @@ public class EsjpInvoker
     }
 
     /**
-     * @return
+     * Checks if is visible.
+     *
+     * @return true, if is visible
      */
     public boolean isVisible()
     {
@@ -136,5 +142,25 @@ public class EsjpInvoker
             EsjpInvoker.LOG.error("EFapsException", e);
         }
         return ret;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #snipplet}.
+     *
+     * @return value of instance variable {@link #snipplet}
+     */
+    public IEsjpSnipplet getSnipplet()
+    {
+        return this.snipplet;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #provider}.
+     *
+     * @return value of instance variable {@link #provider}
+     */
+    public IEsjpSnippletProvider getProvider()
+    {
+        return this.provider;
     }
 }

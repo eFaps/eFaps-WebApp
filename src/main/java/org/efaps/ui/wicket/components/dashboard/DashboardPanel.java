@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2015 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,9 +33,8 @@ import org.apache.wicket.util.time.Duration;
 import org.efaps.api.background.IExecutionBridge;
 import org.efaps.ui.wicket.EFapsApplication;
 import org.efaps.ui.wicket.EFapsSession;
-import org.efaps.ui.wicket.background.ExecutionBridge;
 import org.efaps.ui.wicket.models.EsjpInvoker;
-import org.efaps.util.EFapsException;
+import org.efaps.util.EFapsBaseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,11 +60,12 @@ public class DashboardPanel
      */
     private static final Logger LOG = LoggerFactory.getLogger(DashboardPanel.class);
 
-
-    // state,
-    // 0:add loading component
-    // 1:loading component added, waiting for ajax replace
-    // 2:ajax replacement completed
+    /**
+     * The state.
+     * 0:add loading component
+     * 1:loading component added, waiting for ajax replace
+     * 2:ajax replacement completed
+     */
     private byte state = 0;
 
     /** The job name. */
@@ -154,10 +154,14 @@ public class DashboardPanel
             add(getLoadingComponent(LAZY_LOAD_COMPONENT_ID));
             setState((byte) 1);
             try {
-                final ExecutionBridge bridge = EFapsApplication.get().launch(new DashboardJob(
-                                (EsjpInvoker) getDefaultModelObject()));
+                this.jobName = ((EsjpInvoker) getDefaultModelObject()).getSnipplet().getIdentifier();
+                IExecutionBridge bridge = EFapsSession.get().getBridge4Job(this.jobName, false);
+                if (bridge == null) {
+                    bridge = EFapsApplication.get().launch(new DashboardJob(
+                                    (EsjpInvoker) getDefaultModelObject()), this.jobName);
+                }
                 this.jobName = bridge.getJobName();
-            } catch (final EFapsException e) {
+            } catch (final EFapsBaseException e) {
                 LOG.error("Catched error on startng background job.", e);
             }
         }
@@ -165,17 +169,20 @@ public class DashboardPanel
     }
 
     /**
+     * Sets the state.
      *
-     * @param state
+     * @param _state the new state
      */
-    private void setState(final byte state)
+    private void setState(final byte _state)
     {
-        this.state = state;
+        this.state = _state;
         getPage().dirty();
     }
 
     /**
-     * @param markupId The components markupid.
+     * Gets the loading component.
+     *
+     * @param _markupId the markup id
      * @return The component to show while the real component is being created.
      */
     public Component getLoadingComponent(final String _markupId)
