@@ -456,7 +456,7 @@ public class UITable
                                     || attr.getAttributeType().getUIProvider() instanceof BitEnumUI
                                     || attr.getAttributeType().getUIProvider() instanceof LinkWithRangesUI)) {
                         final UIField uiField = new UIField(instance.getKey(), this, UIValue.get(field, attr, value)
-                                        .setInstance(instance).setClassObject(this));
+                                        .setInstance(instance).setClassObject(this).setCallInstance(getInstance()));
                         uiField.setCompareValue(sortValue);
                         row.add(uiField);
                     } else {

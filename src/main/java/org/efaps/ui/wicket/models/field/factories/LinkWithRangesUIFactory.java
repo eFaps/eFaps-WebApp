@@ -100,19 +100,24 @@ public final class LinkWithRangesUIFactory
     {
         String strValue = "";
         if (_abstractUIField.getValue().getDbValue() != null) {
-            final List<IOption> values = (List<IOption>) _abstractUIField.getValue()
-                            .getReadOnlyValue(_abstractUIField.getParent().getMode());
-            if (values != null && !values.isEmpty()) {
-                if (values.size() == 1) {
-                    strValue = values.get(0).getLabel();
-                } else {
-                    for (final IOption option : values) {
-                        if (option.isSelected()) {
-                            strValue = option.getLabel();
-                            break;
+            final Object valueObj = _abstractUIField.getValue().getReadOnlyValue(_abstractUIField.getParent()
+                            .getMode());
+            if (valueObj instanceof List) {
+                final List<IOption> values = (List<IOption>) valueObj;
+                if (values != null && !values.isEmpty()) {
+                    if (values.size() == 1) {
+                        strValue = values.get(0).getLabel();
+                    } else {
+                        for (final IOption option : values) {
+                            if (option.isSelected()) {
+                                strValue = option.getLabel();
+                                break;
+                            }
                         }
                     }
                 }
+            } else if (valueObj != null) {
+                strValue = valueObj.toString();
             }
         }
         return strValue;
