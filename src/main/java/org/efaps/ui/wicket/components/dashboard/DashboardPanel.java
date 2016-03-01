@@ -16,6 +16,8 @@
  */
 package org.efaps.ui.wicket.components.dashboard;
 
+import java.util.Iterator;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
@@ -25,6 +27,7 @@ import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.IRequestHandler;
 import org.apache.wicket.request.cycle.RequestCycle;
@@ -33,6 +36,8 @@ import org.apache.wicket.util.time.Duration;
 import org.efaps.api.background.IExecutionBridge;
 import org.efaps.ui.wicket.EFapsApplication;
 import org.efaps.ui.wicket.EFapsSession;
+import org.efaps.ui.wicket.components.embeddedlink.LinkElementLink;
+import org.efaps.ui.wicket.models.EmbeddedLink;
 import org.efaps.ui.wicket.models.EsjpInvoker;
 import org.efaps.util.EFapsBaseException;
 import org.slf4j.Logger;
@@ -83,6 +88,7 @@ public class DashboardPanel
         super(_wicketId, _model);
 
         setOutputMarkupId(true);
+        add(new WebMarkupContainer("hiddenRepeater").setOutputMarkupId(true).setVisible(false));
 
         add(new AbstractAjaxTimerBehavior(Duration.milliseconds(500))
         {
@@ -107,6 +113,16 @@ public class DashboardPanel
                         }
                     }
                     setUpdateInterval(Duration.seconds(3));
+                    final RepeatingView hiddenRepeater = new RepeatingView("hiddenRepeater");
+                    DashboardPanel.this.replace(hiddenRepeater);
+                    final Iterator<EmbeddedLink> linksIter = EFapsSession.get().getEmbededLinks().iterator();
+                    while (linksIter.hasNext()) {
+                        final EmbeddedLink link = linksIter.next();
+                        if (DashboardPanel.this.jobName.equals(link.getIdentifier())) {
+                            hiddenRepeater.add(new LinkElementLink(hiddenRepeater.newChildId(), link));
+                            linksIter.remove();
+                        }
+                    }
                 }
                 _target.add(DashboardPanel.this);
             }

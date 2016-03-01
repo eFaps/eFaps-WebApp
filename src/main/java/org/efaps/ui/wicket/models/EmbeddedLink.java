@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.models;
@@ -29,7 +26,6 @@ import org.apache.commons.lang3.RandomStringUtils;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class EmbeddedLink
     implements Serializable
@@ -50,15 +46,30 @@ public class EmbeddedLink
      */
     enum TAG
     {
+
+        /** The dashboard. */
+        DASHBOARD("<span id=\"%s\" class=\"eFapsLink\"></span>"),
+        /** The jasper. */
         JASPER("<span id=\"%s\" class=\"eFapsLink\"></span>");
 
+        /** The html. */
         private String html;
 
+        /**
+         * Instantiates a new tag.
+         *
+         * @param _html the html
+         */
         TAG(final String _html)
         {
             this.html = _html;
         }
 
+        /**
+         * Gets the html.
+         *
+         * @return the html
+         */
         public String getHtml()
         {
             return this.html;
@@ -69,6 +80,9 @@ public class EmbeddedLink
      * The instance key for the link.
      */
     private String instanceKey;
+
+    /** The identifier. */
+    private String identifier;
 
     /**
      * The id of this embedded link.
@@ -144,6 +158,26 @@ public class EmbeddedLink
     }
 
     /**
+     * Gets the identifier.
+     *
+     * @return the identifier
+     */
+    public String getIdentifier()
+    {
+        return this.identifier;
+    }
+
+    /**
+     * Sets the identifier.
+     *
+     * @param _identifier the new identifier
+     */
+    public void setIdentifier(final String _identifier)
+    {
+        this.identifier = _identifier;
+    }
+
+    /**
      * @param _instanceKey instance key the link is wanted for
      * @return new Embeded Link
      */
@@ -151,6 +185,22 @@ public class EmbeddedLink
     {
         final EmbeddedLink ret = new EmbeddedLink(_instanceKey);
         ret.setTagHtml(TAG.JASPER.getHtml());
+        return ret;
+    }
+
+    /**
+     * Gets the dashboard link.
+     *
+     * @param _instanceKey instance key the link is wanted for
+     * @param _identifier the identifier
+     * @return new Embeded Link
+     */
+    public static EmbeddedLink getDashboardLink(final String _instanceKey,
+                                                final String _identifier)
+    {
+        final EmbeddedLink ret = new EmbeddedLink(_instanceKey);
+        ret.setTagHtml(TAG.DASHBOARD.getHtml());
+        ret.setIdentifier(_identifier);
         return ret;
     }
 }
