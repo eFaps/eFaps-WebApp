@@ -30,6 +30,7 @@ import org.apache.wicket.model.Model;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.api.ui.IDashboard;
 import org.efaps.api.ui.IDashboardProvider;
+import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.behaviors.KeepAliveBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.AbstractDojoBehavior;
 import org.efaps.ui.wicket.components.dashboard.DachboardContainerPanel;
@@ -117,7 +118,13 @@ public class DashboardPage
                             }
                         });
                     }
-                    add(new AjaxIndicatingTabbedPanel("tabs", tabs));
+                    final Integer selected = (Integer) EFapsSession.get()
+                                    .getAttribute(DashboardPage.class.getName() + ".SelectedTab");
+                    final AjaxIndicatingTabbedPanel tabbedPanel = new AjaxIndicatingTabbedPanel("tabs", tabs);
+                    if (selected != null && selected > -1 && selected < dashboards.size() ) {
+                        tabbedPanel.setSelectedTab(selected);
+                    }
+                    add(tabbedPanel);
                 }
             } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
                 LOG.error("Could not find/instantiate Provider Class", e);

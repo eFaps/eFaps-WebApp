@@ -27,6 +27,8 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.tabs.AjaxTabbedPanel;
 import org.apache.wicket.extensions.markup.html.tabs.ITab;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.efaps.ui.wicket.EFapsSession;
+import org.efaps.ui.wicket.pages.dashboard.DashboardPage;
 
 
 /**
@@ -67,6 +69,7 @@ public class AjaxIndicatingTabbedPanel
             public void onClick(final AjaxRequestTarget _target)
             {
                 setSelectedTab(_index);
+                EFapsSession.get().setAttribute(DashboardPage.class.getName() + ".SelectedTab", _index);
                 if (_target != null) {
                     _target.add(AjaxIndicatingTabbedPanel.this);
                 }
