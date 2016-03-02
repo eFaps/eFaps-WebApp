@@ -573,28 +573,38 @@ public class UITable
                 if (field.getAttribute() != null && type != null) {
                     attr = type.getAttribute(field.getAttribute());
                 }
-                final FieldValue fieldvalue = new FieldValue(field, attr, null, null, getInstance(), null, this);
-                String htmlValue;
-                String htmlTitle = null;
-                boolean hidden = false;
-                if ((isCreateMode() || isEditMode()) && field.isEditableDisplay(getMode())) {
-                    htmlValue = fieldvalue.getEditHtml(getMode());
-                    htmlTitle = fieldvalue.getStringValue(getMode());
-                } else if (field.isHiddenDisplay(getMode())) {
-                    htmlValue = fieldvalue.getHiddenHtml(getMode());
-                    hidden = true;
+                if (field.getClassUI() == null && field.getUIProvider() != null
+                                || attr != null && attr.getAttributeType().getUIProvider() != null
+                                && (attr.getAttributeType().getUIProvider() instanceof EnumUI
+                                || attr.getAttributeType().getUIProvider() instanceof BitEnumUI
+                                || attr.getAttributeType().getUIProvider() instanceof LinkWithRangesUI)) {
+                    final UIField uiField = new UIField(null, this, UIValue.get(field, attr, null)
+                                    .setInstance(getInstance()).setClassObject(this).setCallInstance(getInstance()));
+                    row.add(uiField);
                 } else {
-                    htmlValue = fieldvalue.getReadOnlyHtml(getMode());
-                    htmlTitle = fieldvalue.getStringValue(getMode());
-                }
-                if (htmlValue == null) {
-                    htmlValue = "";
-                }
-                if (hidden) {
-                    row.addHidden(new UIHiddenCell(this, fieldvalue, null, htmlValue));
-                } else {
-                    final UITableCell cell = new UITableCell(this, fieldvalue, null, htmlValue, htmlTitle, null);
-                    row.add(cell);
+                    final FieldValue fieldvalue = new FieldValue(field, attr, null, null, getInstance(), null, this);
+                    String htmlValue;
+                    String htmlTitle = null;
+                    boolean hidden = false;
+                    if ((isCreateMode() || isEditMode()) && field.isEditableDisplay(getMode())) {
+                        htmlValue = fieldvalue.getEditHtml(getMode());
+                        htmlTitle = fieldvalue.getStringValue(getMode());
+                    } else if (field.isHiddenDisplay(getMode())) {
+                        htmlValue = fieldvalue.getHiddenHtml(getMode());
+                        hidden = true;
+                    } else {
+                        htmlValue = fieldvalue.getReadOnlyHtml(getMode());
+                        htmlTitle = fieldvalue.getStringValue(getMode());
+                    }
+                    if (htmlValue == null) {
+                        htmlValue = "";
+                    }
+                    if (hidden) {
+                        row.addHidden(new UIHiddenCell(this, fieldvalue, null, htmlValue));
+                    } else {
+                        final UITableCell cell = new UITableCell(this, fieldvalue, null, htmlValue, htmlTitle, null);
+                        row.add(cell);
+                    }
                 }
             }
         }
