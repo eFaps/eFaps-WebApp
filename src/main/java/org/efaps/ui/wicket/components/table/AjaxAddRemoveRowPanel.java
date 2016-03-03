@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.components.table;
@@ -48,8 +45,6 @@ import org.efaps.util.cache.CacheReloadException;
  * Panel renders the add, insert and remove buttons for tables on insert.
  *
  * @author The eFaps Team
- * @version $Id: AjaxAddRemoveRowPanel.java 7505 2012-05-11 18:14:52Z
- *          jan@moxter.net $
  */
 public class AjaxAddRemoveRowPanel
     extends Panel
@@ -80,6 +75,11 @@ public class AjaxAddRemoveRowPanel
      * Name of a parameter.
      */
     private static final String FUNCTION_ROWDID = "eFapsRowId";
+
+    /**
+     * Name of a parameter.
+     */
+    private static final String FUNCTION_EXPARA = "eFapsExtraParameter";
 
     /**
      * Name of a parameter.
@@ -216,9 +216,8 @@ public class AjaxAddRemoveRowPanel
                         for (int i = 0; i < count; i++) {
                             // create the new repeater item and add it to the
                             // repeater
-                            RowPanel row;
-
-                            row = new RowPanel(AjaxAddRemoveRowPanel.AjaxAddRow.this.rowsRep.newChildId(),
+                            final RowPanel row = new RowPanel(
+                                            AjaxAddRemoveRowPanel.AjaxAddRow.this.rowsRep.newChildId(),
                                             new UIModel<UIRow>(uirow), tablepanel, false, 0);
                             row.add(AttributeModifier.append("class", "eFapsTableRowOdd"));
                             row.setOutputMarkupId(true);
@@ -289,11 +288,12 @@ public class AjaxAddRemoveRowPanel
                         .append("var ").append(AjaxAddRemoveRowPanel.this.tableName)
                             .append(AjaxAddRemoveRowPanel.VAR_SUFFIX).append(";\n")
                         .append("var ").append(AjaxAddRemoveRowPanel.FUNCTION_PREFIX)
-                            .append(AjaxAddRemoveRowPanel.this.tableName).append("=function(_nrc,_sh,_rId) {\n")
+                            .append(AjaxAddRemoveRowPanel.this.tableName).append("=function(_nrc,_sh,_rId, _ep) {\n")
                         .append("var call=").append(getCallbackFunction(
                                 CallbackParameter.explicit(AjaxAddRemoveRowPanel.FUNCTION_ROWCOUNT),
                                 CallbackParameter.explicit(AjaxAddRemoveRowPanel.FUNCTION_SUCCESSHANDLER),
-                                CallbackParameter.explicit(AjaxAddRemoveRowPanel.FUNCTION_ROWDID)))
+                                CallbackParameter.explicit(AjaxAddRemoveRowPanel.FUNCTION_ROWDID),
+                                CallbackParameter.explicit(AjaxAddRemoveRowPanel.FUNCTION_EXPARA)))
                          .append("if (jQuery.isFunction(_sh)) {\n")
                          .append(AjaxAddRemoveRowPanel.this.tableName).append(AjaxAddRemoveRowPanel.VAR_SUFFIX)
                             .append("=function() {\n")
@@ -312,7 +312,7 @@ public class AjaxAddRemoveRowPanel
                             .append("})\n")
                             .append("}\n")
                          .append("}\n")
-                                .append("call(_nrc,true,_rId);\n")
+                                .append("call(_nrc,true,_rId, _ep);\n")
                         .append("}");
                     return js;
                 }
