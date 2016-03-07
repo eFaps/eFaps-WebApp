@@ -578,7 +578,8 @@ public class UITable
                                 && (attr.getAttributeType().getUIProvider() instanceof EnumUI
                                 || attr.getAttributeType().getUIProvider() instanceof BitEnumUI
                                 || attr.getAttributeType().getUIProvider() instanceof LinkWithRangesUI)
-                                || attr == null && field.getClassUI() == null  && field.getUIProvider() == null) {
+                                || attr == null && field.getClassUI() == null  && field.getUIProvider() == null
+                                    && field.containsProperty("UIType")) {
                     final UIField uiField = new UIField(null, this, UIValue.get(field, attr, null)
                                     .setInstance(getInstance()).setClassObject(this).setCallInstance(getInstance()));
                     row.add(uiField);
