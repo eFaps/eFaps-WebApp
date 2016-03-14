@@ -64,6 +64,8 @@ import org.efaps.ui.wicket.models.objects.AbstractUIModeObject;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO comment!
@@ -78,6 +80,12 @@ public abstract class AbstractUIField
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractUIField.class);
+
 
     /**
      * The factories used to construct the components.
@@ -291,7 +299,7 @@ public abstract class AbstractUIField
     public String getLabel()
         throws EFapsException
     {
-        String key;
+        final String key;
         if (getFieldConfiguration() != null) {
             if (getFieldConfiguration().getField().getLabel() == null) {
 
@@ -332,7 +340,7 @@ public abstract class AbstractUIField
     protected FieldConfiguration getNewFieldConfiguration()
         throws EFapsException
     {
-        FieldConfiguration ret;
+        final FieldConfiguration ret;
         if (getValue() == null) {
             ret = null;
         } else {
@@ -510,13 +518,12 @@ public abstract class AbstractUIField
         Comparable<?> ret = null;
         try {
             if (this.sortValue == null) {
-                ret = this.sortValue;
-            } else {
                 ret = getFactory().getCompareValue(this);
+            } else {
+                ret = this.sortValue;
             }
         } catch (final EFapsException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error("Catched error", e);
         }
         return ret;
     }
@@ -640,7 +647,7 @@ public abstract class AbstractUIField
     public Instance getInstance()
         throws EFapsException
     {
-        Instance ret;
+        final Instance ret;
         // in case of an autocomplete in editmode give the chance to set the instance
         if (isAutoComplete() && getParent().isEditMode() && editable()
                         && getFieldConfiguration().getField().hasEvents(EventType.UI_FIELD_VALUE)) {
