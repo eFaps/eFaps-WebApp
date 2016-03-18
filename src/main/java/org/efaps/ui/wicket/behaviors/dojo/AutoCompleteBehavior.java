@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.behaviors.dojo;
@@ -56,70 +53,33 @@ import org.efaps.ui.wicket.models.cell.AutoCompleteSettings;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.util.EFapsKey;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class AutoCompleteBehavior
     extends AbstractDojoBehavior
     implements IBehaviorListener
 {
-
-    /**
-     * Config types.
-     */
-    public enum Type
-    {
-        /** Render AutomComplete.*/
-        COMPLETE,
-        /** Render AutoSuggestion. */
-        SUGGESTION,
-        /** Render AutoTokenInput. */
-        TOKEN;
-    }
-
-    /**
-     * Interface the component using the behavior must implement.
-     */
-    public interface AutoCompleteField
-    {
-        /**
-         * @param _input the choices
-         * @return new Iteratro
-         */
-        Iterator<Map<String, String>> getChoices(final String _input);
-
-        /**
-         * @return the value for the current item
-         */
-        String getItemValue();
-
-        /**
-         * @return the lable for the current item
-         */
-        String getItemLabel();
-
-        /**
-         * @return list of tokens
-         */
-        List<IOption> getTokens();
-    }
-
     /**
      * Reference to the stylesheet.
      */
     public static final EFapsContentReference CSS = new EFapsContentReference(AutoCompleteBehavior.class,
                     "AutoComplete.css");
 
+    /**
+     * Logger for this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(AutoCompleteBehavior.class);
 
     /**
      *
      */
     private static final long serialVersionUID = 1L;
-
 
     /** the component that this handler is bound to. */
     private Component component;
@@ -133,7 +93,6 @@ public class AutoCompleteBehavior
      * The related fieldUpdate behavior.
      */
     private AjaxFieldUpdateBehavior fieldUpdate;
-
 
     /**
      * @param _settings settings for this behavior
@@ -264,6 +223,9 @@ public class AutoCompleteBehavior
             }
             js.append("],");
         }
+        if (Type.SUGGESTION.equals(this.settings.getAutoType())) {
+            js.append("labelAttr: \"label\",");
+        }
 
         js.append("searchAttr: \"name\"}, \"").append(_component.getMarkupId()).append("\");\n");
 
@@ -350,7 +312,7 @@ public class AutoCompleteBehavior
                 } else {
                     object.put("name", choice);
                 }
-                if (!choice.equals(value)) {
+                if (!choice.equals(value) || Type.SUGGESTION.equals(this.settings.getAutoType())) {
                     if (this.settings.getMaxValueLength() > 0 && value.length() > this.settings.getMaxValueLength()) {
                         object.put("label", StringUtils.left(value, this.settings.getMaxChoiceLength()) + "...");
                     } else {
@@ -369,8 +331,7 @@ public class AutoCompleteBehavior
             }
             _target.appendJSON(jsonArray.toString());
         } catch (final JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error("Catched JSONException", e);
         }
     }
 
@@ -403,6 +364,46 @@ public class AutoCompleteBehavior
     public AutoCompleteSettings getSettings()
     {
         return this.settings;
+    }
+
+    /**
+     * Config types.
+     */
+    public enum Type
+    {
+        /** Render AutomComplete.*/
+        COMPLETE,
+        /** Render AutoSuggestion. */
+        SUGGESTION,
+        /** Render AutoTokenInput. */
+        TOKEN;
+    }
+
+    /**
+     * Interface the component using the behavior must implement.
+     */
+    public interface AutoCompleteField
+    {
+        /**
+         * @param _input the choices
+         * @return new Iteratro
+         */
+        Iterator<Map<String, String>> getChoices(final String _input);
+
+        /**
+         * @return the value for the current item
+         */
+        String getItemValue();
+
+        /**
+         * @return the lable for the current item
+         */
+        String getItemLabel();
+
+        /**
+         * @return list of tokens
+         */
+        List<IOption> getTokens();
     }
 
     /**
