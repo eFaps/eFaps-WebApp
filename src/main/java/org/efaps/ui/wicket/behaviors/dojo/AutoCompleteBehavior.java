@@ -305,18 +305,33 @@ public class AutoCompleteBehavior
                 final String value = map.get(EFapsKey.AUTOCOMPLETE_VALUE.getKey());
 
                 final JSONObject object = new JSONObject();
-                object.put("id", key);
-
-                if (this.settings.getMaxChoiceLength() > 0 && choice.length() > this.settings.getMaxChoiceLength()) {
-                    object.put("name", StringUtils.left(choice, this.settings.getMaxChoiceLength()) + "...");
-                } else {
-                    object.put("name", choice);
-                }
-                if (!choice.equals(value) || Type.SUGGESTION.equals(this.settings.getAutoType())) {
-                    if (this.settings.getMaxValueLength() > 0 && value.length() > this.settings.getMaxValueLength()) {
-                        object.put("label", StringUtils.left(value, this.settings.getMaxChoiceLength()) + "...");
+                if (Type.SUGGESTION.equals(this.settings.getAutoType())) {
+                    if (this.settings.getMaxChoiceLength() > 0 && choice.length() > this.settings
+                                    .getMaxChoiceLength()) {
+                        object.put("label", StringUtils.left(choice, this.settings.getMaxChoiceLength()) + "...");
                     } else {
-                        object.put("label", value);
+                        object.put("label", choice);
+                    }
+                    if (this.settings.getMaxValueLength() > 0 && value.length() > this.settings.getMaxValueLength()) {
+                        object.put("name", StringUtils.left(value, this.settings.getMaxChoiceLength()) + "...");
+                    } else {
+                        object.put("name", value);
+                    }
+                } else {
+                    object.put("id", key);
+                    if (this.settings.getMaxChoiceLength() > 0 && choice.length() > this.settings
+                                    .getMaxChoiceLength()) {
+                        object.put("name", StringUtils.left(choice, this.settings.getMaxChoiceLength()) + "...");
+                    } else {
+                        object.put("name", choice);
+                    }
+                    if (!choice.equals(value)) {
+                        if (this.settings.getMaxValueLength() > 0 && value.length() > this.settings
+                                        .getMaxValueLength()) {
+                            object.put("label", StringUtils.left(value, this.settings.getMaxChoiceLength()) + "...");
+                        } else {
+                            object.put("label", value);
+                        }
                     }
                 }
                 jsonArray.put(object);
