@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.models.objects;
@@ -85,7 +82,6 @@ import org.slf4j.LoggerFactory;
  * for the wicket webapp.
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class UIForm
     extends AbstractUIPageObject
@@ -451,7 +447,7 @@ public class UIForm
         }
 
         // evaluate the label of the field
-        String label;
+        final String label;
         if (_field.getLabel() != null) {
             label = _field.getLabel();
         } else if (attr != null) {
@@ -460,7 +456,7 @@ public class UIForm
             label = "Unknown";
         }
 
-        Instance fieldInstance;
+        final Instance fieldInstance;
         if (_field.getSelectAlternateOID() != null
                         && _query.getSelect(_field.getSelectAlternateOID()) instanceof String) {
             fieldInstance = Instance.get(_query.<String>getSelect(_field.getSelectAlternateOID()));
@@ -503,8 +499,9 @@ public class UIForm
                 final UIFormCellChart fieldChart = new UIFormCellChart(this, (FieldChart) _field, fieldInstance, label);
                 _row.add(fieldChart);
             } else if (_field instanceof FieldPicker) {
-                final UIField cell = new UIField(null, this, UIValue.get(_field, attr, null).setClassObject(this)
-                                .setInstance(getInstance()).setCallInstance(getInstance()));
+                final UIField cell = new UIField(getInstance().getKey(), this,
+                                UIValue.get(_field, attr, null).setClassObject(this).setInstance(getInstance())
+                                    .setCallInstance(getInstance()));
                 final UIPicker picker = new UIPicker((FieldPicker) _field, cell);
                 cell.setPicker(picker);
                 _row.add(cell);
@@ -822,7 +819,7 @@ public class UIForm
                         attr = type != null ? type.getAttribute(field.getAttribute()) : null;
                     }
 
-                    String label;
+                    final String label;
                     if (field.getLabel() != null) {
                         label = field.getLabel();
                     } else if (attr != null) {
