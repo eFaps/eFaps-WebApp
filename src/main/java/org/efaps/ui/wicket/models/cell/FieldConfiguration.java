@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 
@@ -26,6 +23,7 @@ import java.io.Serializable;
 import org.apache.commons.lang3.EnumUtils;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.field.Field;
+import org.efaps.api.ci.UIFormFieldProperty;
 import org.efaps.api.ui.UIType;
 import org.efaps.util.EFapsException;
 
@@ -34,7 +32,6 @@ import org.efaps.util.EFapsException;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class FieldConfiguration
     implements Serializable
@@ -98,6 +95,15 @@ public class FieldConfiguration
     }
 
     /**
+     * @return the alignment of the field
+     */
+    public int getColSpan()
+    {
+        return getField().containsProperty(UIFormFieldProperty.COL_SPAN)
+                        ? Integer.valueOf(getField().getProperty(UIFormFieldProperty.COL_SPAN)) : 1;
+    }
+
+    /**
      * @return the size of the field
      */
     public int getSize()
@@ -126,7 +132,7 @@ public class FieldConfiguration
      */
     public String getLabel()
     {
-        String ret;
+        final String ret;
         if (this.label == null) {
             if (getField().getLabel() == null) {
                 ret = "";
@@ -152,7 +158,7 @@ public class FieldConfiguration
      */
     public UIType getUIType()
     {
-        UIType ret;
+        final UIType ret;
         final String uiTypeStr = getField().getProperty("UIType");
         if (EnumUtils.isValidEnum(UIType.class, uiTypeStr)) {
             ret = UIType.valueOf(uiTypeStr);

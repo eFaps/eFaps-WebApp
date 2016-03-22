@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.components.form.row;
@@ -52,7 +49,6 @@ import org.efaps.util.EFapsException;
  * TODO description!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class RowPanel
     extends Panel
@@ -109,7 +105,7 @@ public class RowPanel
                         labelCell.add(AttributeModifier.replace("rowspan", ((Integer) cell.getRowSpan()).toString()));
                     }
                 }
-                Component valueCell;
+                final Component valueCell;
                 if (cell instanceof UIFormCellSet) {
                     valueCell = new SetDataGrid(cellRepeater.newChildId(), Model.of((UIFormCellSet) cell));
                 } else if (cell instanceof UIFormCellCmd) {
@@ -142,7 +138,8 @@ public class RowPanel
                 valueCell.add(new AttributeAppender("class", new Model<String>("eFapsFormValue"), " "));
             } else if (object instanceof AbstractUIField) {
                 final FieldPanel field = new FieldPanel(cellRepeater.newChildId(), Model.of((AbstractUIField) object));
-                field.add(AttributeModifier.replace("colspan", 2));
+                field.add(AttributeModifier.replace("colspan",
+                                ((AbstractUIField) object).getFieldConfiguration().getColSpan() * 2));
                 if (((AbstractUIField) object).getFieldConfiguration().getRowSpan() > 0) {
                     field.add(AttributeModifier.replace("rowspan",
                                     ((AbstractUIField) object).getFieldConfiguration().getRowSpan()));
