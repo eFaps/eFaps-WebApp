@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.components.tree;
@@ -33,10 +30,12 @@ import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.util.SetModel;
+import org.efaps.admin.ui.field.FieldTable;
 import org.efaps.ui.wicket.components.table.cell.CellPanel;
 import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.cell.UIStructurBrowserTableCell;
 import org.efaps.ui.wicket.models.cell.UITableCell;
+import org.efaps.ui.wicket.models.objects.UIFieldStructurBrowser;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
@@ -44,6 +43,7 @@ import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * This class renders a TreeTable, which loads the children asynchron.<br>
@@ -51,7 +51,6 @@ import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
  * The table shows the columns as defined in the model.
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class StructurBrowserTreeTable
     extends NestedTree<UIStructurBrowser>
@@ -67,17 +66,29 @@ public class StructurBrowserTreeTable
     private static final EFapsContentReference CSS = new EFapsContentReference(StructurBrowserTreeTable.class,
                     "StructurTreeTable.css");
 
+    /** The topic name. */
+    private final String topicName;
+
     /**
      * Constructor.
      *
      * @param _wicketId wicket id for this component
      * @param _model model
+     * @throws CacheReloadException on error
      */
     public StructurBrowserTreeTable(final String _wicketId,
                                     final IModel<UIStructurBrowser> _model)
+        throws CacheReloadException
     {
         super(_wicketId, new StructurBrowserProvider(_model),
                         new SetModel<UIStructurBrowser>(_model.getObject().getExpandedBrowsers()));
+        if (_model.getObject() instanceof UIFieldStructurBrowser) {
+            final FieldTable field = FieldTable.get(((UIFieldStructurBrowser) _model.getObject()).getFieldTabelId());
+            this.topicName = field.getName();
+        } else {
+            this.topicName = _model.getObject().getTable().getName();
+        }
+
         if ("human".equals(Configuration.getAttribute(ConfigAttribute.STRUCBRWSRTREE_CLASS))) {
             add(new HumanTheme());
         } else if ("windows".equals(Configuration.getAttribute(ConfigAttribute.STRUCBRWSRTREE_CLASS))) {
@@ -112,7 +123,12 @@ public class StructurBrowserTreeTable
         super.expand(_uiStrBrws);
         _uiStrBrws.setExpanded(true);
         final AjaxRequestTarget target = getRequestCycle().find(AjaxRequestTarget.class);
-        target.appendJavaScript("highlight();positionTableColumns(eFapsTable" + _uiStrBrws.getTableId() + ");");
+        final StringBuilder js = new StringBuilder()
+                    .append("highlight();positionTableColumns(eFapsTable").append(_uiStrBrws.getTableId()).append(");")
+                    .append("require([\"dojo/topic\"], function(topic){\n")
+                    .append("topic.publish(\"eFaps/expand/").append(this.topicName).append("\");\n")
+                    .append("})\n");
+        target.appendJavaScript(js);
     }
 
     /**
@@ -127,7 +143,12 @@ public class StructurBrowserTreeTable
         super.collapse(_uiStrBrws);
         _uiStrBrws.setExpanded(false);
         final AjaxRequestTarget target = getRequestCycle().find(AjaxRequestTarget.class);
-        target.appendJavaScript("positionTableColumns(eFapsTable" + _uiStrBrws.getTableId() + ");");
+        final StringBuilder js = new StringBuilder()
+                    .append("positionTableColumns(eFapsTable").append(_uiStrBrws.getTableId()).append(");")
+                    .append("require([\"dojo/topic\"], function(topic){\n")
+                    .append("topic.publish(\"eFaps/collapse/").append(this.topicName).append("\");\n")
+                    .append("})\n");
+        target.appendJavaScript(js);
     }
 
     /**

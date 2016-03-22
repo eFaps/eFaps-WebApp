@@ -108,7 +108,7 @@ public class UIFieldStructurBrowser
                                                       final UIStructurBrowser _parent)
         throws EFapsException
     {
-        final FieldTable field = FieldTable.get(((UIFieldStructurBrowser) _parent).fieldTabelId);
+        final FieldTable field = FieldTable.get(((UIFieldStructurBrowser) _parent).getFieldTabelId());
         final UIFieldStructurBrowser ret = new UIFieldStructurBrowser(_parent.getCommandUUID(), _instance == null
                         ? null : _instance.getKey(), _parent.getSortDirection(), field);
         ret.setParentBrws(this);
@@ -150,7 +150,7 @@ public class UIFieldStructurBrowser
     @Override
     protected AbstractAdminObject getObject4Event()
     {
-        return FieldTable.get(this.fieldTabelId);
+        return FieldTable.get(this.getFieldTabelId());
     }
 
     /**
@@ -160,7 +160,7 @@ public class UIFieldStructurBrowser
      */
     public Display getFieldDisplay(final TargetMode _mode)
     {
-        return FieldTable.get(this.fieldTabelId).getDisplay(_mode);
+        return FieldTable.get(this.getFieldTabelId()).getDisplay(_mode);
     }
 
     /**
@@ -178,6 +178,16 @@ public class UIFieldStructurBrowser
     @Override
     public String getCacheKey()
     {
-        return super.getCommandUUID() + "-" + this.fieldTabelId + "-" + UIStructurBrowser.USERSESSIONKEY;
+        return super.getCommandUUID() + "-" + this.getFieldTabelId() + "-" + UIStructurBrowser.USERSESSIONKEY;
+    }
+
+    /**
+     * Gets the id of the Field this Field Structur Browser belongs to.
+     *
+     * @return the id of the Field this Field Structur Browser belongs to
+     */
+    public Long getFieldTabelId()
+    {
+        return this.fieldTabelId;
     }
 }
