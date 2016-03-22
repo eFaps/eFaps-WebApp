@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2015 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,6 @@ import org.slf4j.LoggerFactory;
  * StructurBrowserTable. Updates the menu and the page itself.
  *
  * @author The eFaps Team
- * @version $Id:AjaxLinkContainer.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class MenuContentAjaxLink
     extends WebMarkupContainer
@@ -82,6 +81,7 @@ public class MenuContentAjaxLink
      *
      * @param _wicketId wicket id of this component
      * @param _model model for thid component
+     * @param _content the content
      */
     public MenuContentAjaxLink(final String _wicketId,
                                final IModel<AbstractUIField> _model,
@@ -153,12 +153,9 @@ public class MenuContentAjaxLink
         }
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public void onComponentTagBody(final MarkupStream markupStream, final ComponentTag openTag)
+    public void onComponentTagBody(final MarkupStream _markupStream,
+                                   final ComponentTag _openTag)
     {
         Object ret = null;
         try {
@@ -171,9 +168,8 @@ public class MenuContentAjaxLink
         } catch (final EFapsException e) {
             LOG.error("Catched error on setting tag body for: {}", this);
         }
-        replaceComponentTagBody(markupStream, openTag, ret == null ? "" : String.valueOf(ret));
+        replaceComponentTagBody(_markupStream, _openTag, ret == null ? "" : String.valueOf(ret));
     }
-
 
     /**
      * Behavior to update the menu.
@@ -259,17 +255,20 @@ public class MenuContentAjaxLink
 
             final PageReference calledByPageRef = ((AbstractContentPage) getPage()).getCalledByPageReference();
             if (calledByPageRef != null) {
-                final UpdateMenuBehavior up = getComponent().getBehaviors(UpdateMenuBehavior.class).get(0);
-                ((ContentContainerPage) calledByPageRef.getPage()).getMenuTree().registerListener(up);
-                final AjaxCallListener listener = new AjaxCallListener();
-                final StringBuilder js = new StringBuilder()
-                    .append("var frameWin = top.dojo.doc.getElementById(\"").append(MainPage.IFRAME_ID)
-                    .append("\").contentWindow;")
-                    .append(" frameWin.")
-                    .append(MenuUpdateBehavior.FUNCTION_NAME).append("(\"").append(up.getKey()).append("\");")
-                    .append("return true;");
-                listener.onPrecondition(js);
-                _attributes.getAjaxCallListeners().add(listener);
+                final Page page = calledByPageRef.getPage();
+                if (page instanceof ContentContainerPage) {
+                    final UpdateMenuBehavior up = getComponent().getBehaviors(UpdateMenuBehavior.class).get(0);
+                    ((ContentContainerPage) calledByPageRef.getPage()).getMenuTree().registerListener(up);
+                    final AjaxCallListener listener = new AjaxCallListener();
+                    final StringBuilder js = new StringBuilder()
+                        .append("var frameWin = top.dojo.doc.getElementById(\"").append(MainPage.IFRAME_ID)
+                        .append("\").contentWindow;")
+                        .append(" frameWin.")
+                        .append(MenuUpdateBehavior.FUNCTION_NAME).append("(\"").append(up.getKey()).append("\");")
+                        .append("return true;");
+                    listener.onPrecondition(js);
+                    _attributes.getAjaxCallListeners().add(listener);
+                }
             }
         }
 

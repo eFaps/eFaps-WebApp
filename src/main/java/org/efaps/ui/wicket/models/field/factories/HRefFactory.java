@@ -21,14 +21,21 @@
 package org.efaps.ui.wicket.models.field.factories;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.core.request.handler.IComponentRequestHandler;
+import org.apache.wicket.core.request.handler.IPageRequestHandler;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.request.component.IRequestablePage;
+import org.apache.wicket.request.cycle.RequestCycle;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.Image;
 import org.efaps.admin.ui.Menu;
+import org.efaps.ui.wicket.components.links.ContentContainerLink;
 import org.efaps.ui.wicket.components.links.IconMenuContentAjaxLink;
 import org.efaps.ui.wicket.components.links.MenuContentAjaxLink;
+import org.efaps.ui.wicket.components.split.header.RecentLink;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
+import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.util.EFapsException;
 
 /**
@@ -107,17 +114,28 @@ public class HRefFactory
                     }
                 }
             }
-
+            // evaluate which kind of link must be done
+            Class<? extends IRequestablePage> clazz = null;
+            if (RequestCycle.get().getActiveRequestHandler() instanceof IPageRequestHandler) {
+                clazz = ((IPageRequestHandler) RequestCycle.get().getActiveRequestHandler()).getPageClass();
+            }
+            boolean ajax = clazz != null && ContentContainerPage.class.isAssignableFrom(clazz);
+            if (ajax && RequestCycle.get().getActiveRequestHandler() instanceof IComponentRequestHandler) {
+                ajax = ajax && !(((IComponentRequestHandler) RequestCycle.get().getActiveRequestHandler())
+                                .getComponent() instanceof RecentLink);
+            }
             if (icon == null) {
-                ret = new MenuContentAjaxLink(_wicketId, Model.of(_uiField), content);
+                if (ajax) {
+                    ret = new MenuContentAjaxLink(_wicketId, Model.of(_uiField), content);
+                } else {
+                    ret = new ContentContainerLink(_wicketId, Model.of(_uiField), content);
+                }
             } else {
                 ret = new IconMenuContentAjaxLink(_wicketId, Model.of(_uiField), content, icon);
             }
         }
         return ret;
     }
-
-
 
     /**
      * {@inheritDoc}
@@ -179,6 +197,13 @@ public class HRefFactory
                         && _uiField.getInstanceKey() != null && hasAccess2Menu(_uiField);
     }
 
+    /**
+     * Checks for access to menu.
+     *
+     * @param _uiField the ui field
+     * @return true, if successful
+     * @throws EFapsException on error
+     */
     private boolean hasAccess2Menu(final AbstractUIField _uiField)
         throws EFapsException
     {
