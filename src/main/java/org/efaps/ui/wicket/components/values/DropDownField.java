@@ -119,7 +119,16 @@ public class DropDownField
             if (_choices.isEmpty()) {
                 setDefaultModel(new Model<String>());
             } else {
-                setDefaultModel(Model.of(_choices.get(0)));
+                // check if value is set before
+                for (final DropDownOption choice : _choices) {
+                    if (choice.getValue().equals(String.valueOf(_model.getObject().getValue().getDbValue()))) {
+                        setDefaultModel(Model.of(choice));
+                        break;
+                    }
+                }
+                if (getDefaultModel() == null) {
+                    setDefaultModel(Model.of(_choices.get(0)));
+                }
             }
         }
         setChoices(_choices);
