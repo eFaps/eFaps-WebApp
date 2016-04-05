@@ -299,7 +299,7 @@ public class UITable
 
         final List<Field> fields = getUserSortedColumns();
         int i = 0;
-        Type type;
+        final Type type;
         if (_instances.size() > 0) {
             type = _instances.get(0).getType();
         } else {
@@ -455,8 +455,12 @@ public class UITable
                                     && (attr.getAttributeType().getUIProvider() instanceof EnumUI
                                     || attr.getAttributeType().getUIProvider() instanceof BitEnumUI
                                     || attr.getAttributeType().getUIProvider() instanceof LinkWithRangesUI)) {
-                        final UIField uiField = new UIField(instance.getKey(), this, UIValue.get(field, attr, value)
-                                        .setInstance(instance).setClassObject(this).setCallInstance(getInstance()));
+                        final UIField uiField = new UIField(instance.getKey(), this,
+                                        UIValue.get(field, attr, value)
+                                            .setInstance(instance)
+                                            .setClassObject(this)
+                                            .setCallInstance(getInstance())
+                                            .setRequestInstances(_multi.getInstanceList()));
                         uiField.setCompareValue(sortValue);
                         row.add(uiField);
                     } else {
