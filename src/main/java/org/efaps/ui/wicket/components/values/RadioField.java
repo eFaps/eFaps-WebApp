@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.components.values;
@@ -23,7 +20,6 @@ package org.efaps.ui.wicket.components.values;
 import java.io.Serializable;
 import java.util.List;
 
-import org.apache.wicket.markup.html.form.AbstractChoice;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.RadioChoice;
 import org.apache.wicket.model.IModel;
@@ -40,16 +36,13 @@ import org.slf4j.LoggerFactory;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class RadioField
     extends RadioChoice<RadioOption>
     implements IFieldConfig
 {
 
-    /**
-     *
-     */
+    /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
 
     /**
@@ -57,10 +50,20 @@ public class RadioField
      */
     private static final Logger LOG = LoggerFactory.getLogger(RadioField.class);
 
-
+    /** The field config. */
     private final FieldConfiguration fieldConfig;
+
+    /** The cellvalue. */
     private final AbstractUIField cellvalue;
 
+    /**
+     * Instantiates a new radio field.
+     *
+     * @param _id the id
+     * @param _model the model
+     * @param _value the value
+     * @param _fieldConfiguration the field configuration
+     */
     public RadioField(final String _id,
                       final Model<AbstractUIField> _model,
                       final Object _value,
@@ -76,14 +79,13 @@ public class RadioField
             } else {
                 setDefaultModel(new Model<String>());
             }
-            final AbstractChoice<RadioOption, RadioOption> choices = setChoices(RadioOption.getChoices(this.cellvalue));
+            setChoices(RadioOption.getChoices(this.cellvalue));
             if (getChoices() != null && getChoices().size() > 1) {
                 setSuffix("<br/>");
             }
             setLabel(Model.of(this.cellvalue.getLabel()));
         } catch (final EFapsException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error("Cateched EFapsException", e);
         }
         setChoiceRenderer(new ChoiceRenderer());
         setOutputMarkupId(true);
@@ -91,9 +93,11 @@ public class RadioField
     }
 
     /**
-     * @param _wicketId
-     * @param _of
-     * @param _choices
+     * Instantiates a new radio field.
+     *
+     * @param _wicketId the wicket id
+     * @param _model the model
+     * @param _radios the radios
      */
     public RadioField(final String _wicketId,
                       final Model<AbstractUIField> _model,
@@ -119,8 +123,7 @@ public class RadioField
             setChoices(_radios);
             setLabel(Model.of(this.cellvalue.getLabel()));
         } catch (final EFapsException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error("Cateched EFapsException", e);
         }
         setChoiceRenderer(new ChoiceRenderer());
         setOutputMarkupId(true);
@@ -176,12 +179,10 @@ public class RadioField
         {
             RadioOption ret = null;
             final List<?> choices = _choices.getObject();
-            for (int index = 0; index < choices.size(); index++)
-            {
+            for (int index = 0; index < choices.size(); index++) {
                 final RadioOption choice = (RadioOption) choices.get(index);
-                if (getIdValue(choice, index).equals(_id))
-                {
-                    ret =  choice;
+                if (getIdValue(choice, index).equals(_id)) {
+                    ret = choice;
                     break;
                 }
             }
