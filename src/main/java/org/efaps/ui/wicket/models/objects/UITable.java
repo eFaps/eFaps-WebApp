@@ -39,6 +39,7 @@ import org.efaps.admin.datamodel.ui.BitEnumUI;
 import org.efaps.admin.datamodel.ui.EnumUI;
 import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.datamodel.ui.LinkWithRangesUI;
+import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.admin.datamodel.ui.UIValue;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
@@ -451,10 +452,8 @@ public class UITable
                     }
 
                     if (field.getClassUI() == null && field.getUIProvider() != null
-                                    || attr != null && attr.getAttributeType().getUIProvider() != null
-                                    && (attr.getAttributeType().getUIProvider() instanceof EnumUI
-                                    || attr.getAttributeType().getUIProvider() instanceof BitEnumUI
-                                    || attr.getAttributeType().getUIProvider() instanceof LinkWithRangesUI)) {
+                                    || attr != null
+                                        && !(attr.getAttributeType().getUIProvider() instanceof UIInterface)) {
                         final UIField uiField = new UIField(instance.getKey(), this,
                                         UIValue.get(field, attr, value)
                                             .setInstance(instance)

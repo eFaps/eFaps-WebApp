@@ -35,9 +35,8 @@ import org.efaps.admin.datamodel.AttributeSet;
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.FieldValue;
-import org.efaps.admin.datamodel.ui.TypeUI;
+import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.admin.datamodel.ui.UIValue;
-import org.efaps.admin.datamodel.ui.UserUI;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter.ParameterValues;
@@ -476,9 +475,7 @@ public class UIForm
             if (_field.getClassUI() == null && _field.getUIProvider() != null
                             || attr != null && attr.getAttributeType().getUI() == null
                             || attr == null && _field.getClassUI() == null && _field.getUIProvider() == null
-                            || attr != null && attr.getAttributeType().getUI() != null
-                            && (attr.getAttributeType().getUI() instanceof TypeUI
-                            || attr.getAttributeType().getUI() instanceof UserUI)) {
+                            || attr != null && !(attr.getAttributeType().getUIProvider() instanceof UIInterface)) {
                 addHidden(evaluateUIProvider(_row, _query, _field, fieldInstance, attr));
             } else {
 
@@ -512,8 +509,7 @@ public class UIForm
                                 || attr == null && _field.getClassUI() == null && _field.getUIProvider() == null
                                 || attr != null && attr.getAttributeType().getUI() != null
                                   && (_field.getProperty(UIType.class.getSimpleName()) != null
-                                    || attr.getAttributeType().getUI() instanceof TypeUI
-                                    || attr.getAttributeType().getUI() instanceof UserUI)) {
+                                    || !(attr.getAttributeType().getUIProvider() instanceof UIInterface))) {
                     _row.add(evaluateUIProvider(_row, _query, _field, fieldInstance, attr));
                 } else {
                     evaluateField(_row, _query, _field, fieldInstance, label, attr);
