@@ -35,10 +35,7 @@ import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Status;
 import org.efaps.admin.datamodel.Status.StatusGroup;
 import org.efaps.admin.datamodel.Type;
-import org.efaps.admin.datamodel.ui.BitEnumUI;
-import org.efaps.admin.datamodel.ui.EnumUI;
 import org.efaps.admin.datamodel.ui.FieldValue;
-import org.efaps.admin.datamodel.ui.LinkWithRangesUI;
 import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.admin.datamodel.ui.UIValue;
 import org.efaps.admin.event.EventDefinition;
@@ -51,6 +48,7 @@ import org.efaps.admin.ui.AbstractCommand.SortDirection;
 import org.efaps.admin.ui.Image;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.admin.ui.field.Filter;
+import org.efaps.api.ci.UIFormFieldProperty;
 import org.efaps.api.ci.UITableFieldProperty;
 import org.efaps.api.ui.FilterBase;
 import org.efaps.api.ui.FilterType;
@@ -451,18 +449,7 @@ public class UITable
                         }
                     }
 
-                    if (field.getClassUI() == null && field.getUIProvider() != null
-                                    || attr != null
-                                        && !(attr.getAttributeType().getUIProvider() instanceof UIInterface)) {
-                        final UIField uiField = new UIField(instance.getKey(), this,
-                                        UIValue.get(field, attr, value)
-                                            .setInstance(instance)
-                                            .setClassObject(this)
-                                            .setCallInstance(getInstance())
-                                            .setRequestInstances(_multi.getInstanceList()));
-                        uiField.setCompareValue(sortValue);
-                        row.add(uiField);
-                    } else {
+                    if (isUIInterface(attr, field)) {
                         final FieldValue fieldvalue = new FieldValue(field, attr, value, rowInstance, getInstance(),
                                         new ArrayList<Instance>(_multi.getInstanceList()), this);
                         String htmlTitle = null;
@@ -496,6 +483,15 @@ public class UITable
                             }
                             row.add(cell);
                         }
+                    } else {
+                        final UIField uiField = new UIField(instance.getKey(), this,
+                                        UIValue.get(field, attr, value)
+                                            .setInstance(instance)
+                                            .setClassObject(this)
+                                            .setCallInstance(getInstance())
+                                            .setRequestInstances(_multi.getInstanceList()));
+                        uiField.setCompareValue(sortValue);
+                        row.add(uiField);
                     }
                     // in case of edit mode an empty version of the first row is stored, and can be used to create
                     // new rows
@@ -576,17 +572,7 @@ public class UITable
                 if (field.getAttribute() != null && type != null) {
                     attr = type.getAttribute(field.getAttribute());
                 }
-                if (field.getClassUI() == null && field.getUIProvider() != null
-                                || attr != null && attr.getAttributeType().getUIProvider() != null
-                                && (attr.getAttributeType().getUIProvider() instanceof EnumUI
-                                || attr.getAttributeType().getUIProvider() instanceof BitEnumUI
-                                || attr.getAttributeType().getUIProvider() instanceof LinkWithRangesUI)
-                                || attr == null && field.getClassUI() == null  && field.getUIProvider() == null
-                                    && field.containsProperty("UIType")) {
-                    final UIField uiField = new UIField(null, this, UIValue.get(field, attr, null)
-                                    .setInstance(getInstance()).setClassObject(this).setCallInstance(getInstance()));
-                    row.add(uiField);
-                } else {
+                if (isUIInterface(attr, field)) {
                     final FieldValue fieldvalue = new FieldValue(field, attr, null, null, getInstance(), null, this);
                     String htmlValue;
                     String htmlTitle = null;
@@ -610,6 +596,10 @@ public class UITable
                         final UITableCell cell = new UITableCell(this, fieldvalue, null, htmlValue, htmlTitle, null);
                         row.add(cell);
                     }
+                } else {
+                    final UIField uiField = new UIField(null, this, UIValue.get(field, attr, null)
+                                    .setInstance(getInstance()).setClassObject(this).setCallInstance(getInstance()));
+                    row.add(uiField);
                 }
             }
         }
@@ -618,6 +608,21 @@ public class UITable
         if (getSortKey() != null) {
             sort();
         }
+    }
+
+    /**
+     * Checks if is UI interface.
+     *
+     * @param _attr the _attr
+     * @param _field the _field
+     * @return true, if is UI interface
+     */
+    boolean isUIInterface(final Attribute _attr,
+                          final Field _field)
+    {
+        return (_attr != null && _attr.getAttributeType().getUIProvider() instanceof UIInterface
+                        || _field.getUIProvider() != null && _field.getUIProvider() instanceof UIInterface)
+                        && !_field.containsProperty(UIFormFieldProperty.UI_TYPE);
     }
 
     /**

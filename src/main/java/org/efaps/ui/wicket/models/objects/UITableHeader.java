@@ -172,8 +172,8 @@ public class UITableHeader
         }
 
         if (_field.getFilter().getType().equals(FilterType.FREETEXT) && _attr == null &&
-                        _field.getClassUI() == null) {
-            UITableHeader.LOG.warn("ClassNameUI is require when the field has no attribute, Field:{}",
+                        _field.getUIProvider() == null) {
+            UITableHeader.LOG.warn("UIProvider is require when the field has no attribute, Field:{}",
                             _field.getName());
         }
     }
