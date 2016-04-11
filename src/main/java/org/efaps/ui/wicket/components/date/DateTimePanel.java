@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.components.date;
@@ -33,6 +30,7 @@ import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
+import org.apache.wicket.markup.html.form.ILabelProvider;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.string.StringValue;
@@ -59,10 +57,10 @@ import org.slf4j.LoggerFactory;
  * renders fields for hours and minute.
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class DateTimePanel
     extends FormComponentPanel<DateTime>
+    implements ILabelProvider<String>
 {
     /**
      * Logger for this class.
@@ -125,7 +123,7 @@ public class DateTimePanel
                          final boolean _time)
         throws EFapsException
     {
-        this(_wicketId, _dateObject, _fieldConfiguration.getName(), _fieldConfiguration.getLabel(), _time,
+        this(_wicketId, _dateObject, _fieldConfiguration.getName(), _model.getObject().getLabel(), _time,
                         _fieldConfiguration.getSize());
         this.cellvalue = _model.getObject();
     }
@@ -643,7 +641,6 @@ public class DateTimePanel
     @Override
     public IModel<String> getLabel()
     {
-        // TODO Auto-generated method stub
-        return super.getLabel();
+        return Model.of(getFieldLabel());
     }
 }
