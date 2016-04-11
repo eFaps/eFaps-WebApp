@@ -26,7 +26,6 @@ import org.apache.wicket.core.request.handler.IPageRequestHandler;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.component.IRequestablePage;
 import org.apache.wicket.request.cycle.RequestCycle;
-import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.Image;
 import org.efaps.admin.ui.Menu;
 import org.efaps.ui.wicket.components.links.ContentContainerLink;
@@ -192,7 +191,7 @@ public class HRefFactory
     public boolean applies(final AbstractUIField _uiField)
         throws EFapsException
     {
-        return TargetMode.VIEW.equals(_uiField.getParent().getMode())
+        return _uiField.getParent().isViewMode()
                         && _uiField.getFieldConfiguration().getField().getReference() != null
                         && _uiField.getInstanceKey() != null && hasAccess2Menu(_uiField);
     }
