@@ -23,8 +23,10 @@ import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.form.ILabelProvider;
 import org.apache.wicket.markup.html.link.Link;
+import org.apache.wicket.markup.html.link.PopupSettings;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.models.cell.FieldConfiguration;
@@ -74,6 +76,10 @@ public class ContentContainerLink
     {
         super(_wicketId, _model);
         this.content = _content;
+        if (Target.POPUP.equals(_model.getObject().getFieldConfiguration().getField().getTarget())) {
+            final PopupSettings popup = new PopupSettings("popup");
+            setPopupSettings(popup);
+        }
     }
 
     /**
@@ -111,6 +117,16 @@ public class ContentContainerLink
         } catch (final EFapsException e) {
             LOG.error("Catched error on setting name in tag for: {}", this);
         }
+    }
+
+    /**
+     * Getter method for the instance variable {@link #content}.
+     *
+     * @return value of instance variable {@link #content}
+     */
+    protected String getContent()
+    {
+        return this.content;
     }
 
     @Override

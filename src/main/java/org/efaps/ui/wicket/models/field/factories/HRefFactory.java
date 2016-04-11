@@ -29,6 +29,7 @@ import org.apache.wicket.request.cycle.RequestCycle;
 import org.efaps.admin.ui.Image;
 import org.efaps.admin.ui.Menu;
 import org.efaps.ui.wicket.components.links.ContentContainerLink;
+import org.efaps.ui.wicket.components.links.IconContentContainerLink;
 import org.efaps.ui.wicket.components.links.IconMenuContentAjaxLink;
 import org.efaps.ui.wicket.components.links.MenuContentAjaxLink;
 import org.efaps.ui.wicket.components.split.header.RecentLink;
@@ -130,7 +131,11 @@ public class HRefFactory
                     ret = new ContentContainerLink(_wicketId, Model.of(_uiField), content);
                 }
             } else {
-                ret = new IconMenuContentAjaxLink(_wicketId, Model.of(_uiField), content, icon);
+                if (ajax) {
+                    ret = new IconMenuContentAjaxLink(_wicketId, Model.of(_uiField), content, icon);
+                } else {
+                    ret = new IconContentContainerLink(_wicketId, Model.of(_uiField), content, icon);
+                }
             }
         }
         return ret;
