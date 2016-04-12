@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.EnumUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.wicket.Component;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.datamodel.ui.UIValue;
@@ -477,7 +478,9 @@ public abstract class AbstractUIField
     @Override
     public String toString()
     {
-        return getValue().toString();
+        return new ToStringBuilder(this)
+                        .append("Field", getFieldConfiguration().getField().getName())
+                        .append("Value", getValue()).build();
     }
 
     @Override
