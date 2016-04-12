@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.models.field.factories;
@@ -25,12 +22,14 @@ import java.util.Map;
 
 import org.apache.commons.lang3.text.StrSubstitutor;
 import org.apache.wicket.Component;
+import org.apache.wicket.model.Model;
 import org.efaps.admin.EFapsSystemConfiguration;
 import org.efaps.admin.KernelSettings;
 import org.efaps.admin.datamodel.ui.UserUI;
 import org.efaps.admin.user.AbstractUserObject;
 import org.efaps.admin.user.Person;
 import org.efaps.admin.user.Person.AttrName;
+import org.efaps.ui.wicket.components.values.LabelField;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.util.EFapsException;
 
@@ -38,12 +37,10 @@ import org.efaps.util.EFapsException;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
-// CHECKSTYLE:OFF
+@SuppressWarnings("checkstyle:abstractclassname")
 public final class UserUIFactory
     extends AbstractUIFactory
-// CHECKSTYLE:ON
 {
 
     /**
@@ -63,7 +60,7 @@ public final class UserUIFactory
                                  final AbstractUIField _abstractUIField)
         throws EFapsException
     {
-        return null;
+        return new LabelField(_wicketId, Model.of(""), _abstractUIField);
     }
 
     @Override
