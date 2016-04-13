@@ -55,6 +55,7 @@ import org.efaps.api.ui.FilterType;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.MultiPrintQuery;
+import org.efaps.db.PrintQuery;
 import org.efaps.db.SelectBuilder;
 import org.efaps.ui.wicket.models.cell.UIHiddenCell;
 import org.efaps.ui.wicket.models.cell.UITableCell;
@@ -569,8 +570,15 @@ public class UITable
             if (field.hasAccess(getMode(), getInstance(), getCommand(), getInstance())
                             && !field.isNoneDisplay(getMode())) {
                 attr = null;
-                if (field.getAttribute() != null && type != null) {
-                    attr = type.getAttribute(field.getAttribute());
+                if (type != null) {
+                    if (field.getAttribute() != null) {
+                        attr = type.getAttribute(field.getAttribute());
+                    } else if (field.getSelect() != null) {
+                        final PrintQuery print = new PrintQuery(Instance.get(type, 0));
+                        print.addSelect(field.getSelect());
+                        print.dryRun();
+                        attr = print.getAttribute4Select(field.getSelect());
+                    }
                 }
                 if (isUIInterface(attr, field)) {
                     final FieldValue fieldvalue = new FieldValue(field, attr, null, null, getInstance(), null, this);
