@@ -565,6 +565,10 @@ public abstract class AbstractUIField
                     break;
                 }
             }
+            if (getFactoryKey() == null) {
+                LOG.error("Could not find factory for field '{}' in '{}'", getFieldConfiguration().getName(),
+                                getFieldConfiguration().getField().getCollection().getName());
+            }
         }
         return getFactories().get(getFactoryKey());
     }
