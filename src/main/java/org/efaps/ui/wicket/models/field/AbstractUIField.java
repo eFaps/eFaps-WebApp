@@ -154,6 +154,9 @@ public abstract class AbstractUIField
     /** The sort value. */
     private Comparable<?> sortValue;
 
+    /** The hide. */
+    private boolean hide;
+
     /**
      * @param _instanceKey key to the instance
      * @param _parent       parent object
@@ -608,6 +611,7 @@ public abstract class AbstractUIField
      *
      * @return true, if is auto complete
      */
+    @Override
     public boolean isAutoComplete()
     {
         return getFieldConfiguration().getField().hasEvents(EventType.UI_FIELD_AUTOCOMPLETE);
@@ -664,5 +668,25 @@ public abstract class AbstractUIField
             ret = super.getInstance();
         }
         return ret;
+    }
+
+    /**
+     * Checks if is hide.
+     *
+     * @return the hide
+     */
+    public boolean isHide()
+    {
+        return this.hide;
+    }
+
+    /**
+     * Sets the hide.
+     *
+     * @param _hide the new hide
+     */
+    public void setHide(final boolean _hide)
+    {
+        this.hide = _hide;
     }
 }

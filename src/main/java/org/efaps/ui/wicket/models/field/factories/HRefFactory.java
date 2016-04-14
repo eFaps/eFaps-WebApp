@@ -21,6 +21,7 @@
 package org.efaps.ui.wicket.models.field.factories;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.PageReference;
 import org.apache.wicket.core.request.handler.IComponentRequestHandler;
 import org.apache.wicket.core.request.handler.IPageRequestHandler;
 import org.apache.wicket.model.Model;
@@ -31,10 +32,15 @@ import org.efaps.admin.ui.Menu;
 import org.efaps.ui.wicket.components.links.ContentContainerLink;
 import org.efaps.ui.wicket.components.links.IconContentContainerLink;
 import org.efaps.ui.wicket.components.links.IconMenuContentAjaxLink;
+import org.efaps.ui.wicket.components.links.LoadInTargetAjaxLink;
+import org.efaps.ui.wicket.components.links.LoadInTargetAjaxLink.ScriptTarget;
 import org.efaps.ui.wicket.components.links.MenuContentAjaxLink;
 import org.efaps.ui.wicket.components.split.header.RecentLink;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
+import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
+import org.efaps.ui.wicket.pages.content.AbstractContentPage;
+import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.util.EFapsException;
 
@@ -79,7 +85,7 @@ public class HRefFactory
      */
     @Override
     public Component getHidden(final String _wicketId,
-                               final AbstractUIField _abstractUIField)
+                               final AbstractUIField _uiField)
         throws EFapsException
     {
         return null;
@@ -115,18 +121,33 @@ public class HRefFactory
                 }
             }
             // evaluate which kind of link must be done
-            Class<? extends IRequestablePage> clazz = null;
+            IRequestablePage page = null;
+            PageReference pageRef = null;
             if (RequestCycle.get().getActiveRequestHandler() instanceof IPageRequestHandler) {
-                clazz = ((IPageRequestHandler) RequestCycle.get().getActiveRequestHandler()).getPageClass();
+                page = ((IPageRequestHandler) RequestCycle.get().getActiveRequestHandler()).getPage();
+                if (page != null && page instanceof AbstractContentPage) {
+                    pageRef = ((AbstractContentPage) page).getCalledByPageReference();
+                }
             }
-            boolean ajax = clazz != null && ContentContainerPage.class.isAssignableFrom(clazz);
+            // ajax if the page or the reference is a ContentContainerPage
+            boolean ajax = page != null && (page instanceof ContentContainerPage
+                            || pageRef != null && pageRef.getPage() instanceof ContentContainerPage);
+
+            // verify ajax by checking if is not a recent link
             if (ajax && RequestCycle.get().getActiveRequestHandler() instanceof IComponentRequestHandler) {
                 ajax = ajax && !(((IComponentRequestHandler) RequestCycle.get().getActiveRequestHandler())
                                 .getComponent() instanceof RecentLink);
             }
+
             if (icon == null) {
                 if (ajax) {
-                    ret = new MenuContentAjaxLink(_wicketId, Model.of(_uiField), content);
+                    // checking if is a link of a structurbrowser browserfield
+                    if (page instanceof StructurBrowserPage
+                                    && ((UIStructurBrowser) _uiField.getParent()).isBrowserField(_uiField)) {
+                        ret = new LoadInTargetAjaxLink(_wicketId, Model.of(_uiField), content, ScriptTarget.TOP);
+                    } else {
+                        ret = new MenuContentAjaxLink(_wicketId, Model.of(_uiField), content);
+                    }
                 } else {
                     ret = new ContentContainerLink(_wicketId, Model.of(_uiField), content);
                 }

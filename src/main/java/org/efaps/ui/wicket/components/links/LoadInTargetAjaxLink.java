@@ -15,7 +15,7 @@
  *
  */
 
-package org.efaps.ui.wicket.components.table.cell;
+package org.efaps.ui.wicket.components.links;
 
 import org.apache.wicket.PageReference;
 import org.apache.wicket.RestartResponseException;
@@ -23,33 +23,42 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.core.request.handler.PageProvider;
 import org.apache.wicket.core.request.handler.RenderPageRequestHandler;
+import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.model.IModel;
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.components.RecentObjectLink;
-import org.efaps.ui.wicket.models.cell.UITableCell;
+import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
+import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class is used as link to load a page from an popup window inside the opener window.
  *
  * @author The eFaps Team
- * @param <T> the generic type
  */
-public class AjaxLoadInTargetLink<T>
-    extends AjaxLink<T>
+public class LoadInTargetAjaxLink
+    extends AjaxLink<AbstractUIField>
 {
 
     /**
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(LoadInTargetAjaxLink.class);
 
     /**
      * target used for the script.
@@ -77,19 +86,56 @@ public class AjaxLoadInTargetLink<T>
      */
     private final ScriptTarget target;
 
+    /** The content. */
+    private final String content;
+
     /**
      * Constructor.
      *
      * @param _wicketId wicket id for this component
      * @param _model    model for this component
+     * @param _content the content
      * @param _target   target for this link.
      */
-    public AjaxLoadInTargetLink(final String _wicketId,
-                                final IModel<T> _model,
+    public LoadInTargetAjaxLink(final String _wicketId,
+                                final IModel<AbstractUIField> _model,
+                                final String _content,
                                 final ScriptTarget _target)
     {
         super(_wicketId, _model);
         this.target = _target;
+        this.content = _content;
+    }
+
+    /**
+     * The tag must be overwritten.
+     *
+     * @param _tag tag to write.
+     */
+    @Override
+    protected void onComponentTag(final ComponentTag _tag)
+    {
+        super.onComponentTag(_tag);
+        _tag.setName("a");
+        _tag.put("href", "#");
+    }
+
+    @Override
+    public void onComponentTagBody(final MarkupStream _markupStream,
+                                   final ComponentTag _openTag)
+    {
+        Object ret = null;
+        try {
+            if (this.content == null) {
+                final AbstractUIField uiField = (AbstractUIField) getDefaultModelObject();
+                ret = uiField.getValue().getReadOnlyValue(uiField.getParent().getMode());
+            } else {
+                ret = this.content;
+            }
+        } catch (final EFapsException e) {
+            LOG.error("Catched error on setting tag body for: {}", this);
+        }
+        replaceComponentTagBody(_markupStream, _openTag, ret == null ? "" : String.valueOf(ret));
     }
 
     /**
@@ -98,45 +144,36 @@ public class AjaxLoadInTargetLink<T>
      * @param _target AjaxRequestTarget
      */
     @Override
+    @SuppressWarnings("checkstyle:illegalcatch")
     public void onClick(final AjaxRequestTarget _target)
     {
         Instance instance = null;
-        if (this.target.equals(ScriptTarget.TOP)) {
-            final PageReference reference = ((AbstractContentPage) getPage()).getCalledByPageReference();
-            if (reference != null) {
-                final UIMenuItem menuItem = (UIMenuItem) ((ContentContainerPage) reference.getPage()).getMenuTree()
-                                .getSelected().getDefaultModelObject();
-                RecentObjectLink link = null;
+        try {
+            if (this.target.equals(ScriptTarget.TOP)) {
+                final PageReference reference = ((AbstractContentPage) getPage()).getCalledByPageReference();
+                if (reference != null) {
+                    final UIMenuItem menuItem = (UIMenuItem) ((ContentContainerPage) reference.getPage()).getMenuTree()
+                                    .getSelected().getDefaultModelObject();
+                    final RecentObjectLink link = new RecentObjectLink(menuItem);
+                    if (link != null) {
+                        ((EFapsSession) getSession()).addRecent(link);
+                    }
+                }
+            }
+            final AbstractUIField uiField = super.getModelObject();
+            if (uiField.getInstanceKey() != null) {
+                Menu menu = null;
                 try {
-                    link = new RecentObjectLink(menuItem);
-                } catch (final EFapsException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    instance = uiField.getInstance();
+                    menu = Menu.getTypeTreeMenu(instance.getType());
+                } catch (final Exception e) {
+                    if (menu == null) {
+                        throw new EFapsException(LoadInTargetAjaxLink.class, "NoTreeMenu", instance);
+                    }
                 }
-                if (link != null) {
-                    ((EFapsSession) getSession()).addRecent(link);
-                }
-            }
-        }
-        final UITableCell cellmodel = (UITableCell) super.getModelObject();
-        if (cellmodel.getInstanceKey() != null) {
-            Menu menu = null;
-            try {
-                instance = cellmodel.getInstance();
-                menu = Menu.getTypeTreeMenu(instance.getType());
 
-            //CHECKSTYLE:OFF
-            } catch (final Exception e) {
-                throw new RestartResponseException(new ErrorPage(e));
-            }
-            //CHECKSTYLE:ON
-            if (menu == null) {
-                final Exception ex = new Exception("no tree menu defined for type " + instance.getType().getName());
-                throw new RestartResponseException(new ErrorPage(ex));
-            }
-            try {
-                final ContentContainerPage page = new ContentContainerPage(menu.getUUID(), cellmodel.getInstanceKey(),
-                                false);
+                final ContentContainerPage page = new ContentContainerPage(menu.getUUID(), uiField.getInstanceKey(),
+                                uiField.getParent() instanceof UIStructurBrowser);
                 final CharSequence url = urlFor(new RenderPageRequestHandler(new PageProvider(page)));
                 // touch the page to ensure that the pagemanager stores it to be accessible
                 getSession().getPageManager().touchPage(page);
@@ -148,9 +185,10 @@ public class AjaxLoadInTargetLink<T>
                     .append("\",\"style\": \"border: 0; width: 100%; height: 99%\"")
                     .append("}));");
                 _target.appendJavaScript(js);
-            } catch (final EFapsException e) {
-                throw new RestartResponseException(new ErrorPage(e));
             }
+        } catch (final EFapsException e) {
+            throw new RestartResponseException(new ErrorPage(e));
         }
     }
 }
+

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.components.tree;
@@ -24,7 +21,6 @@ import java.util.Iterator;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
-import org.apache.wicket.PageReference;
 import org.apache.wicket.extensions.markup.html.repeater.tree.AbstractTree.State;
 import org.apache.wicket.extensions.markup.html.repeater.tree.NestedTree;
 import org.apache.wicket.extensions.markup.html.repeater.tree.nested.BranchItem;
@@ -37,22 +33,13 @@ import org.apache.wicket.markup.repeater.RefreshingView;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.efaps.admin.datamodel.ui.DateTimeUI;
-import org.efaps.admin.datamodel.ui.DateUI;
-import org.efaps.admin.ui.field.Field.Display;
-import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.table.cell.CellPanel;
+import org.efaps.ui.wicket.components.table.field.FieldPanel;
 import org.efaps.ui.wicket.components.table.row.RowId;
 import org.efaps.ui.wicket.models.AbstractInstanceObject;
-import org.efaps.ui.wicket.models.UIModel;
-import org.efaps.ui.wicket.models.cell.UIStructurBrowserTableCell;
-import org.efaps.ui.wicket.models.cell.UITableCell;
+import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.field.IHidden;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
-import org.efaps.ui.wicket.models.objects.UITable;
-import org.efaps.ui.wicket.models.objects.UITableHeader;
-import org.efaps.ui.wicket.pages.content.AbstractContentPage;
-import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +48,6 @@ import org.slf4j.LoggerFactory;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class SubElement
     extends Panel
@@ -208,50 +194,30 @@ public class SubElement
             cellsBeforeRepeater.add(cell);
             i++;
         }
-        final PageReference pageRef = ((AbstractContentPage) getPage()).getCalledByPageReference();
-        boolean updateMenu = false;
-        if (pageRef != null && pageRef.getPage() instanceof ContentContainerPage) {
-            updateMenu = true;
-        }
         boolean firstCell = true;
         boolean before = true;
-        for (final UIStructurBrowserTableCell uiCell : strucBrws.getColumns()) {
+        for (final AbstractUIField uiField : strucBrws.getColumns()) {
             final Component cell;
-            if (uiCell.isBrowserField()) {
+            if (strucBrws.isBrowserField(uiField)) {
                 before = false;
                 cell = SubElement.this.tree.newNodeComponent("node", model);
                 _item.add(cell);
             } else {
-                RepeatingView repeater;
+                final RepeatingView repeater;
                 if (before) {
                     repeater = cellsBeforeRepeater;
                 } else {
                     repeater = cellsAfterRepeater;
                 }
-                if (strucBrws.isEditable() && uiCell.getDisplay().equals(Display.EDITABLE)
-                                && (uiCell.getUiClass() instanceof DateUI
-                                                || uiCell.getUiClass() instanceof DateTimeUI)) {
-                    final UITableHeader header = strucBrws.getHeader4Id(uiCell.getFieldId());
-                    final String label;
-                    if (header == null) {
-                        label = "";
-                    } else {
-                        label = header.getLabel();
-                    }
-                    cell = new DateTimePanel(repeater.newChildId(), uiCell.getCompareValue(), uiCell.getName(), label,
-                                    uiCell.getUiClass() instanceof DateTimeUI,
-                                    uiCell.getField().getCols());
-                } else {
-                    cell = new CellPanel(repeater.newChildId(), new UIModel<UITableCell>(uiCell),
-                                    updateMenu, new UITable(strucBrws.getCommandUUID(), strucBrws.getInstanceKey()), 0);
-                }
+                cell = new FieldPanel(repeater.newChildId(), Model.of(uiField));
                 cell.setOutputMarkupId(true);
                 repeater.add(cell);
             }
             if (i == strucBrws.getTableId()) {
                 cell.add(AttributeModifier.append("class", "eFapsTableCellClear"));
             }
-            if (uiCell.isFixedWidth()) {
+
+            if (uiField.getFieldConfiguration().isFixedWidth()) {
                 if (firstCell) {
                     firstCell = false;
                     cell.add(AttributeModifier.append("class", "eFapsTableFirstCell eFapsTableCell"
@@ -309,7 +275,7 @@ public class SubElement
         /**
          * Constructor.
          */
-        public ModelIterator()
+        ModelIterator()
         {
             final UIStructurBrowser t = getModel().getObject();
             if (t == null) {

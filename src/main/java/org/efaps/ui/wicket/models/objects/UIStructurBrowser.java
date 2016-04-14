@@ -38,7 +38,7 @@ import org.apache.wicket.RestartResponseException;
 import org.efaps.admin.AbstractAdminObject;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
-import org.efaps.admin.datamodel.ui.FieldValue;
+import org.efaps.admin.datamodel.ui.UIValue;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
@@ -51,6 +51,7 @@ import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.Image;
 import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.field.Field;
+import org.efaps.api.ci.UITableFieldProperty;
 import org.efaps.beans.ValueList;
 import org.efaps.beans.valueparser.ParseException;
 import org.efaps.beans.valueparser.ValueParser;
@@ -58,9 +59,11 @@ import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.PrintQuery;
-import org.efaps.ui.wicket.models.cell.UIHiddenCell;
-import org.efaps.ui.wicket.models.cell.UIStructurBrowserTableCell;
+import org.efaps.db.SelectBuilder;
+import org.efaps.ui.wicket.models.field.AbstractUIField;
+import org.efaps.ui.wicket.models.field.IAutoComplete;
 import org.efaps.ui.wicket.models.field.IHidden;
+import org.efaps.ui.wicket.models.field.UIField;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 import org.efaps.util.RequestHandler;
@@ -184,12 +187,12 @@ public class UIStructurBrowser
     /**
      * This instance variable holds the children of this StructurBrowserModel.
      */
-    private final List<UIStructurBrowser> children = new ArrayList<UIStructurBrowser>();
+    private final List<UIStructurBrowser> children = new ArrayList<>();
 
     /**
      * Holds the columns in case of a TableTree.
      */
-    private final List<UIStructurBrowserTableCell> columns = new ArrayList<UIStructurBrowserTableCell>();
+    private final List<AbstractUIField> columns = new ArrayList<>();
 
     /**
      * Holds the hidden columns in case of a TableTree.
@@ -399,7 +402,7 @@ public class UIStructurBrowser
     public void execute()
     {
         setExecutionStatus(UIStructurBrowser.ExecutionStatus.EXECUTE);
-        List<Return> ret;
+        final List<Return> ret;
         try {
             if (getTableUUID() == null) {
                 final Map<Instance, Boolean> map = new LinkedHashMap<Instance, Boolean>();
@@ -494,9 +497,19 @@ public class UIStructurBrowser
                             multi.addAttribute(field.getAttribute());
                         } else if (field.getPhrase() != null) {
                             multi.addPhrase(field.getName(), field.getPhrase());
+                        } else if (field.getMsgPhrase() != null) {
+                            multi.addMsgPhrase(new SelectBuilder(getBaseSelect4MsgPhrase(field)), field.getMsgPhrase());
                         }
                         if (field.getSelectAlternateOID() != null) {
                             multi.addSelect(field.getSelectAlternateOID());
+                        }
+                        if (field.containsProperty(UITableFieldProperty.SORT_SELECT)) {
+                            multi.addSelect(field.getProperty(UITableFieldProperty.SORT_SELECT));
+                        } else if (field.containsProperty(UITableFieldProperty.SORT_PHRASE)) {
+                            multi.addPhrase(field.getProperty(UITableFieldProperty.SORT_PHRASE),
+                                            field.getProperty(UITableFieldProperty.SORT_PHRASE));
+                        } else if (field.containsProperty(UITableFieldProperty.SORT_MSG_PHRASE)) {
+                            multi.addMsgPhrase(field.getProperty(UITableFieldProperty.SORT_MSG_PHRASE));
                         }
                     }
                     if (field.getAttribute() != null && type != null) {
@@ -537,6 +550,7 @@ public class UIStructurBrowser
                     instance = evaluateFieldInstance(multi, field);
                     if (field.hasAccess(getMode(), getInstance()) && !field.isNoneDisplay(getMode())) {
                         Object value = null;
+                        Object sortValue = null;
                         attr = null;
                         if (field.getSelect() != null) {
                             value = multi.getSelect(field.getSelect());
@@ -546,57 +560,41 @@ public class UIStructurBrowser
                             attr = multi.getAttribute4Attribute(field.getAttribute());
                         } else if (field.getPhrase() != null) {
                             value = multi.getPhrase(field.getName());
+                        } else if (field.getMsgPhrase() != null) {
+                            value = multi.getMsgPhrase(new SelectBuilder(getBaseSelect4MsgPhrase(field)),
+                                            field.getMsgPhrase());
                         }
-                        final FieldValue fieldvalue = new FieldValue(field, attr, value, instance, getInstance(),
-                                        new ArrayList<Instance>(multi.getInstanceList()), this);
-                        String strValue;
-                        String htmlTitle;
-                        boolean isHidden = false;
-                        if ((isCreateMode() || isEditMode()) && field.isEditableDisplay(getMode())) {
-                            strValue = fieldvalue.getEditHtml(getMode());
-                            htmlTitle = fieldvalue.getStringValue(getMode());
-                        } else if (field.isHiddenDisplay(getMode())) {
-                            strValue = fieldvalue.getHiddenHtml(getMode());
-                            htmlTitle = "";
-                            isHidden = true;
+                        if (field.containsProperty(UITableFieldProperty.SORT_SELECT)) {
+                            sortValue = multi.getSelect(field.getProperty(UITableFieldProperty.SORT_SELECT));
+                        } else if (field.containsProperty(UITableFieldProperty.SORT_PHRASE)) {
+                            sortValue = multi.getPhrase(field.getProperty(UITableFieldProperty.SORT_PHRASE));
+                        } else if (field.containsProperty(UITableFieldProperty.SORT_MSG_PHRASE)) {
+                            sortValue = multi.getMsgPhrase(field.getProperty(UITableFieldProperty.SORT_MSG_PHRASE));
+                        }
+
+                        final UIField uiField = new UIField(instance.getKey(), this,
+                                        UIValue.get(field, attr, value)
+                                            .setInstance(instance)
+                                            .setClassObject(this)
+                                            .setCallInstance(getInstance())
+                                            .setRequestInstances(multi.getInstanceList()));
+                        uiField.setCompareValue(sortValue);
+
+                        if (field.getName().equals(getBrowserFieldName())) {
+                            child.setLabel(uiField.getValue().getReadOnlyValue(uiField.getParent().getMode()));
+                            child.setAllowChildren(checkForAllowChildren(instance));
+                            if (child.isAllowChildren()) {
+                                child.setAllowItems(checkForAllowItems(instance));
+                                child.setParent(checkForChildren(instance));
+                            }
+                            child.setImage(Image.getTypeIcon(instance.getType()) != null ? Image.getTypeIcon(
+                                            instance.getType()).getUrl() : null);
+                            child.setBrowserFieldIndex(child.getColumns().size());
+                        }
+                        if (field.isHiddenDisplay(getMode())) {
+                            child.getHidden().add(uiField);
                         } else {
-                            strValue = fieldvalue.getReadOnlyHtml(getMode());
-                            htmlTitle = fieldvalue.getStringValue(getMode());
-                        }
-                        if (strValue == null) {
-                            strValue = "";
-                        }
-                        if (htmlTitle == null) {
-                            htmlTitle = "";
-                        }
-                        String icon = field.getIcon();
-                        if (field.isShowTypeIcon()) {
-                            final Image cellIcon = Image.getTypeIcon(instance.getType());
-                            if (cellIcon != null) {
-                                icon = cellIcon.getUrl();
-                            }
-                        }
-                        if (isHidden) {
-                            child.getHidden().add(new UIHiddenCell(this, fieldvalue, null, strValue));
-                        } else {
-                            final UIStructurBrowserTableCell cell = new UIStructurBrowserTableCell(child, fieldvalue,
-                                            instance, strValue, htmlTitle, icon);
-                            if (cell.isAutoComplete()) {
-                                cell.setCellValue(fieldvalue.getStringValue(getMode()));
-                            }
-                            if (field.getName().equals(this.browserFieldName)) {
-                                child.setLabel(strValue);
-                                child.setAllowChildren(checkForAllowChildren(instance));
-                                if (child.isAllowChildren()) {
-                                    child.setAllowItems(checkForAllowItems(instance));
-                                    child.setParent(checkForChildren(instance));
-                                }
-                                child.setImage(Image.getTypeIcon(instance.getType()) != null ? Image.getTypeIcon(
-                                                instance.getType()).getUrl() : null);
-                                cell.setBrowserField(true);
-                                child.browserFieldIndex = child.getColumns().size();
-                            }
-                            child.getColumns().add(cell);
+                            child.getColumns().add(uiField);
                         }
                     }
                 }
@@ -863,7 +861,7 @@ public class UIStructurBrowser
     public void addChildren()
     {
         setExecutionStatus(UIStructurBrowser.ExecutionStatus.ADDCHILDREN);
-        List<Return> ret;
+        final List<Return> ret;
         try {
             ret = getObject4Event().executeEvents(EventType.UI_TABLE_EVALUATE, ParameterValues.INSTANCE, getInstance(),
                             ParameterValues.CLASS, this);
@@ -964,7 +962,7 @@ public class UIStructurBrowser
      */
     protected String getJavaScript4Target(final Map<String, String[]> _parameters)
     {
-        String ret;
+        final String ret;
         setExecutionStatus(UIStructurBrowser.ExecutionStatus.GETJAVASCRIPT4TARGET);
         try {
             final List<Return> retList = getObject4Event().executeEvents(EventType.UI_TABLE_EVALUATE,
@@ -1028,15 +1026,16 @@ public class UIStructurBrowser
             if (!node.isRoot()) {
                 final UIStructurBrowser uiObject = (UIStructurBrowser) node.getUserObject();
                 if (uiObject != null) {
-                    for (final UIStructurBrowserTableCell cell : uiObject.getColumns()) {
-                        final String[] values = _parameters.get(cell.getName());
+                    for (final AbstractUIField object : uiObject.getColumns()) {
+                        final IAutoComplete cell = object;
+                        final String[] values =  null;  //_parameters.get(cell.getName());
                         if (cell.isAutoComplete()) {
-                            final String[] autoValues = _parameters.get(cell.getName() + "AutoComplete");
-                            cell.setCellTitle(autoValues[i]);
-                            cell.setInstanceKey(values[i]);
+                          //  final String[] autoValues = _parameters.get(cell.getName() + "AutoComplete");
+                          //  cell.setCellTitle(autoValues[i]);
+                          //  cell.setInstanceKey(values[i]);
                         } else {
                             if (values != null) {
-                                cell.setValueFromUI(values[i]);
+                           //     cell.setValueFromUI(values[i]);
                             }
                         }
                     }
@@ -1053,7 +1052,7 @@ public class UIStructurBrowser
      * @param _index index of the Column
      * @return String with the Value of the Column
      */
-    public UIStructurBrowserTableCell getColumnValue(final int _index)
+    public AbstractUIField getColumnValue(final int _index)
     {
         return this.columns.isEmpty() ? null : this.columns.get(_index);
     }
@@ -1063,9 +1062,11 @@ public class UIStructurBrowser
      *
      * @param _label the label to set
      */
-    private void setLabel(final String _label)
+    private void setLabel(final Object _label)
     {
-        this.label = _label;
+        if (_label != null) {
+            this.label = String.valueOf(_label);
+        }
     }
 
     /**
@@ -1073,7 +1074,7 @@ public class UIStructurBrowser
      *
      * @return value of instance variable {@link #columns}
      */
-    public List<UIStructurBrowserTableCell> getColumns()
+    public List<AbstractUIField> getColumns()
     {
         return this.columns;
     }
@@ -1130,6 +1131,19 @@ public class UIStructurBrowser
     public String getImage()
     {
         return this.image;
+    }
+
+    /**
+     * Checks if is browser field.
+     *
+     * @param _uiField the ui field
+     * @return true, if is browser field
+     * @throws EFapsException on error
+     */
+    public boolean isBrowserField(final AbstractUIField _uiField)
+        throws EFapsException
+    {
+        return _uiField.getFieldConfiguration().getName().equals(getBrowserFieldName());
     }
 
     /**
@@ -1203,8 +1217,6 @@ public class UIStructurBrowser
     {
         return this.label;
     }
-
-
 
     /**
      * Setter method for instance variable {@link #sortDirection} and for all

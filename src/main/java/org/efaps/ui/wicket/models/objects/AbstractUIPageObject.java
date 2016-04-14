@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.models.objects;
@@ -46,8 +43,6 @@ import org.efaps.util.cache.CacheReloadException;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id: AbstractUIPageObject.java 7611 2012-06-08 21:56:57Z
- *          jan@moxter.net $
  */
 public abstract class AbstractUIPageObject
     extends AbstractUIObject
@@ -181,9 +176,9 @@ public abstract class AbstractUIPageObject
     /**
      * Get the CommandAbstract that is the target of this Page.
      *
-     *
-     * @see #targetCmdUUID
      * @return the calling CommandAbstract UIClassification
+     * @throws CacheReloadException the cache reload exception
+     * @see #targetCmdUUID
      */
     public AbstractCommand getTargetCmd()
         throws CacheReloadException
@@ -373,7 +368,7 @@ public abstract class AbstractUIPageObject
     {
         final Map<Type, List<Instance>> types = new HashMap<Type, List<Instance>>();
         for (final Instance instance : _instances) {
-            List<Instance> list;
+            final List<Instance> list;
             if (!types.containsKey(instance.getType())) {
                 list = new ArrayList<Instance>();
                 types.put(instance.getType(), list);
@@ -400,7 +395,10 @@ public abstract class AbstractUIPageObject
     }
 
     /**
+     * Register oid.
      *
+     * @param _oid the oid
+     * @return the string
      */
     public String registerOID(final String _oid)
     {

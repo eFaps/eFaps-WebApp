@@ -23,7 +23,6 @@ package org.efaps.ui.wicket.components.table.cell;
 import java.text.NumberFormat;
 
 import org.apache.wicket.AttributeModifier;
-import org.apache.wicket.Component;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -42,11 +41,6 @@ import org.efaps.ui.wicket.components.autocomplete.AutoCompleteComboBox;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
 import org.efaps.ui.wicket.components.picker.AjaxPickerLink;
 import org.efaps.ui.wicket.components.table.cell.AjaxLoadInTargetLink.ScriptTarget;
-import org.efaps.ui.wicket.components.tree.SetEditedBehavior;
-import org.efaps.ui.wicket.components.values.AbstractField;
-import org.efaps.ui.wicket.components.values.LabelField;
-import org.efaps.ui.wicket.models.cell.FieldConfiguration;
-import org.efaps.ui.wicket.models.cell.UIStructurBrowserTableCell;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.models.field.IAutoComplete;
 import org.efaps.ui.wicket.models.field.IPickable;
@@ -108,32 +102,7 @@ public class CellPanel
         add(AttributeModifier.replace("title", uiTableCell.getCellTitle()));
         add(new AttributeAppender("style", Model.of("text-align:" + uiTableCell.getAlign()), ";"));
 
-        if (uiTableCell instanceof UIStructurBrowserTableCell
-                        && ((UIStructurBrowserTableCell) uiTableCell).isHide()) {
-            add(new WebMarkupContainer("checkbox").setVisible(false));
-            add(new WebMarkupContainer("link").setVisible(false));
-            add(new WebMarkupContainer("icon").setVisible(false));
-            add(new WebComponent("numbering").setVisible(false));
-            add(new WebMarkupContainer("valuePicker").setVisible(false));
-            // the label must be added to have in all columns the same number of rows
-            final Component label;
-            if (uiTableCell.isAutoComplete()) {
-                if ((_uitable.isCreateMode() || _uitable.isEditMode())
-                                && uiTableCell.getDisplay().equals(Display.EDITABLE)) {
-                    label = new AbstractField<String>("label", new FieldConfiguration(uiTableCell.getFieldId()))
-                    {
-                        private static final long serialVersionUID = 1L;
-                    };
-                } else {
-                    label = new LabelField("label", Model.of(uiTableCell.getCellValue()),
-                                    new FieldConfiguration(uiTableCell.getFieldId()), null);
-                }
-            } else {
-                label = new LabelComponent("label", uiTableCell.getCellValue());
-            }
-            add(label);
-            label.add(new AttributeAppender("style", Model.of("display:none"), ";"));
-        } else if (uiTableCell.isAutoComplete() && (_uitable.isCreateMode() || _uitable.isEditMode())
+       if (uiTableCell.isAutoComplete() && (_uitable.isCreateMode() || _uitable.isEditMode())
                         && uiTableCell.getDisplay().equals(Display.EDITABLE)) {
             add(new WebMarkupContainer("checkbox").setVisible(false));
             add(new WebMarkupContainer("link").setVisible(false));
@@ -160,7 +129,7 @@ public class CellPanel
             }
 
             // make the links
-            WebMarkupContainer celllink;
+            final WebMarkupContainer celllink;
             // no link if edit, print or create or there is no definition
             if (uiTableCell.getReference() == null
                             || _uitable.isCreateMode() || _uitable.isEditMode() || _uitable.isPrintMode()) {
@@ -214,9 +183,6 @@ public class CellPanel
                 if ((_uitable.isCreateMode() || _uitable.isEditMode())
                                 && uiTableCell.getDisplay().equals(Display.EDITABLE)) {
                     label.add(new SetSelectedRowBehavior(uiTableCell.getName()));
-                    if (uiTableCell instanceof UIStructurBrowserTableCell) {
-                        label.add(new SetEditedBehavior());
-                    }
                     if (uiTableCell.isFieldUpdate()) {
                         label.add(new AjaxFieldUpdateBehavior(uiTableCell.getFieldUpdateEvent(), _model));
                     }

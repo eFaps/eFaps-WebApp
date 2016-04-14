@@ -56,10 +56,18 @@ public abstract class AbstractInstanceObject
      */
     private String userinterfaceId;
 
+    /**
+     * Instantiates a new abstract instance object.
+     */
     public AbstractInstanceObject()
     {
     }
 
+    /**
+     * Instantiates a new abstract instance object.
+     *
+     * @param _instanceKey the instance key
+     */
     public AbstractInstanceObject(final String _instanceKey)
     {
         this.instanceKey = _instanceKey;
@@ -105,7 +113,14 @@ public abstract class AbstractInstanceObject
         return ret;
     }
 
-    public static Instance getInstance4Create(final Type _type) {
+    /**
+     * Gets the instance4 create.
+     *
+     * @param _type the type
+     * @return the instance4 create
+     */
+    public static Instance getInstance4Create(final Type _type)
+    {
         return Instance.get(_type, 0);
     }
 
@@ -119,9 +134,21 @@ public abstract class AbstractInstanceObject
         this.instanceKey = _instanceKey;
     }
 
+    /**
+     * Gets the instance from manager.
+     *
+     * @return the instance from manager
+     * @throws EFapsException on error
+     */
     public abstract Instance getInstanceFromManager()
         throws EFapsException;
 
+    /**
+     * Checks for instance manager.
+     *
+     * @return true, if successful
+     * @throws EFapsException on error
+     */
     public abstract boolean hasInstanceManager()
         throws EFapsException;
 

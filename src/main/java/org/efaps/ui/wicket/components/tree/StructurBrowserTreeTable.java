@@ -20,7 +20,6 @@ package org.efaps.ui.wicket.components.tree;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
-import org.apache.wicket.PageReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.markup.html.repeater.tree.NestedTree;
 import org.apache.wicket.extensions.markup.html.repeater.tree.Node;
@@ -29,16 +28,13 @@ import org.apache.wicket.extensions.markup.html.repeater.tree.theme.WindowsTheme
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.util.SetModel;
 import org.efaps.admin.ui.field.FieldTable;
-import org.efaps.ui.wicket.components.table.cell.CellPanel;
-import org.efaps.ui.wicket.models.UIModel;
-import org.efaps.ui.wicket.models.cell.UIStructurBrowserTableCell;
-import org.efaps.ui.wicket.models.cell.UITableCell;
+import org.efaps.ui.wicket.components.table.field.FieldPanel;
+import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.objects.UIFieldStructurBrowser;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
-import org.efaps.ui.wicket.pages.content.AbstractContentPage;
-import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.util.Configuration;
@@ -108,13 +104,8 @@ public class StructurBrowserTreeTable
                                             final IModel<UIStructurBrowser> _model)
     {
         final UIStructurBrowser strucBrws = _model.getObject();
-        final UIStructurBrowserTableCell uicell = strucBrws.getColumns().get(strucBrws.getBrowserFieldIndex());
-        final PageReference pageRef = ((AbstractContentPage) getPage()).getCalledByPageReference();
-        boolean updateMenu = false;
-        if (pageRef != null && pageRef.getPage() instanceof ContentContainerPage) {
-            updateMenu = true;
-        }
-        return new CellPanel(_wicketId, new UIModel<UITableCell>(uicell), updateMenu, strucBrws, 0);
+        final AbstractUIField uiField = strucBrws.getColumns().get(strucBrws.getBrowserFieldIndex());
+        return new FieldPanel(_wicketId, Model.of(uiField));
     }
 
     @Override

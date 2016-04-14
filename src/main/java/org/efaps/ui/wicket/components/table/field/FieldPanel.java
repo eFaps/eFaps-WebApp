@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2015 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,9 +58,14 @@ public class FieldPanel
         final AbstractUIField uiField = _model.getObject();
         try {
             add(AttributeModifier.replace("title", uiField.getFactory().getStringValue(uiField)));
-            add(new AttributeAppender("style", Model.of("text-align:" + uiField.getFieldConfiguration().getAlign()),
-                            ";"));
+            add(new AttributeAppender("style",
+                            Model.of("text-align:" + uiField.getFieldConfiguration().getAlign()), ";"));
             final Component field = uiField.getComponent("field");
+
+            if (uiField.isHide()) {
+                field.add(new AttributeAppender("style", Model.of("display:none"), ";"));
+            }
+
             add(field);
         } catch (final EFapsException e) {
             FieldPanel.LOG.error("Catched error during population of a FieldPanel", e);
