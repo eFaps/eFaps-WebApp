@@ -64,7 +64,6 @@ import org.efaps.ui.wicket.models.field.factories.UserUIFactory;
 import org.efaps.ui.wicket.models.objects.AbstractUIModeObject;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -210,6 +209,9 @@ public abstract class AbstractUIField
                 if (event.getProperty("AutoType") != null) {
                     this.autoCompleteSetting.setAutoType(EnumUtils.getEnum(AutoCompleteBehavior.Type.class,
                                     event.getProperty("AutoType")));
+                }
+                if (getFieldConfiguration().getField().getCols() > 0) {
+                    getAutoCompleteSetting().setWidth(getFieldConfiguration().getField().getCols());
                 }
 
                 // add the ExtraParameter definitions
@@ -635,7 +637,8 @@ public abstract class AbstractUIField
     public String getAutoCompleteValue()
         throws EFapsException
     {
-        return String.valueOf(getValue().getReadOnlyValue(getParent().getMode()));
+        final Object val = getValue().getReadOnlyValue(getParent().getMode());
+        return val == null ? null : String.valueOf(val);
     }
 
     @SuppressWarnings("unchecked")

@@ -523,7 +523,8 @@ public class UIForm
     {
         return (_attr != null && _attr.getAttributeType().getUIProvider() instanceof UIInterface
                         || _field.getUIProvider() != null && _field.getUIProvider() instanceof UIInterface)
-                        && !_field.containsProperty(UIFormFieldProperty.UI_TYPE);
+                        && !_field.containsProperty(UIFormFieldProperty.UI_TYPE)
+                        && !_field.hasEvents(EventType.UI_FIELD_AUTOCOMPLETE);
     }
 
     /**

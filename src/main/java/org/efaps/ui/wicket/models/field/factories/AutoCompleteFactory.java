@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 
@@ -33,12 +30,10 @@ import org.efaps.util.EFapsException;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
-//CHECKSTYLE:OFF
+@SuppressWarnings("checkstyle:abstractclassname")
 public class AutoCompleteFactory
     implements IComponentFactory
-// CHECKSTYLE:ON
 {
 
     /**
@@ -81,7 +76,7 @@ public class AutoCompleteFactory
                                final AbstractUIField _uiField)
         throws EFapsException
     {
-     // does not have an hidden!
+        // does not have an hidden!
         return null;
     }
 
@@ -95,7 +90,7 @@ public class AutoCompleteFactory
     public String getPickListValue(final AbstractUIField _uiField)
         throws EFapsException
     {
-        // TODO Auto-generated method stub
+        // does not provide value for a picklist
         return null;
     }
 
@@ -118,7 +113,7 @@ public class AutoCompleteFactory
     public boolean applies(final AbstractUIField _uiField)
         throws EFapsException
     {
-        return _uiField.isAutoComplete();
+        return _uiField.isAutoComplete() && _uiField.editable();
     }
 
     /**

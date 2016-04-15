@@ -140,7 +140,7 @@ public class DropDownField
             for (final EventDefinition event : events) {
                 eventName = event.getProperty("Event") == null ? "change" : event.getProperty("Event");
             }
-            add(new AjaxFieldUpdateBehavior(eventName, Model.of(this.cellvalue)));
+            add(new AjaxFieldUpdateBehavior(eventName, Model.of(this.cellvalue), false));
         }
     }
 

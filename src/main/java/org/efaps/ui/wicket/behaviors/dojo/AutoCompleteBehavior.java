@@ -185,8 +185,9 @@ public class AutoCompleteBehavior
                 break;
             default:
                 final String id = ((AutoCompleteField) _component).getItemValue();
-                if (id != null) {
-                    final String label = ((AutoCompleteField) _component).getItemLabel();
+                final String label = ((AutoCompleteField) _component).getItemLabel();
+                // only if both value are valid it makes sence to add it
+                if (StringUtils.isNotEmpty(id) && StringUtils.isNotEmpty(label)) {
                     js.append("item: { id:\"").append(id).append("\", name:\"").append(label)
                         .append("\", label:\"").append(label) .append("\"},");
                 }
@@ -194,7 +195,7 @@ public class AutoCompleteBehavior
         }
 
         if (this.settings.getWidth() > 0) {
-            js.append("style:\"width:").append(this.settings.getWidth()).append("em\",");
+            js.append("style:\"width:").append(this.settings.getWidth()).append("ch\",");
         }
         if (!this.settings.isHasDownArrow()) {
             js.append("hasDownArrow:").append(this.settings.isHasDownArrow()).append(",");
