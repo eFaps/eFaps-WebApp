@@ -57,6 +57,7 @@ import org.efaps.ui.wicket.models.field.factories.IComponentFactory;
 import org.efaps.ui.wicket.models.field.factories.JaxbUIFactory;
 import org.efaps.ui.wicket.models.field.factories.LinkWithRangesUIFactory;
 import org.efaps.ui.wicket.models.field.factories.NumberUIFactory;
+import org.efaps.ui.wicket.models.field.factories.PasswordUIFactory;
 import org.efaps.ui.wicket.models.field.factories.StringUIFactory;
 import org.efaps.ui.wicket.models.field.factories.TypeUIFactory;
 import org.efaps.ui.wicket.models.field.factories.UITypeFactory;
@@ -64,6 +65,7 @@ import org.efaps.ui.wicket.models.field.factories.UserUIFactory;
 import org.efaps.ui.wicket.models.objects.AbstractUIModeObject;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,6 +98,7 @@ public abstract class AbstractUIField
         AbstractUIField.FACTORIES.put(HRefFactory.get().getKey(), HRefFactory.get());
         AbstractUIField.FACTORIES.put(AutoCompleteFactory.get().getKey(), AutoCompleteFactory.get());
         AbstractUIField.FACTORIES.put(NumberUIFactory.get().getKey(), NumberUIFactory.get());
+        AbstractUIField.FACTORIES.put(PasswordUIFactory.get().getKey(), PasswordUIFactory.get());
         AbstractUIField.FACTORIES.put(StringUIFactory.get().getKey(), StringUIFactory.get());
         AbstractUIField.FACTORIES.put(LinkWithRangesUIFactory.get().getKey(), LinkWithRangesUIFactory.get());
         AbstractUIField.FACTORIES.put(BooleanUIFactory.get().getKey(), BooleanUIFactory.get());

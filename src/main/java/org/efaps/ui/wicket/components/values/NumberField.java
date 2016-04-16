@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.components.values;
@@ -37,6 +34,7 @@ import org.efaps.admin.datamodel.attributetype.RealType;
 import org.efaps.admin.datamodel.ui.DecimalUI;
 import org.efaps.admin.datamodel.ui.IUIProvider;
 import org.efaps.admin.datamodel.ui.UIValue;
+import org.efaps.api.ci.UIFormFieldProperty;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.models.cell.CellSetValue;
 import org.efaps.ui.wicket.models.cell.FieldConfiguration;
@@ -51,7 +49,6 @@ import org.slf4j.LoggerFactory;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class NumberField
     extends AbstractField<Number>
@@ -162,29 +159,23 @@ public class NumberField
     }
 
     @Override
-    protected void onComponentTag(final ComponentTag tag)
+    protected void onComponentTag(final ComponentTag _tag)
     {
-        super.onComponentTag(tag);
+        super.onComponentTag(_tag);
 
-        final IValueMap attributes = tag.getAttributes();
-        final String minimum = getFieldConfig().getField().getProperty("minimum");
-        if (minimum != null)
-        {
-            attributes.put("min", minimum);
+        final IValueMap attributes = _tag.getAttributes();
+        if (getFieldConfig().getField().containsProperty(UIFormFieldProperty.NUMBER_MINIMUM)) {
+            attributes.put("min", getFieldConfig().getField().getProperty(UIFormFieldProperty.NUMBER_MINIMUM));
         } else {
             attributes.remove("min");
         }
-        final String maximum = getFieldConfig().getField().getProperty("maximum");
-        if (maximum != null)
-        {
-            attributes.put("max", maximum);
+        if (getFieldConfig().getField().containsProperty(UIFormFieldProperty.NUMBER_MAXIMUM)) {
+            attributes.put("max", getFieldConfig().getField().getProperty(UIFormFieldProperty.NUMBER_MAXIMUM));
         } else {
             attributes.remove("max");
         }
-        final String step = getFieldConfig().getField().getProperty("step");
-        if (step != null)
-        {
-            attributes.put("step", step);
+        if (getFieldConfig().getField().containsProperty(UIFormFieldProperty.NUMBER_STEP)) {
+            attributes.put("step", getFieldConfig().getField().getProperty(UIFormFieldProperty.NUMBER_STEP));
         } else if (this.any) {
             attributes.put("step", "any");
         } else {

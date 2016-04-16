@@ -14,52 +14,44 @@
  * limitations under the License.
  *
  */
+package org.efaps.ui.wicket.components.values;
 
-
-package org.efaps.ui.wicket.models.field;
-
-import org.apache.wicket.Component;
 import org.apache.wicket.model.Model;
-import org.efaps.ui.wicket.components.values.SnippletField;
 import org.efaps.ui.wicket.models.cell.FieldConfiguration;
-import org.efaps.ui.wicket.models.objects.AbstractUIModeObject;
+import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.util.EFapsException;
 
-
 /**
- * Field used to send messages from the application.
+ * The Class PasswordField.
  *
  * @author The eFaps Team
  */
-public class UIMessageField
-    extends UISnippletField
+public class PasswordField
+    extends StringField
 {
-    /**
-     *
-     */
+
+    /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
 
     /**
-     * @param _instanceKey  instanckey
-     * @param _parent       parent object
+     * Instantiates a new password field.
+     *
+     * @param _wicketId the wicket id
+     * @param _model the model
+     * @param _config the config
      * @throws EFapsException on error
      */
-    public UIMessageField(final String _instanceKey,
-                          final AbstractUIModeObject _parent)
+    public PasswordField(final String _wicketId,
+                         final Model<AbstractUIField> _model,
+                         final FieldConfiguration _config)
         throws EFapsException
     {
-        super(_instanceKey, _parent, (FieldConfiguration) null);
+        super(_wicketId, _model, _config);
     }
 
     @Override
-    public Component getComponent(final String _wicketId)
+    protected String[] getInputTypes()
     {
-        return new SnippletField(_wicketId, Model.of(getHtml()), null, null);
-    }
-
-    @Override
-    public String toString()
-    {
-        return getHtml();
+        return new String[] { "password" };
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.models.field.factories;
@@ -42,12 +39,10 @@ import org.efaps.util.cache.CacheReloadException;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
-// CHECKSTYLE:OFF
+@SuppressWarnings("checkstyle:abstractclassname")
 public final class UITypeFactory
     implements IComponentFactory
-// CHECKSTYLE:ON
 {
 
     /**
@@ -63,6 +58,14 @@ public final class UITypeFactory
         return applies(_uiField) ? getEditableComp(_wicketId, _uiField) : null;
     }
 
+    /**
+     * Gets the editable comp.
+     *
+     * @param _wicketId the wicket id
+     * @param _uiField the ui field
+     * @return the editable comp
+     * @throws EFapsException on error
+     */
     protected Component getEditableComp(final String _wicketId,
                                         final AbstractUIField _uiField)
         throws EFapsException
@@ -76,7 +79,7 @@ public final class UITypeFactory
                 }
                 final String html = String.valueOf(_uiField.getValue().getEditValue(
                                 _uiField.getParent().getMode()));
-                ret = new SnippletField(_wicketId, Model.of(html), label);
+                ret = new SnippletField(_wicketId, Model.of(html), label, _uiField);
                 break;
             case DROPDOWN:
                 final List<DropDownOption> choices = DropDownOption.getChoices(_uiField.getValue()
@@ -117,7 +120,7 @@ public final class UITypeFactory
                     }
                     final String html = String.valueOf(_uiField.getValue().getReadOnlyValue(
                                     _uiField.getParent().getMode()));
-                    ret = new SnippletField(_wicketId, Model.of(html), label);
+                    ret = new SnippletField(_wicketId, Model.of(html), label, _uiField);
                     break;
                 default:
                     break;
@@ -140,7 +143,7 @@ public final class UITypeFactory
                 case SNIPPLET:
                     final String html = String.valueOf(_uiField.getValue().getReadOnlyValue(
                                     _uiField.getParent().getMode()));
-                    ret = new SnippletField(_wicketId, Model.of(html), null);
+                    ret = new SnippletField(_wicketId, Model.of(html), null, _uiField);
                     break;
                 default:
                     break;

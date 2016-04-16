@@ -82,7 +82,7 @@ public class UISnippletField
         if (!getFieldConfiguration().isHideLabel()) {
             label = Model.of(getFieldConfiguration().getLabel());
         }
-        return new SnippletField(_wicketId, Model.of(this.html), label);
+        return new SnippletField(_wicketId, Model.of(this.html), label, null);
     }
 
     @Override

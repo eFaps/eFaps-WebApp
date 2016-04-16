@@ -19,8 +19,8 @@ package org.efaps.ui.wicket.models.field.factories;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.model.Model;
-import org.efaps.admin.datamodel.ui.NumberUI;
-import org.efaps.ui.wicket.components.values.NumberField;
+import org.efaps.admin.datamodel.ui.PasswordUI;
+import org.efaps.ui.wicket.components.values.PasswordField;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.util.EFapsException;
 
@@ -30,19 +30,19 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  */
 @SuppressWarnings("checkstyle:abstractclassname")
-public final class NumberUIFactory
-    extends StringUIFactory
+public final class PasswordUIFactory
+    extends AbstractUIFactory
 {
 
     /**
      * Factory Instance.
      */
-    private static NumberUIFactory FACTORY;
+    private static PasswordUIFactory FACTORY;
 
     /**
      * Singelton.
      */
-    private NumberUIFactory()
+    protected PasswordUIFactory()
     {
     }
 
@@ -56,32 +56,17 @@ public final class NumberUIFactory
     {
         Component ret = null;
         if (applies(_uiField)) {
-            switch (_uiField.getFieldConfiguration().getUIType()) {
-                case DEFAULT:
-                    ret = new NumberField(_wicketId, Model.of(_uiField), _uiField.getFieldConfiguration());
-                    break;
-                case BUTTON:
-                case CHECKBOX:
-                case DROPDOWN:
-                case RADIO:
-                case SNIPPLET:
-                    ret = ((UITypeFactory) UITypeFactory.get()).getEditableComp(_wicketId, _uiField);
-                    break;
-                default:
-                    break;
-            }
+            ret = new PasswordField(_wicketId, Model.of(_uiField), _uiField.getFieldConfiguration());
         }
         return ret;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Component getHidden(final String _wicketId,
-                               final AbstractUIField _abstractUIField)
+                               final AbstractUIField _uiField)
         throws EFapsException
     {
+        // does not have a hidden
         return null;
     }
 
@@ -89,28 +74,21 @@ public final class NumberUIFactory
      * {@inheritDoc}
      */
     @Override
-    public boolean applies(final AbstractUIField _abstractUIField)
+    public boolean applies(final AbstractUIField _uiField)
         throws EFapsException
     {
-        return _abstractUIField.getValue().getUIProvider() instanceof NumberUI;
+        return _uiField.getValue().getUIProvider() instanceof PasswordUI && _uiField.editable();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected String getReadOnlyValue(final AbstractUIField _abstractUIField)
+    protected String getReadOnlyValue(final AbstractUIField _uiField)
         throws EFapsException
     {
-        String strValue = "";
-        final Object valueTmp = _abstractUIField.getValue()
-                        .getReadOnlyValue(_abstractUIField.getParent().getMode());
-        if (valueTmp instanceof Number) {
-            strValue = String.valueOf(valueTmp);
-        } else {
-            strValue = valueTmp == null ? "" : String.valueOf(valueTmp);
-        }
-        return strValue;
+        // does not have an readonly!
+        return null;
     }
 
     /**
@@ -119,7 +97,7 @@ public final class NumberUIFactory
     @Override
     public String getKey()
     {
-        return NumberUIFactory.class.getName();
+        return PasswordUIFactory.class.getName();
     }
 
     /**
@@ -129,7 +107,7 @@ public final class NumberUIFactory
     public String getPickListValue(final AbstractUIField _uiField)
         throws EFapsException
     {
-        return getReadOnlyValue(_uiField);
+        return null;
     }
 
     /**
@@ -139,7 +117,7 @@ public final class NumberUIFactory
     public Comparable<?> getCompareValue(final AbstractUIField _uiField)
         throws EFapsException
     {
-        return (Comparable<?>) _uiField.getValue().getReadOnlyValue(_uiField.getParent().getMode());
+        return null;
     }
 
     /**
@@ -147,9 +125,9 @@ public final class NumberUIFactory
      */
     public static IComponentFactory get()
     {
-        if (NumberUIFactory.FACTORY == null) {
-            NumberUIFactory.FACTORY = new NumberUIFactory();
+        if (PasswordUIFactory.FACTORY == null) {
+            PasswordUIFactory.FACTORY = new PasswordUIFactory();
         }
-        return NumberUIFactory.FACTORY;
+        return PasswordUIFactory.FACTORY;
     }
 }
