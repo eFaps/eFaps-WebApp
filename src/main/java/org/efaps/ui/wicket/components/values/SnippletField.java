@@ -18,6 +18,7 @@
 
 package org.efaps.ui.wicket.components.values;
 
+
 import java.util.List;
 
 import org.apache.commons.lang3.RandomStringUtils;
@@ -25,14 +26,18 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.attributes.AjaxAttributeName;
 import org.apache.wicket.ajax.json.JSONException;
 import org.apache.wicket.ajax.json.JSONObject;
+import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.ILabelProvider;
+import org.apache.wicket.markup.html.form.validation.IFormValidator;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
 import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
+import org.efaps.ui.wicket.models.cell.FieldConfiguration;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 
 
@@ -43,7 +48,7 @@ import org.efaps.ui.wicket.models.field.AbstractUIField;
  */
 public class SnippletField
     extends Label
-    implements ILabelProvider<String>
+    implements ILabelProvider<String>, IFieldConfig
 {
 
     /**
@@ -56,22 +61,26 @@ public class SnippletField
      */
     private final IModel<String> label;
 
+    /** The field config. */
+    private final FieldConfiguration fieldConfig;
+
     /**
      * Instantiates a new snipplet field.
      *
      * @param _wicketId wicket if of this component
      * @param _model model for this component
-     * @param _label label for this component
+     * @param _labelModel label for this component
      * @param _uiField the ui field
      */
     public SnippletField(final String _wicketId,
                          final IModel<String> _model,
-                         final IModel<String> _label,
+                         final IModel<String> _labelModel,
                          final AbstractUIField _uiField)
     {
         super(_wicketId, _model);
         setEscapeModelStrings(false);
-        this.label = _label;
+        this.label = _labelModel;
+        this.fieldConfig = _uiField == null ? null : _uiField.getFieldConfiguration();
         if (_uiField != null && _uiField.isFieldUpdate()) {
             final List<EventDefinition> events = _uiField.getFieldConfiguration().getField().getEvents(
                             EventType.UI_FIELD_UPDATE);
@@ -110,5 +119,23 @@ public class SnippletField
     public IModel<String> getLabel()
     {
         return this.label;
+    }
+
+    @Override
+    protected void onBeforeRender()
+    {
+        super.onBeforeRender();
+        for (final Behavior behavior : getBehaviors()) {
+            if (behavior instanceof IFormValidator) {
+                final Form<?> form = findParent(Form.class);
+                form.add(behavior);
+            }
+        }
+    }
+
+    @Override
+    public FieldConfiguration getFieldConfig()
+    {
+        return this.fieldConfig;
     }
 }

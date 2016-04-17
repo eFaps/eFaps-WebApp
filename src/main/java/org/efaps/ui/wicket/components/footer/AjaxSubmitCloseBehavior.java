@@ -45,6 +45,7 @@ import org.apache.wicket.feedback.FeedbackCollector;
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.ValidationErrorFeedback;
 import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.util.string.StringValue;
@@ -62,6 +63,7 @@ import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.components.FormContainer;
+import org.efaps.ui.wicket.components.autocomplete.AutoCompleteComboBox;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.form.FormPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
@@ -202,7 +204,7 @@ public class AjaxSubmitCloseBehavior
 
                     if (this.uiObject.hasTargetCmd()) {
                         final AbstractCommand targetCmd = this.uiObject.getTargetCmd();
-                        AbstractUIPageObject newUIObject;
+                        final AbstractUIPageObject newUIObject;
                         if (targetCmd.getTargetTable() != null) {
                             newUIObject = new UITable(this.uiObject.getTargetCmdUUID(), this.uiObject
                                             .getInstanceKey(), this.uiObject.getOpenerId());
@@ -339,8 +341,19 @@ public class AjaxSubmitCloseBehavior
         final StringBuilder html = new StringBuilder()
                         .append("<table class=\"eFapsValidateFieldValuesTable\">");
         for (final FeedbackMessage msg : msgs) {
-            msg.getReporter().add(AttributeModifier.append("class", "invalid"));
-            _target.add(msg.getReporter());
+            if (!(msg.getReporter() instanceof Form)) {
+                if (msg.getReporter() instanceof AutoCompleteComboBox) {
+                    final StringBuilder js = new StringBuilder()
+                                .append("require(['dojo/dom','dojo/dom-class'], function (dom, domClass) {")
+                                    .append("domClass.add(dom.byId('").append(msg.getReporter().getMarkupId())
+                                    .append("').parentNode, 'invalid');")
+                                .append("});");
+                    _target.prependJavaScript(js);
+                } else {
+                    msg.getReporter().add(AttributeModifier.append("class", "invalid"));
+                    _target.add(msg.getReporter());
+                }
+            }
             Serializable warn = null;
             if (msg.getMessage() instanceof ValidationErrorFeedback) {
                 // look if a message was set
@@ -349,20 +362,24 @@ public class AjaxSubmitCloseBehavior
                 if (warn == null) {
                     warn = ((ValidationErrorFeedback) msg.getMessage()).getError().getErrorMessage(msgResource);
                 }
+            } else {
+                warn = String.valueOf(msg.getMessage());
             }
-            String label = "";
+            html.append("<tr>");
             if (msg.getReporter() instanceof IFieldConfig) {
-                label = ((IFieldConfig) msg.getReporter()).getFieldConfig().getLabel( );
+                html.append("<td>")
+                    .append(((IFieldConfig) msg.getReporter()).getFieldConfig().getLabel())
+                    .append(":</td><td>")
+                    .append(warn).append("</td>");
+            } else {
+                html.append("<td colspan=\"2\">")
+                    .append(warn).append("</td></tr>");
             }
-            html.append("<tr><td>").append(label).append(":</td><td>")
-                .append(warn).append("</td></tr>");
+            msg.getReporter().getFeedbackMessages().clear();
         }
         html.append("</table>");
         showDialog(_target, html.toString(), true, false);
     }
-
-
-
 
     /**
      * Execute the events which are related to CommandAbstract calling the Form.
