@@ -127,7 +127,7 @@ public class ValueCellPanel
                     label = new LabelComponent("label",
                                     new Model<String>(uiFormCell.getCellValue()));
                     if (uiFormCell.isFieldUpdate() && uiFormCell.getDisplay().equals(Display.EDITABLE)) {
-                        label.add(new AjaxFieldUpdateBehavior(uiFormCell.getFieldUpdateEvent(), _model));
+                        label.add(new AjaxFieldUpdateBehavior(uiFormCell.getFieldUpdateEvent(), _model, false));
                         label.add(new PreviousValueBehavior().setCheck4Select(true));
                     }
                 }

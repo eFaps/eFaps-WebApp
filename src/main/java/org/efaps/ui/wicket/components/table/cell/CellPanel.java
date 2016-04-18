@@ -184,7 +184,7 @@ public class CellPanel
                                 && uiTableCell.getDisplay().equals(Display.EDITABLE)) {
                     label.add(new SetSelectedRowBehavior(uiTableCell.getName()));
                     if (uiTableCell.isFieldUpdate()) {
-                        label.add(new AjaxFieldUpdateBehavior(uiTableCell.getFieldUpdateEvent(), _model));
+                        label.add(new AjaxFieldUpdateBehavior(uiTableCell.getFieldUpdateEvent(), _model, false));
                     }
                     if (uiTableCell.isMultiRows()) {
                         label.add(new ExpandTextareaBehavior());
