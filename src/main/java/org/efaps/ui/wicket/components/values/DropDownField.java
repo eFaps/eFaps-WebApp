@@ -173,6 +173,7 @@ public class DropDownField
                         DropDownField.LOG.error("EFapsException", e);
                     }
                     super.onSubmit(_target);
+                    DropDownField.this.converted = false;
                     updateModel();
                     DropDownField.this.converted = false;
                 }
