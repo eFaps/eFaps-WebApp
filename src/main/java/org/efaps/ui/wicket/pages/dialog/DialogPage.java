@@ -253,9 +253,13 @@ public class DialogPage
             modal.close(_target);
 
             final StringBuilder bldr = new StringBuilder();
-            bldr.append("var inp = top.frames[0].document").append(".getElementById('eFapsContentDiv')").append(
-                            ".getElementsByTagName('input');").append("if(inp!=null){").append("  inp[0].focus();")
-                            .append("}");
+            bldr.append("var cD = top.frames[0].document").append(".getElementById('eFapsContentDiv');")
+                .append("if(cD!=null){")
+                    .append("cD.getElementsByTagName('input');")
+                    .append("if(inp!=null){")
+                        .append("  inp[0].focus();")
+                    .append("}")
+                .append("}");
             _target.appendJavaScript(bldr.toString());
         }
     }
