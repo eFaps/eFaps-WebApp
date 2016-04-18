@@ -25,6 +25,7 @@ import java.util.Map.Entry;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
@@ -176,6 +177,10 @@ public class DropDownField
                 }
             });
         }
+        add(new AttributeAppender("style", "text-align:" + getFieldConfig().getAlign(), ";"));
+        if (getFieldConfig().getField().getCols() != 20) {
+            add(new AttributeAppender("style", "width:" + getFieldConfig().getField().getCols() + "ch", ";"));
+        }
     }
 
     @Override
@@ -189,7 +194,6 @@ public class DropDownField
     protected void onComponentTag(final ComponentTag _tag)
     {
         _tag.setName("select");
-        _tag.append("style", "text-align:" + getFieldConfig().getAlign(), ";");
         super.onComponentTag(_tag);
     }
 
