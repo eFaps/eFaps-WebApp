@@ -26,6 +26,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
+import org.efaps.api.ci.UIFormFieldProperty;
 import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
 import org.efaps.ui.wicket.models.cell.FieldConfiguration;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
@@ -135,12 +136,12 @@ public abstract class AbstractField<T extends Serializable>
     {
         _tag.setName("input");
         _tag.append("style", "text-align:" + getConfig().getAlign(), ";");
-        _tag.put("size", getConfig().getSize());
-
+        if (getFieldConfig().hasProperty(UIFormFieldProperty.COLUMNS)) {
+            _tag.put("size", getConfig().getProperty(UIFormFieldProperty.COLUMNS));
+        }
         if (getInputTypes() != null) {
             _tag.put("type", getInputTypes()[0]);
         }
-
         super.onComponentTag(_tag);
     }
 

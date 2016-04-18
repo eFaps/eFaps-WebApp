@@ -21,8 +21,10 @@ package org.efaps.ui.wicket.models.cell;
 import java.io.Serializable;
 
 import org.apache.commons.lang3.EnumUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.field.Field;
+import org.efaps.api.IEnumValue;
 import org.efaps.api.ci.UIFormFieldProperty;
 import org.efaps.api.ui.UIType;
 import org.efaps.util.EFapsException;
@@ -106,9 +108,40 @@ public class FieldConfiguration
     /**
      * @return the size of the field
      */
-    public int getSize()
+    public String getWidth()
     {
-        return getField().getCols();
+        String ret = "";
+        if (getField().containsProperty(UIFormFieldProperty.WIDTH)) {
+            final String widthTmp = getField().getProperty(UIFormFieldProperty.WIDTH);
+            if (StringUtils.isNumeric(widthTmp)) {
+                ret = widthTmp + "ch";
+            } else {
+                ret = widthTmp;
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * Checks for property.
+     *
+     * @param _enum the _enum
+     * @return true, if successful
+     */
+    public boolean hasProperty(final IEnumValue _enum)
+    {
+        return getField().containsProperty(_enum);
+    }
+
+    /**
+     * Gets the property.
+     *
+     * @param _enum the _enum
+     * @return the property
+     */
+    public String getProperty(final IEnumValue _enum)
+    {
+        return getField().getProperty(_enum);
     }
 
     /**

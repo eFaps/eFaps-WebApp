@@ -17,6 +17,7 @@
 
 package org.efaps.ui.wicket.components.values;
 
+import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.convert.ConversionException;
@@ -99,6 +100,9 @@ public class NumberField
                 this.any = true;
             }
         }
+        if (getFieldConfig().hasProperty(UIFormFieldProperty.WIDTH)) {
+            add(new AttributeAppender("style", "width:" + getFieldConfig().getWidth(), ";"));
+        }
     }
 
     @Override
@@ -162,7 +166,7 @@ public class NumberField
     protected void onComponentTag(final ComponentTag _tag)
     {
         super.onComponentTag(_tag);
-
+        // must rempove teh html5 tags if not set explecitely
         final IValueMap attributes = _tag.getAttributes();
         if (getFieldConfig().getField().containsProperty(UIFormFieldProperty.NUMBER_MINIMUM)) {
             attributes.put("min", getFieldConfig().getField().getProperty(UIFormFieldProperty.NUMBER_MINIMUM));

@@ -21,6 +21,7 @@ package org.efaps.ui.wicket.components.values;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.datamodel.ui.UIValue;
+import org.efaps.api.ci.UIFormFieldProperty;
 import org.efaps.ui.wicket.models.cell.CellSetValue;
 import org.efaps.ui.wicket.models.cell.FieldConfiguration;
 import org.efaps.ui.wicket.models.cell.UIFormCellSet;
@@ -79,8 +80,10 @@ public class StringField
         if (rows > 1) {
             _tag.setName("textarea");
             _tag.put("rows", rows);
-            _tag.put("cols", getConfig().getSize());
-            _tag.remove("size");
+            if (getConfig().hasProperty(UIFormFieldProperty.COLUMNS)) {
+                _tag.put("cols", getConfig().getProperty(UIFormFieldProperty.COLUMNS));
+                _tag.remove("size");
+            }
         }
     }
 

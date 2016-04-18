@@ -36,6 +36,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.util.string.StringValue;
 import org.efaps.admin.datamodel.ui.UIValue;
 import org.efaps.admin.dbproperty.DBProperties;
+import org.efaps.api.ci.UIFormFieldProperty;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.models.cell.CellSetValue;
 import org.efaps.ui.wicket.models.cell.FieldConfiguration;
@@ -110,7 +111,7 @@ public class DateTimePanel
     /**
      * @param _wicketId wicket id of this component
      * @param _model model for this component
-     * @param _fieldConfiguration FieldConfiguration
+     * @param _fieldConf FieldConfiguration
      * @param _dateObject object containing a DateTime, if null or not DateTime
      *                       a new DateTime will be instantiated
      * @param _time must the time be rendered also
@@ -118,13 +119,15 @@ public class DateTimePanel
      */
     public DateTimePanel(final String _wicketId,
                          final Model<AbstractUIField> _model,
-                         final FieldConfiguration _fieldConfiguration,
+                         final FieldConfiguration _fieldConf,
                          final Object _dateObject,
                          final boolean _time)
         throws EFapsException
     {
-        this(_wicketId, _dateObject, _fieldConfiguration.getName(), _model.getObject().getLabel(), _time,
-                        _fieldConfiguration.getSize());
+        this(_wicketId, _dateObject, _fieldConf.getName(), _model.getObject().getLabel(), _time,
+                        _fieldConf.hasProperty(UIFormFieldProperty.COLUMNS)
+                                    ? Integer.valueOf(_fieldConf.getProperty(UIFormFieldProperty.COLUMNS))
+                                    : null);
         this.cellvalue = _model.getObject();
     }
 

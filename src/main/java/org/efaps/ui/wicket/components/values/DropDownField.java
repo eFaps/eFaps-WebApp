@@ -35,6 +35,7 @@ import org.apache.wicket.model.Model;
 import org.efaps.admin.datamodel.ui.UIValue;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
+import org.efaps.api.ci.UIFormFieldProperty;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
 import org.efaps.ui.wicket.models.cell.CellSetValue;
@@ -178,8 +179,8 @@ public class DropDownField
             });
         }
         add(new AttributeAppender("style", "text-align:" + getFieldConfig().getAlign(), ";"));
-        if (getFieldConfig().getField().getCols() != 20) {
-            add(new AttributeAppender("style", "width:" + getFieldConfig().getField().getCols() + "ch", ";"));
+        if (getFieldConfig().hasProperty(UIFormFieldProperty.WIDTH)) {
+            add(new AttributeAppender("style", "width:" + getFieldConfig().getWidth(), ";"));
         }
     }
 
