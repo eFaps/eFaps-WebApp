@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
@@ -33,6 +34,7 @@ import org.apache.wicket.model.Model;
 import org.efaps.admin.datamodel.ui.UIValue;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
+import org.efaps.db.Context;
 import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
 import org.efaps.ui.wicket.models.cell.CellSetValue;
 import org.efaps.ui.wicket.models.cell.FieldConfiguration;
@@ -67,7 +69,7 @@ public class DropDownField
     /**
      * value of this field.
      */
-    private final AbstractUIField cellvalue;
+    private final AbstractUIField uiField;
 
     /**
      * Was the value already converted.
@@ -87,8 +89,8 @@ public class DropDownField
     {
         super(_wicketId);
         setOutputMarkupId(true);
-        this.cellvalue = _model.getObject();
-        final Serializable value = this.cellvalue.getValue().getDbValue();
+        this.uiField = _model.getObject();
+        final Serializable value = this.uiField.getValue().getDbValue();
         if (value != null) {
             setDefaultModel(Model.of(new DropDownOption(String.valueOf(value), null)));
         } else {
@@ -96,6 +98,7 @@ public class DropDownField
         }
         setChoices(DropDownField.getSelectChoices(_choices.getObject()));
         setChoiceRenderer(new ChoiceRenderer());
+        addBehaviors();
     }
 
     /**
@@ -108,7 +111,7 @@ public class DropDownField
                          final List<DropDownOption> _choices)
     {
         super(_wicketId);
-        this.cellvalue = _model.getObject();
+        this.uiField = _model.getObject();
         for (final DropDownOption choice : _choices) {
             if (choice.isSelected()) {
                 setDefaultModel(Model.of(choice));
@@ -133,14 +136,45 @@ public class DropDownField
         }
         setChoices(_choices);
         setChoiceRenderer(new ChoiceRenderer());
-        if (this.cellvalue.getFieldConfiguration().getField().hasEvents(EventType.UI_FIELD_UPDATE)) {
+        addBehaviors();
+    }
+
+    /**
+     * Adds the behaviors.
+     */
+    private void addBehaviors()
+    {
+        if (this.uiField.getFieldConfiguration().getField().hasEvents(EventType.UI_FIELD_UPDATE)) {
             final List<EventDefinition> events =
-                            this.cellvalue.getFieldConfiguration().getField().getEvents(EventType.UI_FIELD_UPDATE);
+                            this.uiField.getFieldConfiguration().getField().getEvents(EventType.UI_FIELD_UPDATE);
             String eventName = "change";
             for (final EventDefinition event : events) {
                 eventName = event.getProperty("Event") == null ? "change" : event.getProperty("Event");
             }
-            add(new AjaxFieldUpdateBehavior(eventName, Model.of(this.cellvalue), false));
+            add(new AjaxFieldUpdateBehavior(eventName, Model.of(this.uiField), false) {
+
+                /** The Constant serialVersionUID. */
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                protected void onSubmit(final AjaxRequestTarget _target)
+                {
+                    // add the previous value as a parameter
+                    final DropDownOption option = (DropDownOption) getDefaultModelObject();
+                    try {
+                        if (option != null) {
+                            Context.getThreadContext().getParameters().put(
+                                            getFieldConfig().getName() + "_eFapsPrevious",
+                                            new String[] { option.getValue() });
+                        }
+                    } catch (final EFapsException e) {
+                        DropDownField.LOG.error("EFapsException", e);
+                    }
+                    super.onSubmit(_target);
+                    updateModel();
+                    DropDownField.this.converted = false;
+                }
+            });
         }
     }
 
@@ -176,12 +210,11 @@ public class DropDownField
     {
         this.converted = true;
         int i = 0;
-        if (this.cellvalue instanceof CellSetValue) {
-            final UIFormCellSet cellset = ((CellSetValue) this.cellvalue).getCellSet();
+        if (this.uiField instanceof CellSetValue) {
+            final UIFormCellSet cellset = ((CellSetValue) this.uiField).getCellSet();
             i = cellset.getIndex(getInputName());
         }
         final String[] value = getInputAsArray();
-
         setConvertedInput(new DropDownOption(
                         String.valueOf(value != null && value.length > 0 && value[i] != null ? trim(value[i]) : null),
                         null));
@@ -195,7 +228,7 @@ public class DropDownField
         }
         setModelObject(getConvertedInput());
         try {
-            this.cellvalue.setValue(UIValue.get(this.cellvalue.getValue().getField(), this.cellvalue.getValue()
+            this.uiField.setValue(UIValue.get(this.uiField.getValue().getField(), this.uiField.getValue()
                             .getAttribute(), ((DropDownOption) getDefaultModelObject()).getValue()));
         } catch (final CacheReloadException e) {
             DropDownField.LOG.error("EFapsException", e);
@@ -208,9 +241,8 @@ public class DropDownField
     @Override
     public FieldConfiguration getFieldConfig()
     {
-        return this.cellvalue.getFieldConfiguration();
+        return this.uiField.getFieldConfiguration();
     }
-
 
     /**
      * @param _values value to convert to dropdown otions
@@ -231,7 +263,7 @@ public class DropDownField
     {
         String ret = null;
         try {
-            ret = this.cellvalue.getLabel();
+            ret = this.uiField.getLabel();
         } catch (final EFapsException e) {
             DropDownField.LOG.error("EFapsException", e);
         }
