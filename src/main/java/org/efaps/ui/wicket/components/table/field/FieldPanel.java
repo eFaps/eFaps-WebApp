@@ -23,6 +23,7 @@ import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.efaps.ui.wicket.behaviors.SetSelectedRowBehavior;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
@@ -65,7 +66,9 @@ public class FieldPanel
             if (uiField.isHide()) {
                 field.add(new AttributeAppender("style", Model.of("display:none"), ";"));
             }
-
+            if (uiField.editable()) {
+                field.add(new SetSelectedRowBehavior(uiField.getFieldConfiguration().getName()));
+            }
             add(field);
         } catch (final EFapsException e) {
             FieldPanel.LOG.error("Catched error during population of a FieldPanel", e);
