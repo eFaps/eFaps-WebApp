@@ -28,11 +28,10 @@ import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
 import org.efaps.api.ci.UIFormFieldProperty;
 import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
-import org.efaps.ui.wicket.models.cell.FieldConfiguration;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
+import org.efaps.ui.wicket.models.field.FieldConfiguration;
+import org.efaps.ui.wicket.models.field.validators.StandartValidator;
 import org.efaps.util.EFapsException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * TODO comment!
@@ -44,12 +43,6 @@ public abstract class AbstractField<T extends Serializable>
     extends TextField<T>
     implements IFieldConfig, IUIField, ILabelProvider<String>
 {
-
-    /**
-     * Logging instance used in this class.
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractField.class);
-
     /**
      * Needed for serialziation.
      */
@@ -81,7 +74,7 @@ public abstract class AbstractField<T extends Serializable>
                         _model.getObject().getParent().getMode())));
         this.config = _config;
         this.cellvalue = _model.getObject();
-        this.add(new Validator<T>(this));
+        this.add(new StandartValidator<T>(this));
         setOutputMarkupId(true);
         setLabel(Model.of(this.cellvalue.getLabel()));
 
@@ -111,16 +104,6 @@ public abstract class AbstractField<T extends Serializable>
     }
 
     /**
-     * Getter method for the instance variable {@link #config}.
-     *
-     * @return value of instance variable {@link #config}
-     */
-    protected FieldConfiguration getConfig()
-    {
-        return this.config;
-    }
-
-    /**
      * Getter method for the instance variable {@link #cellvalue}.
      *
      * @return value of instance variable {@link #cellvalue}
@@ -135,9 +118,9 @@ public abstract class AbstractField<T extends Serializable>
     protected void onComponentTag(final ComponentTag _tag)
     {
         _tag.setName("input");
-        _tag.append("style", "text-align:" + getConfig().getAlign(), ";");
+        _tag.append("style", "text-align:" + getFieldConfig().getAlign(), ";");
         if (getFieldConfig().hasProperty(UIFormFieldProperty.COLUMNS)) {
-            _tag.put("size", getConfig().getProperty(UIFormFieldProperty.COLUMNS));
+            _tag.put("size", getFieldConfig().getProperty(UIFormFieldProperty.COLUMNS));
         }
         if (getInputTypes() != null) {
             _tag.put("type", getInputTypes()[0]);
@@ -148,13 +131,7 @@ public abstract class AbstractField<T extends Serializable>
     @Override
     public String getInputName()
     {
-        String ret = "";
-        try {
-            ret = getConfig().getName();
-        } catch (final EFapsException e) {
-            AbstractField.LOG.error("Catched Exception on get Input Name", e);
-        }
-        return ret;
+        return getFieldConfig().getName();
     }
 
     /**

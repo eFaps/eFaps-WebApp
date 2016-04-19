@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 
-package org.efaps.ui.wicket.models.cell;
+package org.efaps.ui.wicket.models.field;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -29,13 +26,13 @@ import org.efaps.ui.wicket.behaviors.dojo.AutoCompleteBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.AutoCompleteBehavior.Type;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
+import org.efaps.util.EFapsException;
 
 
 /**
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class AutoCompleteSettings
     implements Serializable
@@ -96,16 +93,6 @@ public class AutoCompleteSettings
     private int searchDelay =  Configuration.getAttributeAsInteger(ConfigAttribute.AUTOC_SEARCHDELAY);
 
     /**
-     * Name of the field.
-     */
-    private String fieldName;
-
-    /**
-     * Width of the rendered field.
-     */
-    private int width = 0;
-
-    /**
      * Edit value definition.
      */
     private EditValue value4Edit = EditValue.OID;
@@ -121,9 +108,29 @@ public class AutoCompleteSettings
     private boolean required = true;
 
     /**
-     * The AutoComplete Type
+     * The AutoComplete Type.
      */
     private AutoCompleteBehavior.Type autoType;
+
+    /** The field configuration. */
+    private FieldConfiguration fieldConfiguration;
+
+    /**
+     * Instantiates a new auto complete settings.
+     */
+    public AutoCompleteSettings()
+    {
+    }
+
+    /**
+     * Instantiates a new auto complete settings.
+     *
+     * @param _fieldConfiguration the field configuration
+     */
+    public AutoCompleteSettings(final FieldConfiguration _fieldConfiguration)
+    {
+        this.fieldConfiguration = _fieldConfiguration;
+    }
 
     /**
      * Getter method for the instance variable {@link #hasDownArrow}.
@@ -216,43 +223,14 @@ public class AutoCompleteSettings
     }
 
     /**
-     * Setter method for instance variable {@link #fieldName}.
-     *
-     * @param _fieldName value for instance variable {@link #fieldName}
-     */
-    public void setFieldName(final String _fieldName)
-    {
-        this.fieldName = _fieldName;
-    }
-
-    /**
-     * Setter method for instance variable {@link #width}.
-     *
-     * @param _width value for instance variable {@link #width}
-     */
-    public void setWidth(final int _width)
-    {
-        this.width = _width;
-    }
-
-    /**
      * Getter method for the instance variable {@link #fieldName}.
      *
      * @return value of instance variable {@link #fieldName}
+     * @throws EFapsException on error
      */
     public String getFieldName()
     {
-        return this.fieldName;
-    }
-
-    /**
-     * Getter method for the instance variable {@link #width}.
-     *
-     * @return value of instance variable {@link #width}
-     */
-    public int getWidth()
-    {
-        return this.width;
+        return getFieldConfiguration().getName();
     }
 
     /**
@@ -380,5 +358,25 @@ public class AutoCompleteSettings
     public void setAutoType(final AutoCompleteBehavior.Type _autoType)
     {
         this.autoType = _autoType;
+    }
+
+    /**
+     * Gets the field configuration.
+     *
+     * @return the field configuration
+     */
+    public FieldConfiguration getFieldConfiguration()
+    {
+        return this.fieldConfiguration;
+    }
+
+    /**
+     * Sets the field configuration.
+     *
+     * @param _fieldConfiguration the new field configuration
+     */
+    public void setFieldConfiguration(final FieldConfiguration _fieldConfiguration)
+    {
+        this.fieldConfiguration = _fieldConfiguration;
     }
 }

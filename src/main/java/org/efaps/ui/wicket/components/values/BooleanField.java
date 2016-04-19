@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.components.values;
@@ -35,17 +32,14 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import org.efaps.ui.wicket.components.FormContainer;
-import org.efaps.ui.wicket.models.cell.FieldConfiguration;
+import org.efaps.ui.wicket.models.field.FieldConfiguration;
 import org.efaps.ui.wicket.request.EFapsRequestParametersAdapter;
 import org.efaps.util.EFapsException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class BooleanField
     extends Panel
@@ -56,11 +50,6 @@ public class BooleanField
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
-
-    /**
-     * Logging instance used in this class.
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(BooleanField.class);
 
     /**
      * Configuration for this field.
@@ -103,7 +92,7 @@ public class BooleanField
         radio1.setLabel(Model.of((String) first.getKey()));
         radioGroup.add(radio1);
         final String markupId1 = radio1.getMarkupId(true);
-        radioGroup.add(new Label("label1", Model.of((String) first.getKey())){
+        radioGroup.add(new Label("label1", Model.of((String) first.getKey())) {
 
             private static final long serialVersionUID = 1L;
 
@@ -167,14 +156,10 @@ public class BooleanField
             public void component(final RadioGroup<?> _group,
                                   final IVisit<Void> _visit)
             {
-                try {
-                    if (Boolean.TRUE.equals( _group.getDefaultModelObject())) {
-                        _parameters.addParameterValue(getFieldConfiguration().getName(), "true");
-                    } else {
-                        _parameters.addParameterValue(getFieldConfiguration().getName(), "false");
-                    }
-                } catch (final EFapsException e) {
-                    BooleanField.LOG.error("Catched error during vist", e);
+                if (Boolean.TRUE.equals(_group.getDefaultModelObject())) {
+                    _parameters.addParameterValue(getFieldConfiguration().getName(), "true");
+                } else {
+                    _parameters.addParameterValue(getFieldConfiguration().getName(), "false");
                 }
             }
         });
@@ -192,7 +177,7 @@ public class BooleanField
     @Override
     public IModel<String> getLabel()
     {
-        IModel<String> ret;
+        final IModel<String> ret;
         if (this.label == null) {
             ret = Model.of(getFieldConfig().getLabel());
         } else {

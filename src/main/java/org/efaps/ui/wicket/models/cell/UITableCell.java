@@ -35,7 +35,7 @@ import org.efaps.admin.ui.field.FieldPicker;
 import org.efaps.api.ui.IOption;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
-import org.efaps.ui.wicket.models.cell.AutoCompleteSettings.EditValue;
+import org.efaps.ui.wicket.models.field.AutoCompleteSettings;
 import org.efaps.ui.wicket.models.field.IAutoComplete;
 import org.efaps.ui.wicket.models.field.IFilterable;
 import org.efaps.ui.wicket.models.field.IPickable;
@@ -156,52 +156,6 @@ public class UITableCell
         this.icon = _icon;
         this.multiRows = _fieldValue.getField().getRows() > 1;
 
-        if (_fieldValue.getField().hasEvents(EventType.UI_FIELD_AUTOCOMPLETE)) {
-            if (_fieldValue.getValue() == null) {
-                setCellValue("");
-            } else {
-                setCellValue(String.valueOf(_fieldValue.getValue()));
-            }
-            this.autoCompleteSetting = new AutoCompleteSettings();
-            this.autoCompleteSetting.setFieldName(getName());
-            final List<EventDefinition> events = _fieldValue.getField().getEvents(EventType.UI_FIELD_AUTOCOMPLETE);
-            for (final EventDefinition event : events) {
-                this.autoCompleteSetting.setMinInputLength(event.getProperty("MinInputLength") == null
-                                ? 1 : Integer.valueOf(event.getProperty("MinInputLength")));
-                this.autoCompleteSetting.setMaxChoiceLength(event.getProperty("MaxChoiceLength") == null
-                                ? -1 : Integer.valueOf(event.getProperty("MaxChoiceLength")));
-                this.autoCompleteSetting.setMaxValueLength(event.getProperty("MaxValueLength") == null
-                                ? -1 : Integer.valueOf(event.getProperty("MaxValueLength")));
-                if (event.getProperty("MaxResult") != null) {
-                    this.autoCompleteSetting.setMaxResult(Integer.valueOf(event.getProperty("MaxResult")));
-                }
-                if (event.getProperty("HasDownArrow") != null) {
-                    this.autoCompleteSetting
-                                    .setHasDownArrow("true".equalsIgnoreCase(event.getProperty("HasDownArrow")));
-                }
-                if (event.getProperty("Required") != null) {
-                    this.autoCompleteSetting
-                                    .setRequired(!"false".equalsIgnoreCase(event.getProperty("Required")));
-                }
-                final String ep = event.getProperty("ExtraParameter");
-                if (ep != null) {
-                    this.autoCompleteSetting.getExtraParameters().add(ep);
-                }
-                for (int i = 1; i < 100; i++) {
-                    final String keyTmp = "ExtraParameter" + String.format("%02d", i);
-                    final String epTmp = event.getProperty(keyTmp);
-                    if (epTmp == null) {
-                        break;
-                    } else {
-                        this.autoCompleteSetting.getExtraParameters().add(epTmp);
-                    }
-                }
-                final String value4EditStr = event.getProperty("Value4Edit");
-                if (value4EditStr != null) {
-                    this.autoCompleteSetting.setValue4Edit(EditValue.valueOf(value4EditStr));
-                }
-            }
-        }
         this.fieldUpdate = _fieldValue.getField().hasEvents(EventType.UI_FIELD_UPDATE);
         if (this.fieldUpdate) {
             final List<EventDefinition> events = _fieldValue.getField().getEvents(EventType.UI_FIELD_UPDATE);
@@ -401,6 +355,7 @@ public class UITableCell
      *
      * @return value of instance variable {@link #autoComplete}
      */
+    @Override
     public boolean isAutoComplete()
     {
         return this.autoCompleteSetting != null;

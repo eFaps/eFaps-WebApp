@@ -31,8 +31,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.datamodel.ui.BooleanUI;
 import org.efaps.admin.datamodel.ui.IUIProvider;
-import org.efaps.ui.wicket.models.cell.FieldConfiguration;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
+import org.efaps.ui.wicket.models.field.FieldConfiguration;
 import org.efaps.ui.wicket.models.objects.CheckBoxOption;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
@@ -108,9 +108,11 @@ public class CheckBoxField
     }
 
     /**
-     * @param _wicketId
-     * @param _of
-     * @param _choices
+     * Instantiates a new check box field.
+     *
+     * @param _wicketId the wicket id
+     * @param _model the model
+     * @param _checkBoxes the check boxes
      */
     public CheckBoxField(final String _wicketId,
                          final Model<AbstractUIField> _model,
@@ -158,13 +160,7 @@ public class CheckBoxField
     @Override
     public String getInputName()
     {
-        String ret = "";
-        try {
-            ret = getFieldConfig().getName();
-        } catch (final EFapsException e) {
-            CheckBoxField.LOG.error("Catched Exception on get Input Name", e);
-        }
-        return ret;
+        return getFieldConfig().getName();
     }
 
     /**
@@ -198,17 +194,14 @@ public class CheckBoxField
         {
             CheckBoxOption ret = null;
             final List<?> choices = _choices.getObject();
-            for (int index = 0; index < choices.size(); index++)
-            {
+            for (int index = 0; index < choices.size(); index++) {
                 final CheckBoxOption choice = (CheckBoxOption) choices.get(index);
-                if (getIdValue(choice, index).equals(_id))
-                {
-                    ret =  choice;
+                if (getIdValue(choice, index).equals(_id)) {
+                    ret = choice;
                     break;
                 }
             }
             return ret;
         }
     }
-
 }

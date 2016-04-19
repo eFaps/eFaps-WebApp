@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
-package org.efaps.ui.wicket.components.values;
+package org.efaps.ui.wicket.models.field.validators;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.ValidationError;
 import org.efaps.admin.datamodel.ui.UIValue;
+import org.efaps.ui.wicket.components.values.AbstractField;
+import org.efaps.ui.wicket.components.values.IUIField;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
@@ -35,10 +34,9 @@ import org.slf4j.LoggerFactory;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  * @param <T> object
  */
-public class Validator<T>
+public class StandartValidator<T>
     implements IValidator<T>
 {
 
@@ -57,15 +55,15 @@ public class Validator<T>
      */
     private final Component component;
 
-
     /**
-     * @param _abstractField
+     * Instantiates a new validator.
+     *
+     * @param _component the component
      */
-    public Validator(final Component _component)
+    public StandartValidator(final Component _component)
     {
         this.component = _component;
     }
-
 
     @Override
     public void validate(final IValidatable<T> _validatable)
@@ -80,9 +78,9 @@ public class Validator<T>
                     _validatable.error(new ValidationError(msg));
                 }
             } catch (final CacheReloadException e) {
-                Validator.LOG.error("Catched error on validation", e);
+                StandartValidator.LOG.error("Catched error on validation", e);
             } catch (final EFapsException e) {
-                Validator.LOG.error("Catched error on validation", e);
+                StandartValidator.LOG.error("Catched error on validation", e);
             }
         }
     }

@@ -29,8 +29,8 @@ import org.apache.wicket.model.Model;
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
-import org.efaps.ui.wicket.models.cell.FieldConfiguration;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
+import org.efaps.ui.wicket.models.field.FieldConfiguration;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
@@ -69,6 +69,7 @@ public class ContentContainerLink
      *
      * @param _wicketId wicket id of this component
      * @param _model model fore this component
+     * @param _content the content
      */
     public ContentContainerLink(final String _wicketId,
                                 final IModel<AbstractUIField> _model,
@@ -107,16 +108,13 @@ public class ContentContainerLink
 
     /**
      * Add to the tag.
+     *
      * @param _tag tag to write
      */
     protected void onComponentTagInternal(final ComponentTag _tag)
     {
-        try {
-            _tag.put("name", getConfig().getName());
-            _tag.append("style", "text-align:" + getConfig().getAlign(), ";");
-        } catch (final EFapsException e) {
-            LOG.error("Catched error on setting name in tag for: {}", this);
-        }
+        _tag.put("name", getConfig().getName());
+        _tag.append("style", "text-align:" + getConfig().getAlign(), ";");
     }
 
     /**
@@ -150,11 +148,11 @@ public class ContentContainerLink
     @Override
     public IModel<?> getBody()
     {
-        String body ="";
+        String body = "";
         try {
             if (this.content == null) {
                 final AbstractUIField uiField = (AbstractUIField) getDefaultModelObject();
-                body = String.valueOf( uiField.getValue().getReadOnlyValue(uiField.getParent().getMode()));
+                body = String.valueOf(uiField.getValue().getReadOnlyValue(uiField.getParent().getMode()));
             } else {
                 body = this.content;
             }

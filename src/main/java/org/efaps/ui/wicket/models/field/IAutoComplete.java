@@ -24,7 +24,6 @@ import java.util.Map;
 import org.efaps.admin.event.Return;
 import org.efaps.api.ui.IOption;
 import org.efaps.db.Instance;
-import org.efaps.ui.wicket.models.cell.AutoCompleteSettings;
 import org.efaps.ui.wicket.models.objects.AbstractUIModeObject;
 import org.efaps.util.EFapsException;
 

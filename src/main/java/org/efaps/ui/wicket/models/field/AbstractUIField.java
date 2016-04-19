@@ -41,10 +41,8 @@ import org.efaps.db.Instance;
 import org.efaps.ui.wicket.behaviors.dojo.AutoCompleteBehavior;
 import org.efaps.ui.wicket.components.values.LabelField;
 import org.efaps.ui.wicket.models.AbstractInstanceObject;
-import org.efaps.ui.wicket.models.cell.AutoCompleteSettings;
-import org.efaps.ui.wicket.models.cell.AutoCompleteSettings.EditValue;
-import org.efaps.ui.wicket.models.cell.FieldConfiguration;
 import org.efaps.ui.wicket.models.cell.UIPicker;
+import org.efaps.ui.wicket.models.field.AutoCompleteSettings.EditValue;
 import org.efaps.ui.wicket.models.field.factories.AutoCompleteFactory;
 import org.efaps.ui.wicket.models.field.factories.BitEnumUIFactory;
 import org.efaps.ui.wicket.models.field.factories.BooleanUIFactory;
@@ -87,7 +85,6 @@ public abstract class AbstractUIField
      * Logging instance used in this class.
      */
     private static final Logger LOG = LoggerFactory.getLogger(AbstractUIField.class);
-
 
     /**
      * The factories used to construct the components.
@@ -185,9 +182,8 @@ public abstract class AbstractUIField
     public AutoCompleteSettings getAutoCompleteSetting()
     {
         if (this.autoCompleteSetting == null && isAutoComplete()) {
-            this.autoCompleteSetting = new AutoCompleteSettings();
+            this.autoCompleteSetting = new AutoCompleteSettings(getFieldConfiguration());
 
-            this.autoCompleteSetting.setFieldName(getFieldConfiguration().getField().getName());
             final List<EventDefinition> events = getFieldConfiguration().getField().getEvents(
                             EventType.UI_FIELD_AUTOCOMPLETE);
             for (final EventDefinition event : events) {
@@ -212,9 +208,6 @@ public abstract class AbstractUIField
                 if (event.getProperty("AutoType") != null) {
                     this.autoCompleteSetting.setAutoType(EnumUtils.getEnum(AutoCompleteBehavior.Type.class,
                                     event.getProperty("AutoType")));
-                }
-                if (getFieldConfiguration().getField().getCols() > 0) {
-                    getAutoCompleteSetting().setWidth(getFieldConfiguration().getField().getCols());
                 }
 
                 // add the ExtraParameter definitions

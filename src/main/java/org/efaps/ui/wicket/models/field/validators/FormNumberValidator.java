@@ -29,24 +29,15 @@ import org.efaps.admin.datamodel.ui.NumberUI;
 import org.efaps.admin.datamodel.ui.UIValue;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
-import org.efaps.ui.wicket.models.field.factories.NumberUIFactory;
-import org.efaps.util.EFapsException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The Class NumberValidator.
  *
  * @author The eFaps Team
  */
-public class NumberValidator
+public class FormNumberValidator
     extends FormValidatorAdapter
 {
-
-    /**
-     * Logging instance used in this class.
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(NumberUIFactory.class);
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
@@ -56,7 +47,7 @@ public class NumberValidator
      *
      * @param _uiField the ui field
      */
-    public NumberValidator(final AbstractUIField _uiField)
+    public FormNumberValidator(final AbstractUIField _uiField)
     {
         super(new IFormValidator()
         {
@@ -73,28 +64,24 @@ public class NumberValidator
             @Override
             public void validate(final Form<?> _form)
             {
-                try {
-                    final List<StringValue> list = RequestCycle.get().getRequest().getRequestParameters()
-                                    .getParameterValues(_uiField.getFieldConfiguration().getName());
-                    boolean hasValue = false;
-                    if (CollectionUtils.isNotEmpty(list)) {
-                        for (final StringValue value : list) {
-                            if (!value.isEmpty()) {
-                                final String message = new NumberUI().validateValue(UIValue.get(null, null, value
-                                                .toString()));
-                                if (message != null) {
-                                    _form.error(_uiField.getFieldConfiguration().getLabel() + ": " + message);
-                                }
-                                hasValue = true;
+                final List<StringValue> list = RequestCycle.get().getRequest().getRequestParameters()
+                                .getParameterValues(_uiField.getFieldConfiguration().getName());
+                boolean hasValue = false;
+                if (CollectionUtils.isNotEmpty(list)) {
+                    for (final StringValue value : list) {
+                        if (!value.isEmpty()) {
+                            final String message = new NumberUI().validateValue(UIValue.get(null, null, value
+                                            .toString()));
+                            if (message != null) {
+                                _form.error(_uiField.getFieldConfiguration().getLabel() + ": " + message);
                             }
+                            hasValue = true;
                         }
                     }
-                    if (!hasValue && _uiField.getFieldConfiguration().getField().isRequired()) {
-                        _form.error(DBProperties.getFormatedDBProperty(NumberValidator.class.getName()
-                                        + ".FieldRequired", (Object) _uiField.getFieldConfiguration().getLabel()));
-                    }
-                } catch (final EFapsException e) {
-                    LOG.error("Catched EFapsException", e);
+                }
+                if (!hasValue && _uiField.getFieldConfiguration().getField().isRequired()) {
+                    _form.error(DBProperties.getFormatedDBProperty(FormNumberValidator.class.getName()
+                                    + ".FieldRequired", (Object) _uiField.getFieldConfiguration().getLabel()));
                 }
             }
         });

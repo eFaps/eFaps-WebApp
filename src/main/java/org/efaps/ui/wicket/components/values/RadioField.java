@@ -25,8 +25,8 @@ import org.apache.wicket.markup.html.form.RadioChoice;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.datamodel.IEnum;
-import org.efaps.ui.wicket.models.cell.FieldConfiguration;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
+import org.efaps.ui.wicket.models.field.FieldConfiguration;
 import org.efaps.ui.wicket.models.objects.RadioOption;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
@@ -139,13 +139,7 @@ public class RadioField
     @Override
     public String getInputName()
     {
-        String ret = "";
-        try {
-            ret = getFieldConfig().getName();
-        } catch (final EFapsException e) {
-            RadioField.LOG.error("Catched Exception on get Input Name", e);
-        }
-        return ret;
+        return getFieldConfig().getName();
     }
 
     /**

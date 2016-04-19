@@ -39,9 +39,9 @@ import org.efaps.api.ci.UIFormFieldProperty;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
 import org.efaps.ui.wicket.models.cell.CellSetValue;
-import org.efaps.ui.wicket.models.cell.FieldConfiguration;
 import org.efaps.ui.wicket.models.cell.UIFormCellSet;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
+import org.efaps.ui.wicket.models.field.FieldConfiguration;
 import org.efaps.ui.wicket.models.objects.DropDownOption;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
@@ -180,7 +180,8 @@ public class DropDownField
             });
         }
         add(new AttributeAppender("style", "text-align:" + getFieldConfig().getAlign(), ";"));
-        if (getFieldConfig().hasProperty(UIFormFieldProperty.WIDTH)) {
+        // add the width only if not in a table
+        if (getFieldConfig().hasProperty(UIFormFieldProperty.WIDTH) && !getFieldConfig().isTableField()) {
             add(new AttributeAppender("style", "width:" + getFieldConfig().getWidth(), ";"));
         }
     }
@@ -202,13 +203,7 @@ public class DropDownField
     @Override
     public String getInputName()
     {
-        String ret = "";
-        try {
-            ret = getFieldConfig().getName();
-        } catch (final EFapsException e) {
-            DropDownField.LOG.error("EFapsException", e);
-        }
-        return ret;
+        return getFieldConfig().getName();
     }
 
     @Override

@@ -17,8 +17,8 @@
 package org.efaps.ui.wicket.components.values;
 
 import org.apache.wicket.model.Model;
-import org.efaps.ui.wicket.models.cell.FieldConfiguration;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
+import org.efaps.ui.wicket.models.field.FieldConfiguration;
 import org.efaps.util.EFapsException;
 
 /**

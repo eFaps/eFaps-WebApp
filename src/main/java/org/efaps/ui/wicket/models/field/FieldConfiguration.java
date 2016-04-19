@@ -16,18 +16,22 @@
  */
 
 
-package org.efaps.ui.wicket.models.cell;
+package org.efaps.ui.wicket.models.field;
 
 import java.io.Serializable;
 
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.efaps.admin.dbproperty.DBProperties;
+import org.efaps.admin.ui.Table;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.api.IEnumValue;
 import org.efaps.api.ci.UIFormFieldProperty;
 import org.efaps.api.ui.UIType;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -38,6 +42,11 @@ import org.efaps.util.EFapsException;
 public class FieldConfiguration
     implements Serializable
 {
+
+    /**
+     * Logger.
+     */
+    private static final Logger LOG =  LoggerFactory.getLogger(FieldConfiguration.class);
 
     /**
      * Needed for serialization.
@@ -67,7 +76,6 @@ public class FieldConfiguration
      * @throws EFapsException on error
      */
     public String getName()
-        throws EFapsException
     {
         return getField().getName();
     }
@@ -209,5 +217,21 @@ public class FieldConfiguration
     public void setLabel(final String _label)
     {
         this.label = _label;
+    }
+
+    /**
+     * Checks if is table.
+     *
+     * @return true, if is table
+     */
+    public boolean isTableField()
+    {
+        boolean ret = false;
+        try {
+            ret = getField().getCollection() instanceof Table;
+        } catch (final CacheReloadException e) {
+            LOG.error("CacheReloadException", e);
+        }
+        return ret;
     }
 }

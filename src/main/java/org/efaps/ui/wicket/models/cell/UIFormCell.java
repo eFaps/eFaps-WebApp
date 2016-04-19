@@ -34,7 +34,6 @@ import org.efaps.util.EFapsException;
  * It uses a {@link org.efaps.admin.ui.field.Field} as the base for the data.
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class UIFormCell
     extends UITableCell
@@ -126,14 +125,7 @@ public class UIFormCell
         this.hideLabel = _fieldValue.getField().isHideLabel();
         this.rowSpan = _fieldValue.getField().getRowSpan();
         this.attrTypeName = _attrTypeName;
-        if (isAutoComplete()) {
-            if (_fieldValue.getField().getCols() > 0) {
-                getAutoCompleteSetting().setWidth(_fieldValue.getField().getCols());
-            }
-        }
     }
-
-
 
     /**
      * This is the getter method for the instance variable {@link #attrTypeName}

@@ -46,10 +46,11 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.resource.CoreLibrariesContributor;
 import org.apache.wicket.util.lang.Args;
 import org.apache.wicket.util.string.Strings;
+import org.efaps.api.ci.UIFormFieldProperty;
 import org.efaps.api.ui.IOption;
 import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
 import org.efaps.ui.wicket.behaviors.SetSelectedRowBehavior;
-import org.efaps.ui.wicket.models.cell.AutoCompleteSettings;
+import org.efaps.ui.wicket.models.field.AutoCompleteSettings;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.util.EFapsKey;
@@ -194,8 +195,9 @@ public class AutoCompleteBehavior
                 break;
         }
 
-        if (this.settings.getWidth() > 0) {
-            js.append("style:\"width:").append(this.settings.getWidth()).append("ch\",");
+        if (this.settings.getFieldConfiguration().hasProperty(UIFormFieldProperty.WIDTH)
+                        && !this.settings.getFieldConfiguration().isTableField()) {
+            js.append("style:\"width:").append(this.settings.getFieldConfiguration().getWidth()).append("\",");
         }
         if (!this.settings.isHasDownArrow()) {
             js.append("hasDownArrow:").append(this.settings.isHasDownArrow()).append(",");

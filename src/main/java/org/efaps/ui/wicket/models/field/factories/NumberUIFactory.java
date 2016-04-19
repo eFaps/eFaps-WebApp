@@ -22,7 +22,7 @@ import org.apache.wicket.model.Model;
 import org.efaps.admin.datamodel.ui.NumberUI;
 import org.efaps.ui.wicket.components.values.NumberField;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
-import org.efaps.ui.wicket.models.field.validators.NumberValidator;
+import org.efaps.ui.wicket.models.field.validators.FormNumberValidator;
 import org.efaps.util.EFapsException;
 
 /**
@@ -63,7 +63,7 @@ public final class NumberUIFactory
                 case RADIO:
                 case SNIPPLET:
                     ret = ((UITypeFactory) UITypeFactory.get()).getEditableComp(_wicketId, _uiField);
-                    ret.add(new NumberValidator(_uiField));
+                    ret.add(new FormNumberValidator(_uiField));
                     break;
                 default:
                     break;

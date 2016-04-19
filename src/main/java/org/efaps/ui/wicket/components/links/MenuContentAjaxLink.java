@@ -36,8 +36,8 @@ import org.efaps.db.Instance;
 import org.efaps.ui.wicket.behaviors.update.AbstractRemoteUpdateListenerBehavior;
 import org.efaps.ui.wicket.components.menutree.MenuTree;
 import org.efaps.ui.wicket.components.menutree.MenuUpdateBehavior;
-import org.efaps.ui.wicket.models.cell.FieldConfiguration;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
+import org.efaps.ui.wicket.models.field.FieldConfiguration;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
@@ -145,12 +145,8 @@ public class MenuContentAjaxLink
      */
     protected void onComponentTagInternal(final ComponentTag _tag)
     {
-        try {
-            _tag.put("name", getConfig().getName());
-            _tag.append("style", "text-align:" + getConfig().getAlign(), ";");
-        } catch (final EFapsException e) {
-            LOG.error("Catched error on setting name in tag for: {}", this);
-        }
+        _tag.put("name", getConfig().getName());
+        _tag.append("style", "text-align:" + getConfig().getAlign(), ";");
     }
 
     @Override

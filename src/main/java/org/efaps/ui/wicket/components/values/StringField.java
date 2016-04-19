@@ -23,9 +23,9 @@ import org.apache.wicket.model.Model;
 import org.efaps.admin.datamodel.ui.UIValue;
 import org.efaps.api.ci.UIFormFieldProperty;
 import org.efaps.ui.wicket.models.cell.CellSetValue;
-import org.efaps.ui.wicket.models.cell.FieldConfiguration;
 import org.efaps.ui.wicket.models.cell.UIFormCellSet;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
+import org.efaps.ui.wicket.models.field.FieldConfiguration;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
@@ -76,12 +76,12 @@ public class StringField
     protected void onComponentTag(final ComponentTag _tag)
     {
         super.onComponentTag(_tag);
-        final int rows = getConfig().getRows();
+        final int rows = getFieldConfig().getRows();
         if (rows > 1) {
             _tag.setName("textarea");
             _tag.put("rows", rows);
-            if (getConfig().hasProperty(UIFormFieldProperty.COLUMNS)) {
-                _tag.put("cols", getConfig().getProperty(UIFormFieldProperty.COLUMNS));
+            if (getFieldConfig().hasProperty(UIFormFieldProperty.COLUMNS)) {
+                _tag.put("cols", getFieldConfig().getProperty(UIFormFieldProperty.COLUMNS));
                 _tag.remove("size");
             }
         }

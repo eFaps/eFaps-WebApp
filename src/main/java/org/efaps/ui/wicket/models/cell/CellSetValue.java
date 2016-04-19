@@ -21,6 +21,8 @@
 package org.efaps.ui.wicket.models.cell;
 
 import org.efaps.admin.datamodel.ui.UIValue;
+import org.efaps.ui.wicket.models.field.FieldConfiguration;
+import org.efaps.ui.wicket.models.field.FieldSetConfiguration;
 import org.efaps.ui.wicket.models.field.ISortable;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.util.EFapsException;
