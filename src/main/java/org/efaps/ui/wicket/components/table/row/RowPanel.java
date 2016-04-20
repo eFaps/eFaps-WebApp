@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.components.table.row;
@@ -29,7 +26,6 @@ import org.apache.wicket.model.Model;
 import org.efaps.admin.datamodel.ui.DateTimeUI;
 import org.efaps.admin.datamodel.ui.DateUI;
 import org.efaps.admin.ui.field.Field.Display;
-import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.table.AjaxAddRemoveRowPanel;
 import org.efaps.ui.wicket.components.table.TablePanel;
@@ -38,10 +34,10 @@ import org.efaps.ui.wicket.components.table.field.FieldPanel;
 import org.efaps.ui.wicket.models.AbstractInstanceObject;
 import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.UIModel;
-import org.efaps.ui.wicket.models.cell.UIHiddenCell;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.field.IFilterable;
+import org.efaps.ui.wicket.models.field.IHidden;
 import org.efaps.ui.wicket.models.objects.UIRow;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.models.objects.UITableHeader;
@@ -49,8 +45,6 @@ import org.efaps.util.EFapsException;
 
 /**
  * @author The eFaps Team
- * @version $Id$
- *
  */
 public class RowPanel
     extends Panel
@@ -161,8 +155,11 @@ public class RowPanel
 
         final RepeatingView hiddenRepeater = new RepeatingView("hiddenRepeater");
         this.add(hiddenRepeater);
-        for (final UIHiddenCell cell : uirow.getHidden()) {
-            hiddenRepeater.add(new LabelComponent(hiddenRepeater.newChildId(), cell.getCellValue()));
+        for (final IHidden hidden : uirow.getHidden()) {
+            if (!hidden.isAdded()) {
+                hiddenRepeater.add(hidden.getComponent(hiddenRepeater.newChildId()));
+                hidden.setAdded(true);
+            }
         }
         this.add(new RowId("rowId", Model.of((AbstractInstanceObject) uirow)));
     }

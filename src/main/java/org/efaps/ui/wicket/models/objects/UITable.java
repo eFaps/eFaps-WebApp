@@ -485,36 +485,47 @@ public class UITable
                             row.add(cell);
                         }
                     } else {
-                        final UIField uiField = new UIField(instance.getKey(), this,
-                                        UIValue.get(field, attr, value)
-                                            .setInstance(instance)
-                                            .setClassObject(this)
-                                            .setCallInstance(getInstance())
-                                            .setRequestInstances(_multi.getInstanceList()));
+                        final UIField uiField = new UIField(instance.getKey(), this, UIValue.get(field, attr, value)
+                                        .setInstance(instance).setClassObject(this).setCallInstance(getInstance())
+                                        .setRequestInstances(_multi.getInstanceList()));
                         uiField.setCompareValue(sortValue);
-                        row.add(uiField);
+                        if (hidden) {
+                            row.addHidden(uiField);
+                        } else {
+                            row.add(uiField);
+                        }
                     }
                     // in case of edit mode an empty version of the first row is stored, and can be used to create
                     // new rows
                     if (isEditable() && first) {
-                        final FieldValue fldVal = new FieldValue(field, attr, null, null, getInstance());
-                        final String cellvalue;
-                        final String cellTitle;
-                        if (field.isEditableDisplay(getMode())) {
-                            cellvalue = fldVal.getEditHtml(getMode());
-                            cellTitle = fldVal.getStringValue(getMode());
-                        } else if (field.isHiddenDisplay(getMode())) {
-                            cellvalue = fldVal.getHiddenHtml(getMode());
-                            cellTitle = "";
+                        if (isUIInterface(attr, field)) {
+                            final FieldValue fldVal = new FieldValue(field, attr, null, null, getInstance());
+                            final String cellvalue;
+                            final String cellTitle;
+                            if (field.isEditableDisplay(getMode())) {
+                                cellvalue = fldVal.getEditHtml(getMode());
+                                cellTitle = fldVal.getStringValue(getMode());
+                            } else if (field.isHiddenDisplay(getMode())) {
+                                cellvalue = fldVal.getHiddenHtml(getMode());
+                                cellTitle = "";
+                            } else {
+                                cellvalue = fldVal.getReadOnlyHtml(getMode());
+                                cellTitle = fldVal.getStringValue(getMode());
+                            }
+                            if (hidden) {
+                                this.emptyRow.addHidden(new UIHiddenCell(this, fldVal, null, cellvalue));
+                            } else {
+                                this.emptyRow.add(new UITableCell(this, fldVal, null, cellvalue, cellTitle, icon));
+                            }
                         } else {
-                            cellvalue = fldVal.getReadOnlyHtml(getMode());
-                            cellTitle = fldVal.getStringValue(getMode());
-                        }
-
-                        if (hidden) {
-                            this.emptyRow.addHidden(new UIHiddenCell(this, fldVal, null, cellvalue));
-                        } else {
-                            this.emptyRow.add(new UITableCell(this, fldVal, null, cellvalue, cellTitle, icon));
+                            final UIField uiField = new UIField(instance.getKey(), this, UIValue.get(field, attr, null)
+                                            .setClassObject(this).setCallInstance(getInstance())
+                                            .setRequestInstances(_multi.getInstanceList()));
+                            if (hidden) {
+                                this.emptyRow.addHidden(uiField);
+                            } else {
+                                this.emptyRow.add(uiField);
+                            }
                         }
                     }
                 }

@@ -25,8 +25,8 @@ import java.util.List;
 
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.models.AbstractInstanceObject;
-import org.efaps.ui.wicket.models.cell.UIHiddenCell;
 import org.efaps.ui.wicket.models.field.IFilterable;
+import org.efaps.ui.wicket.models.field.IHidden;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 
@@ -54,7 +54,7 @@ public class UIRow
     /**
      * This list contains the hidden cells for this row.
      */
-    private final List<UIHiddenCell> hidden = new ArrayList<>();
+    private final List<IHidden> hidden = new ArrayList<>();
 
     /**
      * Parent of this row.
@@ -101,7 +101,7 @@ public class UIRow
      *
      * @param _hiddenCell hidden cell to be added
      */
-    public void addHidden(final UIHiddenCell _hiddenCell)
+    public void addHidden(final IHidden _hiddenCell)
     {
         this.hidden.add(_hiddenCell);
     }
@@ -111,7 +111,7 @@ public class UIRow
      *
      * @return value of instance variable {@link #hidden}
      */
-    public List<UIHiddenCell> getHidden()
+    public List<IHidden> getHidden()
     {
         return this.hidden;
     }
