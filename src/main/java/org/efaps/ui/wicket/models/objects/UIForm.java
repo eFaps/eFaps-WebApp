@@ -943,11 +943,11 @@ public class UIForm
         if (isPrintMode()) {
             ret = _fieldvalue.getStringValue(getMode());
         } else {
-            if ((isCreateMode() || isSearchMode()) && _fieldvalue.getField().isEditableDisplay(getMode())) {
+            if ((isCreateMode() || isSearchMode() || isEditMode())
+                            && _fieldvalue.getField().isEditableDisplay(getMode())) {
                 ret = _fieldvalue.getEditHtml(getMode());
             } else if (_fieldvalue.getField().isHiddenDisplay(getMode())) {
                 ret = _fieldvalue.getHiddenHtml(getMode());
-
             } else {
                 ret = _fieldvalue.getReadOnlyHtml(getMode());
             }
