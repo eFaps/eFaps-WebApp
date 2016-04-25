@@ -20,6 +20,9 @@
 
 package org.efaps.ui.wicket.models.field.factories;
 
+import java.util.Collection;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.datamodel.ui.StringUI;
@@ -110,7 +113,10 @@ public class StringUIFactory
     protected String getReadOnlyValue(final AbstractUIField _uiField)
         throws EFapsException
     {
-        final Object obj = _uiField.getValue().getReadOnlyValue(_uiField.getParent().getMode());
+        Object obj = _uiField.getValue().getReadOnlyValue(_uiField.getParent().getMode());
+        if (obj != null && obj instanceof Collection) {
+            obj = StringUtils.join(((Collection<?>) obj).iterator(), ", ");
+        }
         return obj == null ? "" : String.valueOf(obj);
     }
 

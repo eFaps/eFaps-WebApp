@@ -29,6 +29,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.util.io.IClusterable;
 import org.efaps.admin.datamodel.Attribute;
@@ -642,7 +643,8 @@ public class UITable
         return (_attr != null && _attr.getAttributeType().getUIProvider() instanceof UIInterface
                         || _field.getUIProvider() != null && _field.getUIProvider() instanceof UIInterface)
                         && !_field.containsProperty(UIFormFieldProperty.UI_TYPE)
-                        && !_field.hasEvents(EventType.UI_FIELD_AUTOCOMPLETE);
+                        && !_field.hasEvents(EventType.UI_FIELD_AUTOCOMPLETE)
+                        && !StringUtils.startsWith(_field.getSelect(), "linkfrom");
     }
 
     /**
