@@ -214,8 +214,7 @@ public class AjaxAddRemoveRowPanel
                         final TablePanel tablepanel = getComponent().findParent(TablePanel.class);
 
                         for (int i = 0; i < count; i++) {
-                            // create the new repeater item and add it to the
-                            // repeater
+                            // create the new repeater item and add it to the repeater
                             final RowPanel row = new RowPanel(
                                             AjaxAddRemoveRowPanel.AjaxAddRow.this.rowsRep.newChildId(),
                                             new UIModel<UIRow>(uirow), tablepanel, false, 0);

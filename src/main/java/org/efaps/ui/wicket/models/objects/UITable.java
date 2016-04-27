@@ -490,7 +490,7 @@ public class UITable
                                         .setInstance(instance).setClassObject(this).setCallInstance(getInstance())
                                         .setRequestInstances(_multi.getInstanceList()));
                         uiField.setCompareValue(sortValue);
-                        if (hidden) {
+                        if (field.isHiddenDisplay(getMode())) {
                             row.addHidden(uiField);
                         } else {
                             row.add(uiField);
@@ -619,7 +619,11 @@ public class UITable
                 } else {
                     final UIField uiField = new UIField(null, this, UIValue.get(field, attr, null)
                                     .setInstance(getInstance()).setClassObject(this).setCallInstance(getInstance()));
-                    row.add(uiField);
+                    if (field.isHiddenDisplay(getMode())) {
+                        row.addHidden(uiField);
+                    } else {
+                        row.add(uiField);
+                    }
                 }
             }
         }
