@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.models.field.factories;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.core.request.handler.IComponentRequestHandler;
@@ -29,7 +27,10 @@ import org.apache.wicket.request.component.IRequestablePage;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.efaps.admin.ui.Image;
 import org.efaps.admin.ui.Menu;
+import org.efaps.api.ui.HRef;
+import org.efaps.ui.wicket.components.links.CheckOutLink;
 import org.efaps.ui.wicket.components.links.ContentContainerLink;
+import org.efaps.ui.wicket.components.links.IconCheckOutLink;
 import org.efaps.ui.wicket.components.links.IconContentContainerLink;
 import org.efaps.ui.wicket.components.links.IconMenuContentAjaxLink;
 import org.efaps.ui.wicket.components.links.LoadInTargetAjaxLink;
@@ -48,12 +49,10 @@ import org.efaps.util.EFapsException;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
-// CHECKSTYLE:OFF
-public class HRefFactory
+@SuppressWarnings("checkstyle:abstractclassname")
+public final class HRefFactory
     implements IComponentFactory
-// CHECKSTYLE:ON
 {
 
     /**
@@ -120,42 +119,50 @@ public class HRefFactory
                     }
                 }
             }
-            // evaluate which kind of link must be done
-            IRequestablePage page = null;
-            PageReference pageRef = null;
-            if (RequestCycle.get().getActiveRequestHandler() instanceof IPageRequestHandler) {
-                page = ((IPageRequestHandler) RequestCycle.get().getActiveRequestHandler()).getPage();
-                if (page != null && page instanceof AbstractContentPage) {
-                    pageRef = ((AbstractContentPage) page).getCalledByPageReference();
-                }
-            }
-            // ajax if the page or the reference is a ContentContainerPage
-            boolean ajax = page != null && (page instanceof ContentContainerPage
-                            || pageRef != null && pageRef.getPage() instanceof ContentContainerPage);
-
-            // verify ajax by checking if is not a recent link
-            if (ajax && RequestCycle.get().getActiveRequestHandler() instanceof IComponentRequestHandler) {
-                ajax = ajax && !(((IComponentRequestHandler) RequestCycle.get().getActiveRequestHandler())
-                                .getComponent() instanceof RecentLink);
-            }
-
-            if (icon == null) {
-                if (ajax) {
-                    // checking if is a link of a structurbrowser browserfield
-                    if (page instanceof StructurBrowserPage
-                                    && ((UIStructurBrowser) _uiField.getParent()).isBrowserField(_uiField)) {
-                        ret = new LoadInTargetAjaxLink(_wicketId, Model.of(_uiField), content, ScriptTarget.TOP);
-                    } else {
-                        ret = new MenuContentAjaxLink(_wicketId, Model.of(_uiField), content);
-                    }
+            if (isCheckOut(_uiField)) {
+                if (icon == null) {
+                    ret = new CheckOutLink(_wicketId, Model.of(_uiField), content);
                 } else {
-                    ret = new ContentContainerLink(_wicketId, Model.of(_uiField), content);
+                    ret = new IconCheckOutLink(_wicketId, Model.of(_uiField), content, icon);
                 }
             } else {
-                if (ajax) {
-                    ret = new IconMenuContentAjaxLink(_wicketId, Model.of(_uiField), content, icon);
+                // evaluate which kind of link must be done
+                IRequestablePage page = null;
+                PageReference pageRef = null;
+                if (RequestCycle.get().getActiveRequestHandler() instanceof IPageRequestHandler) {
+                    page = ((IPageRequestHandler) RequestCycle.get().getActiveRequestHandler()).getPage();
+                    if (page != null && page instanceof AbstractContentPage) {
+                        pageRef = ((AbstractContentPage) page).getCalledByPageReference();
+                    }
+                }
+                // ajax if the page or the reference is a ContentContainerPage
+                boolean ajax = page != null && (page instanceof ContentContainerPage
+                                || pageRef != null && pageRef.getPage() instanceof ContentContainerPage);
+
+                // verify ajax by checking if is not a recent link
+                if (ajax && RequestCycle.get().getActiveRequestHandler() instanceof IComponentRequestHandler) {
+                    ajax = ajax && !(((IComponentRequestHandler) RequestCycle.get().getActiveRequestHandler())
+                                    .getComponent() instanceof RecentLink);
+                }
+
+                if (icon == null) {
+                    if (ajax) {
+                        // checking if is a link of a structurbrowser browserfield
+                        if (page instanceof StructurBrowserPage
+                                        && ((UIStructurBrowser) _uiField.getParent()).isBrowserField(_uiField)) {
+                            ret = new LoadInTargetAjaxLink(_wicketId, Model.of(_uiField), content, ScriptTarget.TOP);
+                        } else {
+                            ret = new MenuContentAjaxLink(_wicketId, Model.of(_uiField), content);
+                        }
+                    } else {
+                        ret = new ContentContainerLink(_wicketId, Model.of(_uiField), content);
+                    }
                 } else {
-                    ret = new IconContentContainerLink(_wicketId, Model.of(_uiField), content, icon);
+                    if (ajax) {
+                        ret = new IconMenuContentAjaxLink(_wicketId, Model.of(_uiField), content, icon);
+                    } else {
+                        ret = new IconContentContainerLink(_wicketId, Model.of(_uiField), content, icon);
+                    }
                 }
             }
         }
@@ -219,7 +226,19 @@ public class HRefFactory
     {
         return _uiField.getParent().isViewMode()
                         && _uiField.getFieldConfiguration().getField().getReference() != null
-                        && _uiField.getInstanceKey() != null && hasAccess2Menu(_uiField);
+                        && _uiField.getInstanceKey() != null && (isCheckOut(_uiField) || hasAccess2Menu(_uiField));
+    }
+
+    /**
+     * Checks if is a check out.
+     *
+     * @param _uiField the _ui field
+     * @return true, if is check out
+     */
+    private boolean isCheckOut(final AbstractUIField _uiField)
+    {
+        return StringUtils.containsIgnoreCase(_uiField.getFieldConfiguration().getField().getReference(),
+                        HRef.CHECKOUT.toString());
     }
 
     /**
