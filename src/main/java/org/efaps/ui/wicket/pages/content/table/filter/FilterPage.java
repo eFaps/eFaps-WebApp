@@ -237,7 +237,7 @@ public class FilterPage
                                     if (!tmp.isEmpty()) {
                                         final List<StringValue> fromTmp = datePanel.getDateAsString(tmp, null, null,
                                                         null);
-                                        if (fromTmp != null) {
+                                        if (!fromTmp.isEmpty()) {
                                             from = fromTmp.get(0).toString();
                                         }
                                     }

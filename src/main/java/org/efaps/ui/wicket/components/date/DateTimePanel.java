@@ -375,7 +375,7 @@ public class DateTimePanel
             final DateTimeFormatter isofmt = ISODateTimeFormat.dateTime();
             ret.add(StringValue.valueOf(date.toString(isofmt)));
         }
-        return ret.isEmpty() ? null : ret;
+        return ret;
     }
 
     /**
@@ -479,7 +479,9 @@ public class DateTimePanel
                 final List<StringValue> ampms = getRequest().getRequestParameters().getParameterValues(
                                 getAmPmFieldName());
                 final List<DateTime> dateTimes = getDateList(dates, hours, minutes, ampms);
-                setConvertedInput(dateTimes.get(i));
+                if (!dateTimes.isEmpty()) {
+                    setConvertedInput(dateTimes.get(i));
+                }
             } catch (final EFapsException e) {
                 DateTimePanel.LOG.error("Catched error on convert input", e);
             }
