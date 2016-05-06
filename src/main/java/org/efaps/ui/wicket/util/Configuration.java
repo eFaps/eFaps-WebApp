@@ -173,10 +173,10 @@ public final class Configuration
         STORE_INMEMORYCACHE(false, false, "store.InMemoryCacheSize", "10", Integer.class,
                         " The store inmemorycache. Servlet only!!"),
         /** */
-        FORMAT_DATETIME(false, true, BASEKEY + "Format4DateTime", "MM", String.class,
+        FORMAT_DATETIME(false, true, "Format4DateTime", "MM", String.class,
                         "The format for datetime. Can be style or pattern. "),
         /** */
-        FORMAT_DATE(false, true, BASEKEY + "Format4Date", "M-", String.class,
+        FORMAT_DATE(false, true, "Format4Date", "M-", String.class,
                         "The format for date. Can be style or pattern.");
 
         /**
