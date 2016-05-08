@@ -71,6 +71,7 @@ import org.efaps.ui.wicket.components.menu.LinkItem;
 import org.efaps.ui.wicket.components.menu.MenuBarPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.preloader.PreLoaderPanel;
+import org.efaps.ui.wicket.components.search.SearchPanel;
 import org.efaps.ui.wicket.models.PushMsg;
 import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
@@ -223,8 +224,12 @@ public class MainPage
             add(new CallHomeBehavior());
         }
 
+        final SearchPanel search = new SearchPanel("search");
+        add(search);
+
         final WebMarkupContainer logo = new WebMarkupContainer("logo");
         headerPanel.add(logo);
+
         final Label welcome = new Label("welcome", DBProperties.getProperty("Logo.Welcome.Label"));
         logo.add(welcome);
 
