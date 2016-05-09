@@ -82,19 +82,27 @@ public class SearchPanel
                         final SearchResult result = Search.search(queryStr);
                         SearchPanel.this.visitChildren(ResultPanel.class, new IVisitor<Component, Void>()
                         {
+
                             @Override
                             public void component(final Component _component,
                                                   final IVisit<Void> _visit)
                             {
-                               ((ResultPanel) _component).update(result);
+                                ((ResultPanel) _component).update(result);
                             }
                         });
                         resultPanel.setVisible(true);
                         _target.add(resultPanel);
                         final StringBuilder js = new StringBuilder();
-                        js.append("require(['dijit/TooltipDialog', 'dijit/popup', 'dojo/dom', 'dijit/registry'], ")
-                                .append("function(TooltipDialog, popup, dom, registry){\n")
+                        js.append("require(['dijit/TooltipDialog', 'dijit/popup', 'dojo/dom', 'dijit/registry',")
+                                .append("'dojo/window', 'dojo/query', 'dojo/NodeList-dom'],")
+                                .append("function(TooltipDialog, popup, dom, registry, win, query){\n")
                             .append("var rN = dom.byId('").append(resultPanel.getMarkupId()).append("');\n")
+                            .append("var vs = win.getBox();\n")
+                            .append("var wi = (vs.w - 100) + \"px\";\n")
+                            .append("query(\".resultPlaceholder\", rN).style(\"width\", wi);\n")
+                            .append("query('.resultClose', rN).on(\"click\", function(e){\n")
+                            .append("popup.close(registry.byId(rN.id));\n")
+                            .append("});\n")
                             .append("var dialog = registry.byId(rN.id);")
                             .append("if (typeof(dialog) !== \"undefined\") {\n")
                             .append("registry.remove(dialog.id);")
@@ -106,7 +114,8 @@ public class SearchPanel
                                 .append("")
                             .append("popup.open({\n")
                             .append("popup: dialog,")
-                            .append("around: dom.byId('").append(input.getMarkupId()).append("')")
+                            .append("orient: [ \"below-centered\", \"below-alt\", \"below\"],")
+                            .append("around: dom.byId('").append(form.getMarkupId()).append("')")
                             .append("});")
                             .append("});");
 
