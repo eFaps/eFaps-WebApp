@@ -16,18 +16,28 @@
  */
 package org.efaps.ui.wicket.components.search;
 
+import java.util.UUID;
+
 import org.apache.commons.lang3.StringUtils;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.index.Search;
+import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
+import org.efaps.admin.ui.Command;
 import org.efaps.json.index.SearchResult;
+import org.efaps.ui.wicket.util.Configuration;
+import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,6 +67,15 @@ public class SearchPanel
     public SearchPanel(final String _wicketId)
     {
         super(_wicketId);
+        boolean access = false;
+        try {
+            final Command cmd = Command.get(UUID.fromString(Configuration.getAttribute(ConfigAttribute.INDEXACCESSCMD)));
+            access = cmd.hasAccess(TargetMode.VIEW, null);
+        } catch (final EFapsException e) {
+            LOG.error("Catched error during access control to index.", e);
+        }
+        this.setVisible(access);
+
         final ResultPanel resultPanel = new ResultPanel("result");
         resultPanel.setOutputMarkupPlaceholderTag(true).setVisible(false);
         add(resultPanel);
@@ -64,6 +83,8 @@ public class SearchPanel
         add(form);
         final TextField<String> input = new TextField<>("input", Model.of(""));
         input.setOutputMarkupId(true);
+        input.add(new AttributeModifier("placeholder",
+                        DBProperties.getProperty(SearchPanel.class.getName() + ".Placeholder")));
         form.add(input);
         final AjaxButton button = new AjaxButton("button")
         {
@@ -124,6 +145,14 @@ public class SearchPanel
                         LOG.error("Catched EFapsException", e);
                     }
                 }
+            }
+
+            @Override
+            public void onComponentTagBody(final MarkupStream _markupStream,
+                                           final ComponentTag _openTag)
+            {
+                replaceComponentTagBody(_markupStream, _openTag,
+                                DBProperties.getProperty(SearchPanel.class.getName() + ".Button"));
             }
         };
         form.add(button);
