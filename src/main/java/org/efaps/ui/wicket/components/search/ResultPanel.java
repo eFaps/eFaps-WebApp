@@ -21,9 +21,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.Page;
+import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.behavior.AttributeAppender;
+import org.apache.wicket.core.request.handler.PageProvider;
+import org.apache.wicket.core.request.handler.RenderPageRequestHandler;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
@@ -35,10 +39,18 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.ListDataProvider;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.request.IRequestHandler;
+import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
+import org.efaps.admin.ui.Menu;
+import org.efaps.db.Instance;
 import org.efaps.json.index.SearchResult;
 import org.efaps.json.index.SearchResult.Element;
+import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
+import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.ui.wicket.pages.main.MainPage;
+import org.efaps.util.EFapsException;
 
 /**
  * The Class ResultPanel.
@@ -199,12 +211,50 @@ public class ResultPanel
         public void onClick(final AjaxRequestTarget _target)
         {
             final ResultPanel resultPanel = findParent(ResultPanel.class);
+            final SearchResult.Element element = (Element) getDefaultModelObject();
+            Menu menu;
+            Instance instance;
+            try {
+                instance = Instance.get(element.getOid());
+                menu = Menu.getTypeTreeMenu(instance.getType());
+            } catch (final Exception e) {
+                throw new RestartResponseException(new ErrorPage(e));
+            }
+            if (menu == null) {
+                final Exception ex = new Exception("no tree menu defined for type " + instance.getType().getName());
+                throw new RestartResponseException(new ErrorPage(ex));
+            }
+            Page page;
+            try {
+                page = new ContentContainerPage(menu.getUUID(), instance.getOid());
+            } catch (final EFapsException e) {
+                page = new ErrorPage(e);
+            }
+
+            CharSequence pageUrl;
+            final RequestCycle requestCycle = RequestCycle.get();
+
+            page.getSession().getPageManager().touchPage(page);
+            if (page.isPageStateless()) {
+                pageUrl = requestCycle.urlFor(page.getClass(), page.getPageParameters());
+            } else {
+                final IRequestHandler handler = new RenderPageRequestHandler(new PageProvider(page));
+                pageUrl = requestCycle.urlFor(handler);
+            }
+
             final StringBuilder js = new StringBuilder();
-            js.append("require(['dijit/TooltipDialog','dijit/popup','dojo/dom',")
-                .append("'dijit/registry'], function (TooltipDialog, popup, dom, registry) {\n")
+            js.append("require(['dijit/TooltipDialog','dijit/popup','dojo/dom','dijit/registry',")
+                .append("'dojo/dom-construct'], function (TooltipDialog, popup, dom, registry, domConstruct) {\n")
                 .append("var rN = dom.byId('").append(resultPanel.getMarkupId()).append("');\n")
                 .append("var dialog = registry.byId(rN.id);\n")
                 .append("popup.close(dialog);\n")
+                .append("registry.byId(\"").append("mainPanel")
+                .append("\").set(\"content\", domConstruct.create(\"iframe\", {")
+                .append("\"id\": \"").append(MainPage.IFRAME_ID)
+                .append("\",\"src\": \"").append(pageUrl)
+                .append("\",\"style\": \"border: 0; width: 100%; height: 99%\"")
+                .append(",\"id\": \"").append(MainPage.IFRAME_ID).append("\"")
+                .append("}));")
                 .append("});\n");
             _target.appendJavaScript(js);
         }
