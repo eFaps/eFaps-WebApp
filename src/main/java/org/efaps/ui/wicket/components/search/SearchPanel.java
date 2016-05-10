@@ -14,6 +14,7 @@
  * limitations under the License.
  *
  */
+
 package org.efaps.ui.wicket.components.search;
 
 import java.util.UUID;
@@ -22,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.IAjaxIndicatorAware;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
@@ -49,6 +51,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SearchPanel
     extends Panel
+    implements IAjaxIndicatorAware
 {
 
     /** The Constant serialVersionUID. */
@@ -69,7 +72,8 @@ public class SearchPanel
         super(_wicketId);
         boolean access = false;
         try {
-            final Command cmd = Command.get(UUID.fromString(Configuration.getAttribute(ConfigAttribute.INDEXACCESSCMD)));
+            final Command cmd = Command.get(UUID.fromString(
+                            Configuration.getAttribute(ConfigAttribute.INDEXACCESSCMD)));
             access = cmd.hasAccess(TargetMode.VIEW, null);
         } catch (final EFapsException e) {
             LOG.error("Catched error during access control to index.", e);
@@ -157,5 +161,11 @@ public class SearchPanel
         };
         form.add(button);
         form.setDefaultButton(button);
+    }
+
+    @Override
+    public String getAjaxIndicatorMarkupId()
+    {
+        return "searchIndicator";
     }
 }
