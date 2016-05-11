@@ -96,7 +96,7 @@ public class ResultPanel
         });
 
         columns.add(new PropertyColumn<SearchResult.Element, Void>(new Model<String>("Last Name"), "text"));
-        add(new DataTable<SearchResult.Element, Void>("table", columns, this.provider, 25));
+        add(new DataTable<SearchResult.Element, Void>("table", columns, this.provider, 100));
     }
 
     /**
@@ -208,12 +208,13 @@ public class ResultPanel
         }
 
         @Override
+        @SuppressWarnings("checkstyle:illegalcatch")
         public void onClick(final AjaxRequestTarget _target)
         {
             final ResultPanel resultPanel = findParent(ResultPanel.class);
             final SearchResult.Element element = (Element) getDefaultModelObject();
-            Menu menu;
-            Instance instance;
+            final Menu menu;
+            final Instance instance;
             try {
                 instance = Instance.get(element.getOid());
                 menu = Menu.getTypeTreeMenu(instance.getType());
@@ -231,7 +232,7 @@ public class ResultPanel
                 page = new ErrorPage(e);
             }
 
-            CharSequence pageUrl;
+            final CharSequence pageUrl;
             final RequestCycle requestCycle = RequestCycle.get();
 
             page.getSession().getPageManager().touchPage(page);

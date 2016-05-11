@@ -21,8 +21,58 @@
         <form class="eFapsSearchForm" wicket:id="form">
             <input type="text" placeholder="Search here..." autocomplete="off" wicket:id="input" required="required">
             <button type="submit" wicket:id="button">Search</button>
-             <span id="searchIndicator" style="display: none;"></span>
         </form>
+        <span id="searchIndicator" style="display: none;"></span>
         <span wicket:id="result"></span>
+        <script type="text/javascript">
+require(['dijit/popup',
+         'dijit/registry',
+         'dojo/_base/window',
+         'dojo/window',
+         'dojo/query',
+         'dojo/dom-construct',
+         'dojo/NodeList-dom'], function (popup, registry, baseWindow, win, query, domConstruct) {
+           query('.eFapsSearchForm input').on('click', function (e) {
+             var dialog;
+             var form;
+             query('.resultPlaceholder').forEach(function (_node) {
+               dialog = registry.getEnclosingWidget(_node);
+             });
+             query('.eFapsSearchForm').forEach(function (_node) {
+               form = _node;
+             });
+             var pu = popup.getTopPopup();
+             if (dialog != null && (pu == null || pu.widget != dialog)) {
+               var vs = win.getBox();
+               var wi = (vs.w - 100) + 'px';
+               var wh = (vs.h - 150) + 'px';
+               query('.searchOverlay').forEach(domConstruct.destroy);
+               var ov = domConstruct.create('div', {
+                 'class': 'searchOverlay'
+               }, baseWindow.body());
+               query('.searchOverlay').on('click', function (e) {
+                 popup.close(dialog);
+               });
+               query('.resultPlaceholder').style('width', wi);
+               query('.resultOverflow').style('height', wh);
+               query('.resultClose').on('click', function (e) {
+                 popup.close(dialog);
+               });
+               popup.open({
+                 popup: dialog,
+                 orient: [
+                   'below-centered',
+                   'below-alt',
+                   'below'
+                 ],
+                 onClose: function () {
+                   query('.searchOverlay').forEach(domConstruct.destroy);
+                 },
+                 around: form
+               });
+             }
+           });
+         });
+        </script>
     </wicket:panel>
 </html>
