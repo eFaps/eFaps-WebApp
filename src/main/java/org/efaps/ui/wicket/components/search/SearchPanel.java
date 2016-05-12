@@ -34,7 +34,9 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import org.efaps.admin.dbproperty.DBProperties;
-import org.efaps.admin.index.Search;
+import org.efaps.admin.index.ISearch;
+import org.efaps.admin.index.Index;
+import org.efaps.admin.index.Searcher;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.Command;
 import org.efaps.json.index.SearchResult;
@@ -104,7 +106,9 @@ public class SearchPanel
                 final String queryStr = (String) input.getDefaultModelObject();
                 if (StringUtils.isNotEmpty(queryStr)) {
                     try {
-                        final SearchResult result = Search.search(queryStr);
+                        final ISearch search = Index.getSearch();
+                        search.setQuery(queryStr);
+                        final SearchResult result = Searcher.search(search);
                         SearchPanel.this.visitChildren(ResultPanel.class, new IVisitor<Component, Void>()
                         {
 
@@ -112,7 +116,7 @@ public class SearchPanel
                             public void component(final Component _component,
                                                   final IVisit<Void> _visit)
                             {
-                                ((ResultPanel) _component).update(result);
+                                ((ResultPanel) _component).update(search, result);
                             }
                         });
                         resultPanel.setVisible(true);

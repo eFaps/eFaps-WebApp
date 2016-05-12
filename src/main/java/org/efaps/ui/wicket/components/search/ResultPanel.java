@@ -18,7 +18,9 @@
 package org.efaps.ui.wicket.components.search;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
@@ -43,6 +45,7 @@ import org.apache.wicket.request.IRequestHandler;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
+import org.efaps.admin.index.ISearch;
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
 import org.efaps.json.index.SearchResult;
@@ -78,7 +81,17 @@ public class ResultPanel
         add(new Label("label", Model.of("")));
 
         this.provider = new ElementDataProvider();
+        add(getDataTable(null));
+    }
 
+    /**
+     * Gets the data table.
+     *
+     * @param _search the search
+     * @return the data table
+     */
+    private DataTable<SearchResult.Element, Void> getDataTable(final ISearch _search)
+    {
         final List<IColumn<SearchResult.Element, Void>> columns = new ArrayList<>();
 
         columns.add(new AbstractColumn<SearchResult.Element, Void>(new Model<String>(""))
@@ -95,16 +108,25 @@ public class ResultPanel
             }
         });
 
-        columns.add(new PropertyColumn<SearchResult.Element, Void>(new Model<String>("Last Name"), "text"));
-        add(new DataTable<SearchResult.Element, Void>("table", columns, this.provider, 100));
+        if (_search == null || _search.getResultFields().isEmpty()) {
+            columns.add(new PropertyColumn<SearchResult.Element, Void>(new Model<String>("Last Name"), "text"));
+        } else {
+            for (final Entry<String, Collection<String>> entry : _search.getResultFields().entrySet()) {
+                columns.add(new ResultColumn(entry.getValue()));
+            }
+        }
+        return new DataTable<SearchResult.Element, Void>("table", columns, this.provider, _search == null ? 100
+                        : _search.getNumHits());
     }
 
     /**
      * Update.
      *
+     * @param _search the search
      * @param _result the result
      */
-    public void update(final SearchResult _result)
+    public void update(final ISearch _search,
+                       final SearchResult _result)
     {
 
         ResultPanel.this.visitChildren(new IVisitor<Component, Void>()
@@ -130,6 +152,7 @@ public class ResultPanel
                         } else {
                             _component.setVisible(true);
                             ResultPanel.this.provider.setElements(_result.getElements());
+                            _component.replaceWith(getDataTable(_search));
                         }
                         break;
                     default:
@@ -258,6 +281,48 @@ public class ResultPanel
                 .append("}));")
                 .append("});\n");
             _target.appendJavaScript(js);
+        }
+    }
+
+    /**
+     * The Class ResultColumn.
+     */
+    public static class ResultColumn
+        extends AbstractColumn<SearchResult.Element, Void>
+    {
+
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
+
+        /** The keys. */
+        private final Collection<String> keys;
+
+        /**
+         * Instantiates a new result column.
+         *
+         * @param _keys the keys
+         */
+        public ResultColumn(final Collection<String> _keys)
+        {
+            super(Model.of(""));
+            this.keys = _keys;
+        }
+
+        @Override
+        public void populateItem(final Item<ICellPopulator<Element>> _cellItem,
+                                 final String _componentId,
+                                 final IModel<Element> _rowModel)
+        {
+            String val = "";
+            for (final String key : this.keys) {
+                if (_rowModel.getObject().getFields().containsKey(key)) {
+                    val = _rowModel.getObject().getFields().get(key);
+                    break;
+                }
+            }
+            _cellItem.add(new Label(_componentId, val));
         }
     }
 }
