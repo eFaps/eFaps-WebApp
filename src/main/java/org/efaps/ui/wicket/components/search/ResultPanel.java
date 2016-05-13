@@ -33,6 +33,7 @@ import org.apache.wicket.core.request.handler.RenderPageRequestHandler;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.HeadersToolbar;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
 import org.apache.wicket.markup.html.basic.Label;
@@ -45,6 +46,7 @@ import org.apache.wicket.request.IRequestHandler;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.index.ISearch;
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
@@ -79,7 +81,7 @@ public class ResultPanel
     {
         super(_wicketId);
         add(new Label("label", Model.of("")));
-
+        add(new Label("hits", Model.of("")));
         this.provider = new ElementDataProvider();
         add(getDataTable(null));
     }
@@ -112,11 +114,14 @@ public class ResultPanel
             columns.add(new PropertyColumn<SearchResult.Element, Void>(new Model<String>("Last Name"), "text"));
         } else {
             for (final Entry<String, Collection<String>> entry : _search.getResultFields().entrySet()) {
-                columns.add(new ResultColumn(entry.getValue()));
+                columns.add(new ResultColumn(_search.getResultLabel().get(entry.getKey()), entry.getValue()));
             }
         }
-        return new DataTable<SearchResult.Element, Void>("table", columns, this.provider, _search == null ? 100
-                        : _search.getNumHits());
+        final DataTable<Element, Void> ret = new DataTable<SearchResult.Element, Void>("table", columns, this.provider,
+                        _search == null ? 100 : _search.getNumHits());
+
+        ret.addTopToolbar(new HeadersToolbar<Void>(ret, null));
+        return ret;
     }
 
     /**
@@ -138,10 +143,21 @@ public class ResultPanel
             {
                 final String compid = _component.getId();
                 switch (compid) {
+                    case "hits":
+                        if (_result.getElements().isEmpty()) {
+                            _component.setVisible(false);
+                        } else {
+                            _component.setVisible(true);
+                            ((Label) _component).setDefaultModelObject(
+                                            DBProperties.getFormatedDBProperty(ResultPanel.class.getName() + ".Hits",
+                                                            _result.getElements().size(), _result.getHitCount()));
+                        }
+                        break;
                     case "label":
                         if (_result.getElements().isEmpty()) {
                             _component.setVisible(true);
-                            ((Label) _component).setDefaultModelObject("no hay resultados");
+                            ((Label) _component).setDefaultModelObject(
+                                            DBProperties.getProperty(ResultPanel.class.getName() + ".NoResult"));
                         } else {
                             _component.setVisible(false);
                         }
@@ -302,11 +318,13 @@ public class ResultPanel
         /**
          * Instantiates a new result column.
          *
+         * @param _label the label
          * @param _keys the keys
          */
-        public ResultColumn(final Collection<String> _keys)
+        public ResultColumn(final String _label,
+                            final Collection<String> _keys)
         {
-            super(Model.of(""));
+            super(Model.of(_label));
             this.keys = _keys;
         }
 
