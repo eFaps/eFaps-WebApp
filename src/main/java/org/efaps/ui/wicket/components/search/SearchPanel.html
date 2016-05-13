@@ -31,7 +31,19 @@ require(['dijit/popup',
          'dojo/window',
          'dojo/query',
          'dojo/dom-construct',
-         'dojo/NodeList-dom'], function (popup, registry, baseWindow, win, query, domConstruct) {
+         'dojo/keys',
+         'dojo/NodeList-dom'], function (popup, registry, baseWindow, win, query, domConstruct, keys) {
+           query('.eFapsSearchForm input').on('keydown', function (e) {
+              if (keys.ESCAPE == e.keyCode) {
+                var pu = popup.getTopPopup();
+                if (typeof (pu) !== 'undefined') {
+                  query('.resultPlaceholder').forEach(function (_node) {
+                    dialog = registry.getEnclosingWidget(_node);
+                    popup.close(dialog);
+                  });
+                }
+              }
+           });
            query('.eFapsSearchForm input').on('click', function (e) {
              var dialog;
              var form;
