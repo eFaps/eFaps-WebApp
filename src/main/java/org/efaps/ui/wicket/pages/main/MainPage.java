@@ -52,6 +52,7 @@ import org.apache.wicket.protocol.ws.api.message.ConnectedMessage;
 import org.apache.wicket.protocol.ws.api.message.IWebSocketPushMessage;
 import org.apache.wicket.util.string.StringValue;
 import org.apache.wicket.util.time.Duration;
+import org.efaps.admin.EFapsSystemConfiguration;
 import org.efaps.admin.KernelSettings;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.user.Role;
@@ -71,6 +72,7 @@ import org.efaps.ui.wicket.components.menu.LinkItem;
 import org.efaps.ui.wicket.components.menu.MenuBarPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.preloader.PreLoaderPanel;
+import org.efaps.ui.wicket.components.search.SearchPanel;
 import org.efaps.ui.wicket.models.PushMsg;
 import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
@@ -223,8 +225,21 @@ public class MainPage
             add(new CallHomeBehavior());
         }
 
+        try {
+            // only add the search if it is activated in the kernel
+            if (EFapsSystemConfiguration.get().getAttributeValueAsBoolean(KernelSettings.INDEXACTIVATE)) {
+                final SearchPanel search = new SearchPanel("search");
+                add(search);
+            } else {
+                add(new WebMarkupContainer("search").setVisible(false));
+            }
+        } catch (final EFapsException e1) {
+            MainPage.LOG.error("Error on retrieving setting for index", e1);
+        }
+
         final WebMarkupContainer logo = new WebMarkupContainer("logo");
         headerPanel.add(logo);
+
         final Label welcome = new Label("welcome", DBProperties.getProperty("Logo.Welcome.Label"));
         logo.add(welcome);
 

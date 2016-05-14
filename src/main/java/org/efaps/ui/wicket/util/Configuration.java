@@ -177,8 +177,10 @@ public final class Configuration
                         "The format for datetime. Can be style or pattern. "),
         /** */
         FORMAT_DATE(false, true, "Format4Date", "M-", String.class,
-                        "The format for date. Can be style or pattern.");
-
+                        "The format for date. Can be style or pattern."),
+        /** */
+        INDEXACCESSCMD(false, true, "IndexAccessCmd", "88c9ce19-d759-443e-b791-0e725fe58f52", String.class,
+                        "UUID of the command that is used to define the access to the index search.");
         /**
          * Stores the key for this Attribute..
          */

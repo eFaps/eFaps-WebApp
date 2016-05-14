@@ -1,0 +1,90 @@
+<!--
+
+  Copyright 2003 - 2016 The eFaps Team
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+-->
+
+<html xmlns:wicket>
+    <wicket:panel xmlns:wicket="http://wicket.apache.org">
+        <form class="eFapsSearchForm" wicket:id="form">
+            <input type="text" placeholder="Search here..." autocomplete="off" wicket:id="input" required="required">
+            <button type="submit" wicket:id="button">Search</button>
+        </form>
+        <span id="searchIndicator" style="display: none;"></span>
+        <span wicket:id="result"></span>
+        <script type="text/javascript">
+require(['dijit/popup',
+         'dijit/registry',
+         'dojo/_base/window',
+         'dojo/window',
+         'dojo/query',
+         'dojo/dom-construct',
+         'dojo/keys',
+         'dojo/NodeList-dom'], function (popup, registry, baseWindow, win, query, domConstruct, keys) {
+           query('.eFapsSearchForm input').on('keydown', function (e) {
+              if (keys.ESCAPE == e.keyCode) {
+                var pu = popup.getTopPopup();
+                if (typeof (pu) !== 'undefined') {
+                  query('.resultPlaceholder').forEach(function (_node) {
+                    dialog = registry.getEnclosingWidget(_node);
+                    popup.close(dialog);
+                  });
+                }
+              }
+           });
+           query('.eFapsSearchForm input').on('click', function (e) {
+             var dialog;
+             var form;
+             query('.resultPlaceholder').forEach(function (_node) {
+               dialog = registry.getEnclosingWidget(_node);
+             });
+             query('.eFapsSearchForm').forEach(function (_node) {
+               form = _node;
+             });
+             var pu = popup.getTopPopup();
+             if (dialog != null && (pu == null || pu.widget != dialog)) {
+               var vs = win.getBox();
+               var wi = (vs.w - 100) + 'px';
+               var wh = (vs.h - 150) + 'px';
+               query('.searchOverlay').forEach(domConstruct.destroy);
+               var ov = domConstruct.create('div', {
+                 'class': 'searchOverlay'
+               }, baseWindow.body());
+               query('.searchOverlay').on('click', function (e) {
+                 popup.close(dialog);
+               });
+               query('.resultPlaceholder').style('width', wi);
+               query('.resultOverflow').style('height', wh);
+               query('.resultClose').on('click', function (e) {
+                 popup.close(dialog);
+               });
+               popup.open({
+                 popup: dialog,
+                 orient: [
+                   'below-centered',
+                   'below-alt',
+                   'below'
+                 ],
+                 onClose: function () {
+                   query('.searchOverlay').forEach(domConstruct.destroy);
+                 },
+                 around: form
+               });
+             }
+           });
+         });
+        </script>
+    </wicket:panel>
+</html>
