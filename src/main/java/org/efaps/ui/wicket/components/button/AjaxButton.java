@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 
@@ -36,17 +33,16 @@ import org.efaps.ui.wicket.resources.EFapsContentReference;
 
 
 /**
- * TODO comment!
+ * TODO comment!.
  *
  * @author The eFaps Team
- * @version $Id$
- * @param <T>
+ * @param <T> the generic type
  */
-//CHECKSTYLE:OFF
+@SuppressWarnings("checkstyle:abstractclassname")
 public abstract class AjaxButton<T>
     extends GenericPanel<T>
 {
-//CHECKSTYLE:ON
+
     /**
      *
      * Needed for serialization.
@@ -54,6 +50,8 @@ public abstract class AjaxButton<T>
     private static final long serialVersionUID = 1L;
 
     /**
+     * Instantiates a new ajax button.
+     *
      * @param _wicketId wicketid for this component
      */
     public AjaxButton(final String _wicketId)
@@ -62,6 +60,8 @@ public abstract class AjaxButton<T>
     }
 
     /**
+     * Instantiates a new ajax button.
+     *
      * @param _wicketId     WicketId for this component
      * @param _label        label of the button
      */
@@ -72,6 +72,8 @@ public abstract class AjaxButton<T>
     }
 
     /**
+     * Instantiates a new ajax button.
+     *
      * @param _wicketId     WicketId for this component
      * @param _reference    reference to an icon
      */
@@ -82,6 +84,8 @@ public abstract class AjaxButton<T>
     }
 
     /**
+     * Instantiates a new ajax button.
+     *
      * @param _wicketId     WicketId for this component
      * @param _reference    reference to an icon
      * @param _label        label of the button
@@ -95,6 +99,8 @@ public abstract class AjaxButton<T>
     }
 
     /**
+     * Instantiates a new ajax button.
+     *
      * @param _wicketId     WicketId for this component
      * @param _model        Model for this component
      */
@@ -105,6 +111,8 @@ public abstract class AjaxButton<T>
     }
 
     /**
+     * Instantiates a new ajax button.
+     *
      * @param _wicketId     WicketId for this component
      * @param _model        Model for this component
      * @param _reference    reference to an icon
@@ -117,6 +125,8 @@ public abstract class AjaxButton<T>
     }
 
     /**
+     * Instantiates a new ajax button.
+     *
      * @param _wicketId     WicketId for this component
      * @param _model        Model for this component
      * @param _reference    reference to an icon
@@ -141,7 +151,7 @@ public abstract class AjaxButton<T>
                               final EFapsContentReference _reference,
                               final String _label)
     {
-        ButtonLink<T> link;
+        final ButtonLink<T> link;
         if (_model == null) {
             link = new ButtonLink<T>("button");
         } else {
@@ -160,6 +170,16 @@ public abstract class AjaxButton<T>
     }
 
     /**
+     * Gets the default processing.
+     *
+     * @return {@code true} for default processing
+     */
+    protected boolean getDefaultProcessing()
+    {
+        return true;
+    }
+
+    /**
      * Listener method invoked on the ajax request generated when
      * the user clicks the link.
      *
@@ -169,18 +189,20 @@ public abstract class AjaxButton<T>
 
     /**
      * Underlying link.
+     *
+     * @param <T> the generic type
      */
     public static class ButtonLink<T>
         extends WebMarkupContainer
         implements IAjaxIndicatorAware
     {
 
-        /**
-         *
-         */
+        /** The Constant serialVersionUID. */
         private static final long serialVersionUID = 1L;
 
         /**
+         * Instantiates a new button link.
+         *
          * @param _wicketId wicketid for this component
          * @param _model   model for this component
          */
@@ -191,8 +213,9 @@ public abstract class AjaxButton<T>
         }
 
         /**
+         * Instantiates a new button link.
+         *
          * @param _wicketId wicketid for this component
-         * @param _model
          */
         public ButtonLink(final String _wicketId)
         {
@@ -204,6 +227,7 @@ public abstract class AjaxButton<T>
         {
             return "eFapsVeil";
         }
+
         @Override
         protected void onInitialize()
         {
@@ -218,12 +242,20 @@ public abstract class AjaxButton<T>
                 {
                     findParent(AjaxButton.class).onSubmit(_target);
                 }
+
+                @Override
+                public boolean getDefaultProcessing()
+                {
+                    return findParent(AjaxButton.class).getDefaultProcessing();
+                }
             });
         }
     }
 
     /**
      * Render the image span.
+     *
+     * @author The eFaps Team
      */
     public static class ButtonImage
         extends StaticImageComponent
@@ -239,6 +271,8 @@ public abstract class AjaxButton<T>
         private boolean hasReference = false;
 
         /**
+         * Instantiates a new button image.
+         *
          * @param _wicketId wicketid for this component
          */
         public ButtonImage(final String _wicketId)
@@ -247,6 +281,8 @@ public abstract class AjaxButton<T>
         }
 
         /**
+         * Instantiates a new button image.
+         *
          * @param _wicketId wicketid for this component
          * @param _reference reference to an icon that will be shown
          */
@@ -258,6 +294,8 @@ public abstract class AjaxButton<T>
         }
 
         /**
+         * Checks for reference.
+         *
          * @return true if has reference, else false
          */
         public boolean hasReference()
@@ -286,5 +324,4 @@ public abstract class AjaxButton<T>
             _tag.append("style", "background-image:url(" + super.getUrl() + ")", " ");
         }
     }
-
 }

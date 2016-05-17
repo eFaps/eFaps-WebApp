@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.components.picker;
@@ -39,15 +36,12 @@ import org.slf4j.LoggerFactory;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class AjaxPickerButton
     extends AjaxButton<IPickable>
 {
 
-    /**
-     *
-     */
+    /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
 
     /**
@@ -56,8 +50,10 @@ public class AjaxPickerButton
     private static final Logger LOG = LoggerFactory.getLogger(AjaxPickerButton.class);
 
     /**
-     * @param _wicketId
-     * @param _model
+     * Instantiates a new ajax picker button.
+     *
+     * @param _wicketId the wicket id
+     * @param _model the model
      */
     public AjaxPickerButton(final String _wicketId,
                             final IModel<IPickable> _model)
@@ -66,9 +62,15 @@ public class AjaxPickerButton
     }
 
     @Override
+    protected boolean getDefaultProcessing()
+    {
+        return false;
+    }
+
+    @Override
     public void onSubmit(final AjaxRequestTarget _target)
     {
-        ModalWindowContainer modal;
+        final ModalWindowContainer modal;
         if (getPage() instanceof MainPage) {
             modal = ((MainPage) getPage()).getModal();
         } else {
@@ -87,6 +89,5 @@ public class AjaxPickerButton
         } catch (final EFapsException e) {
             LOG.error("Error on submit", e);
         }
-
     }
 }

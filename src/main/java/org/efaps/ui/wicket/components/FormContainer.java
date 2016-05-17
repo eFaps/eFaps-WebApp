@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.components;
@@ -62,7 +59,6 @@ import org.efaps.util.EFapsException;
  * Class for a form. Needed for file upload.
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class FormContainer
     extends Form<Object>
@@ -243,36 +239,35 @@ public class FormContainer
         resetSetCounter();
     }
 
-   /**
-    * Reset the counters for sets.
-    */
-   private void resetSetCounter()
-   {
-       if (getPage().getDefaultModelObject() instanceof UIForm) {
-           for (final Element element : ((UIForm) getPage().getDefaultModelObject()).getElements()) {
-               if (element.getType().equals(ElementType.FORM)) {
-                   for (final FormRow row : ((UIForm.FormElement) element.getElement()).getRowModels()) {
-                       for (final AbstractInstanceObject cell : row.getValues()) {
-                           if (cell instanceof UIFormCellSet) {
-                               ((UIFormCellSet) cell).resetIndex();
-                           }
-                       }
-                   }
-               } else if (element.getType().equals(ElementType.SUBFORM)) {
-                   for (final Element nElement : ((UIFieldForm) element.getElement()).getElements()) {
-                       if (nElement.getType().equals(ElementType.FORM)) {
-                           for (final FormRow row : ((UIForm.FormElement) nElement.getElement())
-                                           .getRowModels()) {
-                               for (final AbstractInstanceObject cell : row.getValues()) {
-                                   if (cell instanceof UIFormCellSet) {
-                                       ((UIFormCellSet) cell).resetIndex();
-                                   }
-                               }
-                           }
-                       }
-                   }
-               }
-           }
-       }
-   }
+    /**
+     * Reset the counters for sets.
+     */
+    private void resetSetCounter()
+    {
+        if (getPage().getDefaultModelObject() instanceof UIForm) {
+            for (final Element element : ((UIForm) getPage().getDefaultModelObject()).getElements()) {
+                if (element.getType().equals(ElementType.FORM)) {
+                    for (final FormRow row : ((UIForm.FormElement) element.getElement()).getRowModels()) {
+                        for (final AbstractInstanceObject cell : row.getValues()) {
+                            if (cell instanceof UIFormCellSet) {
+                                ((UIFormCellSet) cell).resetIndex();
+                            }
+                        }
+                    }
+                } else if (element.getType().equals(ElementType.SUBFORM)) {
+                    for (final Element nElement : ((UIFieldForm) element.getElement()).getElements()) {
+                        if (nElement.getType().equals(ElementType.FORM)) {
+                            for (final FormRow row : ((UIForm.FormElement) nElement.getElement()).getRowModels()) {
+                                for (final AbstractInstanceObject cell : row.getValues()) {
+                                    if (cell instanceof UIFormCellSet) {
+                                        ((UIFormCellSet) cell).resetIndex();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

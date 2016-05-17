@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.components.form.command;
@@ -39,7 +36,6 @@ import org.efaps.util.EFapsException;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class AjaxExecuteLink
     extends AjaxButton<UIFormCellCmd>
@@ -50,9 +46,12 @@ public class AjaxExecuteLink
     private static final long serialVersionUID = 1L;
 
     /**
+     * Instantiates a new ajax execute link.
+     *
      * @param _wicketId wicket id for this component
-     * @param _form     form this button lies in
-     * @param _uiObject uiobjetc for this component
+     * @param _model the model
+     * @param _reference the reference
+     * @param _label the label
      */
     public AjaxExecuteLink(final String _wicketId,
                            final IModel<UIFormCellCmd> _model,
@@ -62,9 +61,16 @@ public class AjaxExecuteLink
         super(_wicketId, _model, _reference, _label);
     }
 
+    @Override
+    protected boolean getDefaultProcessing()
+    {
+        return false;
+    }
+
     /**
+     * On submit.
+     *
      * @param _target   AjaxRequestTarget
-     * @param _form     form
      */
     @Override
     public void onSubmit(final AjaxRequestTarget _target)
