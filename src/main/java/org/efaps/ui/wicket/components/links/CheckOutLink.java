@@ -74,6 +74,7 @@ public class CheckOutLink
             final StringBuilder href = new StringBuilder();
             href.append("../servlet/checkout?").append("oid=").append(uiField.getInstance().getOid());
             _tag.put("href", href);
+            _tag.put("target", "_blank");
         } catch (final EFapsException e) {
             LOG.error("Catched EFapsException", e);
         }
