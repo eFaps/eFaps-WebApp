@@ -1,0 +1,106 @@
+<html>
+<head>
+<script src="http://ajax.googleapis.com/ajax/libs/dojo/1.10.4/dojo/dojo.js"></script>
+</head>
+
+<body>
+    <style>
+<!--
+
+.tristate {
+    margin: 2px;
+
+}
+.tristate button {
+    background-color: #C4C4C4;
+    border-radius: 16px;
+    border-style: solid;
+    border-width: 0;
+    cursor: pointer;
+    height: 25px;
+    width: 50px;
+    outline: none;
+}
+
+.tristate .handle {
+    background-color: white;
+    border-radius: 100%;
+    box-shadow: 0 2px grey;
+    display: inline-block;
+    height: 18px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 18px;
+}
+
+.tristate.on button{
+    background-color: #4CAF50;
+}
+
+.tristate.off button{
+    background-color: #F44336;
+}
+
+.tristate.off .handle {
+    right: -12px;
+    position: relative;
+}
+
+.tristate.on .handle {
+    left: -12px;
+    position: relative;
+}
+-->
+</style>
+    <div class="tristate" id="tri1">
+        <button id="button1" value="1" name="Type:Boleta">
+            <span class="handle"></span>
+        </button>
+        <span>Boleta</span>
+    </div>
+    <div class="tristate on">
+        <button>
+            <span class="handle"></span>
+        </button>
+        <span>Factura</span>
+    </div>
+    <div class="tristate off">
+        <button>
+            <span class="handle"></span>
+        </button>
+        <span>Gui de Remision</span>
+    </div>
+<script type="text/javascript">
+<!--
+require(['dojo/dom-class',
+         'dojo/dom',
+         'dojo/on',
+         'dojo/query',
+         'dojo/NodeList-traverse',
+         'dojo/domReady!'], function (domClass, dom, on, query) {
+           on(dom.byId('button1'), 'click', function (e) {
+               switch (dom.byId('button1').value)
+               {
+               case 'on':
+                 dom.byId('button1').value = 'off';
+                 domClass.replace('tri1', 'off', 'on');
+                 break;
+               case 'off':
+                 dom.byId('button1').value = '';
+                 domClass.remove('tri1', 'off');
+                 break;
+               default:
+                 dom.byId('button1').value = 'on';
+                 domClass.add('tri1', 'on');
+             }
+           });
+         });
+
+//-->
+</script>
+
+</body>
+
+
+
+</html>
