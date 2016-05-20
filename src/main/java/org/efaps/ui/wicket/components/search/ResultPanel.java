@@ -51,7 +51,7 @@ import org.efaps.admin.index.ISearch;
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
 import org.efaps.json.index.SearchResult;
-import org.efaps.json.index.SearchResult.Element;
+import org.efaps.json.index.result.Element;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
@@ -92,32 +92,32 @@ public class ResultPanel
      * @param _search the search
      * @return the data table
      */
-    private DataTable<SearchResult.Element, Void> getDataTable(final ISearch _search)
+    private DataTable<Element, Void> getDataTable(final ISearch _search)
     {
-        final List<IColumn<SearchResult.Element, Void>> columns = new ArrayList<>();
+        final List<IColumn<Element, Void>> columns = new ArrayList<>();
 
-        columns.add(new AbstractColumn<SearchResult.Element, Void>(new Model<String>(""))
+        columns.add(new AbstractColumn<Element, Void>(new Model<String>(""))
         {
 
             private static final long serialVersionUID = 1L;
 
             @Override
-            public void populateItem(final Item<ICellPopulator<SearchResult.Element>> _cellItem,
+            public void populateItem(final Item<ICellPopulator<Element>> _cellItem,
                                      final String _componentId,
-                                     final IModel<SearchResult.Element> _rowModel)
+                                     final IModel<Element> _rowModel)
             {
                 _cellItem.add(new Link(_componentId, _rowModel));
             }
         });
 
         if (_search == null || _search.getResultFields().isEmpty()) {
-            columns.add(new PropertyColumn<SearchResult.Element, Void>(new Model<String>("Last Name"), "text"));
+            columns.add(new PropertyColumn<Element, Void>(new Model<String>("Last Name"), "text"));
         } else {
             for (final Entry<String, Collection<String>> entry : _search.getResultFields().entrySet()) {
                 columns.add(new ResultColumn(_search.getResultLabel().get(entry.getKey()), entry.getValue()));
             }
         }
-        final DataTable<Element, Void> ret = new DataTable<SearchResult.Element, Void>("table", columns, this.provider,
+        final DataTable<Element, Void> ret = new DataTable<Element, Void>("table", columns, this.provider,
                         _search == null ? 100 : _search.getNumHits());
 
         ret.addTopToolbar(new HeadersToolbar<Void>(ret, null));
@@ -191,7 +191,7 @@ public class ResultPanel
         private static final long serialVersionUID = 1L;
 
         /** The elements. */
-        private List<SearchResult.Element> elements = new ArrayList<>();
+        private List<Element> elements = new ArrayList<>();
 
         @Override
         protected List<Element> getData()
@@ -204,7 +204,7 @@ public class ResultPanel
          *
          * @return the elements
          */
-        public List<SearchResult.Element> getElements()
+        public List<Element> getElements()
         {
             return this.elements;
         }
@@ -214,7 +214,7 @@ public class ResultPanel
          *
          * @param _elements the new elements
          */
-        public void setElements(final List<SearchResult.Element> _elements)
+        public void setElements(final List<Element> _elements)
         {
             this.elements = _elements;
         }
@@ -226,7 +226,7 @@ public class ResultPanel
      * @author The eFaps Team
      */
     public static class Link
-        extends AjaxLink<SearchResult.Element>
+        extends AjaxLink<Element>
     {
 
         /** The Constant serialVersionUID. */
@@ -239,7 +239,7 @@ public class ResultPanel
          * @param _model the model
          */
         public Link(final String _wicketId,
-                    final IModel<SearchResult.Element> _model)
+                    final IModel<Element> _model)
         {
             super(_wicketId, _model);
             setBody(Model.of(""));
@@ -251,7 +251,7 @@ public class ResultPanel
         public void onClick(final AjaxRequestTarget _target)
         {
             final ResultPanel resultPanel = findParent(ResultPanel.class);
-            final SearchResult.Element element = (Element) getDefaultModelObject();
+            final Element element = (Element) getDefaultModelObject();
             final Menu menu;
             final Instance instance;
             try {
@@ -304,7 +304,7 @@ public class ResultPanel
      * The Class ResultColumn.
      */
     public static class ResultColumn
-        extends AbstractColumn<SearchResult.Element, Void>
+        extends AbstractColumn<Element, Void>
     {
 
         /**
