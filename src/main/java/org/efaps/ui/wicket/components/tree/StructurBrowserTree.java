@@ -68,15 +68,15 @@ public class StructurBrowserTree
 {
 
     /**
+     * ResourceReference to the StyleSheet used for this Tree.
+     */
+    public static final EFapsContentReference CSS = new EFapsContentReference(StructurBrowserTree.class,
+                    "StructurTree.css");
+
+    /**
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
-
-    /**
-     * ResourceReference to the StyleSheet used for this Tree.
-     */
-    private static final EFapsContentReference CSS = new EFapsContentReference(StructurBrowserTree.class,
-                    "StructurTree.css");
 
     /**
      * @param _wicketId WicketId of the Tree
@@ -198,7 +198,7 @@ public class StructurBrowserTree
         /**
          * Constructor.
          */
-        public ItemLinkBehavior()
+        ItemLinkBehavior()
         {
             super("click");
         }

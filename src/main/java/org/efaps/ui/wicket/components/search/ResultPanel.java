@@ -83,6 +83,7 @@ public class ResultPanel
         add(new Label("label", Model.of("")));
         add(new Label("hits", Model.of("")));
         this.provider = new ElementDataProvider();
+        add(new DimensionPanel("dimension", Model.of()));
         add(getDataTable(null));
     }
 
@@ -111,7 +112,7 @@ public class ResultPanel
         });
 
         if (_search == null || _search.getResultFields().isEmpty()) {
-            columns.add(new PropertyColumn<Element, Void>(new Model<String>("Last Name"), "text"));
+            columns.add(new PropertyColumn<Element, Void>(new Model<String>(""), "text"));
         } else {
             for (final Entry<String, Collection<String>> entry : _search.getResultFields().entrySet()) {
                 columns.add(new ResultColumn(_search.getResultLabel().get(entry.getKey()), entry.getValue()));
@@ -134,7 +135,35 @@ public class ResultPanel
                        final SearchResult _result)
     {
 
-        ResultPanel.this.visitChildren(new IVisitor<Component, Void>()
+        ResultPanel.this.visitChildren(DimensionPanel.class, new IVisitor<Component, Void>()
+        {
+            @Override
+            public void component(final Component _component,
+                                  final IVisit<Void> _visit)
+            {
+                _component.replaceWith(new DimensionPanel("dimension", Model.of(_result)));
+                _visit.dontGoDeeper();
+            }
+        });
+
+        ResultPanel.this.visitChildren(DataTable.class, new IVisitor<Component, Void>()
+        {
+            @Override
+            public void component(final Component _component,
+                                  final IVisit<Void> _visit)
+            {
+                if (_result.getElements().isEmpty()) {
+                    _component.setVisible(false);
+                } else {
+                    _component.setVisible(true);
+                    ResultPanel.this.provider.setElements(_result.getElements());
+                    _component.replaceWith(getDataTable(_search));
+                }
+                _visit.dontGoDeeper();
+            }
+        });
+
+        ResultPanel.this.visitChildren(Label.class, new IVisitor<Component, Void>()
         {
 
             @Override
@@ -160,15 +189,6 @@ public class ResultPanel
                                             DBProperties.getProperty(ResultPanel.class.getName() + ".NoResult"));
                         } else {
                             _component.setVisible(false);
-                        }
-                        break;
-                    case "table":
-                        if (_result.getElements().isEmpty()) {
-                            _component.setVisible(false);
-                        } else {
-                            _component.setVisible(true);
-                            ResultPanel.this.provider.setElements(_result.getElements());
-                            _component.replaceWith(getDataTable(_search));
                         }
                         break;
                     default:
