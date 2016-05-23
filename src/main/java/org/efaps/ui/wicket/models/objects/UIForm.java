@@ -884,7 +884,8 @@ public class UIForm
                                 cell = new UIField(null, this, UIValue.get(field, attr,
                                                 super.isPartOfWizardCall() ? getValue4Wizard(field.getName()) : null)
                                                 .setClassObject(this)
-                                                .setInstance(getInstance()).setCallInstance(getInstance()));
+                                                .setInstance(AbstractInstanceObject.getInstance4Create(type))
+                                                .setCallInstance(getInstance()));
                             }
                         }
                         row.add(cell);
