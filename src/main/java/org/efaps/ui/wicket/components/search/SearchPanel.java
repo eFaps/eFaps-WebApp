@@ -19,6 +19,7 @@ package org.efaps.ui.wicket.components.search;
 
 import java.util.UUID;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
@@ -28,6 +29,7 @@ import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.HiddenField;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
@@ -40,6 +42,7 @@ import org.efaps.admin.index.Searcher;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.Command;
 import org.efaps.json.index.SearchResult;
+import org.efaps.json.index.result.DimValue;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 import org.efaps.util.EFapsException;
@@ -103,11 +106,29 @@ public class SearchPanel
                                     final Form<?> _form)
             {
                 super.onSubmit(_target, _form);
-                final String queryStr = (String) input.getDefaultModelObject();
+                final StringBuilder queryStr = new StringBuilder().append((String) input.getDefaultModelObject());
                 if (StringUtils.isNotEmpty(queryStr)) {
                     try {
+                        SearchPanel.this.visitChildren(HiddenField.class, new IVisitor<Component, Void>()
+                        {
+                            @Override
+                            public void component(final Component _component,
+                                                  final IVisit<Void> _visit)
+                            {
+                               if (_component.getDefaultModelObject() != null) {
+                                  final boolean sel = BooleanUtils.toBoolean(_component.getDefaultModelObjectAsString());
+                                  final DimValuePanel dimValuePanel = _component.findParent(DimValuePanel.class);
+                                  final DimValue dimValue = (DimValue) dimValuePanel.getDefaultModelObject();
+                                  final String type = dimValue.getLabel();
+                                  if (!sel) {
+                                      queryStr.append(" NOT ");
+                                  }
+                                  queryStr.append(" Type:\"").append(type).append("\"");
+                               }
+                            }
+                        });
                         final ISearch search = Index.getSearch();
-                        search.setQuery(queryStr);
+                        search.setQuery(queryStr.toString());
                         final SearchResult result = Searcher.search(search);
                         SearchPanel.this.visitChildren(ResultPanel.class, new IVisitor<Component, Void>()
                         {
@@ -143,7 +164,7 @@ public class SearchPanel
                             .append("popup.close(registry.byId(rN.id));\n")
                             .append("});\n")
                             .append("query(\".resultPlaceholder\", rN).style(\"width\", wi);\n")
-                            .append("query('.resultOverflow', rN).style('height', wh);")
+                            .append("query('.resultContainer', rN).style('height', wh);")
                             .append("query('.resultClose', rN).on(\"click\", function(e){\n")
                             .append("popup.close(registry.byId(rN.id));\n")
                             .append("});\n")

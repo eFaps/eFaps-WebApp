@@ -48,6 +48,7 @@ import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.index.ISearch;
+import org.efaps.admin.index.SearchConfig;
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
 import org.efaps.json.index.SearchResult;
@@ -56,6 +57,8 @@ import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Class ResultPanel.
@@ -68,6 +71,11 @@ public class ResultPanel
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(ResultPanel.class);
 
     /** The provider. */
     private final ElementDataProvider provider;
@@ -141,7 +149,15 @@ public class ResultPanel
             public void component(final Component _component,
                                   final IVisit<Void> _visit)
             {
-                _component.replaceWith(new DimensionPanel("dimension", Model.of(_result)));
+                try {
+                    if (_search.getConfigs().contains(SearchConfig.ACTIVATE_DIMENSION)) {
+                        _component.replaceWith(new DimensionPanel("dimension", Model.of(_result)));
+                    } else {
+                        _component.setVisible(false);
+                    }
+                } catch (final EFapsException e) {
+                    LOG.error("Catched error", e);
+                }
                 _visit.dontGoDeeper();
             }
         });

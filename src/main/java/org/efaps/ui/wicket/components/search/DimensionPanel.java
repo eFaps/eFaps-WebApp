@@ -31,6 +31,7 @@ import org.apache.wicket.extensions.markup.html.repeater.tree.NestedTree;
 import org.apache.wicket.extensions.markup.html.repeater.tree.theme.HumanTheme;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -63,6 +64,8 @@ public class DimensionPanel
                           final IModel<SearchResult> _model)
     {
         super(_wicketId, _model);
+        final Form form = new Form("dimForm", Model.of());
+        add(form);
         final DimensionProvider provider = new DimensionProvider(_model.getObject());
         final NestedTree<ValueWrapper> dimTree = new NestedTree<ValueWrapper>("dimTree", provider)
         {
@@ -83,7 +86,8 @@ public class DimensionPanel
                 return ret;
             }
         };
-        add(dimTree);
+
+        form.add(dimTree);
         dimTree.getModelObject().addAll(provider.getDimensions());
         dimTree.add(new HumanTheme());
     }

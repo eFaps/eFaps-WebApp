@@ -18,6 +18,13 @@
 
 <html xmlns:wicket>
     <wicket:panel xmlns:wicket="http://wicket.apache.org">
-        <span wicket:id="label" class="dimLabel"></span><span wicket:id="value" class="dimValue"></span>
+        <div class="tristate" wicket:id="triStateDiv">
+            <button wicket:id="triStateBtn">
+                <span class="handle"></span>
+            </button>
+            <span wicket:id="label" class="dimLabel"></span>
+            <span wicket:id="value" class="dimValue"></span>
+            <input type="hidden" wicket:id="triStateValue">
+        </div>
     </wicket:panel>
 </html>
