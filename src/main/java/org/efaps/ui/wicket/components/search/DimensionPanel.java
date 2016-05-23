@@ -74,7 +74,13 @@ public class DimensionPanel
             protected Component newContentComponent(final String _wicketId,
                                                     final IModel<ValueWrapper> _model)
             {
-                return new Label(_wicketId, _model.getObject().getLabel());
+                final Component ret;
+                if (_model.getObject().getValue() instanceof Dimension) {
+                    ret = new Label(_wicketId, _model.getObject().getLabel());
+                } else {
+                    ret = new DimValuePanel(_wicketId, Model.of((DimValue) _model.getObject().getValue()));
+                }
+                return ret;
             }
         };
         add(dimTree);
