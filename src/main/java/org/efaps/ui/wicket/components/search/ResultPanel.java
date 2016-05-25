@@ -53,6 +53,7 @@ import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
 import org.efaps.json.index.SearchResult;
 import org.efaps.json.index.result.Element;
+import org.efaps.ui.wicket.components.search.SearchPanel.SearchObject;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
@@ -91,7 +92,7 @@ public class ResultPanel
         add(new Label("label", Model.of("")));
         add(new Label("hits", Model.of("")));
         this.provider = new ElementDataProvider();
-        add(new DimensionPanel("dimension", Model.of()));
+        add(new DimensionPanel("dimension", Model.of(), null));
         add(getDataTable(null));
     }
 
@@ -140,7 +141,8 @@ public class ResultPanel
      * @param _result the result
      */
     public void update(final ISearch _search,
-                       final SearchResult _result)
+                       final SearchResult _result,
+                       final SearchObject _searchObject)
     {
 
         ResultPanel.this.visitChildren(DimensionPanel.class, new IVisitor<Component, Void>()
@@ -151,7 +153,7 @@ public class ResultPanel
             {
                 try {
                     if (_search.getConfigs().contains(SearchConfig.ACTIVATE_DIMENSION)) {
-                        _component.replaceWith(new DimensionPanel("dimension", Model.of(_result)));
+                        _component.replaceWith(new DimensionPanel("dimension", Model.of(_result), _searchObject));
                     } else {
                         _component.setVisible(false);
                     }

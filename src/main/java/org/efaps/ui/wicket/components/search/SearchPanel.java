@@ -17,6 +17,9 @@
 
 package org.efaps.ui.wicket.components.search;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.lang3.BooleanUtils;
@@ -38,11 +41,13 @@ import org.apache.wicket.util.visit.IVisitor;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.index.ISearch;
 import org.efaps.admin.index.Index;
+import org.efaps.admin.index.SearchConfig;
 import org.efaps.admin.index.Searcher;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.Command;
 import org.efaps.json.index.SearchResult;
 import org.efaps.json.index.result.DimValue;
+import org.efaps.json.index.result.Dimension;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 import org.efaps.util.EFapsException;
@@ -88,7 +93,7 @@ public class SearchPanel
         final ResultPanel resultPanel = new ResultPanel("result");
         resultPanel.setOutputMarkupPlaceholderTag(true).setVisible(false);
         add(resultPanel);
-        final Form<Void> form = new Form<>("form");
+        final Form<SearchObject> form = new Form<>("form", Model.of(new SearchObject()));
         add(form);
         final TextField<String> input = new TextField<>("input", Model.of(""));
         input.setOutputMarkupId(true);
@@ -106,29 +111,87 @@ public class SearchPanel
                                     final Form<?> _form)
             {
                 super.onSubmit(_target, _form);
-                final StringBuilder queryStr = new StringBuilder().append((String) input.getDefaultModelObject());
-                if (StringUtils.isNotEmpty(queryStr)) {
+
+                final StringBuilder queryBldr = new StringBuilder().append((String) input.getDefaultModelObject());
+                if (StringUtils.isNotEmpty(queryBldr)) {
                     try {
+                        final List<DimValue> include = new ArrayList<>();
+                        final List<DimValue> exclude = new ArrayList<>();
+
                         SearchPanel.this.visitChildren(HiddenField.class, new IVisitor<Component, Void>()
                         {
+
                             @Override
                             public void component(final Component _component,
                                                   final IVisit<Void> _visit)
                             {
-                               if (_component.getDefaultModelObject() != null) {
-                                  final boolean sel = BooleanUtils.toBoolean(_component.getDefaultModelObjectAsString());
-                                  final DimValuePanel dimValuePanel = _component.findParent(DimValuePanel.class);
-                                  final DimValue dimValue = (DimValue) dimValuePanel.getDefaultModelObject();
-                                  final String type = dimValue.getLabel();
-                                  if (!sel) {
-                                      queryStr.append(" NOT ");
-                                  }
-                                  queryStr.append(" Type:\"").append(type).append("\"");
-                               }
+                                if (_component.getDefaultModelObject() != null) {
+                                    final boolean sel = BooleanUtils
+                                                    .toBoolean(_component.getDefaultModelObjectAsString());
+                                    final DimValuePanel dimValuePanel = _component.findParent(DimValuePanel.class);
+                                    final DimValue dimValue = (DimValue) dimValuePanel.getDefaultModelObject();
+                                    if (sel) {
+                                        include.add(dimValue);
+                                    } else {
+                                        exclude.add(dimValue);
+                                    }
+                                }
                             }
                         });
+                        if (!include.isEmpty()) {
+                            queryBldr.append("(");
+                            boolean first = true;
+                            for (final DimValue dimVal : include) {
+                                if (first) {
+                                    first = false;
+                                } else {
+                                    queryBldr.append(" OR ");
+                                }
+                                queryBldr.append(" Type:\"").append(dimVal.getLabel()).append("\"");
+                            }
+                            queryBldr.append(")");
+                        }
+                        final SearchObject searchObject = (SearchObject) _form.getDefaultModelObject();
+
+                        if (!include.isEmpty() || !exclude.isEmpty()) {
+
+                            // ist the same search string but different dimensions
+                            if (searchObject.getQuery().equals(input.getDefaultModelObject())) {
+
+                            } else {
+                                final ISearch search = new ISearch() {
+
+                                    @Override
+                                    public void setQuery(final String _query)
+                                    {
+                                    }
+
+                                    @Override
+                                    public String getQuery()
+                                    {
+                                        return (String) input.getDefaultModelObject();
+                                    }
+                                    @Override
+                                    public int getNumHits()
+                                    {
+                                        return 1;
+                                    }
+                                    @Override
+                                    public List<SearchConfig> getConfigs() throws EFapsException {
+                                        final List<SearchConfig> ret = new ArrayList<>();
+                                        ret.add(SearchConfig.ACTIVATE_DIMENSION);
+                                        return ret;
+                                    };
+
+                                };
+                                final SearchResult result = Searcher.search(search);
+                                searchObject.setDimensions(result.getDimensions());
+                                searchObject.setQuery((String) input.getDefaultModelObject());
+                            }
+                        }
+
                         final ISearch search = Index.getSearch();
-                        search.setQuery(queryStr.toString());
+                        search.setQuery(queryBldr.toString());
                         final SearchResult result = Searcher.search(search);
                         SearchPanel.this.visitChildren(ResultPanel.class, new IVisitor<Component, Void>()
                         {
@@ -137,7 +200,7 @@ public class SearchPanel
                             public void component(final Component _component,
                                                   final IVisit<Void> _visit)
                             {
-                                ((ResultPanel) _component).update(search, result);
+                                ((ResultPanel) _component).update(search, result, searchObject);
                             }
                         });
                         resultPanel.setVisible(true);
@@ -203,5 +266,66 @@ public class SearchPanel
     public String getAjaxIndicatorMarkupId()
     {
         return "searchIndicator";
+    }
+
+
+    public static class SearchObject
+        implements Serializable
+    {
+
+        /** The Constant serialVersionUID. */
+        private static final long serialVersionUID = 1L;
+
+        /** The query. */
+        private String query = "";
+
+        private List<Dimension> dimensions = new ArrayList<>();
+
+         /**
+         * Getter method for the instance variable {@link #query}.
+         *
+         * @return value of instance variable {@link #query}
+         */
+        public String getQuery()
+        {
+            return this.query;
+        }
+
+
+        /**
+         * Setter method for instance variable {@link #query}.
+         *
+         * @param _query value for instance variable {@link #query}
+         */
+        public void setQuery(final String _query)
+        {
+            this.query = _query;
+        }
+
+
+
+        /**
+         * Getter method for the instance variable {@link #dimensions}.
+         *
+         * @return value of instance variable {@link #dimensions}
+         */
+        public List<Dimension> getDimensions()
+        {
+            return this.dimensions;
+        }
+
+
+
+        /**
+         * Setter method for instance variable {@link #dimensions}.
+         *
+         * @param _dimensions value for instance variable {@link #dimensions}
+         */
+        public void setDimensions(final List<Dimension> _dimensions)
+        {
+            this.dimensions = _dimensions;
+        }
+
+
     }
 }

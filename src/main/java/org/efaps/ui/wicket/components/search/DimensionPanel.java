@@ -39,6 +39,7 @@ import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.json.index.SearchResult;
 import org.efaps.json.index.result.DimValue;
 import org.efaps.json.index.result.Dimension;
+import org.efaps.ui.wicket.components.search.SearchPanel.SearchObject;
 import org.efaps.ui.wicket.components.tree.StructurBrowserTree;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 
@@ -61,12 +62,15 @@ public class DimensionPanel
      * @param _model the model
      */
     public DimensionPanel(final String _wicketId,
-                          final IModel<SearchResult> _model)
+                          final IModel<SearchResult> _model,
+                          final SearchObject _searchObject)
     {
         super(_wicketId, _model);
-        final Form form = new Form("dimForm", Model.of());
+
+        final Form<Void> form = new Form<>("dimForm");
         add(form);
         final DimensionProvider provider = new DimensionProvider(_model.getObject());
+
         final NestedTree<ValueWrapper> dimTree = new NestedTree<ValueWrapper>("dimTree", provider)
         {
 
@@ -88,7 +92,7 @@ public class DimensionPanel
         };
 
         form.add(dimTree);
-        dimTree.getModelObject().addAll(provider.getDimensions());
+        dimTree.getModelObject().addAll(provider.getWrappedDimensions());
         dimTree.add(new HumanTheme());
     }
 
@@ -181,8 +185,8 @@ public class DimensionPanel
         /** The Constant serialVersionUID. */
         private static final long serialVersionUID = 1L;
 
-        /** The result. */
-        private final SearchResult result;
+        /** The dimensions. */
+        private List<Dimension> dimensions;
 
         /**
          * Instantiates a new dimension provider.
@@ -191,7 +195,11 @@ public class DimensionPanel
          */
         public DimensionProvider(final SearchResult _result)
         {
-            this.result = _result;
+            if (_result != null) {
+                this.dimensions = _result.getDimensions();
+            } else {
+                this.dimensions = Collections.emptyList();
+            }
         }
 
         @Override
@@ -202,7 +210,7 @@ public class DimensionPanel
         @Override
         public Iterator<? extends ValueWrapper> getRoots()
         {
-            return getDimensions().iterator();
+            return getWrappedDimensions().iterator();
         }
 
         /**
@@ -210,13 +218,11 @@ public class DimensionPanel
          *
          * @return the dimensions
          */
-        public List<ValueWrapper> getDimensions()
+        public List<ValueWrapper> getWrappedDimensions()
         {
             final List<ValueWrapper> ret = new ArrayList<>();
-            if (this.result != null) {
-                for (final Dimension dim : this.result.getDimensions()) {
-                    ret.add(new ValueWrapper().setValue(dim));
-                }
+            for (final Dimension dim : getDimensions()) {
+                ret.add(new ValueWrapper().setValue(dim));
             }
             Collections.sort(ret, new Comparator<ValueWrapper>()
             {
@@ -272,6 +278,26 @@ public class DimensionPanel
         public IModel<ValueWrapper> model(final ValueWrapper _object)
         {
             return Model.<ValueWrapper>of(_object);
+        }
+
+        /**
+         * Getter method for the instance variable {@link #dimensions}.
+         *
+         * @return value of instance variable {@link #dimensions}
+         */
+        public List<Dimension> getDimensions()
+        {
+            return this.dimensions;
+        }
+
+        /**
+         * Setter method for instance variable {@link #dimensions}.
+         *
+         * @param _dimensions value for instance variable {@link #dimensions}
+         */
+        public void setDimensions(final List<Dimension> _dimensions)
+        {
+            this.dimensions = _dimensions;
         }
     }
 }
