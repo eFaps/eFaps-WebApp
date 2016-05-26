@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
@@ -32,6 +33,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import org.efaps.ui.wicket.models.field.FieldConfiguration;
+import org.efaps.ui.wicket.request.EFapsRequestParametersAdapter;
 
 /**
  * TODO comment!
@@ -58,6 +60,9 @@ public class BooleanField
      */
     private final String label;
 
+    /** The input name. */
+    private String inputName;
+
     /**
      * @param _wicketId wicket id for this component
      * @param _value value of this component
@@ -69,13 +74,17 @@ public class BooleanField
                         final Object _value,
                         final IModel<Map<Object, Object>> _choices,
                         final FieldConfiguration _fieldConfiguration,
-                        final String _label)
+                        final String _label,
+                        final boolean _uniqueName)
     {
         super(_wicketId, new Model<Boolean>());
         setOutputMarkupId(true);
         setRequired(_fieldConfiguration.getField().isRequired());
         this.fieldConfiguration = _fieldConfiguration;
         this.label = _label;
+        // make a unique name if in a fieldset
+        this.inputName = _fieldConfiguration.getName()
+                        + (_uniqueName ? "_" + RandomStringUtils.randomAlphabetic(4) : "");
         final RadioGroup<Boolean> radioGroup = new RadioGroup<Boolean>("radioGroup") {
 
             /** The Constant serialVersionUID. */
@@ -84,7 +93,7 @@ public class BooleanField
             @Override
             public String getInputName()
             {
-                return _fieldConfiguration.getName();
+                return BooleanField.this.inputName;
             }
         };
 
@@ -188,13 +197,20 @@ public class BooleanField
     {
         setConvertedInput(visitChildren(RadioGroup.class, new IVisitor<RadioGroup<Boolean>, Boolean>()
         {
-
             @Override
-            public void component(final RadioGroup<Boolean> _radioGroupd,
+            public void component(final RadioGroup<Boolean> _radioGroup,
                                   final IVisit<Boolean> _visit)
             {
-                _visit.stop(_radioGroupd.getConvertedInput());
+                _visit.stop(_radioGroup.getConvertedInput());
             }
         }));
+
+        // if a unique name was generated set the values in teh parameters
+        if (!getFieldConfiguration().getName().equals(this.inputName)) {
+            final EFapsRequestParametersAdapter parameters = (EFapsRequestParametersAdapter) getRequest()
+                            .getRequestParameters();
+            parameters.addParameterValue(getFieldConfiguration().getName(),
+                            getConvertedInput() == null ? "" : getConvertedInput().toString());
+        }
     }
 }
