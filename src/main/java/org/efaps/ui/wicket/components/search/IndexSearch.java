@@ -17,6 +17,8 @@
 package org.efaps.ui.wicket.components.search;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -30,11 +32,13 @@ import org.apache.wicket.extensions.markup.html.repeater.tree.ITreeProvider;
 import org.apache.wicket.markup.repeater.data.ListDataProvider;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.efaps.admin.EFapsSystemConfiguration;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.index.ISearch;
 import org.efaps.admin.index.Index;
 import org.efaps.admin.index.SearchConfig;
 import org.efaps.admin.index.Searcher;
+import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.json.index.SearchResult;
 import org.efaps.json.index.result.DimValue;
 import org.efaps.json.index.result.Dimension;
@@ -91,33 +95,23 @@ public class IndexSearch
     protected String getQuery()
     {
         final StringBuilder ret = new StringBuilder();
-        ret.append(getCurrentQuery()).append(" ");
-
-        final List<DimValue> excluded = getExcluded();
-        if (!excluded.isEmpty()) {
-            boolean first = true;
-            for (final DimValue dimVal : excluded) {
-                if (first) {
-                    first = false;
-                } else {
-                    ret.append(" AND ");
-                }
-                ret.append(" -Type:\"").append(dimVal.getLabel()).append("\"");
+        try {
+            String clazzname;
+            if (EFapsSystemConfiguration.get().containsAttributeValue("org.efaps.kernel.index.QueryBuilder")) {
+                clazzname = EFapsSystemConfiguration.get().getAttributeValue("org.efaps.kernel.index.QueryBuilder");
+            } else {
+                clazzname = "org.efaps.esjp.admin.index.LucenceQueryBuilder";
             }
-        }
-        final List<DimValue> included = getIncluded();
-        if (!included.isEmpty()) {
-            ret.append("(");
-            boolean first = true;
-            for (final DimValue dimVal : included) {
-                if (first) {
-                    first = false;
-                } else {
-                    ret.append(" OR ");
-                }
-                ret.append(" Type:\"").append(dimVal.getLabel()).append("\"");
-            }
-            ret.append(")");
+            final Class<?> clazz = Class.forName(clazzname, false, EFapsClassLoader.getInstance());
+            final Object obj = clazz.newInstance();
+            final Method method = clazz.getMethod("getQuery4DimValues", String.class, List.class, List.class);
+            final Object newQuery = method.invoke(obj, getCurrentQuery(), getIncluded(), getExcluded());
+            ret.append(newQuery);
+        } catch (EFapsException | ClassNotFoundException | InstantiationException | IllegalAccessException
+                        | NoSuchMethodException | SecurityException | IllegalArgumentException
+                        | InvocationTargetException e) {
+            LOG.error("Catched", e);
+            ret.append(getCurrentQuery());
         }
         return ret.toString();
     }
