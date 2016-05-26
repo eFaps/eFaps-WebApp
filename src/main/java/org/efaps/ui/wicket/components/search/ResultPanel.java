@@ -37,9 +37,8 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.HeadersToolb
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.markup.repeater.Item;
-import org.apache.wicket.markup.repeater.data.ListDataProvider;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.IRequestHandler;
@@ -47,13 +46,10 @@ import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import org.efaps.admin.dbproperty.DBProperties;
-import org.efaps.admin.index.ISearch;
 import org.efaps.admin.index.SearchConfig;
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
-import org.efaps.json.index.SearchResult;
 import org.efaps.json.index.result.Element;
-import org.efaps.ui.wicket.components.search.SearchPanel.SearchObject;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
@@ -67,7 +63,7 @@ import org.slf4j.LoggerFactory;
  * @author The eFaps Team
  */
 public class ResultPanel
-    extends Panel
+    extends GenericPanel<IndexSearch>
 {
 
     /** The Constant serialVersionUID. */
@@ -78,31 +74,29 @@ public class ResultPanel
      */
     private static final Logger LOG = LoggerFactory.getLogger(ResultPanel.class);
 
-    /** The provider. */
-    private final ElementDataProvider provider;
-
     /**
      * Instantiates a new result panel.
      *
      * @param _wicketId the wicket id
+     * @param _model the model
      */
-    public ResultPanel(final String _wicketId)
+    public ResultPanel(final String _wicketId,
+                       final Model<IndexSearch> _model)
     {
-        super(_wicketId);
-        add(new Label("label", Model.of("")));
+        super(_wicketId, _model);
+        add(new Label("noResult", Model.of("")));
         add(new Label("hits", Model.of("")));
-        this.provider = new ElementDataProvider();
-        add(new DimensionPanel("dimension", Model.of(), null));
-        add(getDataTable(null));
+        add(new DimensionPanel("dimension", _model));
+        add(getDataTable(_model.getObject()));
     }
 
     /**
      * Gets the data table.
      *
-     * @param _search the search
+     * @param _indexSearch the index search
      * @return the data table
      */
-    private DataTable<Element, Void> getDataTable(final ISearch _search)
+    private DataTable<Element, Void> getDataTable(final IndexSearch _indexSearch)
     {
         final List<IColumn<Element, Void>> columns = new ArrayList<>();
 
@@ -120,15 +114,18 @@ public class ResultPanel
             }
         });
 
-        if (_search == null || _search.getResultFields().isEmpty()) {
+        if (_indexSearch.getSearch() == null || _indexSearch.getSearch().getResultFields().isEmpty()) {
             columns.add(new PropertyColumn<Element, Void>(new Model<String>(""), "text"));
         } else {
-            for (final Entry<String, Collection<String>> entry : _search.getResultFields().entrySet()) {
-                columns.add(new ResultColumn(_search.getResultLabel().get(entry.getKey()), entry.getValue()));
+            for (final Entry<String, Collection<String>> entry : _indexSearch.getSearch().getResultFields()
+                            .entrySet()) {
+                columns.add(new ResultColumn(_indexSearch.getSearch().getResultLabel().get(entry.getKey()), entry
+                                .getValue()));
             }
         }
-        final DataTable<Element, Void> ret = new DataTable<Element, Void>("table", columns, this.provider,
-                        _search == null ? 100 : _search.getNumHits());
+        final DataTable<Element, Void> ret = new DataTable<Element, Void>("table", columns, _indexSearch
+                        .getDataProvider(), _indexSearch.getSearch() == null ? 100
+                                        : _indexSearch.getSearch().getNumHits());
 
         ret.addTopToolbar(new HeadersToolbar<Void>(ret, null));
         return ret;
@@ -137,12 +134,11 @@ public class ResultPanel
     /**
      * Update.
      *
-     * @param _search the search
-     * @param _result the result
+     * @param _target the target
+     * @param _indexSearch the index search
      */
-    public void update(final ISearch _search,
-                       final SearchResult _result,
-                       final SearchObject _searchObject)
+    public void update(final AjaxRequestTarget _target,
+                       final IndexSearch _indexSearch)
     {
 
         ResultPanel.this.visitChildren(DimensionPanel.class, new IVisitor<Component, Void>()
@@ -152,8 +148,8 @@ public class ResultPanel
                                   final IVisit<Void> _visit)
             {
                 try {
-                    if (_search.getConfigs().contains(SearchConfig.ACTIVATE_DIMENSION)) {
-                        _component.replaceWith(new DimensionPanel("dimension", Model.of(_result), _searchObject));
+                    if (_indexSearch.getSearch().getConfigs().contains(SearchConfig.ACTIVATE_DIMENSION)) {
+                        _component.setVisible(true);
                     } else {
                         _component.setVisible(false);
                     }
@@ -170,12 +166,13 @@ public class ResultPanel
             public void component(final Component _component,
                                   final IVisit<Void> _visit)
             {
-                if (_result.getElements().isEmpty()) {
+                if (_indexSearch.getResult().getElements().isEmpty()) {
                     _component.setVisible(false);
                 } else {
                     _component.setVisible(true);
-                    ResultPanel.this.provider.setElements(_result.getElements());
-                    _component.replaceWith(getDataTable(_search));
+                }
+                if (_indexSearch.isUpdateTable()) {
+                    _component.replaceWith(getDataTable(_indexSearch));
                 }
                 _visit.dontGoDeeper();
             }
@@ -191,20 +188,21 @@ public class ResultPanel
                 final String compid = _component.getId();
                 switch (compid) {
                     case "hits":
-                        if (_result.getElements().isEmpty()) {
+                        if (_indexSearch.getResult().getElements().isEmpty()) {
                             _component.setVisible(false);
                         } else {
                             _component.setVisible(true);
-                            ((Label) _component).setDefaultModelObject(
-                                            DBProperties.getFormatedDBProperty(ResultPanel.class.getName() + ".Hits",
-                                                            _result.getElements().size(), _result.getHitCount()));
+                            ((Label) _component).setDefaultModelObject(DBProperties.getFormatedDBProperty(
+                                            ResultPanel.class.getName() + ".Hits", _indexSearch.getResult()
+                                                            .getElements().size(), _indexSearch.getResult()
+                                                                            .getHitCount()));
                         }
                         break;
-                    case "label":
-                        if (_result.getElements().isEmpty()) {
+                    case "noResult":
+                        if (_indexSearch.getResult().getElements().isEmpty()) {
                             _component.setVisible(true);
-                            ((Label) _component).setDefaultModelObject(
-                                            DBProperties.getProperty(ResultPanel.class.getName() + ".NoResult"));
+                            ((Label) _component).setDefaultModelObject(DBProperties.getProperty(ResultPanel.class
+                                            .getName() + ".NoResult"));
                         } else {
                             _component.setVisible(false);
                         }
@@ -214,48 +212,6 @@ public class ResultPanel
                 }
             }
         });
-    }
-
-    /**
-     * The Class ElementDataProvider.
-     *
-     * @author The eFaps Team
-     */
-    public static class ElementDataProvider
-        extends ListDataProvider<Element>
-    {
-
-        /** The Constant serialVersionUID. */
-        private static final long serialVersionUID = 1L;
-
-        /** The elements. */
-        private List<Element> elements = new ArrayList<>();
-
-        @Override
-        protected List<Element> getData()
-        {
-            return this.elements;
-        }
-
-        /**
-         * Gets the elements.
-         *
-         * @return the elements
-         */
-        public List<Element> getElements()
-        {
-            return this.elements;
-        }
-
-        /**
-         * Sets the elements.
-         *
-         * @param _elements the new elements
-         */
-        public void setElements(final List<Element> _elements)
-        {
-            this.elements = _elements;
-        }
     }
 
     /**

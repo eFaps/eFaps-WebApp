@@ -16,16 +16,19 @@
  */
 package org.efaps.ui.wicket.components.search;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.wicket.ajax.attributes.AjaxCallListener;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.HiddenField;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
 import org.efaps.json.index.result.DimValue;
+import org.efaps.ui.wicket.components.search.IndexSearch.DimTreeNode;
 
 /**
  * The Class DimValuePanel.
@@ -33,7 +36,7 @@ import org.efaps.json.index.result.DimValue;
  * @author The eFaps Team
  */
 public class DimValuePanel
-    extends GenericPanel<DimValue>
+    extends GenericPanel<DimTreeNode>
 {
 
     /** The Constant serialVersionUID. */
@@ -46,11 +49,16 @@ public class DimValuePanel
      * @param _model the model
      */
     public DimValuePanel(final String _id,
-                         final IModel<DimValue> _model)
+                         final IModel<DimTreeNode> _model)
     {
         super(_id, _model);
         final WebMarkupContainer cont = new WebMarkupContainer("triStateDiv");
         cont.setOutputMarkupId(true);
+
+        if (_model.getObject().getStatus() != null) {
+            cont.add(new AttributeAppender("class", _model.getObject().getStatus() ? "on" : "off", " "));
+        }
+
         add(cont);
 
         final AjaxButton btn = new AjaxButton("triStateBtn")
@@ -63,24 +71,40 @@ public class DimValuePanel
             {
                 super.updateAjaxAttributes(_attributes);
                 final AjaxCallListener lstnr = new AjaxCallListener();
-                lstnr. onBefore(getJavaScript());
+                lstnr.onBefore(getJavaScript());
                 _attributes.getAjaxCallListeners().add(lstnr);
             }
         };
         cont.add(btn);
 
         cont.add(new Label("label", _model.getObject().getLabel()));
-        cont.add(new Label("value", _model.getObject().getValue()));
+        cont.add(new Label("value", String.valueOf(((DimValue) _model.getObject().getValue()).getValue())));
 
-        cont.add(new HiddenField<Boolean>("triStateValue", Model.of()) {
+        cont.add(new HiddenField<Boolean>("triStateValue", PropertyModel.of(_model.getObject(), "status")) {
 
             /** The Constant serialVersionUID. */
             private static final long serialVersionUID = 1L;
 
             @Override
-            public boolean isInputNullable() {
+            public boolean isInputNullable()
+            {
                 return true;
             };
+
+            @Override
+            protected String getModelValue() {
+                final Boolean val = (Boolean) getDefaultModelObject();
+                final String ret;
+                if (BooleanUtils.isFalse(val)) {
+                    ret = "off";
+                } else if (BooleanUtils.isTrue(val)) {
+                    ret = "on";
+                } else {
+                    ret = "";
+                }
+                return ret;
+            };
+
         } .setOutputMarkupId(true));
     }
 
@@ -89,7 +113,8 @@ public class DimValuePanel
      *
      * @return the java script
      */
-    private StringBuilder getJavaScript() {
+    private StringBuilder getJavaScript()
+    {
 
         final String divId = get("triStateDiv").getMarkupId(true);
         get("triStateDiv:triStateBtn").getMarkupId(true);
