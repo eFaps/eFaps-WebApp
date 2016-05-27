@@ -17,6 +17,7 @@
 
 package org.efaps.ui.wicket.models.field.factories;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.datamodel.ui.DateTimeUI;
@@ -129,7 +130,11 @@ public final class DateTimeUIFactory
     public Comparable<?> getCompareValue(final AbstractUIField _uiField)
         throws EFapsException
     {
-        return (Comparable<?>) _uiField.getValue().getReadOnlyValue(_uiField.getParent().getMode());
+        Comparable<?> ret = (Comparable<?>) _uiField.getValue().getReadOnlyValue(_uiField.getParent().getMode());
+        if (ret instanceof String && StringUtils.isEmpty((String) ret)) {
+            ret = null;
+        }
+        return ret;
     }
 
     /**
