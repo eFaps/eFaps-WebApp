@@ -183,8 +183,19 @@ public final class HRefFactory
      */
     @Override
     public String getPickListValue(final AbstractUIField _uiField)
+        throws EFapsException
     {
-        return null;
+        String ret = null;
+        for (final IComponentFactory factory : _uiField.getFactories().values()) {
+            if (factory instanceof AbstractUIFactory) {
+                final AbstractUIFactory uiFactory = (AbstractUIFactory) factory;
+                if (uiFactory.applies(_uiField)) {
+                    ret = uiFactory.getPickListValue(_uiField);
+                    break;
+                }
+            }
+        }
+        return ret;
     }
 
     /**
@@ -194,7 +205,17 @@ public final class HRefFactory
     public Comparable<?> getCompareValue(final AbstractUIField _uiField)
         throws EFapsException
     {
-        return null;
+        Comparable<?> ret = null;
+        for (final IComponentFactory factory : _uiField.getFactories().values()) {
+            if (factory instanceof AbstractUIFactory) {
+                final AbstractUIFactory uiFactory = (AbstractUIFactory) factory;
+                if (uiFactory.applies(_uiField)) {
+                    ret = uiFactory.getCompareValue(_uiField);
+                    break;
+                }
+            }
+        }
+        return ret;
     }
 
     /**
