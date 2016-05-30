@@ -141,7 +141,7 @@ public final class UITypeFactory
         if (applies(_uiField)) {
             switch (_uiField.getFieldConfiguration().getUIType()) {
                 case SNIPPLET:
-                    final String html = String.valueOf(_uiField.getValue().getReadOnlyValue(
+                    final String html = String.valueOf(_uiField.getValue().getHiddenValue(
                                     _uiField.getParent().getMode()));
                     ret = new SnippletField(_wicketId, Model.of(html), null, _uiField);
                     break;
