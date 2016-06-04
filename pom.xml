@@ -229,6 +229,10 @@
             <resource>
                 <filtering>false</filtering>
                 <directory>src/main/resources</directory>
+                <excludes>
+                    <exclude>**/*.uncompressed.js</exclude>
+                    <exclude>**/*.txt</exclude>
+                </excludes>
             </resource>
             <resource>
                 <filtering>false</filtering>
@@ -238,8 +242,6 @@
                 </includes>
                 <excludes>
                     <exclude>**/*.java</exclude>
-                    <exclude>**/*.uncompressed.js</exclude>
-                    <exclude>**/*.txt</exclude>
                 </excludes>
             </resource>
         </resources>
