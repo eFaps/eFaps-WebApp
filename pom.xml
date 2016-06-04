@@ -108,13 +108,13 @@
         <profile>
             <properties>
                 <!-- Must be set on the file missing also -->
-                <dojo.version>1.10.4</dojo.version>
+                <dojo.version>1.11.1</dojo.version>
             </properties>
             <id>dojo-install</id>
             <activation>
                 <file>
                     <!-- doe not work with properties therfore it must be set including the dojo version -->
-                    <missing>lib/dojo-release-1.10.4.tar.gz</missing>
+                    <missing>lib/dojo-release-1.11.1.tar.gz</missing>
                 </file>
             </activation>
             <build>
@@ -148,7 +148,7 @@
                                 <id>unpack-dojo</id>
                                 <configuration>
                                     <target>
-                                        <untar compression="gzip" src="lib/dojo-release-${dojo.version}.tar.gz" dest="src/main/java/org/efaps/ui/wicket/behaviors/dojo">
+                                        <untar compression="gzip" src="lib/dojo-release-${dojo.version}.tar.gz" dest="src/main/resources/org/efaps/ui/wicket/behaviors/dojo">
                                             <cutdirsmapper dirs="1" />
                                         </untar>
                                     </target>
@@ -206,7 +206,7 @@
                                 <id>unpack-gridx</id>
                                 <configuration>
                                     <target>
-                                        <untar compression="gzip" src="lib/gridx-${gridx.version}.tar.gz" dest="src/main/java/org/efaps/ui/wicket/behaviors/dojo/gridx">
+                                        <untar compression="gzip" src="lib/gridx-${gridx.version}.tar.gz" dest="src/main/resources/org/efaps/ui/wicket/behaviors/dojo/gridx">
                                             <cutdirsmapper dirs="1" />
                                         </untar>
                                     </target>
