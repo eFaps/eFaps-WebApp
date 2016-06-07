@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev:1491 $
- * Last Changed:    $Date:2007-10-15 18:40:43 -0500 (Mon, 15 Oct 2007) $
- * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.pages.content.table;
@@ -24,6 +21,7 @@ import java.util.UUID;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.PageReference;
+import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.model.IModel;
 import org.efaps.ui.wicket.components.FormContainer;
@@ -38,10 +36,9 @@ import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
 
 /**
- * CLass renders a page containing a table.
+ * Class renders a page containing a table.
  *
  * @author The eFaps Team
- * @version $Id:TablePage.java 1491 2007-10-15 23:40:43Z jmox $
  */
 public class TablePage
     extends AbstractContentPage
@@ -165,6 +162,9 @@ public class TablePage
         this.add(form);
         super.addComponents(form);
         form.add(AttributeModifier.append("class", uiTable.getMode().toString()));
+        if (uiTable.isOpenedByPicker()) {
+            form.add(new AttributeAppender("class", "PICKER", " "));
+        }
         form.add(tablebody);
     }
 
