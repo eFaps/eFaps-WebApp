@@ -57,6 +57,7 @@ import org.efaps.ui.wicket.models.field.factories.JaxbUIFactory;
 import org.efaps.ui.wicket.models.field.factories.LinkWithRangesUIFactory;
 import org.efaps.ui.wicket.models.field.factories.NumberUIFactory;
 import org.efaps.ui.wicket.models.field.factories.PasswordUIFactory;
+import org.efaps.ui.wicket.models.field.factories.RateUIFactory;
 import org.efaps.ui.wicket.models.field.factories.StringUIFactory;
 import org.efaps.ui.wicket.models.field.factories.TypeUIFactory;
 import org.efaps.ui.wicket.models.field.factories.UITypeFactory;
@@ -105,6 +106,7 @@ public abstract class AbstractUIField
         AbstractUIField.FACTORIES.put(DecimalUIFactory.get().getKey(), DecimalUIFactory.get());
         AbstractUIField.FACTORIES.put(UserUIFactory.get().getKey(), UserUIFactory.get());
         AbstractUIField.FACTORIES.put(TypeUIFactory.get().getKey(), TypeUIFactory.get());
+        AbstractUIField.FACTORIES.put(RateUIFactory.get().getKey(), RateUIFactory.get());
         AbstractUIField.FACTORIES.put(EnumUIFactory.get().getKey(), EnumUIFactory.get());
         AbstractUIField.FACTORIES.put(BitEnumUIFactory.get().getKey(), BitEnumUIFactory.get());
         AbstractUIField.FACTORIES.put(JaxbUIFactory.get().getKey(), JaxbUIFactory.get());

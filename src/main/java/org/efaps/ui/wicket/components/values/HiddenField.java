@@ -48,9 +48,25 @@ public class HiddenField
                        final FieldConfiguration _config)
         throws EFapsException
     {
+        this(_wicketId, (String) _model.getObject().getValue().getHiddenValue(
+                        _model.getObject().getParent().getMode()), _config);
+    }
+
+    /**
+     * Instantiates a new hidden field.
+     *
+     * @param _wicketId the wicket id
+     * @param _modelValue the model value
+     * @param _config the config
+     * @throws EFapsException on error
+     */
+    public HiddenField(final String _wicketId,
+                       final String _modelValue,
+                       final FieldConfiguration _config)
+        throws EFapsException
+    {
         super(_wicketId, _config);
-        setModel(Model.of((String) _model.getObject().getValue().getHiddenValue(
-                        _model.getObject().getParent().getMode())));
+        setModel(Model.of(_modelValue));
         setType(String.class);
     }
 
