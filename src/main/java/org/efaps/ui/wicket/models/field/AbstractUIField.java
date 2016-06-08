@@ -50,6 +50,7 @@ import org.efaps.ui.wicket.models.field.factories.DateTimeUIFactory;
 import org.efaps.ui.wicket.models.field.factories.DateUIFactory;
 import org.efaps.ui.wicket.models.field.factories.DecimalUIFactory;
 import org.efaps.ui.wicket.models.field.factories.EnumUIFactory;
+import org.efaps.ui.wicket.models.field.factories.FormatedStringUIFactory;
 import org.efaps.ui.wicket.models.field.factories.HRefFactory;
 import org.efaps.ui.wicket.models.field.factories.IComponentFactory;
 import org.efaps.ui.wicket.models.field.factories.JaxbUIFactory;
@@ -63,6 +64,7 @@ import org.efaps.ui.wicket.models.field.factories.UserUIFactory;
 import org.efaps.ui.wicket.models.objects.AbstractUIModeObject;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -106,6 +108,7 @@ public abstract class AbstractUIField
         AbstractUIField.FACTORIES.put(EnumUIFactory.get().getKey(), EnumUIFactory.get());
         AbstractUIField.FACTORIES.put(BitEnumUIFactory.get().getKey(), BitEnumUIFactory.get());
         AbstractUIField.FACTORIES.put(JaxbUIFactory.get().getKey(), JaxbUIFactory.get());
+        AbstractUIField.FACTORIES.put(FormatedStringUIFactory.get().getKey(), FormatedStringUIFactory.get());
         AbstractUIField.FACTORIES.put(UITypeFactory.get().getKey(), UITypeFactory.get());
     }
 
