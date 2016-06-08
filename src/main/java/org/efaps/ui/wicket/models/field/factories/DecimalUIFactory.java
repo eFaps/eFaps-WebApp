@@ -58,24 +58,7 @@ public final class DecimalUIFactory
     {
         Component ret = null;
         if (applies(_uiField)) {
-            switch (_uiField.getFieldConfiguration().getUIType()) {
-                case NUMBER:
-                    ret = new NumberField(_wicketId, Model.of(_uiField), _uiField.getFieldConfiguration());
-                    break;
-                default:
-                    ret = new NumberField(_wicketId, Model.of(_uiField), _uiField.getFieldConfiguration())
-                    {
-                        /** The Constant serialVersionUID. */
-                        private static final long serialVersionUID = 1L;
-
-                        @Override
-                        protected String[] getInputTypes()
-                        {
-                            return new String[] { "text" };
-                        };
-                    };
-                    break;
-            }
+            ret = new NumberField(_wicketId, Model.of(_uiField), _uiField.getFieldConfiguration());
         }
         return ret;
     }

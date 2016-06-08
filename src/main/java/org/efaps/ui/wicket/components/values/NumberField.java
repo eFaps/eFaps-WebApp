@@ -190,6 +190,15 @@ public class NumberField
     @Override
     protected String[] getInputTypes()
     {
-        return new String[] { "number" };
+        String[] ret;
+        switch (getFieldConfig().getUIType()) {
+            case NUMBER:
+                ret = new String[] { "number" };
+                break;
+            default:
+                ret =  new String[] { "text" };
+                break;
+        }
+        return ret;
     }
 }
