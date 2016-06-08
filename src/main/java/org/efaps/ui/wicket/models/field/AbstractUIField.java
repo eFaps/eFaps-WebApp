@@ -65,7 +65,6 @@ import org.efaps.ui.wicket.models.field.factories.UserUIFactory;
 import org.efaps.ui.wicket.models.objects.AbstractUIModeObject;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -305,33 +304,13 @@ public abstract class AbstractUIField
     public String getLabel()
         throws EFapsException
     {
-        final String key;
+        final String ret;
         if (getFieldConfiguration() != null) {
-            if (getFieldConfiguration().getField().getLabel() == null) {
-
-                if (getValue() != null && getValue().getAttribute() != null) {
-                    if (getInstanceKey() != null
-                                    && getInstance().getType()
-                                                    .getAttribute(getValue().getAttribute().getName()) != null) {
-                        key = getInstance().getType().getAttribute(getValue().getAttribute().getName()).getLabelKey();
-                    } else if (getValue().getInstance() != null
-                                    && getValue().getInstance().getType()
-                                                    .getAttribute(getValue().getAttribute().getName()) != null) {
-                        key = getValue().getInstance().getType().getAttribute(getValue().getAttribute().getName())
-                                        .getLabelKey();
-                    } else {
-                        key = getValue().getAttribute().getLabelKey();
-                    }
-                } else {
-                    key = FieldConfiguration.class.getName() + ".NoLabel";
-                }
-            } else {
-                key = getFieldConfiguration().getField().getLabel();
-            }
+            ret = getFieldConfiguration().getLabel(getValue(), getInstance());
         } else {
-            key = FieldConfiguration.class.getName() + ".NoLabel";
+            ret = DBProperties.getProperty(FieldConfiguration.class.getName() + ".NoLabel");
         }
-        return DBProperties.getProperty(key);
+        return ret;
     }
 
     /**

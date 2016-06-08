@@ -26,8 +26,10 @@ import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.form.FormPanel;
 import org.efaps.ui.wicket.components.form.field.FieldPanel;
+import org.efaps.ui.wicket.components.form.field.FieldSetPanel;
 import org.efaps.ui.wicket.models.AbstractInstanceObject;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
+import org.efaps.ui.wicket.models.field.set.UIFieldSet;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIForm.FormElement;
 import org.efaps.ui.wicket.models.objects.UIForm.FormRow;
@@ -48,12 +50,12 @@ public class RowPanel
     private static final long serialVersionUID = 1L;
 
     /**
-     * @param _wicketId     wicket id for this component
-     * @param _model        model for this component
-     * @param _formmodel    parent model of this row
-     * @param _page page    the RowPanel is in
-     * @param _formPanel    form panel this RowPanel is in
-     * @param _form         form this RowPanel is in
+     * @param _wicketId wicket id for this component
+     * @param _model model for this component
+     * @param _formmodel parent model of this row
+     * @param _page page the RowPanel is in
+     * @param _formPanel form panel this RowPanel is in
+     * @param _form form this RowPanel is in
      * @param _formelementmodel element this rowpanel belongs to
      * @throws EFapsException on error
      *
@@ -82,6 +84,10 @@ public class RowPanel
                                     ((AbstractUIField) object).getFieldConfiguration().getRowSpan()));
                 }
                 cellRepeater.add(field);
+            } else if (object instanceof UIFieldSet) {
+                final FieldSetPanel fieldSet = new FieldSetPanel(cellRepeater.newChildId(),
+                                Model.of((UIFieldSet) object));
+                cellRepeater.add(fieldSet);
             }
         }
     }

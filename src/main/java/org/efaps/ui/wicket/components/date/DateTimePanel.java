@@ -38,10 +38,10 @@ import org.efaps.admin.datamodel.ui.UIValue;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.api.ci.UIFormFieldProperty;
 import org.efaps.db.Context;
-import org.efaps.ui.wicket.models.cell.CellSetValue;
-import org.efaps.ui.wicket.models.cell.UIFormCellSet;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.field.FieldConfiguration;
+import org.efaps.ui.wicket.models.field.set.UIFieldSet;
+import org.efaps.ui.wicket.models.field.set.UIFieldSetValue;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 import org.joda.time.DateTime;
@@ -96,7 +96,7 @@ public class DateTimePanel
     /**
      * Field underlying this Panel.
      */
-    private AbstractUIField cellvalue;
+    private AbstractUIField uiField;
 
     /**
      * Was the value already converted.
@@ -128,7 +128,7 @@ public class DateTimePanel
                         _fieldConf.hasProperty(UIFormFieldProperty.COLUMNS)
                                     ? Integer.valueOf(_fieldConf.getProperty(UIFormFieldProperty.COLUMNS))
                                     : null);
-        this.cellvalue = _model.getObject();
+        this.uiField = _model.getObject();
     }
 
     /**
@@ -462,12 +462,12 @@ public class DateTimePanel
     @Override
     public void convertInput()
     {
-        if (getCellvalue() != null) {
+        if (getUIField() != null) {
             try {
                 this.converted = true;
                 int i = 0;
-                if (getCellvalue() instanceof CellSetValue) {
-                    final UIFormCellSet cellset = ((CellSetValue) getCellvalue()).getCellSet();
+                if (getUIField() instanceof UIFieldSetValue) {
+                    final UIFieldSet cellset = ((UIFieldSetValue) getUIField()).getCellSet();
                     i = cellset.getIndex(getFieldName());
                 }
                 final List<StringValue> dates = getRequest().getRequestParameters().getParameterValues(
@@ -493,9 +493,9 @@ public class DateTimePanel
      *
      * @return value of instance variable {@link #cellvalue}
      */
-    protected AbstractUIField getCellvalue()
+    protected AbstractUIField getUIField()
     {
-        return this.cellvalue;
+        return this.uiField;
     }
 
     @Override
@@ -506,8 +506,8 @@ public class DateTimePanel
         }
         setModelObject(getConvertedInput());
         try {
-            if (getCellvalue() != null) {
-                getCellvalue().setValue(UIValue.get(getCellvalue().getValue().getField(), getCellvalue().getValue()
+            if (getUIField() != null) {
+                getUIField().setValue(UIValue.get(getUIField().getValue().getField(), getUIField().getValue()
                             .getAttribute(), getDefaultModelObject()));
             }
         } catch (final CacheReloadException e) {

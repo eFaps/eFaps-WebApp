@@ -58,6 +58,9 @@ import org.efaps.db.SelectBuilder;
 import org.efaps.ui.wicket.models.AbstractInstanceObject;
 import org.efaps.ui.wicket.models.cell.UIPicker;
 import org.efaps.ui.wicket.models.field.UIField;
+import org.efaps.ui.wicket.models.field.set.UIFieldSet;
+import org.efaps.ui.wicket.models.field.set.UIFieldSetColHeader;
+import org.efaps.ui.wicket.models.field.set.UIFieldSetValue;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
@@ -433,16 +436,6 @@ public class UIForm
             attr = _query.getAttribute4Select(_field.getSelect());
         }
 
-        // evaluate the label of the field
-        final String label;
-        if (_field.getLabel() != null) {
-            label = _field.getLabel();
-        } else if (attr != null) {
-            label = attr.getParent().getName() + "/" + attr.getName() + ".Label";
-        } else {
-            label = "Unknown";
-        }
-
         final Instance fieldInstance;
         if (_field.getSelectAlternateOID() != null
                         && _query.getSelect(_field.getSelectAlternateOID()) instanceof String) {
@@ -463,7 +456,7 @@ public class UIForm
         } else {
             // fieldset
             if (_field instanceof FieldSet) {
-                evaluateFieldSet(_row, _query, _field, fieldInstance, label);
+                evaluateFieldSet(_row, _query, _field, fieldInstance);
             } else if (_field instanceof FieldCommand) {
                //TODO
             } else if (_field instanceof FieldPicker) {
@@ -520,17 +513,15 @@ public class UIForm
      * @param _query query containing the values
      * @param _field field the cell belongs to
      * @param _fieldInstance instance of the FieldSet
-     * @param _label label for the FieldSet
      * @throws EFapsException on error
      */
     private void evaluateFieldSet(final FormRow _row,
                                   final PrintQuery _query,
                                   final Field _field,
-                                  final Instance _fieldInstance,
-                                  final String _label)
+                                  final Instance _fieldInstance)
         throws EFapsException
     {
-        AttributeSet.find(getInstance().getType().getName(), _field.getAttribute());
+        final AttributeSet attrSet = AttributeSet.find(getInstance().getType().getName(), _field.getAttribute());
 
         final Map<?, ?> tmp = (Map<?, ?>) _query.getAttributeSet(_field.getAttribute());
 
@@ -539,24 +530,23 @@ public class UIForm
         if (tmp != null) {
             fieldins.addAll(_query.getInstances4Attribute(_field.getAttribute()));
         }
-/**
-        final UIFormCellSet cellset = new UIFormCellSet(this, UIValue.get(_field, null, null)
-                        .setClassObject(this)
-                        .setCallInstance(getInstance()), _fieldInstance, "", "", _label, isEditMode());
+        final UIFieldSet set = new UIFieldSet(this, _fieldInstance,
+                        UIValue.get(_field, getInstance().getType().getAttribute(_field.getAttribute()), null));
+        set.setMode(getMode());
 
         for (final String attrName : ((FieldSet) _field).getOrder()) {
-            final Attribute child = set.getAttribute(attrName);
-            final UISetColumnHeader column = new UISetColumnHeader(_field.getLabel(), child, _field);
-            cellset.addHeader(column);
+            final Attribute child = attrSet.getAttribute(attrName);
+            final UIFieldSetColHeader column = new UIFieldSetColHeader(_field.getLabel(), child, _field);
+            set.addHeader(column);
         }
 
         final Iterator<Instance> iter = fieldins.iterator();
         final Map<String, Iterator<?>> values = new HashMap<String, Iterator<?>>();
         while (iter.hasNext()) {
             final Instance rowInstance = iter.next();
-            cellset.addRow(rowInstance);
+            set.addRow(rowInstance);
             for (final String attrName : ((FieldSet) _field).getOrder()) {
-                final Attribute child = set.getAttribute(attrName);
+                final Attribute child = attrSet.getAttribute(attrName);
                 Iterator<?> valIter = values.get(attrName);
                 if (valIter == null) {
                     final List<?> tmplist = (List<?>) tmp.get(attrName);
@@ -564,12 +554,11 @@ public class UIForm
                     values.put(attrName, valIter);
                 }
                 final UIValue uiValue = UIValue.get(_field, child, valIter.hasNext() ? valIter.next() : null);
-                cellset.addValue(rowInstance,
-                                new CellSetValue(rowInstance.getKey(), this, cellset, uiValue));
+                set.addValue(rowInstance,
+                                new UIFieldSetValue(rowInstance.getKey(), this, set, uiValue));
             }
         }
-        */
-       // _row.add(cellset);
+        _row.add(set);
     }
 
     /**

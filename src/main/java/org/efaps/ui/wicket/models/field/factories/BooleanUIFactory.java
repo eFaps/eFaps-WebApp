@@ -32,9 +32,9 @@ import org.efaps.admin.datamodel.ui.BooleanUI;
 import org.efaps.api.ui.UIType;
 import org.efaps.ui.wicket.components.values.BooleanField;
 import org.efaps.ui.wicket.components.values.CheckBoxField;
-import org.efaps.ui.wicket.models.cell.CellSetValue;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.field.FieldConfiguration;
+import org.efaps.ui.wicket.models.field.set.UIFieldSetValue;
 import org.efaps.util.EFapsException;
 
 /**
@@ -82,7 +82,7 @@ public final class BooleanUIFactory
                                 .getEditValue(_uiField.getParent().getMode()));
                 final Serializable value = _uiField.getValue().getDbValue();
                 ret = new BooleanField(_wicketId, value, model, _uiField.getFieldConfiguration(), _uiField.getLabel(),
-                                _uiField instanceof CellSetValue);
+                                _uiField instanceof UIFieldSetValue);
             }
         }
         return ret;

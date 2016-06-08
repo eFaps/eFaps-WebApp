@@ -37,10 +37,10 @@ import org.efaps.admin.datamodel.ui.IUIProvider;
 import org.efaps.admin.datamodel.ui.UIValue;
 import org.efaps.api.ci.UIFormFieldProperty;
 import org.efaps.db.Context;
-import org.efaps.ui.wicket.models.cell.CellSetValue;
-import org.efaps.ui.wicket.models.cell.UIFormCellSet;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.field.FieldConfiguration;
+import org.efaps.ui.wicket.models.field.set.UIFieldSet;
+import org.efaps.ui.wicket.models.field.set.UIFieldSetValue;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
@@ -110,8 +110,8 @@ public class NumberField
     {
         this.converted = true;
         int i = 0;
-        if (getCellvalue() instanceof CellSetValue) {
-            final UIFormCellSet cellset = ((CellSetValue) getCellvalue()).getCellSet();
+        if (getCellvalue() instanceof UIFieldSetValue) {
+            final UIFieldSet cellset = ((UIFieldSetValue) getCellvalue()).getCellSet();
             i = cellset.getIndex(getInputName());
         }
         final String[] value = getInputAsArray();

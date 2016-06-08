@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
-package org.efaps.ui.wicket.models.cell;
+package org.efaps.ui.wicket.models.field.set;
 
 import org.efaps.admin.datamodel.ui.UIValue;
+import org.efaps.ui.wicket.models.cell.AbstractUICellValue;
 import org.efaps.ui.wicket.models.field.FieldConfiguration;
 import org.efaps.ui.wicket.models.field.FieldSetConfiguration;
 import org.efaps.ui.wicket.models.field.ISortable;
@@ -31,9 +29,8 @@ import org.efaps.util.EFapsException;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
-public class CellSetValue
+public class UIFieldSetValue
     extends AbstractUICellValue
 {
 
@@ -45,7 +42,7 @@ public class CellSetValue
     /**
      * Set the value belongs to.
      */
-    private final UIFormCellSet cellSet;
+    private final UIFieldSet cellSet;
 
     /**
      * @param _instanceKey key of the instacne
@@ -54,10 +51,10 @@ public class CellSetValue
      * @param _value value
      * @throws EFapsException on error
      */
-    public CellSetValue(final String _instanceKey,
-                        final AbstractUIObject _parent,
-                        final UIFormCellSet _set,
-                        final UIValue _value)
+    public UIFieldSetValue(final String _instanceKey,
+                           final AbstractUIObject _parent,
+                           final UIFieldSet _set,
+                           final UIValue _value)
         throws EFapsException
     {
         super(_instanceKey, _parent, _value);
@@ -85,28 +82,20 @@ public class CellSetValue
      *
      * @return value of instance variable {@link #cellSet}
      */
-    public UIFormCellSet getCellSet()
+    public UIFieldSet getCellSet()
     {
         return this.cellSet;
     }
 
-    /* (non-Javadoc)
-     * @see org.efaps.ui.wicket.models.field.ISortable#getCompareValue()
-     */
     @Override
     public Comparable<?> getCompareValue()
     {
-        // TODO Auto-generated method stub
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
     @Override
     public int compareTo(final ISortable _o)
     {
-        // TODO Auto-generated method stub
         return 0;
     }
 }
