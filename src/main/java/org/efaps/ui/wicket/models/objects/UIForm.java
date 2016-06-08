@@ -651,7 +651,7 @@ public class UIForm
                             && !field.isNoneDisplay(getMode())) {
                 if (field instanceof FieldGroup) {
                     final FieldGroup group = (FieldGroup) field;
-                 // in case that the first field is a group the element must be initiated
+                    // in case that the first field is a group the element must be initiated
                     if (formelement == null) {
                         formelement = new FormElement();
                         this.elements.add(new Element(UIForm.ElementType.FORM, formelement));
@@ -709,28 +709,19 @@ public class UIForm
                     } else {
                         final AbstractInstanceObject cell;
                         if (field instanceof FieldSet) {
-                          //TODO
-                            cell = new UIField(null, this, UIValue.get(field, attr, null).setClassObject(this)
-                                            .setInstance(getInstance()).setCallInstance(getInstance()));
-                            /**
-                            cell = new UIFormCellSet(this, UIValue.get(field, attr,
-                                            super.isPartOfWizardCall() ? getValue4Wizard(field.getName()) : null)
-                                            .setClassObject(this)
-                                            .setInstance(AbstractInstanceObject.getInstance4Create(type))
-                                            .setCallInstance(getInstance()), null, "", "",
-                                            label, isCreateMode());
+                            cell = new UIFieldSet(this,  getInstance(), UIValue.get(field, attr, null).setClassObject(this)
+                                                            .setInstance(getInstance()).setCallInstance(getInstance()));
                             if (type == null) {
-                                ((UIFormCellSet) cell).addHeader(new UISetColumnHeader(field.getLabel(), null, field));
+                                ((UIFieldSet) cell).addHeader(new UIFieldSetColHeader(field.getLabel(), null, field));
                             } else {
                                 final AttributeSet set = AttributeSet.find(type.getName(), field.getAttribute());
                                 for (final String attrName : ((FieldSet) field).getOrder()) {
                                     final Attribute child = set.getAttribute(attrName);
-                                    final UISetColumnHeader column = new UISetColumnHeader(field.getLabel(), child,
+                                    final UIFieldSetColHeader column = new UIFieldSetColHeader(field.getLabel(), child,
                                                     field);
-                                    ((UIFormCellSet) cell).addHeader(column);
+                                    ((UIFieldSet) cell).addHeader(column);
                                 }
                             }
-                            */
                         } else if (field instanceof FieldCommand) {
                             //TODO
                             cell = new UIField(null, this, UIValue.get(field, attr, null).setClassObject(this)
