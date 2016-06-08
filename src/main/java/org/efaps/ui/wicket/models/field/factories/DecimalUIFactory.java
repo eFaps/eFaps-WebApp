@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.models.field.factories;
@@ -36,13 +33,10 @@ import org.efaps.util.EFapsException;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id: DecimalUIFactory.java 11692 2014-01-14 19:54:16Z jan@moxter.net
- *          $
  */
-// CHECKSTYLE:OFF
+@SuppressWarnings("checkstyle:abstractclassname")
 public final class DecimalUIFactory
     extends StringUIFactory
-// CHECKSTYLE:ON
 {
 
     /**
@@ -57,17 +51,31 @@ public final class DecimalUIFactory
     {
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Component getEditable(final String _wicketId,
-                                 final AbstractUIField _abstractUIField)
+                                 final AbstractUIField _uiField)
         throws EFapsException
     {
         Component ret = null;
-        if (applies(_abstractUIField)) {
-            ret = new NumberField(_wicketId, Model.of(_abstractUIField), _abstractUIField.getFieldConfiguration());
+        if (applies(_uiField)) {
+            switch (_uiField.getFieldConfiguration().getUIType()) {
+                case NUMBER:
+                    ret = new NumberField(_wicketId, Model.of(_uiField), _uiField.getFieldConfiguration());
+                    break;
+                default:
+                    ret = new NumberField(_wicketId, Model.of(_uiField), _uiField.getFieldConfiguration())
+                    {
+                        /** The Constant serialVersionUID. */
+                        private static final long serialVersionUID = 1L;
+
+                        @Override
+                        protected String[] getInputTypes()
+                        {
+                            return new String[] { "text" };
+                        };
+                    };
+                    break;
+            }
         }
         return ret;
     }

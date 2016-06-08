@@ -25,6 +25,7 @@ import org.efaps.api.ui.UIType;
 import org.efaps.ui.wicket.components.picker.AjaxPickerButton;
 import org.efaps.ui.wicket.components.values.CheckBoxField;
 import org.efaps.ui.wicket.components.values.DropDownField;
+import org.efaps.ui.wicket.components.values.NumberField;
 import org.efaps.ui.wicket.components.values.RadioField;
 import org.efaps.ui.wicket.components.values.SnippletField;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
@@ -98,6 +99,10 @@ public final class UITypeFactory
                 break;
             case BUTTON:
                 ret = new AjaxPickerButton(_wicketId, Model.<IPickable>of(_uiField));
+                break;
+            case NUMBER:
+                ret = new NumberField(_wicketId, Model.of(_uiField), _uiField.getFieldConfiguration());
+                break;
             default:
                 break;
         }
