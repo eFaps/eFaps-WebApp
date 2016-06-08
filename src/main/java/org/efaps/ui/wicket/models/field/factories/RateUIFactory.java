@@ -18,17 +18,14 @@ package org.efaps.ui.wicket.models.field.factories;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
 
-import org.apache.commons.collections4.IteratorUtils;
 import org.apache.wicket.Component;
-import org.apache.wicket.markup.repeater.AbstractRepeater;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.datamodel.ui.RateUI;
+import org.efaps.admin.datamodel.ui.RateUI.Value;
 import org.efaps.db.Context;
-import org.efaps.ui.wicket.components.values.HiddenField;
+import org.efaps.ui.wicket.components.values.HiddenRateField;
+import org.efaps.ui.wicket.components.values.RateField;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.util.EFapsException;
 
@@ -57,9 +54,10 @@ public final class RateUIFactory
                                  final AbstractUIField _uiField)
         throws EFapsException
     {
-        final Component ret = null;
+        Component ret = null;
         if (applies(_uiField)) {
-
+            final RateUI.Value value = (Value) _uiField.getValue().getHiddenValue(_uiField.getParent().getMode());
+            ret = new RateField(_wicketId, Model.of(value), _uiField.getFieldConfiguration());
         }
         return ret;
     }
@@ -71,33 +69,8 @@ public final class RateUIFactory
     {
         Component ret = null;
         if (applies(_uiField)) {
-            ret = new AbstractRepeater(_wicketId) {
-
-                /** The Constant serialVersionUID. */
-                private static final long serialVersionUID = 1L;
-
-                @Override
-                protected Iterator<? extends Component> renderIterator()
-                {
-                    List<HiddenField> comps = null;
-                    try {
-                        final Object value = _uiField.getValue().getHiddenValue(_uiField.getParent().getMode());
-                        System.out.println(value);
-                        comps = Arrays.asList(new HiddenField(_wicketId, Model.of(_uiField), _uiField
-                                        .getFieldConfiguration()), new HiddenField(_wicketId, Model.of(_uiField),
-                                                        _uiField.getFieldConfiguration()));
-                    } catch (final EFapsException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                    return comps == null ? IteratorUtils.emptyListIterator(): comps.iterator();
-                }
-
-                @Override
-                protected void onPopulate()
-                {
-                }
-            };
+            final RateUI.Value value = (Value) _uiField.getValue().getHiddenValue(_uiField.getParent().getMode());
+            ret = new HiddenRateField(_wicketId, Model.of(value), _uiField.getFieldConfiguration());
         }
         return ret;
     }
@@ -106,10 +79,10 @@ public final class RateUIFactory
      * {@inheritDoc}
      */
     @Override
-    public boolean applies(final AbstractUIField _abstractUIField)
+    public boolean applies(final AbstractUIField _uiField)
         throws EFapsException
     {
-        return _abstractUIField.getValue().getUIProvider() instanceof RateUI;
+        return _uiField.getValue().getUIProvider() instanceof RateUI;
     }
 
     /**
@@ -126,6 +99,10 @@ public final class RateUIFactory
             final DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Context.getThreadContext()
                             .getLocale());
             strValue = formatter.format(valueTmp);
+        } else if (valueTmp instanceof RateUI.Value) {
+            final DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Context.getThreadContext()
+                            .getLocale());
+            strValue = formatter.format(((RateUI.Value) valueTmp).getRate());
         }
         return strValue;
     }
