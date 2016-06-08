@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.efaps.admin.datamodel.Attribute;
-import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.datamodel.ui.UIValue;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.db.Instance;
@@ -41,7 +40,6 @@ import org.efaps.util.cache.CacheReloadException;
  * @version $Id$
  */
 public class UIFormCellSet
-    extends UIFormCell
 {
 
     /**
@@ -85,7 +83,6 @@ public class UIFormCellSet
      * @throws EFapsException on error
      */
     public UIFormCellSet(final AbstractUIObject _parent,
-                         final FieldValue _fieldValue,
                          final Instance _instance,
                          final String _value,
                          final String _icon,
@@ -93,7 +90,6 @@ public class UIFormCellSet
                          final boolean _edit)
         throws EFapsException
     {
-        super(_parent, _fieldValue, _instance, _value, null, _icon, _label, "");
         this.editMode = _edit;
     }
 
@@ -168,7 +164,7 @@ public class UIFormCellSet
         for (final UISetColumnHeader header : this.headers) {
             final UIValue uiValue = UIValue
                             .get(Field.get(header.getFieldId()), Attribute.get(header.getAttrId()), null);
-            final CellSetValue cellSetValue = new CellSetValue(null, getParent(), this, uiValue);
+            final CellSetValue cellSetValue = new CellSetValue(null, null, this, uiValue);
             row.add(cellSetValue);
         }
     }

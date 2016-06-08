@@ -33,7 +33,6 @@ import org.apache.wicket.markup.repeater.RefreshingView;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.efaps.ui.wicket.components.table.cell.CellPanel;
 import org.efaps.ui.wicket.components.table.field.FieldPanel;
 import org.efaps.ui.wicket.components.table.row.RowId;
 import org.efaps.ui.wicket.models.AbstractInstanceObject;
@@ -184,7 +183,7 @@ public class SubElement
             i++;
         }
         if (strucBrws.isShowCheckBoxes()) {
-            final CellPanel cell = new CellPanel(cellsBeforeRepeater.newChildId(), strucBrws.getInstanceKey());
+            final Component cell = null;
             if (i == strucBrws.getTableId()) {
                 cell.add(AttributeModifier.append("class", "eFapsTableCellClear"));
             }

@@ -34,8 +34,6 @@ import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeSet;
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
-import org.efaps.admin.datamodel.ui.FieldValue;
-import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.admin.datamodel.ui.UIValue;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
@@ -45,9 +43,7 @@ import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.Form;
-import org.efaps.admin.ui.Image;
 import org.efaps.admin.ui.field.Field;
-import org.efaps.admin.ui.field.FieldChart;
 import org.efaps.admin.ui.field.FieldClassification;
 import org.efaps.admin.ui.field.FieldCommand;
 import org.efaps.admin.ui.field.FieldGroup;
@@ -55,20 +51,12 @@ import org.efaps.admin.ui.field.FieldHeading;
 import org.efaps.admin.ui.field.FieldPicker;
 import org.efaps.admin.ui.field.FieldSet;
 import org.efaps.admin.ui.field.FieldTable;
-import org.efaps.api.ci.UIFormFieldProperty;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.PrintQuery;
 import org.efaps.db.SelectBuilder;
 import org.efaps.ui.wicket.models.AbstractInstanceObject;
-import org.efaps.ui.wicket.models.cell.CellSetValue;
-import org.efaps.ui.wicket.models.cell.UIFormCell;
-import org.efaps.ui.wicket.models.cell.UIFormCellChart;
-import org.efaps.ui.wicket.models.cell.UIFormCellCmd;
-import org.efaps.ui.wicket.models.cell.UIFormCellSet;
-import org.efaps.ui.wicket.models.cell.UIHiddenCell;
 import org.efaps.ui.wicket.models.cell.UIPicker;
-import org.efaps.ui.wicket.models.cell.UISetColumnHeader;
 import org.efaps.ui.wicket.models.field.UIField;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
@@ -463,34 +451,21 @@ public class UIForm
             fieldInstance = getInstance();
         }
         if (_field.isHiddenDisplay(getMode())) {
-            Object value = null;
             if (_field.getAttribute() != null) {
-                value = _query.getAttribute(_field.getAttribute());
+                _query.getAttribute(_field.getAttribute());
             } else if (_field.getSelect() != null) {
-                value = _query.getSelect(_field.getSelect());
+                _query.getSelect(_field.getSelect());
             } else if (_field.getPhrase() != null) {
-                value = _query.getPhrase(_field.getName());
+                _query.getPhrase(_field.getName());
             }
-            // temp to decide what to do TODO remove in future
-            if (isUIInterface(attr, _field)) {
-                final FieldValue fieldvalue = new FieldValue(_field, attr, value, fieldInstance, getInstance(), null,
-                                this);
-                final String strValue = fieldvalue.getHiddenHtml(getMode());
-                addHidden(new UIHiddenCell(this, fieldvalue, null, strValue));
-            } else {
-                addHidden(evaluateUIProvider(_row, _query, _field, fieldInstance, attr));
-            }
+            addHidden(evaluateUIProvider(_row, _query, _field, fieldInstance, attr));
             ret = false;
         } else {
             // fieldset
             if (_field instanceof FieldSet) {
                 evaluateFieldSet(_row, _query, _field, fieldInstance, label);
             } else if (_field instanceof FieldCommand) {
-                final UIFormCellCmd fieldCmd = new UIFormCellCmd(this, (FieldCommand) _field, fieldInstance, label);
-                _row.add(fieldCmd);
-            } else if (_field instanceof FieldChart) {
-                final UIFormCellChart fieldChart = new UIFormCellChart(this, (FieldChart) _field, fieldInstance, label);
-                _row.add(fieldChart);
+               //TODO
             } else if (_field instanceof FieldPicker) {
                 final UIField cell = new UIField(getInstance().getKey(), this,
                                 UIValue.get(_field, attr, null).setClassObject(this).setInstance(getInstance())
@@ -499,32 +474,10 @@ public class UIForm
                 cell.setPicker(picker);
                 _row.add(cell);
             } else {
-                // temp to decide what to do TODO remove in future
-                if (isUIInterface(attr, _field)) {
-                    evaluateField(_row, _query, _field, fieldInstance, label, attr);
-                } else {
-                    _row.add(evaluateUIProvider(_row, _query, _field, fieldInstance, attr));
-
-                }
+                _row.add(evaluateUIProvider(_row, _query, _field, fieldInstance, attr));
             }
         }
         return ret;
-    }
-
-    /**
-     * Checks if is UI interface.
-     *
-     * @param _attr the _attr
-     * @param _field the _field
-     * @return true, if is UI interface
-     */
-    boolean isUIInterface(final Attribute _attr,
-                          final Field _field)
-    {
-        return (_attr != null && _attr.getAttributeType().getUIProvider() instanceof UIInterface
-                        || _field.getUIProvider() != null && _field.getUIProvider() instanceof UIInterface)
-                        && !_field.containsProperty(UIFormFieldProperty.UI_TYPE)
-                        && !_field.hasEvents(EventType.UI_FIELD_AUTOCOMPLETE);
     }
 
     /**
@@ -561,72 +514,6 @@ public class UIForm
     }
 
     /**
-     * Method evaluates a Field and adds it to the row.
-     *
-     * @param _row FormRow to add the cell to
-     * @param _query query containing the values
-     * @param _field field the cell belongs to
-     * @param _fieldInstance instance of the Field
-     * @param _label label for the Field
-     * @param _attr attribute for the Field
-     * @throws EFapsException on error
-     */
-    private void evaluateField(final FormRow _row,
-                               final PrintQuery _query,
-                               final Field _field,
-                               final Instance _fieldInstance,
-                               final String _label,
-                               final Attribute _attr)
-        throws EFapsException
-    {
-        Object value = null;
-        if (_field.getAttribute() != null) {
-            value = _query.<Object>getAttribute(_field.getAttribute());
-        } else if (_field.getSelect() != null) {
-            value = _query.<Object>getSelect(_field.getSelect());
-        } else if (_field.getPhrase() != null) {
-            value = _query.getPhrase(_field.getName());
-        } else if (_field.getMsgPhrase() != null) {
-            value = _query.getMsgPhrase(new SelectBuilder(getBaseSelect4MsgPhrase(_field)), _field.getMsgPhrase());
-        }
-
-        final FieldValue fieldvalue = new FieldValue(_field, _attr, value, _fieldInstance, getInstance(), null, this,
-                        getCallingCommandUUID() == null ? getCommand() : getCallingCommand());
-
-        String strValue = null;
-        if (isPrintMode()) {
-            strValue = fieldvalue.getStringValue(getMode());
-        } else {
-            if (isEditMode() && _field.isEditableDisplay(getMode())) {
-                if (_field.hasEvents(EventType.UI_FIELD_AUTOCOMPLETE)) {
-                    strValue = fieldvalue.getStringValue(getMode());
-                } else {
-                    strValue = fieldvalue.getEditHtml(getMode());
-                }
-            } else if (_field.isReadonlyDisplay(getMode())) {
-                strValue = fieldvalue.getReadOnlyHtml(getMode());
-            }
-        }
-        if (strValue != null && !this.fileUpload) {
-            final String tmp = strValue.replaceAll(" ", "");
-            if (tmp.toLowerCase().contains("type=\"file\"")) {
-                this.fileUpload = true;
-            }
-        }
-        String icon = _field.getIcon();
-        if (_fieldInstance != null) {
-            if (_field.isShowTypeIcon() && _fieldInstance.getType() != null) {
-                final Image image = Image.getTypeIcon(_fieldInstance.getType());
-                if (image != null) {
-                    icon = image.getUrl();
-                }
-            }
-            final String uiType = _attr != null ? _attr.getAttributeType().getName() : "";
-            _row.add(new UIFormCell(this, fieldvalue, _fieldInstance, strValue, null, icon, _label, uiType));
-        }
-    }
-
-    /**
      * Method evaluates a FieldSet and adds it to the row.
      *
      * @param _row FormRow to add the cell to
@@ -643,7 +530,7 @@ public class UIForm
                                   final String _label)
         throws EFapsException
     {
-        final AttributeSet set = AttributeSet.find(getInstance().getType().getName(), _field.getAttribute());
+        AttributeSet.find(getInstance().getType().getName(), _field.getAttribute());
 
         final Map<?, ?> tmp = (Map<?, ?>) _query.getAttributeSet(_field.getAttribute());
 
@@ -652,9 +539,10 @@ public class UIForm
         if (tmp != null) {
             fieldins.addAll(_query.getInstances4Attribute(_field.getAttribute()));
         }
-
-        final FieldValue fieldValue = new FieldValue(_field, null, "", _fieldInstance, getInstance(), null, this);
-        final UIFormCellSet cellset = new UIFormCellSet(this, fieldValue, _fieldInstance, "", "", _label, isEditMode());
+/**
+        final UIFormCellSet cellset = new UIFormCellSet(this, UIValue.get(_field, null, null)
+                        .setClassObject(this)
+                        .setCallInstance(getInstance()), _fieldInstance, "", "", _label, isEditMode());
 
         for (final String attrName : ((FieldSet) _field).getOrder()) {
             final Attribute child = set.getAttribute(attrName);
@@ -680,7 +568,8 @@ public class UIForm
                                 new CellSetValue(rowInstance.getKey(), this, cellset, uiValue));
             }
         }
-        _row.add(cellset);
+        */
+       // _row.add(cellset);
     }
 
     /**
@@ -823,31 +712,23 @@ public class UIForm
                         attr = type != null ? type.getAttribute(field.getAttribute()) : null;
                     }
 
-                    final String label;
-                    if (field.getLabel() != null) {
-                        label = field.getLabel();
-                    } else if (attr != null) {
-                        label = attr.getParent().getName() + "/" + attr.getName() + ".Label";
-                    } else {
-                        label = "Unknown";
-                    }
-
-                    final String attrTypeName = attr != null ? attr.getAttributeType().getName() : null;
-
                     if (field.isHiddenDisplay(getMode())) {
-                        if (isUIInterface(attr, field)) {
-                            final FieldValue fieldvalue = getFieldValue(field, attr);
-                            addHidden(new UIHiddenCell(this, fieldvalue, null, getStringValue(fieldvalue)));
-                        } else {
-                            final UIField uiField = new UIField(null, this, UIValue.get(field, attr, null)
-                                            .setClassObject(this)
-                                            .setInstance(getInstance()).setCallInstance(getInstance()));
-                            addHidden(uiField);
-                        }
+                        final UIField uiField = new UIField(null, this, UIValue.get(field, attr, null)
+                                        .setClassObject(this)
+                                        .setInstance(getInstance()).setCallInstance(getInstance()));
+                        addHidden(uiField);
                     } else {
                         final AbstractInstanceObject cell;
                         if (field instanceof FieldSet) {
-                            cell = new UIFormCellSet(this, getFieldValue(field, attr), null, "", "",
+                          //TODO
+                            cell = new UIField(null, this, UIValue.get(field, attr, null).setClassObject(this)
+                                            .setInstance(getInstance()).setCallInstance(getInstance()));
+                            /**
+                            cell = new UIFormCellSet(this, UIValue.get(field, attr,
+                                            super.isPartOfWizardCall() ? getValue4Wizard(field.getName()) : null)
+                                            .setClassObject(this)
+                                            .setInstance(AbstractInstanceObject.getInstance4Create(type))
+                                            .setCallInstance(getInstance()), null, "", "",
                                             label, isCreateMode());
                             if (type == null) {
                                 ((UIFormCellSet) cell).addHeader(new UISetColumnHeader(field.getLabel(), null, field));
@@ -860,33 +741,22 @@ public class UIForm
                                     ((UIFormCellSet) cell).addHeader(column);
                                 }
                             }
+                            */
                         } else if (field instanceof FieldCommand) {
-                            cell = new UIFormCellCmd(this, (FieldCommand) field, null, label);
+                            //TODO
+                            cell = new UIField(null, this, UIValue.get(field, attr, null).setClassObject(this)
+                                            .setInstance(getInstance()).setCallInstance(getInstance()));
                         } else if (field instanceof FieldPicker) {
                             cell = new UIField(null, this, UIValue.get(field, attr, null).setClassObject(this)
                                             .setInstance(getInstance()).setCallInstance(getInstance()));
                             final UIPicker picker = new UIPicker((FieldPicker) field, cell);
                             ((UIField) cell).setPicker(picker);
                         } else {
-                            if (isUIInterface(attr, field)) {
-                                final FieldValue fieldvalue = getFieldValue(field, attr);
-                                final String strValue = getStringValue(fieldvalue);
-                                cell = new UIFormCell(this, fieldvalue, strValue, "", label, attrTypeName);
-                                if (isSearchMode()) {
-                                    ((UIFormCell) cell).setReference(null);
-                                } else if (strValue != null && !this.fileUpload) {
-                                    final String tmp = strValue.replaceAll(" ", "");
-                                    if (tmp.toLowerCase().contains("type=\"file\"")) {
-                                        this.fileUpload = true;
-                                    }
-                                }
-                            }  else {
-                                cell = new UIField(null, this, UIValue.get(field, attr,
+                            cell = new UIField(null, this, UIValue.get(field, attr,
                                                 super.isPartOfWizardCall() ? getValue4Wizard(field.getName()) : null)
                                                 .setClassObject(this)
                                                 .setInstance(AbstractInstanceObject.getInstance4Create(type))
                                                 .setCallInstance(getInstance()));
-                            }
                         }
                         row.add(cell);
                         rowgroupcount--;
@@ -916,44 +786,6 @@ public class UIForm
             }
             this.elements.addAll(getClassElements(uiclass, new HashMap<UUID, String>()));
         }
-    }
-
-    /**
-     * @param _field field
-     * @param _attr atribute
-     * @return a fieldvalue
-     * @throws EFapsException on error
-     */
-    private FieldValue getFieldValue(final Field _field,
-                                     final Attribute _attr)
-        throws EFapsException
-    {
-        return new FieldValue(_field, _attr, super.isPartOfWizardCall() ? getValue4Wizard(_field.getName()) : null,
-                        getInstance(), getInstance(), null, this);
-    }
-
-    /**
-     * @param _fieldvalue fieldvalue
-     * @return stringvalue
-     * @throws EFapsException on error
-     */
-    private String getStringValue(final FieldValue _fieldvalue)
-        throws EFapsException
-    {
-        String ret = null;
-        if (isPrintMode()) {
-            ret = _fieldvalue.getStringValue(getMode());
-        } else {
-            if ((isCreateMode() || isSearchMode() || isEditMode())
-                            && _fieldvalue.getField().isEditableDisplay(getMode())) {
-                ret = _fieldvalue.getEditHtml(getMode());
-            } else if (_fieldvalue.getField().isHiddenDisplay(getMode())) {
-                ret = _fieldvalue.getHiddenHtml(getMode());
-            } else {
-                ret = _fieldvalue.getReadOnlyHtml(getMode());
-            }
-        }
-        return ret;
     }
 
     /**

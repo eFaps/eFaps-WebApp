@@ -26,7 +26,7 @@ import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.efaps.ui.wicket.behaviors.dojo.EditorBehavior;
-import org.efaps.ui.wicket.models.cell.UIFormCell;
+import org.efaps.ui.wicket.models.field.AbstractUIField;
 
 /**
  * TODO comment!
@@ -46,7 +46,7 @@ public class EditorPanel
      * @param _model model for this componet
      */
     public EditorPanel(final String _wicketId,
-                       final IModel<UIFormCell> _model)
+                       final IModel<AbstractUIField> _model)
     {
         super(_wicketId, _model);
 
@@ -66,7 +66,7 @@ public class EditorPanel
             protected void onComponentTag(final ComponentTag _tag)
             {
                 super.onComponentTag(_tag);
-                _tag.put("name", ((UIFormCell) super.getDefaultModelObject()).getName());
+                //_tag.put("name", ((UIFormCell) super.getDefaultModelObject()).getName());
                 _tag.put("style", "display:none");
             }
 
@@ -74,8 +74,7 @@ public class EditorPanel
             public void onComponentTagBody(final MarkupStream _markupStream,
                                            final ComponentTag _openTag)
             {
-                replaceComponentTagBody(_markupStream, _openTag,
-                                ((UIFormCell) super.getDefaultModelObject()).getCellValue());
+
             }
         };
         this.add(text);
@@ -103,8 +102,7 @@ public class EditorPanel
             public void onComponentTagBody(final MarkupStream _markupStream,
                                            final ComponentTag _openTag)
             {
-                replaceComponentTagBody(_markupStream, _openTag,
-                                ((UIFormCell) super.getDefaultModelObject()).getCellValue());
+
             }
         };
         editor.add(new EditorBehavior(null));

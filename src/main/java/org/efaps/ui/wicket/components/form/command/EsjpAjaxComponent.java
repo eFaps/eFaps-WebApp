@@ -71,11 +71,11 @@ public class EsjpAjaxComponent
             final CharSequence script = ((AjaxCmdBehavior) getBehaviors().get(0)).getCallbackScript();
             final UIFormCellCmd uiObject = (UIFormCellCmd) getDefaultModelObject();
 
-            final AbstractUIPageObject pageObject = (AbstractUIPageObject) (getPage().getDefaultModelObject());
+            final AbstractUIPageObject pageObject = (AbstractUIPageObject) getPage().getDefaultModelObject();
             final Map<String, String> uiID2Oid = pageObject == null ? null : pageObject.getUiID2Oid();
             final StringBuilder  content = new StringBuilder();
             content.append(JavaScriptUtils.SCRIPT_OPEN_TAG)
-                .append("function ").append(uiObject.getName()).append("(){\n")
+              //  .append("function ").append(uiObject.getName()).append("(){\n")
                 .append(script)
                 .append("\n};")
                 .append(JavaScriptUtils.SCRIPT_CLOSE_TAG)

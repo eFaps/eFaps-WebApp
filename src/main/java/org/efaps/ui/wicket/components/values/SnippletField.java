@@ -33,9 +33,9 @@ import org.apache.wicket.markup.html.form.ILabelProvider;
 import org.apache.wicket.markup.html.form.validation.IFormValidator;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
+import org.efaps.api.ui.IUserInterface;
 import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.field.FieldConfiguration;
@@ -91,9 +91,9 @@ public class SnippletField
             final String html = (String) getDefaultModelObject();
 
             final String tmpId;
-            if (html.contains(UIInterface.EFAPSTMPTAG)) {
+            if (html.contains(IUserInterface.EFAPSTMPTAG)) {
                 tmpId = RandomStringUtils.randomAlphanumeric(12);
-                setDefaultModelObject(html.replace(UIInterface.EFAPSTMPTAG, " id=\"" + tmpId + "\" "));
+                setDefaultModelObject(html.replace(IUserInterface.EFAPSTMPTAG, " id=\"" + tmpId + "\" "));
             } else {
                 tmpId = null;
             }

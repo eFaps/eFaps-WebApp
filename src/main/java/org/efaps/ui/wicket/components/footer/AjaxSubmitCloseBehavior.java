@@ -31,7 +31,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.wicket.AttributeModifier;
-import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.Session;
@@ -51,8 +50,6 @@ import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.util.string.StringValue;
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
-import org.efaps.admin.datamodel.ui.IUIProvider;
-import org.efaps.admin.datamodel.ui.UIValue;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
@@ -73,8 +70,6 @@ import org.efaps.ui.wicket.components.values.IValueConverter;
 import org.efaps.ui.wicket.models.AbstractInstanceObject;
 import org.efaps.ui.wicket.models.FormModel;
 import org.efaps.ui.wicket.models.TableModel;
-import org.efaps.ui.wicket.models.cell.UIFormCell;
-import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.models.field.IFilterable;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
@@ -494,27 +489,7 @@ public class AjaxSubmitCloseBehavior
                 final FormElement formElement = (FormElement) element.getElement();
                 for (final FormRow row : formElement.getRowModels()) {
                     for (final AbstractInstanceObject object : row.getValues()) {
-                        if (object instanceof UIFormCell) {
-                            final UIFormCell cell = (UIFormCell) object;
-                            final StringValue value = getComponent().getRequest().getRequestParameters()
-                                            .getParameterValue(cell.getName());
-                            if (!value.isNull() && !value.isEmpty()) {
-                                final IUIProvider clazz = cell.getUIProvider();
-                                if (clazz != null) {
-                                    final UIValue uiValue = UIValue.get(cell.getField(), cell.getAttribute(), value);
-                                    final String warn = clazz.validateValue(uiValue);
-                                    if (warn != null) {
-                                        _html.append("<tr><td>").append(cell.getCellLabel()).append(":</td><td>")
-                                                        .append(warn).append("</td></tr>");
-                                        ret = false;
-                                        final WebMarkupContainer comp = cell.getComponent();
-                                        final Component label = comp.getParent().get(0);
-                                        label.add(AttributeModifier.append("class", "eFapsFormLabelInvalidValue"));
-                                        _target.add(label);
-                                    }
-                                }
-                            }
-                        }
+
                     }
                 }
             } else if (element.getType().equals(ElementType.SUBFORM)) {
@@ -530,42 +505,11 @@ public class AjaxSubmitCloseBehavior
                     for (final IFilterable filterable : uiRow.getCells()) {
                         final UITableHeader header = headerIter.next();
 
-                        if (filterable instanceof UITableCell) {
-                            final UITableCell uiTableCell = (UITableCell) filterable;
-                            final List<StringValue> values = getComponent().getRequest().getRequestParameters()
-                                            .getParameterValues(uiTableCell.getName());
-                            if (values != null && !values.isEmpty()) {
-                                int i = 0;
-                                for (final StringValue value : values) {
-                                    if (!value.isNull() && !value.isEmpty()) {
-                                        final IUIProvider clazz = uiTableCell.getUIProvider();
-                                        if (clazz != null) {
-                                            final UIValue uiValue = UIValue.get(uiTableCell.getField(),
-                                                            uiTableCell.getAttribute(), value);
-                                            final String warn = clazz.validateValue(uiValue);
-                                            if (warn != null) {
-                                                _html.append("<tr><td>").append(header.getLabel()).append(" ")
-                                                        .append(i + 1)
-                                                        .append(":</td><td>").append(warn).append("</td></tr>");
-                                                ret = false;
-                                                final StringBuilder js = new StringBuilder();
-                                                js.append("document.getElementsByName('")
-                                                    .append(uiTableCell.getName())
-                                                    .append("')[")
-                                                    .append(i)
-                                                    .append("].setAttribute('class', 'eFapsTableCellInvalidValue');");
-                                                _target.appendJavaScript(js.toString());
-                                            }
-                                        }
-                                    }
-                                    i++;
-                                }
-                            }
                         }
                     }
                 }
             }
-        }
+
         return ret;
     }
 

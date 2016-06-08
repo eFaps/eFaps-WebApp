@@ -23,8 +23,6 @@ package org.efaps.ui.wicket.models.cell;
 import java.util.List;
 import java.util.Map;
 
-import org.efaps.admin.datamodel.ui.FieldValue;
-import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.field.FieldCommand;
@@ -39,7 +37,7 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  */
 public class UIFormCellCmd
-    extends UIFormCell
+
 {
     /**
      * Enum is used to set for this UIFormCellCmd which status of execution it
@@ -51,11 +49,6 @@ public class UIFormCellCmd
         /** Method execute is executed. */
         EXECUTE;
     }
-
-    /**
-    * Needed foer serialization.
-    */
-    private static final long serialVersionUID = 1L;
 
     /**
      * Must a button be rendered.
@@ -95,7 +88,6 @@ public class UIFormCellCmd
                          final String _label)
         throws EFapsException
     {
-        super(_parent, new FieldValue(_field, null, null, null, null), _instance, null, null, null, _label, null);
         this.renderButton = _field.isRenderButton();
         this.append = _field.isAppend();
         this.targetField = _field.getTargetField();
@@ -115,12 +107,12 @@ public class UIFormCellCmd
         if (this.executionStatus == null) {
             this.executionStatus = UIFormCellCmd.ExecutionStatus.EXECUTE;
         }
-        final List<Return> ret = executeEvents(EventType.UI_FIELD_CMD, _others, _uiID2Oid);
+        //final List<Return> ret = executeEvents(EventType.UI_FIELD_CMD, _others, _uiID2Oid);
 
         if (this.executionStatus == UIFormCellCmd.ExecutionStatus.EXECUTE) {
             this.executionStatus = null;
         }
-        return ret;
+        return null;
     }
 
     /**
@@ -184,7 +176,7 @@ public class UIFormCellCmd
      */
     public FieldCommand getFieldCommand()
     {
-        return (FieldCommand) getField();
+        return null;
     }
 
     /**
@@ -208,10 +200,10 @@ public class UIFormCellCmd
     /**
      * {@inheritDoc}
      */
-    @Override
+
     public boolean isHideLabel()
     {
-        return super.isHideLabel() ? true : this.renderButton;
+        return this.renderButton;
     }
 
     /**

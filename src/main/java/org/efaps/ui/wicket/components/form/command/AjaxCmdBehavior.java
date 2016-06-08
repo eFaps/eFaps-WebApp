@@ -35,8 +35,6 @@ import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.form.FormPanel;
-import org.efaps.ui.wicket.components.form.cell.ValueCellPanel;
-import org.efaps.ui.wicket.models.cell.UIFormCell;
 import org.efaps.ui.wicket.models.cell.UIFormCellCmd;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.util.EFapsKey;
@@ -103,8 +101,8 @@ public class AjaxCmdBehavior
 
         final StringBuilder snip = new StringBuilder();
         try {
-            final AbstractUIPageObject pageObject = (AbstractUIPageObject) (getComponent().getPage()
-                            .getDefaultModelObject());
+            final AbstractUIPageObject pageObject = (AbstractUIPageObject) getComponent().getPage()
+                            .getDefaultModelObject();
             final Map<String, String> uiID2Oid = pageObject == null ? null : pageObject.getUiID2Oid();
             final List<Return> returns = uiObject.executeEvents(this.others, uiID2Oid);
             for (final Return oneReturn : returns) {
@@ -117,21 +115,17 @@ public class AjaxCmdBehavior
         }
 
         final List<Map<String, String>> values = new ArrayList<Map<String, String>>();
-        try {
-            final AbstractUIPageObject pageObject = (AbstractUIPageObject) (getComponent().getPage()
-                            .getDefaultModelObject());
-            final Map<String, String> uiID2Oid = pageObject == null ? null : pageObject.getUiID2Oid();
-            final List<Return> returns = uiObject.getFieldUpdate(getComponent().getMarkupId(), uiID2Oid);
-            for (final Return aReturn : returns) {
-                final Object ob = aReturn.get(ReturnValues.VALUES);
-                if (ob instanceof List) {
-                    @SuppressWarnings("unchecked")
-                    final List<Map<String, String>> list = (List<Map<String, String>>) ob;
-                    values.addAll(list);
-                }
+        final AbstractUIPageObject pageObject = (AbstractUIPageObject) getComponent().getPage()
+                        .getDefaultModelObject();
+        pageObject.getUiID2Oid();
+        final List<Return> returns = null; ///uiObject.getFieldUpdate(getComponent().getMarkupId(), uiID2Oid);
+        for (final Return aReturn : returns) {
+            final Object ob = aReturn.get(ReturnValues.VALUES);
+            if (ob instanceof List) {
+                @SuppressWarnings("unchecked")
+                final List<Map<String, String>> list = (List<Map<String, String>>) ob;
+                values.addAll(list);
             }
-        } catch (final EFapsException e) {
-            AjaxCmdBehavior.LOG.error("onSubmit", e);
         }
         final StringBuilder js = new StringBuilder();
         int i = 0;
@@ -140,9 +134,9 @@ public class AjaxCmdBehavior
                 for (final String keyString : map.keySet()) {
                     // if the map contains a key that is not defined in this class
                     // it is assumed to be the name of a field
-                    if (!(EFapsKey.FIELDUPDATE_JAVASCRIPT.getKey().equals(keyString))
-                                    && !(EFapsKey.FIELDUPDATE_USEID.getKey().equals(keyString))
-                                    && !(EFapsKey.FIELDUPDATE_USEIDX.getKey().equals(keyString))) {
+                    if (!EFapsKey.FIELDUPDATE_JAVASCRIPT.getKey().equals(keyString)
+                                    && !EFapsKey.FIELDUPDATE_USEID.getKey().equals(keyString)
+                                    && !EFapsKey.FIELDUPDATE_USEIDX.getKey().equals(keyString)) {
                         js.append("eFapsSetFieldValue(").append(i).append(",'")
                             .append(keyString).append("',")
                             .append(map.get(keyString).contains("Array(") ? "" : "'")
@@ -199,6 +193,7 @@ public class AjaxCmdBehavior
         final Iterator<? extends Component> iter = _container.iterator();
         while (iter.hasNext() && ret == null) {
             final Component comp = iter.next();
+            /*
             if (comp.getDefaultModelObject() instanceof UIFormCell) {
                 final UIFormCell cell = (UIFormCell) comp.getDefaultModelObject();
                 if (_name.equals(cell.getName())) {
@@ -215,6 +210,7 @@ public class AjaxCmdBehavior
                     }
                 }
             }
+            */
             if (ret == null && comp instanceof WebMarkupContainer) {
                 ret = getModelFromChild((WebMarkupContainer) comp, _name);
             }

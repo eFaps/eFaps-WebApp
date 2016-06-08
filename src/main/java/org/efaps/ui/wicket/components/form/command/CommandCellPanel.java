@@ -20,21 +20,10 @@
 
 package org.efaps.ui.wicket.components.form.command;
 
-import org.apache.wicket.Component;
-import org.apache.wicket.markup.html.WebComponent;
-import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.components.FormContainer;
-import org.efaps.ui.wicket.components.LabelComponent;
-import org.efaps.ui.wicket.components.autocomplete.AutoCompleteComboBox;
-import org.efaps.ui.wicket.components.autocomplete.AutoCompleteField;
-import org.efaps.ui.wicket.components.button.Button;
-import org.efaps.ui.wicket.models.cell.UIFormCellCmd;
-import org.efaps.ui.wicket.models.field.IAutoComplete;
 import org.efaps.ui.wicket.models.objects.UIForm;
-import org.efaps.ui.wicket.resources.EFapsContentReference;
 
 /**
  * TODO comment!
@@ -64,42 +53,6 @@ public class CommandCellPanel
     {
         super(_wicketId, _model);
         setOutputMarkupId(true);
-        final UIFormCellCmd uiObject = (UIFormCellCmd) getDefaultModelObject();
-        final Component auto;
-        boolean add2Auto = false;
-
-        if (uiObject.isAutoComplete()
-                        && (_formmodel.isCreateMode() || _formmodel.isCreateMode() || _formmodel.isSearchMode())) {
-            auto = new AutoCompleteComboBox("autocomplete", Model.of((IAutoComplete) _model.getObject()), false);
-            add2Auto = true;
-        } else {
-            auto = new WebComponent("autocomplete").setVisible(false);
-        }
-        add(auto);
-        final WebMarkupContainer command = new WebMarkupContainer("command");
-        add(command);
-        if (uiObject.isRenderButton()) {
-            command.setVisible(false);
-            EFapsContentReference reference = null;
-            if (uiObject.getButtonIcon() != null) {
-                reference =  Button.ICON.valueOf(uiObject.getButtonIcon()).getReference();
-            }
-            add(new AjaxExecuteLink("execute", Model.of(uiObject),reference, uiObject.getCellLabel()));
-        } else {
-            add(new WebComponent("execute").setVisible(false));
-
-            final Component targetBottom = new LabelComponent("targetBottom", "").setVisible(false);
-            command.setOutputMarkupId(true);
-            command.add(targetBottom);
-
-            final AjaxCmdBehavior cmdBehavior = new AjaxCmdBehavior(_form, targetBottom);
-            final EsjpAjaxComponent esjpComp = new EsjpAjaxComponent("renderedExecute", _model);
-            esjpComp.add(cmdBehavior);
-            command.add(esjpComp);
-
-            if (add2Auto) {
-                ((AutoCompleteField) auto).addCmdBehavior(cmdBehavior);
-            }
-        }
+        getDefaultModelObject();
     }
 }

@@ -34,7 +34,6 @@ import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.HiddenField;
 import org.apache.wicket.markup.html.form.IFormModelUpdateListener;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.Item;
@@ -50,7 +49,6 @@ import org.efaps.ui.wicket.models.cell.CellSetRow;
 import org.efaps.ui.wicket.models.cell.CellSetValue;
 import org.efaps.ui.wicket.models.cell.UIFormCellSet;
 import org.efaps.ui.wicket.models.cell.UISetColumnHeader;
-import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
@@ -105,7 +103,8 @@ public class SetDataGrid
     {
         super(_wicketId, _model);
         setOutputMarkupId(true);
-        if (_model.getObject().isEditMode() || _model.getObject().getParent().isCreateMode()) {
+        if (_model.getObject().isEditMode() //|| _model.getObject().getParent().isCreateMode()
+                        ) {
             add(new WebComponent("editHeader"));
 
             final WebMarkupContainer addRow = new WebMarkupContainer("addRow");
@@ -180,7 +179,7 @@ public class SetDataGrid
             @Override
             protected void populateItem(final Item<CellSetRow> _item)
             {
-
+/*
                 final CellSetRow row = (CellSetRow) _item.getDefaultModelObject();
                 if (row.getParent().isEditMode() || row.getParent().getParent().isCreateMode()) {
                     final WebMarkupContainer remove = new WebMarkupContainer("remove");
@@ -212,6 +211,7 @@ public class SetDataGrid
                     _item.add(new WebMarkupContainer("remove").setVisible(false));
                 }
                 _item.add(new RowRepeater("columnRepeater", Model.ofList(row.getValues())));
+                */
             }
         };
         add(rowRepeater);
@@ -366,7 +366,7 @@ public class SetDataGrid
         {
             final SetDataGrid grid = findParent(SetDataGrid.class);
             final UIFormCellSet cellSet = (UIFormCellSet) grid.getDefaultModelObject();
-			final RefreshingView<?> repeater = findParent(RefreshingView.class);
+            final RefreshingView<?> repeater = findParent(RefreshingView.class);
             repeater.visitChildren(new IVisitor<Component, Void>()
             {
 

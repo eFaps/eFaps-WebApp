@@ -18,27 +18,15 @@
 package org.efaps.ui.wicket.components.form.row;
 
 import org.apache.wicket.AttributeModifier;
-import org.apache.wicket.Component;
 import org.apache.wicket.Page;
-import org.apache.wicket.behavior.AttributeAppender;
-import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.components.FormContainer;
-import org.efaps.ui.wicket.components.datagrid.SetDataGrid;
 import org.efaps.ui.wicket.components.form.FormPanel;
-import org.efaps.ui.wicket.components.form.cell.ValueCellPanel;
-import org.efaps.ui.wicket.components.form.chart.ChartPanel;
-import org.efaps.ui.wicket.components.form.command.CommandCellPanel;
 import org.efaps.ui.wicket.components.form.field.FieldPanel;
 import org.efaps.ui.wicket.models.AbstractInstanceObject;
-import org.efaps.ui.wicket.models.UIModel;
-import org.efaps.ui.wicket.models.cell.UIFormCell;
-import org.efaps.ui.wicket.models.cell.UIFormCellChart;
-import org.efaps.ui.wicket.models.cell.UIFormCellCmd;
-import org.efaps.ui.wicket.models.cell.UIFormCellSet;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIForm.FormElement;
@@ -84,59 +72,8 @@ public class RowPanel
         final FormRow row = (FormRow) super.getDefaultModelObject();
         final RepeatingView cellRepeater = new RepeatingView("cellRepeater");
         add(cellRepeater);
-
         for (final AbstractInstanceObject object : row.getValues()) {
-            if (object instanceof UIFormCell) {
-                final UIFormCell cell = (UIFormCell) object;
-
-                if (!cell.isHideLabel()) {
-                    final Label labelCell = new Label(cellRepeater.newChildId(), cell.getCellLabel());
-                    cellRepeater.add(labelCell);
-
-                    if (cell.isRequired()) {
-                        labelCell.add(AttributeModifier.replace("class", "eFapsFormLabelRequired"));
-                        labelCell.setOutputMarkupId(true);
-                        _formPanel.addRequiredComponent(cell.getName(), labelCell);
-                    } else {
-                        labelCell.add(AttributeModifier.replace("class", "eFapsFormLabel"));
-                        labelCell.setOutputMarkupId(true);
-                    }
-                    if (cell.getRowSpan() > 0) {
-                        labelCell.add(AttributeModifier.replace("rowspan", ((Integer) cell.getRowSpan()).toString()));
-                    }
-                }
-                final Component valueCell;
-                if (cell instanceof UIFormCellSet) {
-                    valueCell = new SetDataGrid(cellRepeater.newChildId(), Model.of((UIFormCellSet) cell));
-                } else if (cell instanceof UIFormCellCmd) {
-                    valueCell = new CommandCellPanel(cellRepeater.newChildId(), new UIModel<UIFormCellCmd>(
-                                    (UIFormCellCmd) cell),
-                                    _formmodel, _form);
-                } else if (cell instanceof UIFormCellChart) {
-                    valueCell = new ChartPanel(cellRepeater.newChildId(), new UIModel<UIFormCellChart>(
-                                    (UIFormCellChart) cell));
-                } else {
-                    valueCell = new ValueCellPanel(cellRepeater.newChildId(), new UIModel<UIFormCell>(cell),
-                                    _formmodel,
-                                    true);
-                }
-                if (cell.getRowSpan() > 0) {
-                    valueCell.add(AttributeModifier.replace("rowspan", ((Integer) cell.getRowSpan()).toString()));
-                }
-
-                Integer colspan = 2 * (_formelementmodel.getMaxGroupCount() - _model.getObject().getGroupCount()) + 1;
-
-                if (cell.isHideLabel()) {
-                    colspan++;
-                }
-
-                if (row.isRowSpan()) {
-                    colspan = colspan - 2;
-                }
-                valueCell.add(AttributeModifier.replace("colspan", colspan.toString()));
-                cellRepeater.add(valueCell);
-                valueCell.add(new AttributeAppender("class", new Model<String>("eFapsFormValue"), " "));
-            } else if (object instanceof AbstractUIField) {
+            if (object instanceof AbstractUIField) {
                 final FieldPanel field = new FieldPanel(cellRepeater.newChildId(), Model.of((AbstractUIField) object));
                 field.add(AttributeModifier.replace("colspan",
                                 ((AbstractUIField) object).getFieldConfiguration().getColSpan() * 2));

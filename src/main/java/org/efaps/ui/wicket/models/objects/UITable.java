@@ -29,15 +29,12 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.util.io.IClusterable;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Status;
 import org.efaps.admin.datamodel.Status.StatusGroup;
 import org.efaps.admin.datamodel.Type;
-import org.efaps.admin.datamodel.ui.FieldValue;
-import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.admin.datamodel.ui.UIValue;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
@@ -49,7 +46,6 @@ import org.efaps.admin.ui.AbstractCommand.SortDirection;
 import org.efaps.admin.ui.Image;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.admin.ui.field.Filter;
-import org.efaps.api.ci.UIFormFieldProperty;
 import org.efaps.api.ci.UITableFieldProperty;
 import org.efaps.api.ui.FilterBase;
 import org.efaps.api.ui.FilterType;
@@ -58,8 +54,6 @@ import org.efaps.db.Instance;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.PrintQuery;
 import org.efaps.db.SelectBuilder;
-import org.efaps.ui.wicket.models.cell.UIHiddenCell;
-import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.models.field.IFilterable;
 import org.efaps.ui.wicket.models.field.ISortable;
 import org.efaps.ui.wicket.models.field.UIField;
@@ -411,7 +405,6 @@ public class UITable
             final Instance rowInstance = _multi.getCurrentInstance();
             final UIRow row = new UIRow(this, rowInstance.getKey());
 
-            String strValue = "";
             if (isEditMode() && first) {
                 this.emptyRow = new UIRow(this);
             }
@@ -442,91 +435,34 @@ public class UITable
                         sortValue = _multi.getMsgPhrase(field.getProperty(UITableFieldProperty.SORT_MSG_PHRASE));
                     }
 
-                    boolean hidden = false;
-                    String icon = field.getIcon();
+                    final boolean hidden = false;
+                    field.getIcon();
                     if (field.isShowTypeIcon()) {
                         final Image image = Image.getTypeIcon(instance.getType());
                         if (image != null) {
-                            icon = image.getUrl();
+                            image.getUrl();
                         }
                     }
 
-                    if (isUIInterface(attr, field)) {
-                        final FieldValue fieldvalue = new FieldValue(field, attr, value, rowInstance, getInstance(),
-                                        new ArrayList<Instance>(_multi.getInstanceList()), this);
-                        String htmlTitle = null;
-                        if (isPrintMode()) {
-                            strValue = fieldvalue.getStringValue(getMode());
-                        } else {
-                            if ((isCreateMode() || isEditMode()) && field.isEditableDisplay(getMode())) {
-                                strValue = fieldvalue.getEditHtml(getMode());
-                                htmlTitle = fieldvalue.getStringValue(getMode());
-                            } else if (field.isHiddenDisplay(getMode())) {
-                                strValue = fieldvalue.getHiddenHtml(getMode());
-                                hidden = true;
-                            } else {
-                                strValue = fieldvalue.getReadOnlyHtml(getMode());
-                                htmlTitle = fieldvalue.getStringValue(getMode());
-                            }
-                        }
-
-                        if (strValue == null) {
-                            strValue = "";
-                        }
-
-                        if (hidden) {
-                            row.addHidden(new UIHiddenCell(this, fieldvalue, null, strValue));
-                        } else {
-                            final UITableCell cell = new UITableCell(this, fieldvalue, instance, strValue, htmlTitle,
-                                            icon);
-                            cell.setCompareValue(sortValue);
-                            if (cell.isAutoComplete()) {
-                                cell.setCellValue(fieldvalue.getStringValue(getMode()));
-                            }
-                            row.add(cell);
-                        }
+                    final UIField uiField = new UIField(instance.getKey(), this, UIValue.get(field, attr, value)
+                                    .setInstance(instance).setClassObject(this).setCallInstance(getInstance())
+                                    .setRequestInstances(_multi.getInstanceList()));
+                    uiField.setCompareValue(sortValue);
+                    if (field.isHiddenDisplay(getMode())) {
+                        row.addHidden(uiField);
                     } else {
-                        final UIField uiField = new UIField(instance.getKey(), this, UIValue.get(field, attr, value)
-                                        .setInstance(instance).setClassObject(this).setCallInstance(getInstance())
-                                        .setRequestInstances(_multi.getInstanceList()));
-                        uiField.setCompareValue(sortValue);
-                        if (field.isHiddenDisplay(getMode())) {
-                            row.addHidden(uiField);
-                        } else {
-                            row.add(uiField);
-                        }
+                        row.add(uiField);
                     }
                     // in case of edit mode an empty version of the first row is stored, and can be used to create
                     // new rows
                     if (isEditable() && first) {
-                        if (isUIInterface(attr, field)) {
-                            final FieldValue fldVal = new FieldValue(field, attr, null, null, getInstance());
-                            final String cellvalue;
-                            final String cellTitle;
-                            if (field.isEditableDisplay(getMode())) {
-                                cellvalue = fldVal.getEditHtml(getMode());
-                                cellTitle = fldVal.getStringValue(getMode());
-                            } else if (field.isHiddenDisplay(getMode())) {
-                                cellvalue = fldVal.getHiddenHtml(getMode());
-                                cellTitle = "";
-                            } else {
-                                cellvalue = fldVal.getReadOnlyHtml(getMode());
-                                cellTitle = fldVal.getStringValue(getMode());
-                            }
-                            if (hidden) {
-                                this.emptyRow.addHidden(new UIHiddenCell(this, fldVal, null, cellvalue));
-                            } else {
-                                this.emptyRow.add(new UITableCell(this, fldVal, null, cellvalue, cellTitle, icon));
-                            }
+                        final UIField uiFieldFirst = new UIField(instance.getKey(), this, UIValue.get(field, attr, null)
+                                        .setClassObject(this).setCallInstance(getInstance())
+                                        .setRequestInstances(_multi.getInstanceList()));
+                        if (hidden) {
+                            this.emptyRow.addHidden(uiFieldFirst);
                         } else {
-                            final UIField uiField = new UIField(instance.getKey(), this, UIValue.get(field, attr, null)
-                                            .setClassObject(this).setCallInstance(getInstance())
-                                            .setRequestInstances(_multi.getInstanceList()));
-                            if (hidden) {
-                                this.emptyRow.addHidden(uiField);
-                            } else {
-                                this.emptyRow.add(uiField);
-                            }
+                            this.emptyRow.add(uiFieldFirst);
                         }
                     }
                 }
@@ -592,38 +528,12 @@ public class UITable
                         attr = print.getAttribute4Select(field.getSelect());
                     }
                 }
-                if (isUIInterface(attr, field)) {
-                    final FieldValue fieldvalue = new FieldValue(field, attr, null, null, getInstance(), null, this);
-                    String htmlValue;
-                    String htmlTitle = null;
-                    boolean hidden = false;
-                    if ((isCreateMode() || isEditMode()) && field.isEditableDisplay(getMode())) {
-                        htmlValue = fieldvalue.getEditHtml(getMode());
-                        htmlTitle = fieldvalue.getStringValue(getMode());
-                    } else if (field.isHiddenDisplay(getMode())) {
-                        htmlValue = fieldvalue.getHiddenHtml(getMode());
-                        hidden = true;
-                    } else {
-                        htmlValue = fieldvalue.getReadOnlyHtml(getMode());
-                        htmlTitle = fieldvalue.getStringValue(getMode());
-                    }
-                    if (htmlValue == null) {
-                        htmlValue = "";
-                    }
-                    if (hidden) {
-                        row.addHidden(new UIHiddenCell(this, fieldvalue, null, htmlValue));
-                    } else {
-                        final UITableCell cell = new UITableCell(this, fieldvalue, null, htmlValue, htmlTitle, null);
-                        row.add(cell);
-                    }
+                final UIField uiField = new UIField(null, this, UIValue.get(field, attr, null)
+                                .setInstance(getInstance()).setClassObject(this).setCallInstance(getInstance()));
+                if (field.isHiddenDisplay(getMode())) {
+                    row.addHidden(uiField);
                 } else {
-                    final UIField uiField = new UIField(null, this, UIValue.get(field, attr, null)
-                                    .setInstance(getInstance()).setClassObject(this).setCallInstance(getInstance()));
-                    if (field.isHiddenDisplay(getMode())) {
-                        row.addHidden(uiField);
-                    } else {
-                        row.add(uiField);
-                    }
+                    row.add(uiField);
                 }
             }
         }
@@ -632,23 +542,6 @@ public class UITable
         if (getSortKey() != null) {
             sort();
         }
-    }
-
-    /**
-     * Checks if is UI interface.
-     *
-     * @param _attr the _attr
-     * @param _field the _field
-     * @return true, if is UI interface
-     */
-    boolean isUIInterface(final Attribute _attr,
-                          final Field _field)
-    {
-        return (_attr != null && _attr.getAttributeType().getUIProvider() instanceof UIInterface
-                        || _field.getUIProvider() != null && _field.getUIProvider() instanceof UIInterface)
-                        && !_field.containsProperty(UIFormFieldProperty.UI_TYPE)
-                        && !_field.hasEvents(EventType.UI_FIELD_AUTOCOMPLETE)
-                        && !StringUtils.startsWith(_field.getSelect(), "linkfrom");
     }
 
     /**
