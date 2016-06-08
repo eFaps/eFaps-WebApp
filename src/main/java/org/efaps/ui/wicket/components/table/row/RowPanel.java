@@ -25,6 +25,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.components.table.AjaxAddRemoveRowPanel;
 import org.efaps.ui.wicket.components.table.TablePanel;
+import org.efaps.ui.wicket.components.table.field.CheckBoxField;
 import org.efaps.ui.wicket.components.table.field.FieldPanel;
 import org.efaps.ui.wicket.models.AbstractInstanceObject;
 import org.efaps.ui.wicket.models.TableModel;
@@ -74,10 +75,10 @@ public class RowPanel
 
         boolean firstCell = false;
         if (uiTable.isShowCheckBoxes()) {
-            final Component cellpanel = null;
-            cellpanel.setOutputMarkupId(true);
-            cellpanel.add(AttributeModifier.append("class", "eFapsTableCheckBoxCell eFapsTableCellClear"));
-            cellRepeater.add(cellpanel);
+            final CheckBoxField checkbox = new CheckBoxField(cellRepeater.newChildId(), uirow.getInstanceKey());
+            checkbox.setOutputMarkupId(true);
+            checkbox.add(AttributeModifier.append("class", "eFapsTableCheckBoxCell eFapsTableCellClear"));
+            cellRepeater.add(checkbox);
             i++;
             firstCell = true;
         }
