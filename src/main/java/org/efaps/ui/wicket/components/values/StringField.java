@@ -18,7 +18,9 @@
 
 package org.efaps.ui.wicket.components.values;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.model.Model;
 import org.drools.core.util.StringUtils;
 import org.efaps.admin.datamodel.ui.UIValue;
@@ -86,6 +88,19 @@ public class StringField
                 _tag.put("cols", getFieldConfig().getProperty(UIFormFieldProperty.COLUMNS));
                 _tag.remove("size");
             }
+        }
+    }
+
+    @Override
+    public void onComponentTagBody(final MarkupStream _markupStream,
+                                   final ComponentTag _openTag)
+    {
+        if ("textarea".equals(_openTag.getName())) {
+            final String body = StringEscapeUtils.escapeHtml4(_openTag.getAttribute("value"));
+            replaceComponentTagBody(_markupStream, _openTag, body);
+            _openTag.remove("value");
+        } else {
+            super.onComponentTagBody(_markupStream, _openTag);
         }
     }
 
