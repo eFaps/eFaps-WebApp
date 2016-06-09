@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.collections4.IteratorUtils;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.util.io.IClusterable;
 import org.efaps.admin.datamodel.Attribute;
@@ -57,8 +58,11 @@ import org.efaps.db.Instance;
 import org.efaps.db.PrintQuery;
 import org.efaps.db.SelectBuilder;
 import org.efaps.ui.wicket.models.AbstractInstanceObject;
+import org.efaps.ui.wicket.models.field.AbstractUIField;
+import org.efaps.ui.wicket.models.field.IUIElement;
 import org.efaps.ui.wicket.models.field.UICmdField;
 import org.efaps.ui.wicket.models.field.UIField;
+import org.efaps.ui.wicket.models.field.UIGroup;
 import org.efaps.ui.wicket.models.field.UIPicker;
 import org.efaps.ui.wicket.models.field.set.UIFieldSet;
 import org.efaps.ui.wicket.models.field.set.UIFieldSetColHeader;
@@ -255,9 +259,6 @@ public class UIForm
     private void execute4Instance()
         throws EFapsException
     {
-        int rowgroupcount = 1;
-        int rowspan = 1;
-        FormRow row = new FormRow();
         final Set<String> altOIDSel = new HashSet<String>();
         final Form form = Form.get(this.formUUID);
         // evaluate the Form to make the query
@@ -288,7 +289,7 @@ public class UIForm
                 }
                 checkAccessToInstances(inst);
             }
-            FormElement formElement = null;
+            FormElement currentFormElement = null;
             boolean addNew = true;
             UIClassification uiclass = null;
             boolean firstTable = true;
@@ -299,13 +300,12 @@ public class UIForm
                         final FieldGroup group = (FieldGroup) field;
                         // in case that the first field is a group the element
                         // must be initiated
-                        if (formElement == null) {
-                            formElement = new FormElement();
-                            this.elements.add(new Element(UIForm.ElementType.FORM, formElement));
+                        if (currentFormElement == null) {
+                            currentFormElement = new FormElement();
+                            this.elements.add(new Element(UIForm.ElementType.FORM, currentFormElement));
                             addNew = false;
                         }
-
-                        rowgroupcount = group.getGroupCount();
+                        currentFormElement.setGroupCount(group.getGroupCount());
                     } else if (field instanceof FieldTable) {
                         if (((FieldTable) field).getTargetStructurBrowserField() == null) {
                             final UIFieldTable uiFieldTable = new UIFieldTable(getCommandUUID(), getInstanceKey(),
@@ -336,27 +336,15 @@ public class UIForm
                         this.classified = true;
                     } else {
                         if (addNew) {
-                            formElement = new FormElement();
-                            this.elements.add(new Element(UIForm.ElementType.FORM, formElement));
+                            final FormElement formElement = new FormElement()
+                                            .setGroupCount(currentFormElement == null
+                                                ? 0
+                                                :currentFormElement.getGroupCount());
+                            currentFormElement = formElement;
+                            this.elements.add(new Element(UIForm.ElementType.FORM, currentFormElement));
                             addNew = false;
                         }
-                        if (addCell2FormRow(row, print, field)) {
-                            if (field.getRowSpan() > 0) {
-                                rowspan = field.getRowSpan();
-                            }
-                            rowgroupcount--;
-                            if (rowgroupcount < 1) {
-                                rowgroupcount = 1;
-                                if (row.getGroupCount() > 0) {
-                                 //   formElement.addRowModel(row);
-                                    row = new FormRow();
-                                    if (rowspan > 1) {
-                                        rowspan--;
-                                        row.setRowSpan(true);
-                                    }
-                                }
-                            }
-                        }
+                        addCell2FormRow(currentFormElement, print, field);
                     }
                 }
             }
@@ -423,7 +411,7 @@ public class UIForm
      * @throws EFapsException on error
      * @return true if the cell was actually added, else false
      */
-    private boolean addCell2FormRow(final FormRow _row,
+    private boolean addCell2FormRow(final FormElement _formElement,
                                     final PrintQuery _query,
                                     final Field _field)
         throws EFapsException
@@ -451,24 +439,24 @@ public class UIForm
             } else if (_field.getPhrase() != null) {
                 _query.getPhrase(_field.getName());
             }
-            addHidden(evaluateUIProvider(_row, _query, _field, fieldInstance, attr));
+            addHidden(evaluateUIProvider(_query, _field, fieldInstance, attr));
             ret = false;
         } else {
             // fieldset
             if (_field instanceof FieldSet) {
-                evaluateFieldSet(_row, _query, _field, fieldInstance);
+                _formElement.addValue(evaluateFieldSet(_query, _field, fieldInstance));
             } else if (_field instanceof FieldCommand) {
                 final UICmdField cell = new UICmdField(this, (FieldCommand) _field, getInstance());
-                _row.add(cell);
+                _formElement.addValue(cell);
             } else if (_field instanceof FieldPicker) {
                 final UIField cell = new UIField(this, getInstance().getKey(),
                                 UIValue.get(_field, attr, null).setClassObject(this).setInstance(getInstance())
                                     .setCallInstance(getInstance()));
                 final UIPicker picker = new UIPicker((FieldPicker) _field, cell);
                 cell.setPicker(picker);
-                _row.add(cell);
+                _formElement.addValue(cell);
             } else {
-                _row.add(evaluateUIProvider(_row, _query, _field, fieldInstance, attr));
+                _formElement.addValue(evaluateUIProvider(_query, _field, fieldInstance, attr));
             }
         }
         return ret;
@@ -485,8 +473,7 @@ public class UIForm
      * @return the UI field
      * @throws EFapsException on error
      */
-    private UIField evaluateUIProvider(final FormRow _row,
-                                       final PrintQuery _print,
+    private UIField evaluateUIProvider(final PrintQuery _print,
                                        final Field _field,
                                        final Instance _fieldInstance,
                                        final Attribute _attr)
@@ -516,10 +503,9 @@ public class UIForm
      * @param _fieldInstance instance of the FieldSet
      * @throws EFapsException on error
      */
-    private void evaluateFieldSet(final FormRow _row,
-                                  final PrintQuery _query,
-                                  final Field _field,
-                                  final Instance _fieldInstance)
+    private UIFieldSet evaluateFieldSet(final PrintQuery _query,
+                                        final Field _field,
+                                        final Instance _fieldInstance)
         throws EFapsException
     {
         final AttributeSet attrSet = AttributeSet.find(getInstance().getType().getName(), _field.getAttribute());
@@ -531,21 +517,21 @@ public class UIForm
         if (tmp != null) {
             fieldins.addAll(_query.getInstances4Attribute(_field.getAttribute()));
         }
-        final UIFieldSet set = new UIFieldSet(this, _fieldInstance,
+        final UIFieldSet ret = new UIFieldSet(this, _fieldInstance,
                         UIValue.get(_field, getInstance().getType().getAttribute(_field.getAttribute()), null));
-        set.setMode(getMode());
+        ret.setMode(getMode());
 
         for (final String attrName : ((FieldSet) _field).getOrder()) {
             final Attribute child = attrSet.getAttribute(attrName);
             final UIFieldSetColHeader column = new UIFieldSetColHeader(_field.getLabel(), child, _field);
-            set.addHeader(column);
+            ret.addHeader(column);
         }
 
         final Iterator<Instance> iter = fieldins.iterator();
         final Map<String, Iterator<?>> values = new HashMap<String, Iterator<?>>();
         while (iter.hasNext()) {
             final Instance rowInstance = iter.next();
-            set.addRow(rowInstance);
+            ret.addRow(rowInstance);
             for (final String attrName : ((FieldSet) _field).getOrder()) {
                 final Attribute child = attrSet.getAttribute(attrName);
                 Iterator<?> valIter = values.get(attrName);
@@ -555,11 +541,11 @@ public class UIForm
                     values.put(attrName, valIter);
                 }
                 final UIValue uiValue = UIValue.get(_field, child, valIter.hasNext() ? valIter.next() : null);
-                set.addValue(rowInstance,
-                                new UIFieldSetValue(this, rowInstance.getKey(), set, uiValue));
+                ret.addValue(rowInstance,
+                                new UIFieldSetValue(this, rowInstance.getKey(), ret, uiValue));
             }
         }
-        _row.add(set);
+        return ret;
     }
 
     /**
@@ -706,7 +692,7 @@ public class UIForm
                                         .setInstance(getInstance()).setCallInstance(getInstance()));
                         addHidden(uiField);
                     } else {
-                        final AbstractInstanceObject cell;
+                        final IUIElement cell;
                         if (field instanceof FieldSet) {
                             cell = new UIFieldSet(this,  getInstance(), UIValue.get(field, attr, null)
                                                 .setClassObject(this)
@@ -728,7 +714,7 @@ public class UIForm
                         } else if (field instanceof FieldPicker) {
                             cell = new UIField(this, null, UIValue.get(field, attr, null).setClassObject(this)
                                             .setInstance(getInstance()).setCallInstance(getInstance()));
-                            final UIPicker picker = new UIPicker((FieldPicker) field, cell);
+                            final UIPicker picker = new UIPicker((FieldPicker) field, (AbstractInstanceObject) cell);
                             ((UIField) cell).setPicker(picker);
                         } else {
                             cell = new UIField(this, null, UIValue.get(field, attr,
@@ -880,31 +866,38 @@ public class UIForm
         /**
          * Stores the UIFormCell contained in this FormRow.
          */
-        private final List<AbstractInstanceObject> values = new ArrayList<AbstractInstanceObject>();
+        private final ArrayDeque<IUIElement> values = new ArrayDeque<IUIElement>();
 
         /**
          * Stores if the row must be spanned.
          */
-        private boolean rowSpan = false;
+        private int rowSpan = 0;
 
         /**
          * Add a UIFormCell to this FormRow.
          *
          * @param _uiObject UIObject to add
          */
-        public void add(final AbstractInstanceObject _uiObject)
+        public void add(final IUIElement _uiElement)
         {
-            this.values.add(_uiObject);
-        }
-
-        /**
-         * Setter method for the instance variable {@link #rowSpan}.
-         *
-         * @param _rowspan value for instance variable {@link #rowSpan}
-         */
-        public void setRowSpan(final boolean _rowspan)
-        {
-            this.rowSpan = _rowspan;
+            if (_uiElement instanceof AbstractUIField
+                            && ((AbstractUIField) _uiElement).getFieldConfiguration().getRowSpan() > 1) {
+                this.rowSpan = ((AbstractUIField) _uiElement).getFieldConfiguration().getRowSpan();
+                this.values.add(_uiElement);
+            } else if (isRowSpan()) {
+                this.rowSpan--;
+                final IUIElement current = this.values.getLast();
+                UIGroup group;
+                if (current instanceof UIGroup) {
+                    group = (UIGroup) current;
+                } else {
+                    group = new UIGroup();
+                    this.values.addLast(group);
+                }
+                group.add((AbstractUIField) _uiElement);
+            } else {
+                this.values.add(_uiElement);
+            }
         }
 
         /**
@@ -914,7 +907,7 @@ public class UIForm
          */
         public boolean isRowSpan()
         {
-            return this.rowSpan;
+            return this.rowSpan > 0;
         }
 
         /**
@@ -922,9 +915,9 @@ public class UIForm
          *
          * @return value of instance variable {@link #values}
          */
-        public List<AbstractInstanceObject> getValues()
+        public List<IUIElement> getValues()
         {
-            return this.values;
+            return IteratorUtils.toList(this.values.iterator());
         }
 
         /**
@@ -935,6 +928,27 @@ public class UIForm
         public int getGroupCount()
         {
             return this.values.size();
+        }
+
+        /**
+         * Getter method for the instance variable {@link #rowSpan}.
+         *
+         * @return value of instance variable {@link #rowSpan}
+         */
+        public int getRowSpan()
+        {
+            return this.rowSpan;
+        }
+
+        /**
+         * Setter method for instance variable {@link #rowSpan}.
+         *
+         * @param _rowSpan value for instance variable {@link #rowSpan}
+         */
+        public FormRow setRowSpan(final int _rowSpan)
+        {
+            this.rowSpan = _rowSpan;
+            return this;
         }
     }
 
@@ -975,9 +989,9 @@ public class UIForm
          * @param _uiObject the ui object
          * @return the form element
          */
-        public FormElement addValue(final AbstractInstanceObject _uiObject)
+        public FormElement addValue(final IUIElement _uiElement)
         {
-            if (this.groupCount < 1) {
+            if (this.groupCount < 1 && !this.rowModels.isEmpty() && !this.rowModels.getLast().isRowSpan()) {
                 this.rowModels.addLast(new FormRow());
             } else {
                 this.groupCount--;
@@ -985,7 +999,7 @@ public class UIForm
             if (this.rowModels.isEmpty()) {
                 this.rowModels.addLast(new FormRow());
             }
-            this.rowModels.getLast().add(_uiObject);
+            this.rowModels.getLast().add(_uiElement);
             return this;
         }
 
@@ -996,6 +1010,9 @@ public class UIForm
          */
         public FormElement setGroupCount(final int _groupCount)
         {
+            if (_groupCount > 1) {
+                this.rowModels.addLast(new FormRow());
+            }
             this.groupCount = _groupCount;
             return this;
         }

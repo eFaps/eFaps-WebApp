@@ -64,7 +64,6 @@ import org.efaps.ui.wicket.models.field.factories.UserUIFactory;
 import org.efaps.ui.wicket.models.objects.AbstractUIModeObject;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,7 +74,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractUIField
     extends AbstractInstanceObject
-    implements IPickable, IHidden, IFilterable, IAutoComplete
+    implements IPickable, IHidden, IFilterable, IAutoComplete, IUIElement
 {
     /**
      * Needed for serialization.

@@ -27,6 +27,7 @@ import org.efaps.admin.datamodel.ui.UIValue;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.models.field.FieldConfiguration;
+import org.efaps.ui.wicket.models.field.IUIElement;
 import org.efaps.ui.wicket.models.objects.AbstractUIModeObject;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.util.EFapsException;
@@ -39,6 +40,7 @@ import org.efaps.util.cache.CacheReloadException;
  */
 public class UIFieldSet
     extends AbstractUIModeObject
+    implements IUIElement
 {
 
     /** The Constant serialVersionUID. */

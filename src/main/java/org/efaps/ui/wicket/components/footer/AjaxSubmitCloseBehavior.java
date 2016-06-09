@@ -70,8 +70,8 @@ import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.values.ErrorMessageResource;
 import org.efaps.ui.wicket.components.values.IFieldConfig;
 import org.efaps.ui.wicket.components.values.IValueConverter;
-import org.efaps.ui.wicket.models.AbstractInstanceObject;
 import org.efaps.ui.wicket.models.field.IFilterable;
+import org.efaps.ui.wicket.models.field.IUIElement;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.models.objects.UIFieldForm;
@@ -489,7 +489,7 @@ public class AjaxSubmitCloseBehavior
             if (element.getType().equals(ElementType.FORM)) {
                 final FormElement formElement = (FormElement) element.getElement();
                 for (final Iterator<FormRow> uiRowIter = formElement.getRowModels(); uiRowIter.hasNext();) {
-                    for (final AbstractInstanceObject object : uiRowIter.next().getValues()) {
+                    for (final IUIElement object : uiRowIter.next().getValues()) {
 
                     }
                 }
@@ -504,7 +504,7 @@ public class AjaxSubmitCloseBehavior
                     uiRow.getUserinterfaceId();
                     final Iterator<UITableHeader> headerIter = headers.iterator();
                     for (final IFilterable filterable : uiRow.getCells()) {
-                        final UITableHeader header = headerIter.next();
+                        headerIter.next();
 
                         }
                     }

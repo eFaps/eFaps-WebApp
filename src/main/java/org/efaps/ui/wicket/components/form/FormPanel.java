@@ -94,8 +94,7 @@ public class FormPanel
         this.add(rowRepeater);
 
         for (final Iterator<FormRow> uiRowIter = _formelementmodel.getRowModels(); uiRowIter.hasNext();) {
-            final RowPanel row = new RowPanel(rowRepeater.newChildId(), Model.of(uiRowIter.next()), uiForm, _page,
-                                              this, _form, _formelementmodel);
+            final RowPanel row = new RowPanel(rowRepeater.newChildId(), Model.of(uiRowIter.next()), uiForm, _form);
             rowRepeater.add(row);
         }
 
