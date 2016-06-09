@@ -195,6 +195,13 @@ public class NumberField
             case NUMBER:
                 ret = new String[] { "number" };
                 break;
+            case DEFAULT:
+                if (this.any) {
+                    ret = new String[] { "text" };
+                } else {
+                    ret = new String[] { "number" };
+                }
+                break;
             default:
                 ret =  new String[] { "text" };
                 break;
