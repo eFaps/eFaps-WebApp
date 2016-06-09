@@ -20,7 +20,7 @@ package org.efaps.ui.wicket.components.table.field;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.behavior.AttributeAppender;
-import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.behaviors.SetSelectedRowBehavior;
@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * @author The eFaps Team
  */
 public class FieldPanel
-    extends Panel
+    extends FormComponentPanel<AbstractUIField>
 {
 
     /**
@@ -47,6 +47,16 @@ public class FieldPanel
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * Instantiates a new field panel.
+     *
+     * @param _wicketId the wicket id
+     */
+    public FieldPanel(final String _wicketId)
+    {
+        super(_wicketId);
+    }
 
     /**
      * @param _wicketId wicketId for this component

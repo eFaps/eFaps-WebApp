@@ -17,8 +17,9 @@
 
 package org.efaps.ui.wicket.components.table.field;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.markup.ComponentTag;
-import org.apache.wicket.markup.html.form.FormComponent;
+import org.apache.wicket.markup.html.form.CheckBox;
 
 /**
  * TODO comment!
@@ -26,7 +27,7 @@ import org.apache.wicket.markup.html.form.FormComponent;
  * @author The eFaps Team
  */
 public class CheckBoxField
-    extends FormComponent<String>
+    extends FieldPanel
 {
 
     /** The Constant serialVersionUID. */
@@ -46,14 +47,23 @@ public class CheckBoxField
     {
         super(_wicketId);
         this.oid = _oid;
+
+        final Component field = new CheckBox("field")
+        {
+
+            /** The Constant serialVersionUID. */
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            protected void onComponentTag(final ComponentTag _tag)
+            {
+                _tag.getAttributes().put("type", "checkbox");
+                _tag.getAttributes().put("name", "selectedRow");
+                _tag.getAttributes().put("value", CheckBoxField.this.oid);
+                _tag.setName("input");
+            }
+        };
+        add(field);
     }
 
-    @Override
-    protected void onComponentTag(final ComponentTag _tag)
-    {
-        _tag.getAttributes().put("type", "checkbox");
-        _tag.getAttributes().put("name", "selectedRow");
-        _tag.getAttributes().put("value", this.oid);
-        _tag.setName("input");
-    }
 }
