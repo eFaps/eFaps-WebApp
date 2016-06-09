@@ -30,6 +30,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.swing.table.TableModel;
+
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Page;
 import org.apache.wicket.PageReference;
@@ -46,6 +48,7 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.ValidationErrorFeedback;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.util.string.StringValue;
 import org.efaps.admin.datamodel.Classification;
@@ -68,8 +71,6 @@ import org.efaps.ui.wicket.components.values.ErrorMessageResource;
 import org.efaps.ui.wicket.components.values.IFieldConfig;
 import org.efaps.ui.wicket.components.values.IValueConverter;
 import org.efaps.ui.wicket.models.AbstractInstanceObject;
-import org.efaps.ui.wicket.models.FormModel;
-import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.field.IFilterable;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
@@ -223,9 +224,9 @@ public class AjaxSubmitCloseBehavior
                         final ModalWindowContainer modal = footer.getModalWindow();
                         final AbstractContentPage page;
                         if (targetCmd.getTargetTable() != null) {
-                            page = new TablePage(new TableModel((UITable) newUIObject), modal);
+                            page = new TablePage(Model.of((UITable) newUIObject), modal);
                         } else {
-                            page = new FormPage(new FormModel((UIForm) newUIObject), modal);
+                            page = new FormPage(Model.of((UIForm) newUIObject), modal);
                         }
                         if (this.uiObject.getCommand().isTargetShowFile()) {
                             page.getDownloadBehavior().initiate();

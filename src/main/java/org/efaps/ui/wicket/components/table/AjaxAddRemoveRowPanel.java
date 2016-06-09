@@ -29,10 +29,10 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.util.string.StringValue;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
 import org.efaps.ui.wicket.components.table.row.RowPanel;
-import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.AbstractUIHeaderObject;
 import org.efaps.ui.wicket.models.objects.UIFieldTable;
 import org.efaps.ui.wicket.models.objects.UIRow;
@@ -217,7 +217,7 @@ public class AjaxAddRemoveRowPanel
                             // create the new repeater item and add it to the repeater
                             final RowPanel row = new RowPanel(
                                             AjaxAddRemoveRowPanel.AjaxAddRow.this.rowsRep.newChildId(),
-                                            new UIModel<UIRow>(uirow), tablepanel, false, 0);
+                                            Model.of(uirow), tablepanel, false, 0);
                             row.add(AttributeModifier.append("class", "eFapsTableRowOdd"));
                             row.setOutputMarkupId(true);
                             AjaxAddRemoveRowPanel.AjaxAddRow.this.rowsRep.add(row);

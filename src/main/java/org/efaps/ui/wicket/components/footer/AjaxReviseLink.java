@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.components.footer;
@@ -24,8 +21,6 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
-import org.efaps.ui.wicket.models.FormModel;
-import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.models.objects.UIForm;
@@ -42,7 +37,6 @@ import org.efaps.util.EFapsException;
  * and revise the search.
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class AjaxReviseLink
     extends AjaxLink<AbstractUIObject>
@@ -81,9 +75,9 @@ public class AjaxReviseLink
         final AbstractContentPage page;
         try {
             if (prevObject instanceof UITable) {
-                page = new TablePage(new TableModel((UITable) prevObject), modal);
+                page = new TablePage(Model.of((UITable) prevObject), modal);
             } else {
-                page = new FormPage(new FormModel((UIForm) prevObject), modal);
+                page = new FormPage(Model.of((UIForm) prevObject), modal);
             }
             getRequestCycle().setResponsePage(page);
         } catch (final EFapsException e) {

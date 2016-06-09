@@ -28,6 +28,7 @@ import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.request.handler.EmptyRequestHandler;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
@@ -35,7 +36,6 @@ import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
-import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
@@ -119,8 +119,7 @@ public class ExecItem
                         {
                             Page page = null;
                             try {
-                                page = new DialogPage(getPage().getPageReference(),
-                                                new UIModel<UIMenuItem>(uiMenuItem), null);
+                                page = new DialogPage(getPage().getPageReference(), Model.of(uiMenuItem), null);
                             } catch (final EFapsException e) {
                                 page = new ErrorPage(e);
                             }

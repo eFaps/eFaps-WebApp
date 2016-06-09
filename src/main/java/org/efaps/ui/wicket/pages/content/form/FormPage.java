@@ -39,9 +39,6 @@ import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.table.TablePanel;
 import org.efaps.ui.wicket.components.table.header.HeaderPanel;
 import org.efaps.ui.wicket.components.tree.StructurBrowserTreeTablePanel;
-import org.efaps.ui.wicket.models.FormModel;
-import org.efaps.ui.wicket.models.TableModel;
-import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.field.IHidden;
 import org.efaps.ui.wicket.models.objects.UIClassification;
 import org.efaps.ui.wicket.models.objects.UIFieldForm;
@@ -52,7 +49,6 @@ import org.efaps.ui.wicket.models.objects.UIForm.Element;
 import org.efaps.ui.wicket.models.objects.UIForm.ElementType;
 import org.efaps.ui.wicket.models.objects.UIForm.FormElement;
 import org.efaps.ui.wicket.models.objects.UIHeading;
-import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
@@ -166,7 +162,6 @@ public class FormPage
         this(_model, null, _pageReference);
     }
 
-
     /**
      * @param _model            model
      * @param _modalWindow      window
@@ -250,7 +245,7 @@ public class FormPage
         _form.add(elementRepeater);
         for (final Element element : _uiForm.getElements()) {
             if (element.getType().equals(ElementType.FORM)) {
-                elementRepeater.add(new FormPanel(elementRepeater.newChildId(), _page, new FormModel(_uiForm),
+                elementRepeater.add(new FormPanel(elementRepeater.newChildId(), _page, Model.of(_uiForm),
                                 (FormElement) element.getElement(), _form));
             } else if (element.getType().equals(ElementType.HEADING)) {
                 final UIHeading headingmodel = (UIHeading) element.getElement();
@@ -260,19 +255,19 @@ public class FormPage
                 final UIFieldTable fieldTable = (UIFieldTable) element.getElement();
                 fieldTable.setTableId(i);
                 final TablePanel table = new TablePanel(elementRepeater.newChildId(),
-                                new TableModel(fieldTable), _page);
+                                Model.of(fieldTable), _page);
                 final HeaderPanel header = new HeaderPanel(elementRepeater.newChildId(), table);
                 elementRepeater.add(header);
                 elementRepeater.add(table);
             } else if (element.getType().equals(ElementType.CLASSIFICATION)) {
                 elementRepeater.add(new ClassificationPathPanel(elementRepeater.newChildId(),
-                                new UIModel<UIClassification>((UIClassification) element.getElement())));
+                                Model.of((UIClassification) element.getElement())));
             } else if (element.getType().equals(ElementType.STRUCBRWS)) {
                 i++;
                 final UIFieldStructurBrowser strBrwsr = (UIFieldStructurBrowser) element.getElement();
                 strBrwsr.setTableId(i);
                 final StructurBrowserTreeTablePanel strucBrws = new StructurBrowserTreeTablePanel(
-                                elementRepeater.newChildId(), new UIModel<UIStructurBrowser>(strBrwsr));
+                                elementRepeater.newChildId(), Model.of(strBrwsr));
                 elementRepeater.add(strucBrws);
             } else if (element.getType().equals(ElementType.SUBFORM)) {
                 final UIFieldForm uiFieldForm = (UIFieldForm) element.getElement();
@@ -286,7 +281,7 @@ public class FormPage
                 for (final Element subElement : elements) {
                     if (subElement.getType().equals(ElementType.FORM)) {
                         elementRepeater.add(new FormPanel(elementRepeater.newChildId(), _page,
-                                        new FormModel(uiFieldForm), (FormElement) subElement.getElement(), _form));
+                                        Model.of(uiFieldForm), (FormElement) subElement.getElement(), _form));
                     } else if (subElement.getType().equals(ElementType.HEADING)) {
                         final UIHeading headingmodel = (UIHeading) subElement.getElement();
                         elementRepeater.add(new HeadingPanel(elementRepeater.newChildId(), Model.of(headingmodel)));
@@ -295,7 +290,7 @@ public class FormPage
                         final UIFieldTable fieldTable = (UIFieldTable) subElement.getElement();
                         fieldTable.setTableId(i);
                         final TablePanel table = new TablePanel(elementRepeater.newChildId(),
-                                        new TableModel(fieldTable), _page);
+                                        Model.of(fieldTable), _page);
                         final HeaderPanel header = new HeaderPanel(elementRepeater.newChildId(), table);
                         elementRepeater.add(header);
                         elementRepeater.add(table);

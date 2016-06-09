@@ -30,13 +30,13 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.embeddedlink.LinkElementComponent;
 import org.efaps.ui.wicket.components.embeddedlink.LinkElementLink;
 import org.efaps.ui.wicket.components.form.row.RowPanel;
 import org.efaps.ui.wicket.models.EmbeddedLink;
-import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.field.IHidden;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIForm.FormElement;
@@ -98,7 +98,7 @@ public class FormPanel
         this.add(rowRepeater);
 
         for (final FormRow uiRow : _formelementmodel.getRowModels()) {
-            final RowPanel row = new RowPanel(rowRepeater.newChildId(), new UIModel<FormRow>(uiRow), uiForm, _page,
+            final RowPanel row = new RowPanel(rowRepeater.newChildId(), Model.of(uiRow), uiForm, _page,
                                               this, _form, _formelementmodel);
             rowRepeater.add(row);
         }

@@ -24,9 +24,9 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
-import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.models.objects.UIWizardObject;
@@ -85,7 +85,7 @@ public class SearchSubmitLink
             }
             final FooterPanel footer = findParent(FooterPanel.class);
             final ModalWindowContainer modal = footer.getModalWindow();
-            final TablePage page = new TablePage(new TableModel(newTable), modal);
+            final TablePage page = new TablePage(Model.of(newTable), modal);
             getRequestCycle().setResponsePage(page);
         } catch (final EFapsException e) {
             getRequestCycle().setResponsePage(new ErrorPage(e));

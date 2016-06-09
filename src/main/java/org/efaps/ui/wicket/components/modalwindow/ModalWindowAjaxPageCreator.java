@@ -22,9 +22,7 @@ package org.efaps.ui.wicket.components.modalwindow;
 
 import org.apache.wicket.Page;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
-import org.efaps.ui.wicket.models.FormModel;
-import org.efaps.ui.wicket.models.TableModel;
-import org.efaps.ui.wicket.models.UIModel;
+import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.models.objects.UITable;
@@ -93,7 +91,7 @@ public class ModalWindowAjaxPageCreator
                     ret = new DialogPage(this.modalWindow.getPage().getPageReference(),
                                     uiform.getCommand().getName() + ".InvalidInstance", false, false);
                 } else {
-                    ret = new FormPage(new FormModel(uiform), this.modalWindow, this.modalWindow.getPage()
+                    ret = new FormPage(Model.of(uiform), this.modalWindow, this.modalWindow.getPage()
                                     .getPageReference());
                 }
             } else {
@@ -101,13 +99,13 @@ public class ModalWindowAjaxPageCreator
                     final UITable uitable = new UITable(this.uiObject.getCommand().getUUID(),
                                     this.uiObject.getInstanceKey());
                     uitable.setPicker(this.uiObject);
-                    ret = new TablePage(new TableModel(uitable), this.modalWindow, this.modalWindow.getPage()
+                    ret = new TablePage(Model.of(uitable), this.modalWindow, this.modalWindow.getPage()
                                     .getPageReference());
                 } else {
                     final UIStructurBrowser uiPageObject = new UIStructurBrowser(this.uiObject.getCommand().getUUID(),
                                     this.uiObject.getInstanceKey());
                     uiPageObject.setPicker(this.uiObject);
-                    ret = new StructurBrowserPage(new UIModel<UIStructurBrowser>(uiPageObject), this.modalWindow,
+                    ret = new StructurBrowserPage(Model.of(uiPageObject), this.modalWindow,
                                     this.modalWindow.getPage().getPageReference());
                 }
             }

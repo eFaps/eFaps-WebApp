@@ -74,7 +74,6 @@ import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.preloader.PreLoaderPanel;
 import org.efaps.ui.wicket.components.search.SearchPanel;
 import org.efaps.ui.wicket.models.PushMsg;
-import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.models.objects.UIUserSession;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
@@ -212,7 +211,7 @@ public class MainPage
         borderPanel.add(headerPanel);
         headerPanel.add(new ContentPaneBehavior(Region.TOP, false));
 
-        headerPanel.add(new MenuBarPanel("menubar", new UIModel<UIMenuItem>(new UIMenuItem(UUID
+        headerPanel.add(new MenuBarPanel("menubar", Model.of(new UIMenuItem(UUID
                       .fromString(Configuration.getAttribute(ConfigAttribute.TOOLBAR))))));
 
         // set the title for the Page
@@ -254,7 +253,7 @@ public class MainPage
             final long usrId = context.getPersonId();
             // Admin_Common_SystemMessageAlert
             final LinkItem alert = new LinkItem("useralert",
-                            new UIModel<UIMenuItem>(new UIMenuItem(SetMessageStatusBehavior.getCmdUUD())))
+                            Model.of(new UIMenuItem(SetMessageStatusBehavior.getCmdUUD())))
             {
 
                 private static final long serialVersionUID = 1L;

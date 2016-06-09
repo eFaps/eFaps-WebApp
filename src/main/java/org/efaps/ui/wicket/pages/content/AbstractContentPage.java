@@ -39,7 +39,6 @@ import org.efaps.ui.wicket.components.footer.FooterPanel;
 import org.efaps.ui.wicket.components.heading.HeadingPanel;
 import org.efaps.ui.wicket.components.menu.MenuBarPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
-import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.models.objects.UIForm;
@@ -179,18 +178,18 @@ public abstract class AbstractContentPage
         final AbstractUIObject uiObject = (AbstractUIObject) super.getDefaultModelObject();
         add(new HeadingPanel("titel",  Model.of(new UIHeading(uiObject.getTitle()))));
 
-        UIModel<UIMenuItem> model = null;
+        IModel<UIMenuItem> model = null;
         if (uiObject.getMode() == TargetMode.SEARCH
                         && uiObject.getCallingCommandUUID() != null
                         && uiObject instanceof UIForm) {
-            model = new UIModel<UIMenuItem>(new UISearchItem(uiObject.getCallingCommand()
+            model = Model.of(new UISearchItem(uiObject.getCallingCommand()
                                             .getTargetSearch().getUUID()));
         } else if (uiObject.getCommand().getTargetMenu() != null) {
-            model = new UIModel<UIMenuItem>(new UIMenuItem(uiObject.getCommand().getTargetMenu()
+            model = Model.of(new UIMenuItem(uiObject.getCommand().getTargetMenu()
                                             .getUUID(), uiObject.getInstanceKey()));
         }
         add(new MenuBarPanel("menu", model));
-        WebMarkupContainer exLink;
+        final WebMarkupContainer exLink;
         if (((AbstractUIPageObject) super.getDefaultModelObject()).getHelpTarget() != null) {
             final PopupSettings set = new PopupSettings(PopupSettings.RESIZABLE | PopupSettings.SCROLLBARS
                             | PopupSettings.MENU_BAR | PopupSettings.LOCATION_BAR | PopupSettings.STATUS_BAR

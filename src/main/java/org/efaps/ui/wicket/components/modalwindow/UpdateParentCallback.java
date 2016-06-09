@@ -23,10 +23,8 @@ package org.efaps.ui.wicket.components.modalwindow;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.request.cycle.RequestCycle;
-import org.efaps.ui.wicket.models.FormModel;
-import org.efaps.ui.wicket.models.TableModel;
-import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
@@ -107,6 +105,7 @@ public class UpdateParentCallback
      *
      * @param _target Target
      */
+    @Override
     public void onClose(final AjaxRequestTarget _target)
     {
         if (this.modalwindow.isUpdateParent()) {
@@ -118,15 +117,15 @@ public class UpdateParentCallback
             AbstractContentPage page = null;
             try {
                 if (uiObject instanceof UITable) {
-                    page = new TablePage(new TableModel((UITable) uiObject),
+                    page = new TablePage(Model.of((UITable) uiObject),
                                     ((AbstractContentPage) this.pageReference.getPage()).getModalWindow(),
                                     ((AbstractContentPage) this.pageReference.getPage()).getCalledByPageReference());
                 } else if (uiObject instanceof UIForm) {
-                    page = new FormPage(new FormModel((UIForm) uiObject),
+                    page = new FormPage(Model.of((UIForm) uiObject),
                                     ((AbstractContentPage) this.pageReference.getPage()).getModalWindow(),
                                     ((AbstractContentPage) this.pageReference.getPage()).getCalledByPageReference());
                 } else if (uiObject instanceof UIStructurBrowser) {
-                    page = new StructurBrowserPage(new UIModel<UIStructurBrowser>((UIStructurBrowser) uiObject),
+                    page = new StructurBrowserPage(Model.of((UIStructurBrowser) uiObject),
                                     ((AbstractContentPage) this.pageReference.getPage()).getModalWindow(),
                                     ((AbstractContentPage) this.pageReference.getPage()).getCalledByPageReference());
                 }

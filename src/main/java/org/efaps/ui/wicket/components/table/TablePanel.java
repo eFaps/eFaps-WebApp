@@ -30,16 +30,16 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.behaviors.RowSelectedInput;
 import org.efaps.ui.wicket.components.table.row.RowPanel;
-import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.UIFieldTable;
 import org.efaps.ui.wicket.models.objects.UIRow;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
-import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,7 +108,7 @@ public class TablePanel
             int i = 0;
             for (final Iterator<UIRow> rowIter = uiTable.getValues().iterator(); rowIter.hasNext(); odd = !odd) {
                 i++;
-                final RowPanel row = new RowPanel(rowsRepeater.newChildId(), new UIModel<UIRow>(rowIter.next()), this,
+                final RowPanel row = new RowPanel(rowsRepeater.newChildId(), Model.of(rowIter.next()), this,
                                 ((AbstractContentPage) _page).isUpdateMenu(), i);
                 row.setOutputMarkupId(true);
                 if (odd) {

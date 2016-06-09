@@ -28,7 +28,6 @@ import org.efaps.ui.wicket.components.table.TablePanel;
 import org.efaps.ui.wicket.components.table.field.CheckBoxField;
 import org.efaps.ui.wicket.components.table.field.FieldPanel;
 import org.efaps.ui.wicket.models.AbstractInstanceObject;
-import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.field.IFilterable;
 import org.efaps.ui.wicket.models.field.IHidden;
@@ -84,7 +83,7 @@ public class RowPanel
         }
         if (uiTable.isEditable()) {
             final AjaxAddRemoveRowPanel remove = new AjaxAddRemoveRowPanel(cellRepeater.newChildId(),
-                            new TableModel(uiTable), this);
+                            Model.of(uiTable), this);
             remove.setOutputMarkupId(true);
             remove.add(AttributeModifier.append("class", "eFapsTableRemoveRowCell eFapsTableCellClear"));
             cellRepeater.add(remove);
