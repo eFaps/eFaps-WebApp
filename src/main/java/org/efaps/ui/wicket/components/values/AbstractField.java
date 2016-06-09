@@ -56,7 +56,7 @@ public abstract class AbstractField<T extends Serializable>
     /**
      * value of this field.
      */
-    private final AbstractUIField cellvalue;
+    private final AbstractUIField uiField;
 
     /**
      * @param _wicketId wicket id for this component
@@ -73,10 +73,10 @@ public abstract class AbstractField<T extends Serializable>
         super(_wicketId, Model.of((T) _model.getObject().getValue().getEditValue(
                         _model.getObject().getParent().getMode())));
         this.config = _config;
-        this.cellvalue = _model.getObject();
+        this.uiField = _model.getObject();
         this.add(new StandartValidator<T>(this));
         setOutputMarkupId(true);
-        setLabel(Model.of(this.cellvalue.getLabel()));
+        setLabel(Model.of(this.uiField.getLabel()));
 
         if (_config.getField().hasEvents(EventType.UI_FIELD_UPDATE)) {
             final List<EventDefinition> events = _config.getField().getEvents(EventType.UI_FIELD_UPDATE);
@@ -84,7 +84,7 @@ public abstract class AbstractField<T extends Serializable>
             for (final EventDefinition event : events) {
                 eventName = event.getProperty("Event") == null ? "change" : event.getProperty("Event");
             }
-            add(new AjaxFieldUpdateBehavior(eventName, Model.of(this.cellvalue), false));
+            add(new AjaxFieldUpdateBehavior(eventName, Model.of(this.uiField), false));
         }
     }
 
@@ -97,7 +97,7 @@ public abstract class AbstractField<T extends Serializable>
     {
         super(_wicketId, Model.<T>of());
         this.config = _config;
-        this.cellvalue = null;
+        this.uiField = null;
         setLabel(Model.of(_config.getLabel()));
         setOutputMarkupId(true);
         setType(String.class);
@@ -109,9 +109,9 @@ public abstract class AbstractField<T extends Serializable>
      * @return value of instance variable {@link #cellvalue}
      */
     @Override
-    public AbstractUIField getCellvalue()
+    public AbstractUIField getUIField()
     {
-        return this.cellvalue;
+        return this.uiField;
     }
 
     @Override

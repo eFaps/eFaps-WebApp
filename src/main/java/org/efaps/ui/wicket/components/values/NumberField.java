@@ -88,8 +88,8 @@ public class NumberField
     {
         super(_wicketId, _model, _config);
         setRequired(_config.getField().isRequired());
-        if (getCellvalue().getValue().getAttribute() != null) {
-            final IAttributeType attrType = getCellvalue().getValue().getAttribute().getAttributeType()
+        if (getUIField().getValue().getAttribute() != null) {
+            final IAttributeType attrType = getUIField().getValue().getAttribute().getAttributeType()
                             .getDbAttrType();
             if (attrType instanceof DecimalType) {
                 this.any = true;
@@ -110,16 +110,16 @@ public class NumberField
     {
         this.converted = true;
         int i = 0;
-        if (getCellvalue() instanceof UIFieldSetValue) {
-            final UIFieldSet cellset = ((UIFieldSetValue) getCellvalue()).getCellSet();
+        if (getUIField() instanceof UIFieldSetValue) {
+            final UIFieldSet cellset = ((UIFieldSetValue) getUIField()).getCellSet();
             i = cellset.getIndex(getInputName());
         }
         final String[] value = getInputAsArray();
         try {
             if (value != null && value.length > 0 && value[i] != null) {
                 IConverter<? extends Number> converter = LongConverter.INSTANCE;
-                if (getCellvalue().getValue().getAttribute() != null) {
-                    final IAttributeType attrType = getCellvalue().getValue().getAttribute().getAttributeType()
+                if (getUIField().getValue().getAttribute() != null) {
+                    final IAttributeType attrType = getUIField().getValue().getAttribute().getAttributeType()
                                     .getDbAttrType();
                     if (attrType instanceof LongType) {
                         converter = LongConverter.INSTANCE;
@@ -155,7 +155,7 @@ public class NumberField
         }
         setModelObject(getConvertedInput());
         try {
-            getCellvalue().setValue(UIValue.get(getCellvalue().getValue().getField(), getCellvalue().getValue()
+            getUIField().setValue(UIValue.get(getUIField().getValue().getField(), getUIField().getValue()
                             .getAttribute(), getDefaultModelObject()));
         } catch (final CacheReloadException e) {
             NumberField.LOG.error("Catched error on updateModel", e);

@@ -20,7 +20,9 @@ package org.efaps.ui.wicket.components.values;
 
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.model.Model;
+import org.drools.core.util.StringUtils;
 import org.efaps.admin.datamodel.ui.UIValue;
+import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.api.ci.UIFormFieldProperty;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.field.FieldConfiguration;
@@ -88,12 +90,22 @@ public class StringField
     }
 
     @Override
+    protected String getModelValue()
+    {
+        String ret = super.getModelValue();
+        if (StringUtils.isEmpty(ret) && TargetMode.SEARCH.equals(getUIField().getParent().getMode())) {
+            ret = "*";
+        }
+        return ret;
+    }
+
+    @Override
     public void convertInput()
     {
         this.converted = true;
         int i = 0;
-        if (getCellvalue() instanceof UIFieldSetValue) {
-            final UIFieldSet cellset = ((UIFieldSetValue) getCellvalue()).getCellSet();
+        if (getUIField() instanceof UIFieldSetValue) {
+            final UIFieldSet cellset = ((UIFieldSetValue) getUIField()).getCellSet();
             i = cellset.getIndex(getInputName());
         }
         final String[] value = getInputAsArray();
@@ -108,7 +120,7 @@ public class StringField
         }
         setModelObject(getConvertedInput());
         try {
-            getCellvalue().setValue(UIValue.get(getCellvalue().getValue().getField(), getCellvalue().getValue()
+            getUIField().setValue(UIValue.get(getUIField().getValue().getField(), getUIField().getValue()
                             .getAttribute(), getDefaultModelObject()));
         } catch (final CacheReloadException e) {
             StringField.LOG.error("Catched error on updateModel", e);
