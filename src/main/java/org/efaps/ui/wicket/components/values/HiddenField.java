@@ -48,8 +48,8 @@ public class HiddenField
                        final FieldConfiguration _config)
         throws EFapsException
     {
-        this(_wicketId, (String) _model.getObject().getValue().getHiddenValue(
-                        _model.getObject().getParent().getMode()), _config);
+        this(_wicketId, String.valueOf(_model.getObject().getValue().getHiddenValue(
+                        _model.getObject().getParent().getMode())), _config);
     }
 
     /**

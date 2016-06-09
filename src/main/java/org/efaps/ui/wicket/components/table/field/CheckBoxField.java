@@ -20,6 +20,7 @@ package org.efaps.ui.wicket.components.table.field;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.form.CheckBox;
+import org.apache.wicket.model.Model;
 
 /**
  * TODO comment!
@@ -46,9 +47,10 @@ public class CheckBoxField
                          final String _oid)
     {
         super(_wicketId);
+        setDefaultModel(Model.of());
         this.oid = _oid;
 
-        final Component field = new CheckBox("field")
+        final Component field = new CheckBox("field", Model.of(Boolean.FALSE))
         {
 
             /** The Constant serialVersionUID. */
@@ -65,5 +67,4 @@ public class CheckBoxField
         };
         add(field);
     }
-
 }
