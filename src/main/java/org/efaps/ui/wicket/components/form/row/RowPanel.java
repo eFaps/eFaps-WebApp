@@ -17,7 +17,6 @@
 
 package org.efaps.ui.wicket.components.form.row;
 
-import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Page;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
@@ -83,13 +82,10 @@ public class RowPanel
                 cellRepeater.add(fieldSet);
             } else if (object instanceof AbstractUIField) {
                 final FieldPanel field = new FieldPanel(cellRepeater.newChildId(), Model.of((AbstractUIField) object));
-                field.add(AttributeModifier.replace("colspan",
-                                ((AbstractUIField) object).getFieldConfiguration().getColSpan() * 2));
-                if (((AbstractUIField) object).getFieldConfiguration().getRowSpan() > 0) {
-                    field.add(AttributeModifier.replace("rowspan",
-                                    ((AbstractUIField) object).getFieldConfiguration().getRowSpan()));
-                }
                 cellRepeater.add(field);
+                if (((AbstractUIField) object).getFieldConfiguration().getRowSpan() > 0) {
+
+                }
             } else if (object instanceof UIFieldSet) {
                 final FieldSetPanel fieldSet = new FieldSetPanel(cellRepeater.newChildId(),
                                 Model.of((UIFieldSet) object));

@@ -17,6 +17,7 @@
 
 package org.efaps.ui.wicket.models.objects;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -303,9 +304,7 @@ public class UIForm
                             this.elements.add(new Element(UIForm.ElementType.FORM, formElement));
                             addNew = false;
                         }
-                        if (formElement.getMaxGroupCount() < group.getGroupCount()) {
-                            formElement.setMaxGroupCount(group.getGroupCount());
-                        }
+
                         rowgroupcount = group.getGroupCount();
                     } else if (field instanceof FieldTable) {
                         if (((FieldTable) field).getTargetStructurBrowserField() == null) {
@@ -349,7 +348,7 @@ public class UIForm
                             if (rowgroupcount < 1) {
                                 rowgroupcount = 1;
                                 if (row.getGroupCount() > 0) {
-                                    formElement.addRowModel(row);
+                                 //   formElement.addRowModel(row);
                                     row = new FormRow();
                                     if (rowspan > 1) {
                                         rowspan--;
@@ -616,10 +615,7 @@ public class UIForm
     private void execute4NoInstance()
         throws EFapsException
     {
-        int rowgroupcount = 1;
-        FormRow row = new FormRow();
         final Form form = Form.get(this.formUUID);
-
         Type type = null;
         if (isCreateMode() || isEditMode()) {
             type = getCreateTargetType();
@@ -644,7 +640,7 @@ public class UIForm
             }
         }
 
-        FormElement formelement = null;
+        FormElement currentFormElement = null;
         boolean addNew = true;
         UIClassification uiclass = null;
         boolean firstTable = true;
@@ -654,15 +650,12 @@ public class UIForm
                 if (field instanceof FieldGroup) {
                     final FieldGroup group = (FieldGroup) field;
                     // in case that the first field is a group the element must be initiated
-                    if (formelement == null) {
-                        formelement = new FormElement();
-                        this.elements.add(new Element(UIForm.ElementType.FORM, formelement));
+                    if (currentFormElement == null) {
+                        currentFormElement = new FormElement();
+                        this.elements.add(new Element(UIForm.ElementType.FORM, currentFormElement));
                         addNew = false;
                     }
-                    if (formelement.getMaxGroupCount() < group.getGroupCount()) {
-                        formelement.setMaxGroupCount(group.getGroupCount());
-                    }
-                    rowgroupcount = group.getGroupCount();
+                    currentFormElement.setGroupCount(group.getGroupCount());
                 } else if (field instanceof FieldHeading) {
                     this.elements.add(new Element(UIForm.ElementType.HEADING, new UIHeading((FieldHeading) field)));
                     addNew = true;
@@ -689,8 +682,12 @@ public class UIForm
                     addNew = true;
                 } else {
                     if (addNew) {
-                        formelement = new FormElement();
-                        this.elements.add(new Element(UIForm.ElementType.FORM, formelement));
+                        final FormElement formElement = new FormElement()
+                                        .setGroupCount(currentFormElement == null
+                                            ? 0
+                                            :currentFormElement.getGroupCount());
+                        currentFormElement = formElement;
+                        this.elements.add(new Element(UIForm.ElementType.FORM, currentFormElement));
                         addNew = false;
                     }
                     final Attribute attr;
@@ -740,15 +737,7 @@ public class UIForm
                                                 .setInstance(AbstractInstanceObject.getInstance4Create(type))
                                                 .setCallInstance(getInstance()));
                         }
-                        row.add(cell);
-                        rowgroupcount--;
-                        if (rowgroupcount < 1) {
-                            rowgroupcount = 1;
-                            if (row.getGroupCount() > 0) {
-                                formelement.addRowModel(row);
-                                row = new FormRow();
-                            }
-                        }
+                        currentFormElement.addValue(cell);
                     }
                 }
             }
@@ -962,27 +951,12 @@ public class UIForm
         private static final long serialVersionUID = 1L;
 
         /**
-         * Stores the maximal group count for a row.
-         *
-         * @see #getMaxGroupCount
-         * @see #setMaxGroupCount
-         */
-        private int maxGroupCount = 1;
-
-        /**
          * Stores the FormRows for this FormElement.
          */
-        private final List<UIForm.FormRow> rowModels = new ArrayList<UIForm.FormRow>();
+        private final ArrayDeque<FormRow> rowModels = new ArrayDeque<>();
 
-        /**
-         * Add a FormRow to this FormElement.
-         *
-         * @param _formRow FormRow to add
-         */
-        public void addRowModel(final FormRow _formRow)
-        {
-            this.rowModels.add(_formRow);
-        }
+        /** The group count. */
+        private int groupCount = 0;
 
         /**
          * This is the getter method for the instance variable
@@ -990,36 +964,50 @@ public class UIForm
          *
          * @return value of instance variable {@link #rowModels}
          */
-        public List<UIForm.FormRow> getRowModels()
+        public Iterator<FormRow> getRowModels()
         {
-            return this.rowModels;
+            return this.rowModels.iterator();
         }
 
         /**
-         * This is the getter method for the instance variable
-         * {@link #maxGroupCount}.
+         * Adds the value.
          *
-         * @return value of instance variable {@link #maxGroupCount}
-         * @see #maxGroupCount
-         * @see #setMaxGroupCount
+         * @param _uiObject the ui object
+         * @return the form element
          */
-        public int getMaxGroupCount()
+        public FormElement addValue(final AbstractInstanceObject _uiObject)
         {
-            return this.maxGroupCount;
+            if (this.groupCount < 1) {
+                this.rowModels.addLast(new FormRow());
+            } else {
+                this.groupCount--;
+            }
+            if (this.rowModels.isEmpty()) {
+                this.rowModels.addLast(new FormRow());
+            }
+            this.rowModels.getLast().add(_uiObject);
+            return this;
         }
 
         /**
-         * This is the setter method for the instance variable
-         * {@link #maxGroupCount}.
+         * Sets the group count.
          *
-         * @param _maxGroupCount new value for instance variable
-         *            {@link #maxGroupCount}
-         * @see #maxGroupCount
-         * @see #getMaxGroupCount
+         * @param _groupCount the new group count
          */
-        protected void setMaxGroupCount(final int _maxGroupCount)
+        public FormElement setGroupCount(final int _groupCount)
         {
-            this.maxGroupCount = _maxGroupCount;
+            this.groupCount = _groupCount;
+            return this;
+        }
+
+        /**
+         * Gets the group count.
+         *
+         * @return the group count
+         */
+        public int getGroupCount()
+        {
+            return this.groupCount;
         }
     }
 

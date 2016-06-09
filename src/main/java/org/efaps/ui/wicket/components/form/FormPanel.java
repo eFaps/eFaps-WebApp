@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev:1510 $
- * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
- * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.components.form;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -52,8 +50,6 @@ import org.efaps.util.EFapsException;
  * TODO description.
  *
  * @author The eFaps Team
- * @version $Id$
- *
  */
 public class FormPanel
     extends Panel
@@ -97,8 +93,8 @@ public class FormPanel
         final RepeatingView rowRepeater = new RepeatingView("rowRepeater");
         this.add(rowRepeater);
 
-        for (final FormRow uiRow : _formelementmodel.getRowModels()) {
-            final RowPanel row = new RowPanel(rowRepeater.newChildId(), Model.of(uiRow), uiForm, _page,
+        for (final Iterator<FormRow> uiRowIter = _formelementmodel.getRowModels(); uiRowIter.hasNext();) {
+            final RowPanel row = new RowPanel(rowRepeater.newChildId(), Model.of(uiRowIter.next()), uiForm, _page,
                                               this, _form, _formelementmodel);
             rowRepeater.add(row);
         }

@@ -488,8 +488,8 @@ public class AjaxSubmitCloseBehavior
         for (final Element element : _uiform.getElements()) {
             if (element.getType().equals(ElementType.FORM)) {
                 final FormElement formElement = (FormElement) element.getElement();
-                for (final FormRow row : formElement.getRowModels()) {
-                    for (final AbstractInstanceObject object : row.getValues()) {
+                for (final Iterator<FormRow> uiRowIter = formElement.getRowModels(); uiRowIter.hasNext();) {
+                    for (final AbstractInstanceObject object : uiRowIter.next().getValues()) {
 
                     }
                 }
