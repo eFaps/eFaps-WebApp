@@ -25,10 +25,12 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.form.FormPanel;
+import org.efaps.ui.wicket.components.form.command.CommandCellPanel;
 import org.efaps.ui.wicket.components.form.field.FieldPanel;
 import org.efaps.ui.wicket.components.form.field.FieldSetPanel;
 import org.efaps.ui.wicket.models.AbstractInstanceObject;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
+import org.efaps.ui.wicket.models.field.UICmdField;
 import org.efaps.ui.wicket.models.field.set.UIFieldSet;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIForm.FormElement;
@@ -75,7 +77,11 @@ public class RowPanel
         final RepeatingView cellRepeater = new RepeatingView("cellRepeater");
         add(cellRepeater);
         for (final AbstractInstanceObject object : row.getValues()) {
-            if (object instanceof AbstractUIField) {
+            if (object instanceof UICmdField) {
+                final CommandCellPanel fieldSet = new CommandCellPanel(cellRepeater.newChildId(),
+                                Model.of((UICmdField) object), _formmodel, _form);
+                cellRepeater.add(fieldSet);
+            } else if (object instanceof AbstractUIField) {
                 final FieldPanel field = new FieldPanel(cellRepeater.newChildId(), Model.of((AbstractUIField) object));
                 field.add(AttributeModifier.replace("colspan",
                                 ((AbstractUIField) object).getFieldConfiguration().getColSpan() * 2));

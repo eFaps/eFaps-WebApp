@@ -41,7 +41,6 @@ import org.efaps.db.Instance;
 import org.efaps.ui.wicket.behaviors.dojo.AutoCompleteBehavior;
 import org.efaps.ui.wicket.components.values.LabelField;
 import org.efaps.ui.wicket.models.AbstractInstanceObject;
-import org.efaps.ui.wicket.models.cell.UIPicker;
 import org.efaps.ui.wicket.models.field.AutoCompleteSettings.EditValue;
 import org.efaps.ui.wicket.models.field.factories.AutoCompleteFactory;
 import org.efaps.ui.wicket.models.field.factories.BitEnumUIFactory;
@@ -65,6 +64,7 @@ import org.efaps.ui.wicket.models.field.factories.UserUIFactory;
 import org.efaps.ui.wicket.models.objects.AbstractUIModeObject;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -165,8 +165,8 @@ public abstract class AbstractUIField
      * @param _value        value
      * @throws EFapsException on error
      */
-    public AbstractUIField(final String _instanceKey,
-                           final AbstractUIModeObject _parent,
+    public AbstractUIField(final AbstractUIModeObject _parent,
+                           final String _instanceKey,
                            final UIValue _value)
         throws EFapsException
     {

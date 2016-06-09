@@ -444,7 +444,7 @@ public class UITable
                         }
                     }
 
-                    final UIField uiField = new UIField(instance.getKey(), this, UIValue.get(field, attr, value)
+                    final UIField uiField = new UIField(this, instance.getKey(), UIValue.get(field, attr, value)
                                     .setInstance(instance).setClassObject(this).setCallInstance(getInstance())
                                     .setRequestInstances(_multi.getInstanceList()));
                     uiField.setCompareValue(sortValue);
@@ -456,7 +456,7 @@ public class UITable
                     // in case of edit mode an empty version of the first row is stored, and can be used to create
                     // new rows
                     if (isEditable() && first) {
-                        final UIField uiFieldFirst = new UIField(instance.getKey(), this, UIValue.get(field, attr, null)
+                        final UIField uiFieldFirst = new UIField(this, instance.getKey(), UIValue.get(field, attr, null)
                                         .setClassObject(this).setCallInstance(getInstance())
                                         .setRequestInstances(_multi.getInstanceList()));
                         if (hidden) {
@@ -528,7 +528,7 @@ public class UITable
                         attr = print.getAttribute4Select(field.getSelect());
                     }
                 }
-                final UIField uiField = new UIField(null, this, UIValue.get(field, attr, null)
+                final UIField uiField = new UIField(this, null,  UIValue.get(field, attr, null)
                                 .setInstance(getInstance()).setClassObject(this).setCallInstance(getInstance()));
                 if (field.isHiddenDisplay(getMode())) {
                     row.addHidden(uiField);

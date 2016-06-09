@@ -43,11 +43,11 @@ public class UIMessageField
      * @param _parent       parent object
      * @throws EFapsException on error
      */
-    public UIMessageField(final String _instanceKey,
-                          final AbstractUIModeObject _parent)
+    public UIMessageField(final AbstractUIModeObject _parent,
+                          final String _instanceKey)
         throws EFapsException
     {
-        super(_instanceKey, _parent, (FieldConfiguration) null);
+        super(_parent, _instanceKey, (FieldConfiguration) null);
     }
 
     @Override

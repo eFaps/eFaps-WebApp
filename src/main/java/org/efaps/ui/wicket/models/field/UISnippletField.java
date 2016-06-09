@@ -47,12 +47,12 @@ public class UISnippletField
      * @param _config the FieldConfiguration for this Field
      * @throws EFapsException on error
      */
-    public UISnippletField(final String _instanceKey,
-                           final AbstractUIModeObject _parent,
+    public UISnippletField(final AbstractUIModeObject _parent,
+                           final String _instanceKey,
                            final FieldConfiguration _config)
         throws EFapsException
     {
-        super(_instanceKey, _parent, null);
+        super(_parent, _instanceKey,  null);
         setFieldConfiguration(_config);
     }
 

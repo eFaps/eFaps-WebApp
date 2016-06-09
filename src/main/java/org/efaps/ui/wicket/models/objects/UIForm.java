@@ -56,8 +56,9 @@ import org.efaps.db.Instance;
 import org.efaps.db.PrintQuery;
 import org.efaps.db.SelectBuilder;
 import org.efaps.ui.wicket.models.AbstractInstanceObject;
-import org.efaps.ui.wicket.models.cell.UIPicker;
+import org.efaps.ui.wicket.models.field.UICmdField;
 import org.efaps.ui.wicket.models.field.UIField;
+import org.efaps.ui.wicket.models.field.UIPicker;
 import org.efaps.ui.wicket.models.field.set.UIFieldSet;
 import org.efaps.ui.wicket.models.field.set.UIFieldSetColHeader;
 import org.efaps.ui.wicket.models.field.set.UIFieldSetValue;
@@ -458,9 +459,10 @@ public class UIForm
             if (_field instanceof FieldSet) {
                 evaluateFieldSet(_row, _query, _field, fieldInstance);
             } else if (_field instanceof FieldCommand) {
-               //TODO
+                final UICmdField cell = new UICmdField(this, (FieldCommand) _field, getInstance());
+                _row.add(cell);
             } else if (_field instanceof FieldPicker) {
-                final UIField cell = new UIField(getInstance().getKey(), this,
+                final UIField cell = new UIField(this, getInstance().getKey(),
                                 UIValue.get(_field, attr, null).setClassObject(this).setInstance(getInstance())
                                     .setCallInstance(getInstance()));
                 final UIPicker picker = new UIPicker((FieldPicker) _field, cell);
@@ -501,7 +503,7 @@ public class UIForm
         } else if (_field.getMsgPhrase() != null) {
             value = _print.getMsgPhrase(new SelectBuilder(getBaseSelect4MsgPhrase(_field)), _field.getMsgPhrase());
         }
-        final UIField uiField = new UIField(_fieldInstance.getKey(), this, UIValue.get(_field, _attr, value)
+        final UIField uiField = new UIField(this, getInstance().getKey(), UIValue.get(_field, _attr, value)
                         .setInstance(_fieldInstance).setClassObject(this));
         return uiField;
     }
@@ -555,7 +557,7 @@ public class UIForm
                 }
                 final UIValue uiValue = UIValue.get(_field, child, valIter.hasNext() ? valIter.next() : null);
                 set.addValue(rowInstance,
-                                new UIFieldSetValue(rowInstance.getKey(), this, set, uiValue));
+                                new UIFieldSetValue(this, rowInstance.getKey(), set, uiValue));
             }
         }
         _row.add(set);
@@ -702,15 +704,17 @@ public class UIForm
                     }
 
                     if (field.isHiddenDisplay(getMode())) {
-                        final UIField uiField = new UIField(null, this, UIValue.get(field, attr, null)
+                        final UIField uiField = new UIField(this, null, UIValue.get(field, attr, null)
                                         .setClassObject(this)
                                         .setInstance(getInstance()).setCallInstance(getInstance()));
                         addHidden(uiField);
                     } else {
                         final AbstractInstanceObject cell;
                         if (field instanceof FieldSet) {
-                            cell = new UIFieldSet(this,  getInstance(), UIValue.get(field, attr, null).setClassObject(this)
-                                                            .setInstance(getInstance()).setCallInstance(getInstance()));
+                            cell = new UIFieldSet(this,  getInstance(), UIValue.get(field, attr, null)
+                                                .setClassObject(this)
+                                                .setInstance(getInstance())
+                                                .setCallInstance(getInstance()));
                             if (type == null) {
                                 ((UIFieldSet) cell).addHeader(new UIFieldSetColHeader(field.getLabel(), null, field));
                             } else {
@@ -723,16 +727,14 @@ public class UIForm
                                 }
                             }
                         } else if (field instanceof FieldCommand) {
-                            //TODO
-                            cell = new UIField(null, this, UIValue.get(field, attr, null).setClassObject(this)
-                                            .setInstance(getInstance()).setCallInstance(getInstance()));
+                            cell = new UICmdField(this, (FieldCommand) field, getInstance());
                         } else if (field instanceof FieldPicker) {
-                            cell = new UIField(null, this, UIValue.get(field, attr, null).setClassObject(this)
+                            cell = new UIField(this, null, UIValue.get(field, attr, null).setClassObject(this)
                                             .setInstance(getInstance()).setCallInstance(getInstance()));
                             final UIPicker picker = new UIPicker((FieldPicker) field, cell);
                             ((UIField) cell).setPicker(picker);
                         } else {
-                            cell = new UIField(null, this, UIValue.get(field, attr,
+                            cell = new UIField(this, null, UIValue.get(field, attr,
                                                 super.isPartOfWizardCall() ? getValue4Wizard(field.getName()) : null)
                                                 .setClassObject(this)
                                                 .setInstance(AbstractInstanceObject.getInstance4Create(type))

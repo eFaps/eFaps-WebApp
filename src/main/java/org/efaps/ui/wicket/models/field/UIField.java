@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.models.field;
@@ -28,7 +25,6 @@ import org.efaps.util.EFapsException;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class UIField
     extends AbstractUIField
@@ -44,11 +40,11 @@ public class UIField
      * @param _value        value
      * @throws EFapsException on error
      */
-    public UIField(final String _instanceKey,
-                   final AbstractUIModeObject _parent,
+    public UIField(final AbstractUIModeObject _parent,
+                   final String _instanceKey,
                    final UIValue _value)
         throws EFapsException
     {
-        super(_instanceKey, _parent, _value);
+        super(_parent, _instanceKey,  _value);
     }
 }

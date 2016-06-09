@@ -572,7 +572,7 @@ public class UIStructurBrowser
                             sortValue = multi.getMsgPhrase(field.getProperty(UITableFieldProperty.SORT_MSG_PHRASE));
                         }
 
-                        final UIField uiField = new UIField(instance.getKey(), this,
+                        final UIField uiField = new UIField(this, instance.getKey(),
                                         UIValue.get(field, attr, value)
                                             .setInstance(instance)
                                             .setClassObject(this)

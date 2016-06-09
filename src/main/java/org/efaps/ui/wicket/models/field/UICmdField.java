@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,16 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
-
-package org.efaps.ui.wicket.models.cell;
+package org.efaps.ui.wicket.models.field;
 
 import java.util.List;
 import java.util.Map;
 
+import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.field.FieldCommand;
@@ -31,24 +28,32 @@ import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.util.EFapsException;
 
 /**
- * TODO comment!
+ * The Class UICmdField.
  *
  * @author The eFaps Team
- * @version $Id$
  */
-public class UIFormCellCmd
-
+public class UICmdField
+    extends AbstractUIField
 {
+
     /**
      * Enum is used to set for this UIFormCellCmd which status of execution it
      * is in.
+     *
+     * @author The eFaps Team
      */
-    public enum ExecutionStatus {
+    public enum ExecutionStatus
+    {
         /** Method evaluateRenderedContent is executed. */
         RENDER,
         /** Method execute is executed. */
         EXECUTE;
     }
+
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
     /**
      * Must a button be rendered.
@@ -76,27 +81,31 @@ public class UIFormCellCmd
     private final String buttonIcon;
 
     /**
-     * @param _parent   Parent object
-     * @param _field    field this cellbelongs to
+     * UI form cell cmd.
+     *
+     * @param _parent Parent object
+     * @param _field field this cellbelongs to
      * @param _instance instance this field belongs to
-     * @param _label    label of the field
-     * @throws EFapsException   on error
+     * @throws EFapsException on error
      */
-    public UIFormCellCmd(final AbstractUIObject _parent,
-                         final FieldCommand _field,
-                         final Instance _instance,
-                         final String _label)
+    public UICmdField(final AbstractUIObject _parent,
+                      final FieldCommand _field,
+                      final Instance _instance)
         throws EFapsException
     {
+        super(_parent, _instance == null ? null : _instance.getOid(), null);
         this.renderButton = _field.isRenderButton();
         this.append = _field.isAppend();
         this.targetField = _field.getTargetField();
-        this.buttonIcon =  _field.getButtonIcon();
+        this.buttonIcon = _field.getButtonIcon();
+        setFieldConfiguration(new FieldConfiguration(_field.getId()));
     }
 
     /**
      * Execute the underlying events.
+     *
      * @param _others others
+     * @param _uiID2Oid the ui i d2 oid
      * @return list of returns
      * @throws EFapsException on error
      */
@@ -105,14 +114,14 @@ public class UIFormCellCmd
         throws EFapsException
     {
         if (this.executionStatus == null) {
-            this.executionStatus = UIFormCellCmd.ExecutionStatus.EXECUTE;
+            this.executionStatus = ExecutionStatus.EXECUTE;
         }
-        //final List<Return> ret = executeEvents(EventType.UI_FIELD_CMD, _others, _uiID2Oid);
+        final List<Return> ret = executeEvents(EventType.UI_FIELD_CMD, _others, _uiID2Oid);
 
-        if (this.executionStatus == UIFormCellCmd.ExecutionStatus.EXECUTE) {
+        if (this.executionStatus == ExecutionStatus.EXECUTE) {
             this.executionStatus = null;
         }
-        return null;
+        return ret;
     }
 
     /**
@@ -136,19 +145,19 @@ public class UIFormCellCmd
     }
 
     /**
-     * Get the script to render the content for the UserInterface in
-     * case that not a standard button should be rendered.
+     * Get the script to render the content for the UserInterface in case that
+     * not a standard button should be rendered.
      *
      * @param _script additional script from the UserInterface
+     * @param _uiID2Oid the ui i d2 oid
      * @return html snipplet
      * @throws EFapsException on error
-     *
      */
     public String getRenderedContent(final String _script,
                                      final Map<String, String> _uiID2Oid)
         throws EFapsException
     {
-        this.executionStatus = UIFormCellCmd.ExecutionStatus.RENDER;
+        this.executionStatus = UICmdField.ExecutionStatus.RENDER;
         final StringBuilder snip = new StringBuilder();
         final List<Return> returns = executeEvents(_script, _uiID2Oid);
         for (final Return oneReturn : returns) {
@@ -172,6 +181,7 @@ public class UIFormCellCmd
 
     /**
      * Get the field this UIFormCellCmd belongs to.
+     *
      * @return fieldcommand
      */
     public FieldCommand getFieldCommand()
@@ -190,6 +200,8 @@ public class UIFormCellCmd
     }
 
     /**
+     * Checks if is target field for the value.
+     *
      * @return true if not null
      */
     public boolean isTargetField()
@@ -198,9 +210,10 @@ public class UIFormCellCmd
     }
 
     /**
-     * {@inheritDoc}
+     * Checks if is hide label.
+     *
+     * @return true, if is hide label
      */
-
     public boolean isHideLabel()
     {
         return this.renderButton;

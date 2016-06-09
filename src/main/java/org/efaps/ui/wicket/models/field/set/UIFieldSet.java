@@ -197,7 +197,7 @@ public class UIFieldSet
         for (final UIFieldSetColHeader header : getHeaders()) {
             final UIValue uiValue = UIValue
                             .get(Field.get(header.getFieldId()), Attribute.get(header.getAttrId()), null);
-            final UIFieldSetValue cellSetValue = new UIFieldSetValue(null, getParent(), this, uiValue);
+            final UIFieldSetValue cellSetValue = new UIFieldSetValue(getParent(), null, this, uiValue);
             row.add(cellSetValue);
         }
     }

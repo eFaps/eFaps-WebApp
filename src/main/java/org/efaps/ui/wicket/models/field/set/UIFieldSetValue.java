@@ -18,7 +18,7 @@
 package org.efaps.ui.wicket.models.field.set;
 
 import org.efaps.admin.datamodel.ui.UIValue;
-import org.efaps.ui.wicket.models.cell.AbstractUICellValue;
+import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.field.FieldConfiguration;
 import org.efaps.ui.wicket.models.field.FieldSetConfiguration;
 import org.efaps.ui.wicket.models.field.ISortable;
@@ -31,7 +31,7 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  */
 public class UIFieldSetValue
-    extends AbstractUICellValue
+    extends AbstractUIField
 {
 
     /**
@@ -51,13 +51,13 @@ public class UIFieldSetValue
      * @param _value value
      * @throws EFapsException on error
      */
-    public UIFieldSetValue(final String _instanceKey,
-                           final AbstractUIObject _parent,
+    public UIFieldSetValue(final AbstractUIObject _parent,
+                           final String _instanceKey,
                            final UIFieldSet _set,
                            final UIValue _value)
         throws EFapsException
     {
-        super(_instanceKey, _parent, _value);
+        super(_parent, _instanceKey, _value);
         this.cellSet = _set;
     }
 
@@ -68,7 +68,7 @@ public class UIFieldSetValue
     protected FieldConfiguration getNewFieldConfiguration()
         throws EFapsException
     {
-        FieldConfiguration ret;
+        final FieldConfiguration ret;
         if (getValue().getAttribute() == null) {
             ret = super.getNewFieldConfiguration();
         } else {

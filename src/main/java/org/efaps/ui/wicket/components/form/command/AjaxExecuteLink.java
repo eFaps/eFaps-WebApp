@@ -26,7 +26,7 @@ import org.apache.wicket.model.IModel;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.ui.wicket.components.button.AjaxButton;
-import org.efaps.ui.wicket.models.cell.UIFormCellCmd;
+import org.efaps.ui.wicket.models.field.UICmdField;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
@@ -38,7 +38,7 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  */
 public class AjaxExecuteLink
-    extends AjaxButton<UIFormCellCmd>
+    extends AjaxButton<UICmdField>
 {
     /**
     * Needed for serialization.
@@ -54,7 +54,7 @@ public class AjaxExecuteLink
      * @param _label the label
      */
     public AjaxExecuteLink(final String _wicketId,
-                           final IModel<UIFormCellCmd> _model,
+                           final IModel<UICmdField> _model,
                            final EFapsContentReference _reference,
                            final String _label)
     {
@@ -75,7 +75,7 @@ public class AjaxExecuteLink
     @Override
     public void onSubmit(final AjaxRequestTarget _target)
     {
-        final UIFormCellCmd uiObject = (UIFormCellCmd) getDefaultModelObject();
+        final UICmdField uiObject = (UICmdField) getDefaultModelObject();
         final StringBuilder snip = new StringBuilder();
         try {
             final AbstractUIPageObject pageObject = (AbstractUIPageObject) getPage().getDefaultModelObject();
