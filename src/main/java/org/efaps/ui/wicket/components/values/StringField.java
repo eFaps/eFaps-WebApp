@@ -86,7 +86,7 @@ public class StringField
             _tag.put("rows", rows);
             if (getFieldConfig().hasProperty(UIFormFieldProperty.COLUMNS)) {
                 _tag.put("cols", getFieldConfig().getProperty(UIFormFieldProperty.COLUMNS));
-                _tag.remove("size");
+                _tag.remove("maxlength");
             }
         }
     }

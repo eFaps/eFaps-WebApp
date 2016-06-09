@@ -17,7 +17,6 @@
 
 package org.efaps.ui.wicket.components.values;
 
-import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.convert.ConversionException;
@@ -99,9 +98,6 @@ public class NumberField
             if (uiprovider instanceof DecimalUI) {
                 this.any = true;
             }
-        }
-        if (getFieldConfig().hasProperty(UIFormFieldProperty.WIDTH)) {
-            add(new AttributeAppender("style", "width:" + getFieldConfig().getWidth(), ";"));
         }
     }
 

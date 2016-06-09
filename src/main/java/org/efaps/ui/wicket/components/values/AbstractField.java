@@ -20,6 +20,7 @@ package org.efaps.ui.wicket.components.values;
 import java.io.Serializable;
 import java.util.List;
 
+import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.form.ILabelProvider;
 import org.apache.wicket.markup.html.form.TextField;
@@ -86,6 +87,10 @@ public abstract class AbstractField<T extends Serializable>
             }
             add(new AjaxFieldUpdateBehavior(eventName, Model.of(this.uiField), false));
         }
+        if (getFieldConfig().hasProperty(UIFormFieldProperty.WIDTH)) {
+            add(new AttributeAppender("style", "width:" + getFieldConfig().getWidth(), ";"));
+        }
+        add(new AttributeAppender("style", "text-align:" + getFieldConfig().getAlign(), ";"));
     }
 
     /**
@@ -118,9 +123,8 @@ public abstract class AbstractField<T extends Serializable>
     protected void onComponentTag(final ComponentTag _tag)
     {
         _tag.setName("input");
-        _tag.append("style", "text-align:" + getFieldConfig().getAlign(), ";");
         if (getFieldConfig().hasProperty(UIFormFieldProperty.COLUMNS)) {
-            _tag.put("size", getFieldConfig().getProperty(UIFormFieldProperty.COLUMNS));
+            _tag.put("maxlength", getFieldConfig().getProperty(UIFormFieldProperty.COLUMNS));
         }
         if (getInputTypes() != null) {
             _tag.put("type", getInputTypes()[0]);
