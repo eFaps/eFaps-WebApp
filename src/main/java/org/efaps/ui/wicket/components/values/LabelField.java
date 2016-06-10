@@ -18,10 +18,12 @@
 package org.efaps.ui.wicket.components.values;
 
 import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.ILabelProvider;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.util.string.Strings;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.field.FieldConfiguration;
 import org.efaps.util.EFapsException;
@@ -93,5 +95,17 @@ public class LabelField
     {
         super.onComponentTag(_tag);
         _tag.put("name", this.fieldConfiguration.getName());
+    }
+
+    @Override
+    public void onComponentTagBody(final MarkupStream markupStream, final ComponentTag openTag)
+    {
+        final String content = getDefaultModelObjectAsString();
+        if (content.contains("\n")) {
+            final CharSequence body = Strings.toMultilineMarkup(content);
+            replaceComponentTagBody(markupStream, openTag, body);
+        } else {
+            replaceComponentTagBody(markupStream, openTag, content);
+        }
     }
 }

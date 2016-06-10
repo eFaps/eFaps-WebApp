@@ -186,7 +186,7 @@ public class NumberField
     @Override
     protected String[] getInputTypes()
     {
-        String[] ret;
+        final String[] ret;
         switch (getFieldConfig().getUIType()) {
             case NUMBER:
                 ret = new String[] { "number" };
