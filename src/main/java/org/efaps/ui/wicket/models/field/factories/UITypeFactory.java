@@ -76,7 +76,8 @@ public final class UITypeFactory
             case SNIPPLET:
                 Model<String> label = null;
                 if (!_uiField.getFieldConfiguration().isHideLabel()) {
-                    label = Model.of(_uiField.getFieldConfiguration().getLabel());
+                    label = Model.of(_uiField.getFieldConfiguration().getLabel(_uiField.getValue(),
+                                    _uiField.getInstance()));
                 }
                 final String html = String.valueOf(_uiField.getValue().getEditValue(
                                 _uiField.getParent().getMode()));

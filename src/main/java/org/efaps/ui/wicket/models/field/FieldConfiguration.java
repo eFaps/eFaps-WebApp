@@ -30,6 +30,7 @@ import org.efaps.api.IEnumValue;
 import org.efaps.api.ci.UIFormFieldProperty;
 import org.efaps.api.ui.UIType;
 import org.efaps.db.Instance;
+import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -199,7 +200,7 @@ public class FieldConfiguration
                            final Instance _fieldInst)
         throws CacheReloadException
     {
-        String key;
+        final String key;
         if (getField().getLabel() == null) {
             if (_uiValue != null && _uiValue.getAttribute() != null) {
                 if (_fieldInst != null && _fieldInst.isValid()
