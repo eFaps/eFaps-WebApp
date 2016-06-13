@@ -18,6 +18,7 @@
 package org.efaps.ui.wicket.models.field;
 
 import org.efaps.admin.datamodel.ui.UIValue;
+import org.efaps.admin.user.AbstractUserObject;
 import org.efaps.ui.wicket.models.objects.AbstractUIModeObject;
 import org.efaps.util.EFapsException;
 
@@ -29,6 +30,7 @@ import org.efaps.util.EFapsException;
 public class UIField
     extends AbstractUIField
 {
+
     /**
      * Needed for serialization.
      */
@@ -36,8 +38,8 @@ public class UIField
 
     /**
      * @param _instanceKey key to the instance
-     * @param _parent       parent object
-     * @param _value        value
+     * @param _parent parent object
+     * @param _value value
      * @throws EFapsException on error
      */
     public UIField(final AbstractUIModeObject _parent,
@@ -45,6 +47,10 @@ public class UIField
                    final UIValue _value)
         throws EFapsException
     {
-        super(_parent, _instanceKey,  _value);
+        super(_parent, _instanceKey, _value);
+        if (getValue() != null && getValue().getObject() != null
+                        && getValue().getObject() instanceof AbstractUserObject) {
+            setInstanceKey(((AbstractUserObject) getValue().getObject()).getInstance().getKey());
+        }
     }
 }
