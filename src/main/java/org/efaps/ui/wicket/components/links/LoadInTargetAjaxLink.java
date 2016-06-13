@@ -190,5 +190,15 @@ public class LoadInTargetAjaxLink
             throw new RestartResponseException(new ErrorPage(e));
         }
     }
+
+    /**
+     * Getter method for the instance variable {@link #content}.
+     *
+     * @return value of instance variable {@link #content}
+     */
+    protected String getContent()
+    {
+        return this.content;
+    }
 }
 
