@@ -77,11 +77,7 @@ public class UISnippletField
     @Override
     public Component getComponent(final String _wicketId)
     {
-        Model<String> label = null;
-        if (!getFieldConfiguration().isHideLabel()) {
-            label = Model.of(getFieldConfiguration().getLabel());
-        }
-        return new SnippletField(_wicketId, Model.of(this.html), label, null);
+        return new SnippletField(_wicketId, Model.of(this.html), null);
     }
 
     @Override

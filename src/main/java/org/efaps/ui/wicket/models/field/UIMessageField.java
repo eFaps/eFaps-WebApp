@@ -53,7 +53,7 @@ public class UIMessageField
     @Override
     public Component getComponent(final String _wicketId)
     {
-        return new SnippletField(_wicketId, Model.of(getHtml()), null, null);
+        return new SnippletField(_wicketId, Model.of(getHtml()), null);
     }
 
     @Override

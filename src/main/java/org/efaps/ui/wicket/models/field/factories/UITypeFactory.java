@@ -74,14 +74,12 @@ public final class UITypeFactory
         Component ret = null;
         switch (_uiField.getFieldConfiguration().getUIType()) {
             case SNIPPLET:
-                Model<String> label = null;
                 if (!_uiField.getFieldConfiguration().isHideLabel()) {
-                    label = Model.of(_uiField.getFieldConfiguration().getLabel(_uiField.getValue(),
-                                    _uiField.getInstance()));
+                    _uiField.getFieldConfiguration().evalLabel(_uiField.getValue(), _uiField.getInstance());
                 }
                 final String html = String.valueOf(_uiField.getValue().getEditValue(
                                 _uiField.getParent().getMode()));
-                ret = new SnippletField(_wicketId, Model.of(html), label, _uiField);
+                ret = new SnippletField(_wicketId, Model.of(html),  _uiField);
                 break;
             case DROPDOWN:
                 final List<DropDownOption> choices = DropDownOption.getChoices(_uiField.getValue()
@@ -120,13 +118,12 @@ public final class UITypeFactory
 
             switch (_uiField.getFieldConfiguration().getUIType()) {
                 case SNIPPLET:
-                    Model<String> label = null;
                     if (!_uiField.getFieldConfiguration().isHideLabel()) {
-                        label = Model.of(_uiField.getFieldConfiguration().getLabel());
+                        _uiField.getFieldConfiguration().evalLabel(_uiField.getValue(), _uiField.getInstance());
                     }
                     final String html = String.valueOf(_uiField.getValue().getReadOnlyValue(
                                     _uiField.getParent().getMode()));
-                    ret = new SnippletField(_wicketId, Model.of(html), label, _uiField);
+                    ret = new SnippletField(_wicketId, Model.of(html), _uiField);
                     break;
                 default:
                     break;
@@ -149,7 +146,7 @@ public final class UITypeFactory
                 case SNIPPLET:
                     final String html = String.valueOf(_uiField.getValue().getHiddenValue(
                                     _uiField.getParent().getMode()));
-                    ret = new SnippletField(_wicketId, Model.of(html), null, _uiField);
+                    ret = new SnippletField(_wicketId, Model.of(html), _uiField);
                     break;
                 default:
                     break;

@@ -116,16 +116,25 @@ public class RateField
         add(inverted);
     }
 
+    /**
+     * Gets the input types4 rate.
+     *
+     * @return the input types4 rate
+     */
     protected String[] getInputTypes4Rate()
     {
         return null;
     }
 
+    /**
+     * On component tag4 rate.
+     *
+     * @param _tag the _tag
+     */
     protected void onComponentTag4Rate(final ComponentTag _tag)
     {
+        //used by HiddenRateField
     }
-
-
 
     @Override
     public FieldConfiguration getFieldConfig()

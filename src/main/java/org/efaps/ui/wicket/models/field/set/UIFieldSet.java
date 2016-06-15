@@ -233,7 +233,7 @@ public class UIFieldSet
     public String getLabel()
         throws EFapsException
     {
-        return getFieldConfiguration().getLabel(getValue(), getInstance());
+        return getFieldConfiguration().evalLabel(getValue(), getInstance());
     }
 
     /**

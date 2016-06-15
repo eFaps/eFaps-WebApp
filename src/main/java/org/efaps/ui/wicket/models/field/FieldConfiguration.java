@@ -30,7 +30,6 @@ import org.efaps.api.IEnumValue;
 import org.efaps.api.ci.UIFormFieldProperty;
 import org.efaps.api.ui.UIType;
 import org.efaps.db.Instance;
-import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -189,15 +188,15 @@ public class FieldConfiguration
     }
 
     /**
-     * Gets the label.
+     * Evaluate the label.
      *
      * @param _uiValue the _ui value
      * @param _fieldInst the _field inst
      * @return the label
      * @throws CacheReloadException the cache reload exception
      */
-    public String getLabel(final UIValue _uiValue,
-                           final Instance _fieldInst)
+    public String evalLabel(final UIValue _uiValue,
+                            final Instance _fieldInst)
         throws CacheReloadException
     {
         final String key;
@@ -221,7 +220,8 @@ public class FieldConfiguration
         } else {
             key = getField().getLabel();
         }
-        return DBProperties.getProperty(key);
+        this.label = DBProperties.getProperty(key);
+        return this.label;
     }
 
     /**

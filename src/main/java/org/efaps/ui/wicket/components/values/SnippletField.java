@@ -56,11 +56,6 @@ public class SnippletField
      */
     private static final long serialVersionUID = 1L;
 
-    /**
-     * The label for this Field.
-     */
-    private final IModel<String> label;
-
     /** The field config. */
     private final FieldConfiguration fieldConfig;
 
@@ -74,12 +69,10 @@ public class SnippletField
      */
     public SnippletField(final String _wicketId,
                          final IModel<String> _model,
-                         final IModel<String> _labelModel,
                          final AbstractUIField _uiField)
     {
         super(_wicketId, _model);
         setEscapeModelStrings(false);
-        this.label = _labelModel;
         this.fieldConfig = _uiField == null ? null : _uiField.getFieldConfiguration();
         if (_uiField != null && _uiField.isFieldUpdate()) {
             final List<EventDefinition> events = _uiField.getFieldConfiguration().getField().getEvents(
@@ -118,7 +111,7 @@ public class SnippletField
     @Override
     public IModel<String> getLabel()
     {
-        return this.label;
+        return Model.of(getFieldConfig().getLabel());
     }
 
     @Override

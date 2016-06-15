@@ -305,7 +305,7 @@ public abstract class AbstractUIField
     {
         final String ret;
         if (getFieldConfiguration() != null) {
-            ret = getFieldConfiguration().getLabel(getValue(), getInstance());
+            ret = getFieldConfiguration().evalLabel(getValue(), getInstance());
         } else {
             ret = DBProperties.getProperty(FieldConfiguration.class.getName() + ".NoLabel");
         }
