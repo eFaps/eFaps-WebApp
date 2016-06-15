@@ -121,8 +121,8 @@ public final class UITypeFactory
                     if (!_uiField.getFieldConfiguration().isHideLabel()) {
                         _uiField.getFieldConfiguration().evalLabel(_uiField.getValue(), _uiField.getInstance());
                     }
-                    final String html = String.valueOf(_uiField.getValue().getReadOnlyValue(
-                                    _uiField.getParent().getMode()));
+                    final Object value = _uiField.getValue().getReadOnlyValue(_uiField.getParent().getMode());
+                    final String html = value == null ? null : String.valueOf(value);
                     ret = new SnippletField(_wicketId, Model.of(html), _uiField);
                     break;
                 default:
@@ -144,8 +144,8 @@ public final class UITypeFactory
         if (applies(_uiField)) {
             switch (_uiField.getFieldConfiguration().getUIType()) {
                 case SNIPPLET:
-                    final String html = String.valueOf(_uiField.getValue().getHiddenValue(
-                                    _uiField.getParent().getMode()));
+                    final Object value = _uiField.getValue().getHiddenValue(_uiField.getParent().getMode());
+                    final String html = value == null ? null : String.valueOf(value);
                     ret = new SnippletField(_wicketId, Model.of(html), _uiField);
                     break;
                 default:
