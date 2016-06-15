@@ -98,14 +98,15 @@ public class LabelField
     }
 
     @Override
-    public void onComponentTagBody(final MarkupStream markupStream, final ComponentTag openTag)
+    public void onComponentTagBody(final MarkupStream _markupStream,
+                                   final ComponentTag _openTag)
     {
         final String content = getDefaultModelObjectAsString();
         if (content.contains("\n")) {
             final CharSequence body = Strings.toMultilineMarkup(content);
-            replaceComponentTagBody(markupStream, openTag, body);
+            replaceComponentTagBody(_markupStream, _openTag, body);
         } else {
-            replaceComponentTagBody(markupStream, openTag, content);
+            replaceComponentTagBody(_markupStream, _openTag, content);
         }
     }
 }

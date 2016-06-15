@@ -39,6 +39,7 @@ import org.efaps.ui.wicket.components.links.LoadInTargetAjaxLink;
 import org.efaps.ui.wicket.components.links.LoadInTargetAjaxLink.ScriptTarget;
 import org.efaps.ui.wicket.components.links.MenuContentAjaxLink;
 import org.efaps.ui.wicket.components.split.header.RecentLink;
+import org.efaps.ui.wicket.components.values.LabelField;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
@@ -121,7 +122,9 @@ public final class HRefFactory
                     }
                 }
             }
-            if (isCheckOut(_uiField)) {
+            if (StringUtils.isEmpty(content)) {
+                ret = new LabelField(_wicketId, Model.of(""), _uiField);
+            } else if (isCheckOut(_uiField)) {
                 if (icon == null) {
                     ret = new CheckOutLink(_wicketId, Model.of(_uiField), content);
                 } else {
