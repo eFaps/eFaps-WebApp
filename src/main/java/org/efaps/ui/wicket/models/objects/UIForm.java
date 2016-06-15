@@ -336,10 +336,8 @@ public class UIForm
                         this.classified = true;
                     } else {
                         if (addNew) {
-                            final FormElement formElement = new FormElement()
-                                            .setGroupCount(currentFormElement == null
-                                                ? 0
-                                                :currentFormElement.getGroupCount());
+                            final FormElement formElement = new FormElement().setGroupCount(currentFormElement == null
+                                            ? 0 : currentFormElement.getGroupCount());
                             currentFormElement = formElement;
                             this.elements.add(new Element(UIForm.ElementType.FORM, currentFormElement));
                             addNew = false;
@@ -405,11 +403,11 @@ public class UIForm
     /**
      * Method to add a Cell to the given Row.
      *
-     * @param _row FormRow to add the cell to
+     * @param _formElement the form element
      * @param _query query containing the values
      * @param _field field the cell belongs to
-     * @throws EFapsException on error
      * @return true if the cell was actually added, else false
+     * @throws EFapsException on error
      */
     private boolean addCell2FormRow(final FormElement _formElement,
                                     final PrintQuery _query,
@@ -465,7 +463,6 @@ public class UIForm
     /**
      * Method evaluates a Field and adds it to the row.
      *
-     * @param _row FormRow to add the cell to
      * @param _print query containing the values
      * @param _field field the cell belongs to
      * @param _fieldInstance instance of the Field
@@ -489,18 +486,20 @@ public class UIForm
         } else if (_field.getMsgPhrase() != null) {
             value = _print.getMsgPhrase(new SelectBuilder(getBaseSelect4MsgPhrase(_field)), _field.getMsgPhrase());
         }
-        final UIField uiField = new UIField(this, getInstance().getKey(), UIValue.get(_field, _attr, value)
-                        .setInstance(_fieldInstance).setClassObject(this));
+        final UIField uiField = new UIField(this, _fieldInstance.getKey(), UIValue.get(_field, _attr, value)
+                        .setInstance(_fieldInstance)
+                        .setCallInstance(getInstance())
+                        .setClassObject(this));
         return uiField;
     }
 
     /**
      * Method evaluates a FieldSet and adds it to the row.
      *
-     * @param _row FormRow to add the cell to
      * @param _query query containing the values
      * @param _field field the cell belongs to
      * @param _fieldInstance instance of the FieldSet
+     * @return the UI field set
      * @throws EFapsException on error
      */
     private UIFieldSet evaluateFieldSet(final PrintQuery _query,
@@ -668,10 +667,8 @@ public class UIForm
                     addNew = true;
                 } else {
                     if (addNew) {
-                        final FormElement formElement = new FormElement()
-                                        .setGroupCount(currentFormElement == null
-                                            ? 0
-                                            :currentFormElement.getGroupCount());
+                        final FormElement formElement = new FormElement().setGroupCount(currentFormElement == null ? 0
+                                        : currentFormElement.getGroupCount());
                         currentFormElement = formElement;
                         this.elements.add(new Element(UIForm.ElementType.FORM, currentFormElement));
                         addNew = false;
@@ -876,7 +873,7 @@ public class UIForm
         /**
          * Add a UIFormCell to this FormRow.
          *
-         * @param _uiObject UIObject to add
+         * @param _uiElement the ui element
          */
         public void add(final IUIElement _uiElement)
         {
@@ -887,7 +884,7 @@ public class UIForm
             } else if (isRowSpan()) {
                 this.rowSpan--;
                 final IUIElement current = this.values.getLast();
-                UIGroup group;
+                final UIGroup group;
                 if (current instanceof UIGroup) {
                     group = (UIGroup) current;
                 } else {
@@ -944,6 +941,7 @@ public class UIForm
          * Setter method for instance variable {@link #rowSpan}.
          *
          * @param _rowSpan value for instance variable {@link #rowSpan}
+         * @return the form row
          */
         public FormRow setRowSpan(final int _rowSpan)
         {
@@ -986,7 +984,7 @@ public class UIForm
         /**
          * Adds the value.
          *
-         * @param _uiObject the ui object
+         * @param _uiElement the ui element
          * @return the form element
          */
         public FormElement addValue(final IUIElement _uiElement)
@@ -1007,6 +1005,7 @@ public class UIForm
          * Sets the group count.
          *
          * @param _groupCount the new group count
+         * @return the form element
          */
         public FormElement setGroupCount(final int _groupCount)
         {

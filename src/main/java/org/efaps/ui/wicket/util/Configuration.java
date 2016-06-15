@@ -172,6 +172,10 @@ public final class Configuration
         /***/
         STORE_INMEMORYCACHE(false, false, "store.InMemoryCacheSize", "10", Integer.class,
                         " The store inmemorycache. Servlet only!!"),
+        /***/
+        STORE_MAXSIZEPERSESSION(false, false, "store.MaxSizePerSession(", "50", Integer.class,
+                        " The store MaxSizePerSession in MB. Servlet only!!"),
+
         /** */
         FORMAT_DATETIME(false, true, "Format4DateTime", "MM", String.class,
                         "The format for datetime. Can be style or pattern. "),

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev:1490 $
- * Last Changed:    $Date:2007-10-15 18:04:02 -0500 (Mon, 15 Oct 2007) $
- * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.pages.login;
@@ -45,16 +42,13 @@ import org.efaps.ui.wicket.pages.info.GatherInfoPage;
  * additional Message is shown to the User.
  *
  * @author The eFaps Team
- * @version $Id:LoginPage.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class LoginPage
     extends WebPage
     implements EFapsNoAuthorizationNeededInterface
 {
 
-    /**
-     *
-     */
+    /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
 
     /**
@@ -122,13 +116,9 @@ public class LoginPage
         } else {
             this.add(new WebMarkupContainer("msg").setVisible(false));
         }
+        setStatelessHint(true);
     }
 
-
-    /*
-     * (non-Javadoc)
-     * @see org.apache.wicket.Component#renderHead(org.apache.wicket.markup.head.IHeaderResponse)
-     */
     @Override
     public void renderHead(final IHeaderResponse _response)
     {

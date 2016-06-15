@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2015 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,9 +50,6 @@ public class KeepAliveBehavior
             super.renderHead(_component, _response);
             _response.render(OnLoadHeaderItem.forScript(
                             "top.Wicket.WebSocket.send(\"" + KeepAliveBehavior.MSG + "\")"));
-        } else {
-            super.renderHead(_component, _response);
-            _response.render(OnLoadHeaderItem.forScript("top.document['eFapsCallHome']();"));
         }
     }
 }
