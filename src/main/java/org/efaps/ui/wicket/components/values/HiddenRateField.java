@@ -19,7 +19,8 @@ package org.efaps.ui.wicket.components.values;
 
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.model.IModel;
-import org.efaps.admin.datamodel.ui.RateUI;
+import org.efaps.admin.datamodel.ui.RateUI.Value;
+import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.field.FieldConfiguration;
 import org.efaps.util.EFapsException;
 
@@ -36,17 +37,20 @@ public class HiddenRateField
     private static final long serialVersionUID = 1L;
 
     /**
-     * @param _wicketId
-     * @param _model
-     * @param _config
-     * @throws EFapsException
+     * Instantiates a new hidden rate field.
+     *
+     * @param _wicketId the _wicket id
+     * @param _model the _model
+     * @param _config the _config
+     * @throws EFapsException the e faps exception
      */
     public HiddenRateField(final String _wicketId,
-                           final IModel<RateUI.Value> _model,
-                           final FieldConfiguration _config)
+                           final IModel<AbstractUIField> _model,
+                           final FieldConfiguration _config,
+                           final Value _value)
         throws EFapsException
     {
-        super(_wicketId, _model, _config);
+        super(_wicketId, _model, _config, _value);
     }
 
     @Override

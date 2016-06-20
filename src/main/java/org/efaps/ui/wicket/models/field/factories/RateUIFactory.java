@@ -56,9 +56,9 @@ public final class RateUIFactory
     {
         Component ret = null;
         if (applies(_uiField)) {
-            final RateUI.Value value = (Value) _uiField.getValue().getHiddenValue(_uiField.getParent().getMode());
+            final RateUI.Value value = (Value) _uiField.getValue().getEditValue(_uiField.getParent().getMode());
             _uiField.getFieldConfiguration().evalLabel(_uiField.getValue(), _uiField.getInstance());
-            ret = new RateField(_wicketId, Model.of(value), _uiField.getFieldConfiguration());
+            ret = new RateField(_wicketId, Model.of(_uiField), _uiField.getFieldConfiguration(), value);
         }
         return ret;
     }
@@ -71,7 +71,7 @@ public final class RateUIFactory
         Component ret = null;
         if (applies(_uiField)) {
             final RateUI.Value value = (Value) _uiField.getValue().getHiddenValue(_uiField.getParent().getMode());
-            ret = new HiddenRateField(_wicketId, Model.of(value), _uiField.getFieldConfiguration());
+            ret = new HiddenRateField(_wicketId, Model.of(_uiField), _uiField.getFieldConfiguration(), value);
         }
         return ret;
     }
