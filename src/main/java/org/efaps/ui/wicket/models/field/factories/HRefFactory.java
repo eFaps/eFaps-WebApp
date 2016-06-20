@@ -45,6 +45,7 @@ import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
+import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.util.EFapsException;
 
@@ -140,10 +141,13 @@ public final class HRefFactory
                         pageRef = ((AbstractContentPage) page).getCalledByPageReference();
                     }
                 }
-                // ajax if the page or the reference is a ContentContainerPage
+                // ajax if the page or the reference is a ContentContainerPage,
+                // or the table was called as part of a WizardCall meaning connect is done
                 boolean ajax = page != null && (page instanceof ContentContainerPage
-                                || pageRef != null && pageRef.getPage() instanceof ContentContainerPage);
-
+                                || pageRef != null && pageRef.getPage() instanceof ContentContainerPage)
+                                || page instanceof TablePage
+                                                && ((AbstractUIPageObject) ((Component) page).getDefaultModelObject())
+                                                .isPartOfWizardCall();
                 // verify ajax by checking if is not a recent link
                 if (ajax && RequestCycle.get().getActiveRequestHandler() instanceof IComponentRequestHandler) {
                     ajax = ajax && !(((IComponentRequestHandler) RequestCycle.get().getActiveRequestHandler())
