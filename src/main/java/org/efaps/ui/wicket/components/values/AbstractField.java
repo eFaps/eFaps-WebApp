@@ -32,6 +32,7 @@ import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.field.FieldConfiguration;
 import org.efaps.ui.wicket.models.field.validators.StandartValidator;
+import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.util.EFapsException;
 
 /**
@@ -87,7 +88,9 @@ public abstract class AbstractField<T extends Serializable>
             }
             add(new AjaxFieldUpdateBehavior(eventName, Model.of(this.uiField), false));
         }
-        if (getFieldConfig().hasProperty(UIFormFieldProperty.WIDTH)) {
+        // only if explecitely set and not part of a table set the with here
+        if (getFieldConfig().hasProperty(UIFormFieldProperty.WIDTH)
+                        && !(_model.getObject().getParent() instanceof UITable)) {
             add(new AttributeAppender("style", "width:" + getFieldConfig().getWidth(), ";"));
         }
         add(new AttributeAppender("style", "text-align:" + getFieldConfig().getAlign(), ";"));
