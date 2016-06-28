@@ -124,7 +124,11 @@ public final class HRefFactory
                 }
             }
             if (StringUtils.isEmpty(content)) {
-                ret = new LabelField(_wicketId, Model.of(""), _uiField);
+                if (isCheckOut(_uiField) && icon != null) {
+                    ret = new IconCheckOutLink(_wicketId, Model.of(_uiField), content, icon);
+                } else {
+                    ret = new LabelField(_wicketId, Model.of(""), _uiField);
+                }
             } else if (isCheckOut(_uiField)) {
                 if (icon == null) {
                     ret = new CheckOutLink(_wicketId, Model.of(_uiField), content);
