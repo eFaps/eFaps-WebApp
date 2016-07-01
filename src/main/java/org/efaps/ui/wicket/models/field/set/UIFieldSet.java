@@ -90,7 +90,7 @@ public class UIFieldSet
                       final UIValue _uiValue)
         throws CacheReloadException
     {
-        super(_instance.getKey());
+        super(_instance == null ? null : _instance.getKey());
         this.parent = _parent;
         this.value = _uiValue;
         this.fieldConfiguration = new FieldConfiguration(_uiValue.getField().getId());

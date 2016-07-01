@@ -103,8 +103,7 @@ public class SetDataGrid
     {
         super(_wicketId, _model);
         setOutputMarkupId(true);
-        if (_model.getObject().isEditMode() //|| _model.getObject().getParent().isCreateMode()
-                        ) {
+        if (_model.getObject().isEditMode() || _model.getObject().getParent().isCreateMode()) {
             add(new WebComponent("editHeader"));
 
             final WebMarkupContainer addRow = new WebMarkupContainer("addRow");
@@ -235,6 +234,18 @@ public class SetDataGrid
         _response.render(AbstractEFapsHeaderItem.forCss(SetDataGrid.CSS).setSortWeight(10));
     }
 
+    @Override
+    public IModel<String> getLabel()
+    {
+        String label = "unknown";
+        try {
+            label = ((UIFieldSet) getDefaultModelObject()).getLabel();
+        } catch (final EFapsException e) {
+            LOG.error("Catched", e);
+        }
+        return Model.of(label);
+    }
+
     /**
      * Repeater fo ra Row.
      */
@@ -275,7 +286,7 @@ public class SetDataGrid
             try {
                 _item.add(value.getComponent("value"));
             } catch (final EFapsException e) {
-                 LOG.error("Catched", e);
+                LOG.error("Catched", e);
             }
         }
     }
@@ -378,17 +389,5 @@ public class SetDataGrid
             cellSet.getRows().remove(getDefaultModelObject());
             _target.add(grid);
         }
-    }
-
-    @Override
-    public IModel<String> getLabel()
-    {
-        String label ="unknown";
-        try {
-            label = ((UIFieldSet) getDefaultModelObject()).getLabel();
-        } catch (final EFapsException e) {
-            LOG.error("Catched", e);;
-        }
-        return Model.of(label);
     }
 }

@@ -51,6 +51,8 @@ import org.apache.wicket.markup.html.form.ValidationErrorFeedback;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.util.string.StringValue;
+import org.apache.wicket.util.visit.IVisit;
+import org.apache.wicket.util.visit.IVisitor;
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventType;
@@ -64,14 +66,17 @@ import org.efaps.db.Instance;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.autocomplete.AutoCompleteComboBox;
+import org.efaps.ui.wicket.components.datagrid.SetDataGrid;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.form.FormPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
+import org.efaps.ui.wicket.components.values.DropDownField;
 import org.efaps.ui.wicket.components.values.ErrorMessageResource;
 import org.efaps.ui.wicket.components.values.IFieldConfig;
 import org.efaps.ui.wicket.components.values.IValueConverter;
 import org.efaps.ui.wicket.models.field.IFilterable;
 import org.efaps.ui.wicket.models.field.IUIElement;
+import org.efaps.ui.wicket.models.field.set.UIFieldSet;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.models.objects.UIFieldForm;
@@ -375,6 +380,29 @@ public class AjaxSubmitCloseBehavior
         }
         html.append("</table>");
         showDialog(_target, html.toString(), true, false);
+
+        // after every commit the fieldset must be resteted
+        getForm().getPage().visitChildren(SetDataGrid.class, new IVisitor<SetDataGrid, Void>()
+        {
+
+            @Override
+            public void component(final SetDataGrid _setDataGrid,
+                                  final IVisit<Void> _visit)
+            {
+                final UIFieldSet fieldSet = (UIFieldSet) _setDataGrid.getDefaultModelObject();
+                fieldSet.resetIndex();
+            }
+        });
+        getForm().getPage().visitChildren(DropDownField.class, new IVisitor<DropDownField, Void>()
+        {
+
+            @Override
+            public void component(final DropDownField _dropDown,
+                                  final IVisit<Void> _visit)
+            {
+                _dropDown.setConverted(false);
+            }
+        });
     }
 
     /**

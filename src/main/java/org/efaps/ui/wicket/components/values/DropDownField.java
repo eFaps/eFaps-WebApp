@@ -299,6 +299,16 @@ public class DropDownField
     }
 
     /**
+     * Sets the was the value already converted.
+     *
+     * @param _converted the new was the value already converted
+     */
+    public void setConverted(final boolean _converted)
+    {
+        this.converted = _converted;
+    }
+
+    /**
      * The renderer for this dropdown.
      */
     public final class ChoiceRenderer

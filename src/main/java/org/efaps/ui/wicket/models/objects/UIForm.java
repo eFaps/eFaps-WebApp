@@ -691,7 +691,7 @@ public class UIForm
                     } else {
                         final IUIElement cell;
                         if (field instanceof FieldSet) {
-                            cell = new UIFieldSet(this,  getInstance(), UIValue.get(field, attr, null)
+                            cell = new UIFieldSet(this, getInstance(), UIValue.get(field, attr, null)
                                                 .setClassObject(this)
                                                 .setInstance(getInstance())
                                                 .setCallInstance(getInstance()));
