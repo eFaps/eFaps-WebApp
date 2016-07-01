@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.components.form.command;
@@ -27,7 +24,7 @@ import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.model.IModel;
-import org.efaps.ui.wicket.models.cell.UIFormCellCmd;
+import org.efaps.ui.wicket.models.field.UICmdField;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
@@ -37,7 +34,6 @@ import org.slf4j.LoggerFactory;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class EsjpAjaxComponent
     extends WebComponent
@@ -57,7 +53,7 @@ public class EsjpAjaxComponent
      * @param _model model for this component
      */
     public EsjpAjaxComponent(final String _wicketId,
-                             final IModel<?> _model)
+                             final IModel<UICmdField> _model)
     {
         super(_wicketId, _model);
     }
@@ -69,18 +65,17 @@ public class EsjpAjaxComponent
         super.onComponentTagBody(_markupstream, _componenttag);
         try {
             final CharSequence script = ((AjaxCmdBehavior) getBehaviors().get(0)).getCallbackScript();
-            final UIFormCellCmd uiObject = (UIFormCellCmd) getDefaultModelObject();
+            final UICmdField uiObject = (UICmdField) getDefaultModelObject();
 
-            final AbstractUIPageObject pageObject = (AbstractUIPageObject) (getPage().getDefaultModelObject());
+            final AbstractUIPageObject pageObject = (AbstractUIPageObject) getPage().getDefaultModelObject();
             final Map<String, String> uiID2Oid = pageObject == null ? null : pageObject.getUiID2Oid();
             final StringBuilder  content = new StringBuilder();
             content.append(JavaScriptUtils.SCRIPT_OPEN_TAG)
-                .append("function ").append(uiObject.getName()).append("(){\n")
+                .append("function ").append(uiObject.getFieldConfiguration().getName()).append("(){\n")
                 .append(script)
                 .append("\n};")
                 .append(JavaScriptUtils.SCRIPT_CLOSE_TAG)
                 .append(uiObject.getRenderedContent(script.toString(), uiID2Oid));
-
             replaceComponentTagBody(_markupstream, _componenttag, content);
         } catch (final EFapsException e) {
             EsjpAjaxComponent.LOG.error("onComponentTagBody", e);

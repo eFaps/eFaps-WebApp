@@ -25,7 +25,6 @@ import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.Page;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.Session;
-import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
@@ -74,7 +73,6 @@ import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.preloader.PreLoaderPanel;
 import org.efaps.ui.wicket.components.search.SearchPanel;
 import org.efaps.ui.wicket.models.PushMsg;
-import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.models.objects.UIUserSession;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
@@ -212,7 +210,7 @@ public class MainPage
         borderPanel.add(headerPanel);
         headerPanel.add(new ContentPaneBehavior(Region.TOP, false));
 
-        headerPanel.add(new MenuBarPanel("menubar", new UIModel<UIMenuItem>(new UIMenuItem(UUID
+        headerPanel.add(new MenuBarPanel("menubar", Model.of(new UIMenuItem(UUID
                       .fromString(Configuration.getAttribute(ConfigAttribute.TOOLBAR))))));
 
         // set the title for the Page
@@ -220,10 +218,6 @@ public class MainPage
 
         add(this.modal);
         add(new ResizeEventBehavior());
-
-        if (!Configuration.getAttributeAsBoolean(ConfigAttribute.WEBSOCKET_ACTVATE)) {
-            add(new CallHomeBehavior());
-        }
 
         try {
             // only add the search if it is activated in the kernel
@@ -254,7 +248,7 @@ public class MainPage
             final long usrId = context.getPersonId();
             // Admin_Common_SystemMessageAlert
             final LinkItem alert = new LinkItem("useralert",
-                            new UIModel<UIMenuItem>(new UIMenuItem(SetMessageStatusBehavior.getCmdUUD())))
+                            Model.of(new UIMenuItem(SetMessageStatusBehavior.getCmdUUD())))
             {
 
                 private static final long serialVersionUID = 1L;
@@ -437,57 +431,6 @@ public class MainPage
                                final IHeaderResponse _response)
         {
             _response.render(JavaScriptHeaderItem.forScript(getCallbackScript(), ResizeEventBehavior.class.getName()));
-        }
-    }
-
-    /**
-     * Event that calls regularly the server to maintain this page alive.
-     */
-    public class CallHomeBehavior
-        extends AbstractDefaultAjaxBehavior
-    {
-
-        /**
-         *
-         */
-        private static final long serialVersionUID = 1L;
-
-        @Override
-        protected CharSequence getCallbackScript(final Component _component)
-        {
-            final StringBuilder js = new StringBuilder()
-                .append("top.document['eFapsCallHome'] = function() {\n")
-                .append("   var lastCall = top.document['eFapsCallHomeTime'];\n")
-                .append("   if (lastCall) { \n")
-                .append("       top.document['eFapsCallHomeCount'] += 1;\n")
-                .append("       if ((new Date().getTime() - lastCall) > (2 * 60 * 1000) ")
-                        .append("|| top.document['eFapsCallHomeCount'] > ")
-                        .append(Configuration.getAttributeAsInteger(ConfigAttribute.STORE_INMEMORYCACHE) - 2)
-                        .append(") {\n")
-                .append(getCallbackFunctionBody())
-                .append("       }\n")
-                .append("   } else {\n")
-                .append("       top.document['eFapsCallHomeTime'] = new Date().getTime();\n")
-                .append("       top.document['eFapsCallHomeCount'] = 1;\n")
-                .append("   }\n")
-                .append("}\n");
-            return js.toString();
-        }
-
-        @Override
-        public void renderHead(final Component _component,
-                               final IHeaderResponse _response)
-        {
-            _response.render(JavaScriptHeaderItem.forScript(getCallbackScript(), CallHomeBehavior.class.getName()));
-        }
-
-        @Override
-        protected void respond(final AjaxRequestTarget _target)
-        {
-            _target.appendJavaScript("top.document['eFapsCallHomeTime'] = new Date().getTime();");
-            _target.appendJavaScript("top.document['eFapsCallHomeCount'] = 1;");
-            // touch the page to ensure that the pagemanager stores it to be accessible
-            getSession().getPageManager().touchPage(getPage());
         }
     }
 }

@@ -188,14 +188,14 @@ public class UITaskObject
                         if (field.getAttribute() != null) {
                             object = print.getAttribute(field.getAttribute());
                             attr = getInstance().getType().getAttribute(field.getAttribute());
-                            uiField = new UIField(getInstance().getKey(), this, UIValue.get(field, attr, object));
+                            uiField = new UIField(this, getInstance().getKey(), UIValue.get(field, attr, object));
                         } else if (field.getSelect() != null) {
                             object = print.getSelect(field.getSelect());
                             attr = print.getAttribute4Select(field.getSelect());
-                            uiField = new UIField(getInstance().getKey(), this, UIValue.get(field, attr, object));
+                            uiField = new UIField(this, getInstance().getKey(), UIValue.get(field, attr, object));
                         } else if (field.getPhrase() != null) {
                             object = print.getPhrase(field.getName());
-                            uiField = new UIField(getInstance().getKey(), this, UIValue.get(field, attr, object));
+                            uiField = new UIField(this, getInstance().getKey(), UIValue.get(field, attr, object));
                         } else if (field.hasEvents(EventType.UI_FIELD_VALUE)) {
                             final StringBuilder html = new StringBuilder();
                             final List<Return> returns = field.executeEvents(EventType.UI_FIELD_VALUE,
@@ -204,7 +204,7 @@ public class UITaskObject
                             for (final Return ret : returns) {
                                 html.append(ret.get(ReturnValues.SNIPLETT));
                             }
-                            uiField = new UISnippletField(getInstance().getKey(), this,
+                            uiField = new UISnippletField(this, getInstance().getKey(),
                                             new FieldConfiguration(field.getId()));
                             ((UISnippletField) uiField).setHtml(html.toString());
                         }
@@ -217,7 +217,7 @@ public class UITaskObject
                 } else {
                     final UIGroup uiGroup = new UIGroup();
                     this.groups.add(uiGroup);
-                    final UISnippletField uiField = new UIMessageField(getInstance().getKey(), this);
+                    final UISnippletField uiField = new UIMessageField(this, getInstance().getKey());
                     uiField.setHtml(DBProperties.getProperty(UITaskObject.class.getName()
                                     + ".noObject"));
                     uiGroup.add(uiField);

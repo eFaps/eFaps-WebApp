@@ -29,7 +29,7 @@ import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.value.IValueMap;
-import org.efaps.admin.datamodel.ui.UIInterface;
+import org.efaps.api.ui.IUserInterface;
 
 /**
  * This class is a Label for webform and webtable. It is needed to replace
@@ -90,7 +90,7 @@ public class LabelComponent
         String value = getDefaultModelObjectAsString(getDefaultModelObject());
         // if the value contains the EFAPSTMPTAG all tags from this component
         // will be moved to the subcomponent
-        if (value != null && value.contains(UIInterface.EFAPSTMPTAG)) {
+        if (value != null && value.contains(IUserInterface.EFAPSTMPTAG)) {
             final StringBuilder tagBldr = new StringBuilder();
             final List<? extends Behavior> behaviors = getBehaviors();
             final ComponentTag tmpTag = new ComponentTag(_openTag);
@@ -108,7 +108,7 @@ public class LabelComponent
             if (!map.containsKey("id")) {
                 tagBldr.append(" id=\"").append(getMarkupId()).append("\" ");
             }
-            value = value.replace(UIInterface.EFAPSTMPTAG, tagBldr);
+            value = value.replace(IUserInterface.EFAPSTMPTAG, tagBldr);
         }
         super.replaceComponentTagBody(_markupStream, _openTag, value);
     }

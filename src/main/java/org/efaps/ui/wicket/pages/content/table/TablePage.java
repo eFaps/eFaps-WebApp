@@ -24,11 +24,11 @@ import org.apache.wicket.PageReference;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.table.TablePanel;
 import org.efaps.ui.wicket.components.table.header.HeaderPanel;
-import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
@@ -87,7 +87,7 @@ public class TablePage
                      final String _openerId)
         throws EFapsException
     {
-        this(new TableModel(new UITable(_uuid, _instanceKey, _openerId)));
+        this(Model.of(new UITable(_uuid, _instanceKey, _openerId)));
     }
 
     /**
@@ -99,7 +99,7 @@ public class TablePage
                      final String _instanceKey)
         throws EFapsException
     {
-        this(new TableModel(new UITable(_uuid, _instanceKey)));
+        this(Model.of(new UITable(_uuid, _instanceKey)));
     }
 
     /**
@@ -125,7 +125,7 @@ public class TablePage
                      final PageReference _pageReference)
         throws EFapsException
     {
-        this(new TableModel(new UITable(_commandUUID, _instanceKey)), null, _pageReference);
+        this(Model.of(new UITable(_commandUUID, _instanceKey)), null, _pageReference);
     }
 
 
@@ -155,7 +155,7 @@ public class TablePage
             uiTable.execute();
         }
 
-        final TablePanel tablebody = new TablePanel("tablebody", new TableModel(uiTable), this);
+        final TablePanel tablebody = new TablePanel("tablebody", Model.of(uiTable), this);
         this.add(new HeaderPanel("header", tablebody));
 
         final FormContainer form = new FormContainer("form");

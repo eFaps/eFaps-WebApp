@@ -18,14 +18,18 @@
 
 package org.efaps.ui.wicket.components.values;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.model.Model;
+import org.drools.core.util.StringUtils;
 import org.efaps.admin.datamodel.ui.UIValue;
+import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.api.ci.UIFormFieldProperty;
-import org.efaps.ui.wicket.models.cell.CellSetValue;
-import org.efaps.ui.wicket.models.cell.UIFormCellSet;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.field.FieldConfiguration;
+import org.efaps.ui.wicket.models.field.set.UIFieldSet;
+import org.efaps.ui.wicket.models.field.set.UIFieldSetValue;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
@@ -82,9 +86,32 @@ public class StringField
             _tag.put("rows", rows);
             if (getFieldConfig().hasProperty(UIFormFieldProperty.COLUMNS)) {
                 _tag.put("cols", getFieldConfig().getProperty(UIFormFieldProperty.COLUMNS));
-                _tag.remove("size");
+                _tag.remove("maxlength");
             }
         }
+    }
+
+    @Override
+    public void onComponentTagBody(final MarkupStream _markupStream,
+                                   final ComponentTag _openTag)
+    {
+        if ("textarea".equals(_openTag.getName())) {
+            final String body = StringEscapeUtils.escapeHtml4(_openTag.getAttribute("value"));
+            replaceComponentTagBody(_markupStream, _openTag, body);
+            _openTag.remove("value");
+        } else {
+            super.onComponentTagBody(_markupStream, _openTag);
+        }
+    }
+
+    @Override
+    protected String getModelValue()
+    {
+        String ret = super.getModelValue();
+        if (StringUtils.isEmpty(ret) && TargetMode.SEARCH.equals(getUIField().getParent().getMode())) {
+            ret = "*";
+        }
+        return ret;
     }
 
     @Override
@@ -92,8 +119,8 @@ public class StringField
     {
         this.converted = true;
         int i = 0;
-        if (getCellvalue() instanceof CellSetValue) {
-            final UIFormCellSet cellset = ((CellSetValue) getCellvalue()).getCellSet();
+        if (getUIField() instanceof UIFieldSetValue) {
+            final UIFieldSet cellset = ((UIFieldSetValue) getUIField()).getCellSet();
             i = cellset.getIndex(getInputName());
         }
         final String[] value = getInputAsArray();
@@ -108,7 +135,7 @@ public class StringField
         }
         setModelObject(getConvertedInput());
         try {
-            getCellvalue().setValue(UIValue.get(getCellvalue().getValue().getField(), getCellvalue().getValue()
+            getUIField().setValue(UIValue.get(getUIField().getValue().getField(), getUIField().getValue()
                             .getAttribute(), getDefaultModelObject()));
         } catch (final CacheReloadException e) {
             StringField.LOG.error("Catched error on updateModel", e);

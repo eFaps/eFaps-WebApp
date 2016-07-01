@@ -39,7 +39,6 @@ import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.values.ErrorMessageResource;
 import org.efaps.ui.wicket.components.values.IFieldConfig;
-import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
@@ -219,43 +218,25 @@ public class AjaxFieldUpdateBehavior
             uiObject = this.model.getObject();
         }
         final List<Map<String, Object>> values = new ArrayList<Map<String, Object>>();
-        if (uiObject instanceof UITableCell) {
-            try {
-                final AbstractUIPageObject pageObject = (AbstractUIPageObject) getComponent().getPage()
-                                .getDefaultModelObject();
-                final Map<String, String> uiID2Oid = pageObject == null ? null : pageObject.getUiID2Oid();
-                final List<Return> returns = ((UITableCell) uiObject).getFieldUpdate(getComponent().getMarkupId(),
-                                uiID2Oid);
-                for (final Return aReturn : returns) {
-                    final Object ob = aReturn.get(ReturnValues.VALUES);
-                    if (ob instanceof List) {
-                        @SuppressWarnings("unchecked")
-                        final List<Map<String, Object>> list = (List<Map<String, Object>>) ob;
-                        values.addAll(list);
-                    }
+
+        try {
+            final AbstractUIPageObject pageObject = (AbstractUIPageObject) getComponent().getPage()
+                            .getDefaultModelObject();
+            final Map<String, String> uiID2Oid = pageObject == null ? null : pageObject.getUiID2Oid();
+            final List<Return> returns = ((AbstractUIField) uiObject).executeEvents(EventType.UI_FIELD_UPDATE,
+                            getComponent().getMarkupId(), uiID2Oid);
+            for (final Return aReturn : returns) {
+                final Object ob = aReturn.get(ReturnValues.VALUES);
+                if (ob instanceof List) {
+                    @SuppressWarnings("unchecked")
+                    final List<Map<String, Object>> list = (List<Map<String, Object>>) ob;
+                    values.addAll(list);
                 }
-            } catch (final EFapsException e) {
-                AjaxFieldUpdateBehavior.LOG.error("onSubmit", e);
             }
-        } else {
-            try {
-                final AbstractUIPageObject pageObject = (AbstractUIPageObject) getComponent().getPage()
-                                .getDefaultModelObject();
-                final Map<String, String> uiID2Oid = pageObject == null ? null : pageObject.getUiID2Oid();
-                final List<Return> returns = ((AbstractUIField) uiObject).executeEvents(EventType.UI_FIELD_UPDATE,
-                                getComponent().getMarkupId(), uiID2Oid);
-                for (final Return aReturn : returns) {
-                    final Object ob = aReturn.get(ReturnValues.VALUES);
-                    if (ob instanceof List) {
-                        @SuppressWarnings("unchecked")
-                        final List<Map<String, Object>> list = (List<Map<String, Object>>) ob;
-                        values.addAll(list);
-                    }
-                }
-            } catch (final EFapsException e) {
-                AjaxFieldUpdateBehavior.LOG.error("onSubmit", e);
-            }
+        } catch (final EFapsException e) {
+            AjaxFieldUpdateBehavior.LOG.error("onSubmit", e);
         }
+
 
         final StringBuilder js = new StringBuilder();
         int i = 0;

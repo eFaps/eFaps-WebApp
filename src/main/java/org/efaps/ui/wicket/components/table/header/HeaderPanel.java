@@ -41,7 +41,6 @@ import org.apache.wicket.util.string.StringValue;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.behaviors.dojo.DnDBehavior;
 import org.efaps.ui.wicket.components.tree.StructurBrowserTreeTable;
-import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.AbstractUIHeaderObject;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.UIFieldTable;
@@ -187,8 +186,7 @@ public class HeaderPanel
         for (int j = 0; j < uitable.getHeaders().size(); j++) {
             final UITableHeader uiHeader = uitable.getHeaders().get(j);
 
-            final HeaderCellPanel cell = new HeaderCellPanel(cellRepeater.newChildId(),
-                            new UIModel<UITableHeader>(uiHeader), uitable);
+            final HeaderCellPanel cell = new HeaderCellPanel(cellRepeater.newChildId(), Model.of(uiHeader), uitable);
 
             if (uiHeader.isFixedWidth()) {
                 widthsTmp.add(".eFapsCellFixedWidth" + i + "{width: " + uiHeader.getWidth() + "px; }\n");

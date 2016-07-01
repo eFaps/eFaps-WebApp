@@ -70,7 +70,7 @@ public class StandartValidator<T>
     {
         if (this.component instanceof IUIField) {
             try {
-                final AbstractUIField uiField = ((IUIField) this.component).getCellvalue();
+                final AbstractUIField uiField = ((IUIField) this.component).getUIField();
                 final UIValue uiValue = UIValue.get(uiField.getValue().getField(), uiField.getValue().getAttribute(),
                                 _validatable.getValue());
                 final String msg = uiField.getValue().getUIProvider().validateValue(uiValue);

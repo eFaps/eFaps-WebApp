@@ -47,12 +47,12 @@ public class UISnippletField
      * @param _config the FieldConfiguration for this Field
      * @throws EFapsException on error
      */
-    public UISnippletField(final String _instanceKey,
-                           final AbstractUIModeObject _parent,
+    public UISnippletField(final AbstractUIModeObject _parent,
+                           final String _instanceKey,
                            final FieldConfiguration _config)
         throws EFapsException
     {
-        super(_instanceKey, _parent, null);
+        super(_parent, _instanceKey,  null);
         setFieldConfiguration(_config);
     }
 
@@ -77,11 +77,7 @@ public class UISnippletField
     @Override
     public Component getComponent(final String _wicketId)
     {
-        Model<String> label = null;
-        if (!getFieldConfiguration().isHideLabel()) {
-            label = Model.of(getFieldConfiguration().getLabel());
-        }
-        return new SnippletField(_wicketId, Model.of(this.html), label, null);
+        return new SnippletField(_wicketId, Model.of(this.html), null);
     }
 
     @Override

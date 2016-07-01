@@ -25,6 +25,7 @@ import org.apache.wicket.core.request.handler.IPageRequestHandler;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.component.IRequestablePage;
 import org.apache.wicket.request.cycle.RequestCycle;
+import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.admin.ui.Image;
 import org.efaps.admin.ui.Menu;
 import org.efaps.api.ui.HRef;
@@ -32,16 +33,19 @@ import org.efaps.ui.wicket.components.links.CheckOutLink;
 import org.efaps.ui.wicket.components.links.ContentContainerLink;
 import org.efaps.ui.wicket.components.links.IconCheckOutLink;
 import org.efaps.ui.wicket.components.links.IconContentContainerLink;
+import org.efaps.ui.wicket.components.links.IconLoadInTargetAjaxLink;
 import org.efaps.ui.wicket.components.links.IconMenuContentAjaxLink;
 import org.efaps.ui.wicket.components.links.LoadInTargetAjaxLink;
 import org.efaps.ui.wicket.components.links.LoadInTargetAjaxLink.ScriptTarget;
 import org.efaps.ui.wicket.components.links.MenuContentAjaxLink;
 import org.efaps.ui.wicket.components.split.header.RecentLink;
+import org.efaps.ui.wicket.components.values.LabelField;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
+import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.util.EFapsException;
 
@@ -119,7 +123,13 @@ public final class HRefFactory
                     }
                 }
             }
-            if (isCheckOut(_uiField)) {
+            if (StringUtils.isEmpty(content)) {
+                if (isCheckOut(_uiField) && icon != null) {
+                    ret = new IconCheckOutLink(_wicketId, Model.of(_uiField), content, icon);
+                } else {
+                    ret = new LabelField(_wicketId, Model.of(""), _uiField);
+                }
+            } else if (isCheckOut(_uiField)) {
                 if (icon == null) {
                     ret = new CheckOutLink(_wicketId, Model.of(_uiField), content);
                 } else {
@@ -135,14 +145,27 @@ public final class HRefFactory
                         pageRef = ((AbstractContentPage) page).getCalledByPageReference();
                     }
                 }
-                // ajax if the page or the reference is a ContentContainerPage
+                // ajax if the page or the reference is a ContentContainerPage,
+                // or the table was called as part of a WizardCall meaning connect is done
                 boolean ajax = page != null && (page instanceof ContentContainerPage
-                                || pageRef != null && pageRef.getPage() instanceof ContentContainerPage);
-
+                                || pageRef != null && pageRef.getPage() instanceof ContentContainerPage)
+                                || page instanceof TablePage
+                                                && ((AbstractUIPageObject) ((Component) page).getDefaultModelObject())
+                                                .isPartOfWizardCall();
                 // verify ajax by checking if is not a recent link
                 if (ajax && RequestCycle.get().getActiveRequestHandler() instanceof IComponentRequestHandler) {
                     ajax = ajax && !(((IComponentRequestHandler) RequestCycle.get().getActiveRequestHandler())
                                     .getComponent() instanceof RecentLink);
+                }
+
+                // check if for searchmode the page is in an pop up window
+                boolean isInPopUp = false;
+                if (_uiField.getParent().isSearchMode()) {
+                    if (((AbstractUIPageObject) _uiField.getParent()).isPartOfWizardCall()) {
+                        final AbstractUIPageObject pageObj = ((AbstractUIPageObject) _uiField.getParent()).getWizard()
+                                        .getUIPageObjects().get(0);
+                        isInPopUp = Target.POPUP.equals(pageObj.getTarget());
+                    }
                 }
 
                 if (icon == null) {
@@ -154,12 +177,17 @@ public final class HRefFactory
                         } else {
                             ret = new MenuContentAjaxLink(_wicketId, Model.of(_uiField), content);
                         }
+                    } else if (isInPopUp) {
+                        ret = new LoadInTargetAjaxLink(_wicketId, Model.of(_uiField), content, ScriptTarget.OPENER);
                     } else {
                         ret = new ContentContainerLink(_wicketId, Model.of(_uiField), content);
                     }
                 } else {
                     if (ajax) {
                         ret = new IconMenuContentAjaxLink(_wicketId, Model.of(_uiField), content, icon);
+                    } else if (isInPopUp) {
+                        ret = new IconLoadInTargetAjaxLink(_wicketId, Model.of(_uiField), content,
+                                        ScriptTarget.OPENER, icon);
                     } else {
                         ret = new IconContentContainerLink(_wicketId, Model.of(_uiField), content, icon);
                     }
@@ -245,7 +273,7 @@ public final class HRefFactory
     public boolean applies(final AbstractUIField _uiField)
         throws EFapsException
     {
-        return _uiField.getParent().isViewMode()
+        return (_uiField.getParent().isViewMode() || _uiField.getParent().isSearchMode())
                         && _uiField.getFieldConfiguration().getField().getReference() != null
                         && _uiField.getInstanceKey() != null && (isCheckOut(_uiField) || hasAccess2Menu(_uiField));
     }

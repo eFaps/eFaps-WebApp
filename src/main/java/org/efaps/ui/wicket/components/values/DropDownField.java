@@ -38,10 +38,10 @@ import org.efaps.admin.event.EventType;
 import org.efaps.api.ci.UIFormFieldProperty;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
-import org.efaps.ui.wicket.models.cell.CellSetValue;
-import org.efaps.ui.wicket.models.cell.UIFormCellSet;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.field.FieldConfiguration;
+import org.efaps.ui.wicket.models.field.set.UIFieldSet;
+import org.efaps.ui.wicket.models.field.set.UIFieldSetValue;
 import org.efaps.ui.wicket.models.objects.DropDownOption;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
@@ -211,8 +211,8 @@ public class DropDownField
     {
         this.converted = true;
         int i = 0;
-        if (this.uiField instanceof CellSetValue) {
-            final UIFormCellSet cellset = ((CellSetValue) this.uiField).getCellSet();
+        if (this.uiField instanceof UIFieldSetValue) {
+            final UIFieldSet cellset = ((UIFieldSetValue) this.uiField).getCellSet();
             i = cellset.getIndex(getInputName());
         }
         final String[] value = getInputAsArray();
@@ -296,6 +296,16 @@ public class DropDownField
     public Component setDefaultFormProcessing(final boolean _defaultFormProcessing)
     {
         return this;
+    }
+
+    /**
+     * Sets the was the value already converted.
+     *
+     * @param _converted the new was the value already converted
+     */
+    public void setConverted(final boolean _converted)
+    {
+        this.converted = _converted;
     }
 
     /**

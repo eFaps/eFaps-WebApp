@@ -22,13 +22,14 @@ import java.io.Serializable;
 
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.efaps.admin.datamodel.ui.UIValue;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.Table;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.api.IEnumValue;
 import org.efaps.api.ci.UIFormFieldProperty;
 import org.efaps.api.ui.UIType;
-import org.efaps.util.EFapsException;
+import org.efaps.db.Instance;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -184,6 +185,43 @@ public class FieldConfiguration
             ret = this.label;
         }
         return ret;
+    }
+
+    /**
+     * Evaluate the label.
+     *
+     * @param _uiValue the _ui value
+     * @param _fieldInst the _field inst
+     * @return the label
+     * @throws CacheReloadException the cache reload exception
+     */
+    public String evalLabel(final UIValue _uiValue,
+                            final Instance _fieldInst)
+        throws CacheReloadException
+    {
+        final String key;
+        if (getField().getLabel() == null) {
+            if (_uiValue != null && _uiValue.getAttribute() != null) {
+                if (_fieldInst != null && _fieldInst.isValid()
+                                && _fieldInst.getType()
+                                                .getAttribute(_uiValue.getAttribute().getName()) != null) {
+                    key = _fieldInst.getType().getAttribute(_uiValue.getAttribute().getName()).getLabelKey();
+                } else if (_uiValue.getInstance() != null
+                                && _uiValue.getInstance().getType()
+                                                .getAttribute(_uiValue.getAttribute().getName()) != null) {
+                    key = _uiValue.getInstance().getType().getAttribute(_uiValue.getAttribute().getName())
+                                    .getLabelKey();
+                } else {
+                    key = _uiValue.getAttribute().getLabelKey();
+                }
+            } else {
+                key = FieldConfiguration.class.getName() + ".NoLabel";
+            }
+        } else {
+            key = getField().getLabel();
+        }
+        this.label = DBProperties.getProperty(key);
+        return this.label;
     }
 
     /**

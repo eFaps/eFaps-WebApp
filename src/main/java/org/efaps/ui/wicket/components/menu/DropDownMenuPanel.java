@@ -20,6 +20,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.ui.wicket.behaviors.dojo.DropDownMenuBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.MenuItemBehavior;
@@ -27,7 +28,6 @@ import org.efaps.ui.wicket.components.menu.ajax.ExecItem;
 import org.efaps.ui.wicket.components.menu.ajax.OpenModalItem;
 import org.efaps.ui.wicket.components.menu.ajax.SearchItem;
 import org.efaps.ui.wicket.components.menu.ajax.SubmitItem;
-import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.models.objects.UISearchItem;
 import org.efaps.ui.wicket.util.IdGenerator;
@@ -66,7 +66,7 @@ public class DropDownMenuPanel
 
         for (final UIMenuItem childItem : menuItem.getChildren()) {
             if (childItem.hasChildren()) {
-                itemRepeater.add(new PopupMenuPanel(_idGenerator.newChildId(), new UIModel<UIMenuItem>(childItem),
+                itemRepeater.add(new PopupMenuPanel(_idGenerator.newChildId(), Model.of(childItem),
                                 _idGenerator, false));
             } else {
                 Component item = null;
@@ -74,36 +74,35 @@ public class DropDownMenuPanel
                     childItem.setURL(childItem.getReference());
                     if (childItem.getReference().equals(
                                     "/" + getSession().getApplication().getApplicationKey() + "/taskadmin?")) {
-                        item = new TaskAdminItem(_idGenerator.newChildId(), new UIModel<UIMenuItem>(childItem));
+                        item = new TaskAdminItem(_idGenerator.newChildId(), Model.of(childItem));
                     }
                     if (childItem.getReference().equals(
                                     "/" + getSession().getApplication().getApplicationKey() + "/connection?")) {
-                        item = new ConnectionItem(_idGenerator.newChildId(), new UIModel<UIMenuItem>(childItem));
+                        item = new ConnectionItem(_idGenerator.newChildId(), Model.of(childItem));
                     }
                 }
 
                 if (item == null) {
                     if (childItem.getTarget() != Target.UNKNOWN) {
                         if (childItem.getTarget() == Target.MODAL) {
-                            item = new OpenModalItem(_idGenerator.newChildId(),
-                                            new UIModel<UIMenuItem>(childItem));
+                            item = new OpenModalItem(_idGenerator.newChildId(), Model.of(childItem));
                         } else if (childItem.getTarget() == Target.POPUP) {
-                            item = new PopupItem(_idGenerator.newChildId(), new UIModel<UIMenuItem>(childItem));
+                            item = new PopupItem(_idGenerator.newChildId(), Model.of(childItem));
                         } else if (childItem.getTarget() == Target.HIDDEN) {
-                            item = new ExecItem(_idGenerator.newChildId(), new UIModel<UIMenuItem>(childItem));
+                            item = new ExecItem(_idGenerator.newChildId(), Model.of(childItem));
                         } else {
-                            item = new LinkItem(_idGenerator.newChildId(), new UIModel<UIMenuItem>(childItem));
+                            item = new LinkItem(_idGenerator.newChildId(), Model.of(childItem));
                         }
                     } else {
                         if (childItem instanceof UISearchItem) {
-                            item = new SearchItem(_idGenerator.newChildId(), new UIModel<UIMenuItem>(childItem));
+                            item = new SearchItem(_idGenerator.newChildId(), Model.of(childItem));
                         } else if (childItem.getCommand().getTargetForm() != null
                                         || childItem.getCommand().getTargetTable() != null) {
-                            item = new LinkItem(_idGenerator.newChildId(), new UIModel<UIMenuItem>(childItem));
+                            item = new LinkItem(_idGenerator.newChildId(), Model.of(childItem));
                         } else if (childItem.getCommand().isSubmit()) {
-                            item = new SubmitItem(_idGenerator.newChildId(), new UIModel<UIMenuItem>(childItem));
+                            item = new SubmitItem(_idGenerator.newChildId(), Model.of(childItem));
                         } else {
-                            item = new ExecItem(_idGenerator.newChildId(), new UIModel<UIMenuItem>(childItem));
+                            item = new ExecItem(_idGenerator.newChildId(), Model.of(childItem));
                         }
                     }
                 }

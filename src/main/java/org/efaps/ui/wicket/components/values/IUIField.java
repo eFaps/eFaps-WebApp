@@ -35,5 +35,5 @@ public interface IUIField
     /**
      * @return the UIField object
      */
-    AbstractUIField getCellvalue();
+    AbstractUIField getUIField();
 }

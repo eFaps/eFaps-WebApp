@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2015 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,6 @@ import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.api.ui.IDashboard;
 import org.efaps.api.ui.IDashboardProvider;
 import org.efaps.ui.wicket.EFapsSession;
-import org.efaps.ui.wicket.behaviors.KeepAliveBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.AbstractDojoBehavior;
 import org.efaps.ui.wicket.components.dashboard.DachboardContainerPanel;
 import org.efaps.ui.wicket.components.tabs.AjaxIndicatingTabbedPanel;
@@ -81,12 +80,11 @@ public class DashboardPage
         {
             private static final long serialVersionUID = 1L;
         });
-        add(new KeepAliveBehavior());
 
         final List<ITab> tabs = new ArrayList<ITab>();
         final String providerClass = Configuration.getAttribute(ConfigAttribute.BOARD_PROVIDER);
         if (providerClass != null) {
-            Class<?> clazz;
+            final Class<?> clazz;
             try {
                 clazz = Class.forName(providerClass, false, EFapsClassLoader.getInstance());
                 final IDashboardProvider provider = (IDashboardProvider) clazz.newInstance();
@@ -121,12 +119,12 @@ public class DashboardPage
                     final Integer selected = (Integer) EFapsSession.get()
                                     .getAttribute(DashboardPage.class.getName() + ".SelectedTab");
                     final AjaxIndicatingTabbedPanel tabbedPanel = new AjaxIndicatingTabbedPanel("tabs", tabs);
-                    if (selected != null && selected > -1 && selected < dashboards.size() ) {
+                    if (selected != null && selected > -1 && selected < dashboards.size()) {
                         tabbedPanel.setSelectedTab(selected);
                     }
                     add(tabbedPanel);
                 }
-            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+            } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException e) {
                 LOG.error("Could not find/instantiate Provider Class", e);
             } catch (final EFapsBaseException e1) {
                 LOG.error("Could not retrieve dashboard classes", e1);

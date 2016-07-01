@@ -17,7 +17,6 @@
 
 package org.efaps.ui.wicket.components.values;
 
-import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.convert.ConversionException;
@@ -37,10 +36,10 @@ import org.efaps.admin.datamodel.ui.IUIProvider;
 import org.efaps.admin.datamodel.ui.UIValue;
 import org.efaps.api.ci.UIFormFieldProperty;
 import org.efaps.db.Context;
-import org.efaps.ui.wicket.models.cell.CellSetValue;
-import org.efaps.ui.wicket.models.cell.UIFormCellSet;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.field.FieldConfiguration;
+import org.efaps.ui.wicket.models.field.set.UIFieldSet;
+import org.efaps.ui.wicket.models.field.set.UIFieldSetValue;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
@@ -88,8 +87,8 @@ public class NumberField
     {
         super(_wicketId, _model, _config);
         setRequired(_config.getField().isRequired());
-        if (getCellvalue().getValue().getAttribute() != null) {
-            final IAttributeType attrType = getCellvalue().getValue().getAttribute().getAttributeType()
+        if (getUIField().getValue().getAttribute() != null) {
+            final IAttributeType attrType = getUIField().getValue().getAttribute().getAttributeType()
                             .getDbAttrType();
             if (attrType instanceof DecimalType) {
                 this.any = true;
@@ -100,9 +99,6 @@ public class NumberField
                 this.any = true;
             }
         }
-        if (getFieldConfig().hasProperty(UIFormFieldProperty.WIDTH)) {
-            add(new AttributeAppender("style", "width:" + getFieldConfig().getWidth(), ";"));
-        }
     }
 
     @Override
@@ -110,16 +106,16 @@ public class NumberField
     {
         this.converted = true;
         int i = 0;
-        if (getCellvalue() instanceof CellSetValue) {
-            final UIFormCellSet cellset = ((CellSetValue) getCellvalue()).getCellSet();
+        if (getUIField() instanceof UIFieldSetValue) {
+            final UIFieldSet cellset = ((UIFieldSetValue) getUIField()).getCellSet();
             i = cellset.getIndex(getInputName());
         }
         final String[] value = getInputAsArray();
         try {
             if (value != null && value.length > 0 && value[i] != null) {
                 IConverter<? extends Number> converter = LongConverter.INSTANCE;
-                if (getCellvalue().getValue().getAttribute() != null) {
-                    final IAttributeType attrType = getCellvalue().getValue().getAttribute().getAttributeType()
+                if (getUIField().getValue().getAttribute() != null) {
+                    final IAttributeType attrType = getUIField().getValue().getAttribute().getAttributeType()
                                     .getDbAttrType();
                     if (attrType instanceof LongType) {
                         converter = LongConverter.INSTANCE;
@@ -155,7 +151,7 @@ public class NumberField
         }
         setModelObject(getConvertedInput());
         try {
-            getCellvalue().setValue(UIValue.get(getCellvalue().getValue().getField(), getCellvalue().getValue()
+            getUIField().setValue(UIValue.get(getUIField().getValue().getField(), getUIField().getValue()
                             .getAttribute(), getDefaultModelObject()));
         } catch (final CacheReloadException e) {
             NumberField.LOG.error("Catched error on updateModel", e);
@@ -190,6 +186,22 @@ public class NumberField
     @Override
     protected String[] getInputTypes()
     {
-        return new String[] { "number" };
+        final String[] ret;
+        switch (getFieldConfig().getUIType()) {
+            case NUMBER:
+                ret = new String[] { "number" };
+                break;
+            case DEFAULT:
+                if (this.any) {
+                    ret = new String[] { "text" };
+                } else {
+                    ret = new String[] { "number" };
+                }
+                break;
+            default:
+                ret =  new String[] { "text" };
+                break;
+        }
+        return ret;
     }
 }

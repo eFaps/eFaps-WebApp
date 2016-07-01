@@ -33,7 +33,7 @@ import org.apache.wicket.markup.repeater.RefreshingView;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.efaps.ui.wicket.components.table.cell.CellPanel;
+import org.efaps.ui.wicket.components.table.field.CheckBoxField;
 import org.efaps.ui.wicket.components.table.field.FieldPanel;
 import org.efaps.ui.wicket.components.table.row.RowId;
 import org.efaps.ui.wicket.models.AbstractInstanceObject;
@@ -184,14 +184,15 @@ public class SubElement
             i++;
         }
         if (strucBrws.isShowCheckBoxes()) {
-            final CellPanel cell = new CellPanel(cellsBeforeRepeater.newChildId(), strucBrws.getInstanceKey());
+            final CheckBoxField checkbox = new CheckBoxField(cellsBeforeRepeater.newChildId(),
+                            strucBrws.getInstanceKey());
             if (i == strucBrws.getTableId()) {
-                cell.add(AttributeModifier.append("class", "eFapsTableCellClear"));
+                checkbox.add(AttributeModifier.append("class", "eFapsTableCellClear"));
             }
-            cell.add(AttributeModifier.append("class", "eFapsSTBRWtmp"));
-            cell.add(AttributeModifier.append("class", "eFapsTableCheckBoxCell eFapsCellFixedWidth" + i));
-            cell.setOutputMarkupId(true);
-            cellsBeforeRepeater.add(cell);
+            checkbox.add(AttributeModifier.append("class", "eFapsSTBRWtmp"));
+            checkbox.add(AttributeModifier.append("class", "eFapsTableCheckBoxCell eFapsCellFixedWidth" + i));
+            checkbox.setOutputMarkupId(true);
+            cellsBeforeRepeater.add(checkbox);
             i++;
         }
         boolean firstCell = true;

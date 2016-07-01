@@ -46,7 +46,7 @@ import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.PrintQuery;
 import org.efaps.ui.wicket.components.modalwindow.ICmdUIObject;
-import org.efaps.ui.wicket.models.cell.UIPicker;
+import org.efaps.ui.wicket.models.field.UIPicker;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.util.EFapsException;

@@ -20,7 +20,7 @@ package org.efaps.ui.wicket.components.menu.ajax;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
-import org.efaps.ui.wicket.models.FormModel;
+import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
@@ -94,7 +94,7 @@ public class SearchItem
                 uiform.setCommandUUID(menuitem.getCommandUUID());
                 uiform.setFormUUID(uiform.getCommand().getTargetForm().getUUID());
                 uiform.execute();
-                getRequestCycle().setResponsePage(new FormPage(new FormModel(uiform),
+                getRequestCycle().setResponsePage(new FormPage(Model.of(uiform),
                                 ((AbstractContentPage) getPage()).getModalWindow()));
             } catch (final EFapsException e) {
                 throw new RestartResponseException(new ErrorPage(e));

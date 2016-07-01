@@ -23,24 +23,16 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.efaps.admin.datamodel.ui.DateTimeUI;
-import org.efaps.admin.datamodel.ui.DateUI;
-import org.efaps.admin.ui.field.Field.Display;
-import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.table.AjaxAddRemoveRowPanel;
 import org.efaps.ui.wicket.components.table.TablePanel;
-import org.efaps.ui.wicket.components.table.cell.CellPanel;
+import org.efaps.ui.wicket.components.table.field.CheckBoxField;
 import org.efaps.ui.wicket.components.table.field.FieldPanel;
 import org.efaps.ui.wicket.models.AbstractInstanceObject;
-import org.efaps.ui.wicket.models.TableModel;
-import org.efaps.ui.wicket.models.UIModel;
-import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.field.IFilterable;
 import org.efaps.ui.wicket.models.field.IHidden;
 import org.efaps.ui.wicket.models.objects.UIRow;
 import org.efaps.ui.wicket.models.objects.UITable;
-import org.efaps.ui.wicket.models.objects.UITableHeader;
 import org.efaps.util.EFapsException;
 
 /**
@@ -82,16 +74,16 @@ public class RowPanel
 
         boolean firstCell = false;
         if (uiTable.isShowCheckBoxes()) {
-            final CellPanel cellpanel = new CellPanel(cellRepeater.newChildId(), uirow.getInstanceKey());
-            cellpanel.setOutputMarkupId(true);
-            cellpanel.add(AttributeModifier.append("class", "eFapsTableCheckBoxCell eFapsTableCellClear"));
-            cellRepeater.add(cellpanel);
+            final CheckBoxField checkbox = new CheckBoxField(cellRepeater.newChildId(), uirow.getInstanceKey());
+            checkbox.setOutputMarkupId(true);
+            checkbox.add(AttributeModifier.append("class", "eFapsTableCheckBoxCell eFapsTableCellClear"));
+            cellRepeater.add(checkbox);
             i++;
             firstCell = true;
         }
         if (uiTable.isEditable()) {
             final AjaxAddRemoveRowPanel remove = new AjaxAddRemoveRowPanel(cellRepeater.newChildId(),
-                            new TableModel(uiTable), this);
+                            Model.of(uiTable), this);
             remove.setOutputMarkupId(true);
             remove.add(AttributeModifier.append("class", "eFapsTableRemoveRowCell eFapsTableCellClear"));
             cellRepeater.add(remove);
@@ -102,29 +94,7 @@ public class RowPanel
         for (final IFilterable filterable : uirow.getCells()) {
             Component cell = null;
             boolean fixedWidth = false;
-            if (filterable instanceof UITableCell) {
-                final UITableCell uiCell = (UITableCell) filterable;
-                if (uiTable.isEditable() && uiCell.getDisplay().equals(Display.EDITABLE)
-                                && (uiCell.getUiClass() instanceof DateUI
-                                || uiCell.getUiClass() instanceof DateTimeUI)) {
-
-                    final UITableHeader header = uiTable.getHeader4Id(uiCell.getFieldId());
-                    final String label;
-                    if (header == null) {
-                        label = "";
-                    } else {
-                        label = header.getLabel();
-                    }
-                    cell = new DateTimePanel(cellRepeater.newChildId(), uiCell.getCompareValue(), uiCell.getName(),
-                                    label,
-                                    uiCell.getUiClass() instanceof DateTimeUI,
-                                    uiCell.getField().getCols());
-                } else {
-                    cell = new CellPanel(cellRepeater.newChildId(), new UIModel<UITableCell>(uiCell),
-                                    _updateListMenu, uiTable, _idx);
-                }
-                fixedWidth = uiCell.isFixedWidth();
-            } else if (filterable instanceof AbstractUIField) {
+            if (filterable instanceof AbstractUIField) {
                 fixedWidth = ((AbstractUIField) filterable).getFieldConfiguration().isFixedWidth();
                 cell = new FieldPanel(cellRepeater.newChildId(), Model.of((AbstractUIField) filterable));
             }

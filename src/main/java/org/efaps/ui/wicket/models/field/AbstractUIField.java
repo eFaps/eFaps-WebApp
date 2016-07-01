@@ -41,7 +41,6 @@ import org.efaps.db.Instance;
 import org.efaps.ui.wicket.behaviors.dojo.AutoCompleteBehavior;
 import org.efaps.ui.wicket.components.values.LabelField;
 import org.efaps.ui.wicket.models.AbstractInstanceObject;
-import org.efaps.ui.wicket.models.cell.UIPicker;
 import org.efaps.ui.wicket.models.field.AutoCompleteSettings.EditValue;
 import org.efaps.ui.wicket.models.field.factories.AutoCompleteFactory;
 import org.efaps.ui.wicket.models.field.factories.BitEnumUIFactory;
@@ -50,12 +49,14 @@ import org.efaps.ui.wicket.models.field.factories.DateTimeUIFactory;
 import org.efaps.ui.wicket.models.field.factories.DateUIFactory;
 import org.efaps.ui.wicket.models.field.factories.DecimalUIFactory;
 import org.efaps.ui.wicket.models.field.factories.EnumUIFactory;
+import org.efaps.ui.wicket.models.field.factories.FormatedStringUIFactory;
 import org.efaps.ui.wicket.models.field.factories.HRefFactory;
 import org.efaps.ui.wicket.models.field.factories.IComponentFactory;
 import org.efaps.ui.wicket.models.field.factories.JaxbUIFactory;
 import org.efaps.ui.wicket.models.field.factories.LinkWithRangesUIFactory;
 import org.efaps.ui.wicket.models.field.factories.NumberUIFactory;
 import org.efaps.ui.wicket.models.field.factories.PasswordUIFactory;
+import org.efaps.ui.wicket.models.field.factories.RateUIFactory;
 import org.efaps.ui.wicket.models.field.factories.StringUIFactory;
 import org.efaps.ui.wicket.models.field.factories.TypeUIFactory;
 import org.efaps.ui.wicket.models.field.factories.UITypeFactory;
@@ -73,7 +74,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractUIField
     extends AbstractInstanceObject
-    implements IPickable, IHidden, IFilterable, IAutoComplete
+    implements IPickable, IHidden, IFilterable, IAutoComplete, IUIElement
 {
     /**
      * Needed for serialization.
@@ -103,9 +104,11 @@ public abstract class AbstractUIField
         AbstractUIField.FACTORIES.put(DecimalUIFactory.get().getKey(), DecimalUIFactory.get());
         AbstractUIField.FACTORIES.put(UserUIFactory.get().getKey(), UserUIFactory.get());
         AbstractUIField.FACTORIES.put(TypeUIFactory.get().getKey(), TypeUIFactory.get());
+        AbstractUIField.FACTORIES.put(RateUIFactory.get().getKey(), RateUIFactory.get());
         AbstractUIField.FACTORIES.put(EnumUIFactory.get().getKey(), EnumUIFactory.get());
         AbstractUIField.FACTORIES.put(BitEnumUIFactory.get().getKey(), BitEnumUIFactory.get());
         AbstractUIField.FACTORIES.put(JaxbUIFactory.get().getKey(), JaxbUIFactory.get());
+        AbstractUIField.FACTORIES.put(FormatedStringUIFactory.get().getKey(), FormatedStringUIFactory.get());
         AbstractUIField.FACTORIES.put(UITypeFactory.get().getKey(), UITypeFactory.get());
     }
 
@@ -161,8 +164,8 @@ public abstract class AbstractUIField
      * @param _value        value
      * @throws EFapsException on error
      */
-    public AbstractUIField(final String _instanceKey,
-                           final AbstractUIModeObject _parent,
+    public AbstractUIField(final AbstractUIModeObject _parent,
+                           final String _instanceKey,
                            final UIValue _value)
         throws EFapsException
     {
@@ -300,33 +303,13 @@ public abstract class AbstractUIField
     public String getLabel()
         throws EFapsException
     {
-        final String key;
+        final String ret;
         if (getFieldConfiguration() != null) {
-            if (getFieldConfiguration().getField().getLabel() == null) {
-
-                if (getValue() != null && getValue().getAttribute() != null) {
-                    if (getInstanceKey() != null
-                                    && getInstance().getType()
-                                                    .getAttribute(getValue().getAttribute().getName()) != null) {
-                        key = getInstance().getType().getAttribute(getValue().getAttribute().getName()).getLabelKey();
-                    } else if (getValue().getInstance() != null
-                                    && getValue().getInstance().getType()
-                                                    .getAttribute(getValue().getAttribute().getName()) != null) {
-                        key = getValue().getInstance().getType().getAttribute(getValue().getAttribute().getName())
-                                        .getLabelKey();
-                    } else {
-                        key = getValue().getAttribute().getLabelKey();
-                    }
-                } else {
-                    key = FieldConfiguration.class.getName() + ".NoLabel";
-                }
-            } else {
-                key = getFieldConfiguration().getField().getLabel();
-            }
+            ret = getFieldConfiguration().evalLabel(getValue(), getInstance());
         } else {
-            key = FieldConfiguration.class.getName() + ".NoLabel";
+            ret = DBProperties.getProperty(FieldConfiguration.class.getName() + ".NoLabel");
         }
-        return DBProperties.getProperty(key);
+        return ret;
     }
 
     /**

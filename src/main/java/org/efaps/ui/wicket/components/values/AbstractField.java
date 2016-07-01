@@ -20,6 +20,7 @@ package org.efaps.ui.wicket.components.values;
 import java.io.Serializable;
 import java.util.List;
 
+import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.form.ILabelProvider;
 import org.apache.wicket.markup.html.form.TextField;
@@ -31,6 +32,7 @@ import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.field.FieldConfiguration;
 import org.efaps.ui.wicket.models.field.validators.StandartValidator;
+import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.util.EFapsException;
 
 /**
@@ -56,7 +58,7 @@ public abstract class AbstractField<T extends Serializable>
     /**
      * value of this field.
      */
-    private final AbstractUIField cellvalue;
+    private final AbstractUIField uiField;
 
     /**
      * @param _wicketId wicket id for this component
@@ -73,10 +75,10 @@ public abstract class AbstractField<T extends Serializable>
         super(_wicketId, Model.of((T) _model.getObject().getValue().getEditValue(
                         _model.getObject().getParent().getMode())));
         this.config = _config;
-        this.cellvalue = _model.getObject();
+        this.uiField = _model.getObject();
         this.add(new StandartValidator<T>(this));
         setOutputMarkupId(true);
-        setLabel(Model.of(this.cellvalue.getLabel()));
+        setLabel(Model.of(this.uiField.getLabel()));
 
         if (_config.getField().hasEvents(EventType.UI_FIELD_UPDATE)) {
             final List<EventDefinition> events = _config.getField().getEvents(EventType.UI_FIELD_UPDATE);
@@ -84,8 +86,14 @@ public abstract class AbstractField<T extends Serializable>
             for (final EventDefinition event : events) {
                 eventName = event.getProperty("Event") == null ? "change" : event.getProperty("Event");
             }
-            add(new AjaxFieldUpdateBehavior(eventName, Model.of(this.cellvalue), false));
+            add(new AjaxFieldUpdateBehavior(eventName, Model.of(this.uiField), false));
         }
+        // only if explecitely set and not part of a table set the with here
+        if (getFieldConfig().hasProperty(UIFormFieldProperty.WIDTH)
+                        && !(_model.getObject().getParent() instanceof UITable)) {
+            add(new AttributeAppender("style", "width:" + getFieldConfig().getWidth(), ";"));
+        }
+        add(new AttributeAppender("style", "text-align:" + getFieldConfig().getAlign(), ";"));
     }
 
     /**
@@ -97,7 +105,7 @@ public abstract class AbstractField<T extends Serializable>
     {
         super(_wicketId, Model.<T>of());
         this.config = _config;
-        this.cellvalue = null;
+        this.uiField = null;
         setLabel(Model.of(_config.getLabel()));
         setOutputMarkupId(true);
         setType(String.class);
@@ -109,18 +117,17 @@ public abstract class AbstractField<T extends Serializable>
      * @return value of instance variable {@link #cellvalue}
      */
     @Override
-    public AbstractUIField getCellvalue()
+    public AbstractUIField getUIField()
     {
-        return this.cellvalue;
+        return this.uiField;
     }
 
     @Override
     protected void onComponentTag(final ComponentTag _tag)
     {
         _tag.setName("input");
-        _tag.append("style", "text-align:" + getFieldConfig().getAlign(), ";");
         if (getFieldConfig().hasProperty(UIFormFieldProperty.COLUMNS)) {
-            _tag.put("size", getFieldConfig().getProperty(UIFormFieldProperty.COLUMNS));
+            _tag.put("maxlength", getFieldConfig().getProperty(UIFormFieldProperty.COLUMNS));
         }
         if (getInputTypes() != null) {
             _tag.put("type", getInputTypes()[0]);

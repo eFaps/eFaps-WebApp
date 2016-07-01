@@ -24,7 +24,7 @@ import java.util.UUID;
 
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-import org.efaps.ui.wicket.models.UIModel;
+import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.util.EFapsException;
 
@@ -55,7 +55,7 @@ public class StructurBrowserTreePanel
                                     final String _oid)
         throws EFapsException
     {
-        this(_wicketId, new UIModel<UIStructurBrowser>(new UIStructurBrowser(_commandUUID, _oid)));
+        this(_wicketId, Model.of(new UIStructurBrowser(_commandUUID, _oid)));
     }
 
     /**

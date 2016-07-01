@@ -27,6 +27,7 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.ui.wicket.behaviors.dojo.MenuBarBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.MenuBarItemBehavior;
@@ -35,7 +36,6 @@ import org.efaps.ui.wicket.components.menu.ajax.OpenModalItem;
 import org.efaps.ui.wicket.components.menu.ajax.SearchItem;
 import org.efaps.ui.wicket.components.menu.ajax.SetCompanyItem;
 import org.efaps.ui.wicket.components.menu.ajax.SubmitItem;
-import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.models.objects.UISearchItem;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
@@ -85,7 +85,7 @@ public class MenuBarPanel
             final IdGenerator idGenerator = new IdGenerator();
             for (final UIMenuItem childItem : menuItem.getChildren()) {
                 if (childItem.hasChildren()) {
-                    itemRepeater.add(new PopupMenuPanel(idGenerator.newChildId(), new UIModel<UIMenuItem>(childItem),
+                    itemRepeater.add(new PopupMenuPanel(idGenerator.newChildId(), Model.of(childItem),
                                     idGenerator));
                 } else {
                     Component item = null;
@@ -93,43 +93,42 @@ public class MenuBarPanel
                         childItem.setURL(childItem.getReference());
                         if (childItem.getReference().equals(
                                         "/" + getSession().getApplication().getApplicationKey() + "/logout?")) {
-                            item = new LogOutItem(idGenerator.newChildId(), new UIModel<UIMenuItem>(childItem));
+                            item = new LogOutItem(idGenerator.newChildId(), Model.of(childItem));
                         } else if (childItem.getReference().equals(
                                         "/" + getSession().getApplication().getApplicationKey() + "/setcompany?")) {
-                            item = new SetCompanyItem(idGenerator.newChildId(), new UIModel<UIMenuItem>(childItem));
+                            item = new SetCompanyItem(idGenerator.newChildId(), Model.of(childItem));
                         } else if (childItem.getReference().equals(
                                         "/" + getSession().getApplication().getApplicationKey() + "/home?")) {
-                            item = new HomeItem(idGenerator.newChildId(), new UIModel<UIMenuItem>(childItem));
+                            item = new HomeItem(idGenerator.newChildId(), Model.of(childItem));
                         } else if (childItem.getReference().equals(
                                         "/" + getSession().getApplication().getApplicationKey() + "/taskadmin?")) {
-                            item = new TaskAdminItem(idGenerator.newChildId(), new UIModel<UIMenuItem>(childItem));
+                            item = new TaskAdminItem(idGenerator.newChildId(), Model.of(childItem));
                         } else if (childItem.getReference().equals(
                                         "/" + getSession().getApplication().getApplicationKey() + "/connection?")) {
-                            item = new ConnectionItem(idGenerator.newChildId(), new UIModel<UIMenuItem>(childItem));
+                            item = new ConnectionItem(idGenerator.newChildId(), Model.of(childItem));
                         }
                     }
                     if (item == null) {
                         if (childItem.getTarget() != Target.UNKNOWN) {
                             if (childItem.getTarget() == Target.MODAL) {
-                                item = new OpenModalItem(idGenerator.newChildId(),
-                                                new UIModel<UIMenuItem>(childItem));
+                                item = new OpenModalItem(idGenerator.newChildId(), Model.of(childItem));
                             } else if (childItem.getTarget() == Target.POPUP) {
-                                item = new PopupItem(idGenerator.newChildId(), new UIModel<UIMenuItem>(childItem));
+                                item = new PopupItem(idGenerator.newChildId(), Model.of(childItem));
                             } else if (childItem.getTarget() == Target.HIDDEN) {
-                                item = new ExecItem(idGenerator.newChildId(), new UIModel<UIMenuItem>(childItem));
+                                item = new ExecItem(idGenerator.newChildId(), Model.of(childItem));
                             } else {
-                                item = new LinkItem(idGenerator.newChildId(), new UIModel<UIMenuItem>(childItem));
+                                item = new LinkItem(idGenerator.newChildId(), Model.of(childItem));
                             }
                         } else {
                             if (childItem instanceof UISearchItem) {
-                                item = new SearchItem(idGenerator.newChildId(), new UIModel<UIMenuItem>(childItem));
+                                item = new SearchItem(idGenerator.newChildId(), Model.of(childItem));
                             } else if (childItem.getCommand().getTargetForm() != null
                                             || childItem.getCommand().getTargetTable() != null) {
-                                item = new LinkItem(idGenerator.newChildId(), new UIModel<UIMenuItem>(childItem));
+                                item = new LinkItem(idGenerator.newChildId(), Model.of(childItem));
                             } else if (childItem.getCommand().isSubmit()) {
-                                item = new SubmitItem(idGenerator.newChildId(), new UIModel<UIMenuItem>(childItem));
+                                item = new SubmitItem(idGenerator.newChildId(), Model.of(childItem));
                             } else {
-                                item = new ExecItem(idGenerator.newChildId(), new UIModel<UIMenuItem>(childItem));
+                                item = new ExecItem(idGenerator.newChildId(), Model.of(childItem));
                             }
                         }
                     }

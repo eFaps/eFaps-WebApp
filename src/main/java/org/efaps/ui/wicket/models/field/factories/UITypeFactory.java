@@ -25,6 +25,7 @@ import org.efaps.api.ui.UIType;
 import org.efaps.ui.wicket.components.picker.AjaxPickerButton;
 import org.efaps.ui.wicket.components.values.CheckBoxField;
 import org.efaps.ui.wicket.components.values.DropDownField;
+import org.efaps.ui.wicket.components.values.NumberField;
 import org.efaps.ui.wicket.components.values.RadioField;
 import org.efaps.ui.wicket.components.values.SnippletField;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
@@ -73,13 +74,12 @@ public final class UITypeFactory
         Component ret = null;
         switch (_uiField.getFieldConfiguration().getUIType()) {
             case SNIPPLET:
-                Model<String> label = null;
                 if (!_uiField.getFieldConfiguration().isHideLabel()) {
-                    label = Model.of(_uiField.getFieldConfiguration().getLabel());
+                    _uiField.getFieldConfiguration().evalLabel(_uiField.getValue(), _uiField.getInstance());
                 }
                 final String html = String.valueOf(_uiField.getValue().getEditValue(
                                 _uiField.getParent().getMode()));
-                ret = new SnippletField(_wicketId, Model.of(html), label, _uiField);
+                ret = new SnippletField(_wicketId, Model.of(html),  _uiField);
                 break;
             case DROPDOWN:
                 final List<DropDownOption> choices = DropDownOption.getChoices(_uiField.getValue()
@@ -98,6 +98,10 @@ public final class UITypeFactory
                 break;
             case BUTTON:
                 ret = new AjaxPickerButton(_wicketId, Model.<IPickable>of(_uiField));
+                break;
+            case NUMBER:
+                ret = new NumberField(_wicketId, Model.of(_uiField), _uiField.getFieldConfiguration());
+                break;
             default:
                 break;
         }
@@ -114,13 +118,12 @@ public final class UITypeFactory
 
             switch (_uiField.getFieldConfiguration().getUIType()) {
                 case SNIPPLET:
-                    Model<String> label = null;
                     if (!_uiField.getFieldConfiguration().isHideLabel()) {
-                        label = Model.of(_uiField.getFieldConfiguration().getLabel());
+                        _uiField.getFieldConfiguration().evalLabel(_uiField.getValue(), _uiField.getInstance());
                     }
-                    final String html = String.valueOf(_uiField.getValue().getReadOnlyValue(
-                                    _uiField.getParent().getMode()));
-                    ret = new SnippletField(_wicketId, Model.of(html), label, _uiField);
+                    final Object value = _uiField.getValue().getReadOnlyValue(_uiField.getParent().getMode());
+                    final String html = value == null ? null : String.valueOf(value);
+                    ret = new SnippletField(_wicketId, Model.of(html), _uiField);
                     break;
                 default:
                     break;
@@ -141,9 +144,9 @@ public final class UITypeFactory
         if (applies(_uiField)) {
             switch (_uiField.getFieldConfiguration().getUIType()) {
                 case SNIPPLET:
-                    final String html = String.valueOf(_uiField.getValue().getHiddenValue(
-                                    _uiField.getParent().getMode()));
-                    ret = new SnippletField(_wicketId, Model.of(html), null, _uiField);
+                    final Object value = _uiField.getValue().getHiddenValue(_uiField.getParent().getMode());
+                    final String html = value == null ? null : String.valueOf(value);
+                    ret = new SnippletField(_wicketId, Model.of(html), _uiField);
                     break;
                 default:
                     break;

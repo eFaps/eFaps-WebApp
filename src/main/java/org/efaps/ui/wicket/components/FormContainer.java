@@ -41,15 +41,12 @@ import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.date.IDateListener;
 import org.efaps.ui.wicket.components.values.DropDownField;
 import org.efaps.ui.wicket.components.values.IValueConverter;
-import org.efaps.ui.wicket.models.AbstractInstanceObject;
-import org.efaps.ui.wicket.models.cell.UIFormCellSet;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.DropDownOption;
 import org.efaps.ui.wicket.models.objects.UIFieldForm;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIForm.Element;
 import org.efaps.ui.wicket.models.objects.UIForm.ElementType;
-import org.efaps.ui.wicket.models.objects.UIForm.FormRow;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.request.EFapsRequest;
 import org.efaps.ui.wicket.request.EFapsRequestParametersAdapter;
@@ -247,23 +244,23 @@ public class FormContainer
         if (getPage().getDefaultModelObject() instanceof UIForm) {
             for (final Element element : ((UIForm) getPage().getDefaultModelObject()).getElements()) {
                 if (element.getType().equals(ElementType.FORM)) {
-                    for (final FormRow row : ((UIForm.FormElement) element.getElement()).getRowModels()) {
-                        for (final AbstractInstanceObject cell : row.getValues()) {
-                            if (cell instanceof UIFormCellSet) {
-                                ((UIFormCellSet) cell).resetIndex();
-                            }
-                        }
-                    }
+                    //for (final FormRow row : ((UIForm.FormElement) element.getElement()).getRowModels()) {
+                    //    for (final AbstractInstanceObject cell : row.getValues()) {
+                            //if (cell instanceof UIFormCellSet) {
+                            //    ((UIFormCellSet) cell).resetIndex();
+                            //}
+                    //  }
+                    //}
                 } else if (element.getType().equals(ElementType.SUBFORM)) {
                     for (final Element nElement : ((UIFieldForm) element.getElement()).getElements()) {
                         if (nElement.getType().equals(ElementType.FORM)) {
-                            for (final FormRow row : ((UIForm.FormElement) nElement.getElement()).getRowModels()) {
-                                for (final AbstractInstanceObject cell : row.getValues()) {
-                                    if (cell instanceof UIFormCellSet) {
-                                        ((UIFormCellSet) cell).resetIndex();
-                                    }
-                                }
-                            }
+                            //        for (final FormRow row : ((UIForm.FormElement) nElement.getElement()).getRowModels()) {
+                            //  for (final AbstractInstanceObject cell : row.getValues()) {
+                                    //        if (cell instanceof UIFormCellSet) {
+                                    //  ((UIFormCellSet) cell).resetIndex();
+                                    //}
+                            //  }
+                            // }
                         }
                     }
                 }

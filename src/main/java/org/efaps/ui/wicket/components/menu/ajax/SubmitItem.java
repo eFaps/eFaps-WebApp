@@ -25,6 +25,7 @@ import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.util.string.StringValue;
 import org.efaps.admin.event.EventType;
@@ -34,9 +35,6 @@ import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
-import org.efaps.ui.wicket.models.FormModel;
-import org.efaps.ui.wicket.models.TableModel;
-import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
@@ -137,7 +135,7 @@ public class SubmitItem
                             {
                                 Page page = null;
                                 try {
-                                    page = new DialogPage(getPage().getPageReference(), new UIModel<UIMenuItem>(
+                                    page = new DialogPage(getPage().getPageReference(), Model.of(
                                                     uiMenuItem),
                                                     oids);
                                 } catch (final EFapsException e) {
@@ -155,7 +153,7 @@ public class SubmitItem
                         boolean updatePage = true;
                         if (command.hasEvents(EventType.UI_COMMAND_EXECUTE)) {
                             try {
-                                List<Return> rets;
+                                final List<Return> rets;
                                 if (oidValues != null) {
                                     rets = command.executeEvents(EventType.UI_COMMAND_EXECUTE, ParameterValues.OTHERS,
                                                     oids);
@@ -181,10 +179,10 @@ public class SubmitItem
                             Page page = null;
                             try {
                                 if (uiObject instanceof UITable) {
-                                    page = new TablePage(new TableModel((UITable) uiObject),
+                                    page = new TablePage(Model.of((UITable) uiObject),
                                                     ((AbstractContentPage) getPage()).getCalledByPageReference());
                                 } else if (uiObject instanceof UIForm) {
-                                    page = new FormPage(new FormModel((UIForm) uiObject),
+                                    page = new FormPage(Model.of((UIForm) uiObject),
                                                     ((AbstractContentPage) getPage()).getCalledByPageReference());
                                 }
                             } catch (final EFapsException e) {

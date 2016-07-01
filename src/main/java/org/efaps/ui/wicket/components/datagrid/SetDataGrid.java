@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.components.datagrid;
@@ -36,7 +33,8 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.HiddenField;
 import org.apache.wicket.markup.html.form.IFormModelUpdateListener;
-import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.markup.html.form.ILabelProvider;
+import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.RefreshingView;
 import org.apache.wicket.model.IModel;
@@ -46,10 +44,10 @@ import org.apache.wicket.util.visit.IVisitor;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
 import org.efaps.ui.wicket.components.values.IValueConverter;
-import org.efaps.ui.wicket.models.cell.CellSetRow;
-import org.efaps.ui.wicket.models.cell.CellSetValue;
-import org.efaps.ui.wicket.models.cell.UIFormCellSet;
-import org.efaps.ui.wicket.models.cell.UISetColumnHeader;
+import org.efaps.ui.wicket.models.field.set.UIFieldSet;
+import org.efaps.ui.wicket.models.field.set.UIFieldSetColHeader;
+import org.efaps.ui.wicket.models.field.set.UIFieldSetRow;
+import org.efaps.ui.wicket.models.field.set.UIFieldSetValue;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
@@ -61,10 +59,10 @@ import org.slf4j.LoggerFactory;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class SetDataGrid
-    extends Panel
+    extends GenericPanel<UIFieldSet>
+    implements ILabelProvider<String>
 {
     /**
      * Reference to the style sheet.
@@ -101,7 +99,7 @@ public class SetDataGrid
      * @param _model    model for this component
      */
     public SetDataGrid(final String _wicketId,
-                       final IModel<UIFormCellSet> _model)
+                       final IModel<UIFieldSet> _model)
     {
         super(_wicketId, _model);
         setOutputMarkupId(true);
@@ -134,54 +132,54 @@ public class SetDataGrid
             add(new WebMarkupContainer("addRow").setVisible(false));
         }
 
-        final RefreshingView<UISetColumnHeader> headerRepeater = new RefreshingView<UISetColumnHeader>(
+        final RefreshingView<UIFieldSetColHeader> headerRepeater = new RefreshingView<UIFieldSetColHeader>(
                         "headerRepeater", Model.ofList(_model.getObject().getHeaders()))
         {
 
             private static final long serialVersionUID = 1L;
 
             @Override
-            protected Iterator<IModel<UISetColumnHeader>> getItemModels()
+            protected Iterator<IModel<UIFieldSetColHeader>> getItemModels()
             {
-                final List<IModel<UISetColumnHeader>> ret = new ArrayList<IModel<UISetColumnHeader>>();
+                final List<IModel<UIFieldSetColHeader>> ret = new ArrayList<IModel<UIFieldSetColHeader>>();
                 final List<?> rows = (List<?>) getDefaultModelObject();
                 for (final Object row : rows) {
-                    ret.add(new Model<UISetColumnHeader>((UISetColumnHeader) row));
+                    ret.add(new Model<UIFieldSetColHeader>((UIFieldSetColHeader) row));
                 }
                 return ret.iterator();
             }
 
             @Override
-            protected void populateItem(final Item<UISetColumnHeader> _item)
+            protected void populateItem(final Item<UIFieldSetColHeader> _item)
             {
-                final UISetColumnHeader header = (UISetColumnHeader) _item.getDefaultModelObject();
+                final UIFieldSetColHeader header = (UIFieldSetColHeader) _item.getDefaultModelObject();
                 _item.add(new Label("header", header.getLabel()));
             }
         };
         add(headerRepeater);
 
-        final RefreshingView<CellSetRow> rowRepeater = new RefreshingView<CellSetRow>(
+        final RefreshingView<UIFieldSetRow> rowRepeater = new RefreshingView<UIFieldSetRow>(
                         "rowRepeater", Model.ofList(_model.getObject().getRows()))
         {
 
             private static final long serialVersionUID = 1L;
 
             @Override
-            protected Iterator<IModel<CellSetRow>> getItemModels()
+            protected Iterator<IModel<UIFieldSetRow>> getItemModels()
             {
-                final List<IModel<CellSetRow>> ret = new ArrayList<IModel<CellSetRow>>();
+                final List<IModel<UIFieldSetRow>> ret = new ArrayList<IModel<UIFieldSetRow>>();
                 final List<?> rows = (List<?>) getDefaultModelObject();
                 for (final Object row : rows) {
-                    ret.add(new Model<CellSetRow>((CellSetRow) row));
+                    ret.add(new Model<UIFieldSetRow>((UIFieldSetRow) row));
                 }
                 return ret.iterator();
             }
 
             @Override
-            protected void populateItem(final Item<CellSetRow> _item)
+            protected void populateItem(final Item<UIFieldSetRow> _item)
             {
 
-                final CellSetRow row = (CellSetRow) _item.getDefaultModelObject();
+                final UIFieldSetRow row = (UIFieldSetRow) _item.getDefaultModelObject();
                 if (row.getParent().isEditMode() || row.getParent().getParent().isCreateMode()) {
                     final WebMarkupContainer remove = new WebMarkupContainer("remove");
                     _item.add(remove);
@@ -204,7 +202,7 @@ public class SetDataGrid
                         @Override
                         public String getInputName()
                         {
-                            return row.getParent().getName() + "_ID";
+                            return row.getParent().getFieldConfiguration().getName() + "_ID";
                         }
                     });
 
@@ -217,14 +215,11 @@ public class SetDataGrid
         add(rowRepeater);
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.wicket.Component#onAfterRender()
-     */
     @Override
     protected void onAfterRender()
     {
         super.onAfterRender();
-        final UIFormCellSet cellSet = (UIFormCellSet) getDefaultModelObject();
+        final UIFieldSet cellSet = (UIFieldSet) getDefaultModelObject();
         cellSet.resetIndex();
     }
 
@@ -239,11 +234,23 @@ public class SetDataGrid
         _response.render(AbstractEFapsHeaderItem.forCss(SetDataGrid.CSS).setSortWeight(10));
     }
 
+    @Override
+    public IModel<String> getLabel()
+    {
+        String label = "unknown";
+        try {
+            label = ((UIFieldSet) getDefaultModelObject()).getLabel();
+        } catch (final EFapsException e) {
+            LOG.error("Catched", e);
+        }
+        return Model.of(label);
+    }
+
     /**
      * Repeater fo ra Row.
      */
     public final class RowRepeater
-        extends RefreshingView<CellSetValue>
+        extends RefreshingView<UIFieldSetValue>
     {
 
         /**
@@ -262,25 +269,24 @@ public class SetDataGrid
         }
 
         @Override
-        protected Iterator<IModel<CellSetValue>> getItemModels()
+        protected Iterator<IModel<UIFieldSetValue>> getItemModels()
         {
-            final List<IModel<CellSetValue>> ret = new ArrayList<IModel<CellSetValue>>();
+            final List<IModel<UIFieldSetValue>> ret = new ArrayList<IModel<UIFieldSetValue>>();
             final List<?> values = (List<?>) getDefaultModelObject();
             for (final Object value : values) {
-                ret.add(new Model<CellSetValue>((CellSetValue) value));
+                ret.add(new Model<UIFieldSetValue>((UIFieldSetValue) value));
             }
             return ret.iterator();
         }
 
         @Override
-        protected void populateItem(final Item<CellSetValue> _item)
+        protected void populateItem(final Item<UIFieldSetValue> _item)
         {
-            final CellSetValue value = _item.getModelObject();
+            final UIFieldSetValue value = _item.getModelObject();
             try {
                 _item.add(value.getComponent("value"));
             } catch (final EFapsException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                LOG.error("Catched", e);
             }
         }
     }
@@ -311,7 +317,7 @@ public class SetDataGrid
                                 final Form<?> _form)
         {
             final SetDataGrid grid = findParent(SetDataGrid.class);
-            final UIFormCellSet cellSet = (UIFormCellSet) grid.getDefaultModelObject();
+            final UIFieldSet cellSet = (UIFieldSet) grid.getDefaultModelObject();
 
             grid.visitChildren(new IVisitor<Component, Void>()
             {
@@ -343,7 +349,7 @@ public class SetDataGrid
      * Linkt to remove a row.
      */
     public final class RemoveLink
-        extends AjaxLink<CellSetRow>
+        extends AjaxLink<UIFieldSetRow>
     {
 
         /**
@@ -356,7 +362,7 @@ public class SetDataGrid
          * @param _model    model
          */
         public RemoveLink(final String _wicketId,
-                          final Model<CellSetRow> _model)
+                          final Model<UIFieldSetRow> _model)
         {
             super(_wicketId, _model);
         }
@@ -365,8 +371,8 @@ public class SetDataGrid
         public void onClick(final AjaxRequestTarget _target)
         {
             final SetDataGrid grid = findParent(SetDataGrid.class);
-            final UIFormCellSet cellSet = (UIFormCellSet) grid.getDefaultModelObject();
-			final RefreshingView<?> repeater = findParent(RefreshingView.class);
+            final UIFieldSet cellSet = (UIFieldSet) grid.getDefaultModelObject();
+            final RefreshingView<?> repeater = findParent(RefreshingView.class);
             repeater.visitChildren(new IVisitor<Component, Void>()
             {
 

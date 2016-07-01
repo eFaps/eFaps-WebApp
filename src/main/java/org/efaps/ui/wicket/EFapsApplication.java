@@ -129,6 +129,8 @@ public class EFapsApplication
     @Override
     protected void init()
     {
+        super.init();
+
         final String appKey = getInitParameter(AbstractFilter.INITPARAM_APP_KEY);
         final String loginRolesTmp = getInitParameter(AbstractFilter.INITPARAM_LOGIN_ROLES);
         final Set<UUID> temp = new HashSet<UUID>();
@@ -153,8 +155,6 @@ public class EFapsApplication
         }
         AppConfigHandler.init(map);
 
-        super.init();
-
         getJavaScriptLibrarySettings().setJQueryReference(new DynamicJQueryResourceReference());
 
         getApplicationSettings().setPageExpiredErrorPage(LoginPage.class);
@@ -177,7 +177,9 @@ public class EFapsApplication
         getDebugSettings().setAjaxDebugModeEnabled(false);
         getDebugSettings().setDevelopmentUtilitiesEnabled(false);
 
-        getStoreSettings().setMaxSizePerSession(Bytes.megabytes(20));
+        setPageManagerProvider(new EFapsPageManagerProvider(this));
+        getStoreSettings().setMaxSizePerSession(Bytes.megabytes(Configuration.getAttributeAsInteger(
+                        ConfigAttribute.STORE_MAXSIZEPERSESSION)));
         getStoreSettings().setInmemoryCacheSize(Configuration.getAttributeAsInteger(
                         ConfigAttribute.STORE_INMEMORYCACHE));
 
@@ -216,7 +218,7 @@ public class EFapsApplication
             @Override
             public AppendingStringBuffer filter(final AppendingStringBuffer _responseBuffer)
             {
-                AppendingStringBuffer ret;
+                final AppendingStringBuffer ret;
                 if (RequestCycle.get().getActiveRequestHandler() instanceof ACAjaxRequestTarget) {
                     ret = new AppendingStringBuffer().append(_responseBuffer.subSequence(0,
                                     _responseBuffer.length() - XmlPartialPageUpdate.END_ROOT_ELEMENT.length()));

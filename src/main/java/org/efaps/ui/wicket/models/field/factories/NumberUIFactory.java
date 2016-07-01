@@ -55,6 +55,7 @@ public final class NumberUIFactory
         if (applies(_uiField)) {
             switch (_uiField.getFieldConfiguration().getUIType()) {
                 case DEFAULT:
+                case NUMBER:
                     ret = new NumberField(_wicketId, Model.of(_uiField), _uiField.getFieldConfiguration());
                     break;
                 case BUTTON:

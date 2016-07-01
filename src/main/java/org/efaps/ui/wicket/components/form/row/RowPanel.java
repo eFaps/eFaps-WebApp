@@ -17,31 +17,20 @@
 
 package org.efaps.ui.wicket.components.form.row;
 
-import org.apache.wicket.AttributeModifier;
-import org.apache.wicket.Component;
-import org.apache.wicket.Page;
-import org.apache.wicket.behavior.AttributeAppender;
-import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.components.FormContainer;
-import org.efaps.ui.wicket.components.datagrid.SetDataGrid;
-import org.efaps.ui.wicket.components.form.FormPanel;
-import org.efaps.ui.wicket.components.form.cell.ValueCellPanel;
-import org.efaps.ui.wicket.components.form.chart.ChartPanel;
 import org.efaps.ui.wicket.components.form.command.CommandCellPanel;
 import org.efaps.ui.wicket.components.form.field.FieldPanel;
-import org.efaps.ui.wicket.models.AbstractInstanceObject;
-import org.efaps.ui.wicket.models.UIModel;
-import org.efaps.ui.wicket.models.cell.UIFormCell;
-import org.efaps.ui.wicket.models.cell.UIFormCellChart;
-import org.efaps.ui.wicket.models.cell.UIFormCellCmd;
-import org.efaps.ui.wicket.models.cell.UIFormCellSet;
+import org.efaps.ui.wicket.components.form.field.FieldSetPanel;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
+import org.efaps.ui.wicket.models.field.IUIElement;
+import org.efaps.ui.wicket.models.field.UICmdField;
+import org.efaps.ui.wicket.models.field.UIGroup;
+import org.efaps.ui.wicket.models.field.set.UIFieldSet;
 import org.efaps.ui.wicket.models.objects.UIForm;
-import org.efaps.ui.wicket.models.objects.UIForm.FormElement;
 import org.efaps.ui.wicket.models.objects.UIForm.FormRow;
 import org.efaps.util.EFapsException;
 
@@ -60,91 +49,40 @@ public class RowPanel
     private static final long serialVersionUID = 1L;
 
     /**
-     * @param _wicketId     wicket id for this component
-     * @param _model        model for this component
-     * @param _formmodel    parent model of this row
-     * @param _page page    the RowPanel is in
-     * @param _formPanel    form panel this RowPanel is in
-     * @param _form         form this RowPanel is in
-     * @param _formelementmodel element this rowpanel belongs to
-     * @throws EFapsException on error
+     * Instantiates a new row panel.
      *
+     * @param _wicketId wicket id for this component
+     * @param _model model for this component
+     * @param _uiForm the _ui form
+     * @param _formContainer the _form container
+     * @throws EFapsException on error
      */
     public RowPanel(final String _wicketId,
                     final IModel<FormRow> _model,
-                    final UIForm _formmodel,
-                    final Page _page,
-                    final FormPanel _formPanel,
-                    final FormContainer _form,
-                    final FormElement _formelementmodel)
+                    final UIForm _uiForm,
+                    final FormContainer _formContainer)
         throws EFapsException
     {
         super(_wicketId, _model);
-
         final FormRow row = (FormRow) super.getDefaultModelObject();
         final RepeatingView cellRepeater = new RepeatingView("cellRepeater");
         add(cellRepeater);
-
-        for (final AbstractInstanceObject object : row.getValues()) {
-            if (object instanceof UIFormCell) {
-                final UIFormCell cell = (UIFormCell) object;
-
-                if (!cell.isHideLabel()) {
-                    final Label labelCell = new Label(cellRepeater.newChildId(), cell.getCellLabel());
-                    cellRepeater.add(labelCell);
-
-                    if (cell.isRequired()) {
-                        labelCell.add(AttributeModifier.replace("class", "eFapsFormLabelRequired"));
-                        labelCell.setOutputMarkupId(true);
-                        _formPanel.addRequiredComponent(cell.getName(), labelCell);
-                    } else {
-                        labelCell.add(AttributeModifier.replace("class", "eFapsFormLabel"));
-                        labelCell.setOutputMarkupId(true);
-                    }
-                    if (cell.getRowSpan() > 0) {
-                        labelCell.add(AttributeModifier.replace("rowspan", ((Integer) cell.getRowSpan()).toString()));
-                    }
-                }
-                final Component valueCell;
-                if (cell instanceof UIFormCellSet) {
-                    valueCell = new SetDataGrid(cellRepeater.newChildId(), Model.of((UIFormCellSet) cell));
-                } else if (cell instanceof UIFormCellCmd) {
-                    valueCell = new CommandCellPanel(cellRepeater.newChildId(), new UIModel<UIFormCellCmd>(
-                                    (UIFormCellCmd) cell),
-                                    _formmodel, _form);
-                } else if (cell instanceof UIFormCellChart) {
-                    valueCell = new ChartPanel(cellRepeater.newChildId(), new UIModel<UIFormCellChart>(
-                                    (UIFormCellChart) cell));
-                } else {
-                    valueCell = new ValueCellPanel(cellRepeater.newChildId(), new UIModel<UIFormCell>(cell),
-                                    _formmodel,
-                                    true);
-                }
-                if (cell.getRowSpan() > 0) {
-                    valueCell.add(AttributeModifier.replace("rowspan", ((Integer) cell.getRowSpan()).toString()));
-                }
-
-                Integer colspan = 2 * (_formelementmodel.getMaxGroupCount() - _model.getObject().getGroupCount()) + 1;
-
-                if (cell.isHideLabel()) {
-                    colspan++;
-                }
-
-                if (row.isRowSpan()) {
-                    colspan = colspan - 2;
-                }
-                valueCell.add(AttributeModifier.replace("colspan", colspan.toString()));
-                cellRepeater.add(valueCell);
-                valueCell.add(new AttributeAppender("class", new Model<String>("eFapsFormValue"), " "));
+        for (final IUIElement object : row.getValues()) {
+            if (object instanceof UICmdField) {
+                final CommandCellPanel fieldSet = new CommandCellPanel(cellRepeater.newChildId(),
+                                Model.of((UICmdField) object), _uiForm, _formContainer);
+                cellRepeater.add(fieldSet);
             } else if (object instanceof AbstractUIField) {
                 final FieldPanel field = new FieldPanel(cellRepeater.newChildId(), Model.of((AbstractUIField) object));
-                field.add(AttributeModifier.replace("colspan",
-                                ((AbstractUIField) object).getFieldConfiguration().getColSpan() * 2));
-                if (((AbstractUIField) object).getFieldConfiguration().getRowSpan() > 0) {
-                    field.add(AttributeModifier.replace("rowspan",
-                                    ((AbstractUIField) object).getFieldConfiguration().getRowSpan()));
-                }
                 cellRepeater.add(field);
+            } else if (object instanceof UIFieldSet) {
+                final FieldSetPanel fieldSet = new FieldSetPanel(cellRepeater.newChildId(),
+                                Model.of((UIFieldSet) object));
+                cellRepeater.add(fieldSet);
+            } else if (object instanceof UIGroup) {
+                final GroupPanel group = new GroupPanel(cellRepeater.newChildId(), Model.of((UIGroup) object), _uiForm,
+                                _formContainer);
+                cellRepeater.add(group);
             }
         }
     }

@@ -141,4 +141,15 @@ public class UIWizardObject
     {
         return this.parameters.get(_uiObject);
     }
+
+
+    /**
+     * Getter method for the instance variable {@link #uiObjects}.
+     *
+     * @return value of instance variable {@link #uiObjects}
+     */
+    public List<AbstractUIPageObject> getUIPageObjects()
+    {
+        return this.uiObjects;
+    }
 }

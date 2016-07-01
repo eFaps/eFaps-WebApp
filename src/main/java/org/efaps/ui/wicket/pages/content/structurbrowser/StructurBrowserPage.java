@@ -23,10 +23,10 @@ import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.tree.StructurBrowserTreeTablePanel;
-import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
@@ -62,7 +62,7 @@ public class StructurBrowserPage
                                final String _instanceKey)
         throws EFapsException
     {
-        this(new UIModel<UIStructurBrowser>(new UIStructurBrowser(_commandUUID, _instanceKey)));
+        this(Model.of(new UIStructurBrowser(_commandUUID, _instanceKey)));
     }
 
     /**
@@ -111,7 +111,7 @@ public class StructurBrowserPage
                                final PageReference _calledByPageRef)
         throws EFapsException
     {
-        this(new UIModel<UIStructurBrowser>(new UIStructurBrowser(_commandUUID, _instanceKey)), null, _calledByPageRef);
+        this(Model.of(new UIStructurBrowser(_commandUUID, _instanceKey)), null, _calledByPageRef);
     }
 
     /**
@@ -146,7 +146,7 @@ public class StructurBrowserPage
         this.add(form);
         super.addComponents(form);
         form.add(AttributeModifier.append("class", uiObject.getMode().toString()));
-        form.add(new StructurBrowserTreeTablePanel("structurBrowserTable", new UIModel<UIStructurBrowser>(uiObject)));
+        form.add(new StructurBrowserTreeTablePanel("structurBrowserTable", Model.of(uiObject)));
     }
 
     @Override

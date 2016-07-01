@@ -28,7 +28,6 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.behaviors.dojo.PopupMenuBarItemBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.PopupMenuItemBehavior;
-import org.efaps.ui.wicket.models.UIModel;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.util.IdGenerator;
 import org.efaps.util.cache.CacheReloadException;
@@ -114,6 +113,6 @@ public class PopupMenuPanel
                 replaceComponentTagBody(_markupStream, _openTag, html);
             }
         });
-        add(new DropDownMenuPanel("menu", new UIModel<UIMenuItem>(menuItem), _idGenerator));
+        add(new DropDownMenuPanel("menu", Model.of(menuItem), _idGenerator));
     }
 }
