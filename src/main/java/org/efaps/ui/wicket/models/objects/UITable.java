@@ -54,6 +54,7 @@ import org.efaps.db.Instance;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.PrintQuery;
 import org.efaps.db.SelectBuilder;
+import org.efaps.ui.wicket.models.field.FieldConfiguration;
 import org.efaps.ui.wicket.models.field.IFilterable;
 import org.efaps.ui.wicket.models.field.ISortable;
 import org.efaps.ui.wicket.models.field.UIField;
@@ -351,7 +352,8 @@ public class UITable
                     }
                 }
                 if (!field.isHiddenDisplay(getMode())) {
-                    final UITableHeader uiTableHeader = new UITableHeader(this, field, sortdirection, attr);
+                    final FieldConfiguration fieldConfig = new FieldConfiguration(field.getId());
+                    final UITableHeader uiTableHeader = new UITableHeader(this, fieldConfig, sortdirection, attr);
                     if (this.filterTempCache.containsKey(uiTableHeader.getFieldName())) {
                         this.filters.put(uiTableHeader.getFieldName(),
                                         this.filterTempCache.get(uiTableHeader.getFieldName()));
@@ -360,7 +362,7 @@ public class UITable
                         this.filters.put(uiTableHeader.getFieldName(), new TableFilter(uiTableHeader));
                     }
                     getHeaders().add(uiTableHeader);
-                    if (!field.isFixedWidth()) {
+                    if (!fieldConfig.isFixedWidth()) {
                         if (userWidthList != null && userWidthList.size() > i) {
                             if (isShowCheckBoxes() && userWidthList.size() > i + 1) {
                                 uiTableHeader.setWidth(userWidthList.get(i + 1));
@@ -368,7 +370,7 @@ public class UITable
                                 uiTableHeader.setWidth(userWidthList.get(i));
                             }
                         }
-                        setWidthWeight(getWidthWeight() + field.getWidth());
+                        setWidthWeight(getWidthWeight() + fieldConfig.getWidthWeight());
                     }
                 }
                 i++;
@@ -491,11 +493,12 @@ public class UITable
                 if (field.getName().equals(getSortKey())) {
                     sortdirection = getSortDirection();
                 }
-                final UITableHeader headermodel = new UITableHeader(this, field, sortdirection, null);
+                final FieldConfiguration fieldConfig = new FieldConfiguration(field.getId());
+                final UITableHeader headermodel = new UITableHeader(this, fieldConfig, sortdirection, null);
                 headermodel.setSortable(false);
                 headermodel.setFilter(false);
                 getHeaders().add(headermodel);
-                if (!field.isFixedWidth()) {
+                if (!fieldConfig.isFixedWidth()) {
                     if (userWidthList != null
                                     && (isShowCheckBoxes() && i + 1 < userWidthList.size()
                                                     || !isShowCheckBoxes() && i < userWidthList.size())) {
@@ -505,7 +508,7 @@ public class UITable
                             headermodel.setWidth(userWidthList.get(i));
                         }
                     }
-                    setWidthWeight(getWidthWeight() + field.getWidth());
+                    setWidthWeight(getWidthWeight() + fieldConfig.getWidthWeight());
                 }
                 i++;
             }

@@ -61,6 +61,7 @@ import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.PrintQuery;
 import org.efaps.db.SelectBuilder;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
+import org.efaps.ui.wicket.models.field.FieldConfiguration;
 import org.efaps.ui.wicket.models.field.IAutoComplete;
 import org.efaps.ui.wicket.models.field.IHidden;
 import org.efaps.ui.wicket.models.field.UIField;
@@ -521,9 +522,11 @@ public class UIStructurBrowser
                             sortdirection = getSortDirection();
                         }
                         if (!field.isHiddenDisplay(getMode())) {
-                            final UITableHeader uiTableHeader = new UITableHeader(this, field, sortdirection, attr);
+                            final FieldConfiguration fieldConfig = new FieldConfiguration(field.getId());
+                            final UITableHeader uiTableHeader = new UITableHeader(this, fieldConfig, sortdirection,
+                                            attr);
                             getHeaders().add(uiTableHeader);
-                            if (!field.isFixedWidth()) {
+                            if (!fieldConfig.isFixedWidth()) {
                                 if (userWidthList != null && userWidthList.size() > i) {
                                     if (isShowCheckBoxes() && userWidthList.size() > i + 1) {
                                         uiTableHeader.setWidth(userWidthList.get(i + 1));
@@ -531,7 +534,7 @@ public class UIStructurBrowser
                                         uiTableHeader.setWidth(userWidthList.get(i));
                                     }
                                 }
-                                setWidthWeight(getWidthWeight() + field.getWidth());
+                                setWidthWeight(getWidthWeight() + fieldConfig.getWidthWeight());
                             }
                         }
                     }

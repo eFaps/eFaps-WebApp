@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.models.objects;
@@ -28,18 +25,17 @@ import org.efaps.admin.datamodel.ui.DecimalUI;
 import org.efaps.admin.datamodel.ui.IUIProvider;
 import org.efaps.admin.datamodel.ui.NumberUI;
 import org.efaps.admin.datamodel.ui.StringUI;
-import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.AbstractCommand.SortDirection;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.admin.ui.field.Filter;
 import org.efaps.api.ui.FilterType;
+import org.efaps.ui.wicket.models.field.FieldConfiguration;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * @author The eFaps Team
- * @version $Id$
  */
 public class UITableHeader
     implements IClusterable
@@ -52,7 +48,7 @@ public class UITableHeader
     /**
      * Enum for the different types of filter.
      */
-    public static enum FilterValueType
+    public enum FilterValueType
     {
         /** Date. */
         DATE,
@@ -72,11 +68,6 @@ public class UITableHeader
     private static final long serialVersionUID = 1L;
 
     /**
-     * The label for this header.
-     */
-    private final String label;
-
-    /**
      * Is this header sortable.
      */
     private boolean sortable;
@@ -85,11 +76,6 @@ public class UITableHeader
      * The type of the filter.
      */
     private FilterValueType filterType = UITableHeader.FilterValueType.NONE;
-
-    /**
-     * has this header a fixed width.
-     */
-    private final boolean fixedWidth;
 
     /**
      * Sort direction.
@@ -114,7 +100,7 @@ public class UITableHeader
     /**
      * Id of the field this UITableHeader belongs to.
      */
-    private final long fieldId;
+    private final FieldConfiguration fieldConfig;
 
     /**
      * Is the filter activated.
@@ -133,28 +119,26 @@ public class UITableHeader
 
     /**
      * @param _uiHeaderObject   the header object this header is embedded in
-     * @param _field            field
+     * @param _fieldConfig      Field Configuration
      * @param _sortdirection    sort direction
      * @param _attr             attribute this field is used for
      */
     public UITableHeader(final AbstractUIHeaderObject _uiHeaderObject,
-                         final Field _field,
+                         final FieldConfiguration _fieldConfig,
                          final SortDirection _sortdirection,
                          final Attribute _attr)
     {
         this.uiHeaderObject = _uiHeaderObject;
-        this.label = _field.getLabel();
-        this.sortable = _field.isSortAble();
-        this.filter = !_field.getFilter().getType().equals(FilterType.NONE);
-        setFilterApplied(_field.getFilter().isRequired());
+        this.fieldConfig = _fieldConfig;
+        this.sortable = _fieldConfig.getField().isSortAble();
+        this.filter = !_fieldConfig.getField().getFilter().getType().equals(FilterType.NONE);
+        setFilterApplied(_fieldConfig.getField().getFilter().isRequired());
         this.sortDirection = _sortdirection;
-        this.width = _field.getWidth();
-        this.fixedWidth = _field.isFixedWidth();
-        this.fieldId = _field.getId();
+        this.width = _fieldConfig.getWidthWeight();
         this.attrId = _attr != null ? _attr.getId() : 0;
 
-        if (_field.getFilter().getType().equals(FilterType.FREETEXT)) {
-            IUIProvider uiProvider = _field.getUIProvider();
+        if (_fieldConfig.getField().getFilter().getType().equals(FilterType.FREETEXT)) {
+            IUIProvider uiProvider = _fieldConfig.getField().getUIProvider();
             if (uiProvider == null && _attr != null) {
                 uiProvider = _attr.getAttributeType().getUIProvider();
             }
@@ -171,10 +155,10 @@ public class UITableHeader
             }
         }
 
-        if (_field.getFilter().getType().equals(FilterType.FREETEXT) && _attr == null &&
-                        _field.getUIProvider() == null) {
+        if (_fieldConfig.getField().getFilter().getType().equals(FilterType.FREETEXT) && _attr == null
+                        && _fieldConfig.getField().getUIProvider() == null) {
             UITableHeader.LOG.warn("UIProvider is require when the field has no attribute, Field:{}",
-                            _field.getName());
+                            _fieldConfig.getField().getName());
         }
     }
 
@@ -195,11 +179,7 @@ public class UITableHeader
      */
     public String getLabel()
     {
-        String ret = "";
-        if (this.label != null) {
-            ret = DBProperties.getProperty(this.label);
-        }
-        return ret;
+        return this.fieldConfig.getLabel();
     }
 
     /**
@@ -251,7 +231,7 @@ public class UITableHeader
      */
     public long getFieldId()
     {
-        return this.fieldId;
+        return this.fieldConfig.getField().getId();
     }
 
     /**
@@ -259,7 +239,7 @@ public class UITableHeader
      */
     public Field getField()
     {
-        return Field.get(getFieldId());
+        return this.fieldConfig.getField();
     }
 
     /**
@@ -338,7 +318,7 @@ public class UITableHeader
      */
     public boolean isFixedWidth()
     {
-        return this.fixedWidth;
+        return this.fieldConfig.isFixedWidth();
     }
 
     /**

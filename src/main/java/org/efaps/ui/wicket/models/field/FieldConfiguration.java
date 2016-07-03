@@ -30,6 +30,7 @@ import org.efaps.api.IEnumValue;
 import org.efaps.api.ci.UIFormFieldProperty;
 import org.efaps.api.ui.UIType;
 import org.efaps.db.Instance;
+import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -120,13 +121,27 @@ public class FieldConfiguration
     public String getWidth()
     {
         String ret = "";
-        if (getField().containsProperty(UIFormFieldProperty.WIDTH)) {
-            final String widthTmp = getField().getProperty(UIFormFieldProperty.WIDTH);
+        if (hasProperty(UIFormFieldProperty.WIDTH)) {
+            final String widthTmp = getProperty(UIFormFieldProperty.WIDTH);
             if (StringUtils.isNumeric(widthTmp)) {
                 ret = widthTmp + "ch";
             } else {
                 ret = widthTmp;
             }
+        }
+        return ret;
+    }
+
+    /**
+     * Gets the width weight.
+     *
+     * @return the width weight
+     */
+    public int getWidthWeight()
+    {
+        int ret = 1;
+        if (!isFixedWidth() && hasProperty(UIFormFieldProperty.WIDTH)) {
+            ret = Integer.valueOf(getProperty(UIFormFieldProperty.WIDTH));
         }
         return ret;
     }
@@ -158,7 +173,8 @@ public class FieldConfiguration
      */
     public boolean isFixedWidth()
     {
-        return getField().isFixedWidth();
+        return hasProperty(UIFormFieldProperty.WIDTH)
+                        && !StringUtils.isNumeric(getField().getProperty(UIFormFieldProperty.WIDTH));
     }
 
     /**
