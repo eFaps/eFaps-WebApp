@@ -117,7 +117,7 @@ public class UIForm
      *
      * @see #getElements
      */
-    private final List<Element> elements = new ArrayList<Element>();
+    private final List<Element> elements = new ArrayList<>();
 
     /**
      * The instance variable stores the form which must be shown.
@@ -135,7 +135,7 @@ public class UIForm
      * Map is used to store the new values passed during the creation process
      * from the webapp.
      */
-    private final Map<String, String[]> newValues = new HashMap<String, String[]>();
+    private final Map<String, String[]> newValues = new HashMap<>();
 
     /**
      * Is this form classified by classification.
@@ -259,7 +259,7 @@ public class UIForm
     private void execute4Instance()
         throws EFapsException
     {
-        final Set<String> altOIDSel = new HashSet<String>();
+        final Set<String> altOIDSel = new HashSet<>();
         final Form form = Form.get(this.formUUID);
         // evaluate the Form to make the query
         final PrintQuery print = new PrintQuery(getInstance());
@@ -283,7 +283,7 @@ public class UIForm
         }
         if (print.execute()) {
             if (!altOIDSel.isEmpty()) {
-                final List<Instance> inst = new ArrayList<Instance>();
+                final List<Instance> inst = new ArrayList<>();
                 for (final String sel : altOIDSel) {
                     inst.addAll(print.getInstances4Select(sel));
                 }
@@ -294,7 +294,8 @@ public class UIForm
             UIClassification uiclass = null;
             boolean firstTable = true;
             for (final Field field : form.getFields()) {
-                if (field.hasAccess(getMode(), getInstance(), getCommand(), getInstance())
+                final Instance instance = evaluateFieldInstance(print, field);
+                if (field.hasAccess(getMode(), instance, getCommand(), getInstance())
                                 && !field.isNoneDisplay(getMode())) {
                     if (field instanceof FieldGroup) {
                         final FieldGroup group = (FieldGroup) field;
@@ -385,7 +386,7 @@ public class UIForm
     {
         // remove previous added classification forms
         final Iterator<Element> iter2 = this.elements.iterator();
-        final Map<UUID, String> uuid2InstanceKey = new HashMap<UUID, String>();
+        final Map<UUID, String> uuid2InstanceKey = new HashMap<>();
         while (iter2.hasNext()) {
             final IFormElement element = iter2.next().getElement();
             if (element instanceof UIFieldForm) {
@@ -422,13 +423,7 @@ public class UIForm
             attr = _query.getAttribute4Select(_field.getSelect());
         }
 
-        final Instance fieldInstance;
-        if (_field.getSelectAlternateOID() != null
-                        && _query.getSelect(_field.getSelectAlternateOID()) instanceof String) {
-            fieldInstance = Instance.get(_query.<String>getSelect(_field.getSelectAlternateOID()));
-        } else {
-            fieldInstance = getInstance();
-        }
+        final Instance fieldInstance = evaluateFieldInstance(_query, _field);
         if (_field.isHiddenDisplay(getMode())) {
             if (_field.getAttribute() != null) {
                 _query.getAttribute(_field.getAttribute());
@@ -511,7 +506,7 @@ public class UIForm
 
         final Map<?, ?> tmp = (Map<?, ?>) _query.getAttributeSet(_field.getAttribute());
 
-        final List<Instance> fieldins = new ArrayList<Instance>();
+        final List<Instance> fieldins = new ArrayList<>();
 
         if (tmp != null) {
             fieldins.addAll(_query.getInstances4Attribute(_field.getAttribute()));
@@ -527,7 +522,7 @@ public class UIForm
         }
 
         final Iterator<Instance> iter = fieldins.iterator();
-        final Map<String, Iterator<?>> values = new HashMap<String, Iterator<?>>();
+        final Map<String, Iterator<?>> values = new HashMap<>();
         while (iter.hasNext()) {
             final Instance rowInstance = iter.next();
             ret.addRow(rowInstance);
@@ -559,7 +554,7 @@ public class UIForm
                                            final Map<UUID, String> _uuid2InstanceKey)
         throws EFapsException
     {
-        final List<Element> ret = new ArrayList<Element>();
+        final List<Element> ret = new ArrayList<>();
         if (_uiclass.isSelected() && !_uiclass.isRoot()) {
             final UIFieldForm fieldform;
             if (_uuid2InstanceKey.containsKey(_uiclass.getClassificationUUID())) {
@@ -863,7 +858,7 @@ public class UIForm
         /**
          * Stores the UIFormCell contained in this FormRow.
          */
-        private final ArrayDeque<IUIElement> values = new ArrayDeque<IUIElement>();
+        private final ArrayDeque<IUIElement> values = new ArrayDeque<>();
 
         /**
          * Stores if the row must be spanned.

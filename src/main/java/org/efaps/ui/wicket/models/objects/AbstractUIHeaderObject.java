@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.models.objects;
@@ -25,17 +22,11 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.UUID;
 
-import org.efaps.admin.event.EventType;
-import org.efaps.admin.event.Parameter.ParameterValues;
-import org.efaps.admin.event.Return;
-import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractCommand.SortDirection;
 import org.efaps.admin.ui.Table;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.db.Context;
-import org.efaps.db.Instance;
-import org.efaps.db.MultiPrintQuery;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
@@ -45,7 +36,6 @@ import org.slf4j.LoggerFactory;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public abstract class AbstractUIHeaderObject
     extends AbstractUIPageObject
@@ -115,7 +105,7 @@ public abstract class AbstractUIHeaderObject
     /**
      * The instance Array holds the Label for the Columns.
      */
-    private final List<UITableHeader> headers = new ArrayList<UITableHeader>();
+    private final List<UITableHeader> headers = new ArrayList<>();
 
     /**
      * This instance variable stores the Id of the table. This int is used to
@@ -429,7 +419,7 @@ public abstract class AbstractUIHeaderObject
 
                 final StringTokenizer tokens = new StringTokenizer(widths, ";");
 
-                ret = new ArrayList<Integer>();
+                ret = new ArrayList<>();
 
                 while (tokens.hasMoreTokens()) {
                     final String token = tokens.nextToken();
@@ -594,7 +584,7 @@ public abstract class AbstractUIHeaderObject
      */
     protected List<Field> getUserSortedColumns()
     {
-        List<Field> ret = new ArrayList<Field>();
+        List<Field> ret = new ArrayList<>();
         try {
             final List<Field> fields = getTable().getFields();
             if (Context.getThreadContext().containsUserAttribute(
@@ -634,43 +624,4 @@ public abstract class AbstractUIHeaderObject
      */
     public abstract void sort()
         throws EFapsException;
-
-
-    /**
-     * @param _multi multiprint
-     * @param _field field the instance is wanted for
-     * @return instance for the field
-     * @throws EFapsException on erro
-     */
-    protected Instance evaluateFieldInstance(final MultiPrintQuery _multi,
-                                             final Field _field)
-        throws EFapsException
-    {
-        Instance ret = _multi.getCurrentInstance();
-        if (_field.getSelectAlternateOID() != null) {
-            try {
-                final Object alternateObj = _multi.getSelect(_field.getSelectAlternateOID());
-                if (alternateObj instanceof String) {
-                    ret = Instance.get((String) alternateObj);
-                } else if (alternateObj instanceof Instance) {
-                    ret = (Instance) alternateObj;
-                }
-            } catch (final ClassCastException e) {
-                LOG.error("Field '{}' has invalid SelectAlternateOID value", _field);
-            }
-        } else if (_field.hasEvents(EventType.UI_FIELD_ALTINST)) {
-            final List<Return> retTmps = _field.executeEvents(EventType.UI_FIELD_ALTINST,
-                            ParameterValues.INSTANCE, ret,
-                            ParameterValues.CALL_INSTANCE, getInstance(),
-                            ParameterValues.REQUEST_INSTANCES,_multi.getInstanceList(),
-                            ParameterValues.PARAMETERS, Context.getThreadContext().getParameters(),
-                            ParameterValues.CLASS, this);
-            for (final Return retTmp : retTmps) {
-                if (retTmp.contains(ReturnValues.INSTANCE) && retTmp.get(ReturnValues.INSTANCE) != null) {
-                    ret = (Instance) retTmp.get(ReturnValues.INSTANCE);
-                }
-            }
-        }
-        return ret;
-    }
 }

@@ -29,15 +29,23 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.event.EventType;
+import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.event.Return;
+import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.Command;
 import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.field.Field;
+import org.efaps.db.AbstractPrintQuery;
+import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.models.field.IHidden;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO comment!
@@ -54,9 +62,14 @@ public abstract class AbstractUIPageObject
     private static final long serialVersionUID = 1L;
 
     /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractUIPageObject.class);
+
+    /**
      * Mapping between the id used for the interface and an oid from eFaps.
      */
-    private final Map<String, String> uiID2Oid = new HashMap<String, String>();
+    private final Map<String, String> uiID2Oid = new HashMap<>();
 
     /**
      * Random that can be used for the id in the userinterface and stored in
@@ -72,7 +85,7 @@ public abstract class AbstractUIPageObject
     /**
      * Map of instance with access definition.
      */
-    private final Map<Instance, Boolean> accessMap = new HashMap<Instance, Boolean>();
+    private final Map<Instance, Boolean> accessMap = new HashMap<>();
 
     /**
      * This instance variable stores the UUID of the CommandAbstract that is the
@@ -366,11 +379,11 @@ public abstract class AbstractUIPageObject
     protected Map<Instance, Boolean> checkAccessToInstances(final List<Instance> _instances)
         throws EFapsException
     {
-        final Map<Type, List<Instance>> types = new HashMap<Type, List<Instance>>();
+        final Map<Type, List<Instance>> types = new HashMap<>();
         for (final Instance instance : _instances) {
             final List<Instance> list;
             if (!types.containsKey(instance.getType())) {
-                list = new ArrayList<Instance>();
+                list = new ArrayList<>();
                 types.put(instance.getType(), list);
             } else {
                 list = types.get(instance.getType());
@@ -416,6 +429,44 @@ public abstract class AbstractUIPageObject
         String ret = "";
         if (_field.getSelectAlternateOID() != null) {
             ret = StringUtils.removeEnd(_field.getSelectAlternateOID(), ".oid");
+        }
+        return ret;
+    }
+
+    /**
+     * @param _multi multiprint
+     * @param _field field the instance is wanted for
+     * @return instance for the field
+     * @throws EFapsException on erro
+     */
+    protected Instance evaluateFieldInstance(final AbstractPrintQuery _print,
+                                             final Field _field)
+        throws EFapsException
+    {
+        Instance ret = _print.getCurrentInstance();
+        if (_field.getSelectAlternateOID() != null) {
+            try {
+                final Object alternateObj = _print.getSelect(_field.getSelectAlternateOID());
+                if (alternateObj instanceof String) {
+                    ret = Instance.get((String) alternateObj);
+                } else if (alternateObj instanceof Instance) {
+                    ret = (Instance) alternateObj;
+                }
+            } catch (final ClassCastException e) {
+                LOG.error("Field '{}' has invalid SelectAlternateOID value", _field);
+            }
+        } else if (_field.hasEvents(EventType.UI_FIELD_ALTINST)) {
+            final List<Return> retTmps = _field.executeEvents(EventType.UI_FIELD_ALTINST,
+                            ParameterValues.INSTANCE, ret,
+                            ParameterValues.CALL_INSTANCE, getInstance(),
+                            ParameterValues.REQUEST_INSTANCES, _print.getInstanceList(),
+                            ParameterValues.PARAMETERS, Context.getThreadContext().getParameters(),
+                            ParameterValues.CLASS, this);
+            for (final Return retTmp : retTmps) {
+                if (retTmp.contains(ReturnValues.INSTANCE) && retTmp.get(ReturnValues.INSTANCE) != null) {
+                    ret = (Instance) retTmp.get(ReturnValues.INSTANCE);
+                }
+            }
         }
         return ret;
     }
