@@ -168,7 +168,8 @@ public class EFapsPageCache
         SoftReference<SerializedPage> removedMain = null;
         while (this.cache.size() > this.maxSize) {
             final SoftReference<SerializedPage> remove = this.cache.pollLast();
-            if (MainPage.class.getName().equals(remove.get().getKey())) {
+            if (remove != null && remove.get() != null
+                            && MainPage.class.getName().equals(remove.get().getKey())) {
                 removedMain = remove;
             }
         }
