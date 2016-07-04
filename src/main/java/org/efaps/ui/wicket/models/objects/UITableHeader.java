@@ -380,4 +380,14 @@ public class UITableHeader
     {
         this.uiHeaderObject = _uiHeaderObject;
     }
+
+    /**
+     * Getter method for the instance variable {@link #fieldConfig}.
+     *
+     * @return value of instance variable {@link #fieldConfig}
+     */
+    public FieldConfiguration getFieldConfig()
+    {
+        return this.fieldConfig;
+    }
 }

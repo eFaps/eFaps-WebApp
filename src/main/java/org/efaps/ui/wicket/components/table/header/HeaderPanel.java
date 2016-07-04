@@ -172,7 +172,7 @@ public class HeaderPanel
             firstcell = true;
         }
         // add the add/remove buttons in edit mode for normal tables
-        if (uitable.isEditable() && !(isStructurBrowser())) {
+        if (uitable.isEditable() && !isStructurBrowser()) {
             final HeaderCellPanel cell = new HeaderCellPanel(cellRepeater.newChildId(), false,
                             "eFapsTableRemoveRowCell", i);
             cell.setOutputMarkupId(true);
@@ -181,7 +181,7 @@ public class HeaderPanel
             firstcell = true;
         }
 
-        final List<String> widthsTmp = new ArrayList<String>();
+        final List<String> widthsTmp = new ArrayList<>();
 
         for (int j = 0; j < uitable.getHeaders().size(); j++) {
             final UITableHeader uiHeader = uitable.getHeaders().get(j);
@@ -189,7 +189,7 @@ public class HeaderPanel
             final HeaderCellPanel cell = new HeaderCellPanel(cellRepeater.newChildId(), Model.of(uiHeader), uitable);
 
             if (uiHeader.isFixedWidth()) {
-                widthsTmp.add(".eFapsCellFixedWidth" + i + "{width: " + uiHeader.getWidth() + "px; }\n");
+                widthsTmp.add(".eFapsCellFixedWidth" + i + "{width: " + uiHeader.getFieldConfig().getWidth() + "; }\n");
                 if (firstcell) {
                     firstcell = false;
                     cell.add(AttributeModifier.append("class", "eFapsTableFirstCell eFapsTableHeaderCell"
@@ -293,13 +293,13 @@ public class HeaderPanel
             .append(this.headerProperties + ".modelID = ")
             .append(((AbstractUIHeaderObject) super.getDefaultModelObject()).getTableId()).append(";\n  ")
             .append(this.headerProperties).append(".storeColumnWidths = ")
-            .append((this.getBehaviors(AjaxStoreColumnWidthBehavior.class).get(0)).getJavaScript())
+            .append(this.getBehaviors(AjaxStoreColumnWidthBehavior.class).get(0).getJavaScript())
             .append("; ")
             .append(this.headerProperties).append(".storeColumnOrder = ")
-            .append((this.getBehaviors(AjaxStoreColumnOrderBehavior.class).get(0)).getJavaScript())
+            .append(this.getBehaviors(AjaxStoreColumnOrderBehavior.class).get(0).getJavaScript())
             .append("; ")
             .append(this.headerProperties + ".reloadTable = ")
-            .append((this.getBehaviors(AjaxReloadTableBehavior.class).get(0)).getJavaScript())
+            .append(this.getBehaviors(AjaxReloadTableBehavior.class).get(0).getJavaScript())
             .append("; ")
             .append("  addOnResizeEvent(function (){ positionTableColumns(")
             .append(this.headerProperties)
