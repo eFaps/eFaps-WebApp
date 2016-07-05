@@ -53,6 +53,7 @@ import org.efaps.admin.ui.field.FieldHeading;
 import org.efaps.admin.ui.field.FieldPicker;
 import org.efaps.admin.ui.field.FieldSet;
 import org.efaps.admin.ui.field.FieldTable;
+import org.efaps.api.ci.UIFormProperty;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.PrintQuery;
@@ -129,7 +130,7 @@ public class UIForm
     /**
      * Used to set if the form is used to upload a file.
      */
-    private boolean fileUpload = false;
+    private boolean multiPart = false;
 
     /**
      * Map is used to store the new values passed during the creation process
@@ -173,9 +174,9 @@ public class UIForm
         if (_commandUUID != null) {
             final AbstractCommand command = super.getCommand();
             if (command == null) {
-                this.formUUID = null;
+                setFormUUID(null);
             } else if (command.getTargetForm() != null) {
-                this.formUUID = command.getTargetForm().getUUID();
+                setFormUUID(command.getTargetForm().getUUID());
             }
         }
     }
@@ -260,7 +261,7 @@ public class UIForm
         throws EFapsException
     {
         final Set<String> altOIDSel = new HashSet<>();
-        final Form form = Form.get(this.formUUID);
+        final Form form = getForm();
         // evaluate the Form to make the query
         final PrintQuery print = new PrintQuery(getInstance());
         for (final Field field : form.getFields()) {
@@ -595,7 +596,7 @@ public class UIForm
     private void execute4NoInstance()
         throws EFapsException
     {
-        final Form form = Form.get(this.formUUID);
+        final Form form = getForm();
         Type type = null;
         if (isCreateMode() || isEditMode()) {
             type = getCreateTargetType();
@@ -787,10 +788,15 @@ public class UIForm
      * This is the setter method for the instance variable {@link #formUUID}.
      *
      * @param _formUUID the formUUID to set
+     * @throws CacheReloadException on error
      */
     public void setFormUUID(final UUID _formUUID)
+        throws CacheReloadException
     {
         this.formUUID = _formUUID;
+        if (_formUUID != null) {
+            this.multiPart = "true".equalsIgnoreCase(getForm().getProperty(UIFormProperty.MULTI_PART));
+        }
     }
 
     /**
@@ -808,9 +814,9 @@ public class UIForm
      *
      * @return value of instance variable {@link #fileUpload}
      */
-    public boolean isFileUpload()
+    public boolean isMultiPart()
     {
-        return this.fileUpload;
+        return this.multiPart;
     }
 
     /**
@@ -818,9 +824,9 @@ public class UIForm
      *
      * @param _fileUpload the fileUpload to set
      */
-    public void setFileUpload(final boolean _fileUpload)
+    public void setMultiPart(final boolean _fileUpload)
     {
-        this.fileUpload = _fileUpload;
+        this.multiPart = _fileUpload;
     }
 
     /**

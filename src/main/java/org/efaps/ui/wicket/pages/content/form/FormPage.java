@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev:1491 $
- * Last Changed:    $Date:2007-10-15 18:40:43 -0500 (Mon, 15 Oct 2007) $
- * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.pages.content.form;
@@ -56,7 +53,6 @@ import org.efaps.util.EFapsException;
 
 /**
  * @author The eFaps Team
- * @version $Id:FormPage.java 1491 2007-10-15 23:40:43Z jmox $
  */
 public class FormPage
     extends AbstractContentPage
@@ -195,7 +191,7 @@ public class FormPage
         final FormContainer form = new FormContainer("form");
         add(form);
         form.add(AttributeModifier.append("class", uiForm.getMode().toString()));
-        if (uiForm.isFileUpload() && (uiForm.isCreateMode() || uiForm.isEditMode())) {
+        if (uiForm.isMultiPart() && (uiForm.isCreateMode() || uiForm.isEditMode())) {
             form.setMultiPart(true);
             form.setMaxSize(getApplication().getApplicationSettings().getDefaultMaximumUploadSize());
         }
@@ -224,17 +220,6 @@ public class FormPage
 
         if (!_uiForm.isInitialized()) {
             _uiForm.execute();
-        }
-        // in case of classification the different parts of the form a loaded
-        // via ajax, that leads
-        // to problems on parsing the dojo elements (EditorPanel) to prevent
-        // this the dojo
-        // scripts are loaded by default. Thats not the optimum, but normally
-        // the scripts are
-        // already in the cache of the browser
-        // TODO Is there a better way?
-        if (_uiForm.isClassified() && (_uiForm.isEditMode() || _uiForm.isCreateMode())) {
-            // EditorPanel.prepare(_page);
         }
         // the hidden cells must be marked as not added yet.
         for (final IHidden cell : _uiForm.getHidden()) {
