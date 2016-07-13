@@ -30,7 +30,6 @@ import org.efaps.api.IEnumValue;
 import org.efaps.api.ci.UIFormFieldProperty;
 import org.efaps.api.ui.UIType;
 import org.efaps.db.Instance;
-import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -254,7 +253,7 @@ public class FieldConfiguration
     public UIType getUIType()
     {
         final UIType ret;
-        final String uiTypeStr = getField().getProperty("UIType");
+        final String uiTypeStr = getProperty(UIFormFieldProperty.UI_TYPE);
         if (EnumUtils.isValidEnum(UIType.class, uiTypeStr)) {
             ret = UIType.valueOf(uiTypeStr);
         } else {

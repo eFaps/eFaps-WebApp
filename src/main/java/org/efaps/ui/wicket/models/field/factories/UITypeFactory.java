@@ -28,6 +28,7 @@ import org.efaps.ui.wicket.components.values.DropDownField;
 import org.efaps.ui.wicket.components.values.NumberField;
 import org.efaps.ui.wicket.components.values.RadioField;
 import org.efaps.ui.wicket.components.values.SnippletField;
+import org.efaps.ui.wicket.components.values.UploadField;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.field.IPickable;
 import org.efaps.ui.wicket.models.objects.CheckBoxOption;
@@ -101,6 +102,9 @@ public final class UITypeFactory
                 break;
             case NUMBER:
                 ret = new NumberField(_wicketId, Model.of(_uiField), _uiField.getFieldConfiguration());
+                break;
+            case UPLOAD:
+                ret = new UploadField(_wicketId, Model.of(_uiField));
                 break;
             default:
                 break;
