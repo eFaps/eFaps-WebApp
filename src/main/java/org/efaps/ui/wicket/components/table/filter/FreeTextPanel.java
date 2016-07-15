@@ -33,6 +33,7 @@ import org.apache.wicket.model.Model;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
+import org.efaps.ui.wicket.models.field.FieldConfiguration;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.models.objects.UITable.TableFilter;
 import org.efaps.ui.wicket.models.objects.UITableHeader;
@@ -106,7 +107,7 @@ public class FreeTextPanel
             };
             model.setObject(uitable.getFilter(tableHeader).getFrom());
 
-            final TextField<String> stringFilter = new TextField<String>("from", model);
+            final TextField<String> stringFilter = new TextField<>("from", model);
             this.add(stringFilter);
 
             final WebMarkupContainer options = new WebMarkupContainer("options");
@@ -141,9 +142,11 @@ public class FreeTextPanel
             this.add(new Label("textFrom", DBProperties.getProperty("FilterPage.textFrom")));
             this.add(new Label("textTo", DBProperties.getProperty("FilterPage.textTo")));
 
-            final DateTimePanel dateFrom = new DateTimePanel("dateFrom", fromDate, "dateFrom", "dateFrom", false, null);
+            final FieldConfiguration dfConfig = FieldConfiguration.getSimFieldConfig("dateFrom");
+            final DateTimePanel dateFrom = new DateTimePanel("dateFrom", Model.of(), dfConfig, fromDate, false);
             this.add(dateFrom);
-            final DateTimePanel dateTo = new DateTimePanel("dateTo", toDate, "dateTo", "dateTo", false, null);
+            final FieldConfiguration dtConfig = FieldConfiguration.getSimFieldConfig("dateTo");
+            final DateTimePanel dateTo = new DateTimePanel("dateTo", Model.of(), dtConfig, toDate, false);
             this.add(dateTo);
 
             final StyleDateConverter conv = new StyleDateConverter(false);
@@ -175,8 +178,8 @@ public class FreeTextPanel
         } else if (filterType.equals(FilterValueType.INTEGER) || filterType.equals(FilterValueType.DECIMAL)) {
             this.add(new Label("textFrom", DBProperties.getProperty("FilterPage.textFrom")));
             this.add(new Label("textTo", DBProperties.getProperty("FilterPage.textTo")));
-            this.add(new TextField<Object>("from"));
-            this.add(new TextField<Object>("to"));
+            this.add(new TextField<>("from"));
+            this.add(new TextField<>("to"));
             this.fromFieldName = "from";
             this.toFieldName = "to";
             this.add(new WebMarkupContainer("js").setVisible(false));

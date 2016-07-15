@@ -287,4 +287,26 @@ public class FieldConfiguration
         }
         return ret;
     }
+
+    /**
+     * Gets the field config.
+     *
+     * @return the field config
+     */
+    public static FieldConfiguration getSimFieldConfig(final String _fieldName)
+    {
+        final Field field = new Field(0, "", _fieldName);
+        final FieldConfiguration ret = new FieldConfiguration(0)
+        {
+            /** The Constant serialVersionUID. */
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public Field getField()
+            {
+                return field;
+            }
+        };
+        return ret;
+    }
 }

@@ -18,10 +18,11 @@
 package org.efaps.ui.wicket.components.date;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.datetime.DateConverter;
 import org.apache.wicket.datetime.StyleDateConverter;
 import org.apache.wicket.datetime.markup.html.form.DateTextField;
@@ -30,18 +31,21 @@ import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
-import org.apache.wicket.markup.html.form.ILabelProvider;
-import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.string.StringValue;
 import org.efaps.admin.datamodel.ui.UIValue;
 import org.efaps.admin.dbproperty.DBProperties;
+import org.efaps.admin.event.EventDefinition;
+import org.efaps.admin.event.EventType;
 import org.efaps.api.ci.UIFormFieldProperty;
 import org.efaps.db.Context;
+import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
+import org.efaps.ui.wicket.components.values.IFieldConfig;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.field.FieldConfiguration;
 import org.efaps.ui.wicket.models.field.set.UIFieldSet;
 import org.efaps.ui.wicket.models.field.set.UIFieldSetValue;
+import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 import org.joda.time.DateTime;
@@ -61,7 +65,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DateTimePanel
     extends FormComponentPanel<DateTime>
-    implements ILabelProvider<String>
+    implements IFieldConfig
 {
     /**
      * Logger for this class.
@@ -72,11 +76,6 @@ public class DateTimePanel
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
-
-    /**
-     * Name of the field this DateTimePanel belongs to.
-     */
-    private final String fieldName;
 
     /**
      * DateConverter needed to enable date formating related to the locale.
@@ -103,33 +102,8 @@ public class DateTimePanel
      */
     private boolean converted;
 
-    /**
-     * Label of the Panel. mainly used for error indication.
-     */
-    private String fieldLabel;
-
-    /**
-     * @param _wicketId wicket id of this component
-     * @param _model model for this component
-     * @param _fieldConf FieldConfiguration
-     * @param _dateObject object containing a DateTime, if null or not DateTime
-     *                       a new DateTime will be instantiated
-     * @param _time must the time be rendered also
-     * @throws EFapsException on error
-     */
-    public DateTimePanel(final String _wicketId,
-                         final Model<AbstractUIField> _model,
-                         final FieldConfiguration _fieldConf,
-                         final Object _dateObject,
-                         final boolean _time)
-        throws EFapsException
-    {
-        this(_wicketId, _dateObject, _fieldConf.getName(), _model.getObject().getLabel(), _time,
-                        _fieldConf.hasProperty(UIFormFieldProperty.COLUMNS)
-                                    ? Integer.valueOf(_fieldConf.getProperty(UIFormFieldProperty.COLUMNS))
-                                    : null);
-        this.uiField = _model.getObject();
-    }
+    /** The field config. */
+    private FieldConfiguration fieldConfig;
 
     /**
      * @param _wicketId wicket id of this component
@@ -142,19 +116,23 @@ public class DateTimePanel
      * @throws EFapsException on error
      */
     public DateTimePanel(final String _wicketId,
+                         final Model<AbstractUIField> _model,
+                         final FieldConfiguration _fieldConf,
                          final Object _dateObject,
-                         final String _fieldName,
-                         final String _fieldLabel,
-                         final boolean _time,
-                         final Integer _inputSize)
+                         final boolean _time)
         throws EFapsException
     {
         super(_wicketId, Model.<DateTime>of());
+        this.uiField = _model.getObject();
+        this.fieldConfig = _fieldConf;
         this.datetime = _dateObject == null || !(_dateObject instanceof DateTime)
                         ? new DateTime(Context.getThreadContext().getChronology())
                         : (DateTime) _dateObject;
-        this.fieldLabel = _fieldLabel;
-        setLabel(Model.of(this.fieldLabel));
+        if (this.uiField != null) {
+            setLabel(Model.of(getFieldConfig().evalLabel(this.uiField.getValue(), this.uiField.getInstance())));
+        } else {
+            setLabel(Model.of(getFieldConfig().getLabel()));
+        }
         this.converter = new StyleDateConverter(false) {
 
             private static final long serialVersionUID = 1L;
@@ -176,8 +154,7 @@ public class DateTimePanel
             }
         };
 
-        this.fieldName = _fieldName;
-        final DateTextField dateField = new DateTextField("date", new Model<Date>(this.datetime.toDate()),
+        final DateTextField dateField = new DateTextField("date", new Model<>(this.datetime.toDate()),
                         this.converter)
         {
 
@@ -188,20 +165,20 @@ public class DateTimePanel
             {
                 return DateTimePanel.this.getDateFieldName();
             }
-
-            @Override
-            protected void onComponentTag(final ComponentTag _tag)
-            {
-                super.onComponentTag(_tag);
-                if (_inputSize != null) {
-                    _tag.put("size", _inputSize);
-                }
-            }
         };
         this.add(dateField);
 
+        if (getFieldConfig().hasProperty(UIFormFieldProperty.COLUMNS)) {
+            add(new AttributeModifier("maxlength", getFieldConfig().getProperty(UIFormFieldProperty.COLUMNS)));
+        }
+        if (getFieldConfig().hasProperty(UIFormFieldProperty.WIDTH)
+                        && this.uiField != null && !(this.uiField.getParent() instanceof UITable)) {
+            add(new AttributeAppender("style", "width:" + getFieldConfig().getWidth(), ";"));
+        }
+
         this.datePicker = new DatePickerBehavior();
         dateField.add(this.datePicker);
+
         final WebComponent hour = new WebComponent("hours")
         {
 
@@ -287,6 +264,22 @@ public class DateTimePanel
         if (!use12HourFormat()) {
             ampm.setVisible(false);
         }
+
+        if (getFieldConfig() != null && getFieldConfig().getField().hasEvents(EventType.UI_FIELD_UPDATE)) {
+            final List<EventDefinition> events = getFieldConfig().getField().getEvents(EventType.UI_FIELD_UPDATE);
+            String eventName = "change";
+            for (final EventDefinition event : events) {
+                eventName = event.getProperty("Event") == null ? "change" : event.getProperty("Event");
+            }
+            dateField.add(new AjaxFieldUpdateBehavior(eventName, Model.of(this.uiField), false));
+            if (_time) {
+                hour.add(new AjaxFieldUpdateBehavior(eventName, Model.of(this.uiField), false));
+                minutes.add(new AjaxFieldUpdateBehavior(eventName, Model.of(this.uiField), false));
+                if (use12HourFormat()) {
+                    ampm.add(new AjaxFieldUpdateBehavior(eventName, Model.of(this.uiField), false));
+                }
+            }
+        }
         this.add(new WebMarkupContainer("seperator").setVisible(_time));
     }
 
@@ -318,7 +311,7 @@ public class DateTimePanel
      */
     public String getFieldName()
     {
-        return this.fieldName;
+        return getFieldConfig().getName();
     }
 
     /**
@@ -326,7 +319,7 @@ public class DateTimePanel
      */
     public String getDateFieldName()
     {
-        return this.fieldName + "_eFapsDate";
+        return getFieldName() + "_eFapsDate";
     }
 
     /**
@@ -334,7 +327,7 @@ public class DateTimePanel
      */
     public String getHourFieldName()
     {
-        return this.fieldName + "_eFapsHour";
+        return getFieldName() + "_eFapsHour";
     }
 
     /**
@@ -342,7 +335,7 @@ public class DateTimePanel
      */
     public String getMinuteFieldName()
     {
-        return this.fieldName + "_eFapsMinute";
+        return getFieldName() + "_eFapsMinute";
     }
 
     /**
@@ -350,7 +343,7 @@ public class DateTimePanel
      */
     public String getAmPmFieldName()
     {
-        return this.fieldName + "_eFapsAmPm";
+        return getFieldName() + "_eFapsAmPm";
     }
 
     /**
@@ -369,7 +362,7 @@ public class DateTimePanel
                                              final List<StringValue> _ampm)
         throws EFapsException
     {
-        final List<StringValue> ret = new ArrayList<StringValue>();
+        final List<StringValue> ret = new ArrayList<>();
         final List<DateTime> dates = getDateList(_date, _hour, _minute, _ampm);
         for (final DateTime date : dates) {
             final DateTimeFormatter isofmt = ISODateTimeFormat.dateTime();
@@ -394,7 +387,7 @@ public class DateTimePanel
                                       final List<StringValue> _ampm)
         throws EFapsException
     {
-        final List<DateTime> ret = new ArrayList<DateTime>();
+        final List<DateTime> ret = new ArrayList<>();
         if (_date != null) {
             Iterator<StringValue> hourIter = null;
             Iterator<StringValue> minuteIter = null;
@@ -515,7 +508,6 @@ public class DateTimePanel
         }
     }
 
-
     /**
      * @param _date date list
      * @param _hour hour list
@@ -543,7 +535,7 @@ public class DateTimePanel
         if (_ampm != null) {
             ampmIter = _ampm.iterator();
         }
-
+        final String fieldLabel = getLabel().getObject();
         if (hourIter != null) {
             int i = 1;
             while (hourIter.hasNext()) {
@@ -555,10 +547,10 @@ public class DateTimePanel
                     _htmlTable.append("<tr><td>");
                     if (_hour.size() > 1) {
                         _htmlTable.append(DBProperties.getFormatedDBProperty(DateTimePanel.class.getName()
-                                        + ".validate.hour.nonumber.line", new Object[] { getFieldLabel(), i}));
+                                        + ".validate.hour.nonumber.line", new Object[] { fieldLabel, i}));
                     } else {
                         _htmlTable.append(DBProperties.getFormatedDBProperty(DateTimePanel.class.getName()
-                                    + ".validate.hour.nonumber", new Object[] { getFieldLabel() }));
+                                    + ".validate.hour.nonumber", new Object[] { fieldLabel }));
                     }
                     _htmlTable.append("</td></tr>");
                     ret = false;
@@ -569,10 +561,10 @@ public class DateTimePanel
                     _htmlTable.append("<tr><td>");
                     if (_hour.size() > 1) {
                         _htmlTable.append(DBProperties.getFormatedDBProperty(DateTimePanel.class.getName()
-                                        + ".validate.hour.line", new Object[] { getFieldLabel(), i, 0, 24 }));
+                                        + ".validate.hour.line", new Object[] { fieldLabel, i, 0, 24 }));
                     } else {
                         _htmlTable.append(DBProperties.getFormatedDBProperty(DateTimePanel.class.getName()
-                                        + ".validate.hour", new Object[] { getFieldLabel(), 0, 24 }));
+                                        + ".validate.hour", new Object[] { fieldLabel, 0, 24 }));
                     }
                     _htmlTable.append("</td></tr>");
                     ret = false;
@@ -581,10 +573,10 @@ public class DateTimePanel
                     _htmlTable.append("<tr><td>");
                     if (_hour.size() > 1) {
                         _htmlTable.append(DBProperties.getFormatedDBProperty(DateTimePanel.class.getName()
-                                        + ".validate.hour.line", new Object[] { getFieldLabel(), i, 1, 12 }));
+                                        + ".validate.hour.line", new Object[] { fieldLabel, i, 1, 12 }));
                     } else {
                         _htmlTable.append(DBProperties.getFormatedDBProperty(DateTimePanel.class.getName()
-                                        + ".validate.hour", new Object[] { getFieldLabel(), 1, 12 }));
+                                        + ".validate.hour", new Object[] { fieldLabel, 1, 12 }));
                     }
                     _htmlTable.append("</td></tr>");
                     ret = false;
@@ -605,10 +597,10 @@ public class DateTimePanel
                     _htmlTable.append("<tr><td>");
                     if (_hour.size() > 1) {
                         _htmlTable.append(DBProperties.getFormatedDBProperty(DateTimePanel.class.getName()
-                                        + ".validate.minute.nonumber.line", new Object[] { getFieldLabel(), i}));
+                                        + ".validate.minute.nonumber.line", new Object[] { fieldLabel, i}));
                     } else {
                         _htmlTable.append(DBProperties.getFormatedDBProperty(DateTimePanel.class.getName()
-                                    + ".validate.minute.nonumber", new Object[] { getFieldLabel() }));
+                                    + ".validate.minute.nonumber", new Object[] { fieldLabel }));
                     }
                     _htmlTable.append("</td></tr>");
                     ret = false;
@@ -618,10 +610,10 @@ public class DateTimePanel
                     _htmlTable.append("<tr><td>");
                     if (_hour.size() > 1) {
                         _htmlTable.append(DBProperties.getFormatedDBProperty(DateTimePanel.class.getName()
-                                        + ".validate.minute.line", new Object[] { getFieldLabel(), i, 0, 59 }));
+                                        + ".validate.minute.line", new Object[] { fieldLabel, i, 0, 59 }));
                     } else {
                         _htmlTable.append(DBProperties.getFormatedDBProperty(DateTimePanel.class.getName()
-                                        + ".validate.minute", new Object[] { getFieldLabel(), 0, 59 }));
+                                        + ".validate.minute", new Object[] { fieldLabel, 0, 59 }));
                     }
                     _htmlTable.append("</td></tr>");
                     ret = false;
@@ -633,19 +625,9 @@ public class DateTimePanel
         return ret;
     }
 
-    /**
-     * Getter method for the instance variable {@link #fieldLabel}.
-     *
-     * @return value of instance variable {@link #fieldLabel}
-     */
-    public String getFieldLabel()
-    {
-        return this.fieldLabel;
-    }
-
     @Override
-    public IModel<String> getLabel()
+    public FieldConfiguration getFieldConfig()
     {
-        return Model.of(getFieldLabel());
+        return this.fieldConfig;
     }
 }

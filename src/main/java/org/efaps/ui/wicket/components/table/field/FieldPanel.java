@@ -68,10 +68,11 @@ public class FieldPanel
         super(_wicketId, _model);
         final AbstractUIField uiField = _model.getObject();
         try {
-            add(AttributeModifier.replace("title", uiField.getFactory().getStringValue(uiField)));
             add(new AttributeAppender("style",
                             Model.of("text-align:" + uiField.getFieldConfiguration().getAlign()), ";"));
             final Component field = uiField.getComponent("field");
+
+            add(AttributeModifier.replace("title", uiField.getFactory().getStringValue(uiField)));
 
             if (uiField.isHide()) {
                 field.add(new AttributeAppender("style", Model.of("display:none"), ";"));
