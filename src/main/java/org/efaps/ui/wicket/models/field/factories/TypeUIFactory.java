@@ -58,7 +58,12 @@ public final class TypeUIFactory
                                  final AbstractUIField _uiField)
         throws EFapsException
     {
-        return null;
+        Component ret = null;
+        if (applies(_uiField)) {
+           //there is no default editable field for TypeUI, teherfor give the chance to UIType
+           ret = UITypeFactory.get().getEditable(_wicketId, _uiField);
+        }
+        return ret;
     }
 
     /**
@@ -66,10 +71,15 @@ public final class TypeUIFactory
      */
     @Override
     public Component getHidden(final String _wicketId,
-                               final AbstractUIField _abstractUIField)
+                               final AbstractUIField _uiField)
         throws EFapsException
     {
-        return null;
+        Component ret = null;
+        if (applies(_uiField)) {
+           //there is no default hidden field for TypeUI, teherfor give the chance to UIType
+           ret = UITypeFactory.get().getEditable(_wicketId, _uiField);
+        }
+        return ret;
     }
 
     /**
