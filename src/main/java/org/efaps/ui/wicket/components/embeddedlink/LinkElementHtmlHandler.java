@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,25 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.components.embeddedlink;
+
+import org.efaps.ui.wicket.EFapsSession;
+import org.efaps.ui.wicket.models.EmbeddedLink;
 
 import net.sf.jasperreports.engine.JRGenericPrintElement;
 import net.sf.jasperreports.engine.export.GenericElementHtmlHandler;
 import net.sf.jasperreports.engine.export.JRHtmlExporterContext;
 
-import org.efaps.ui.wicket.EFapsSession;
-import org.efaps.ui.wicket.models.EmbeddedLink;
-
 /**
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class LinkElementHtmlHandler
     implements GenericElementHtmlHandler
@@ -48,15 +44,17 @@ public class LinkElementHtmlHandler
                                   final JRGenericPrintElement _element)
     {
         final EmbeddedLink link = (EmbeddedLink) _element.getParameterValue(EmbeddedLink.JASPER_PARAMETERKEY);
-        EFapsSession.get().addEmbededLink(link);
-
         final StringBuilder html = new StringBuilder();
-        html.append("<div style=\"left:")
-            .append(_element.getX()).append("px;top:").append(_element.getY())
-            .append("px;width:").append(_element.getWidth()).append("px;height:")
-            .append(_element.getWidth()).append("px;\">")
-            .append(link.getTag())
-            .append("</div>");
+        if (link.getInstanceKey() != null) {
+            EFapsSession.get().addEmbededLink(link);
+
+            html.append("<div style=\"left:")
+                .append(_element.getX()).append("px;top:").append(_element.getY())
+                .append("px;width:").append(_element.getWidth()).append("px;height:")
+                .append(_element.getWidth()).append("px;\">")
+                .append(link.getTag())
+                .append("</div>");
+        }
         return html.toString();
     }
 }
