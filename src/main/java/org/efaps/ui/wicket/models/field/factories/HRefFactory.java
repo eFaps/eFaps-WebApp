@@ -42,8 +42,10 @@ import org.efaps.ui.wicket.components.split.header.RecentLink;
 import org.efaps.ui.wicket.components.values.LabelField;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
+import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
+import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
@@ -147,11 +149,14 @@ public final class HRefFactory
                 }
                 // ajax if the page or the reference is a ContentContainerPage,
                 // or the table was called as part of a WizardCall meaning connect is done
+                // or it was opened after a form in modal mode
                 boolean ajax = page != null && (page instanceof ContentContainerPage
                                 || pageRef != null && pageRef.getPage() instanceof ContentContainerPage)
                                 || page instanceof TablePage
                                                 && ((AbstractUIPageObject) ((Component) page).getDefaultModelObject())
-                                                .isPartOfWizardCall();
+                                                .isPartOfWizardCall()
+                        || page instanceof FormPage
+                            && Target.MODAL.equals(((UIForm) ((Component) page).getDefaultModelObject()).getTarget());
                 // verify ajax by checking if is not a recent link
                 if (ajax && RequestCycle.get().getActiveRequestHandler() instanceof IComponentRequestHandler) {
                     ajax = ajax && !(((IComponentRequestHandler) RequestCycle.get().getActiveRequestHandler())
