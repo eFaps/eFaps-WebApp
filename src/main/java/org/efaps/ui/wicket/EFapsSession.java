@@ -34,7 +34,6 @@ import java.util.Stack;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.wicket.Application;
 import org.apache.wicket.Component;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.Session;
@@ -53,6 +52,7 @@ import org.efaps.db.Context;
 import org.efaps.jaas.LoginHandler;
 import org.efaps.ui.wicket.components.IRecent;
 import org.efaps.ui.wicket.components.menu.LinkItem;
+import org.efaps.ui.wicket.connectionregistry.RegistryManager;
 import org.efaps.ui.wicket.models.EmbeddedLink;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
@@ -121,7 +121,7 @@ public class EFapsSession
      *
      * @see #openContext()
      */
-    private final Map<String, Object> sessionAttributes = new HashMap<String, Object>();
+    private final Map<String, Object> sessionAttributes = new HashMap<>();
 
     /**
      * File to be shown by the ShowFileCallBackBehavior.
@@ -131,22 +131,17 @@ public class EFapsSession
     /**
      * Stack that contains the recent visited components.
      */
-    private final Stack<IRecent> recentStack = new Stack<IRecent>();
+    private final Stack<IRecent> recentStack = new Stack<>();
 
     /**
      * Links that are embeded in html, generated outside this wicket app.
      */
-    private final List<EmbeddedLink> embededlinks = new ArrayList<EmbeddedLink>();
+    private final List<EmbeddedLink> embededlinks = new ArrayList<>();
 
     /**
      * Size of the Stack for the recent objects.
      */
     private final int stackSize;
-
-    /**
-     * Application Key.
-     */
-    private final String appKey;
 
     /**
      * Standard Constructor from Wicket.
@@ -159,7 +154,6 @@ public class EFapsSession
                         final String _appKey)
     {
         super(_request);
-        this.appKey = _appKey;
         this.stackSize = Configuration.getAttributeAsInteger(ConfigAttribute.RECENTCACHESIZE);
     }
 
@@ -168,7 +162,8 @@ public class EFapsSession
      *
      * @param _bridge the _bridge
      */
-    public synchronized void addExecutionBridge(final IExecutionBridge _bridge) {
+    public synchronized void addExecutionBridge(final IExecutionBridge _bridge)
+    {
         bind();
         this.executionBridges.add(_bridge);
     }
@@ -176,9 +171,10 @@ public class EFapsSession
     /**
      * Prune finished tasks.
      */
-    public synchronized void  pruneFinishedTasks() {
+    public synchronized void  pruneFinishedTasks()
+    {
         final ArrayList<IExecutionBridge> nonFinishedBridges = new ArrayList<>();
-        for(final IExecutionBridge bridge: this.executionBridges) {
+        for (final IExecutionBridge bridge: this.executionBridges) {
             if (!bridge.isFinished()) {
                 nonFinishedBridges.add(bridge);
             }
@@ -197,7 +193,7 @@ public class EFapsSession
                                                   final int _size)
     {
         final int min = Math.min(_size, this.executionBridges.size());
-        return new ArrayList<IExecutionBridge>(this.executionBridges.subList(_start, min)).iterator();
+        return new ArrayList<>(this.executionBridges.subList(_start, min)).iterator();
     }
 
     /**
@@ -228,7 +224,8 @@ public class EFapsSession
      *
      * @return the long
      */
-    public long countJobs() {
+    public long countJobs()
+    {
         return this.executionBridges.size();
     }
 
@@ -351,21 +348,11 @@ public class EFapsSession
             // further requests are made (e.g. setting the current company
             openContext();
             setAttribute(EFapsSession.LOGIN_ATTRIBUTE_NAME, this.userName);
-            getConnectionRegistry().setUser(this.userName, getId());
+            RegistryManager.registerUserSession(this.userName, getId());
         } else {
             this.userName = null;
             this.sessionAttributes.clear();
         }
-    }
-
-    /**
-     * Get the Connection Registry.
-     *
-     * @return value of instance Connection Registry
-     */
-    public ConnectionRegistry getConnectionRegistry()
-    {
-        return EFapsApplication.get().getConnectionRegistry();
     }
 
     /**
@@ -388,7 +375,6 @@ public class EFapsSession
             }
         }
         closeContext();
-        getConnectionRegistry().removeUser(this.userName, getId());
         this.userName = null;
     }
 
@@ -463,7 +449,7 @@ public class EFapsSession
                 if (!Context.isTMActive()) {
                     final ServletWebRequest request = (ServletWebRequest) RequestCycle.get().getRequest();
                     if (request instanceof EFapsRequest || request instanceof EFapsMultipartRequest) {
-                        final Map<String, String[]> parameters = new HashMap<String, String[]>();
+                        final Map<String, String[]> parameters = new HashMap<>();
                         final IRequestParameters reqPara = request.getRequestParameters();
                         for (final String name : reqPara.getParameterNames()) {
                             final List<StringValue> values = reqPara.getParameterValues(name);
@@ -572,10 +558,7 @@ public class EFapsSession
     public void onInvalidate()
     {
         EFapsSession.LOG.trace("Session invalidated: {}", this);
-        if (this.userName != null) {
-            final EFapsApplication app = (EFapsApplication) Application.get(this.appKey);
-            app.getConnectionRegistry().removeUser(this.userName, getId(), app);
-        }
+        RegistryManager.removeUserSession(getId());
         super.onInvalidate();
     }
 

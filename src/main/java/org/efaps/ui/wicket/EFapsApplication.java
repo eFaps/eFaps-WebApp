@@ -17,7 +17,6 @@
 
 package org.efaps.ui.wicket;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -75,6 +74,7 @@ import org.efaps.ui.wicket.background.JobContext;
 import org.efaps.ui.wicket.background.JobRunnable;
 import org.efaps.ui.wicket.behaviors.KeepAliveBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.AutoCompleteBehavior.ACAjaxRequestTarget;
+import org.efaps.ui.wicket.connectionregistry.RegistryManager;
 import org.efaps.ui.wicket.pages.error.UnexpectedErrorPage;
 import org.efaps.ui.wicket.pages.login.LoginPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
@@ -95,11 +95,6 @@ import org.efaps.util.EFapsException;
 public class EFapsApplication
     extends WebApplication
 {
-    /**
-     * Registry for the Connections of Users in this application.
-     */
-    private ConnectionRegistry connectionRegistry;
-
     /** The executor service. */
     private final ExecutorService executorService = new ThreadPoolExecutor(10, 10, 0L, TimeUnit.MILLISECONDS,
                     new LinkedBlockingQueue<Runnable>(), new ThreadFactory()
@@ -133,7 +128,7 @@ public class EFapsApplication
 
         final String appKey = getInitParameter(AbstractFilter.INITPARAM_APP_KEY);
         final String loginRolesTmp = getInitParameter(AbstractFilter.INITPARAM_LOGIN_ROLES);
-        final Set<UUID> temp = new HashSet<UUID>();
+        final Set<UUID> temp = new HashSet<>();
         if (loginRolesTmp != null) {
             final String[] loginRolesAr = loginRolesTmp.split(",");
             for (final String loginRole : loginRolesAr) {
@@ -142,7 +137,7 @@ public class EFapsApplication
         }
         AppAccessHandler.init(appKey, temp);
 
-        final Map<String, String> map = new HashMap<String, String>();
+        final Map<String, String> map = new HashMap<>();
         for (final AppConfigHandler.Parameter param : AppConfigHandler.Parameter.values()) {
             final String configTmp = getInitParameter(param.getKey());
             if (configTmp != null) {
@@ -211,8 +206,6 @@ public class EFapsApplication
                 return new EFapsResourceAggregator(_response);
             }
         });
-        this.connectionRegistry = new ConnectionRegistry();
-
         getRequestCycleSettings().addResponseFilter(new IResponseFilter()
         {
             @Override
@@ -257,16 +250,6 @@ public class EFapsApplication
         return new EFapsRequest(_servletRequest, _filterPath);
     }
 
-    /**
-     * Getter method for the instance variable {@link #connectionRegistry}.
-     *
-     * @return value of instance variable {@link #connectionRegistry}
-     */
-    public final ConnectionRegistry getConnectionRegistry()
-    {
-        return this.connectionRegistry;
-    }
-
     @Override
     public void onEvent(final IEvent<?> _event)
     {
@@ -275,7 +258,7 @@ public class EFapsApplication
             if (wsEvent != null) {
                 final TextMessage msg = wsEvent.getMessage();
                 if (KeepAliveBehavior.MSG.equals(msg.getText())) {
-                    getConnectionRegistry().registerKeepAlive(Session.get().getId(), new Date());
+                    RegistryManager.registerKeepAlive(Session.get());
                     _event.stop();
                 }
             }

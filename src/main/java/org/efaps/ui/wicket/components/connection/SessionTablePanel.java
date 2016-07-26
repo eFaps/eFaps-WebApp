@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 
@@ -41,8 +38,8 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.dbproperty.DBProperties;
-import org.efaps.ui.wicket.EFapsApplication;
 import org.efaps.ui.wicket.components.bpm.AbstractSortableProvider;
+import org.efaps.ui.wicket.connectionregistry.RegistryManager;
 import org.efaps.ui.wicket.models.objects.UIUserSession;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
@@ -53,7 +50,6 @@ import org.efaps.util.EFapsException;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class SessionTablePanel
     extends Panel
@@ -89,9 +85,9 @@ public class SessionTablePanel
         super(_wicketId);
         this.dataProvider = _dataProvider;
 
-        final List<IColumn<UIUserSession, String>> columns = new ArrayList<IColumn<UIUserSession, String>>();
+        final List<IColumn<UIUserSession, String>> columns = new ArrayList<>();
 
-        columns.add(new AbstractColumn<UIUserSession, String>(new Model<String>(""))
+        columns.add(new AbstractColumn<UIUserSession, String>(new Model<>(""))
         {
 
             private static final long serialVersionUID = 1L;
@@ -110,7 +106,7 @@ public class SessionTablePanel
                     public void onClick(final AjaxRequestTarget _target)
                     {
                         final UIUserSession uiSession = (UIUserSession) getDefaultModelObject();
-                        EFapsApplication.get().getConnectionRegistry().markSessionAsInvalid(uiSession.getSessionId());
+                        RegistryManager.invalidateSession(uiSession.getSessionId());
                         info(DBProperties.getFormatedDBProperty(SessionTablePanel.class.getName() + ".Feedback",
                                         new Object[] { uiSession.getSessionId() }));
                         _target.addChildren(getPage(), FeedbackPanel.class);
@@ -136,17 +132,16 @@ public class SessionTablePanel
         final String sessionId = DBProperties.getProperty(SessionTablePanel.class.getName() + ".SessionId");
         final String lastActivity = DBProperties.getProperty(SessionTablePanel.class.getName() + ".LastActivity");
 
-        columns.add(new PropertyColumn<UIUserSession, String>(new Model<String>(userName), "userName",
+        columns.add(new PropertyColumn<UIUserSession, String>(new Model<>(userName), "userName",
                         "userName"));
-        columns.add(new PropertyColumn<UIUserSession, String>(new Model<String>(sessionId), "sessionId", "sessionId"));
+        columns.add(new PropertyColumn<UIUserSession, String>(new Model<>(sessionId), "sessionId", "sessionId"));
 
-        columns.add(new PropertyColumn<UIUserSession, String>(new Model<String>(lastActivity), "lastActivity",
+        columns.add(new PropertyColumn<UIUserSession, String>(new Model<>(lastActivity), "lastActivity",
                         "lastActivity"));
 
-        add(new AjaxFallbackDefaultDataTable<UIUserSession, String>("table", columns, this.dataProvider,
+        add(new AjaxFallbackDefaultDataTable<>("table", columns, this.dataProvider,
                         this.dataProvider.getRowsPerPage()));
     }
-
 
     /**
      * @return update the underlying data

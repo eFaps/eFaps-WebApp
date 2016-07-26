@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.components.connection;
@@ -38,6 +35,7 @@ import org.apache.wicket.util.visit.IVisitor;
 import org.efaps.ui.wicket.EFapsApplication;
 import org.efaps.ui.wicket.components.bpm.AbstractSortableProvider;
 import org.efaps.ui.wicket.components.connection.MessageTablePanel.CheckBoxPanel;
+import org.efaps.ui.wicket.connectionregistry.RegistryManager;
 import org.efaps.ui.wicket.models.PushMsg;
 import org.efaps.ui.wicket.models.objects.UIUser;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
@@ -47,7 +45,6 @@ import org.efaps.util.EFapsException;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class MessagePanel
     extends Panel
@@ -74,7 +71,7 @@ public class MessagePanel
         throws EFapsException
     {
         super(_wicketId);
-        final Form<Void> msgForm = new Form<Void>("msgForm");
+        final Form<Void> msgForm = new Form<>("msgForm");
         add(msgForm);
 
         final AjaxSubmitLink sendMsgBtn = new AjaxSubmitLink("sendMsgBtn", msgForm)
@@ -111,7 +108,7 @@ public class MessagePanel
                             if (selected) {
                                 final CheckBoxPanel panel = (CheckBoxPanel) _checkBox.getParent();
                                 final UIUser user = (UIUser) panel.getDefaultModelObject();
-                                final List<IWebSocketConnection> conns = EFapsApplication.get().getConnectionRegistry()
+                                final List<IWebSocketConnection> conns = RegistryManager
                                                 .getConnections4User(user.getUserName());
                                 for (final IWebSocketConnection conn : conns) {
                                     conn.sendMessage(new PushMsg(msg.toString()));
@@ -158,7 +155,7 @@ public class MessagePanel
         };
         msgForm.add(broadcastMsgBtn);
 
-        final TextArea<String> msg = new TextArea<String>("msg", Model.of(""));
+        final TextArea<String> msg = new TextArea<>("msg", Model.of(""));
         msgForm.add(msg);
 
         final MessageTablePanel messageTable = new MessageTablePanel("messageTable", _pageReference,

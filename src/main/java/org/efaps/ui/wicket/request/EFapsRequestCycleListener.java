@@ -20,14 +20,13 @@
 
 package org.efaps.ui.wicket.request;
 
-import java.util.Date;
-
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.cycle.AbstractRequestCycleListener;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.session.ISessionStore;
 import org.efaps.ui.wicket.EFapsSession;
+import org.efaps.ui.wicket.connectionregistry.RegistryManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,11 +71,7 @@ public class EFapsRequestCycleListener
         final EFapsSession session = getEFapsSession(_cycle.getRequest());
         if (session != null) {
             session.openContext();
-            if (session.getConnectionRegistry().sessionValid(session.getId())) {
-                session.getConnectionRegistry().registerSessionActivity(session.getId(), new Date());
-            } else {
-                session.invalidate();
-            }
+            RegistryManager.registerActivity(session);
         }
         EFapsRequestCycleListener.LOG.debug("Begin of Request.");
     }

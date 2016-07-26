@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,31 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.models.objects;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.wicket.protocol.ws.api.message.IWebSocketPushMessage;
-import org.efaps.ui.wicket.ConnectionRegistry;
-import org.efaps.ui.wicket.EFapsApplication;
+import org.efaps.ui.wicket.connectionregistry.RegistryManager;
+import org.efaps.ui.wicket.connectionregistry.UserSession;
 import org.joda.time.DateTime;
 
 /**
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class UIUserSession
     extends UIUser implements IWebSocketPushMessage
@@ -109,21 +102,17 @@ public class UIUserSession
     }
 
     /**
+     * Gets the UI user sessions.
+     *
      * @return list of currently registered Users
      */
     public static List<UIUserSession> getUIUserSessions()
     {
-        final List<UIUserSession> ret = new ArrayList<UIUserSession>();
-        final ConnectionRegistry registry = EFapsApplication.get().getConnectionRegistry();
-        final Map<String, Set<String>> userSessions = registry.getSessions4Users();
-        final Map<String, Long> activity = registry.getSessionsActivity();
-
-        for (final Entry<String, Set<String>> entry : userSessions.entrySet()) {
-            final Iterator<String> iter = entry.getValue().iterator();
-            while (iter.hasNext()) {
-                final String sessionTmp = iter.next();
-                ret.add(new UIUserSession(entry.getKey(), sessionTmp, activity.get(sessionTmp)));
-            }
+        final List<UIUserSession> ret = new ArrayList<>();
+        final Collection<UserSession> userSessions = RegistryManager.getUserSessions();
+        for (final UserSession userSession : userSessions) {
+            ret.add(new UIUserSession(userSession.getUserName(), userSession.getSessionId(), userSession
+                            .getLastActivity()));
         }
         return ret;
     }

@@ -57,7 +57,6 @@ import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.user.Role;
 import org.efaps.db.Context;
 import org.efaps.message.MessageStatusHolder;
-import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.behaviors.SetMessageStatusBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.BorderContainerBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.BorderContainerBehavior.Design;
@@ -72,6 +71,7 @@ import org.efaps.ui.wicket.components.menu.MenuBarPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.preloader.PreLoaderPanel;
 import org.efaps.ui.wicket.components.search.SearchPanel;
+import org.efaps.ui.wicket.connectionregistry.RegistryManager;
 import org.efaps.ui.wicket.models.PushMsg;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.models.objects.UIUserSession;
@@ -244,7 +244,7 @@ public class MainPage
             final String companyName = context.getCompany() == null ? "" : context.getCompany().getName();
             logo.add(new Label("company", companyName));
             logo.add(new AttributeModifier("class",
-                            new Model<String>("eFapsLogo " + companyName.replaceAll("\\W", ""))));
+                            new Model<>("eFapsLogo " + companyName.replaceAll("\\W", ""))));
             final long usrId = context.getPersonId();
             // Admin_Common_SystemMessageAlert
             final LinkItem alert = new LinkItem("useralert",
@@ -268,9 +268,9 @@ public class MainPage
             };
             add(alert);
             alert.add(new MessageListenerBehavior());
-            alert.add(new AttributeModifier("class", new Model<String>("eFapsUserMsg")));
+            alert.add(new AttributeModifier("class", new Model<>("eFapsUserMsg")));
             if (!MessageStatusHolder.hasReadMsg(usrId)) {
-                alert.add(new AttributeModifier("style", new Model<String>("display:none")));
+                alert.add(new AttributeModifier("style", new Model<>("display:none")));
             }
             final WebMarkupContainer socketMsgContainer = new WebMarkupContainer("socketMsgContainer");
             add(socketMsgContainer);
@@ -286,8 +286,7 @@ public class MainPage
                     @Override
                     protected void onConnect(final ConnectedMessage _message)
                     {
-                        EFapsSession.get().getConnectionRegistry()
-                                        .addMsgConnection(_message.getSessionId(), _message.getKey());
+                        RegistryManager.addMsgConnection(_message.getSessionId(), _message.getKey());
                     }
                 });
                 socketMsgContainer.add(this.socketMsg);
@@ -300,7 +299,7 @@ public class MainPage
                     public void onClick(final AjaxRequestTarget _target)
                     {
                         final MarkupContainer msgContainer = MainPage.this.socketMsg.getParent();
-                        msgContainer.add(new AttributeModifier("style", new Model<String>("display:none")));
+                        msgContainer.add(new AttributeModifier("style", new Model<>("display:none")));
                         _target.add(msgContainer);
                     }
                 };
@@ -345,7 +344,7 @@ public class MainPage
                 if (msg instanceof PushMsg) {
                     this.socketMsg.setDefaultModelObject(wsEvent.getMessage().toString());
                     final MarkupContainer msgContainer = this.socketMsg.getParent();
-                    msgContainer.add(new AttributeModifier("style", new Model<String>("display:block")));
+                    msgContainer.add(new AttributeModifier("style", new Model<>("display:block")));
                     wsEvent.getHandler().add(msgContainer);
                 } else if (msg instanceof UIUserSession) {
                     final String sessId = ((UIUserSession) msg).getSessionId();

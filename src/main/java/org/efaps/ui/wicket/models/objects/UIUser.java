@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,26 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.models.objects;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.efaps.ui.wicket.ConnectionRegistry;
-import org.efaps.ui.wicket.EFapsApplication;
+import org.efaps.ui.wicket.connectionregistry.RegistryManager;
 
 /**
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class UIUser
     implements Serializable
@@ -82,15 +78,13 @@ public class UIUser
         return ToStringBuilder.reflectionToString(this);
     }
 
-
     /**
      * @return list of currently registered Users
      */
     public static List<UIUser> getUIUser()
     {
-        final List<UIUser> ret = new ArrayList<UIUser>();
-        final ConnectionRegistry registry = EFapsApplication.get().getConnectionRegistry();
-        final List<String> users = registry.getUsers();
+        final List<UIUser> ret = new ArrayList<>();
+        final Collection<String> users = RegistryManager.getUsers();
         for (final String user : users) {
             ret.add(new UIUser(user));
         }

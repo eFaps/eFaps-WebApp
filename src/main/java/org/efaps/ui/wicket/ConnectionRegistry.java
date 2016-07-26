@@ -135,7 +135,7 @@ public class ConnectionRegistry
             synchronized (ConnectionRegistry.INVALIDATED) {
                 invalidated = Session.get().getApplication().getMetaData(ConnectionRegistry.INVALIDATED);
                 if (invalidated == null) {
-                    invalidated = new ConcurrentHashSet<String>();
+                    invalidated = new ConcurrentHashSet<>();
                     Session.get().getApplication().setMetaData(ConnectionRegistry.INVALIDATED, invalidated);
                 }
             }
@@ -201,7 +201,7 @@ public class ConnectionRegistry
             synchronized (ConnectionRegistry.INVALIDATED) {
                 invalidated = Session.get().getApplication().getMetaData(ConnectionRegistry.INVALIDATED);
                 if (invalidated == null) {
-                    invalidated = new ConcurrentHashSet<String>();
+                    invalidated = new ConcurrentHashSet<>();
                     Session.get().getApplication().setMetaData(ConnectionRegistry.INVALIDATED, invalidated);
                 }
             }
@@ -319,7 +319,7 @@ public class ConnectionRegistry
             synchronized (ConnectionRegistry.USER2SESSION) {
                 sessions = user2session.get(_userName);
                 if (sessions == null) {
-                    sessions = new ConcurrentHashSet<String>();
+                    sessions = new ConcurrentHashSet<>();
                     user2session.put(_userName, sessions);
                 }
             }
@@ -402,7 +402,7 @@ public class ConnectionRegistry
      */
     public List<IWebSocketConnection> getConnections4User(final String _login)
     {
-        final List<IWebSocketConnection> ret = new ArrayList<IWebSocketConnection>();
+        final List<IWebSocketConnection> ret = new ArrayList<>();
         final ConcurrentMap<String, ConcurrentHashSet<String>> user2session = Session.get().getApplication()
                         .getMetaData(ConnectionRegistry.USER2SESSION);
         final ConcurrentMap<String, IKey> sessionId2pageId = Session.get().getApplication()
@@ -459,12 +459,12 @@ public class ConnectionRegistry
      */
     public List<String> getSession4User(final String _userName)
     {
-        List<String> ret = new ArrayList<String>();
+        List<String> ret = new ArrayList<>();
         final ConcurrentMap<String, ConcurrentHashSet<String>> user2session = Session.get().getApplication()
                         .getMetaData(ConnectionRegistry.USER2SESSION);
         if (user2session != null) {
             final ConcurrentHashSet<String> sessions = user2session.get(_userName);
-            ret = new ArrayList<String>(sessions);
+            ret = new ArrayList<>(sessions);
         }
         return ret;
     }
@@ -474,11 +474,11 @@ public class ConnectionRegistry
      */
     public List<String> getUsers()
     {
-        List<String> ret = new ArrayList<String>();
+        List<String> ret = new ArrayList<>();
         final ConcurrentMap<String, ConcurrentHashSet<String>> user2session = Session.get().getApplication()
                         .getMetaData(ConnectionRegistry.USER2SESSION);
         if (user2session != null) {
-            ret = new ArrayList<String>(user2session.keySet());
+            ret = new ArrayList<>(user2session.keySet());
         }
         return ret;
     }
@@ -490,7 +490,7 @@ public class ConnectionRegistry
     {
         final ConcurrentMap<String, ConcurrentHashSet<String>> user2session = Session.get().getApplication()
                         .getMetaData(ConnectionRegistry.USER2SESSION);
-        final Map<String, Set<String>> tmpmap = new TreeMap<String, Set<String>>();
+        final Map<String, Set<String>> tmpmap = new TreeMap<>();
         if (user2session != null) {
             for (final Entry<String, ConcurrentHashSet<String>> entry : user2session.entrySet()) {
                 tmpmap.put(entry.getKey(), Collections.unmodifiableSet(entry.getValue()));
@@ -585,7 +585,7 @@ public class ConnectionRegistry
         public void run()
         {
             final EFapsApplication app = (EFapsApplication) Application.get(this.applicationKey);
-            app.getConnectionRegistry().sendKeepAlive(app);
+
         }
     }
 }
