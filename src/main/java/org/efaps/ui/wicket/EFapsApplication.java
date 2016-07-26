@@ -95,6 +95,9 @@ import org.efaps.util.EFapsException;
 public class EFapsApplication
     extends WebApplication
 {
+    /** The max inactive interval. */
+    private static int MAXINACTIVEINTERVAL = 0;
+
     /** The executor service. */
     private final ExecutorService executorService = new ThreadPoolExecutor(10, 10, 0L, TimeUnit.MILLISECONDS,
                     new LinkedBlockingQueue<Runnable>(), new ThreadFactory()
@@ -247,6 +250,9 @@ public class EFapsApplication
     public WebRequest newWebRequest(final HttpServletRequest _servletRequest,
                                     final String _filterPath)
     {
+        if (MAXINACTIVEINTERVAL == 0) {
+            MAXINACTIVEINTERVAL = _servletRequest.getSession().getMaxInactiveInterval();
+        }
         return new EFapsRequest(_servletRequest, _filterPath);
     }
 
@@ -317,6 +323,16 @@ public class EFapsApplication
     public static EFapsApplication get()
     {
         return (EFapsApplication) Application.get();
+    }
+
+    /**
+     * Gets the max inactive interval.
+     *
+     * @return the max inactive interval
+     */
+    public static int getMaxInactiveInterval()
+    {
+        return MAXINACTIVEINTERVAL;
     }
 
     /**

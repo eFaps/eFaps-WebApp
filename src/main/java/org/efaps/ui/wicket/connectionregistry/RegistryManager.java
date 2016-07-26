@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -83,7 +84,12 @@ public final class RegistryManager
     public static void registerUserSession(final String _userName,
                                            final String _sessionId)
     {
-        getCache().put(_sessionId, new UserSession().setUserName(_userName).setSessionId(_sessionId));
+        if (EFapsApplication.getMaxInactiveInterval() > 0) {
+            getCache().put(_sessionId, new UserSession().setUserName(_userName).setSessionId(_sessionId),
+                           EFapsApplication.getMaxInactiveInterval() + 600, TimeUnit.SECONDS);
+        } else {
+            getCache().put(_sessionId, new UserSession().setUserName(_userName).setSessionId(_sessionId));
+        }
         registerLogin4History(_userName, _sessionId);
     }
 
