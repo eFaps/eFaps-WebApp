@@ -90,7 +90,7 @@ public class UITable
     /**
      * Map contains the applied filters to this table.
      */
-    private final Map<String, TableFilter> filters = new HashMap<String, TableFilter>();
+    private final Map<String, TableFilter> filters = new HashMap<>();
 
     /**
      * Map is used to store the filters in relation to a field name. It is used
@@ -101,14 +101,14 @@ public class UITable
      * @see #getInstanceListsOld()
      * @see #execute4InstanceOld()
      */
-    private final Map<String, TableFilter> filterTempCache = new HashMap<String, TableFilter>();
+    private final Map<String, TableFilter> filterTempCache = new HashMap<>();
 
     /**
      * All evaluated rows of this table are stored in this list.
      *
      * @see #getValues
      */
-    private final List<UIRow> values = new ArrayList<UIRow>();
+    private final List<UIRow> values = new ArrayList<>();
 
     /**
      * Thie Row is used in case of edit to create new empty rows.
@@ -228,7 +228,7 @@ public class UITable
         throws EFapsException
     {
         // get the filters that must be applied against the database
-        final Map<String, Map<String, Object>> dataBasefilters = new HashMap<String, Map<String, Object>>();
+        final Map<String, Map<String, Object>> dataBasefilters = new HashMap<>();
         final Iterator<Entry<String, TableFilter>> iter = this.filters.entrySet().iterator();
         this.filterTempCache.clear();
         while (iter.hasNext()) {
@@ -287,7 +287,7 @@ public class UITable
     private void execute4Instance(final List<Instance> _instances)
         throws EFapsException
     {
-        final Set<String>altOIDSel = new HashSet<String>();
+        final Set<String>altOIDSel = new HashSet<>();
 
         // evaluate for all expressions in the table
         final MultiPrintQuery multi = new MultiPrintQuery(_instances);
@@ -380,7 +380,7 @@ public class UITable
         multi.execute();
 
         if (!altOIDSel.isEmpty()) {
-            final List<Instance> inst = new ArrayList<Instance>();
+            final List<Instance> inst = new ArrayList<>();
             for (final String sel : altOIDSel) {
                 inst.addAll(multi.getInstances4Select(sel));
             }
@@ -736,7 +736,7 @@ public class UITable
     public List<String> getFilterPickList(final UITableHeader _uitableHeader)
         throws EFapsException
     {
-        final List<String> ret = new ArrayList<String>();
+        final List<String> ret = new ArrayList<>();
         for (final UIRow rowmodel : this.values) {
             for (final IFilterable cell : rowmodel.getCells()) {
                 if (cell.belongsTo(_uitableHeader.getFieldId())) {
@@ -773,7 +773,7 @@ public class UITable
     private List<Status> getStatus4Type(final Type _type)
         throws CacheReloadException
     {
-        final List<Status> ret = new ArrayList<Status>();
+        final List<Status> ret = new ArrayList<>();
         final StatusGroup grp = Status.get(_type.getUUID());
         if (grp != null) {
             ret.addAll(grp.values());
@@ -790,7 +790,7 @@ public class UITable
      */
     private void storeFilters()
     {
-        final Map<String, TableFilter> sessFilter = new HashMap<String, TableFilter>();
+        final Map<String, TableFilter> sessFilter = new HashMap<>();
         for (final Entry<String, TableFilter> entry : this.filters.entrySet()) {
             sessFilter.put(entry.getKey(), entry.getValue());
         }
@@ -812,7 +812,7 @@ public class UITable
     public List<UIRow> getValues()
         throws EFapsException
     {
-        List<UIRow> ret = new ArrayList<UIRow>();
+        List<UIRow> ret = new ArrayList<>();
         if (isFiltered()) {
             for (final UIRow row : this.values) {
                 boolean filtered = false;
@@ -889,6 +889,16 @@ public class UITable
         this.values.clear();
         getHeaders().clear();
         getHidden().clear();
+    }
+
+    /**
+     * Checks if is grid.
+     *
+     * @return true, if is grid
+     */
+    public boolean isGrid()
+    {
+        return false;
     }
 
     /**
@@ -1097,7 +1107,7 @@ public class UITable
                 if (filter.getDefaultValue() == null) {
                     this.filterList = Collections.EMPTY_SET;
                 } else {
-                    final Set<Long> list = new HashSet<Long>();
+                    final Set<Long> list = new HashSet<>();
                     final Type grptype = _uitableHeader.getAttribute().getLink();
                     final List<Status> status = getStatus4Type(grptype);
                     final String[] defaultAr = filter.getDefaultValue().split(";");
@@ -1184,7 +1194,7 @@ public class UITable
         {
             this.headerFieldId = _uitableHeader.getFieldId();
             this.filterType = _uitableHeader.getFilterType();
-            final Set<UUID> list = new HashSet<UUID>();
+            final Set<UUID> list = new HashSet<>();
             if (_uiClassification.isSelected()) {
                 list.add(_uiClassification.getClassificationUUID());
             }
@@ -1214,7 +1224,7 @@ public class UITable
          */
         public Map<String, Object> getMap4esjp()
         {
-            final Map<String, Object> ret = new HashMap<String, Object>();
+            final Map<String, Object> ret = new HashMap<>();
             if (getParameters() != null) {
                 ret.putAll(getParameters());
             } else if (this.filterList == null) {

@@ -2,7 +2,7 @@
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <!--
 
-  Copyright 2003 - 2014 The eFaps Team
+  Copyright 2003 - 2016 The eFaps Team
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -16,11 +16,6 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 
-  Author:          The eFaps Team
-  Revision:        $Rev:1491 $
-  Last Changed:    $Date:2007-10-15 18:40:43 -0500 (Mon, 15 Oct 2007) $
-  Last Changed By: $Author:jmox $
-
 -->
 
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org">
@@ -31,6 +26,9 @@
             <div class="eFapsContentDiv">
                 <div wicket:id="tablebody" />
             </div>
+        </form>
+        <form wicket:id="gridForm">
+            <div wicket:id="grid" style="width: 100%;heigth:800px;"></div>
         </form>
     </wicket:extend>
 </body>
