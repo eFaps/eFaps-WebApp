@@ -46,6 +46,7 @@ import org.efaps.admin.ui.AbstractCommand.SortDirection;
 import org.efaps.admin.ui.Image;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.admin.ui.field.Filter;
+import org.efaps.api.ci.UICommandProperty;
 import org.efaps.api.ci.UITableFieldProperty;
 import org.efaps.api.ui.FilterBase;
 import org.efaps.api.ui.FilterType;
@@ -895,10 +896,12 @@ public class UITable
      * Checks if is grid.
      *
      * @return true, if is grid
+     * @throws CacheReloadException the cache reload exception
      */
     public boolean isGrid()
+        throws CacheReloadException
     {
-        return false;
+        return "GridX".equals(getCommand().getProperty(UICommandProperty.TARGET_TABLE_TYPE));
     }
 
     /**
