@@ -108,11 +108,22 @@ public class GridXComponent
                 .append("'gridx/modules/HScroller',")
                 .append("'gridx/modules/SingleSort',")
                 .append("'gridx/modules/move/Column',")
-                .append("'gridx/modules/select/Column',")
+                .append("'gridx/modules/extendedSelect/Column',")
+                .append("'gridx/modules/extendedSelect/Cell',")
                 .append("'gridx/modules/dnd/Column',")
-                .append("'gridx/core/model/extensions/FormatSort'")
+                .append("'gridx/core/model/extensions/FormatSort',")
+                .append("'gridx/support/Summary',")
+                .append("'gridx/support/QuickFilter',")
+                .append("'gridx/modules/Bar',")
+                .append("'gridx/modules/Filter'")
                 .append("], function(query, domGeom, win, domStyle, ready, registry, Memory, Cache, Grid, ")
-                .append("VirtualVScroller, ColumnResizer,HScroller, SingleSort, MoveColumn, SelectColumn, DnDColumn, FormatSort){\n")
+                .append("VirtualVScroller, ColumnResizer,HScroller, SingleSort, MoveColumn, SelectColumn, SelectCell, ")
+                .append("DnDColumn, FormatSort, Summary, QuickFilter, Bar, Filter){\n")
+
+                .append("var cp = function(item1, item2) {\n")
+                .append("return item1.s < item2.s ? -1 : (item1.s > item2.s ? 1 : 0);\n")
+                .append("}\n")
+
                 .append("var store = new Memory({\n")
                 .append("data: [\n");
 
@@ -126,13 +137,12 @@ public class GridXComponent
                 js.append("{ id:").append(i);
                 for (final IFilterable uiCell: row.getCells()) {
                     final String val = ((UIField) uiCell).getFactory().getPickListValue((AbstractUIField) uiCell);
-                    final String orderVal = String.valueOf(((UIField) uiCell).getFactory().getCompareValue((AbstractUIField) uiCell));
+                    final String orderVal = String.valueOf(((UIField) uiCell).getFactory()
+                                    .getCompareValue((AbstractUIField) uiCell));
 
                     js.append(",").append(((UIField) uiCell).getFieldConfiguration().getName()).append(":")
-                        .append("{ val:")
-                        .append("'").append(StringEscapeUtils.escapeEcmaScript(val)).append("', orderVal:")
-                        .append("'").append(StringEscapeUtils.escapeEcmaScript(orderVal)).append("'")
-                        .append("}");
+                        .append("{ v:'").append(StringEscapeUtils.escapeEcmaScript(val))
+                        .append("', s:'").append(StringEscapeUtils.escapeEcmaScript(orderVal)).append("'}");
                 }
                 js.append("}");
                 i++;
@@ -153,12 +163,9 @@ public class GridXComponent
                     .append(" field:'").append(header.getFieldName()).append("',")
                     .append(" name:'").append(header.getLabel()).append("',\n")
                     .append("formatter: function(obj) {\n")
-                    .append("return obj.").append(header.getFieldName()).append(".val;\n")
+                    .append("return obj.").append(header.getFieldName()).append(".v;\n")
                     .append("},\n")
-                    .append("comparator: function(item1, item2) {\n")
-                    .append(" return item1.orderVal > item2.orderVal;\n")
-                    .append("    }\n");
-
+                    .append("comparator: cp\n");
                 if (header.getFieldConfig().getField().getReference() != null) {
                     js.append(", decorator: function(data, rowId, visualIndex, cell){\n")
                         .append("return '<a href=\"").append(
@@ -178,13 +185,20 @@ public class GridXComponent
                 .append("cacheClass: Cache,")
                 .append("store: store,")
                 .append("structure: structure,\n")
+                .append("barTop: [\n")
+                    .append("Summary,\n")
+                    .append("{pluginClass: QuickFilter, style: 'text-align: center;'} \n")
+                .append("],\n")
                 .append("modules: [\n")
                     .append("VirtualVScroller,\n")
                     .append("ColumnResizer,\n")
                     .append("SingleSort,\n")
                     .append("MoveColumn,\n")
                     .append("SelectColumn,\n")
+                    .append("SelectCell,\n")
                     .append("DnDColumn,\n")
+                    .append("Bar,\n")
+                    .append("Filter,\n")
                     .append("HScroller")
                 .append("],\n")
                 .append("modelExtensions: [\n")
