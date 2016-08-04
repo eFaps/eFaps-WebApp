@@ -85,8 +85,8 @@ public final class RegistryManager
                                            final String _sessionId)
     {
         if (EFapsApplication.getMaxInactiveInterval() > 0) {
-            getCache().put(_sessionId, new UserSession().setUserName(_userName).setSessionId(_sessionId),
-                           EFapsApplication.getMaxInactiveInterval() + 600, TimeUnit.SECONDS);
+            getCache().put(_sessionId, new UserSession().setUserName(_userName).setSessionId(_sessionId), -1,
+                            TimeUnit.MINUTES, EFapsApplication.getMaxInactiveInterval() + 600, TimeUnit.SECONDS);
         } else {
             getCache().put(_sessionId, new UserSession().setUserName(_userName).setSessionId(_sessionId));
         }
