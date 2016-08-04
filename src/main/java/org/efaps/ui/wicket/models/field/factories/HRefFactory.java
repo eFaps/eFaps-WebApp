@@ -155,7 +155,7 @@ public final class HRefFactory
                                 || page instanceof TablePage
                                                 && ((AbstractUIPageObject) ((Component) page).getDefaultModelObject())
                                                 .isPartOfWizardCall()
-                        || page instanceof FormPage
+                        || page instanceof FormPage && pageRef != null && pageRef.getPage() instanceof FormPage
                             && Target.MODAL.equals(((UIForm) ((Component) page).getDefaultModelObject()).getTarget());
                 // verify ajax by checking if is not a recent link
                 if (ajax && RequestCycle.get().getActiveRequestHandler() instanceof IComponentRequestHandler) {
