@@ -19,6 +19,7 @@ package org.efaps.ui.wicket.components;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -41,12 +42,15 @@ import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.date.IDateListener;
 import org.efaps.ui.wicket.components.values.DropDownField;
 import org.efaps.ui.wicket.components.values.IValueConverter;
+import org.efaps.ui.wicket.models.field.IUIElement;
+import org.efaps.ui.wicket.models.field.set.UIFieldSet;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.DropDownOption;
 import org.efaps.ui.wicket.models.objects.UIFieldForm;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIForm.Element;
 import org.efaps.ui.wicket.models.objects.UIForm.ElementType;
+import org.efaps.ui.wicket.models.objects.UIForm.FormRow;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.request.EFapsRequest;
 import org.efaps.ui.wicket.request.EFapsRequestParametersAdapter;
@@ -75,12 +79,12 @@ public class FormContainer
     /**
      * Set contains the date components of this formpanel.
      */
-    private final Set<DateTimePanel> dateComponents = new HashSet<DateTimePanel>();
+    private final Set<DateTimePanel> dateComponents = new HashSet<>();
 
     /**
      * Set contains value Converters.
      */
-    private final Set<IValueConverter> valueConverters = new LinkedHashSet<IValueConverter>();
+    private final Set<IValueConverter> valueConverters = new LinkedHashSet<>();
 
     /**
      * Constructor setting the wicket id of this component.
@@ -194,7 +198,7 @@ public class FormContainer
                     }
                 }
 
-                final Map<String, String[]> parameters = new HashMap<String, String[]>();
+                final Map<String, String[]> parameters = new HashMap<>();
                 final IRequestParameters reqPara = getRequest().getRequestParameters();
                 for (final String name : reqPara.getParameterNames()) {
                     final List<StringValue> values = reqPara.getParameterValues(name);
@@ -244,23 +248,27 @@ public class FormContainer
         if (getPage().getDefaultModelObject() instanceof UIForm) {
             for (final Element element : ((UIForm) getPage().getDefaultModelObject()).getElements()) {
                 if (element.getType().equals(ElementType.FORM)) {
-                    //for (final FormRow row : ((UIForm.FormElement) element.getElement()).getRowModels()) {
-                    //    for (final AbstractInstanceObject cell : row.getValues()) {
-                            //if (cell instanceof UIFormCellSet) {
-                            //    ((UIFormCellSet) cell).resetIndex();
-                            //}
-                    //  }
-                    //}
+                    final Iterator<FormRow> iter = ((UIForm.FormElement) element.getElement()).getRowModels();
+                    while (iter.hasNext()) {
+                        final FormRow row = iter.next();
+                        for (final IUIElement uiElement : row.getValues()) {
+                            if (uiElement instanceof UIFieldSet) {
+                                ((UIFieldSet) uiElement).resetIndex();
+                            }
+                        }
+                    }
                 } else if (element.getType().equals(ElementType.SUBFORM)) {
                     for (final Element nElement : ((UIFieldForm) element.getElement()).getElements()) {
                         if (nElement.getType().equals(ElementType.FORM)) {
-                            //        for (final FormRow row : ((UIForm.FormElement) nElement.getElement()).getRowModels()) {
-                            //  for (final AbstractInstanceObject cell : row.getValues()) {
-                                    //        if (cell instanceof UIFormCellSet) {
-                                    //  ((UIFormCellSet) cell).resetIndex();
-                                    //}
-                            //  }
-                            // }
+                            final Iterator<FormRow> iter = ((UIForm.FormElement) nElement.getElement()).getRowModels();
+                            while (iter.hasNext()) {
+                                final FormRow row = iter.next();
+                                for (final IUIElement uiElement : row.getValues()) {
+                                    if (uiElement instanceof UIFieldSet) {
+                                        ((UIFieldSet) uiElement).resetIndex();
+                                    }
+                                }
+                            }
                         }
                     }
                 }
