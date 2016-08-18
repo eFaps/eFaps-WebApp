@@ -45,7 +45,7 @@ public abstract class AbstractUIHeaderObject
      * This enum holds the Values used as part of the key for the UserAttributes
      * or SessionAttribute witch belong to a TableModel.
      */
-    public static enum UserCacheKey
+    public enum UserCacheKey
     {
         /**
          * Key for UserAttributes used for the order of Columns.
@@ -66,7 +66,11 @@ public abstract class AbstractUIHeaderObject
         /**
          * Key for SessionAttribute used for the filter of a table.
          */
-        FILTER("filter");
+        FILTER("filter"),
+        /**
+         * Key for SessionAttribute used for the filter of a table.
+         */
+        GRIDX("gridx");
 
         /**
          * Value of the user attribute.
@@ -78,7 +82,7 @@ public abstract class AbstractUIHeaderObject
          *
          * @param _value Value
          */
-        private UserCacheKey(final String _value)
+        UserCacheKey(final String _value)
         {
             this.value = _value;
         }

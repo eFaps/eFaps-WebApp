@@ -21,6 +21,9 @@ package org.efaps.ui.wicket.components.table;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.wicket.Page;
 import org.apache.wicket.RestartResponseException;
+import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.attributes.CallbackParameter;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.head.CssHeaderItem;
@@ -35,6 +38,7 @@ import org.apache.wicket.util.string.StringValue;
 import org.apache.wicket.util.string.StringValueConversionException;
 import org.efaps.admin.ui.Menu;
 import org.efaps.api.ui.FilterBase;
+import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.behaviors.dojo.AbstractDojoBehavior;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
@@ -78,6 +82,7 @@ public class GridXComponent
     {
         super(_wicketId, _model);
         setOutputMarkupId(true);
+        add(new PersistAjaxBehavior());
     }
 
     @Override
@@ -96,6 +101,8 @@ public class GridXComponent
 
                 .append("<script type=\"text/javascript\">")
                 .append("require([")
+                .append("'dojo/_base/lang',")
+                .append("'dojo/_base/json',")
                 .append("'dojo/query',")
                 .append("'dojo/dom-geometry',")
                 .append("'dojo/window',")
@@ -120,6 +127,7 @@ public class GridXComponent
                 .append("'gridx/support/menu/AZFilterMenu',")
                 .append("'gridx/modules/Bar',")
                 .append("'gridx/modules/Filter',")
+                .append("'gridx/modules/Persist',")
 
                 .append("'dijit/form/DropDownButton',")
                 .append("'dijit/form/TextBox',")
@@ -127,9 +135,9 @@ public class GridXComponent
                 .append("'dojo/ready'")
                 .append("")
 
-                .append("], function(query, domGeom, win, domStyle, ready, registry, Memory, Cache, Grid, ")
+                .append("], function(lang, json, query, domGeom, win, domStyle, ready, registry, Memory, Cache, Grid, ")
                 .append("VirtualVScroller, ColumnResizer,HScroller, SingleSort, MoveColumn, SelectColumn, SelectCell, ")
-                .append("DnDColumn, HeaderDialog, FormatSort, Summary, QuickFilter, AZFilterMenu, Bar, Filter, ")
+                .append("DnDColumn, HeaderDialog, FormatSort, Summary, QuickFilter, AZFilterMenu, Bar, Persist, Filter, ")
                 .append("DropDownButton,TextBox,TooltipDialog,ready")
                 .append("){\n")
 
@@ -216,8 +224,28 @@ public class GridXComponent
                     .append("HeaderDialog,\n")
                     .append("Bar,\n")
                     .append("Filter,\n")
-                    .append("HScroller")
+                    .append("HScroller,\n")
+                    .append("Persist\n")
                 .append("],\n")
+                .append("persistGet: function(_key) {");
+
+            if (Context.getThreadContext().containsUserAttribute(uiTable.getCacheKey(UITable.UserCacheKey.GRIDX))) {
+                js.append("return ").append(Context.getThreadContext().getUserAttribute(
+                                uiTable.getCacheKey(UITable.UserCacheKey.GRIDX)));
+            }
+
+            js.append("},\n")
+                .append("persistPut: function(_key, _value, _options) {\n")
+                .append("var value;")
+                .append("if(_value && lang.isObject(_value)){\n")
+                .append("value = json.toJson(_value);\n")
+                .append("}else{\n")
+                .append("value = {expires: -1};\n")
+                .append("}\n")
+
+                .append(getBehaviors(PersistAjaxBehavior.class).get(0).getCallbackFunctionBody(
+                                CallbackParameter.explicit("value")))
+                .append("},\n")
                 .append("modelExtensions: [\n")
                     .append("FormatSort\n")
                     .append("]\n")
@@ -236,6 +264,7 @@ public class GridXComponent
                 .append("});")
                 .append("\n")
                 .append("\n</script>");
+
             replaceComponentTagBody(_markupStream, _openTag, js);
         } catch (final EFapsException e) {
             // TODO Auto-generated catch block
@@ -281,6 +310,39 @@ public class GridXComponent
         } catch (final StringValueConversionException | EFapsException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * The Class AjaxBehavior.
+     *
+     * @author The eFaps Team
+     */
+    public static class PersistAjaxBehavior
+        extends AbstractDefaultAjaxBehavior
+    {
+
+        /** The Constant serialVersionUID. */
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        protected void respond(final AjaxRequestTarget _target)
+        {
+
+            try {
+                final StringValue value = getComponent().getRequest().getRequestParameters().getParameterValue(
+                                "value");
+                if (!value.isEmpty()) {
+                    final UITable uiTable = (UITable) getComponent().getDefaultModelObject();
+
+                    Context.getThreadContext().setUserAttribute(uiTable.getCacheKey(UITable.UserCacheKey.GRIDX), value
+                                .toString());
+                }
+            } catch (final EFapsException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
         }
     }
 }
