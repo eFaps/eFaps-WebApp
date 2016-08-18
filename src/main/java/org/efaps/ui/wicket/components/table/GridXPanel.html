@@ -17,11 +17,18 @@
 -->
 <html xmlns:wicket>
 <wicket:panel>
-    <div data-dojo-type="dijit/TooltipDialog" id="myFormDialog"
+    <div wicket:id="filterRepeater" data-dojo-type="dijit/TooltipDialog" id="myFormDialog"
         data-dojo-id="myFormDialog" title="Accept or decline agreement terms"
         style="display: none">
-        <div wicket:id="filter"></div>
-        <span wicket:id="btn"></span>
+        <script type="dojo/on" data-dojo-event="blur" data-dojo-args="e">
+            require(["dijit/popup"], function(popup){
+                popup.close(e);
+            });
+        </script>
+        <form wicket:id="filterForm">
+            <div wicket:id="filter"></div>
+            <span wicket:id="btn"></span>
+        </form>
     </div>
     <div wicket:id="grid" style="width: 100%; heigth: 800px;"></div>
 </wicket:panel>

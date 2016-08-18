@@ -189,8 +189,7 @@ public class GridXComponent
                         .append("}\n");
                 }
                 if (header.getFilter() != null && FilterBase.DATABASE.equals(header.getFilter().getBase())) {
-                    //final DojoTooltipDialog dialog = new DojoTooltipDialog(header.getFieldId() + "Dialog");
-                    js.append(", dialog: 'myFormDialog'"); //.append(dialog.getScript());
+                    js.append(", dialog: 'fttd_").append(header.getFieldId()).append("', headerClass:'eFapsFiltered'");
                 }
                 js.append("}");
                 j++;
