@@ -20,6 +20,7 @@ package org.efaps.ui.wicket.components.button;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.IAjaxIndicatorAware;
+import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.head.CssHeaderItem;
@@ -153,9 +154,9 @@ public abstract class AjaxButton<T>
     {
         final ButtonLink<T> link;
         if (_model == null) {
-            link = new ButtonLink<T>("button");
+            link = new ButtonLink<>("button");
         } else {
-            link = new ButtonLink<T>("button", _model);
+            link = new ButtonLink<>("button", _model);
         }
         add(link);
         link.add(new ButtonImage("icon", _reference));
@@ -186,6 +187,17 @@ public abstract class AjaxButton<T>
      * @param _target AjaxRequestTarget
      */
     public abstract void onSubmit(final AjaxRequestTarget _target);
+
+    /**
+     * Update ajax attributes.
+     *
+     * @param attributes the attributes
+     */
+    protected void updateAjaxAttributes(final AjaxRequestAttributes attributes)
+    {
+        // to be able to overwrite
+    }
+
 
     /**
      * Underlying link.
@@ -247,6 +259,13 @@ public abstract class AjaxButton<T>
                 public boolean getDefaultProcessing()
                 {
                     return findParent(AjaxButton.class).getDefaultProcessing();
+                }
+
+                @Override
+                protected void updateAjaxAttributes(final AjaxRequestAttributes attributes)
+                {
+                    super.updateAjaxAttributes(attributes);
+                    findParent(AjaxButton.class).updateAjaxAttributes(attributes);
                 }
             });
         }

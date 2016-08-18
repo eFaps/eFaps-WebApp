@@ -28,7 +28,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
-import org.efaps.ui.wicket.components.table.GridXComponent;
+import org.efaps.ui.wicket.components.table.GridXPanel;
 import org.efaps.ui.wicket.components.table.TablePanel;
 import org.efaps.ui.wicket.components.table.header.HeaderPanel;
 import org.efaps.ui.wicket.models.objects.UITable;
@@ -161,7 +161,7 @@ public class TablePage
             add(new WebMarkupContainer("form").setVisible(false));
             final FormContainer form = new FormContainer("gridForm");
             this.add(form);
-            form.add(new GridXComponent("grid", super.getDefaultModel()));
+            form.add(new GridXPanel("gridPanel", Model.of(uiTable)));
             super.addComponents(form);
         } else {
             add(new WebMarkupContainer("gridForm").setVisible(false));

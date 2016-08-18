@@ -34,6 +34,7 @@ import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.util.string.StringValue;
 import org.apache.wicket.util.string.StringValueConversionException;
 import org.efaps.admin.ui.Menu;
+import org.efaps.api.ui.FilterBase;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.behaviors.dojo.AbstractDojoBehavior;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
@@ -92,6 +93,7 @@ public class GridXComponent
     {
         try {
             final StringBuilder js = new StringBuilder()
+
                 .append("<script type=\"text/javascript\">")
                 .append("require([")
                 .append("'dojo/query',")
@@ -111,14 +113,25 @@ public class GridXComponent
                 .append("'gridx/modules/extendedSelect/Column',")
                 .append("'gridx/modules/extendedSelect/Cell',")
                 .append("'gridx/modules/dnd/Column',")
+                .append("'efaps/HeaderDialog',")
                 .append("'gridx/core/model/extensions/FormatSort',")
                 .append("'gridx/support/Summary',")
                 .append("'gridx/support/QuickFilter',")
+                .append("'gridx/support/menu/AZFilterMenu',")
                 .append("'gridx/modules/Bar',")
-                .append("'gridx/modules/Filter'")
+                .append("'gridx/modules/Filter',")
+
+                .append("'dijit/form/DropDownButton',")
+                .append("'dijit/form/TextBox',")
+                .append("'dijit/TooltipDialog',")
+                .append("'dojo/ready'")
+                .append("")
+
                 .append("], function(query, domGeom, win, domStyle, ready, registry, Memory, Cache, Grid, ")
                 .append("VirtualVScroller, ColumnResizer,HScroller, SingleSort, MoveColumn, SelectColumn, SelectCell, ")
-                .append("DnDColumn, FormatSort, Summary, QuickFilter, Bar, Filter){\n")
+                .append("DnDColumn, HeaderDialog, FormatSort, Summary, QuickFilter, AZFilterMenu, Bar, Filter, ")
+                .append("DropDownButton,TextBox,TooltipDialog,ready")
+                .append("){\n")
 
                 .append("var cp = function(item1, item2) {\n")
                 .append("return item1.s < item2.s ? -1 : (item1.s > item2.s ? 1 : 0);\n")
@@ -175,6 +188,9 @@ public class GridXComponent
                         .append("\">' + data + '</a>';\n")
                         .append("}\n");
                 }
+                if (header.getFilter() != null && FilterBase.DATABASE.equals(header.getFilter().getBase())) {
+                    js.append(", dialog: 'fttd_").append(header.getFieldId()).append("', headerClass:'eFapsFiltered'");
+                }
                 js.append("}");
                 j++;
             }
@@ -197,6 +213,7 @@ public class GridXComponent
                     .append("SelectColumn,\n")
                     .append("SelectCell,\n")
                     .append("DnDColumn,\n")
+                    .append("HeaderDialog,\n")
                     .append("Bar,\n")
                     .append("Filter,\n")
                     .append("HScroller")
@@ -205,9 +222,8 @@ public class GridXComponent
                     .append("FormatSort\n")
                     .append("]\n")
                 .append("});")
-                .append("grid.placeAt('").append(getMarkupId(true)).append("');")
-                .append("grid.startup();")
-
+                .append("grid.placeAt('").append(getMarkupId(true)).append("');\n")
+                .append("grid.startup();\n")
                 .append(" ready(function(){")
                 .append(" var bar = query('.eFapsMenuBarPanel') [0];\n")
                 .append("var pos = domGeom.position(bar);\n")
@@ -215,7 +231,6 @@ public class GridXComponent
                 .append("var hh = vs.h - pos.h -pos.y;\n")
                 .append("console.log(hh);\n")
                 .append("registry.byId('grid').resize({h:hh});")
-                .append("")
                 .append("")
                 .append("});")
                 .append("});")
@@ -263,7 +278,7 @@ public class GridXComponent
                 }
                 this.setResponsePage(page);
             }
-        } catch (StringValueConversionException | EFapsException e) {
+        } catch (final StringValueConversionException | EFapsException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
