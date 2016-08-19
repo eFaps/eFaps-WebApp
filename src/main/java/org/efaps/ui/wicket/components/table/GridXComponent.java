@@ -124,7 +124,6 @@ public class GridXComponent
                 .append("'gridx/core/model/extensions/FormatSort',")
                 .append("'gridx/support/Summary',")
                 .append("'gridx/support/QuickFilter',")
-                .append("'gridx/support/menu/AZFilterMenu',")
                 .append("'gridx/modules/Bar',")
                 .append("'gridx/modules/Filter',")
                 .append("'gridx/modules/Persist',")
@@ -137,7 +136,7 @@ public class GridXComponent
 
                 .append("], function(lang, json, query, domGeom, win, domStyle, ready, registry, Memory, Cache, Grid, ")
                 .append("VirtualVScroller, ColumnResizer,HScroller, SingleSort, MoveColumn, SelectColumn, SelectCell, ")
-                .append("DnDColumn, HeaderDialog, FormatSort, Summary, QuickFilter, AZFilterMenu, Bar, Persist, Filter, ")
+                .append("DnDColumn, HeaderDialog, FormatSort, Summary, QuickFilter, Bar, Persist, Filter, ")
                 .append("DropDownButton,TextBox,TooltipDialog,ready")
                 .append("){\n")
 
