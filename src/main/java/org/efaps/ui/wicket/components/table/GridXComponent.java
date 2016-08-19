@@ -120,14 +120,15 @@ public class GridXComponent
                 .append("'gridx/modules/extendedSelect/Column',")
                 .append("'gridx/modules/extendedSelect/Cell',")
                 .append("'gridx/modules/dnd/Column',")
+                .append("'gridx/modules/HiddenColumns',")
                 .append("'efaps/HeaderDialog',")
+                .append("'efaps/GridConfig',")
                 .append("'gridx/core/model/extensions/FormatSort',")
                 .append("'gridx/support/Summary',")
                 .append("'gridx/support/QuickFilter',")
                 .append("'gridx/modules/Bar',")
                 .append("'gridx/modules/Filter',")
                 .append("'gridx/modules/Persist',")
-
                 .append("'dijit/form/DropDownButton',")
                 .append("'dijit/form/TextBox',")
                 .append("'dijit/TooltipDialog',")
@@ -136,7 +137,7 @@ public class GridXComponent
 
                 .append("], function(lang, json, query, domGeom, win, domStyle, ready, registry, Memory, Cache, Grid, ")
                 .append("VirtualVScroller, ColumnResizer,HScroller, SingleSort, MoveColumn, SelectColumn, SelectCell, ")
-                .append("DnDColumn, HeaderDialog, FormatSort, Summary, QuickFilter, Bar, Persist, Filter, ")
+                .append("DnDColumn, HiddenColumns, HeaderDialog, GridConfig, FormatSort, Summary, QuickFilter, Bar, Persist, Filter, ")
                 .append("DropDownButton,TextBox,TooltipDialog,ready")
                 .append("){\n")
 
@@ -210,7 +211,8 @@ public class GridXComponent
                 .append("structure: structure,\n")
                 .append("barTop: [\n")
                     .append("Summary,\n")
-                    .append("{pluginClass: QuickFilter, style: 'text-align: center;'} \n")
+                    .append("{pluginClass: QuickFilter, style: 'text-align: center;'}, \n")
+                    .append("{pluginClass: GridConfig, style: 'text-align: right;'} \n")
                 .append("],\n")
                 .append("modules: [\n")
                     .append("VirtualVScroller,\n")
@@ -224,6 +226,7 @@ public class GridXComponent
                     .append("Bar,\n")
                     .append("Filter,\n")
                     .append("HScroller,\n")
+                    .append("HiddenColumns,\n")
                     .append("Persist\n")
                 .append("],\n")
                 .append("persistGet: function(_key) {");
