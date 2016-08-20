@@ -38,6 +38,7 @@ import org.apache.wicket.util.string.StringValue;
 import org.apache.wicket.util.string.StringValueConversionException;
 import org.efaps.admin.ui.Menu;
 import org.efaps.api.ui.FilterBase;
+import org.efaps.api.ui.FilterType;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.behaviors.dojo.AbstractDojoBehavior;
@@ -97,8 +98,9 @@ public class GridXComponent
                                    final ComponentTag _openTag)
     {
         try {
-            final StringBuilder js = new StringBuilder()
+            final UITable uiTable = (UITable) getDefaultModelObject();
 
+            final StringBuilder js = new StringBuilder()
                 .append("<script type=\"text/javascript\">")
                 .append("require([")
                 .append("'dojo/_base/lang',")
@@ -123,11 +125,12 @@ public class GridXComponent
                 .append("'gridx/modules/HiddenColumns',")
                 .append("'efaps/HeaderDialog',")
                 .append("'efaps/GridConfig',")
-                .append("'gridx/core/model/extensions/FormatSort',")
+                .append("'efaps/GridSort',")
                 .append("'gridx/support/Summary',")
                 .append("'gridx/support/QuickFilter',")
                 .append("'gridx/modules/Bar',")
                 .append("'gridx/modules/Filter',")
+                .append("'gridx/modules/filter/FilterBar',")
                 .append("'gridx/modules/Persist',")
                 .append("'dijit/form/DropDownButton',")
                 .append("'dijit/form/TextBox',")
@@ -137,41 +140,22 @@ public class GridXComponent
 
                 .append("], function(lang, json, query, domGeom, win, domStyle, ready, registry, Memory, Cache, Grid, ")
                 .append("VirtualVScroller, ColumnResizer,HScroller, SingleSort, MoveColumn, SelectColumn, SelectCell, ")
-                .append("DnDColumn, HiddenColumns, HeaderDialog, GridConfig, FormatSort, Summary, QuickFilter, Bar, Persist, Filter, ")
+                .append("DnDColumn, HiddenColumns, HeaderDialog, GridConfig, GridSort, Summary, QuickFilter, Bar, Persist, Filter,FilterBar, ")
                 .append("DropDownButton,TextBox,TooltipDialog,ready")
                 .append("){\n")
 
-                .append("var cp = function(item1, item2) {\n")
-                .append("return item1.s < item2.s ? -1 : (item1.s > item2.s ? 1 : 0);\n")
+                .append("var cp = function(_attr, _itemA, _itemB) {\n")
+                .append("var strA = _itemA.hasOwnProperty(_attr + '_sort') ? _itemA[_attr + '_sort'] : _itemA[_attr];\n")
+                .append("var strB = _itemB.hasOwnProperty(_attr + '_sort') ? _itemB[_attr + '_sort'] : _itemB[_attr];\n")
+                .append("return strA < strB ? -1 : (strA > strB ? 1 : 0);\n")
                 .append("}\n")
 
                 .append("var store = new Memory({\n")
-                .append("data: [\n");
-
-            int i = 0;
-            final UITable uiTable = (UITable) getDefaultModelObject();
-
-            for (final UIRow row : uiTable.getValues()) {
-                if (i > 0) {
-                    js.append(",\n");
-                }
-                js.append("{ id:").append(i);
-                for (final IFilterable uiCell: row.getCells()) {
-                    final String val = ((UIField) uiCell).getFactory().getPickListValue((AbstractUIField) uiCell);
-                    final String orderVal = String.valueOf(((UIField) uiCell).getFactory()
-                                    .getCompareValue((AbstractUIField) uiCell));
-
-                    js.append(",").append(((UIField) uiCell).getFieldConfiguration().getName()).append(":")
-                        .append("{ v:'").append(StringEscapeUtils.escapeEcmaScript(val))
-                        .append("', s:'").append(StringEscapeUtils.escapeEcmaScript(orderVal)).append("'}");
-                }
-                js.append("}");
-                i++;
-            }
-
-            js.append("]\n")
+                .append("data: ")
+                .append(GridXComponent.getDataJS(uiTable))
                 .append("});\n")
                 .append("var structure = [\n");
+
             boolean first = true;
             int j = 0;
             for (final UITableHeader header: uiTable.getHeaders()) {
@@ -182,11 +166,11 @@ public class GridXComponent
                 }
                 js.append("{ id:'").append(header.getFieldId()).append("',")
                     .append(" field:'").append(header.getFieldName()).append("',")
-                    .append(" name:'").append(header.getLabel()).append("',\n")
-                    .append("formatter: function(obj) {\n")
-                    .append("return obj.").append(header.getFieldName()).append(".v;\n")
-                    .append("},\n")
-                    .append("comparator: cp\n");
+                    .append(" name:'").append(header.getLabel()).append("'\n")
+               //     .append("formatter: function(obj) {\n")
+               //     .append("return obj.").append(header.getFieldName()).append(".v;\n")
+               //     .append("},\n")
+                    .append(", comparator: cp\n");
                 if (header.getFieldConfig().getField().getReference() != null) {
                     js.append(", decorator: function(data, rowId, visualIndex, cell){\n")
                         .append("return '<a href=\"").append(
@@ -196,8 +180,15 @@ public class GridXComponent
                         .append("\">' + data + '</a>';\n")
                         .append("}\n");
                 }
-                if (header.getFilter() != null && FilterBase.DATABASE.equals(header.getFilter().getBase())) {
-                    js.append(", dialog: 'fttd_").append(header.getFieldId()).append("', headerClass:'eFapsFiltered'");
+                if (FilterBase.DATABASE.equals(header.getFilter().getBase())) {
+                    js.append(", dialog: 'fttd_").append(header.getFieldId()).append("', headerClass:'eFapsFiltered'\n");
+                } else if (FilterType.PICKLIST.equals(header.getFilter().getType())) {
+                    js.append(", dataType: 'enum'\n");
+                       // .append(", enumOptions: [")
+                        //.append(StringUtils.join(uiTable.getFilterPickList(header), ","))
+                        //.append("]");
+                } else {
+                   // js.append(", filterable: false\n");
                 }
                 js.append("}");
                 j++;
@@ -249,7 +240,7 @@ public class GridXComponent
                                 CallbackParameter.explicit("value")))
                 .append("},\n")
                 .append("modelExtensions: [\n")
-                    .append("FormatSort\n")
+                    .append("GridSort\n")
                     .append("]\n")
                 .append("});")
                 .append("grid.placeAt('").append(getMarkupId(true)).append("');\n")
@@ -346,5 +337,42 @@ public class GridXComponent
             }
 
         }
+    }
+
+    /**
+     * Gets the data JS.
+     *
+     * @param _uiTable the ui table
+     * @return the data JS
+     * @throws EFapsException on error
+     */
+    public static CharSequence getDataJS(final UITable _uiTable)
+        throws EFapsException
+    {
+        final StringBuilder ret = new StringBuilder().append(" [\n");
+        int i = 0;
+        for (final UIRow row : _uiTable.getValues()) {
+            if (i > 0) {
+                ret.append(",\n");
+            }
+            ret.append("{ id:").append(i);
+            for (final IFilterable uiCell : row.getCells()) {
+                final String val = ((UIField) uiCell).getFactory().getPickListValue((AbstractUIField) uiCell);
+                final String orderVal = String.valueOf(((UIField) uiCell).getFactory().getCompareValue(
+                                (AbstractUIField) uiCell));
+
+                ret.append(",").append(((UIField) uiCell).getFieldConfiguration().getName()).append(":").append("'")
+                                .append(StringEscapeUtils.escapeEcmaScript(val)).append("'");
+
+                if (val != null && !val.equals(orderVal)) {
+                    ret.append(",").append(((UIField) uiCell).getFieldConfiguration().getName()).append("_sort:")
+                                    .append("'").append(StringEscapeUtils.escapeEcmaScript(orderVal)).append("'");
+                }
+            }
+            ret.append("}");
+            i++;
+        }
+        ret.append("]\n");
+        return ret;
     }
 }

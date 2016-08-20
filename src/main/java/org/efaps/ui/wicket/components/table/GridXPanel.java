@@ -21,7 +21,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.head.IHeaderResponse;
@@ -38,10 +37,6 @@ import org.efaps.ui.wicket.components.button.AjaxButton;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.table.filter.FreeTextPanel;
 import org.efaps.ui.wicket.components.table.filter.StatusPanel;
-import org.efaps.ui.wicket.models.field.AbstractUIField;
-import org.efaps.ui.wicket.models.field.IFilterable;
-import org.efaps.ui.wicket.models.field.UIField;
-import org.efaps.ui.wicket.models.objects.UIRow;
 import org.efaps.ui.wicket.models.objects.UIStatusSet;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.models.objects.UITableHeader;
@@ -155,8 +150,8 @@ public class GridXPanel
                         {
                             final UITable uiTable = _model.getObject();
                             try {
-                                final List<StringValue> selection = getRequest().getRequestParameters().getParameterValues(
-                                                StatusPanel.CHECKBOXNAME);
+                                final List<StringValue> selection = getRequest().getRequestParameters()
+                                                .getParameterValues(StatusPanel.CHECKBOXNAME);
                                 if (selection != null) {
                                     final List<UIStatusSet> sets = statusPanel.getStatusSets();
                                     final UITableHeader uitableHeader = (UITableHeader) getDefaultModelObject();
@@ -199,38 +194,17 @@ public class GridXPanel
     private CharSequence getJavascript(final UITable _uiTable)
         throws EFapsException
     {
-
         final StringBuilder js = new StringBuilder()
                     .append("require([")
                     .append("'dijit/registry']")
                     .append(", function (registry) {\n")
                     .append("var grid = registry.byId('grid');\n")
-                    .append("var items= [\n");
-
-        int i = 0;
-        for (final UIRow row : _uiTable.getValues()) {
-            if (i > 0) {
-                js.append(",\n");
-            }
-            js.append("{ id:").append(i);
-            for (final IFilterable uiCell: row.getCells()) {
-                final String val = ((UIField) uiCell).getFactory().getPickListValue((AbstractUIField) uiCell);
-                final String orderVal = String.valueOf(((UIField) uiCell).getFactory()
-                                .getCompareValue((AbstractUIField) uiCell));
-
-                js.append(",").append(((UIField) uiCell).getFieldConfiguration().getName()).append(":")
-                    .append("{ v:'").append(StringEscapeUtils.escapeEcmaScript(val))
-                    .append("', s:'").append(StringEscapeUtils.escapeEcmaScript(orderVal)).append("'}");
-            }
-            js.append("}");
-            i++;
-        }
-
-        js.append("]\n")
-            .append("grid.model.clearCache();\n")
-            .append("grid.model.store.setData(items);\n")
-            .append("grid.body.refresh();\n")
-            .append("});");
+                    .append("var items= ")
+                    .append(GridXComponent.getDataJS(_uiTable))
+                    .append("grid.model.clearCache();\n")
+                    .append("grid.model.store.setData(items);\n")
+                    .append("grid.body.refresh();\n")
+                    .append("});");
         return js;
     }
 
