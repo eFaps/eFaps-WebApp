@@ -25,6 +25,7 @@ import org.apache.wicket.markup.html.form.RadioChoice;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.datamodel.IEnum;
+import org.efaps.api.ci.UIFormFieldProperty;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.field.FieldConfiguration;
 import org.efaps.ui.wicket.models.objects.RadioOption;
@@ -140,6 +141,24 @@ public class RadioField
     public String getInputName()
     {
         return getFieldConfig().getName();
+    }
+
+    @Override
+    protected String getSuffix(final int _index,
+                               final RadioOption _choice)
+    {
+        final String ret;
+        if (getFieldConfig().hasProperty(UIFormFieldProperty.RADIO_ROW_LENGTH)) {
+            final int rowLength = Integer.parseInt(getFieldConfig().getProperty(UIFormFieldProperty.RADIO_ROW_LENGTH));
+            if (rowLength < 0 ||_index % rowLength == 0) {
+                ret = "";
+            } else {
+                ret = getSuffix();
+            }
+        } else {
+            ret = getSuffix();
+        }
+        return ret;
     }
 
     /**
