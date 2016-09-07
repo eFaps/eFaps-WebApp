@@ -54,6 +54,10 @@ public final class Configuration
     public enum ConfigAttribute
     {
 
+        /** */
+        LOGINALERT_PROVIDER(false, true, "LoginAlert.Provider", "org.efaps.esjp.common.loginalert.AlertProvider",
+                        String.class, "Class name of the AlertProvider class"),
+
         /**  */
         RECENTCACHESIZE(false, true, "RecentCacheSize", "5", Integer.class,
                         "Number of items in the Recent Links menu. Default Value is 5."),
@@ -185,6 +189,7 @@ public final class Configuration
         /** */
         INDEXACCESSCMD(false, true, "IndexAccessCmd", "88c9ce19-d759-443e-b791-0e725fe58f52", String.class,
                         "UUID of the command that is used to define the access to the index search.");
+
         /**
          * Stores the key for this Attribute..
          */

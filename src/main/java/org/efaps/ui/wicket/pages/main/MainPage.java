@@ -25,6 +25,7 @@ import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.Page;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.Session;
+import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
@@ -34,10 +35,12 @@ import org.apache.wicket.ajax.attributes.ThrottlingSettings;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.devutils.debugbar.DebugBar;
 import org.apache.wicket.event.IEvent;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
+import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.head.PriorityHeaderItem;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -54,7 +57,10 @@ import org.apache.wicket.util.time.Duration;
 import org.efaps.admin.EFapsSystemConfiguration;
 import org.efaps.admin.KernelSettings;
 import org.efaps.admin.dbproperty.DBProperties;
+import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.admin.user.Role;
+import org.efaps.api.ui.IEsjpSnipplet;
+import org.efaps.api.ui.ILoginAlertProvider;
 import org.efaps.db.Context;
 import org.efaps.message.MessageStatusHolder;
 import org.efaps.ui.wicket.behaviors.SetMessageStatusBehavior;
@@ -78,10 +84,12 @@ import org.efaps.ui.wicket.models.objects.UIUserSession;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.dashboard.DashboardPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.ui.wicket.pages.error.UnexpectedErrorPage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
+import org.efaps.util.EFapsBaseException;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
@@ -179,6 +187,8 @@ public class MainPage
 
         add(new RequireBehavior("dojo/dom", "dojo/_base/window"));
         add(new PreLoaderPanel("preloader"));
+
+        add(new OpenWindowOnLoadBehavior());
 
         final WebMarkupContainer borderPanel = new WebMarkupContainer("borderPanel");
         this.add(borderPanel);
@@ -430,6 +440,94 @@ public class MainPage
                                final IHeaderResponse _response)
         {
             _response.render(JavaScriptHeaderItem.forScript(getCallbackScript(), ResizeEventBehavior.class.getName()));
+        }
+    }
+
+    /**
+     * The Class OpenWindowOnLoadBehavior.
+     *
+     * @author The eFaps Team
+     */
+    public class OpenWindowOnLoadBehavior
+        extends AbstractDefaultAjaxBehavior
+    {
+
+        /** The Constant serialVersionUID. */
+        private static final long serialVersionUID = 1L;
+
+        /** The esjp. */
+        private IEsjpSnipplet esjpSnipplet;
+
+        /** The provider. */
+        private ILoginAlertProvider provider;
+
+        @Override
+        protected void onBind()
+        {
+            super.onBind();
+            final String providerClass = Configuration.getAttribute(ConfigAttribute.LOGINALERT_PROVIDER);
+            if (providerClass != null) {
+                final Class<?> clazz;
+                try {
+                    clazz = Class.forName(providerClass, false, EFapsClassLoader.getInstance());
+                    this.provider = (ILoginAlertProvider) clazz.newInstance();
+                    this.esjpSnipplet = this.provider.getEsjpSnipplet("LoginAlert");
+                } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+                    LOG.error("Could not find/instantiate Provider Class", e);
+                }
+            }
+        }
+
+        @Override
+        protected void respond(final AjaxRequestTarget _target)
+        {
+            final ModalWindowContainer modalTmp = getModal();
+            modalTmp.setPageCreator(new ModalWindow.PageCreator()
+            {
+
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                public Page createPage()
+                {
+                    Page page;
+                    try {
+                        page = new AlertPage(Model.of(OpenWindowOnLoadBehavior.this.esjpSnipplet.getHtmlSnipplet()
+                                        .toString()));
+                    } catch (final EFapsBaseException e) {
+                        LOG.error("Catched error.", e);
+                        page = new UnexpectedErrorPage();
+                    }
+                    return page;
+                }
+            });
+            modalTmp.setWindowClosedCallback(new ModalWindow.WindowClosedCallback()
+            {
+
+                /** The Constant serialVersionUID. */
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                public void onClose(final AjaxRequestTarget _target)
+                {
+                    OpenWindowOnLoadBehavior.this.provider.onClose();
+                }
+            });
+
+            modalTmp.show(_target);
+        }
+
+        @Override
+        public void renderHead(final Component _component,
+                               final IHeaderResponse _response)
+        {
+            try {
+                if (this.esjpSnipplet != null && this.esjpSnipplet.isVisible()) {
+                    _response.render(OnDomReadyHeaderItem.forScript(getCallbackScript()));
+                }
+            } catch (final EFapsBaseException e) {
+                LOG.error("Catched error.", e);
+            }
         }
     }
 }
