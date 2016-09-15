@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.wicket.Page;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.basic.Label;
@@ -67,7 +68,7 @@ public class FormPanel
     /**
      * Map containing the required Components. Used for the check if this components are filled in.
      */
-    private final Map<String, Label> requiredComponents = new HashMap<String, Label>();
+    private final Map<String, Label> requiredComponents = new HashMap<>();
 
     /**
      * @param _wicketId wicket id of this component
@@ -94,8 +95,11 @@ public class FormPanel
         this.add(rowRepeater);
 
         for (final Iterator<FormRow> uiRowIter = _formelementmodel.getRowModels(); uiRowIter.hasNext();) {
-            final RowPanel row = new RowPanel(rowRepeater.newChildId(), Model.of(uiRowIter.next()), uiForm, _form);
-            rowRepeater.add(row);
+            final FormRow formRow = uiRowIter.next();
+            if (CollectionUtils.isNotEmpty(formRow.getValues())) {
+                final RowPanel row = new RowPanel(rowRepeater.newChildId(), Model.of(formRow), uiForm, _form);
+                rowRepeater.add(row);
+            }
         }
 
         final RepeatingView hiddenRepeater = new RepeatingView("hiddenRepeater");
