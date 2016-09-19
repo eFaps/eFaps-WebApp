@@ -21,6 +21,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.head.IHeaderResponse;
@@ -43,6 +45,8 @@ import org.efaps.ui.wicket.models.objects.UITableHeader;
 import org.efaps.ui.wicket.models.objects.UITableHeader.FilterValueType;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Class GridXPanel.
@@ -55,6 +59,11 @@ public class GridXPanel
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * Logger for this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(GridXPanel.class);
 
     /**
      * Instantiates a new grid X panel.
@@ -131,8 +140,7 @@ public class GridXPanel
                                 uiTable.execute();
                                 _target.appendJavaScript(getJavascript(uiTable));
                             } catch (final EFapsException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
+                                LOG.error("Catched error", e);
                             }
                         }
                     });
@@ -173,15 +181,13 @@ public class GridXPanel
                                 }
                                 _target.appendJavaScript(getJavascript(uiTable));
                             } catch (final EFapsException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
+                                LOG.error("Catched error", e);
                             }
                         }
                     });
                 }
             }
         }
-
     }
 
     /**
@@ -202,8 +208,21 @@ public class GridXPanel
                     .append("var items= ")
                     .append(GridXComponent.getDataJS(_uiTable))
                     .append("grid.model.clearCache();\n")
-                    .append("grid.model.store.setData(items);\n")
-                    .append("grid.body.refresh();\n")
+                    .append("grid.model.store.setData(items);\n");
+
+        for (final UITableHeader header: _uiTable.getHeaders()) {
+            if (FilterType.PICKLIST.equals(header.getFilter().getType())) {
+                final List<String> picklist = _uiTable.getFilterPickList(header);
+                if (CollectionUtils.isNotEmpty(picklist)) {
+                    js.append("grid._columnsById['").append(header.getFieldId()).append("'].enumOptions=['")
+                        .append(StringUtils.join(picklist, "','"))
+                        .append("'];");
+                } else {
+                    js.append("grid._columnsById['287215'].enumOptions='';");
+                }
+            }
+        }
+        js.append("grid.body.refresh();\n")
                     .append("});");
         return js;
     }

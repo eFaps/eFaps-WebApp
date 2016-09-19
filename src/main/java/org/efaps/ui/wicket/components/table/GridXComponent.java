@@ -18,7 +18,11 @@
 
 package org.efaps.ui.wicket.components.table;
 
+import java.util.List;
+
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.Page;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
@@ -52,6 +56,8 @@ import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO comment!
@@ -71,6 +77,11 @@ public class GridXComponent
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * Logger for this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(GridXComponent.class);
 
     /**
      * Instantiates a new grid component.
@@ -110,6 +121,7 @@ public class GridXComponent
                 .append("'dojo/window',")
                 .append("'dojo/dom-style',")
                 .append("'dojo/ready',")
+                .append("'dojo/on',")
                 .append("'dijit/registry',")
                 .append("'dojo/store/Memory',")
                 .append("'gridx/core/model/cache/Sync',")
@@ -138,15 +150,17 @@ public class GridXComponent
                 .append("'dojo/ready'")
                 .append("")
 
-                .append("], function(lang, json, query, domGeom, win, domStyle, ready, registry, Memory, Cache, Grid, ")
-                .append("VirtualVScroller, ColumnResizer,HScroller, SingleSort, MoveColumn, SelectColumn, SelectCell, ")
-                .append("DnDColumn, HiddenColumns, HeaderDialog, GridConfig, GridSort, Summary, QuickFilter, Bar, Persist, Filter,FilterBar, ")
-                .append("DropDownButton,TextBox,TooltipDialog,ready")
+                .append("], function(lang, json, query, domGeom, win, domStyle, ready, on, registry, Memory, Cache, ")
+                .append("Grid, VirtualVScroller, ColumnResizer,HScroller, SingleSort, MoveColumn, SelectColumn,  ")
+                .append("SelectCell, DnDColumn, HiddenColumns, HeaderDialog, GridConfig, GridSort, Summary, ")
+                .append("QuickFilter, Bar, Persist, Filter,FilterBar, DropDownButton,TextBox,TooltipDialog,ready")
                 .append("){\n")
 
                 .append("var cp = function(_attr, _itemA, _itemB) {\n")
-                .append("var strA = _itemA.hasOwnProperty(_attr + '_sort') ? _itemA[_attr + '_sort'] : _itemA[_attr];\n")
-                .append("var strB = _itemB.hasOwnProperty(_attr + '_sort') ? _itemB[_attr + '_sort'] : _itemB[_attr];\n")
+                .append("var strA = _itemA.hasOwnProperty(_attr + '_sort')")
+                    .append(" ? _itemA[_attr + '_sort'] : _itemA[_attr];\n")
+                .append("var strB = _itemB.hasOwnProperty(_attr + '_sort') ")
+                    .append("? _itemB[_attr + '_sort'] : _itemB[_attr];\n")
                 .append("return strA < strB ? -1 : (strA > strB ? 1 : 0);\n")
                 .append("}\n")
 
@@ -181,12 +195,16 @@ public class GridXComponent
                         .append("}\n");
                 }
                 if (FilterBase.DATABASE.equals(header.getFilter().getBase())) {
-                    js.append(", dialog: 'fttd_").append(header.getFieldId()).append("', headerClass:'eFapsFiltered'\n");
+                    js.append(", dialog: 'fttd_").append(header.getFieldId())
+                        .append("', headerClass:'eFapsFiltered'\n");
                 } else if (FilterType.PICKLIST.equals(header.getFilter().getType())) {
                     js.append(", dataType: 'enum'\n");
-                       // .append(", enumOptions: [")
-                        //.append(StringUtils.join(uiTable.getFilterPickList(header), ","))
-                        //.append("]");
+                    final List<String> picklist = uiTable.getFilterPickList(header);
+                    if (CollectionUtils.isNotEmpty(picklist)) {
+                        js.append(", enumOptions: ['")
+                            .append(StringUtils.join(picklist, "','"))
+                            .append("']");
+                    }
                 } else {
                    // js.append(", filterable: false\n");
                 }
@@ -246,21 +264,27 @@ public class GridXComponent
                 .append("});")
                 .append("grid.placeAt('").append(getMarkupId(true)).append("');\n")
                 .append("grid.startup();\n")
-                .append(" ready(function(){")
-                .append(" var bar = query('.eFapsMenuBarPanel') [0];\n")
+                .append("ready(function(){")
+                .append("var bar = query('.eFapsMenuBarPanel') [0];\n")
                 .append("var pos = domGeom.position(bar);\n")
                 .append("var vs = win.getBox();\n")
                 .append("var hh = vs.h - pos.h -pos.y;\n")
                 .append("registry.byId('grid').resize({h:hh});")
                 .append("});")
+                .append("on(window, 'resize', function() {\n")
+                .append("var bar = query('.eFapsMenuBarPanel') [0];\n")
+                .append("var pos = domGeom.position(bar);\n")
+                .append("var vs = win.getBox();\n")
+                .append("var hh = vs.h - pos.h -pos.y;\n")
+                .append("registry.byId('grid').resize({h:hh});")
+                .append("});\n")
                 .append("});")
                 .append("\n")
                 .append("\n</script>");
 
             replaceComponentTagBody(_markupStream, _openTag, js);
         } catch (final EFapsException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error("Catched error", e);
         }
     }
 
@@ -300,41 +324,7 @@ public class GridXComponent
                 this.setResponsePage(page);
             }
         } catch (final StringValueConversionException | EFapsException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * The Class AjaxBehavior.
-     *
-     * @author The eFaps Team
-     */
-    public static class PersistAjaxBehavior
-        extends AbstractDefaultAjaxBehavior
-    {
-
-        /** The Constant serialVersionUID. */
-        private static final long serialVersionUID = 1L;
-
-        @Override
-        protected void respond(final AjaxRequestTarget _target)
-        {
-
-            try {
-                final StringValue value = getComponent().getRequest().getRequestParameters().getParameterValue(
-                                "value");
-                if (!value.isEmpty()) {
-                    final UITable uiTable = (UITable) getComponent().getDefaultModelObject();
-
-                    Context.getThreadContext().setUserAttribute(uiTable.getCacheKey(UITable.UserCacheKey.GRIDX), value
-                                .toString());
-                }
-            } catch (final EFapsException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-
+            LOG.error("Catched error", e);
         }
     }
 
@@ -357,15 +347,24 @@ public class GridXComponent
             ret.append("{ id:").append(i);
             for (final IFilterable uiCell : row.getCells()) {
                 final String val = ((UIField) uiCell).getFactory().getPickListValue((AbstractUIField) uiCell);
-                final String orderVal = String.valueOf(((UIField) uiCell).getFactory().getCompareValue(
-                                (AbstractUIField) uiCell));
-
                 ret.append(",").append(((UIField) uiCell).getFieldConfiguration().getName()).append(":").append("'")
-                                .append(StringEscapeUtils.escapeEcmaScript(val)).append("'");
+                    .append(StringEscapeUtils.escapeEcmaScript(val)).append("'");
 
+                final Comparable<?> orderObject = ((UIField) uiCell).getCompareValue();
+                final String orderVal;
+                final boolean ps;
+                if (orderObject instanceof Number) {
+                    orderVal = ((Number) orderObject).toString();
+                    ps = false;
+                } else {
+                    orderVal = String.valueOf(orderObject);
+                    ps = true;
+                }
                 if (val != null && !val.equals(orderVal)) {
                     ret.append(",").append(((UIField) uiCell).getFieldConfiguration().getName()).append("_sort:")
-                                    .append("'").append(StringEscapeUtils.escapeEcmaScript(orderVal)).append("'");
+                                    .append(ps ? "'" : "")
+                                    .append(StringEscapeUtils.escapeEcmaScript(orderVal))
+                                    .append(ps ? "'" : "");
                 }
             }
             ret.append("}");
@@ -373,5 +372,35 @@ public class GridXComponent
         }
         ret.append("]\n");
         return ret;
+    }
+
+    /**
+     * The Class AjaxBehavior.
+     *
+     * @author The eFaps Team
+     */
+    public static class PersistAjaxBehavior
+        extends AbstractDefaultAjaxBehavior
+    {
+
+        /** The Constant serialVersionUID. */
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        protected void respond(final AjaxRequestTarget _target)
+        {
+            try {
+                final StringValue value = getComponent().getRequest().getRequestParameters().getParameterValue(
+                                "value");
+                if (!value.isEmpty()) {
+                    final UITable uiTable = (UITable) getComponent().getDefaultModelObject();
+
+                    Context.getThreadContext().setUserAttribute(uiTable.getCacheKey(UITable.UserCacheKey.GRIDX), value
+                                .toString());
+                }
+            } catch (final EFapsException e) {
+                LOG.error("Catched error", e);
+            }
+        }
     }
 }
