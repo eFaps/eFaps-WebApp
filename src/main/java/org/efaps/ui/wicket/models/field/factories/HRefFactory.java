@@ -140,23 +140,34 @@ public final class HRefFactory
             } else {
                 // evaluate which kind of link must be done
                 IRequestablePage page = null;
-                PageReference pageRef = null;
+                IRequestablePage calledByPage = null;
                 if (RequestCycle.get().getActiveRequestHandler() instanceof IPageRequestHandler) {
                     page = ((IPageRequestHandler) RequestCycle.get().getActiveRequestHandler()).getPage();
                     if (page != null && page instanceof AbstractContentPage) {
-                        pageRef = ((AbstractContentPage) page).getCalledByPageReference();
+                        final PageReference pageRef = ((AbstractContentPage) page).getCalledByPageReference();
+                        if (pageRef != null) {
+                            calledByPage = pageRef.getPage();
+                        }
                     }
                 }
+
                 // ajax if the page or the reference is a ContentContainerPage,
                 // or the table was called as part of a WizardCall meaning connect is done
                 // or it was opened after a form in modal mode
                 boolean ajax = page != null && (page instanceof ContentContainerPage
-                                || pageRef != null && pageRef.getPage() instanceof ContentContainerPage)
+                                || calledByPage instanceof ContentContainerPage)
                                 || page instanceof TablePage
-                                                && ((AbstractUIPageObject) ((Component) page).getDefaultModelObject())
+                                        && ((AbstractUIPageObject) ((Component) page).getDefaultModelObject())
                                                 .isPartOfWizardCall()
-                        || page instanceof FormPage && pageRef != null && pageRef.getPage() instanceof FormPage
-                            && Target.MODAL.equals(((UIForm) ((Component) page).getDefaultModelObject()).getTarget());
+                        // form opened modal over a form
+                        || page instanceof FormPage && calledByPage instanceof FormPage
+                            && Target.MODAL.equals(((UIForm) ((Component) page).getDefaultModelObject()).getTarget())
+                        // form opened modal over a table that itself is part of a contentcontainer
+                        || page instanceof FormPage
+                            && Target.MODAL.equals(((UIForm) ((Component) page).getDefaultModelObject()).getTarget())
+                            && calledByPage instanceof TablePage
+                            && ((TablePage) calledByPage).getCalledByPageReference() != null;
+
                 // verify ajax by checking if is not a recent link
                 if (ajax && RequestCycle.get().getActiveRequestHandler() instanceof IComponentRequestHandler) {
                     ajax = ajax && !(((IComponentRequestHandler) RequestCycle.get().getActiveRequestHandler())
