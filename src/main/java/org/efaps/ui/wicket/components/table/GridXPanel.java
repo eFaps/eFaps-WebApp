@@ -23,6 +23,7 @@ import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.head.IHeaderResponse;
@@ -33,9 +34,11 @@ import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.string.StringValue;
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.api.ui.FilterBase;
 import org.efaps.api.ui.FilterType;
 import org.efaps.ui.wicket.components.button.AjaxButton;
+import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.table.filter.FreeTextPanel;
 import org.efaps.ui.wicket.components.table.filter.StatusPanel;
@@ -85,6 +88,9 @@ public class GridXPanel
         for (final UITableHeader header : _model.getObject().getHeaders()) {
             if (header.getFilter() != null && FilterBase.DATABASE.equals(header.getFilter().getBase())) {
                 final WebMarkupContainer container = new WebMarkupContainer(filterRepeater.newChildId());
+                container.add(AttributeModifier.replace("title",
+                                Model.of(DBProperties.getFormatedDBProperty(GridXPanel.class.getName() + ".FilterTitel",
+                                                (Object) header.getLabel()))));
                 container.setOutputMarkupId(true);
                 container.setMarkupId("fttd_" + header.getFieldId());
                 filterRepeater.add(container);
@@ -93,7 +99,7 @@ public class GridXPanel
                 if (FilterValueType.DATE.equals(header.getFilterType())) {
                     final FreeTextPanel freeTextPanel = new FreeTextPanel("filter", Model.of(header));
                     form.add(freeTextPanel);
-                    form.add(new AjaxButton<UITableHeader>("btn", Model.of(header))
+                    form.add(new AjaxButton<UITableHeader>("btn", Model.of(header), Button.ICON.ACCEPT.getReference())
                     {
 
                         /** The Constant serialVersionUID. */

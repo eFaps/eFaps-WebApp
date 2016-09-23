@@ -133,8 +133,11 @@ public class GridXComponent
                 .append("'gridx/modules/move/Column',")
                 .append("'gridx/modules/extendedSelect/Column',")
                 .append("'gridx/modules/extendedSelect/Cell',")
+                .append("'gridx/modules/extendedSelect/Row',")
                 .append("'gridx/modules/dnd/Column',")
                 .append("'gridx/modules/HiddenColumns',")
+                .append("'gridx/modules/IndirectSelect',")
+                .append("'gridx/modules/RowHeader',")
                 .append("'efaps/HeaderDialog',")
                 .append("'efaps/GridConfig',")
                 .append("'efaps/GridSort',")
@@ -152,9 +155,9 @@ public class GridXComponent
 
                 .append("], function(lang, json, query, domGeom, win, domStyle, ready, on, registry, Memory, Cache, ")
                 .append("Grid, VirtualVScroller, ColumnResizer,HScroller, SingleSort, MoveColumn, SelectColumn,  ")
-                .append("SelectCell, DnDColumn, HiddenColumns, HeaderDialog, GridConfig, GridSort, Summary, ")
-                .append("QuickFilter, Bar, Persist, Filter,FilterBar, DropDownButton,TextBox,TooltipDialog,ready")
-                .append("){\n")
+                .append("SelectCell, SelectRow, DnDColumn, HiddenColumns, IndirectSelect , RowHeader, HeaderDialog, ")
+                .append("GridConfig, GridSort, Summary, QuickFilter, Bar, Persist, Filter,FilterBar,")
+                .append("DropDownButton, TextBox, TooltipDialog, ready){\n")
 
                 .append("var cp = function(_attr, _itemA, _itemB) {\n")
                 .append("var strA = _itemA.hasOwnProperty(_attr + '_sort')")
@@ -180,11 +183,12 @@ public class GridXComponent
                 }
                 js.append("{ id:'").append(header.getFieldId()).append("',")
                     .append(" field:'").append(header.getFieldName()).append("',")
-                    .append(" name:'").append(header.getLabel()).append("'\n")
-               //     .append("formatter: function(obj) {\n")
-               //     .append("return obj.").append(header.getFieldName()).append(".v;\n")
-               //     .append("},\n")
-                    .append(", comparator: cp\n");
+                    .append(" name:'").append(header.getLabel()).append("'\n");
+
+                if (!"left".equals(header.getField().getAlign())) {
+                    js.append(", style:'text-align:right'");
+                }
+                js.append(", comparator: cp\n");
                 if (header.getFieldConfig().getField().getReference() != null) {
                     js.append(", decorator: function(data, rowId, visualIndex, cell){\n")
                         .append("return '<a href=\"").append(
@@ -237,8 +241,15 @@ public class GridXComponent
                     .append("FilterBar,\n")
                     .append("HScroller,\n")
                     .append("HiddenColumns,\n")
-                    .append("Persist\n")
-                .append("],\n")
+                    .append("Persist\n");
+
+            if (uiTable.isShowCheckBoxes()) {
+                js.append(", IndirectSelect,\n")
+                    .append("SelectRow,\n")
+                    .append("RowHeader,\n");
+            }
+
+            js.append("],\n")
                 .append("persistGet: function(_key) {");
 
             if (Context.getThreadContext().containsUserAttribute(uiTable.getCacheKey(UITable.UserCacheKey.GRIDX))) {

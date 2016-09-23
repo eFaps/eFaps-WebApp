@@ -191,9 +191,9 @@ public abstract class AjaxButton<T>
     /**
      * Update ajax attributes.
      *
-     * @param attributes the attributes
+     * @param _attributes the attributes
      */
-    protected void updateAjaxAttributes(final AjaxRequestAttributes attributes)
+    protected void updateAjaxAttributes(final AjaxRequestAttributes _attributes)
     {
         // to be able to overwrite
     }
@@ -262,10 +262,10 @@ public abstract class AjaxButton<T>
                 }
 
                 @Override
-                protected void updateAjaxAttributes(final AjaxRequestAttributes attributes)
+                protected void updateAjaxAttributes(final AjaxRequestAttributes _attributes)
                 {
-                    super.updateAjaxAttributes(attributes);
-                    findParent(AjaxButton.class).updateAjaxAttributes(attributes);
+                    super.updateAjaxAttributes(_attributes);
+                    findParent(AjaxButton.class).updateAjaxAttributes(_attributes);
                 }
             });
         }
