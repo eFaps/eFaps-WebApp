@@ -49,7 +49,8 @@ public class KeepAliveBehavior
         if (Configuration.getAttributeAsBoolean(ConfigAttribute.WEBSOCKET_ACTVATE)) {
             super.renderHead(_component, _response);
             _response.render(OnLoadHeaderItem.forScript(
-                            "top.Wicket.WebSocket.send(\"" + KeepAliveBehavior.MSG + "\")"));
+                            "if (typeof top.Wicket.WebSocket != 'undefined') {\n "
+                            + "top.Wicket.WebSocket.send(\"" + KeepAliveBehavior.MSG + "\"); \n}" ));
         }
     }
 }
