@@ -17,6 +17,7 @@
 
 package org.efaps.ui.wicket.components;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -26,6 +27,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior.AjaxFormSubmitter;
@@ -36,10 +38,14 @@ import org.apache.wicket.protocol.http.servlet.MultipartServletWebRequest;
 import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.util.string.StringValue;
+import org.apache.wicket.util.string.StringValueConversionException;
+import org.apache.wicket.util.visit.IVisit;
+import org.apache.wicket.util.visit.IVisitor;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.EFapsSession.FileParameter;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.date.IDateListener;
+import org.efaps.ui.wicket.components.table.GridXComponent;
 import org.efaps.ui.wicket.components.values.DropDownField;
 import org.efaps.ui.wicket.components.values.IValueConverter;
 import org.efaps.ui.wicket.models.field.IUIElement;
@@ -51,10 +57,14 @@ import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIForm.Element;
 import org.efaps.ui.wicket.models.objects.UIForm.ElementType;
 import org.efaps.ui.wicket.models.objects.UIForm.FormRow;
+import org.efaps.ui.wicket.models.objects.UIRow;
+import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.request.EFapsRequest;
 import org.efaps.ui.wicket.request.EFapsRequestParametersAdapter;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class for a form. Needed for file upload.
@@ -70,6 +80,11 @@ public class FormContainer
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(FormContainer.class);
 
     /**
      * Url for the action that must be called.
@@ -221,6 +236,33 @@ public class FormContainer
     @Override
     public void process(final IFormSubmitter _submittingComponent)
     {
+        // if their is a GridXComponent convert the ids to oids
+        visitChildren(GridXComponent.class, new IVisitor<GridXComponent, Void>()
+        {
+
+            @Override
+            public void component(final GridXComponent _gridX,
+                                  final IVisit<Void> _visit)
+            {
+                try {
+                    final EFapsRequestParametersAdapter parameters = (EFapsRequestParametersAdapter) getRequest()
+                                    .getRequestParameters();
+                    final List<StringValue> selectedRows = parameters.getParameterValues("selectedRow");
+                    if (CollectionUtils.isNotEmpty(selectedRows)) {
+                        final List<StringValue> newValues = new ArrayList<>();
+                        for (final StringValue value : selectedRows) {
+                            final UITable uiTable = (UITable) _gridX.getDefaultModelObject();
+                            final UIRow row = uiTable.getValues().get(value.toInt());
+                            newValues.add(StringValue.valueOf ( row.getInstance().getOid()));
+                        }
+                        parameters.setParameterValues("selectedRow", newValues);
+                    }
+                } catch (StringValueConversionException | EFapsException e) {
+                    LOG.error("Catched exeption", e);
+                }
+            }
+        });
+
         // for a dropdown add the previous value as a parameter
         if (_submittingComponent instanceof AjaxFormSubmitter && ((AjaxFormSubmitter) _submittingComponent)
                         .getFormSubmittingComponent() != null && ((AjaxFormSubmitter) _submittingComponent)

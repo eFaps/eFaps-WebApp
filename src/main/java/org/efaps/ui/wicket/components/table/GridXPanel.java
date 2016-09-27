@@ -77,7 +77,7 @@ public class GridXPanel
      */
     public GridXPanel(final String _wicketId,
                       final IModel<UITable> _model)
-                    throws EFapsException
+        throws EFapsException
     {
         super(_wicketId, _model);
         add(new GridXComponent("grid", _model));
