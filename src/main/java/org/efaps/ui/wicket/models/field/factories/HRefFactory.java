@@ -49,6 +49,7 @@ import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
+import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.util.EFapsException;
 
 /**
@@ -166,7 +167,8 @@ public final class HRefFactory
                         || page instanceof FormPage
                             && Target.MODAL.equals(((UIForm) ((Component) page).getDefaultModelObject()).getTarget())
                             && calledByPage instanceof TablePage
-                            && ((TablePage) calledByPage).getCalledByPageReference() != null;
+                            && ((TablePage) calledByPage).getCalledByPageReference() != null
+                            && !(((TablePage) calledByPage).getCalledByPageReference().getPage() instanceof MainPage);
 
                 // verify ajax by checking if is not a recent link
                 if (ajax && RequestCycle.get().getActiveRequestHandler() instanceof IComponentRequestHandler) {
