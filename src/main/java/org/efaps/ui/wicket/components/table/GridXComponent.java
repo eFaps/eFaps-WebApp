@@ -33,6 +33,7 @@ import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebComponent;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.ILinkListener;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
@@ -114,10 +115,13 @@ public class GridXComponent
             final StringBuilder js = new StringBuilder()
                 .append("<script type=\"text/javascript\">")
                 .append("require([")
+                .append("'dojo/_base/array',")
                 .append("'dojo/_base/lang',")
                 .append("'dojo/_base/json',")
+                .append("'dojo/aspect',")
                 .append("'dojo/query',")
                 .append("'dojo/dom-geometry',")
+                .append("'dojo/dom-construct',")
                 .append("'dojo/window',")
                 .append("'dojo/dom-style',")
                 .append("'dojo/ready',")
@@ -153,11 +157,11 @@ public class GridXComponent
                 .append("'dojo/ready'")
                 .append("")
 
-                .append("], function(lang, json, query, domGeom, win, domStyle, ready, on, registry, Memory, Cache, ")
-                .append("Grid, VirtualVScroller, ColumnResizer,HScroller, SingleSort, MoveColumn, SelectColumn,  ")
-                .append("SelectCell, SelectRow, DnDColumn, HiddenColumns, IndirectSelect , RowHeader, HeaderDialog, ")
-                .append("GridConfig, GridSort, Summary, QuickFilter, Bar, Persist, Filter,FilterBar,")
-                .append("DropDownButton, TextBox, TooltipDialog, ready){\n")
+                .append("], function(array, lang, json, aspect, query, domGeom, domConstruct, win, domStyle, ready,")
+                .append("on, registry, Memory, Cache, Grid, VirtualVScroller, ColumnResizer,HScroller, SingleSort, ")
+                .append("MoveColumn, SelectColumn, SelectCell, SelectRow, DnDColumn, HiddenColumns, IndirectSelect , ")
+                .append("RowHeader, HeaderDialog, GridConfig, GridSort, Summary, QuickFilter, Bar, Persist, Filter,")
+                .append("FilterBar, DropDownButton, TextBox, TooltipDialog, ready){\n")
 
                 .append("var cp = function(_attr, _itemA, _itemB) {\n")
                 .append("var strA = _itemA.hasOwnProperty(_attr + '_sort')")
@@ -289,8 +293,34 @@ public class GridXComponent
                 .append("var hh = vs.h - pos.h -pos.y;\n")
                 .append("registry.byId('grid').resize({h:hh});")
                 .append("});\n")
+
+                .append("aspect.after(grid.select.row, 'onSelectionChange', function (_defferd) {\n")
+                .append("query(\"input[name='selectedRow']\").forEach(domConstruct.destroy);\n")
+                .append("array.forEach(registry.byId('grid').select.row.getSelected(), function (_item) {\n")
+                .append("domConstruct.create('input', {\n")
+                .append("type: 'hidden',\n")
+                .append("name:'selectedRow',\n")
+                .append("value: _item\n")
+                .append("},\n")
+                .append("'").append(findParent(Form.class).getMarkupId(true)).append("');\n")
+                .append("});\n")
+                .append("});\n")
+
+                .append("grid.prevSelected = [];\n")
+                .append("var ftb = function () {\n")
+                .append("registry.byId('grid').prevSelected = registry.byId('grid').select.row.getSelected();\n")
+                .append("};\n")
+                .append("var fta = function () {\n")
+                .append("array.forEach(registry.byId('grid').prevSelected, function (_item) {\n")
+                .append("registry.byId('grid').select.row.selectById(_item);\n")
+                .append("});\n")
+                .append("};\n")
+                .append("aspect.before(grid.filter, 'setFilter', ftb);\n")
+                .append("aspect.before(grid.filter, 'clearFilter', ftb);\n")
+                .append("aspect.after(grid.filter, 'setFilter', fta);\n")
+                .append("aspect.after(grid.filter, 'clearFilter', fta);\n")
+
                 .append("});")
-                .append("\n")
                 .append("\n</script>");
 
             replaceComponentTagBody(_markupStream, _openTag, js);
