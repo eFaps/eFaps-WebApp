@@ -224,7 +224,7 @@ public class GridXPanel
                         .append(StringUtils.join(picklist, "','"))
                         .append("'];");
                 } else {
-                    js.append("grid._columnsById['287215'].enumOptions='';");
+                    js.append("grid._columnsById[").append(header.getFieldId()).append("].enumOptions='';");
                 }
             }
         }
