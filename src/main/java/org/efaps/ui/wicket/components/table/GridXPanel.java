@@ -32,6 +32,7 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.string.StringValue;
 import org.efaps.admin.dbproperty.DBProperties;
@@ -80,7 +81,18 @@ public class GridXPanel
         throws EFapsException
     {
         super(_wicketId, _model);
-        add(new GridXComponent("grid", _model));
+        add(new GridXComponent("grid", new LoadableDetachableModel<UITable>()
+        {
+
+            /** The Constant serialVersionUID. */
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            protected UITable load()
+            {
+                return _model.getObject();
+            }
+        }));
 
         final RepeatingView filterRepeater = new RepeatingView("filterRepeater");
         add(filterRepeater);

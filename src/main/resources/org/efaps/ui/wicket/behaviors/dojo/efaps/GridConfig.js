@@ -5,13 +5,14 @@ define([
     "dijit/_TemplatedMixin",
     "dijit/_WidgetsInTemplateMixin",
     "dijit/CheckedMenuItem",
-    'dojo/text!./templates/GridConfig.html',
-], function(declare, array, _WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin, CheckedMenuItem,  template){
+    "dojo/text!./templates/GridConfig.html",
+    "dojo/i18n!./nls/eFaps"
+], function(declare, array, _WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin, CheckedMenuItem, template, eFapsNLS){
 
     return declare([_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin], {
         templateString: template,
 
-        buttonLabel: 'Columns',
+        buttonLabel: eFapsNLS.gridConfigButtonLabel,
 
         grid: null,
 
