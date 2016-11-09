@@ -165,7 +165,7 @@ public class GridXPanel
                 } else if (FilterType.STATUS.equals(header.getFilter().getType())) {
                     final StatusPanel statusPanel = new StatusPanel("filter", Model.of(header));
                     form.add(statusPanel);
-                    form.add(new AjaxButton<UITableHeader>("btn", Model.of(header))
+                    form.add(new AjaxButton<UITableHeader>("btn", Model.of(header), Button.ICON.ACCEPT.getReference())
                     {
 
                         /** The Constant serialVersionUID. */
@@ -185,7 +185,9 @@ public class GridXPanel
                                     // all value are selected and the not required,
                                     // meaning that nothing must be filtered
                                     if (selection.size() == sets.size() && !uitableHeader.getFilter().isRequired()) {
-                                        _model.getObject().removeFilter(uitableHeader);
+                                        uiTable.removeFilter(uitableHeader);
+                                        uiTable.resetModel();
+                                        uiTable.execute();
                                     } else {
                                         final Set<Object> filterList = new HashSet<>();
                                         for (final StringValue value : selection) {
