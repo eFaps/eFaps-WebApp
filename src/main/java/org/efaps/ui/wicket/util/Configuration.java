@@ -130,7 +130,7 @@ public final class Configuration
                         String.class,
                         "UUID of a form that will be used in case that there is no form found for the task page."),
          /***/
-        WEBSOCKET_ACTVATE(false, true, "WebSocket.activate", "true", Boolean.class, " Websocket activated. "),
+        WEBSOCKET_ACTVATE(false, true, "WebSocket.activate", "false", Boolean.class, " Websocket activated. "),
         /**  */
         WEBSOCKET_KASP(false, true, "WebSocket.KeepAliveSendPeriod", "180", Integer.class,
                         "Websocket KeepAlive period."),
