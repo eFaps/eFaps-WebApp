@@ -43,6 +43,9 @@ import org.efaps.util.EFapsException;
 import org.efaps.util.cache.InfinispanCache;
 import org.hibernate.search.query.dsl.QueryBuilder;
 import org.infinispan.Cache;
+import org.infinispan.configuration.cache.Configuration;
+import org.infinispan.configuration.cache.ConfigurationBuilder;
+import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.query.CacheQuery;
 import org.infinispan.query.ResultIterator;
 import org.infinispan.query.Search;
@@ -302,6 +305,15 @@ public final class RegistryManager
      */
     private static Cache<String, UserSession> getCache()
     {
+        // before the first use the Entity used for indexing must be added
+        if (!((EmbeddedCacheManager) InfinispanCache.get().getContainer()).cacheExists(SESSIONCACHE)) {
+            final Configuration config = ((EmbeddedCacheManager) InfinispanCache.get().getContainer())
+                            .getCacheConfiguration(SESSIONCACHE);
+            final ConfigurationBuilder bldr = new ConfigurationBuilder().read(config);
+            bldr.indexing().addIndexedEntity(UserSession.class);
+            ((EmbeddedCacheManager) InfinispanCache.get().getContainer()).defineConfiguration(SESSIONCACHE, bldr
+                            .build());
+        }
         return InfinispanCache.get().getIgnReCache(SESSIONCACHE);
     }
 }
