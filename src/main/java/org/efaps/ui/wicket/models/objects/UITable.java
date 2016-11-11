@@ -182,7 +182,8 @@ public class UITable
                     // add the filter here, if it is a required filter or a default value is set, that must be
                     // applied against the database
                     for (final Field field : command.getTargetTable().getFields()) {
-                        if ((field.getFilter().isRequired()
+                        if (field.hasAccess(getMode(), getInstance(), getCommand(), getInstance()) &&
+                                        (field.getFilter().isRequired()
                                         || field.getFilter().getDefaultValue() != null
                                             && !field.getFilter().getDefaultValue().isEmpty())
                                         && field.getFilter().getBase().equals(FilterBase.DATABASE)) {
