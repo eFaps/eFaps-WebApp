@@ -26,12 +26,16 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.internal.HtmlHeaderContainer;
 import org.apache.wicket.model.IModel;
+import org.efaps.jaas.AppAccessHandler;
 import org.efaps.ui.wicket.behaviors.AjaxDownloadBehavior;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.IconHeaderItem;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
+import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This abstract Page extends WebPage to deliver the functionality of merging
@@ -63,6 +67,11 @@ public abstract class AbstractMergePage
                     "AbstractMergePage.css");
 
     /**
+     * Logger for this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractMergePage.class);
+
+    /**
      * The DownloadBehavior used for downloading files.
      */
     private final AjaxDownloadBehavior downloadBehavior  = new AjaxDownloadBehavior();
@@ -87,8 +96,13 @@ public abstract class AbstractMergePage
     public AbstractMergePage(final IModel<?> _model)
     {
         super(_model);
-        add(this.downloadBehavior);
+        this.add(this.downloadBehavior);
         this.body = new TransparentWebMarkupContainer("body");
+        try {
+            this.body.add(AttributeModifier.append("class", AppAccessHandler.getApplicationKey()));
+        } catch (final EFapsException e) {
+            AbstractMergePage.LOG.error("Could not set class attribute for body", e);
+        }
         this.body.add(AttributeModifier.append("class", Configuration.getAttribute(ConfigAttribute.DOJO_CLASS)));
         super.add(this.body);
 
@@ -125,7 +139,7 @@ public abstract class AbstractMergePage
         MarkupContainer ret = null;
         for (final Component child : _childs) {
             if (child instanceof HtmlHeaderContainer) {
-                ret = add2Page(child);
+                ret = this.add2Page(child);
             } else {
                 ret = this.body.add(_childs);
             }
