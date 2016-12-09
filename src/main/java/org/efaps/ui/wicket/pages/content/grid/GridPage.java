@@ -16,11 +16,14 @@
  */
 package org.efaps.ui.wicket.pages.content.grid;
 
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.model.IModel;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.gridx.GridXPanel;
 import org.efaps.ui.wicket.models.objects.UIGrid;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
+import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
 
 /**
@@ -34,6 +37,11 @@ public class GridPage
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * Reference to the style sheet.
+     */
+    private static final EFapsContentReference CSS = new EFapsContentReference(GridPage.class, "GridPage.css");
 
     /**
      * Instantiates a new grid page.
@@ -61,4 +69,12 @@ public class GridPage
             e.printStackTrace();
         }
     }
+
+    @Override
+    public void renderHead(final IHeaderResponse _response)
+    {
+        super.renderHead(_response);
+        _response.render(AbstractEFapsHeaderItem.forCss(GridPage.CSS));
+    }
+
 }

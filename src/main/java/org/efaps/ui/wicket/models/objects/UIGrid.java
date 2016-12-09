@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
  * @author The eFaps Team
  */
 public class UIGrid
-    implements Serializable
+    extends AbstractUI
 {
 
     /** The Constant serialVersionUID. */
@@ -161,8 +161,15 @@ public class UIGrid
                         final UIValue uiValue = UIValue.get(field, attr, value)
                                         .setRequestInstances(multi.getInstanceList());
                         final Object fV = uiValue.getReadOnlyValue(TargetMode.VIEW);
-                        cells.add(new Cell().setValue(fV).setSortValue(sortValue)
-                                        .setFieldConfig(column.getFieldConfig()));
+                        final Cell cell = new Cell()
+                                        .setValue(fV)
+                                        .setSortValue(sortValue)
+                                        .setFieldConfig(column.getFieldConfig());
+
+                        if (column.getFieldConfig().getField().getReference() != null) {
+                            cell.setInstance(instance);
+                        }
+                        cells.add(cell);
                     }
                 }
             }
@@ -260,10 +267,16 @@ public class UIGrid
         return null;
     }
 
+    /**
+     * Checks if is show check boxes.
+     *
+     * @return true, if is show check boxes
+     * @throws CacheReloadException the cache reload exception
+     */
     public boolean isShowCheckBoxes()
+        throws CacheReloadException
     {
-        // TODO Auto-generated method stub
-        return false;
+        return getCommand().isTargetShowCheckBoxes();
     }
 
     /**
@@ -299,7 +312,7 @@ public class UIGrid
                     ret = (Instance) alternateObj;
                 }
             } catch (final ClassCastException e) {
-                LOG.error("Field '{}' has invalid SelectAlternateOID value", _field);
+                UIGrid.LOG.error("Field '{}' has invalid SelectAlternateOID value", _field);
             }
         } else if (_field.hasEvents(EventType.UI_FIELD_ALTINST)) {
             final List<Return> retTmps = _field.executeEvents(EventType.UI_FIELD_ALTINST, ParameterValues.INSTANCE, ret,
@@ -340,6 +353,21 @@ public class UIGrid
         private Object value;
 
         private Object sortValue;
+
+        private Instance instance;
+
+
+        public Instance getInstance()
+        {
+            return this.instance;
+        }
+
+
+        public Cell setInstance(final Instance instance)
+        {
+            this.instance = instance;
+            return this;
+        }
 
         public String getValue()
         {
