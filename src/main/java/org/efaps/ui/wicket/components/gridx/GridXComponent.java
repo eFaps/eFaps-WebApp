@@ -198,9 +198,13 @@ public class GridXComponent
                 .append("cacheClass: Cache,")
                 .append("store: store,")
                 .append("structure: structure,\n")
-                .append("barTop: [\n")
-                    .append("{plugin: pMenuBar, style: 'text-align: left;'}, \n")
-                    .append("{pluginClass: QuickFilter, style: 'text-align: center;'}, \n")
+                .append("barTop: [\n");
+
+            if (dojoClasses.contains(DojoClasses.MenuBar)) {
+                js.append("{plugin: pMenuBar, style: 'text-align: left;'}, \n");
+            }
+
+            js.append("{pluginClass: QuickFilter, style: 'text-align: center;'}, \n")
                     .append("{pluginClass: GridConfig, style: 'text-align: right;'} \n")
                     .append("],\n")
                 .append("barBottom: [\n")
@@ -312,12 +316,11 @@ public class GridXComponent
     protected CharSequence getMenu(final Set<DojoClass> _dojoClasses) throws EFapsException
     {
         final StringBuilder ret = new StringBuilder();
-        Collections.addAll(_dojoClasses, DojoClasses.MenuBar, DojoClasses.DropDownMenu, DojoClasses.MenuItem,
-                        DojoClasses.PopupMenuBarItem, DojoClasses.MenuBarItem);
-
         final UIGrid uiGrid = (UIGrid) getDefaultModelObject();
-
         if (uiGrid.getCommand().getTargetMenu() != null) {
+            Collections.addAll(_dojoClasses, DojoClasses.MenuBar, DojoClasses.DropDownMenu, DojoClasses.MenuItem,
+                            DojoClasses.PopupMenuBarItem, DojoClasses.MenuBarItem);
+
             ret.append("var pMenuBar = new MenuBar({});\n");
             for (final AbstractCommand child : uiGrid.getCommand().getTargetMenu().getCommands()) {
                 if (child instanceof AbstractMenu) {
