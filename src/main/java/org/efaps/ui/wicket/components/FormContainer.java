@@ -45,7 +45,7 @@ import org.efaps.db.Context;
 import org.efaps.ui.wicket.EFapsSession.FileParameter;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.date.IDateListener;
-import org.efaps.ui.wicket.components.table.GridXComponent;
+import org.efaps.ui.wicket.components.gridx.GridXComponent;
 import org.efaps.ui.wicket.components.values.DropDownField;
 import org.efaps.ui.wicket.components.values.IValueConverter;
 import org.efaps.ui.wicket.models.field.IUIElement;
@@ -57,8 +57,8 @@ import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIForm.Element;
 import org.efaps.ui.wicket.models.objects.UIForm.ElementType;
 import org.efaps.ui.wicket.models.objects.UIForm.FormRow;
-import org.efaps.ui.wicket.models.objects.UIRow;
-import org.efaps.ui.wicket.models.objects.UITable;
+import org.efaps.ui.wicket.models.objects.UIGrid;
+import org.efaps.ui.wicket.models.objects.UIGrid.Row;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.request.EFapsRequest;
 import org.efaps.ui.wicket.request.EFapsRequestParametersAdapter;
@@ -252,14 +252,14 @@ public class FormContainer
                     if (CollectionUtils.isNotEmpty(selectedRows)) {
                         final List<StringValue> newValues = new ArrayList<>();
                         for (final StringValue value : selectedRows) {
-                            final UITable uiTable = (UITable) _gridX.getDefaultModelObject();
-                            final UIRow row = uiTable.getValues().get(value.toInt());
-                            newValues.add(StringValue.valueOf ( row.getInstance().getOid()));
+                            final UIGrid uiGrid = (UIGrid) _gridX.getDefaultModelObject();
+                            final Row row = uiGrid.getValues().get(value.toInt());
+                            newValues.add(StringValue.valueOf (row.getInstance().getOid()));
                         }
                         parameters.setParameterValues("selectedRow", newValues);
                     }
                 } catch (StringValueConversionException | EFapsException e) {
-                    LOG.error("Catched exeption", e);
+                    FormContainer.LOG.error("Catched exeption", e);
                 }
             }
         });

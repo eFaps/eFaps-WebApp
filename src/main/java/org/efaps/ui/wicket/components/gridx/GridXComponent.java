@@ -45,6 +45,8 @@ import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.util.string.StringValue;
 import org.apache.wicket.util.string.StringValueConversionException;
+import org.apache.wicket.util.visit.IVisit;
+import org.apache.wicket.util.visit.IVisitor;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractMenu;
 import org.efaps.admin.ui.Menu;
@@ -263,14 +265,14 @@ public class GridXComponent
                 .append("grid.placeAt('").append(getMarkupId(true)).append("');\n")
                 .append("grid.startup();\n")
                 .append("ready(function(){")
-                .append("var bar = query('.eFapsMenuBarPanel') [0];\n")
+                .append("var bar = query('.eFapsFrameTitle') [0];\n")
                 .append("var pos = domGeom.position(bar);\n")
                 .append("var vs = win.getBox();\n")
                 .append("var hh = vs.h - pos.h -pos.y;\n")
                 .append("registry.byId('grid').resize({h:hh});")
                 .append("});")
                 .append("on(window, 'resize', function() {\n")
-                .append("var bar = query('.eFapsMenuBarPanel') [0];\n")
+                .append("var bar = query('.eFapsFrameTitle') [0];\n")
                 .append("var pos = domGeom.position(bar);\n")
                 .append("var vs = win.getBox();\n")
                 .append("var hh = vs.h - pos.h -pos.y;\n")
@@ -368,11 +370,25 @@ public class GridXComponent
                 .append(" label: \"")
                 .append(StringEscapeUtils.escapeEcmaScript(_cmd.getLabelProperty())).append("\",\n")
                 .append("onClick: function(event) {\n")
-                .append("var rid = \"").append(rid).append("\";\n")
-                .append(getBehaviors(MenuItemAjaxBehavior.class).get(0).getCallbackFunctionBody(
-                            CallbackParameter.explicit("rid")))
-                .append("}\n")
-                .append("})\n");
+                .append("var rid = \"").append(rid).append("\";\n");
+
+        if (_cmd.isSubmit()) {
+            final GridXPanel panel = (GridXPanel) getParent();
+            panel.visitChildren(MenuSubmitItem.class, new IVisitor<MenuSubmitItem, Void>()
+            {
+
+                @Override
+                public void component(final MenuSubmitItem _item,
+                                      final IVisit<Void> visit)
+                {
+                    js.append(_item.getBavior().getCallbackFunctionBody(CallbackParameter.explicit("rid")));
+                }
+            });
+        } else {
+            js.append(getBehaviors(MenuItemAjaxBehavior.class).get(0).getCallbackFunctionBody(CallbackParameter
+                            .explicit("rid")));
+        }
+        js.append("}\n").append("})\n");
         return js;
     }
 

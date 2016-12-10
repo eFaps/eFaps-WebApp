@@ -16,12 +16,17 @@
  */
 package org.efaps.ui.wicket.pages.content.grid;
 
+import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.gridx.GridXPanel;
+import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.objects.UIGrid;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
+import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
@@ -51,16 +56,24 @@ public class GridPage
     public GridPage(final IModel<UIGrid> _model)
     {
         super(_model);
-        addComponents();
-    }
-
-    /**
-     * Inits the.
-     */
-    private void addComponents()
-    {
         try {
-            final FormContainer form = new FormContainer("form");
+            add2Page(new Label("pageTitle", DBProperties.getProperty("Logo.Version.Label")));
+            add(new Label("titel", _model.getObject().getTitle()));
+            add(new ModalWindowContainer("modal"));
+
+            final FormContainer form = new FormContainer("form")
+            {
+
+                /** The Constant serialVersionUID. */
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                protected void onComponentTag(final ComponentTag _tag)
+                {
+                    super.onComponentTag(_tag);
+                    _tag.put("action", "");
+                }
+            };
             add(form);
             final GridXPanel panel = new GridXPanel("gridPanel", (IModel<UIGrid>) getDefaultModel());
             form.add(panel);
@@ -75,6 +88,7 @@ public class GridPage
     {
         super.renderHead(_response);
         _response.render(AbstractEFapsHeaderItem.forCss(GridPage.CSS));
+        _response.render(AbstractEFapsHeaderItem.forCss(AbstractContentPage.CSS));
     }
 
 }

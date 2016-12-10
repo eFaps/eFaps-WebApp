@@ -25,8 +25,10 @@ import java.util.UUID;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.wicket.RestartResponseException;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.ui.UIValue;
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
@@ -45,6 +47,7 @@ import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.SelectBuilder;
 import org.efaps.ui.wicket.models.field.FieldConfiguration;
 import org.efaps.ui.wicket.models.objects.AbstractUIHeaderObject.UserCacheKey;
+import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
@@ -77,7 +80,7 @@ public class UIGrid
     private final List<Column> columns = new ArrayList<>();
 
     /** The values. */
-    private final List<List<Cell>> values =new ArrayList<>();
+    private final List<Row> values = new ArrayList<>();
 
     /**
      * Instantiates a new UI grid.
@@ -129,9 +132,8 @@ public class UIGrid
                 }
                 multi.execute();
                 while (multi.next()) {
-                    final Instance rowInstance = multi.getCurrentInstance();
-                    final List<Cell> cells = new ArrayList<>();
-                    this.values.add(cells);
+                    final Row row = new Row(multi.getCurrentInstance());
+                    this.values.add(row);
                     for (final Column column : this.columns) {
                         final Field field = column.getField();
                         final Instance instance = evaluateFieldInstance(multi, field);
@@ -169,7 +171,7 @@ public class UIGrid
                         if (column.getFieldConfig().getField().getReference() != null) {
                             cell.setInstance(instance);
                         }
-                        cells.add(cell);
+                        row.add(cell);
                     }
                 }
             }
@@ -204,7 +206,7 @@ public class UIGrid
         return lists;
     }
 
-    public List<List<Cell>> getValues()
+    public List<Row> getValues()
         throws EFapsException
     {
         init();
@@ -329,6 +331,27 @@ public class UIGrid
     }
 
     /**
+     * This method retrieves the Value for the Title from the eFaps Database.
+     *
+     * @return Value of the Title
+     * @throws Exception
+     */
+    public String getTitle()
+    {
+        String title = "";
+        try {
+            final String key = getCommand().getTargetTitle() == null
+                            ? getCommand().getName() + ".Title"
+                            : getCommand().getTargetTitle();
+            title = DBProperties.getProperty(key);
+        } catch (final Exception e) {
+            throw new RestartResponseException(new ErrorPage(new EFapsException(this.getClass(), "",
+                            "Error reading the Title")));
+        } // CHECKSTYLE:ON
+        return title;
+    }
+
+    /**
      * Gets the.
      *
      * @param _commandUUID the command UUID
@@ -340,6 +363,25 @@ public class UIGrid
         ret.setCmdUUID(_commandUUID);
         return ret;
     }
+
+    public static class Row extends ArrayList<Cell>
+    {
+        /** The Constant serialVersionUID. */
+        private static final long serialVersionUID = 1L;
+
+        private final Instance instance;
+
+        public Row(final Instance _Instance)
+        {
+            this.instance = _Instance;
+        }
+
+        public Instance getInstance()
+        {
+            return this.instance;
+        }
+    }
+
 
     public static class Cell
         implements Serializable

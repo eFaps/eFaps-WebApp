@@ -78,6 +78,10 @@ public class ModalWindowContainer
      */
     private boolean targetShowFile = false;
 
+    /** The top. */
+    private boolean top = true;
+
+
     /**
      * Constructor.
      *
@@ -327,7 +331,13 @@ public class ModalWindowContainer
     @Override
     protected CharSequence getShowJavaScript()
     {
-        return "top.Wicket.Window.create(settings).show();\n";
+        String ret;
+        if (isTop()) {
+            ret = "top.Wicket.Window.create(settings).show();\n";
+        } else {
+            ret = "Wicket.Window.create(settings).show();\n";
+        }
+        return ret;
     }
 
     /**
@@ -376,5 +386,23 @@ public class ModalWindowContainer
         this.targetShowFile = _targetShowFile;
     }
 
+    /**
+     * Checks if is top.
+     *
+     * @return the top
+     */
+    public boolean isTop()
+    {
+        return this.top;
+    }
 
+    /**
+     * Sets the top.
+     *
+     * @param top the new top
+     */
+    public void setTop(final boolean _top)
+    {
+        this.top = _top;
+    }
 }

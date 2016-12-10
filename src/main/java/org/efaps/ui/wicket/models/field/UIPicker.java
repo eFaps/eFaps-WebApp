@@ -35,8 +35,8 @@ import org.efaps.admin.ui.field.FieldPicker;
 import org.efaps.api.ui.UIType;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
-import org.efaps.ui.wicket.components.modalwindow.ICmdUIObject;
 import org.efaps.ui.wicket.models.AbstractInstanceObject;
+import org.efaps.ui.wicket.models.objects.ICmdUIObject;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
@@ -198,7 +198,7 @@ public class UIPicker
                                       final Object... _objectTuples)
         throws EFapsException
     {
-        List<Return> ret = new ArrayList<Return>();
+        List<Return> ret = new ArrayList<>();
         if (_eventType.equals(EventType.UI_COMMAND_EXECUTE) && getCommand().hasEvents(EventType.UI_PICKER)) {
             this.executed  = true;
             final Parameter param = new Parameter();
@@ -303,5 +303,12 @@ public class UIPicker
     public void setParentParameters(final Map<String, String[]> _parameters)
     {
         this.parentParameters = _parameters;
+    }
+
+    @Override
+    public List<Return> executeEvents(final Object... _objectTuples)
+        throws EFapsException
+    {
+        return null;
     }
 }

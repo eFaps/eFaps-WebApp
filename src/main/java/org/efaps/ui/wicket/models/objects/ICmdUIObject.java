@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 
-package org.efaps.ui.wicket.components.modalwindow;
+package org.efaps.ui.wicket.models.objects;
 
+import java.io.Serializable;
+import java.util.List;
+
+import org.efaps.admin.event.Return;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.util.EFapsException;
 
@@ -29,11 +30,10 @@ import org.efaps.util.EFapsException;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public interface ICmdUIObject
+    extends Serializable
 {
-
     /**
      * @return the command belonging to this CommandModel
      * @throws EFapsException on error
@@ -45,4 +45,22 @@ public interface ICmdUIObject
      * @return the instance key for this object
      */
     String getInstanceKey();
+
+
+    /**
+     * This method executes the Events which are related to this Model. It will
+     * take the Events of the CallingCommand {@link #callingCmdUUID}, if it is
+     * declared, otherwise it will take the Events of the Command
+     * {@link #cmdUUID}. The Method also adds the oid {@link #instanceKey} to
+     * the Context, so that it is accessible for the esjp.<br>
+     * This method throws an eFpasError to provide the possibility for different
+     * responses in the components.
+     *
+     * @param _objectTuples n tuples of ParamterValue and Object
+     * @throws EFapsException on error
+     * @return List of Returns
+     */
+    List<Return> executeEvents(final Object... _objectTuples)
+        throws EFapsException;
+
 }

@@ -38,7 +38,6 @@ import org.efaps.beans.valueparser.ValueParser;
 import org.efaps.db.Context;
 import org.efaps.db.PrintQuery;
 import org.efaps.ui.wicket.UsageRegistry;
-import org.efaps.ui.wicket.components.modalwindow.ICmdUIObject;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;

@@ -60,6 +60,7 @@ public class GridXPanel
             /** The Constant serialVersionUID. */
             private static final long serialVersionUID = 1L;
         });
+        add(new MenuSubmitItem("submitter"));
         add(new GridXComponent("grid", new LoadableDetachableModel<UIGrid>()
         {
 
@@ -72,7 +73,6 @@ public class GridXPanel
                 return _model.getObject();
             }
         }));
-
         final RepeatingView filterRepeater = new RepeatingView("filterRepeater");
         add(filterRepeater);
     }

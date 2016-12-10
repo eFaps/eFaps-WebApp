@@ -15,22 +15,15 @@
   limitations under the License.
 
 -->
+
 <html xmlns:wicket>
 <wicket:panel>
-    <div wicket:id="filterRepeater" data-dojo-type="dijit/TooltipDialog" id="myFormDialog"
-        data-dojo-id="myFormDialog" title="Accept or decline agreement terms"
-        style="display: none">
-        <script type="dojo/on" data-dojo-event="blur" data-dojo-args="e">
-            require(["dijit/popup"], function(popup){
-                popup.close(e);
-            });
-        </script>
-        <form wicket:id="filterForm">
-            <div wicket:id="filter"></div>
-            <span wicket:id="btn"></span>
-        </form>
+    <div class="eFapsWarnDialogText">
+        <span wicket:id="textLabel">label</span>
     </div>
-    <div wicket:id="grid" style="width: 100%; heigth: 800px;"></div>
-    <span wicket:id="submitter"></span>
+    <div class="eFapsWarnDialogButtons">
+        <div class="eFapsWarnDialogButton2" wicket:id="closeButton"></div>
+        <div class="eFapsWarnDialogButton1" wicket:id="submitButton"></div>
+    </div>
 </wicket:panel>
 </html>

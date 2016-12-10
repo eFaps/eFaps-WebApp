@@ -64,16 +64,15 @@ import org.efaps.util.cache.CacheReloadException;
 public class DialogPage
     extends AbstractMergePage
 {
+    /**
+     * Reference to the StyleSheet of this Page stored in the eFaps-DataBase.
+     */
+    public static final EFapsContentReference CSS = new EFapsContentReference(DialogPage.class, "DialogPage.css");
 
     /**
      *
      */
     private static final long serialVersionUID = 1L;
-
-    /**
-     * Reference to the StyleSheet of this Page stored in the eFaps-DataBase.
-     */
-    private static final EFapsContentReference CSS = new EFapsContentReference(DialogPage.class, "DialogPage.css");
 
     /**
      * Reference to the page that opened this dialog.
@@ -161,7 +160,7 @@ public class DialogPage
      * @param _keytype type of the key e.g. "Cancel", "Submit", "Close"
      * @return Label
      */
-    private static String getLabel(final String _cmdName,
+    public static String getLabel(final String _cmdName,
                                    final String _keytype)
     {
         String ret;

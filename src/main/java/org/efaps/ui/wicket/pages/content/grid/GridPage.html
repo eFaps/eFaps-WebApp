@@ -18,11 +18,21 @@
 
 -->
 
-<html xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:wicket="http://wicket.apache.org">
-<body wicket:id="body">
-         <form wicket:id="form">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org">
+    <head>
+        <title wicket:id="pageTitle"></title>
+    </head>
+    <body wicket:id="body">
+        <div id="eFapsVeil" style="display:none">
+            <div class="eFapsPreventClick"></div>
+            <div class="eFapsIndicator"></div>
+        </div>
+        <div wicket:id="modal"></div>
+        <div class="eFapsFrameTitle">
+            <span wicket:id="titel">titel here</span>
+        </div>
+        <form wicket:id="form">
             <span wicket:id="gridPanel"></span>
         </form>
-</body>
+    </body>
 </html>
