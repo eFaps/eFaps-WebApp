@@ -30,7 +30,6 @@ import org.efaps.util.cache.CacheReloadException;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public abstract class AbstractUIModeObject
     extends AbstractInstanceObject
@@ -81,9 +80,10 @@ public abstract class AbstractUIModeObject
      * @see #mode
      * @see #getMode
      */
-    public void setMode(final TargetMode _mode)
+    public AbstractUIModeObject setMode(final TargetMode _mode)
     {
         this.mode = _mode;
+        return this;
     }
 
     /**

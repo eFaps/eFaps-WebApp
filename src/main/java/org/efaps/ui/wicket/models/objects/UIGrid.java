@@ -18,8 +18,10 @@ package org.efaps.ui.wicket.models.objects;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -46,6 +48,8 @@ import org.efaps.db.Instance;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.SelectBuilder;
 import org.efaps.ui.wicket.models.field.FieldConfiguration;
+import org.efaps.ui.wicket.models.field.JSField;
+import org.efaps.ui.wicket.models.field.factories.IComponentFactory;
 import org.efaps.ui.wicket.models.objects.AbstractUIHeaderObject.UserCacheKey;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
@@ -104,6 +108,9 @@ public class UIGrid
             }
             final List<Instance> instances = getInstances();
             if (CollectionUtils.isNotEmpty(instances)) {
+                /** The factories. */
+                final Map<Long, JSField> jsFields = new HashMap<>();
+
                 final Set<String> altOIDSel = new HashSet<>();
                 final MultiPrintQuery multi = new MultiPrintQuery(instances);
                 for (final Column column : this.columns) {
@@ -162,12 +169,8 @@ public class UIGrid
 
                         final UIValue uiValue = UIValue.get(field, attr, value)
                                         .setRequestInstances(multi.getInstanceList());
-                        final Object fV = uiValue.getReadOnlyValue(TargetMode.VIEW);
-                        final Cell cell = new Cell()
-                                        .setValue(fV)
-                                        .setSortValue(sortValue)
-                                        .setFieldConfig(column.getFieldConfig());
 
+                        final Cell cell = getCell(column, uiValue, jsFields);
                         if (column.getFieldConfig().getField().getReference() != null) {
                             cell.setInstance(instance);
                         }
@@ -175,8 +178,40 @@ public class UIGrid
                     }
                 }
             }
+
         }
     }
+
+    protected Cell getCell(final Column _column,
+                           final UIValue _uiValue,
+                           final Map<Long, JSField> _fields)
+        throws EFapsException
+    {
+        JSField jsField;
+        if (_fields.containsKey(_uiValue.getField().getId())) {
+            jsField = _fields.get(_uiValue.getField().getId());
+        } else {
+            jsField = new JSField(_uiValue);
+            final IComponentFactory fact = jsField.getFactory();
+            if (fact == null) {
+                _fields.put(_uiValue.getField().getId(), null);
+                jsField = null;
+            } else {
+                _fields.put(_uiValue.getField().getId(), jsField);
+            }
+        }
+        final String value;
+        if (jsField == null) {
+            value = "";
+        } else {
+            jsField.setValue(_uiValue);
+            value = jsField.getFactory().getStringValue(jsField);
+        }
+        return  new Cell().setValue(value)
+                        .setSortValue(value)
+                        .setFieldConfig(_column.getFieldConfig());
+    }
+
 
     /**
      * @param _field Field the Base select will be evaluated for

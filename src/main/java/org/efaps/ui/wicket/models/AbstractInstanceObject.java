@@ -34,8 +34,6 @@ import org.efaps.util.EFapsException;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id: AbstractInstanceObject.java 3447 2009-11-29 22:46:39Z
- *          tim.moxter $
  */
 public abstract class AbstractInstanceObject
     implements Serializable
@@ -96,7 +94,7 @@ public abstract class AbstractInstanceObject
         Map<String, Instance> map = (Map<String, Instance>) Session.get().getAttribute(
                         EFapsKey.INSTANCE_CACHEKEY.getKey());
         if (map == null) {
-            map = new HashMap<String, Instance>();
+            map = new HashMap<>();
             Session.get().setAttribute(EFapsKey.INSTANCE_CACHEKEY.getKey(), (Serializable) map);
         }
         if (map.containsKey(this.instanceKey)) {

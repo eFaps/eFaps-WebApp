@@ -452,7 +452,8 @@ public class GridXComponent
             for (final Cell cell : row) {
 
                 ret.append(",").append(cell.getFieldConfig().getName()).append(":").append("'")
-                    .append(StringEscapeUtils.escapeEcmaScript(cell.getValue())).append("'");
+                    .append(StringEscapeUtils.escapeEcmaScript(StringEscapeUtils.escapeHtml4(cell.getValue())))
+                    .append("'");
 
                 final Comparable<?> orderObject = (Comparable<?>) cell.getSortValue();
                 if (orderObject != null) {
