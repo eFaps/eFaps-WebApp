@@ -60,7 +60,9 @@ public class GridXPanel
             /** The Constant serialVersionUID. */
             private static final long serialVersionUID = 1L;
         });
-        add(new MenuSubmitItem("submitter"));
+        // add a hidden element that has all the events used by the menu
+        add(new MenuItem("menuItem"));
+
         add(new GridXComponent("grid", new LoadableDetachableModel<UIGrid>()
         {
 

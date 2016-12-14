@@ -180,7 +180,7 @@ public class ConfirmationPanel
                         public void component(final ModalWindowContainer modal,
                                               final IVisit<Void> _visit)
                         {
-                            modal.close(_target);
+                            modal.close(_target, cmdUI);
                             _visit.stop();
                         }
                     });

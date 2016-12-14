@@ -12,6 +12,7 @@ import org.efaps.admin.event.Return;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Command;
 import org.efaps.db.Context;
+import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
 
 /**
@@ -40,7 +41,7 @@ public class UICmdObject
     }
 
     @Override
-    public String getInstanceKey()
+    public Instance getInstance()
     {
         return null;
     }

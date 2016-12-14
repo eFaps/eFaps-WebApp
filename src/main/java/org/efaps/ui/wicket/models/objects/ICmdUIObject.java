@@ -15,7 +15,6 @@
  *
  */
 
-
 package org.efaps.ui.wicket.models.objects;
 
 import java.io.Serializable;
@@ -23,8 +22,8 @@ import java.util.List;
 
 import org.efaps.admin.event.Return;
 import org.efaps.admin.ui.AbstractCommand;
+import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
-
 
 /**
  * TODO comment!
@@ -34,6 +33,7 @@ import org.efaps.util.EFapsException;
 public interface ICmdUIObject
     extends Serializable
 {
+
     /**
      * @return the command belonging to this CommandModel
      * @throws EFapsException on error
@@ -43,9 +43,10 @@ public interface ICmdUIObject
 
     /**
      * @return the instance key for this object
+     * @throws EFapsException on error
      */
-    String getInstanceKey();
-
+    Instance getInstance()
+        throws EFapsException;
 
     /**
      * This method executes the Events which are related to this Model. It will

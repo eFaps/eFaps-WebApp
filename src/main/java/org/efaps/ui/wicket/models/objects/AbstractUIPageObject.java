@@ -54,6 +54,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractUIPageObject
     extends AbstractUIObject
+    implements ICmdUIObject
 {
 
     /**
@@ -453,7 +454,7 @@ public abstract class AbstractUIPageObject
                     ret = (Instance) alternateObj;
                 }
             } catch (final ClassCastException e) {
-                LOG.error("Field '{}' has invalid SelectAlternateOID value", _field);
+                AbstractUIPageObject.LOG.error("Field '{}' has invalid SelectAlternateOID value", _field);
             }
         } else if (_field.hasEvents(EventType.UI_FIELD_ALTINST)) {
             final List<Return> retTmps = _field.executeEvents(EventType.UI_FIELD_ALTINST,

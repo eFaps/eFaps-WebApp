@@ -48,12 +48,15 @@ import org.apache.wicket.util.string.StringValueConversionException;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import org.efaps.admin.ui.AbstractCommand;
+import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.admin.ui.AbstractMenu;
 import org.efaps.admin.ui.Menu;
 import org.efaps.api.ui.FilterBase;
 import org.efaps.api.ui.FilterType;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.behaviors.dojo.AbstractDojoBehavior;
+import org.efaps.ui.wicket.components.gridx.behaviors.OpenModalBehavior;
+import org.efaps.ui.wicket.components.gridx.behaviors.SubmitBehavior;
 import org.efaps.ui.wicket.models.objects.UIGrid;
 import org.efaps.ui.wicket.models.objects.UIGrid.Cell;
 import org.efaps.ui.wicket.models.objects.UIGrid.Column;
@@ -372,16 +375,30 @@ public class GridXComponent
                 .append("onClick: function(event) {\n")
                 .append("var rid = \"").append(rid).append("\";\n");
 
-        if (_cmd.isSubmit()) {
+        if (Target.MODAL.equals(_cmd.getTarget())) {
             final GridXPanel panel = (GridXPanel) getParent();
-            panel.visitChildren(MenuSubmitItem.class, new IVisitor<MenuSubmitItem, Void>()
+            panel.visitChildren(MenuItem.class, new IVisitor<MenuItem, Void>()
             {
 
                 @Override
-                public void component(final MenuSubmitItem _item,
+                public void component(final MenuItem _item,
                                       final IVisit<Void> visit)
                 {
-                    js.append(_item.getBavior().getCallbackFunctionBody(CallbackParameter.explicit("rid")));
+                    js.append(_item.getBehaviors(OpenModalBehavior.class).get(0)
+                                    .getCallbackFunctionBody(CallbackParameter.explicit("rid")));
+                }
+            });
+        } else if (_cmd.isSubmit()) {
+            final GridXPanel panel = (GridXPanel) getParent();
+            panel.visitChildren(MenuItem.class, new IVisitor<MenuItem, Void>()
+            {
+
+                @Override
+                public void component(final MenuItem _item,
+                                      final IVisit<Void> visit)
+                {
+                    js.append(_item.getBehaviors(SubmitBehavior.class).get(0)
+                                    .getCallbackFunctionBody(CallbackParameter.explicit("rid")));
                 }
             });
         } else {

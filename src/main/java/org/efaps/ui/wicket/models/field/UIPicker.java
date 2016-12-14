@@ -178,11 +178,14 @@ public class UIPicker
 
     /**
      * {@inheritDoc}
+     *
+     * @throws EFapsException
      */
     @Override
-    public String getInstanceKey()
+    public Instance getInstance()
+        throws EFapsException
     {
-        return this.parent.getInstanceKey();
+        return this.parent.getInstance();
     }
 
     /**

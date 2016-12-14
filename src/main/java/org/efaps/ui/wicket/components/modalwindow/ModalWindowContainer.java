@@ -35,18 +35,23 @@ import org.apache.wicket.request.IRequestHandler;
 import org.efaps.admin.ui.Menu;
 import org.efaps.ui.wicket.components.menutree.MenuUpdateBehavior;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
+import org.efaps.ui.wicket.models.objects.ICmdUIObject;
 import org.efaps.ui.wicket.models.objects.UIForm;
+import org.efaps.ui.wicket.models.objects.UIGrid;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
+import org.efaps.ui.wicket.pages.content.grid.GridPage;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.dashboard.DashboardPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
+import org.efaps.ui.wicket.util.DojoClasses;
+import org.efaps.ui.wicket.util.DojoWrapper;
 import org.efaps.util.EFapsException;
 
 /**
@@ -118,7 +123,7 @@ public class ModalWindowContainer
      * @param _uiObject uiObject of the page that was opened in the current modal
      */
     public void close(final AjaxRequestTarget _target,
-                      final AbstractUIPageObject _uiObject)
+                      final ICmdUIObject _uiObject)
     {
         super.close(_target);
         closeInternal(_target, _uiObject);
@@ -141,7 +146,7 @@ public class ModalWindowContainer
      * @param _uiObject uiObject of the page that was opened in the current modal
      */
     private void closeInternal(final IPartialPageRequestHandler _target,
-                               final AbstractUIPageObject _uiObject)
+                               final ICmdUIObject _uiObject)
     {
         if (this.targetShowFile) {
             ((AbstractMergePage) getPage()).getDownloadBehavior().initiate(_target);
@@ -158,61 +163,96 @@ public class ModalWindowContainer
      * @return JavaScript
      * @throws EFapsException
      */
-    public String getReloadJavaScript(final AbstractUIPageObject _uiObject)
+    public String getReloadJavaScript(final ICmdUIObject _uiObject)
     {
-        final AbstractUIPageObject uiObject = (AbstractUIPageObject) getPage().getDefaultModelObject();
         final StringBuilder javascript = new StringBuilder();
-        if (uiObject != null) {
-            try {
-                PageReference calledByPageRef = ((AbstractContentPage) getPage()).getCalledByPageReference();
-                if (calledByPageRef != null && calledByPageRef.getPage() instanceof AbstractContentPage) {
-                    calledByPageRef = ((AbstractContentPage) calledByPageRef.getPage()).getCalledByPageReference();
-                }
-                final String href = _uiObject.getCommand().getReference();
-                final Page page;
-                boolean tree = false;
-                if ("TREE?".equalsIgnoreCase(href) && _uiObject.getInstance() != null
-                                && _uiObject.getInstance().isValid()) {
-                    final Menu menu = Menu.getTypeTreeMenu(_uiObject.getInstance().getType());
-                    if (menu == null) {
-                        final Exception ex = new Exception("no tree menu defined for type "
-                                        + _uiObject.getInstance().getType().getName());
-                        throw new RestartResponseException(new ErrorPage(ex));
+        if (getPage() instanceof GridPage) {
+            final UIGrid uiGrid = (UIGrid) getPage().getDefaultModelObject();
+            final GridPage gridPage = new GridPage(Model.of(UIGrid.get(uiGrid.getCmdUUID())));
+            final IRequestHandler handler = new RenderPageRequestHandler(new PageProvider(gridPage));
+            final String url = getRequestCycle().urlFor(handler).toString();
+
+            javascript.append(DojoWrapper.require(new StringBuilder()
+                    .append(" top.dijit.registry.byId(\"mainPanel\").set(\"content\",")
+                    .append(" domConstruct.create(\"iframe\",{")
+                        .append("\"id\": \"").append(MainPage.IFRAME_ID)
+                        .append("\",\"src\": \"./wicket/").append(url)
+                        .append("\",\"style\": \"border: 0; width: 100%; height: 99%\" }")
+                        .append("))"), DojoClasses.domConstruct));
+        } else {
+            final AbstractUIPageObject uiObject = (AbstractUIPageObject) getPage().getDefaultModelObject();
+
+            if (uiObject != null) {
+                try {
+                    PageReference calledByPageRef = ((AbstractContentPage) getPage()).getCalledByPageReference();
+                    if (calledByPageRef != null && calledByPageRef.getPage() instanceof AbstractContentPage) {
+                        calledByPageRef = ((AbstractContentPage) calledByPageRef.getPage()).getCalledByPageReference();
                     }
-                    page = new ContentContainerPage(menu.getUUID(), _uiObject.getInstance().getKey());
-                    tree = true;
-                } else {
-                    uiObject.resetModel();
-                    if (uiObject instanceof UITable) {
-                        page = new TablePage(Model.of((UITable) uiObject), calledByPageRef);
-                    } else if (uiObject instanceof UIForm) {
-                        page = new FormPage(Model.of((UIForm) uiObject), calledByPageRef);
-                    } else if (uiObject instanceof UIStructurBrowser) {
-                        page = new StructurBrowserPage(Model.of((UIStructurBrowser) uiObject), calledByPageRef);
+                    final String href = _uiObject.getCommand().getReference();
+                    final Page page;
+                    boolean tree = false;
+                    if ("TREE?".equalsIgnoreCase(href) && _uiObject.getInstance() != null
+                                    && _uiObject.getInstance().isValid()) {
+                        final Menu menu = Menu.getTypeTreeMenu(_uiObject.getInstance().getType());
+                        if (menu == null) {
+                            final Exception ex = new Exception("no tree menu defined for type "
+                                            + _uiObject.getInstance().getType().getName());
+                            throw new RestartResponseException(new ErrorPage(ex));
+                        }
+                        page = new ContentContainerPage(menu.getUUID(), _uiObject.getInstance().getKey());
+                        tree = true;
                     } else {
-                        page = new MockHomePage();
+                        uiObject.resetModel();
+                        if (uiObject instanceof UITable) {
+                            page = new TablePage(Model.of((UITable) uiObject), calledByPageRef);
+                        } else if (uiObject instanceof UIForm) {
+                            page = new FormPage(Model.of((UIForm) uiObject), calledByPageRef);
+                        } else if (uiObject instanceof UIStructurBrowser) {
+                            page = new StructurBrowserPage(Model.of((UIStructurBrowser) uiObject), calledByPageRef);
+                        } else {
+                            page = new MockHomePage();
+                        }
                     }
+                    final IRequestHandler handler = new RenderPageRequestHandler(new PageProvider(page));
+                    // touch the page to ensure that the pagemanager stores it to be accessible
+                    getSession().getPageManager().touchPage(page);
+                    final String url = getRequestCycle().urlFor(handler).toString();
+                    if (calledByPageRef != null && calledByPageRef.getPage() instanceof ContentContainerPage && !tree) {
+                        final String panelId = ((ContentContainerPage) calledByPageRef.getPage()).getCenterPanelId();
+                        javascript.append("require([\"dojo/dom-construct\"], function(domConstruct){")
+                            .append("var mF = top.dojo.doc.getElementById(\"").append(MainPage.IFRAME_ID).append("\");")
+                            .append("if (mF != null) {")
+                            .append("mF.contentWindow.dijit.registry.byId(\"").append(panelId)
+                            .append("\").set(\"content\",")
+                                .append(" domConstruct.create(\"iframe\", {")
+                                    .append("\"src\": \"").append(url)
+                                    .append("\",\"style\": \"border: 0; width: 100%; height: 99%\"}")
+                                .append(")); ")
+                            .append("mF.contentWindow.").append(MenuUpdateBehavior.FUNCTION_NAME).append("(\"")
+                            .append(MenuUpdateBehavior.PARAMETERKEY4UPDATE).append("\");")
+                            .append("}")
+                            .append("});");
+                    } else {
+                        javascript.append("require([\"dojo/dom-construct\"], function(domConstruct){")
+                            .append(" top.dijit.registry.byId(\"mainPanel\").set(\"content\",")
+                                .append(" domConstruct.create(\"iframe\",{")
+                                    .append("\"id\": \"").append(MainPage.IFRAME_ID)
+                                    .append("\",\"src\": \"./wicket/").append(url)
+                                    .append("\",\"style\": \"border: 0; width: 100%; height: 99%\" }")
+                                 .append("))")
+                            .append("});");
+                    }
+                } catch (final EFapsException e) {
+                    throw new RestartResponseException(new ErrorPage(e));
                 }
-                final IRequestHandler handler = new RenderPageRequestHandler(new PageProvider(page));
-                // touch the page to ensure that the pagemanager stores it to be accessible
-                getSession().getPageManager().touchPage(page);
-                final String url = getRequestCycle().urlFor(handler).toString();
-                if (calledByPageRef != null && calledByPageRef.getPage() instanceof ContentContainerPage && !tree) {
-                    final String panelId = ((ContentContainerPage) calledByPageRef.getPage()).getCenterPanelId();
-                    javascript.append("require([\"dojo/dom-construct\"], function(domConstruct){")
-                        .append("var mF = top.dojo.doc.getElementById(\"").append(MainPage.IFRAME_ID).append("\");")
-                        .append("if (mF != null) {")
-                        .append("mF.contentWindow.dijit.registry.byId(\"").append(panelId)
-                        .append("\").set(\"content\",")
-                            .append(" domConstruct.create(\"iframe\", {")
-                                .append("\"src\": \"").append(url)
-                                .append("\",\"style\": \"border: 0; width: 100%; height: 99%\"}")
-                            .append(")); ")
-                        .append("mF.contentWindow.").append(MenuUpdateBehavior.FUNCTION_NAME).append("(\"")
-                        .append(MenuUpdateBehavior.PARAMETERKEY4UPDATE).append("\");")
-                        .append("}")
-                        .append("});");
-                } else {
+            } else if (getPage() instanceof MainPage) {
+                try {
+                    // this was called by the DashBoard
+                    final DashboardPage page = new DashboardPage(getPage().getPageReference());
+                    final IRequestHandler handler = new RenderPageRequestHandler(new PageProvider(page));
+                    // touch the page to ensure that the pagemanager stores it to be accessible
+                    getSession().getPageManager().touchPage(page);
+                    final String url = getRequestCycle().urlFor(handler).toString();
                     javascript.append("require([\"dojo/dom-construct\"], function(domConstruct){")
                         .append(" top.dijit.registry.byId(\"mainPanel\").set(\"content\",")
                             .append(" domConstruct.create(\"iframe\",{")
@@ -221,28 +261,9 @@ public class ModalWindowContainer
                                 .append("\",\"style\": \"border: 0; width: 100%; height: 99%\" }")
                              .append("))")
                         .append("});");
+                } catch (final EFapsException e) {
+                    throw new RestartResponseException(new ErrorPage(e));
                 }
-            } catch (final EFapsException e) {
-                throw new RestartResponseException(new ErrorPage(e));
-            }
-        } else if (getPage() instanceof MainPage) {
-            try {
-                // this was called by the DashBoard
-                final DashboardPage page = new DashboardPage(getPage().getPageReference());
-                final IRequestHandler handler = new RenderPageRequestHandler(new PageProvider(page));
-                // touch the page to ensure that the pagemanager stores it to be accessible
-                getSession().getPageManager().touchPage(page);
-                final String url = getRequestCycle().urlFor(handler).toString();
-                javascript.append("require([\"dojo/dom-construct\"], function(domConstruct){")
-                    .append(" top.dijit.registry.byId(\"mainPanel\").set(\"content\",")
-                        .append(" domConstruct.create(\"iframe\",{")
-                            .append("\"id\": \"").append(MainPage.IFRAME_ID)
-                            .append("\",\"src\": \"./wicket/").append(url)
-                            .append("\",\"style\": \"border: 0; width: 100%; height: 99%\" }")
-                         .append("))")
-                    .append("});");
-            } catch (final EFapsException e) {
-                throw new RestartResponseException(new ErrorPage(e));
             }
         }
         return javascript.toString();
@@ -301,7 +322,13 @@ public class ModalWindowContainer
     @Override
     public String getCloseJavacript()
     {
-        return ModalWindowContainer.getCloseJavacriptInternal();
+        String ret;
+        if (isTop()) {
+            ret = ModalWindowContainer.getCloseJavacriptInternal();
+        } else {
+            ret = super.getCloseJavacript();
+        }
+        return ret;
     }
 
     /**

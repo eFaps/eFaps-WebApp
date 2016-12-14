@@ -82,8 +82,10 @@ public class ModalWindowAjaxPageCreator
     {
         Page ret = null;
         try {
+            final String instKey = this.uiObject.getInstance() == null ? null : this.uiObject.getInstance().getKey();
+
             if (this.uiObject.getCommand().getTargetTable() == null) {
-                final UIForm uiform = new UIForm(this.uiObject.getCommand().getUUID(), this.uiObject.getInstanceKey());
+                final UIForm uiform = new UIForm(this.uiObject.getCommand().getUUID(), instKey);
                 uiform.setPicker(this.uiObject);
                 if (!uiform.isInitialized()) {
                     uiform.execute();
@@ -97,14 +99,13 @@ public class ModalWindowAjaxPageCreator
                 }
             } else {
                 if (this.uiObject.getCommand().getTargetStructurBrowserField() == null) {
-                    final UITable uitable = new UITable(this.uiObject.getCommand().getUUID(),
-                                    this.uiObject.getInstanceKey());
+                    final UITable uitable = new UITable(this.uiObject.getCommand().getUUID(), instKey);
                     uitable.setPicker(this.uiObject);
                     ret = new TablePage(Model.of(uitable), this.modalWindow, this.modalWindow.getPage()
                                     .getPageReference());
                 } else {
                     final UIStructurBrowser uiPageObject = new UIStructurBrowser(this.uiObject.getCommand().getUUID(),
-                                    this.uiObject.getInstanceKey());
+                                    instKey);
                     uiPageObject.setPicker(this.uiObject);
                     ret = new StructurBrowserPage(Model.of(uiPageObject), this.modalWindow,
                                     this.modalWindow.getPage().getPageReference());
