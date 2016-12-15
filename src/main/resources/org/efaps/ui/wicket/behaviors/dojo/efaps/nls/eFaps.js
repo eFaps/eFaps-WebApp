@@ -1,6 +1,7 @@
 define({root:
 ({
-    gridConfigButtonLabel: "Columns"
+    gridConfigButtonLabel: "Columns",
+    gridConfigToggleLabel: "Wrap/unwrap lines"
 }),
 "de": true,
 "es": true,

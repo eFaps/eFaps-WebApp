@@ -1,18 +1,24 @@
 define([
     "dojo/_base/declare",
     "dojo/_base/array",
+    "dojo/dom-class",
+    "dojo/dom-geometry",
+    "dojo/on",
     "dijit/_WidgetBase",
     "dijit/_TemplatedMixin",
     "dijit/_WidgetsInTemplateMixin",
+    "dijit/form/ToggleButton",
     "dijit/CheckedMenuItem",
+    "dijit/Toolbar",
     "dojo/text!./templates/GridConfig.html",
     "dojo/i18n!./nls/eFaps"
-], function(declare, array, _WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin, CheckedMenuItem, template, eFapsNLS){
+], function(declare, array, domClass, domGeom, on, _WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin, ToggleButton, CheckedMenuItem, Toolbar, template, eFapsNLS) {
 
     return declare([_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin], {
         templateString: template,
 
         buttonLabel: eFapsNLS.gridConfigButtonLabel,
+        toggleLabel: eFapsNLS.gridConfigToggleLabel,
 
         grid: null,
 
@@ -36,7 +42,8 @@ define([
             var t = this, g = t.grid,
                 dn = t.domNode,
                 tm = t.menu,
-                hC = g.hiddenColumns;
+                hC = g.hiddenColumns,
+                tB = t.toggleButton;
 
             array.forEach(g.structure, function(col){
                  var item = new CheckedMenuItem({
@@ -50,6 +57,13 @@ define([
                  });
                  this.addChild(item);
              }, tm);
+
+            on(tB, "click", function(evt){
+                domClass.toggle(tB.domNode, "dijitDisabled", !tB.checked);
+                domClass.toggle(g.bodyNode, "eFapsNoWrap", !tB.checked);
+                g.resize();
+            });
+
         },
 
         check: function(_colId) {

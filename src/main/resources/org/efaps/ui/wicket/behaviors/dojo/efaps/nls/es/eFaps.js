@@ -1,3 +1,4 @@
 define({
-    gridConfigButtonLabel: "Columnas"
+    gridConfigButtonLabel: "Columnas",
+    gridConfigToggleLabel: "Ajustar líneas"
 });
