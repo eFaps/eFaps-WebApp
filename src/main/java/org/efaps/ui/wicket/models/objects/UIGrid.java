@@ -18,7 +18,6 @@ package org.efaps.ui.wicket.models.objects;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -30,8 +29,13 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.RestartResponseException;
 import org.efaps.admin.datamodel.Attribute;
+import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.datamodel.ui.DateTimeUI;
+import org.efaps.admin.datamodel.ui.DateUI;
+import org.efaps.admin.datamodel.ui.IUIProvider;
 import org.efaps.admin.datamodel.ui.UIValue;
 import org.efaps.admin.dbproperty.DBProperties;
+import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
@@ -46,6 +50,9 @@ import org.efaps.api.ci.UITableFieldProperty;
 import org.efaps.api.ui.FilterBase;
 import org.efaps.api.ui.IFilter;
 import org.efaps.api.ui.IFilterList;
+import org.efaps.api.ui.IListFilter;
+import org.efaps.api.ui.IMapFilter;
+import org.efaps.api.ui.IOption;
 import org.efaps.db.AbstractPrintQuery;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
@@ -90,6 +97,10 @@ public class UIGrid
     /** The values. */
     private final List<Row> values = new ArrayList<>();
 
+    /** The filter list. */
+    private final FilterList filterList = new FilterList();
+
+
     /**
      * Instantiates a new UI grid.
      */
@@ -108,83 +119,94 @@ public class UIGrid
                                 TargetMode.VIEW)) {
                     final Column column = new Column().setFieldConfig(new FieldConfiguration(field.getId()));
                     this.columns.add(column);
-                }
-            }
-            final List<Instance> instances = getInstances();
-            if (CollectionUtils.isNotEmpty(instances)) {
-                /** The factories. */
-                final Map<Long, JSField> jsFields = new HashMap<>();
-
-                final Set<String> altOIDSel = new HashSet<>();
-                final MultiPrintQuery multi = new MultiPrintQuery(instances);
-                for (final Column column : this.columns) {
-                    final Field field = column.getField();
-                    if (field.getSelect() != null) {
-                        multi.addSelect(field.getSelect());
-                    } else if (field.getAttribute() != null) {
-                        multi.addAttribute(field.getAttribute());
-                    } else if (field.getPhrase() != null) {
-                        multi.addPhrase(field.getName(), field.getPhrase());
-                    } else if (field.getMsgPhrase() != null) {
-                        multi.addMsgPhrase(new SelectBuilder(getBaseSelect4MsgPhrase(field)), field.getMsgPhrase());
-                    }
-                    if (field.getSelectAlternateOID() != null) {
-                        multi.addSelect(field.getSelectAlternateOID());
-                        altOIDSel.add(field.getSelectAlternateOID());
-                    }
-                    if (field.containsProperty(UITableFieldProperty.SORT_SELECT)) {
-                        multi.addSelect(field.getProperty(UITableFieldProperty.SORT_SELECT));
-                    } else if (field.containsProperty(UITableFieldProperty.SORT_PHRASE)) {
-                        multi.addPhrase(field.getProperty(UITableFieldProperty.SORT_PHRASE), field.getProperty(
-                                        UITableFieldProperty.SORT_PHRASE));
-                    } else if (field.containsProperty(UITableFieldProperty.SORT_MSG_PHRASE)) {
-                        multi.addMsgPhrase(field.getProperty(UITableFieldProperty.SORT_MSG_PHRASE));
-                    }
-                }
-                multi.execute();
-                while (multi.next()) {
-                    final Row row = new Row(multi.getCurrentInstance());
-                    this.values.add(row);
-                    for (final Column column : this.columns) {
-                        final Field field = column.getField();
-                        final Instance instance = evaluateFieldInstance(multi, field);
-                        Object value = null;
-                        Object sortValue = null;
-                        Attribute attr = null;
-                        if (field.getSelect() != null) {
-                            value = multi.<Object>getSelect(field.getSelect());
-                            attr = multi.getAttribute4Select(field.getSelect());
-                        } else if (field.getAttribute() != null) {
-                            value = multi.<Object>getAttribute(field.getAttribute());
-                            attr = multi.getAttribute4Attribute(field.getAttribute());
-                        } else if (field.getPhrase() != null) {
-                            value = multi.getPhrase(field.getName());
-                        } else if (field.getMsgPhrase() != null) {
-                            value = multi.getMsgPhrase(new SelectBuilder(getBaseSelect4MsgPhrase(field)), field
-                                            .getMsgPhrase());
-                        }
-                        if (field.containsProperty(UITableFieldProperty.SORT_SELECT)) {
-                            sortValue = multi.getSelect(field.getProperty(UITableFieldProperty.SORT_SELECT));
-                        } else if (field.containsProperty(UITableFieldProperty.SORT_PHRASE)) {
-                            sortValue = multi.getPhrase(field.getProperty(UITableFieldProperty.SORT_PHRASE));
-                        } else if (field.containsProperty(UITableFieldProperty.SORT_MSG_PHRASE)) {
-                            sortValue = multi.getMsgPhrase(field.getProperty(UITableFieldProperty.SORT_MSG_PHRASE));
-                        }
-
-                        final UIValue uiValue = UIValue.get(field, attr, value)
-                                        .setRequestInstances(multi.getInstanceList());
-
-                        final Cell cell = getCell(column, uiValue, sortValue, jsFields);
-                        if (column.getFieldConfig().getField().getReference() != null) {
-                            cell.setInstance(instance);
-                        }
-                        row.add(cell);
+                    // before executing the esjp add the filters that are working against the database to
+                    // get them filled with the defaults
+                    if (FilterBase.DATABASE.equals(field.getFilter().getBase())) {
+                        this.filterList.add(getFilter4Field(column.getField()));
                     }
                 }
             }
-
+            load();
         }
     }
+
+    protected void load()
+        throws EFapsException
+    {
+        final List<Instance> instances = getInstances();
+        if (CollectionUtils.isNotEmpty(instances)) {
+            /** The factories. */
+            final Map<Long, JSField> jsFields = new HashMap<>();
+
+            final Set<String> altOIDSel = new HashSet<>();
+            final MultiPrintQuery multi = new MultiPrintQuery(instances);
+            for (final Column column : this.columns) {
+                final Field field = column.getField();
+                if (field.getSelect() != null) {
+                    multi.addSelect(field.getSelect());
+                } else if (field.getAttribute() != null) {
+                    multi.addAttribute(field.getAttribute());
+                } else if (field.getPhrase() != null) {
+                    multi.addPhrase(field.getName(), field.getPhrase());
+                } else if (field.getMsgPhrase() != null) {
+                    multi.addMsgPhrase(new SelectBuilder(getBaseSelect4MsgPhrase(field)), field.getMsgPhrase());
+                }
+                if (field.getSelectAlternateOID() != null) {
+                    multi.addSelect(field.getSelectAlternateOID());
+                    altOIDSel.add(field.getSelectAlternateOID());
+                }
+                if (field.containsProperty(UITableFieldProperty.SORT_SELECT)) {
+                    multi.addSelect(field.getProperty(UITableFieldProperty.SORT_SELECT));
+                } else if (field.containsProperty(UITableFieldProperty.SORT_PHRASE)) {
+                    multi.addPhrase(field.getProperty(UITableFieldProperty.SORT_PHRASE), field.getProperty(
+                                    UITableFieldProperty.SORT_PHRASE));
+                } else if (field.containsProperty(UITableFieldProperty.SORT_MSG_PHRASE)) {
+                    multi.addMsgPhrase(field.getProperty(UITableFieldProperty.SORT_MSG_PHRASE));
+                }
+            }
+            multi.execute();
+            while (multi.next()) {
+                final Row row = new Row(multi.getCurrentInstance());
+                this.values.add(row);
+                for (final Column column : this.columns) {
+                    final Field field = column.getField();
+                    final Instance instance = evaluateFieldInstance(multi, field);
+                    Object value = null;
+                    Object sortValue = null;
+                    Attribute attr = null;
+                    if (field.getSelect() != null) {
+                        value = multi.<Object>getSelect(field.getSelect());
+                        attr = multi.getAttribute4Select(field.getSelect());
+                    } else if (field.getAttribute() != null) {
+                        value = multi.<Object>getAttribute(field.getAttribute());
+                        attr = multi.getAttribute4Attribute(field.getAttribute());
+                    } else if (field.getPhrase() != null) {
+                        value = multi.getPhrase(field.getName());
+                    } else if (field.getMsgPhrase() != null) {
+                        value = multi.getMsgPhrase(new SelectBuilder(getBaseSelect4MsgPhrase(field)), field
+                                        .getMsgPhrase());
+                    }
+                    if (field.containsProperty(UITableFieldProperty.SORT_SELECT)) {
+                        sortValue = multi.getSelect(field.getProperty(UITableFieldProperty.SORT_SELECT));
+                    } else if (field.containsProperty(UITableFieldProperty.SORT_PHRASE)) {
+                        sortValue = multi.getPhrase(field.getProperty(UITableFieldProperty.SORT_PHRASE));
+                    } else if (field.containsProperty(UITableFieldProperty.SORT_MSG_PHRASE)) {
+                        sortValue = multi.getMsgPhrase(field.getProperty(UITableFieldProperty.SORT_MSG_PHRASE));
+                    }
+
+                    final UIValue uiValue = UIValue.get(field, attr, value).setRequestInstances(multi
+                                    .getInstanceList());
+
+                    final Cell cell = getCell(column, uiValue, sortValue, jsFields);
+                    if (column.getFieldConfig().getField().getReference() != null) {
+                        cell.setInstance(instance);
+                    }
+                    row.add(cell);
+                }
+            }
+        }
+    }
+
 
     protected Cell getCell(final Column _column,
                            final UIValue _uiValue,
@@ -234,17 +256,11 @@ public class UIGrid
     protected List<Instance> getInstances()
         throws EFapsException
     {
-        final FilterList filterList = new FilterList();
-        for (final Column column : getColumns()) {
-            if (FilterBase.DATABASE.equals(column.getField().getFilter().getBase())) {
-                filterList.getFilters().add(getFilter4Field(column.getField()));
-            }
-        }
         final List<Return> ret = getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
                         ParameterValues.INSTANCE, null,
                         ParameterValues.PARAMETERS, Context.getThreadContext().getParameters(),
                         ParameterValues.CLASS, this,
-                        ParameterValues.OTHERS, filterList);
+                        ParameterValues.OTHERS, this.filterList);
         List<Instance> lists = null;
         if (ret.size() < 1) {
             throw new EFapsException(UITable.class, "getInstanceList");
@@ -256,34 +272,54 @@ public class UIGrid
 
     protected IFilter getFilter4Field(final Field _field)
     {
-        return new IFilter()
-        {
-            @Override
-            public Long getFieldID()
-            {
-                return _field.getId();
-            }
-        };
-    }
-
-
-    public static class FilterList
-        implements IFilterList
-    {
-        List<IFilter> filters = new ArrayList<>();
-
-        @Override
-        public Collection<IFilter> getFilters()
-        {
-            return this.filters;
+        IFilter ret;
+        switch (_field.getFilter().getType()) {
+            case STATUS:
+            case CLASSIFICATION:
+            case PICKLIST:
+                ret = new ListFilter(_field.getId());
+                break;
+            case FREETEXT:
+            case FORM:
+                ret = new MapFilter(_field.getId());
+                break;
+            case NONE:
+            default:
+                ret = new IFilter()
+                {
+                    @Override
+                    public long getFieldId()
+                    {
+                        return _field.getId();
+                    }
+                };
+                break;
         }
+        return ret;
     }
 
+    /**
+     * Gets the values.
+     *
+     * @return the values
+     */
     public List<Row> getValues()
         throws EFapsException
     {
         init();
         return this.values;
+    }
+
+    /**
+     * Gets the filter list.
+     *
+     * @return the filter list
+     */
+    public FilterList getFilterList()
+        throws EFapsException
+    {
+        init();
+        return this.filterList;
     }
 
     /**
@@ -422,6 +458,74 @@ public class UIGrid
                             "Error reading the Title")));
         } // CHECKSTYLE:ON
         return title;
+    }
+
+    /**
+     * Method used to evaluate the type for this table from the connected
+     * events.
+     *
+     * @return type if found
+     * @throws EFapsException on error
+     */
+    protected Type getType()
+        throws EFapsException
+    {
+        init();
+        Type ret;
+        if (getValues().isEmpty()) {
+            final List<EventDefinition> events =  getCommand().getEvents(EventType.UI_TABLE_EVALUATE);
+            String typeName = null;
+            if (events.size() > 1) {
+                throw new EFapsException(this.getClass(), "execute4NoInstance.moreThanOneEvaluate");
+            } else {
+                final EventDefinition event = events.get(0);
+                // test for basic or abstract types
+                if (event.getProperty("Type") != null) {
+                    typeName = event.getProperty("Type");
+                }
+                // no type yet search alternatives
+                if (typeName == null) {
+                    for (int i = 1; i < 100; i++) {
+                        final String nameTmp = "Type" + String.format("%02d", i);
+                        if (event.getProperty(nameTmp) != null) {
+                            typeName = event.getProperty(nameTmp);
+                        } else {
+                            break;
+                        }
+                    }
+                }
+            }
+            ret = typeName == null ? null : Type.get(typeName);
+        } else {
+            ret = getValues().get(0).getInstance().getType();
+        }
+        return ret;
+    }
+
+    public boolean isDateFilter(final IFilter _filter) throws EFapsException
+    {
+        boolean ret;
+        final Field field = Field.get(_filter.getFieldId());
+        // Explicitly set UIProvider
+        if (field.getUIProvider() != null && (field.getUIProvider() instanceof DateTimeUI || field
+                        .getUIProvider() instanceof DateUI)) {
+            ret = true;
+        } else {
+            final Attribute attr = getType().getAttribute(field.getAttribute());
+            final IUIProvider uiProvider = attr.getAttributeType().getUIProvider();
+            ret = uiProvider instanceof DateTimeUI || uiProvider instanceof DateUI;
+        }
+        return ret;
+    }
+
+    public void reload() throws EFapsException
+    {
+        if (!this.initialized) {
+            init();
+        } else {
+            this.values.clear();
+            load();
+        }
     }
 
     /**
@@ -574,4 +678,73 @@ public class UIGrid
         }
 
     }
+
+
+    public static class FilterList
+        extends HashSet<IFilter>
+        implements IFilterList
+    {
+
+        /** The Constant serialVersionUID. */
+        private static final long serialVersionUID = 1L;
+    }
+
+    public static class ListFilter
+        extends HashSet<IOption>
+        implements IListFilter
+    {
+
+        /** The Constant serialVersionUID. */
+        private static final long serialVersionUID = 1L;
+        /** The field id. */
+        private final long fieldId;
+
+        /**
+         * Instantiates a new map filter.
+         *
+         * @param _fieldId the field id
+         */
+        public ListFilter(final long _fieldId)
+        {
+            this.fieldId = _fieldId;
+        }
+
+        @Override
+        public long getFieldId()
+        {
+            return this.fieldId;
+        }
+    }
+
+    /**
+     * The Class MapFilter.
+     */
+    public static class MapFilter
+        extends HashMap<String, Object>
+        implements IMapFilter
+    {
+
+        /** The Constant serialVersionUID. */
+        private static final long serialVersionUID = 1L;
+
+        /** The field id. */
+        private final long fieldId;
+
+        /**
+         * Instantiates a new map filter.
+         *
+         * @param _fieldId the field id
+         */
+        public MapFilter(final long _fieldId)
+        {
+            this.fieldId = _fieldId;
+        }
+
+        @Override
+        public long getFieldId()
+        {
+            return this.fieldId;
+        }
+    }
+
 }
