@@ -1033,6 +1033,11 @@ public class UITable
         private long headerFieldId;
 
         /**
+         * Id of the field this header belongs to.
+         */
+        private long fieldId;
+
+        /**
          * Type of the Filter.
          */
         private final FilterValueType filterType;
@@ -1060,7 +1065,8 @@ public class UITable
          */
         public TableFilter(final long _fieldId)
         {
-            this.headerFieldId = _fieldId;
+            this.headerFieldId = 0;
+            this.fieldId = _fieldId;
             this.filterType = null;
         }
 
@@ -1235,10 +1241,10 @@ public class UITable
         {
             final IFilter ret;
             if (getParameters() != null) {
-                ret = new MapFilter(this.headerFieldId);
+                ret = new MapFilter(this.headerFieldId > 0 ? this.headerFieldId : this.fieldId);
                 ((MapFilter) ret).putAll(getParameters());
             } else if (this.filterList == null) {
-                ret = new MapFilter(this.headerFieldId);
+                ret = new MapFilter(this.headerFieldId > 0 ? this.headerFieldId : this.fieldId);
                 ((MapFilter) ret).put(UITable.TableFilter.FROM, this.from);
                 ((MapFilter) ret).put(UITable.TableFilter.TO, this.to);
                 ((MapFilter) ret).put(UITable.TableFilter.EXPERTMODE, isExpertMode());
@@ -1250,7 +1256,8 @@ public class UITable
                     @Override
                     public long getFieldId()
                     {
-                        return TableFilter.this.headerFieldId;
+                        return TableFilter.this.headerFieldId > 0 ? TableFilter.this.headerFieldId
+                                        : TableFilter.this.fieldId;
                     }
 
                     @Override
