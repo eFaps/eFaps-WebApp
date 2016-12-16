@@ -16,11 +16,14 @@
  */
 package org.efaps.ui.wicket.components.gridx;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.form.CheckBoxMultipleChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.markup.repeater.RepeatingView;
@@ -33,12 +36,15 @@ import org.apache.wicket.util.visit.IVisitor;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.api.ui.IFilter;
+import org.efaps.api.ui.IListFilter;
 import org.efaps.api.ui.IMapFilter;
+import org.efaps.api.ui.IOption;
 import org.efaps.ui.wicket.behaviors.dojo.AbstractDojoBehavior;
 import org.efaps.ui.wicket.components.button.AjaxButton;
 import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.gridx.filter.DateFilterPanel;
+import org.efaps.ui.wicket.components.gridx.filter.ListFilterPanel;
 import org.efaps.ui.wicket.models.objects.UIGrid;
 import org.efaps.util.DateTimeUtil;
 import org.efaps.util.EFapsException;
@@ -176,20 +182,66 @@ public class GridXPanel
                     } else {
 
                     }
-                        break;
-                    case STATUS:
-                    case CLASSIFICATION:
-                    case FORM:
-                    case PICKLIST:
-                    case NONE:
+                    break;
+                case STATUS:
+                    form.add(new ListFilterPanel("filter", new Model<>((IListFilter) filter)));
+                    form.add(new AjaxButton<IListFilter>("btn", new Model<>((IListFilter) filter), Button.ICON.ACCEPT
+                                    .getReference())
+                    {
 
-                    default:
-                        form.add(new WebMarkupContainer("filter"));
-                        form.add(new WebMarkupContainer("btn"));
-                        break;
-                }
+                        /** The Constant serialVersionUID. */
+                        private static final long serialVersionUID = 1L;
 
+                        @Override
+                        public void onSubmit(final AjaxRequestTarget _target)
+                        {
+                            final GridXPanel gridpanel = findParent(GridXPanel.class);
+                            final UIGrid uiGrid = gridpanel.getModelObject();
+                            form.visitChildren(CheckBoxMultipleChoice.class,
+                                        new IVisitor<CheckBoxMultipleChoice<?>, Void>()
+                                        {
 
+                                            @Override
+                                            public void component(final CheckBoxMultipleChoice<?> _checkBox,
+                                                                  final IVisit<Void> _visit)
+                                            {
+                                                try {
+                                                    final ListFilterPanel filterPanel = _checkBox.findParent(
+                                                                    ListFilterPanel.class);
+                                                    @SuppressWarnings("unchecked")
+                                                    final List<IOption> sel = (List<IOption>) _checkBox
+                                                                    .getDefaultModelObject();
+                                                        for (final IOption option : filterPanel.getModelObject()) {
+                                                            final Method method = option.getClass().getMethod("setSelected",
+                                                                            boolean.class);
+                                                            method.invoke(option, sel.contains(option));
+                                                        }
+                                                } catch (final IllegalAccessException | InvocationTargetException
+                                                                | NoSuchMethodException e) {
+                                                    GridXPanel.LOG.error("Catched error", e);
+                                                }
+                                            }
+                                        });
+
+                            try {
+                                uiGrid.reload();
+                                _target.appendJavaScript(getJavascript(uiGrid));
+                            } catch (final EFapsException e) {
+                                GridXPanel.LOG.error("Catched error", e);
+                            }
+                        }
+                    });
+                    break;
+                case CLASSIFICATION:
+                case FORM:
+                case PICKLIST:
+                case NONE:
+
+                default:
+                    form.add(new WebMarkupContainer("filter"));
+                    form.add(new WebMarkupContainer("btn"));
+                    break;
+            }
         }
     }
 
@@ -197,7 +249,7 @@ public class GridXPanel
     /**
      * Gets the javascript.
      *
-     * @param _uiTable the ui table
+     * @param _uiGrid the ui grid
      * @return the javascript
      * @throws EFapsException on error
      */

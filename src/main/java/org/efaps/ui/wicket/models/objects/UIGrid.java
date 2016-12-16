@@ -690,7 +690,7 @@ public class UIGrid
     }
 
     public static class ListFilter
-        extends HashSet<IOption>
+        extends ArrayList<IOption>
         implements IListFilter
     {
 
