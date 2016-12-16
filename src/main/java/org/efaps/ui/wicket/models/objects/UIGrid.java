@@ -18,6 +18,7 @@ package org.efaps.ui.wicket.models.objects;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -42,6 +43,9 @@ import org.efaps.admin.ui.Table;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.admin.ui.field.Filter;
 import org.efaps.api.ci.UITableFieldProperty;
+import org.efaps.api.ui.FilterBase;
+import org.efaps.api.ui.IFilter;
+import org.efaps.api.ui.IFilterList;
 import org.efaps.db.AbstractPrintQuery;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
@@ -170,7 +174,7 @@ public class UIGrid
                         final UIValue uiValue = UIValue.get(field, attr, value)
                                         .setRequestInstances(multi.getInstanceList());
 
-                        final Cell cell = getCell(column, uiValue, jsFields);
+                        final Cell cell = getCell(column, uiValue, sortValue, jsFields);
                         if (column.getFieldConfig().getField().getReference() != null) {
                             cell.setInstance(instance);
                         }
@@ -184,6 +188,7 @@ public class UIGrid
 
     protected Cell getCell(final Column _column,
                            final UIValue _uiValue,
+                           final Object _sortValue,
                            final Map<Long, JSField> _fields)
         throws EFapsException
     {
@@ -208,7 +213,7 @@ public class UIGrid
             value = jsField.getFactory().getStringValue(jsField);
         }
         return  new Cell().setValue(value)
-                        .setSortValue(value)
+                        .setSortValue(_sortValue)
                         .setFieldConfig(_column.getFieldConfig());
     }
 
@@ -229,9 +234,17 @@ public class UIGrid
     protected List<Instance> getInstances()
         throws EFapsException
     {
-        final List<Return> ret = getCommand().executeEvents(EventType.UI_TABLE_EVALUATE, ParameterValues.INSTANCE, null,
-                        ParameterValues.PARAMETERS, Context.getThreadContext().getParameters(), ParameterValues.CLASS,
-                        this, ParameterValues.OTHERS, null);
+        final FilterList filterList = new FilterList();
+        for (final Column column : getColumns()) {
+            if (FilterBase.DATABASE.equals(column.getField().getFilter().getBase())) {
+                filterList.getFilters().add(getFilter4Field(column.getField()));
+            }
+        }
+        final List<Return> ret = getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
+                        ParameterValues.INSTANCE, null,
+                        ParameterValues.PARAMETERS, Context.getThreadContext().getParameters(),
+                        ParameterValues.CLASS, this,
+                        ParameterValues.OTHERS, filterList);
         List<Instance> lists = null;
         if (ret.size() < 1) {
             throw new EFapsException(UITable.class, "getInstanceList");
@@ -239,6 +252,31 @@ public class UIGrid
             lists = (List<Instance>) ret.get(0).get(ReturnValues.VALUES);
         }
         return lists;
+    }
+
+    protected IFilter getFilter4Field(final Field _field)
+    {
+        return new IFilter()
+        {
+            @Override
+            public Long getFieldID()
+            {
+                return _field.getId();
+            }
+        };
+    }
+
+
+    public static class FilterList
+        implements IFilterList
+    {
+        List<IFilter> filters = new ArrayList<>();
+
+        @Override
+        public Collection<IFilter> getFilters()
+        {
+            return this.filters;
+        }
     }
 
     public List<Row> getValues()
