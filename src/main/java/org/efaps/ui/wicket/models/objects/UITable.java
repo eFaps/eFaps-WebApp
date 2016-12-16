@@ -55,6 +55,7 @@ import org.efaps.api.ui.IFilter;
 import org.efaps.api.ui.IFilterList;
 import org.efaps.api.ui.IListFilter;
 import org.efaps.api.ui.IMapFilter;
+import org.efaps.api.ui.IOption;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.MultiPrintQuery;
@@ -1250,22 +1251,33 @@ public class UITable
                 ((MapFilter) ret).put(UITable.TableFilter.EXPERTMODE, isExpertMode());
                 ((MapFilter) ret).put(UITable.TableFilter.IGNORECASE, isIgnoreCase());
             } else {
-                ret = new IListFilter()
-                {
-
-                    @Override
-                    public long getFieldId()
+                final ListFilter listFilter = new ListFilter(this.headerFieldId > 0 ? this.headerFieldId : this.fieldId);
+                ret = listFilter;
+                for (final Object val : this.filterList) {
+                    listFilter.add(new IOption()
                     {
-                        return TableFilter.this.headerFieldId > 0 ? TableFilter.this.headerFieldId
-                                        : TableFilter.this.fieldId;
-                    }
+                        /** The Constant serialVersionUID. */
+                        private static final long serialVersionUID = 1L;
 
-                    @Override
-                    public Object[] getValues()
-                    {
-                        return TableFilter.this.filterList.toArray();
-                    }
-                };
+                        @Override
+                        public String getLabel()
+                        {
+                            return null;
+                        }
+
+                        @Override
+                        public Object getValue()
+                        {
+                            return val;
+                        }
+
+                        @Override
+                        public boolean isSelected()
+                        {
+                            return true;
+                        }
+                    });
+                }
             }
             return ret;
         }
@@ -1414,6 +1426,34 @@ public class UITable
         private static final long serialVersionUID = 1L;
 
     }
+
+    public static class ListFilter
+        extends HashSet<IOption>
+        implements IListFilter
+    {
+
+        /** The Constant serialVersionUID. */
+        private static final long serialVersionUID = 1L;
+        /** The field id. */
+        private final long fieldId;
+
+        /**
+         * Instantiates a new map filter.
+         *
+         * @param _fieldId the field id
+         */
+        public ListFilter(final long _fieldId)
+        {
+            this.fieldId = _fieldId;
+        }
+
+        @Override
+        public long getFieldId()
+        {
+            return this.fieldId;
+        }
+    }
+
 
     /**
      * The Class MapFilter.
