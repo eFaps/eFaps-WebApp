@@ -49,7 +49,12 @@ import org.efaps.admin.ui.field.Filter;
 import org.efaps.api.ci.UICommandProperty;
 import org.efaps.api.ci.UITableFieldProperty;
 import org.efaps.api.ui.FilterBase;
+import org.efaps.api.ui.FilterDefault;
 import org.efaps.api.ui.FilterType;
+import org.efaps.api.ui.IFilter;
+import org.efaps.api.ui.IFilterList;
+import org.efaps.api.ui.IListFilter;
+import org.efaps.api.ui.IMapFilter;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.MultiPrintQuery;
@@ -61,7 +66,6 @@ import org.efaps.ui.wicket.models.field.ISortable;
 import org.efaps.ui.wicket.models.field.UIField;
 import org.efaps.ui.wicket.models.objects.UITableHeader.FilterValueType;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
-import org.efaps.ui.wicket.util.FilterDefault;
 import org.efaps.util.DateTimeUtil;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
@@ -182,12 +186,12 @@ public class UITable
                     // add the filter here, if it is a required filter or a default value is set, that must be
                     // applied against the database
                     for (final Field field : command.getTargetTable().getFields()) {
-                        if (field.hasAccess(getMode(), getInstance(), getCommand(), getInstance()) &&
-                                        (field.getFilter().isRequired()
+                        if (field.hasAccess(getMode(), getInstance(), getCommand(), getInstance())
+                                        && (field.getFilter().isRequired()
                                         || field.getFilter().getDefaultValue() != null
                                             && !field.getFilter().getDefaultValue().isEmpty())
                                         && field.getFilter().getBase().equals(FilterBase.DATABASE)) {
-                            this.filters.put(field.getName(), new TableFilter());
+                            this.filters.put(field.getName(), new TableFilter(field.getId()));
                         }
                     }
                 }
@@ -230,7 +234,7 @@ public class UITable
         throws EFapsException
     {
         // get the filters that must be applied against the database
-        final Map<String, Map<String, Object>> dataBasefilters = new HashMap<>();
+        final IFilterList filterList = new FilterList();
         final Iterator<Entry<String, TableFilter>> iter = this.filters.entrySet().iterator();
         this.filterTempCache.clear();
         while (iter.hasNext()) {
@@ -238,8 +242,7 @@ public class UITable
             if (entry.getValue().getUiTableHeader() == null
                            || entry.getValue().getUiTableHeader() != null
                            && entry.getValue().getUiTableHeader().getFilter().getBase().equals(FilterBase.DATABASE)) {
-                final Map<String, Object> map = entry.getValue().getMap4esjp();
-                dataBasefilters.put(entry.getKey(), map);
+                filterList.add(entry.getValue().getFilter());
             }
             this.filterTempCache.put(entry.getKey(), entry.getValue());
             iter.remove();
@@ -249,7 +252,7 @@ public class UITable
                         ParameterValues.INSTANCE, getInstance(),
                         ParameterValues.PARAMETERS, Context.getThreadContext().getParameters(),
                         ParameterValues.CLASS, this,
-                        ParameterValues.OTHERS, dataBasefilters);
+                        ParameterValues.OTHERS, filterList);
         List<Instance> lists = null;
         if (ret.size() < 1) {
             throw new EFapsException(UITable.class, "getInstanceList");
@@ -1052,10 +1055,12 @@ public class UITable
         /**
          * Constructor is used for a database based filter in case that it is
          * required.
+         *
+         * @param _fieldId the field id
          */
-        public TableFilter()
+        public TableFilter(final long _fieldId)
         {
-            this.headerFieldId = 0;
+            this.headerFieldId = _fieldId;
             this.filterType = null;
         }
 
@@ -1226,18 +1231,34 @@ public class UITable
          *
          * @return Map
          */
-        public Map<String, Object> getMap4esjp()
+        public IFilter getFilter()
         {
-            final Map<String, Object> ret = new HashMap<>();
+            final IFilter ret;
             if (getParameters() != null) {
-                ret.putAll(getParameters());
+                ret = new MapFilter(this.headerFieldId);
+                ((MapFilter) ret).putAll(getParameters());
             } else if (this.filterList == null) {
-                ret.put(UITable.TableFilter.FROM, this.from);
-                ret.put(UITable.TableFilter.TO, this.to);
-                ret.put(UITable.TableFilter.EXPERTMODE, isExpertMode());
-                ret.put(UITable.TableFilter.IGNORECASE, isIgnoreCase());
+                ret = new MapFilter(this.headerFieldId);
+                ((MapFilter) ret).put(UITable.TableFilter.FROM, this.from);
+                ((MapFilter) ret).put(UITable.TableFilter.TO, this.to);
+                ((MapFilter) ret).put(UITable.TableFilter.EXPERTMODE, isExpertMode());
+                ((MapFilter) ret).put(UITable.TableFilter.IGNORECASE, isIgnoreCase());
             } else {
-                ret.put(UITable.TableFilter.LIST, this.filterList);
+                ret = new IListFilter()
+                {
+
+                    @Override
+                    public long getFieldId()
+                    {
+                        return TableFilter.this.headerFieldId;
+                    }
+
+                    @Override
+                    public Object[] getValues()
+                    {
+                        return TableFilter.this.filterList.toArray();
+                    }
+                };
             }
             return ret;
         }
@@ -1371,6 +1392,50 @@ public class UITable
         public void setParameters(final Map<String, String[]> _parameters)
         {
             this.parameters = _parameters;
+        }
+    }
+
+
+    /**
+     * The Class FilterList.
+     */
+    public static class FilterList
+        extends HashSet<IFilter>
+        implements IFilterList
+    {
+        /** The Constant serialVersionUID. */
+        private static final long serialVersionUID = 1L;
+
+    }
+
+    /**
+     * The Class MapFilter.
+     */
+    public static class MapFilter
+        extends HashMap<String, Object>
+        implements IMapFilter
+    {
+
+        /** The Constant serialVersionUID. */
+        private static final long serialVersionUID = 1L;
+
+        /** The field id. */
+        private final long fieldId;
+
+        /**
+         * Instantiates a new map filter.
+         *
+         * @param _fieldId the field id
+         */
+        public MapFilter(final long _fieldId)
+        {
+            this.fieldId = _fieldId;
+        }
+
+        @Override
+        public long getFieldId()
+        {
+            return this.fieldId;
         }
     }
 }
