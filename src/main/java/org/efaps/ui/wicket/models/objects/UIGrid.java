@@ -61,13 +61,13 @@ import org.efaps.db.SelectBuilder;
 import org.efaps.ui.wicket.models.field.FieldConfiguration;
 import org.efaps.ui.wicket.models.field.JSField;
 import org.efaps.ui.wicket.models.field.factories.IComponentFactory;
-import org.efaps.ui.wicket.models.objects.AbstractUIHeaderObject.UserCacheKey;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class UIGrid.
  *
@@ -100,9 +100,10 @@ public class UIGrid
     /** The filter list. */
     private final FilterList filterList = new FilterList();
 
-
     /**
      * Instantiates a new UI grid.
+     *
+     * @throws EFapsException the e faps exception
      */
     private UIGrid()
     {
@@ -119,14 +120,26 @@ public class UIGrid
         if (!this.initialized) {
             this.initialized = true;
             final List<Field> fields = getTable().getFields();
+
+            boolean check4Filter = true;
+            if (Context.getThreadContext().containsSessionAttribute(getCacheKey(CacheKey.DBFILTER))) {
+                check4Filter = false;
+                final FilterList tmpFilterList = (FilterList) Context.getThreadContext().getSessionAttribute(getCacheKey(
+                                CacheKey.DBFILTER));
+                for (final IFilter filter : tmpFilterList) {
+                    this.filterList.add(filter);
+                }
+            }
+
             for (final Field field : fields) {
                 if (field.hasAccess(TargetMode.VIEW, null, getCommand(), null) && !field.isNoneDisplay(
                                 TargetMode.VIEW)) {
                     final Column column = new Column().setFieldConfig(new FieldConfiguration(field.getId()));
                     this.columns.add(column);
-                    // before executing the esjp add the filters that are working against the database to
+                    // before executing the esjp add the filters that are
+                    // working against the database to
                     // get them filled with the defaults
-                    if (FilterBase.DATABASE.equals(field.getFilter().getBase())) {
+                    if (check4Filter && FilterBase.DATABASE.equals(field.getFilter().getBase())) {
                         this.filterList.add(getFilter4Field(column.getField()));
                     }
                 }
@@ -259,6 +272,8 @@ public class UIGrid
     }
 
     /**
+     * Gets the base select for msg phrase.
+     *
      * @param _field Field the Base select will be evaluated for
      * @return base select
      */
@@ -368,6 +383,12 @@ public class UIGrid
         return getCommand().getTargetTable();
     }
 
+    /**
+     * Gets the command.
+     *
+     * @return the command
+     * @throws CacheReloadException the cache reload exception
+     */
     public AbstractCommand getCommand()
         throws CacheReloadException
     {
@@ -406,6 +427,12 @@ public class UIGrid
         return this.columns;
     }
 
+    /**
+     * Gets the filter pick list.
+     *
+     * @param _header the header
+     * @return the filter pick list
+     */
     public List<String> getFilterPickList(final Column _header)
     {
         // TODO Auto-generated method stub
@@ -432,13 +459,15 @@ public class UIGrid
      * @param _key UserAttributeKey the Key is wanted
      * @return String with the key
      */
-    public String getCacheKey(final UserCacheKey _key)
+    public String getCacheKey(final CacheKey _key)
     {
         return getCmdUUID() + "-" + _key.getValue();
     }
 
     /**
-     * @param _multi multiprint
+     * Evaluate field instance.
+     *
+     * @param _print the print
      * @param _field field the instance is wanted for
      * @return instance for the field
      * @throws EFapsException on erro
@@ -477,7 +506,6 @@ public class UIGrid
      * This method retrieves the Value for the Title from the eFaps Database.
      *
      * @return Value of the Title
-     * @throws Exception
      */
     public String getTitle()
     {
@@ -536,6 +564,13 @@ public class UIGrid
         return ret;
     }
 
+    /**
+     * Checks if is date filter.
+     *
+     * @param _filter the filter
+     * @return true, if is date filter
+     * @throws EFapsException the e faps exception
+     */
     public boolean isDateFilter(final IFilter _filter) throws EFapsException
     {
         boolean ret;
@@ -552,12 +587,19 @@ public class UIGrid
         return ret;
     }
 
-    public void reload() throws EFapsException
+    /**
+     * Reload.
+     *
+     * @throws EFapsException the e faps exception
+     */
+    public void reload()
+        throws EFapsException
     {
         if (!this.initialized) {
             init();
         } else {
             this.values.clear();
+            Context.getThreadContext().setSessionAttribute(getCacheKey(CacheKey.DBFILTER), this.filterList);
             load();
         }
     }
@@ -567,6 +609,7 @@ public class UIGrid
      *
      * @param _commandUUID the command UUID
      * @return the UI grid
+     * @throws EFapsException the e faps exception
      */
     public static UIGrid get(final UUID _commandUUID)
     {
@@ -575,18 +618,34 @@ public class UIGrid
         return ret;
     }
 
+    /**
+     * The Class Row.
+     *
+     * @author The eFaps Team
+     */
     public static class Row extends ArrayList<Cell>
     {
         /** The Constant serialVersionUID. */
         private static final long serialVersionUID = 1L;
 
+        /** The instance. */
         private final Instance instance;
 
+        /**
+         * Instantiates a new row.
+         *
+         * @param _Instance the instance
+         */
         public Row(final Instance _Instance)
         {
             this.instance = _Instance;
         }
 
+        /**
+         * Gets the single instance of Row.
+         *
+         * @return single instance of Row
+         */
         public Instance getInstance()
         {
             return this.instance;
@@ -594,6 +653,11 @@ public class UIGrid
     }
 
 
+    /**
+     * The Class Cell.
+     *
+     * @author The eFaps Team
+     */
     public static class Cell
         implements Serializable
     {
@@ -601,56 +665,100 @@ public class UIGrid
         /** The Constant serialVersionUID. */
         private static final long serialVersionUID = 1L;
 
+        /** The field config. */
         private FieldConfiguration fieldConfig;
 
+        /** The value. */
         private Object value;
 
+        /** The sort value. */
         private Object sortValue;
 
+        /** The instance. */
         private Instance instance;
 
-
+        /**
+         * Gets the single instance of Cell.
+         *
+         * @return single instance of Cell
+         */
         public Instance getInstance()
         {
             return this.instance;
         }
 
-
+        /**
+         * Sets the instance.
+         *
+         * @param instance the instance
+         * @return the cell
+         */
         public Cell setInstance(final Instance instance)
         {
             this.instance = instance;
             return this;
         }
 
+        /**
+         * Gets the value.
+         *
+         * @return the value
+         */
         public String getValue()
         {
             return String.valueOf(this.value);
         }
 
+        /**
+         * Sets the value.
+         *
+         * @param _value the value
+         * @return the cell
+         */
         public Cell setValue(final Object _value)
         {
             this.value = _value;
             return this;
         }
 
+        /**
+         * Gets the sort value.
+         *
+         * @return the sort value
+         */
         public Object getSortValue()
         {
             return this.sortValue;
         }
 
+        /**
+         * Sets the sort value.
+         *
+         * @param _sortValue the sort value
+         * @return the cell
+         */
         public Cell setSortValue(final Object _sortValue)
         {
             this.sortValue = _sortValue;
             return this;
         }
 
-
+        /**
+         * Gets the field config.
+         *
+         * @return the field config
+         */
         public FieldConfiguration getFieldConfig()
         {
             return this.fieldConfig;
         }
 
-
+        /**
+         * Sets the field config.
+         *
+         * @param _fieldConfig the field config
+         * @return the cell
+         */
         public Cell setFieldConfig(final FieldConfiguration _fieldConfig)
         {
             this.fieldConfig = _fieldConfig;
@@ -658,25 +766,35 @@ public class UIGrid
         }
     }
 
+    /**
+     * The Class Column.
+     *
+     * @author The eFaps Team
+     */
     public static class Column
         implements Serializable
     {
 
-        /**
-         *
-         */
+        /** The Constant serialVersionUID. */
         private static final long serialVersionUID = 1L;
         /**
          * Id of the field this UITableHeader belongs to.
          */
         private FieldConfiguration fieldConfig;
 
+        /**
+         * Gets the field name.
+         *
+         * @return the field name
+         */
         public String getFieldName()
         {
             return getFieldConfig().getName();
         }
 
         /**
+         * Gets the filter.
+         *
          * @return the filter belonging to this header.
          */
         public Filter getFilter()
@@ -685,6 +803,8 @@ public class UIGrid
         }
 
         /**
+         * Gets the field.
+         *
          * @return the field this haeder belongs to.
          */
         public Field getField()
@@ -692,12 +812,19 @@ public class UIGrid
             return getFieldConfig().getField();
         }
 
+        /**
+         * Gets the id of the field this UITableHeader belongs to.
+         *
+         * @return the id of the field this UITableHeader belongs to
+         */
         public FieldConfiguration getFieldConfig()
         {
             return this.fieldConfig;
         }
 
         /**
+         * Gets the label.
+         *
          * @return translated label
          */
         public String getLabel()
@@ -705,15 +832,24 @@ public class UIGrid
             return getFieldConfig().getLabel();
         }
 
+        /**
+         * Sets the field config.
+         *
+         * @param _fieldConfig the field config
+         * @return the column
+         */
         protected Column setFieldConfig(final FieldConfiguration _fieldConfig)
         {
             this.fieldConfig = _fieldConfig;
             return this;
         }
-
     }
 
-
+    /**
+     * The Class FilterList.
+     *
+     * @author The eFaps Team
+     */
     public static class FilterList
         extends HashSet<IFilter>
         implements IFilterList
@@ -723,6 +859,11 @@ public class UIGrid
         private static final long serialVersionUID = 1L;
     }
 
+    /**
+     * The Class ListFilter.
+     *
+     * @author The eFaps Team
+     */
     public static class ListFilter
         extends ArrayList<IOption>
         implements IListFilter
@@ -752,6 +893,8 @@ public class UIGrid
 
     /**
      * The Class MapFilter.
+     *
+     * @author The eFaps Team
      */
     public static class MapFilter
         extends HashMap<String, Object>
@@ -781,4 +924,45 @@ public class UIGrid
         }
     }
 
+    /**
+     * This enum holds the Values used as part of the key for the UserAttributes
+     * or SessionAttribute witch belong to a TableModel.
+     *
+     * @author The eFaps Team
+     */
+    public enum CacheKey
+    {
+        /** The DB filter. */
+        DBFILTER("dbFilter"),
+
+        /**
+         * Key for SessionAttribute used for the filter of a table.
+         */
+        GRIDX("gridx");
+
+        /**
+         * Value of the user attribute.
+         */
+        private final String value;
+
+        /**
+         * Constructor setting the instance variable.
+         *
+         * @param _value Value
+         */
+        CacheKey(final String _value)
+        {
+            this.value = _value;
+        }
+
+        /**
+         * Gets the value of the user attribute.
+         *
+         * @return the value
+         */
+        public String getValue()
+        {
+            return this.value;
+        }
+    }
 }

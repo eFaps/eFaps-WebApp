@@ -204,7 +204,7 @@ public class GridXPanel
                                                           final IVisit<Void> _visit)
                                     {
                                         ((IMapFilter) filter).put("from", _text.getModelObject());
-                                        ((IMapFilter) filter).put("fiter", _text.getModelObject());
+                                        ((IMapFilter) filter).put("filter", _text.getModelObject());
                                     }
                                 });
 

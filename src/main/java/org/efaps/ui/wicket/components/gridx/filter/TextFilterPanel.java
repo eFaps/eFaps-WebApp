@@ -80,6 +80,10 @@ public class TextFilterPanel
                 // no detach needed
             }
         };
+        final String filter = (String) getModelObject().get("filter");
+        if (filter != null) {
+            model.setObject(filter);
+        }
         final TextField<String> stringFilter = new TextField<>("text", model);
         this.add(stringFilter);
 

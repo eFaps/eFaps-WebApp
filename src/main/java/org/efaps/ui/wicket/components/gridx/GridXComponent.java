@@ -61,7 +61,6 @@ import org.efaps.ui.wicket.components.gridx.behaviors.SubmitModalBehavior;
 import org.efaps.ui.wicket.models.objects.UIGrid;
 import org.efaps.ui.wicket.models.objects.UIGrid.Cell;
 import org.efaps.ui.wicket.models.objects.UIGrid.Column;
-import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
@@ -244,9 +243,9 @@ public class GridXComponent
             js.append("],\n")
                 .append("persistGet: function(_key) {");
 
-            if (Context.getThreadContext().containsUserAttribute(uiGrid.getCacheKey(UITable.UserCacheKey.GRIDX))) {
+            if (Context.getThreadContext().containsUserAttribute(uiGrid.getCacheKey(UIGrid.CacheKey.GRIDX))) {
                 js.append("return ").append(Context.getThreadContext().getUserAttribute(
-                                uiGrid.getCacheKey(UITable.UserCacheKey.GRIDX)));
+                                uiGrid.getCacheKey(UIGrid.CacheKey.GRIDX)));
             }
 
             js.append("},\n")
@@ -512,8 +511,7 @@ public class GridXComponent
                                 "value");
                 if (!value.isEmpty()) {
                     final UIGrid uiGrid = (UIGrid) getComponent().getDefaultModelObject();
-
-                    Context.getThreadContext().setUserAttribute(uiGrid.getCacheKey(UITable.UserCacheKey.GRIDX), value
+                    Context.getThreadContext().setUserAttribute(uiGrid.getCacheKey(UIGrid.CacheKey.GRIDX), value
                                 .toString());
                 }
             } catch (final EFapsException e) {
