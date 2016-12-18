@@ -23,12 +23,10 @@ import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.head.IHeaderResponse;
-import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
-import org.efaps.ui.wicket.components.table.GridXPanel;
 import org.efaps.ui.wicket.components.table.TablePanel;
 import org.efaps.ui.wicket.components.table.header.HeaderPanel;
 import org.efaps.ui.wicket.models.objects.UITable;
@@ -156,27 +154,19 @@ public class TablePage
         if (!uiTable.isInitialized()) {
             uiTable.execute();
         }
-        if (uiTable.isGrid()) {
-            add(new WebMarkupContainer("header").setVisible(false));
-            add(new WebMarkupContainer("form").setVisible(false));
-            final FormContainer form = new FormContainer("gridForm");
-            this.add(form);
-            form.add(new GridXPanel("gridPanel", Model.of(uiTable)));
-            super.addComponents(form);
-        } else {
-            add(new WebMarkupContainer("gridForm").setVisible(false));
-            final TablePanel tablebody = new TablePanel("tablebody", Model.of(uiTable), this);
-            this.add(new HeaderPanel("header", tablebody));
 
-            final FormContainer form = new FormContainer("form");
-            this.add(form);
-            super.addComponents(form);
-            form.add(AttributeModifier.append("class", uiTable.getMode().toString()));
-            if (uiTable.isOpenedByPicker()) {
-                form.add(new AttributeAppender("class", "PICKER", " "));
-            }
-            form.add(tablebody);
+        final TablePanel tablebody = new TablePanel("tablebody", Model.of(uiTable), this);
+        this.add(new HeaderPanel("header", tablebody));
+
+        final FormContainer form = new FormContainer("form");
+        this.add(form);
+        super.addComponents(form);
+        form.add(AttributeModifier.append("class", uiTable.getMode().toString()));
+        if (uiTable.isOpenedByPicker()) {
+            form.add(new AttributeAppender("class", "PICKER", " "));
         }
+        form.add(tablebody);
+
     }
 
     @Override

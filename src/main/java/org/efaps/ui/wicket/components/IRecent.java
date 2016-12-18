@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,34 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
-
 
 package org.efaps.ui.wicket.components;
 
 import org.apache.wicket.Component;
 import org.efaps.util.EFapsException;
 
-
 /**
  * Interface that must be implemented from a component if is used to navigate
  * back to a recent page or object.
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public interface IRecent
 {
+
     /**
      * Open the Page the Link directs to.
      *
      * @param _openComponent Component that class the open command
      * @throws EFapsException on any error
      */
-    void open(final Component _openComponent) throws EFapsException;
+    void open(Component _openComponent)
+        throws EFapsException;
 
     /**
      * The String presented to the User to open this Link.
@@ -49,5 +45,6 @@ public interface IRecent
      * @return the label of the link
      * @throws EFapsException on any error
      */
-    String getLabel(final int _maxLength) throws EFapsException;
+    String getLabel(int _maxLength)
+        throws EFapsException;
 }

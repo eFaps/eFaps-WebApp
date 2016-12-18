@@ -188,7 +188,10 @@ public final class Configuration
                         "The format for date. Can be style or pattern."),
         /** */
         INDEXACCESSCMD(false, true, "IndexAccessCmd", "88c9ce19-d759-443e-b791-0e725fe58f52", String.class,
-                        "UUID of the command that is used to define the access to the index search.");
+                        "UUID of the command that is used to define the access to the index search."),
+        /** */
+        TABLEDEFAULTTYPE(false, true, "TableDefaultType", "Table" ,String.class,
+                        "Type of table used as default page table");
 
         /**
          * Stores the key for this Attribute..
@@ -235,7 +238,7 @@ public final class Configuration
         {
             this.system = _system;
             this.user = _user;
-            this.key = BASEKEY + _key;
+            this.key = Configuration.BASEKEY + _key;
             this.defaultvalue = _defaultValue;
             this.attrClass = _class;
             this.description = _description == null ? "" : _description;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.components.menu;
@@ -30,6 +27,7 @@ import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.request.http.handler.RedirectRequestHandler;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
@@ -37,19 +35,22 @@ import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.components.IRecent;
+import org.efaps.ui.wicket.models.objects.UIGrid;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
+import org.efaps.ui.wicket.pages.content.grid.GridPage;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
+import org.efaps.ui.wicket.util.Configuration;
+import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 import org.efaps.util.EFapsException;
 
 /**
  * Class renders a standard link for the menu.
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class LinkItem
     extends Link<UIMenuItem>
@@ -83,12 +84,17 @@ public class LinkItem
         try {
             final AbstractCommand command = model.getCommand();
             if (command.getTargetTable() != null) {
-                WebPage page;
+                final WebPage page;
                 if (command.getTargetStructurBrowserField() != null) {
                     page = new StructurBrowserPage(model.getCommandUUID(), model.getInstanceKey(), getPage()
                                     .getPageReference());
                 } else {
-                    page = new TablePage(model.getCommandUUID(), model.getInstanceKey(), getPage().getPageReference());
+                    if ("GridX".equals(Configuration.getAttribute(ConfigAttribute.TABLEDEFAULTTYPE))) {
+                        page = new GridPage(Model.of(UIGrid.get(command.getUUID())));
+                    } else {
+                        page = new TablePage(model.getCommandUUID(), model.getInstanceKey(),
+                                        getPage().getPageReference());
+                    }
                 }
                 setResponsePage(page);
             } else if (command.getTargetForm() != null || command.getTargetSearch() != null) {
@@ -131,8 +137,13 @@ public class LinkItem
                                 model.getInstanceKey());
                 setResponsePage(page);
             } else {
-                final TablePage page = new TablePage(model.getCommandUUID(), model.getInstanceKey());
-                setResponsePage(page);
+                if ("GridX".equals(Configuration.getAttribute(ConfigAttribute.TABLEDEFAULTTYPE))) {
+                    final GridPage page = new GridPage(Model.of(UIGrid.get(command.getUUID())));
+                    setResponsePage(page);
+                } else {
+                    final TablePage page = new TablePage(model.getCommandUUID(), model.getInstanceKey());
+                    setResponsePage(page);
+                }
             }
         } else if (command.getTargetForm() != null) {
             final FormPage page = new FormPage(model.getCommandUUID(), model.getInstanceKey());
@@ -155,7 +166,7 @@ public class LinkItem
         return label;
     }
 
-     @Override
+    @Override
     public void onComponentTagBody(final MarkupStream _markupStream,
                                    final ComponentTag _openTag)
     {
