@@ -129,7 +129,8 @@ public class FormContainer
         if (getPage().getDefaultModelObject() != null) {
             // only on SearchMode we want normal submit, in any other case we
             // use AjaxSubmit
-            if (!((AbstractUIObject) getPage().getDefaultModelObject()).isSearchMode()) {
+            if (getPage().getDefaultModelObject() instanceof AbstractUIObject
+                            && !((AbstractUIObject) getPage().getDefaultModelObject()).isSearchMode()) {
                 //_tag.put("onSubmit", "return false;");
                 _tag.put("action", "");
             }
