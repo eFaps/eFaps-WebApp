@@ -108,6 +108,11 @@ public class UIGrid
     {
     }
 
+    /**
+     * Inits the.
+     *
+     * @throws EFapsException the e faps exception
+     */
     private void init()
         throws EFapsException
     {
@@ -130,6 +135,11 @@ public class UIGrid
         }
     }
 
+    /**
+     * Load.
+     *
+     * @throws EFapsException the e faps exception
+     */
     protected void load()
         throws EFapsException
     {
@@ -207,7 +217,16 @@ public class UIGrid
         }
     }
 
-
+    /**
+     * Gets the cell.
+     *
+     * @param _column the column
+     * @param _uiValue the ui value
+     * @param _sortValue the sort value
+     * @param _fields the fields
+     * @return the cell
+     * @throws EFapsException the e faps exception
+     */
     protected Cell getCell(final Column _column,
                            final UIValue _uiValue,
                            final Object _sortValue,
@@ -239,7 +258,6 @@ public class UIGrid
                         .setFieldConfig(_column.getFieldConfig());
     }
 
-
     /**
      * @param _field Field the Base select will be evaluated for
      * @return base select
@@ -253,6 +271,13 @@ public class UIGrid
         return ret;
     }
 
+    /**
+     * Gets the instances.
+     *
+     * @return the instances
+     * @throws EFapsException the e faps exception
+     */
+    @SuppressWarnings("unchecked")
     protected List<Instance> getInstances()
         throws EFapsException
     {
@@ -270,6 +295,12 @@ public class UIGrid
         return lists;
     }
 
+    /**
+     * Gets the filter for field.
+     *
+     * @param _field the field
+     * @return the filter for field
+     */
     protected IFilter getFilter4Field(final Field _field)
     {
         IFilter ret;
@@ -287,6 +318,9 @@ public class UIGrid
             default:
                 ret = new IFilter()
                 {
+                    /** The Constant serialVersionUID. */
+                    private static final long serialVersionUID = 1L;
+
                     @Override
                     public long getFieldId()
                     {

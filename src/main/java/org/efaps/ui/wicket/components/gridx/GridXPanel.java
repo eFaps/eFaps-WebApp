@@ -23,8 +23,10 @@ import java.util.List;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.CheckBoxMultipleChoice;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
@@ -45,6 +47,7 @@ import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.gridx.filter.DateFilterPanel;
 import org.efaps.ui.wicket.components.gridx.filter.ListFilterPanel;
+import org.efaps.ui.wicket.components.gridx.filter.TextFilterPanel;
 import org.efaps.ui.wicket.models.objects.UIGrid;
 import org.efaps.util.DateTimeUtil;
 import org.efaps.util.EFapsException;
@@ -180,6 +183,49 @@ public class GridXPanel
                             }
                         });
                     } else {
+                        form.add(new TextFilterPanel("filter", Model.of((IMapFilter) filter)));
+                        form.add(new AjaxButton<IMapFilter>("btn", Model.of((IMapFilter) filter), Button.ICON.ACCEPT
+                                        .getReference())
+                        {
+
+                            /** The Constant serialVersionUID. */
+                            private static final long serialVersionUID = 1L;
+
+                            @Override
+                            public void onSubmit(final AjaxRequestTarget _target)
+                            {
+                                final GridXPanel gridpanel = findParent(GridXPanel.class);
+                                final UIGrid uiGrid = gridpanel.getModelObject();
+
+                                form.visitChildren(TextField.class, new IVisitor<TextField<String>, Void>()
+                                {
+                                    @Override
+                                    public void component(final TextField<String> _text,
+                                                          final IVisit<Void> _visit)
+                                    {
+                                        ((IMapFilter) filter).put("from", _text.getModelObject());
+                                        ((IMapFilter) filter).put("fiter", _text.getModelObject());
+                                    }
+                                });
+
+                                form.visitChildren(CheckBox.class, new IVisitor<CheckBox, Void>()
+                                {
+                                    @Override
+                                    public void component(final CheckBox _checkBox,
+                                                          final IVisit<Void> _visit)
+                                    {
+                                        ((IMapFilter) filter).put(_checkBox.getId(), _checkBox.getModelObject());
+                                    }
+                                });
+
+                                try {
+                                    uiGrid.reload();
+                                    _target.appendJavaScript(getJavascript(uiGrid));
+                                } catch (final EFapsException e) {
+                                    GridXPanel.LOG.error("Catched error", e);
+                                }
+                            }
+                        });
 
                     }
                     break;
