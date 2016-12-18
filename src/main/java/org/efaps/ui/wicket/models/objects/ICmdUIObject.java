@@ -20,6 +20,7 @@ package org.efaps.ui.wicket.models.objects;
 import java.io.Serializable;
 import java.util.List;
 
+import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.db.Instance;
@@ -61,7 +62,8 @@ public interface ICmdUIObject
      * @throws EFapsException on error
      * @return List of Returns
      */
-    List<Return> executeEvents(final Object... _objectTuples)
+    List<Return> executeEvents(final EventType _eventType,
+                               final Object... _objectTuples)
         throws EFapsException;
 
 }

@@ -5,10 +5,12 @@ import java.util.List;
 
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.IAjaxIndicatorAware;
 import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.util.string.StringValue;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
+import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Command;
@@ -22,6 +24,7 @@ import org.efaps.util.cache.CacheReloadException;
 
 public class OpenModalBehavior
     extends AjaxEventBehavior
+    implements IAjaxIndicatorAware
 {
 
     /**
@@ -69,7 +72,6 @@ public class OpenModalBehavior
 
             final ModalWindowAjaxPageCreator pageCreator = new ModalWindowAjaxPageCreator(new ICmdUIObject()
             {
-
                 /**
                  * The Constant
                  * serialVersionUID.
@@ -90,7 +92,8 @@ public class OpenModalBehavior
                 }
 
                 @Override
-                public List<Return> executeEvents(final Object... _objectTuples)
+                public List<Return> executeEvents(final EventType _eventType,
+                                                  final Object... _objectTuples)
                     throws EFapsException
                 {
                     return null;
@@ -107,5 +110,11 @@ public class OpenModalBehavior
             _modal.setPageCreator(pageCreator);
             _visit.stop(_modal);
         }
+    }
+
+    @Override
+    public String getAjaxIndicatorMarkupId()
+    {
+        return "eFapsVeil";
     }
 }

@@ -47,26 +47,6 @@ public class UICmdObject
     }
 
     /**
-     * This method executes the Events which are related to this Model. It will
-     * take the Events of the CallingCommand {@link #callingCmdUUID}, if it is
-     * declared, otherwise it will take the Events of the Command
-     * {@link #cmdUUID}. The Method also adds the oid {@link #instanceKey} to
-     * the Context, so that it is accessible for the esjp.<br>
-     * This method throws an eFpasError to provide the possibility for different
-     * responses in the components.
-     *
-     * @param _objectTuples n tuples of ParamterValue and Object
-     * @throws EFapsException on error
-     * @return List of Returns
-     */
-    @Override
-    public List<Return> executeEvents(final Object... _objectTuples)
-        throws EFapsException
-    {
-        return executeEvents(EventType.UI_COMMAND_EXECUTE, _objectTuples);
-    }
-
-    /**
      * Execute the events.
      *
      * @param _eventType type of events to be executed
@@ -74,8 +54,9 @@ public class UICmdObject
      * @return Lsit of returns from the events
      * @throws EFapsException on error
      */
-    private List<Return> executeEvents(final EventType _eventType,
-                                       final Object... _objectTuples)
+    @Override
+    public List<Return> executeEvents(final EventType _eventType,
+                                      final Object... _objectTuples)
         throws EFapsException
     {
         List<Return> ret = new ArrayList<>();
@@ -95,14 +76,24 @@ public class UICmdObject
         return ret;
     }
 
-
+    /**
+     * Gets the.
+     *
+     * @param _cmdId the cmd id
+     * @return the UI cmd object
+     */
     public static UICmdObject get(final Long _cmdId)
     {
         final UICmdObject ret = new UICmdObject(_cmdId);
         return ret;
     }
 
-
+    /**
+     * Gets the model.
+     *
+     * @param _cmdId the cmd id
+     * @return the model
+     */
     public static IModel<ICmdUIObject> getModel(final Long _cmdId)
     {
         return Model.<ICmdUIObject>of(UICmdObject.get(_cmdId));

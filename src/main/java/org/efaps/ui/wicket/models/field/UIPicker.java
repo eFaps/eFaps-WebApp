@@ -196,6 +196,7 @@ public class UIPicker
      * @return the list< return>
      * @throws EFapsException on error
      */
+    @Override
     @SuppressWarnings("unchecked")
     public List<Return> executeEvents(final EventType _eventType,
                                       final Object... _objectTuples)
@@ -306,12 +307,5 @@ public class UIPicker
     public void setParentParameters(final Map<String, String[]> _parameters)
     {
         this.parentParameters = _parameters;
-    }
-
-    @Override
-    public List<Return> executeEvents(final Object... _objectTuples)
-        throws EFapsException
-    {
-        return null;
     }
 }

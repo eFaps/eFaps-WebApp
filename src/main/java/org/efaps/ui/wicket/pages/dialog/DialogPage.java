@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev:1489 $
- * Last Changed:    $Date:2007-10-15 17:50:46 -0500 (Mon, 15 Oct 2007) $
- * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.pages.dialog;
@@ -36,6 +33,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import org.efaps.admin.dbproperty.DBProperties;
+import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
@@ -45,7 +43,7 @@ import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.components.footer.AjaxSubmitCloseBehavior;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.modalwindow.UpdateParentCallback;
-import org.efaps.ui.wicket.models.objects.UIMenuItem;
+import org.efaps.ui.wicket.models.objects.ICmdUIObject;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
@@ -59,7 +57,6 @@ import org.efaps.util.cache.CacheReloadException;
  * e.g. "Do you really want to...?"
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class DialogPage
     extends AbstractMergePage
@@ -88,25 +85,30 @@ public class DialogPage
      * @param _oids oids which must be past on, in case of submit
      */
     public DialogPage(final PageReference _pageReference,
-                      final IModel<UIMenuItem> _model,
+                      final IModel<ICmdUIObject> _model,
                       final String[] _oids)
         throws CacheReloadException
     {
         super(_model);
         this.pageReference = _pageReference;
-        final UIMenuItem menuItem = _model.getObject();
+        try {
+            final ICmdUIObject menuItem = _model.getObject();
 
-        final String cmdName = menuItem.getCommand().getName();
+            final String cmdName = menuItem.getCommand().getName();
 
-        add(new Label("textLabel", DBProperties.getProperty(cmdName + ".Question")).setOutputMarkupId(true));
+            add(new Label("textLabel", DBProperties.getProperty(cmdName + ".Question")).setOutputMarkupId(true));
 
-        add(new Button("submitButton", new AjaxSubmitLink(Button.LINKID, _model, _oids),
-                        DialogPage.getLabel(cmdName, "Submit"), Button.ICON.ACCEPT.getReference())
-                        .setOutputMarkupId(true));
+            add(new Button("submitButton", new AjaxSubmitLink(Button.LINKID, _model, _oids),
+                            DialogPage.getLabel(cmdName, "Submit"), Button.ICON.ACCEPT.getReference())
+                            .setOutputMarkupId(true));
 
-        add(new Button("closeButton", new AjaxCloseLink(Button.LINKID), DialogPage.getLabel(cmdName, "Cancel"),
-                        Button.ICON.CANCEL.getReference()));
-        add(new RequireBehavior("dojo/query", "dojo/NodeList-dom"));
+            add(new Button("closeButton", new AjaxCloseLink(Button.LINKID), DialogPage.getLabel(cmdName, "Cancel"),
+                            Button.ICON.CANCEL.getReference()));
+            add(new RequireBehavior("dojo/query", "dojo/NodeList-dom"));
+        } catch (final EFapsException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -246,10 +248,16 @@ public class DialogPage
         @Override
         public void onClick(final AjaxRequestTarget _target)
         {
-            final ModalWindowContainer modal = ((AbstractContentPage) DialogPage.this.pageReference.getPage())
-                            .getModal();
-
-            modal.close(_target);
+            DialogPage.this.pageReference.getPage().visitChildren(ModalWindowContainer.class,
+                            new IVisitor<ModalWindowContainer, Void>()
+                            {
+                                @Override
+                                public void component(final ModalWindowContainer _modal,
+                                                      final IVisit<Void> _visit)
+                                {
+                                    _modal.close(_target);
+                                }
+                            });
 
             final StringBuilder bldr = new StringBuilder();
             bldr.append("var cD = top.frames[0].document").append(".getElementById('eFapsContentDiv');")
@@ -267,7 +275,7 @@ public class DialogPage
      * AjaxLink that submits the Parameters and closes the ModalWindow.
      */
     public class AjaxSubmitLink
-        extends AjaxLink<UIMenuItem>
+        extends AjaxLink<ICmdUIObject>
     {
 
         /** Needed for serialization. */
@@ -289,7 +297,7 @@ public class DialogPage
          * @param _oids oids
          */
         public AjaxSubmitLink(final String _wicketId,
-                              final IModel<UIMenuItem> _model,
+                              final IModel<ICmdUIObject> _model,
                               final String[] _oids)
         {
             super(_wicketId, _model);
@@ -303,15 +311,25 @@ public class DialogPage
         @Override
         public void onClick(final AjaxRequestTarget _target)
         {
-            final UIMenuItem model = getModelObject();
+            final ICmdUIObject model = getModelObject();
             try {
                 if (isValidated() || validate(_target)) {
-                    model.executeEvents(ParameterValues.OTHERS, this.oids);
-                    final ModalWindowContainer modal = ((AbstractContentPage) DialogPage.this.pageReference.getPage())
-                                    .getModal();
-                    modal.setWindowClosedCallback(new UpdateParentCallback(DialogPage.this.pageReference, modal));
-                    modal.setUpdateParent(true);
-                    modal.close(_target);
+                    model.executeEvents(EventType.UI_COMMAND_EXECUTE, ParameterValues.OTHERS, this.oids);
+
+                    DialogPage.this.pageReference.getPage().visitChildren(ModalWindowContainer.class,
+                                    new IVisitor<ModalWindowContainer, Void>()
+                                    {
+
+                                        @Override
+                                        public void component(final ModalWindowContainer _modal,
+                                                              final IVisit<Void> _visit)
+                                        {
+                                            _modal.setWindowClosedCallback(new UpdateParentCallback(
+                                                            DialogPage.this.pageReference, _modal));
+                                            _modal.setUpdateParent(true);
+                                            _modal.close(_target);
+                                        }
+                                    });
                 }
             } catch (final EFapsException e) {
                 throw new RestartResponseException(new ErrorPage(e));
@@ -333,8 +351,9 @@ public class DialogPage
             setValidated(true);
             boolean ret = true;
             boolean goOn = true;
-            final UIMenuItem menuItem = (UIMenuItem) getDefaultModelObject();
-            final List<Return> returns = menuItem.validate(ParameterValues.OTHERS, this.oids);
+            final ICmdUIObject cmdObject = (ICmdUIObject) getDefaultModelObject();
+            final List<Return> returns = cmdObject.executeEvents(EventType.UI_VALIDATE,
+                            ParameterValues.OTHERS, this.oids);
             final StringBuilder bldr = new StringBuilder();
             for (final Return oneReturn : returns) {
                 if (oneReturn.get(ReturnValues.VALUES) != null || oneReturn.get(ReturnValues.SNIPLETT) != null) {

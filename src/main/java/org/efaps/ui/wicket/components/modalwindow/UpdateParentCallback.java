@@ -27,10 +27,12 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.UIForm;
+import org.efaps.ui.wicket.models.objects.UIGrid;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
+import org.efaps.ui.wicket.pages.content.grid.GridPage;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
@@ -109,27 +111,36 @@ public class UpdateParentCallback
     public void onClose(final AjaxRequestTarget _target)
     {
         if (this.modalwindow.isUpdateParent()) {
-
-            final AbstractUIObject uiObject = (AbstractUIObject) this.pageReference.getPage().getDefaultModelObject();
-            if (this.clearmodel) {
-                uiObject.resetModel();
-            }
-            AbstractContentPage page = null;
+            final Object object = this.pageReference.getPage().getDefaultModelObject();
             try {
-                if (uiObject instanceof UITable) {
-                    page = new TablePage(Model.of((UITable) uiObject),
-                                    ((AbstractContentPage) this.pageReference.getPage()).getModalWindow(),
-                                    ((AbstractContentPage) this.pageReference.getPage()).getCalledByPageReference());
-                } else if (uiObject instanceof UIForm) {
-                    page = new FormPage(Model.of((UIForm) uiObject),
-                                    ((AbstractContentPage) this.pageReference.getPage()).getModalWindow(),
-                                    ((AbstractContentPage) this.pageReference.getPage()).getCalledByPageReference());
-                } else if (uiObject instanceof UIStructurBrowser) {
-                    page = new StructurBrowserPage(Model.of((UIStructurBrowser) uiObject),
-                                    ((AbstractContentPage) this.pageReference.getPage()).getModalWindow(),
-                                    ((AbstractContentPage) this.pageReference.getPage()).getCalledByPageReference());
+                if (object instanceof AbstractUIObject) {
+
+                    final AbstractUIObject uiObject = (AbstractUIObject) object;
+                    if (this.clearmodel) {
+                        uiObject.resetModel();
+                    }
+                    AbstractContentPage page = null;
+
+                    if (uiObject instanceof UITable) {
+                        page = new TablePage(Model.of((UITable) uiObject), ((AbstractContentPage) this.pageReference
+                                        .getPage()).getModalWindow(), ((AbstractContentPage) this.pageReference
+                                                        .getPage()).getCalledByPageReference());
+                    } else if (uiObject instanceof UIForm) {
+                        page = new FormPage(Model.of((UIForm) uiObject), ((AbstractContentPage) this.pageReference
+                                        .getPage()).getModalWindow(), ((AbstractContentPage) this.pageReference
+                                                        .getPage()).getCalledByPageReference());
+                    } else if (uiObject instanceof UIStructurBrowser) {
+                        page = new StructurBrowserPage(Model.of((UIStructurBrowser) uiObject),
+                                        ((AbstractContentPage) this.pageReference.getPage()).getModalWindow(),
+                                        ((AbstractContentPage) this.pageReference.getPage())
+                                                        .getCalledByPageReference());
+                    }
+                    RequestCycle.get().setResponsePage(page);
+                } else if (object instanceof UIGrid) {
+                    final UIGrid uiGrid = (UIGrid) object;
+                    uiGrid.reload();
+                    RequestCycle.get().setResponsePage(new GridPage(Model.of(uiGrid)));
                 }
-                RequestCycle.get().setResponsePage(page);
             } catch (final EFapsException e) {
                 RequestCycle.get().setResponsePage(new ErrorPage(e));
             }

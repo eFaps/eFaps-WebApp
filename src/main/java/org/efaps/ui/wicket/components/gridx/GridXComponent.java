@@ -331,10 +331,7 @@ public class GridXComponent
                 if (child instanceof AbstractMenu) {
                     ret.append(getSubMenu((AbstractMenu) child, "pMenuBar"));
                 } else {
-                    ret.append("pMenuBar.addChild(new MenuBarItem({\n")
-                        .append(" label: \"")
-                            .append(StringEscapeUtils.escapeEcmaScript(child.getLabelProperty())).append("\"\n")
-                        .append("}));\n");
+                    ret.append("pMenuBar.addChild(").append(getMenuItem(child, true)).append(");\n");
                 }
             }
         }
@@ -353,7 +350,7 @@ public class GridXComponent
                 js.append(getSubMenu((AbstractMenu) child, var));
             } else {
                 js.append(var).append(".addChild(")
-                    .append(getMenuItem(child))
+                    .append(getMenuItem(child, false))
                     .append(");\n");
             }
         }
@@ -364,13 +361,18 @@ public class GridXComponent
         return js;
     }
 
-    protected CharSequence getMenuItem(final AbstractCommand _cmd)
+    protected CharSequence getMenuItem(final AbstractCommand _cmd,
+                                       final boolean _menuBar)
     {
         final UIGrid uiGrid = (UIGrid) getDefaultModelObject();
         final String rid = uiGrid.getRandom4ID(_cmd.getId());
-        final StringBuilder js = new StringBuilder()
-                .append("new MenuItem({\n")
-                .append(" label: \"")
+        final StringBuilder js = new StringBuilder();
+        if (_menuBar) {
+            js.append("new MenuBarItem({\n");
+        } else {
+            js.append("new MenuItem({\n");
+        }
+        js.append(" label: \"")
                 .append(StringEscapeUtils.escapeEcmaScript(_cmd.getLabelProperty())).append("\",\n")
                 .append("onClick: function(event) {\n")
                 .append("var rid = \"").append(rid).append("\";\n");

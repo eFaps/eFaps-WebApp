@@ -3,9 +3,13 @@ package org.efaps.ui.wicket.components.gridx.behaviors;
 import java.io.File;
 import java.util.List;
 
+import org.apache.wicket.Page;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.IAjaxIndicatorAware;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.util.string.StringValue;
 import org.apache.wicket.util.visit.IVisit;
@@ -16,21 +20,30 @@ import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.Command;
 import org.efaps.ui.wicket.EFapsSession;
-import org.efaps.ui.wicket.components.confirmation.ConfirmationPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.objects.UICmdObject;
 import org.efaps.ui.wicket.models.objects.UIGrid;
+import org.efaps.ui.wicket.pages.AbstractMergePage;
+import org.efaps.ui.wicket.pages.content.grid.GridPage;
+import org.efaps.ui.wicket.pages.dialog.DialogPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.util.ParameterUtil;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.CacheReloadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SubmitBehavior
     extends AjaxFormSubmitBehavior
+    implements IAjaxIndicatorAware
 {
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * Logger for this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(SubmitBehavior.class);
 
     /**
      * Instantiates a new menu item submit ajax behavior.
@@ -75,11 +88,27 @@ public class SubmitBehavior
                                         public void component(final ModalWindowContainer _modal,
                                                               final IVisit<Void> _visit)
                                         {
-                                            _modal.setContent(new ConfirmationPanel(_modal.getContentId(), UICmdObject
-                                                            .getModel(cmdId)));
+                                            _modal.setPageCreator(new ModalWindow.PageCreator()
+                                            {
+
+                                                private static final long serialVersionUID = 1L;
+
+                                                @Override
+                                                public Page createPage()
+                                                {
+                                                    Page page = null;
+                                                    try {
+                                                        page = new DialogPage(getComponent().getPage()
+                                                                        .getPageReference(), UICmdObject.getModel(
+                                                                                        cmdId), oids);
+                                                    } catch (final EFapsException e) {
+                                                        page = new ErrorPage(e);
+                                                    }
+                                                    return page;
+                                                }
+                                            });
                                             _modal.setInitialHeight(150);
                                             _modal.setInitialWidth(350);
-                                            _modal.setTop(false);
                                             _modal.show(_target);
                                             _visit.stop();
                                         }
@@ -98,8 +127,8 @@ public class SubmitBehavior
                                 final Object object = rets.get(0).get(ReturnValues.VALUES);
                                 if (object instanceof File) {
                                     ((EFapsSession) getComponent().getSession()).setFile((File) object);
-                                    // ((AbstractMergePage)
-                                    // getPage()).getDownloadBehavior().initiate(_target);
+                                    ((AbstractMergePage) getComponent().getPage()).getDownloadBehavior().initiate(
+                                                    _target);
                                     updatePage = false;
                                 }
                             }
@@ -108,35 +137,47 @@ public class SubmitBehavior
                         }
                     }
                     if (updatePage) {
-                        /**
-                         * final AbstractUIObject uiObject =
-                         * (AbstractUIObject)
-                         * getPage().getDefaultModelObject();
-                         * uiObject.resetModel();
-                         *
-                         * Page page = null;
-                         * try {
-                         * if (uiObject instanceof UITable) {
-                         * page = new TablePage(Model.of((UITable)
-                         * uiObject),
-                         * ((AbstractContentPage)
-                         * getPage()).getCalledByPageReference());
-                         * } else if (uiObject instanceof UIForm) {
-                         * page = new FormPage(Model.of((UIForm) uiObject),
-                         * ((AbstractContentPage)
-                         * getPage()).getCalledByPageReference());
-                         * }
-                         * } catch (final EFapsException e) {
-                         * page = new ErrorPage(e);
-                         * }
-                         * setResponsePage(page);
-                         */
+                        uiGrid.reload();
+                        getComponent().setResponsePage(new GridPage(Model.of(uiGrid)));
                     }
                 }
+            } else {
+                getComponent().getPage().visitChildren(ModalWindowContainer.class,
+                                new IVisitor<ModalWindowContainer, Void>()
+                                {
+
+                                    @Override
+                                    public void component(final ModalWindowContainer _modal,
+                                                          final IVisit<Void> _visit)
+                                    {
+                                        _modal.setPageCreator(new ModalWindow.PageCreator()
+                                        {
+
+                                            private static final long serialVersionUID = 1L;
+
+                                            @Override
+                                            public Page createPage()
+                                            {
+                                                return new DialogPage(getComponent().getPage().getPageReference(),
+                                                                "SubmitSelectedRows.fail" + cmd.getSubmitSelectedRows(),
+                                                                false, false);
+                                            }
+                                        });
+                                        _modal.setInitialHeight(150);
+                                        _modal.setInitialWidth(350);
+                                        _modal.show(_target);
+                                        _visit.stop();
+                                    }
+                                });
             }
-        } catch (final CacheReloadException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (final EFapsException e) {
+            SubmitBehavior.LOG.error("Catched", e);
         }
+    }
+
+    @Override
+    public String getAjaxIndicatorMarkupId()
+    {
+        return "eFapsVeil";
     }
 }
