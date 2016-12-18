@@ -57,6 +57,7 @@ import org.efaps.db.Context;
 import org.efaps.ui.wicket.behaviors.dojo.AbstractDojoBehavior;
 import org.efaps.ui.wicket.components.gridx.behaviors.OpenModalBehavior;
 import org.efaps.ui.wicket.components.gridx.behaviors.SubmitBehavior;
+import org.efaps.ui.wicket.components.gridx.behaviors.SubmitModalBehavior;
 import org.efaps.ui.wicket.models.objects.UIGrid;
 import org.efaps.ui.wicket.models.objects.UIGrid.Cell;
 import org.efaps.ui.wicket.models.objects.UIGrid.Column;
@@ -107,7 +108,6 @@ public class GridXComponent
         super(_wicketId, _model);
         setOutputMarkupId(true);
         add(new PersistAjaxBehavior());
-        add(new MenuItemAjaxBehavior());
     }
 
     @Override
@@ -377,36 +377,28 @@ public class GridXComponent
                 .append("onClick: function(event) {\n")
                 .append("var rid = \"").append(rid).append("\";\n");
 
-        if (Target.MODAL.equals(_cmd.getTarget())) {
-            final GridXPanel panel = (GridXPanel) getParent();
-            panel.visitChildren(MenuItem.class, new IVisitor<MenuItem, Void>()
-            {
+        final GridXPanel panel = (GridXPanel) getParent();
+        panel.visitChildren(MenuItem.class, new IVisitor<MenuItem, Void>()
+        {
 
-                @Override
-                public void component(final MenuItem _item,
-                                      final IVisit<Void> visit)
-                {
-                    js.append(_item.getBehaviors(OpenModalBehavior.class).get(0)
-                                    .getCallbackFunctionBody(CallbackParameter.explicit("rid")));
-                }
-            });
-        } else if (_cmd.isSubmit()) {
-            final GridXPanel panel = (GridXPanel) getParent();
-            panel.visitChildren(MenuItem.class, new IVisitor<MenuItem, Void>()
+            @Override
+            public void component(final MenuItem _item,
+                                  final IVisit<Void> visit)
             {
-
-                @Override
-                public void component(final MenuItem _item,
-                                      final IVisit<Void> visit)
-                {
-                    js.append(_item.getBehaviors(SubmitBehavior.class).get(0)
-                                    .getCallbackFunctionBody(CallbackParameter.explicit("rid")));
+                if (Target.MODAL.equals(_cmd.getTarget())) {
+                    if (_cmd.isSubmit()) {
+                        js.append(_item.getBehaviors(SubmitModalBehavior.class).get(0).getCallbackFunctionBody(
+                                        CallbackParameter.explicit("rid")));
+                    } else {
+                        js.append(_item.getBehaviors(OpenModalBehavior.class).get(0).getCallbackFunctionBody(
+                                        CallbackParameter.explicit("rid")));
+                    }
+                } else if (_cmd.isSubmit()) {
+                    js.append(_item.getBehaviors(SubmitBehavior.class).get(0).getCallbackFunctionBody(CallbackParameter
+                                    .explicit("rid")));
                 }
-            });
-        } else {
-            js.append(getBehaviors(MenuItemAjaxBehavior.class).get(0).getCallbackFunctionBody(CallbackParameter
-                            .explicit("rid")));
-        }
+            }
+        });
         js.append("}\n").append("})\n");
         return js;
     }
@@ -529,27 +521,4 @@ public class GridXComponent
             }
         }
     }
-
-    /**
-    * The Class AjaxBehavior.
-    *
-    * @author The eFaps Team
-    */
-   public static class MenuItemAjaxBehavior
-       extends AbstractDefaultAjaxBehavior
-   {
-
-        /** The Constant serialVersionUID. */
-        private static final long serialVersionUID = -6677751297943775978L;
-
-        @Override
-        protected void respond(final AjaxRequestTarget target)
-        {
-            final StringValue rid = getComponent().getRequest().getRequestParameters().getParameterValue("rid");
-
-            final UIGrid uiGrid = (UIGrid) getComponent().getDefaultModelObject();
-            final Long cmdId = uiGrid.getID4Random(rid.toString());
-            System.out.println(cmdId);
-        }
-   }
 }
