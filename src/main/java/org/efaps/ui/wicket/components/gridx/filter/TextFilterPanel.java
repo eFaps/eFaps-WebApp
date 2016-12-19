@@ -43,9 +43,10 @@ public class TextFilterPanel
     private static final long serialVersionUID = 1L;
 
     /**
+     * Instantiates a new text filter panel.
+     *
      * @param _wicketId wicket id for this component
      * @param _model model for this component
-     * @param _uitableHeader UITableHeader this panel belongs to
      * @throws EFapsException on error
      */
     public TextFilterPanel(final String _wicketId,
@@ -69,9 +70,9 @@ public class TextFilterPanel
             }
 
             @Override
-            public void setObject(final String object)
+            public void setObject(final String _object)
             {
-                this.value = object;
+                this.value = _object;
             }
 
             @Override

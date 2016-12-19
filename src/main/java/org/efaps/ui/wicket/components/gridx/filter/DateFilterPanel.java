@@ -47,7 +47,7 @@ public class DateFilterPanel
      *
      * @param _id the id
      * @param _model the model
-     * @throws EFapsException
+     * @throws EFapsException on error
      */
     public DateFilterPanel(final String _id,
                            final IModel<IMapFilter> _model)

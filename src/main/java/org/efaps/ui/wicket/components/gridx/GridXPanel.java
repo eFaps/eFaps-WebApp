@@ -46,6 +46,7 @@ import org.efaps.ui.wicket.components.button.AjaxButton;
 import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.gridx.filter.DateFilterPanel;
+import org.efaps.ui.wicket.components.gridx.filter.FormFilterPanel;
 import org.efaps.ui.wicket.components.gridx.filter.ListFilterPanel;
 import org.efaps.ui.wicket.components.gridx.filter.TextFilterPanel;
 import org.efaps.ui.wicket.models.objects.UIGrid;
@@ -110,9 +111,8 @@ public class GridXPanel
         for (final IFilter filter : _model.getObject().getFilterList()) {
             final Field field = Field.get(filter.getFieldId());
             final WebMarkupContainer container = new WebMarkupContainer(filterRepeater.newChildId());
-            container.add(AttributeModifier.replace("title",
-                            Model.of(DBProperties.getFormatedDBProperty(GridXPanel.class.getName() + ".FilterTitel",
-                                            (Object) field.getLabel()))));
+            container.add(AttributeModifier.replace("title", Model.of(DBProperties.getFormatedDBProperty(
+                            GridXPanel.class.getName() + ".FilterTitel", (Object) field.getLabel()))));
             container.setOutputMarkupId(true);
             container.setMarkupId("fttd_" + filter.getFieldId());
             filterRepeater.add(container);
@@ -199,6 +199,7 @@ public class GridXPanel
 
                                 form.visitChildren(TextField.class, new IVisitor<TextField<String>, Void>()
                                 {
+
                                     @Override
                                     public void component(final TextField<String> _text,
                                                           final IVisit<Void> _visit)
@@ -210,6 +211,7 @@ public class GridXPanel
 
                                 form.visitChildren(CheckBox.class, new IVisitor<CheckBox, Void>()
                                 {
+
                                     @Override
                                     public void component(final CheckBox _checkBox,
                                                           final IVisit<Void> _visit)
@@ -244,30 +246,30 @@ public class GridXPanel
                             final GridXPanel gridpanel = findParent(GridXPanel.class);
                             final UIGrid uiGrid = gridpanel.getModelObject();
                             form.visitChildren(CheckBoxMultipleChoice.class,
-                                        new IVisitor<CheckBoxMultipleChoice<?>, Void>()
-                                        {
-
-                                            @Override
-                                            public void component(final CheckBoxMultipleChoice<?> _checkBox,
-                                                                  final IVisit<Void> _visit)
+                                            new IVisitor<CheckBoxMultipleChoice<?>, Void>()
                                             {
-                                                try {
-                                                    final ListFilterPanel filterPanel = _checkBox.findParent(
-                                                                    ListFilterPanel.class);
-                                                    @SuppressWarnings("unchecked")
-                                                    final List<IOption> sel = (List<IOption>) _checkBox
-                                                                    .getDefaultModelObject();
+
+                                                @Override
+                                                public void component(final CheckBoxMultipleChoice<?> _checkBox,
+                                                                      final IVisit<Void> _visit)
+                                                {
+                                                    try {
+                                                        final ListFilterPanel filterPanel = _checkBox.findParent(
+                                                                        ListFilterPanel.class);
+                                                        @SuppressWarnings("unchecked")
+                                                        final List<IOption> sel = (List<IOption>) _checkBox
+                                                                        .getDefaultModelObject();
                                                         for (final IOption option : filterPanel.getModelObject()) {
-                                                            final Method method = option.getClass().getMethod("setSelected",
-                                                                            boolean.class);
+                                                            final Method method = option.getClass().getMethod(
+                                                                            "setSelected", boolean.class);
                                                             method.invoke(option, sel.contains(option));
                                                         }
-                                                } catch (final IllegalAccessException | InvocationTargetException
-                                                                | NoSuchMethodException e) {
-                                                    GridXPanel.LOG.error("Catched error", e);
+                                                    } catch (final IllegalAccessException | InvocationTargetException
+                                                                    | NoSuchMethodException e) {
+                                                        GridXPanel.LOG.error("Catched error", e);
+                                                    }
                                                 }
-                                            }
-                                        });
+                                            });
 
                             try {
                                 uiGrid.reload();
@@ -278,11 +280,13 @@ public class GridXPanel
                         }
                     });
                     break;
-                case CLASSIFICATION:
                 case FORM:
+                    form.add(new FormFilterPanel("filter", new Model<>((IMapFilter) filter), getModelObject()));
+                    form.add(new WebMarkupContainer("btn"));
+                    break;
+                case CLASSIFICATION:
                 case PICKLIST:
                 case NONE:
-
                 default:
                     form.add(new WebMarkupContainer("filter"));
                     form.add(new WebMarkupContainer("btn"));
@@ -290,7 +294,6 @@ public class GridXPanel
             }
         }
     }
-
 
     /**
      * Gets the javascript.
@@ -302,18 +305,12 @@ public class GridXPanel
     private CharSequence getJavascript(final UIGrid _uiGrid)
         throws EFapsException
     {
-        final StringBuilder js = new StringBuilder()
-                    .append("require([")
-                    .append("'dijit/registry']")
-                    .append(", function (registry) {\n")
-                    .append("var grid = registry.byId('grid');\n")
-                    .append("var items= ")
-                    .append(GridXComponent.getDataJS(_uiGrid))
-                    .append("grid.model.clearCache();\n")
-                    .append("grid.model.store.setData(items);\n");
+        final StringBuilder js = new StringBuilder().append("require([").append("'dijit/registry']").append(
+                        ", function (registry) {\n").append("var grid = registry.byId('grid');\n").append("var items= ")
+                        .append(GridXComponent.getDataJS(_uiGrid)).append("grid.model.clearCache();\n").append(
+                                        "grid.model.store.setData(items);\n");
 
-        js.append("grid.body.refresh();\n")
-                    .append("});");
+        js.append("grid.body.refresh();\n").append("});");
         return js;
     }
 }

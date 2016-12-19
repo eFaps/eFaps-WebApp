@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.components;
@@ -30,25 +27,11 @@ import org.efaps.ui.wicket.behaviors.dojo.LazyIframeBehavior;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class LazyIframe
     extends WebMarkupContainer
     implements ILinkListener
 {
-
-    /**
-     * Provides the Frame Content.
-     */
-    public interface IFrameProvider
-        extends IClusterable
-    {
-        /**
-         * @return the page to be displayed
-         */
-        Page getPage();
-    }
-
 
     /**
      * Needed for serialization.
@@ -60,10 +43,12 @@ public class LazyIframe
      */
     private final IFrameProvider frameProvider;
 
-
     /**
+     * Instantiates a new lazy iframe.
+     *
      * @param _wicketId         wicket id of this component
      * @param _frameProvider    Provider for the frame
+     * @param _frameMarkupId the frame markup id
      */
     public LazyIframe(final String _wicketId,
                       final IFrameProvider _frameProvider,
@@ -79,5 +64,17 @@ public class LazyIframe
     public void onLinkClicked()
     {
         setResponsePage(this.frameProvider.getPage());
+    }
+
+    /**
+     * Provides the Frame Content.
+     */
+    public interface IFrameProvider
+        extends IClusterable
+    {
+        /**
+         * @return the page to be displayed
+         */
+        Page getPage();
     }
 }

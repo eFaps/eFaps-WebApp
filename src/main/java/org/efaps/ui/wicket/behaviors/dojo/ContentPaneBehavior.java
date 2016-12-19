@@ -70,7 +70,7 @@ public class ContentPaneBehavior
          *
          * @param _key Key
          */
-        private Region(final String _key)
+        Region(final String _key)
         {
             this.key = _key;
         }
@@ -109,8 +109,9 @@ public class ContentPaneBehavior
     /**
      * Sould a splitter be added.
      */
-    private final Boolean splitter;
+    private final boolean splitter;
 
+    /** The splitter state. */
     private final String splitterState;
 
     /**
@@ -133,7 +134,7 @@ public class ContentPaneBehavior
      * @param _splitter should a splitter be rendered
      * @param _width width of this ContentPaneBehavior
      * @param _height height of this ContentPaneBehavior
-     *
+     * @param _splitterState the splitter state
      */
     public ContentPaneBehavior(final Region _region,
                                final boolean _splitter,
@@ -162,7 +163,11 @@ public class ContentPaneBehavior
     {
         super.onComponentTag(_component, _tag);
         _tag.put("data-dojo-type", "dijit/layout/ContentPane");
-        _tag.append("data-dojo-props", "region: '" + this.region.getKey() + "'", ",");
+
+        if (this.region != null) {
+            _tag.append("data-dojo-props", "region: '" + this.region.getKey() + "'", ",");
+        }
+
         if (this.splitter) {
             _tag.append("data-dojo-props", "splitter: true", ",");
         }
@@ -176,7 +181,6 @@ public class ContentPaneBehavior
         if (this.height != null) {
             _tag.append("style", "height: " + this.height, ";");
         }
-
     }
 
     /**

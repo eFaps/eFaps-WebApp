@@ -34,7 +34,6 @@ import org.efaps.util.EFapsException;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class RowId
     extends WebComponent
@@ -59,18 +58,21 @@ public class RowId
     protected void onComponentTag(final ComponentTag _tag)
     {
         super.onComponentTag(_tag);
-        final AbstractUIPageObject uiObject = (AbstractUIPageObject) getPage().getDefaultModelObject();
-        final AbstractInstanceObject instObj = (AbstractInstanceObject) getDefaultModelObject();
-        instObj.setUserinterfaceId(uiObject.getNewRandom());
-        try {
-            uiObject.getUiID2Oid().put(instObj.getUserinterfaceId(), instObj.getInstance() == null
-                            ? null : instObj.getInstance().getOid());
-        } catch (final EFapsException e) {
-            throw new RestartResponseException(new ErrorPage(e));
+        final Object object = getPage().getDefaultModelObject();
+        if (object instanceof AbstractUIPageObject) {
+            final AbstractUIPageObject uiObject = (AbstractUIPageObject) getPage().getDefaultModelObject();
+            final AbstractInstanceObject instObj = (AbstractInstanceObject) getDefaultModelObject();
+            instObj.setUserinterfaceId(uiObject.getNewRandom());
+            try {
+                uiObject.getUiID2Oid().put(instObj.getUserinterfaceId(), instObj.getInstance() == null ? null
+                                : instObj.getInstance().getOid());
+            } catch (final EFapsException e) {
+                throw new RestartResponseException(new ErrorPage(e));
+            }
+            _tag.put("name", EFapsKey.TABLEROW_NAME.getKey());
+            _tag.put("value", instObj.getUserinterfaceId());
         }
-        _tag.put("name", EFapsKey.TABLEROW_NAME.getKey());
-        _tag.put("value", instObj.getUserinterfaceId());
         _tag.put("type", "hidden");
-    }
 
+    }
 }
