@@ -212,7 +212,7 @@ public class GridXComponent
                     .append("{pluginClass: GridConfig, style: 'text-align: right;'} \n")
                     .append("],\n")
                 .append("barBottom: [\n")
-                    .append("Summary\n")
+                    .append("{pluginClass: Summary, style: 'text-align: right;'}\n")
                     .append("],\n")
                 .append("modules: [\n")
                     .append("VirtualVScroller,\n")

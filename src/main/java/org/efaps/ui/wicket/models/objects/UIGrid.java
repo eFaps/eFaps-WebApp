@@ -43,6 +43,7 @@ import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.Command;
+import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.Table;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.admin.ui.field.Filter;
@@ -124,8 +125,8 @@ public class UIGrid
             boolean check4Filter = true;
             if (Context.getThreadContext().containsSessionAttribute(getCacheKey(CacheKey.DBFILTER))) {
                 check4Filter = false;
-                final FilterList tmpFilterList = (FilterList) Context.getThreadContext().getSessionAttribute(getCacheKey(
-                                CacheKey.DBFILTER));
+                final FilterList tmpFilterList = (FilterList) Context.getThreadContext().getSessionAttribute(
+                                getCacheKey(CacheKey.DBFILTER));
                 for (final IFilter filter : tmpFilterList) {
                     this.filterList.add(filter);
                 }
@@ -217,8 +218,9 @@ public class UIGrid
                         sortValue = multi.getMsgPhrase(field.getProperty(UITableFieldProperty.SORT_MSG_PHRASE));
                     }
 
-                    final UIValue uiValue = UIValue.get(field, attr, value).setRequestInstances(multi
-                                    .getInstanceList());
+                    final UIValue uiValue = UIValue.get(field, attr, value)
+                                    .setInstance(instance)
+                                    .setRequestInstances(multi.getInstanceList());
 
                     final Cell cell = getCell(column, uiValue, sortValue, jsFields);
                     if (column.getFieldConfig().getField().getReference() != null) {
@@ -318,7 +320,7 @@ public class UIGrid
      */
     protected IFilter getFilter4Field(final Field _field)
     {
-        IFilter ret;
+        final IFilter ret;
         switch (_field.getFilter().getType()) {
             case STATUS:
             case CLASSIFICATION:
@@ -351,6 +353,7 @@ public class UIGrid
      * Gets the values.
      *
      * @return the values
+     * @throws EFapsException on error
      */
     public List<Row> getValues()
         throws EFapsException
@@ -363,6 +366,7 @@ public class UIGrid
      * Gets the filter list.
      *
      * @return the filter list
+     * @throws EFapsException on error
      */
     public FilterList getFilterList()
         throws EFapsException
@@ -392,7 +396,11 @@ public class UIGrid
     public AbstractCommand getCommand()
         throws CacheReloadException
     {
-        return Command.get(getCmdUUID());
+        AbstractCommand cmd = Command.get(getCmdUUID());
+        if (cmd == null) {
+            cmd = Menu.get(getCmdUUID());
+        }
+        return cmd;
     }
 
     /**
@@ -419,6 +427,7 @@ public class UIGrid
      * Gets the columns.
      *
      * @return the columns
+     * @throws EFapsException on error
      */
     public List<Column> getColumns()
         throws EFapsException
@@ -518,7 +527,7 @@ public class UIGrid
         } catch (final Exception e) {
             throw new RestartResponseException(new ErrorPage(new EFapsException(this.getClass(), "",
                             "Error reading the Title")));
-        } // CHECKSTYLE:ON
+        }
         return title;
     }
 
@@ -533,7 +542,7 @@ public class UIGrid
         throws EFapsException
     {
         init();
-        Type ret;
+        final Type ret;
         if (getValues().isEmpty()) {
             final List<EventDefinition> events =  getCommand().getEvents(EventType.UI_TABLE_EVALUATE);
             String typeName = null;
@@ -573,7 +582,7 @@ public class UIGrid
      */
     public boolean isDateFilter(final IFilter _filter) throws EFapsException
     {
-        boolean ret;
+        final boolean ret;
         final Field field = Field.get(_filter.getFieldId());
         // Explicitly set UIProvider
         if (field.getUIProvider() != null && (field.getUIProvider() instanceof DateTimeUI || field
@@ -581,8 +590,12 @@ public class UIGrid
             ret = true;
         } else {
             final Attribute attr = getType().getAttribute(field.getAttribute());
-            final IUIProvider uiProvider = attr.getAttributeType().getUIProvider();
-            ret = uiProvider instanceof DateTimeUI || uiProvider instanceof DateUI;
+            if (attr == null) {
+                ret = false;
+            } else {
+                final IUIProvider uiProvider = attr.getAttributeType().getUIProvider();
+                ret = uiProvider instanceof DateTimeUI || uiProvider instanceof DateUI;
+            }
         }
         return ret;
     }
@@ -634,11 +647,11 @@ public class UIGrid
         /**
          * Instantiates a new row.
          *
-         * @param _Instance the instance
+         * @param _instance the instance
          */
-        public Row(final Instance _Instance)
+        public Row(final Instance _instance)
         {
-            this.instance = _Instance;
+            this.instance = _instance;
         }
 
         /**
@@ -690,12 +703,12 @@ public class UIGrid
         /**
          * Sets the instance.
          *
-         * @param instance the instance
+         * @param _instance the instance
          * @return the cell
          */
-        public Cell setInstance(final Instance instance)
+        public Cell setInstance(final Instance _instance)
         {
-            this.instance = instance;
+            this.instance = _instance;
             return this;
         }
 
