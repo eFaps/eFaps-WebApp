@@ -9,18 +9,23 @@ define([
     "dijit/_WidgetsInTemplateMixin",
     "dijit/form/ToggleButton",
     "dijit/CheckedMenuItem",
+    "dijit/MenuItem",
     "dijit/Toolbar",
     "dojo/text!./templates/GridConfig.html",
     "dojo/i18n!./nls/eFaps"
-], function(declare, array, domClass, domGeom, on, _WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin, ToggleButton, CheckedMenuItem, Toolbar, template, eFapsNLS) {
+], function(declare, array, domClass, domGeom, on, _WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin, ToggleButton,
+        CheckedMenuItem, MenuItem, Toolbar, template, eFapsNLS) {
 
     return declare([_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin], {
         templateString: template,
 
+        //Labels
         buttonLabel: eFapsNLS.gridConfigButtonLabel,
         toggleLabel: eFapsNLS.gridConfigToggleLabel,
+        printDropDownLabel: "Print",
 
         grid: null,
+        printItems: [],
 
         startup: function(){
             var t = this;
@@ -43,7 +48,8 @@ define([
                 dn = t.domNode,
                 tm = t.menu,
                 hC = g.hiddenColumns,
-                tB = t.toggleButton;
+                tB = t.toggleButton,
+                pM = t.printMenu;
 
             array.forEach(g.structure, function(col){
                  var item = new CheckedMenuItem({
@@ -64,6 +70,9 @@ define([
                 g.resize();
             });
 
+            array.forEach(t.printItems, function(_item){
+                 pM.addChild(_item);
+            }, pM);
         },
 
         check: function(_colId) {

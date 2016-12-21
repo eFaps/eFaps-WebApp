@@ -42,7 +42,6 @@ import org.efaps.util.cache.CacheReloadException;
  * @author The eFaps Team
  */
 public class ModalVisitor
-
     implements IVisitor<ModalWindowContainer, ModalWindowContainer>, Serializable
 {
 

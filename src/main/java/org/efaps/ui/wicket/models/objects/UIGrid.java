@@ -16,8 +16,10 @@
  */
 package org.efaps.ui.wicket.models.objects;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -36,7 +38,9 @@ import org.efaps.admin.datamodel.ui.IUIProvider;
 import org.efaps.admin.datamodel.ui.UIValue;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.EventDefinition;
+import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.EventType;
+import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
@@ -67,6 +71,8 @@ import org.efaps.ui.wicket.models.field.factories.DecimalUIFactory;
 import org.efaps.ui.wicket.models.field.factories.IComponentFactory;
 import org.efaps.ui.wicket.models.field.factories.NumberUIFactory;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.ui.wicket.util.Configuration;
+import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
@@ -370,7 +376,7 @@ public class UIGrid
         throws EFapsException
     {
         init();
-        return this.values;
+        return Collections.unmodifiableList(this.values);
     }
 
     /**
@@ -444,7 +450,7 @@ public class UIGrid
         throws EFapsException
     {
         init();
-        return this.columns;
+        return Collections.unmodifiableList(this.columns);
     }
 
     /**
@@ -642,6 +648,28 @@ public class UIGrid
         return ret;
     }
 
+
+    public static File print(final UIGrid _uiGrid)
+    {
+        final String clazzName = Configuration.getAttribute(ConfigAttribute.GRIDPRINTESJP);
+        try {
+            final Class<?> clazz = Class.forName(clazzName);
+            final EventExecution event = (EventExecution) clazz.newInstance();
+            final Parameter param = new Parameter();
+            param.put(ParameterValues.PARAMETERS, Context.getThreadContext().getParameters());
+            param.put(ParameterValues.CLASS, _uiGrid);
+            event.execute(param);
+     } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+         // TODO Auto-generated catch block
+         e.printStackTrace();
+     } catch (final EFapsException e) {
+         // TODO Auto-generated catch block
+         e.printStackTrace();
+     }
+        return null;
+    }
+
+
     /**
      * The Class Row.
      *
@@ -717,7 +745,7 @@ public class UIGrid
          * @param _instance the instance
          * @return the cell
          */
-        public Cell setInstance(final Instance _instance)
+        protected Cell setInstance(final Instance _instance)
         {
             this.instance = _instance;
             return this;
@@ -739,7 +767,7 @@ public class UIGrid
          * @param _value the value
          * @return the cell
          */
-        public Cell setValue(final Object _value)
+        protected Cell setValue(final Object _value)
         {
             this.value = _value;
             return this;
@@ -761,7 +789,7 @@ public class UIGrid
          * @param _sortValue the sort value
          * @return the cell
          */
-        public Cell setSortValue(final Object _sortValue)
+        protected Cell setSortValue(final Object _sortValue)
         {
             this.sortValue = _sortValue;
             return this;
@@ -783,7 +811,7 @@ public class UIGrid
          * @param _fieldConfig the field config
          * @return the cell
          */
-        public Cell setFieldConfig(final FieldConfiguration _fieldConfig)
+        protected Cell setFieldConfig(final FieldConfiguration _fieldConfig)
         {
             this.fieldConfig = _fieldConfig;
             return this;
@@ -969,6 +997,18 @@ public class UIGrid
         public long getFieldId()
         {
             return this.fieldId;
+        }
+
+        @Override
+        public boolean equals(final Object _obj)
+        {
+            boolean ret;
+            if (_obj instanceof MapFilter) {
+                ret = ((MapFilter) _obj).getFieldId() == this.fieldId && super.equals(_obj);
+            } else {
+                ret = super.equals(_obj);
+            }
+            return ret;
         }
     }
 

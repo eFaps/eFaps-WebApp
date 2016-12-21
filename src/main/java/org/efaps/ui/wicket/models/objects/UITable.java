@@ -29,6 +29,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.util.io.IClusterable;
 import org.efaps.admin.datamodel.Attribute;
@@ -46,7 +47,6 @@ import org.efaps.admin.ui.AbstractCommand.SortDirection;
 import org.efaps.admin.ui.Image;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.admin.ui.field.Filter;
-import org.efaps.api.ci.UICommandProperty;
 import org.efaps.api.ci.UITableFieldProperty;
 import org.efaps.api.ui.FilterBase;
 import org.efaps.api.ui.FilterDefault;
@@ -898,18 +898,6 @@ public class UITable
     }
 
     /**
-     * Checks if is grid.
-     *
-     * @return true, if is grid
-     * @throws CacheReloadException the cache reload exception
-     */
-    public boolean isGrid()
-        throws CacheReloadException
-    {
-        return "GridX".equals(getCommand().getProperty(UICommandProperty.TARGET_TABLE_TYPE));
-    }
-
-    /**
      * Method to get the events that are related to this UITable.
      *
      * @param _eventType eventype to get
@@ -1244,7 +1232,8 @@ public class UITable
             if (getParameters() != null) {
                 ret = new MapFilter(this.headerFieldId > 0 ? this.headerFieldId : this.fieldId);
                 ((MapFilter) ret).putAll(getParameters());
-            } else if (this.filterList == null) {
+            } else if (this.filterList == null && !FilterType.STATUS.equals(Field
+                            .get(this.headerFieldId > 0 ? this.headerFieldId : this.fieldId).getFilter().getType())) {
                 ret = new MapFilter(this.headerFieldId > 0 ? this.headerFieldId : this.fieldId);
                 ((MapFilter) ret).put(UITable.TableFilter.FROM, this.from);
                 ((MapFilter) ret).put(UITable.TableFilter.TO, this.to);
@@ -1253,30 +1242,32 @@ public class UITable
             } else {
                 final ListFilter listFilter = new ListFilter(this.headerFieldId > 0 ? this.headerFieldId : this.fieldId);
                 ret = listFilter;
-                for (final Object val : this.filterList) {
-                    listFilter.add(new IOption()
-                    {
-                        /** The Constant serialVersionUID. */
-                        private static final long serialVersionUID = 1L;
-
-                        @Override
-                        public String getLabel()
+                if (CollectionUtils.isNotEmpty(this.filterList)) {
+                     for (final Object val : this.filterList) {
+                        listFilter.add(new IOption()
                         {
-                            return null;
-                        }
+                            /** The Constant serialVersionUID. */
+                            private static final long serialVersionUID = 1L;
 
-                        @Override
-                        public Object getValue()
-                        {
-                            return val;
-                        }
+                            @Override
+                            public String getLabel()
+                            {
+                                return null;
+                            }
 
-                        @Override
-                        public boolean isSelected()
-                        {
-                            return true;
-                        }
-                    });
+                            @Override
+                            public Object getValue()
+                            {
+                                return val;
+                            }
+
+                            @Override
+                            public boolean isSelected()
+                            {
+                                return true;
+                            }
+                        });
+                    }
                 }
             }
             return ret;
@@ -1428,7 +1419,7 @@ public class UITable
     }
 
     public static class ListFilter
-        extends HashSet<IOption>
+        extends ArrayList<IOption>
         implements IListFilter
     {
 
@@ -1483,6 +1474,18 @@ public class UITable
         public long getFieldId()
         {
             return this.fieldId;
+        }
+
+        @Override
+        public boolean equals(final Object _obj)
+        {
+            boolean ret;
+            if (_obj instanceof MapFilter) {
+                ret = ((MapFilter) _obj).getFieldId() == this.fieldId && super.equals(_obj);
+            } else {
+                ret = super.equals(_obj);
+            }
+            return ret;
         }
     }
 }

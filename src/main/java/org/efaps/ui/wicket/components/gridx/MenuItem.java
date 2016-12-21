@@ -2,6 +2,7 @@ package org.efaps.ui.wicket.components.gridx;
 
 import org.apache.wicket.markup.html.WebComponent;
 import org.efaps.ui.wicket.components.gridx.behaviors.OpenModalBehavior;
+import org.efaps.ui.wicket.components.gridx.behaviors.PrintBehavior;
 import org.efaps.ui.wicket.components.gridx.behaviors.SubmitBehavior;
 import org.efaps.ui.wicket.components.gridx.behaviors.SubmitModalBehavior;
 
@@ -21,5 +22,6 @@ public class MenuItem
         add(new OpenModalBehavior());
         add(new SubmitBehavior());
         add(new SubmitModalBehavior());
+        add(new PrintBehavior());
     }
 }

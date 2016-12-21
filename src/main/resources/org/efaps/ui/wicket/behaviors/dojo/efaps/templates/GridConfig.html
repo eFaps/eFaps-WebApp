@@ -1,8 +1,12 @@
-<div class="gridConfig" id="widget_${id}" data-dojo-type="dijit/Toolbar">
+<div class="gridConfig" id="gridWidget_${id}" data-dojo-type="dijit/Toolbar">
     <button data-dojo-type="dijit/form/ToggleButton" data-dojo-props="iconClass:'dijitDisabled dijitEditorIcon dijitEditorIconSelectAll', checked: true, showLabel: false"
         data-dojo-attach-point="toggleButton">
         ${toggleLabel}
     </button>
+    <div data-dojo-type="dijit/form/DropDownButton" data-dojo-props="iconClass:'dijitEditorIcon dijitEditorIconPrint', showLabel: false" data-dojo-attach-point="printDropDown" >
+        ${printDropDownLabel}
+        <div data-dojo-type="dijit/Menu" data-dojo-attach-point="printMenu"></div>
+    </div>
     <div data-dojo-type="dijit/form/DropDownButton" data-dojo-attach-point="dropDownButton">
         <span>${buttonLabel}</span>
         <div data-dojo-type="dijit/Menu" data-dojo-attach-point="menu"></div>

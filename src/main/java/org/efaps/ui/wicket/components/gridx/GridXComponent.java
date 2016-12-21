@@ -23,13 +23,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.wicket.Page;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
+import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.CallbackParameter;
+import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.head.CssHeaderItem;
@@ -53,6 +56,7 @@ import org.efaps.api.ui.FilterBase;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.behaviors.dojo.AbstractDojoBehavior;
 import org.efaps.ui.wicket.components.gridx.behaviors.OpenModalBehavior;
+import org.efaps.ui.wicket.components.gridx.behaviors.PrintBehavior;
 import org.efaps.ui.wicket.components.gridx.behaviors.SubmitBehavior;
 import org.efaps.ui.wicket.components.gridx.behaviors.SubmitModalBehavior;
 import org.efaps.ui.wicket.models.objects.UIGrid;
@@ -183,7 +187,7 @@ public class GridXComponent
                     js.append(", dataType: '").append(column.getDataType()).append("'\n");
                     switch (column.getDataType()) {
                         case "date":
-                            final String formatStr = Configuration.getAttribute(Configuration.ConfigAttribute.FORMAT_DATE);
+                            Configuration.getAttribute(Configuration.ConfigAttribute.FORMAT_DATE);
 
                             js.append(", dateParser: function(_value){ \n")
                                 .append(" var pattern = /(\\d\\d?)\\/(\\d{2})\\/(\\d{4})/;\n")
@@ -218,7 +222,8 @@ public class GridXComponent
             }
 
             js.append("{pluginClass: QuickFilter, style: 'text-align: center;'}, \n")
-                    .append("{pluginClass: GridConfig, style: 'text-align: right;'} \n")
+                    .append("{ pluginClass: GridConfig, style: 'text-align: right;', printItems: [")
+                    .append(getPrintMenuItems()).append("]} \n")
                     .append("],\n")
                 .append("barBottom: [\n")
                     .append("{pluginClass: Summary, style: 'text-align: right;'}\n")
@@ -326,6 +331,25 @@ public class GridXComponent
         }
     }
 
+    protected CharSequence getPrintMenuItems(){
+        final StringBuilder ret = new StringBuilder();
+        final PrintBehavior printBehavior = (PrintBehavior) getBehavior(PrintBehavior.class);
+        final String[] mimes = new String[] {"PDF", "XLS"};
+        for (final String mime : mimes) {
+            if (ret.length() > 0) {
+                ret.append(",");
+            }
+            ret.append("new MenuItem({\n")
+                .append("label: \"").append(mime).append("\",\n")
+                .append("iconClass:\"eFapsMenuIcon eFapsMenuIcon").append(mime.toUpperCase()).append("\",\n")
+                .append("onClick:").append(printBehavior.getCallbackFunction(
+                                CallbackParameter.resolved("MIME","\"" + mime + "\"")))
+                .append("})\n");
+        }
+        return ret;
+    }
+
+
     protected CharSequence getMenu(final Set<DojoClass> _dojoClasses) throws EFapsException
     {
         final StringBuilder ret = new StringBuilder();
@@ -412,6 +436,26 @@ public class GridXComponent
     }
 
 
+    protected AjaxEventBehavior getBehavior(final Class<? extends Behavior> _class)
+    {
+        final GridXPanel panel = (GridXPanel) getParent();
+        return panel.visitChildren(MenuItem.class, new IVisitor<MenuItem, AjaxEventBehavior>()
+        {
+
+            @Override
+            public void component(final MenuItem _item,
+                                  final IVisit<AjaxEventBehavior> visit)
+            {
+                final List<? extends Behavior> behaviors = _item.getBehaviors(_class);
+                if (CollectionUtils.isNotEmpty(behaviors)) {
+                    visit.stop((AjaxEventBehavior) behaviors.get(0));
+                } else {
+                    visit.stop();
+                }
+            }
+        });
+    }
+
     @Override
     public void onLinkClicked()
     {
@@ -432,7 +476,7 @@ public class GridXComponent
                 }
                 if (menu == null) {
                     final Exception ex = new Exception("no tree menu defined for type "
-                                    + (cell.getInstance()) == null ? "??"
+                                    + cell.getInstance() == null ? "??"
                                                     : cell.getInstance().getType().getName());
                     throw new RestartResponseException(new ErrorPage(ex));
                 }
@@ -528,4 +572,6 @@ public class GridXComponent
             }
         }
     }
+
+
 }

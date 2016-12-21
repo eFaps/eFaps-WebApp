@@ -190,8 +190,11 @@ public final class Configuration
         INDEXACCESSCMD(false, true, "IndexAccessCmd", "88c9ce19-d759-443e-b791-0e725fe58f52", String.class,
                         "UUID of the command that is used to define the access to the index search."),
         /** */
-        TABLEDEFAULTTYPE(false, true, "TableDefaultType", "Table" ,String.class,
-                        "Type of table used as default page table");
+        TABLEDEFAULTTYPE(false, true, "TableDefaultType", "Table", String.class,
+                        "Type of table used as default page table"),
+        /** */
+        GRIDPRINTESJP(false, true, "GridXPrinter", "org.efaps.esjp.ui.print.GridX", String.class,
+                        "Class name of the esjp to be invoked for printing GridX.");
 
         /**
          * Stores the key for this Attribute..
