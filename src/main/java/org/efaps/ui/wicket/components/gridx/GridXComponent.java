@@ -23,10 +23,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.Page;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
@@ -52,7 +50,6 @@ import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.admin.ui.AbstractMenu;
 import org.efaps.admin.ui.Menu;
 import org.efaps.api.ui.FilterBase;
-import org.efaps.api.ui.FilterType;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.behaviors.dojo.AbstractDojoBehavior;
 import org.efaps.ui.wicket.components.gridx.behaviors.OpenModalBehavior;
@@ -64,6 +61,7 @@ import org.efaps.ui.wicket.models.objects.UIGrid.Column;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.DojoClass;
 import org.efaps.ui.wicket.util.DojoClasses;
 import org.efaps.ui.wicket.util.DojoWrapper;
@@ -154,21 +152,21 @@ public class GridXComponent
 
             boolean first = true;
             int j = 0;
-            for (final Column header: uiGrid.getColumns()) {
+            for (final Column column : uiGrid.getColumns()) {
                 if (first) {
                     first = false;
                 } else {
                     js.append(",");
                 }
-                js.append("{ id:'").append(header.getField().getId()).append("',")
-                    .append(" field:'").append(header.getFieldName()).append("',")
-                    .append(" name:'").append(header.getLabel()).append("'\n");
+                js.append("{ id:'").append(column.getField().getId()).append("',")
+                    .append(" field:'").append(column.getFieldName()).append("',")
+                    .append(" name:'").append(column.getLabel()).append("'\n");
 
-                if (!"left".equals(header.getField().getAlign())) {
+                if (!"left".equals(column.getField().getAlign())) {
                     js.append(", style:'text-align:right'");
                 }
                 js.append(", comparator: cp\n");
-                if (header.getFieldConfig().getField().getReference() != null) {
+                if (column.getFieldConfig().getField().getReference() != null) {
                     js.append(", decorator: function(data, rowId, visualIndex, cell){\n")
                         .append("return '<a href=\"").append(
                                     urlFor(ILinkListener.INTERFACE, new PageParameters()))
@@ -177,19 +175,30 @@ public class GridXComponent
                         .append("\">' + data + '</a>';\n")
                         .append("}\n");
                 }
-                if (FilterBase.DATABASE.equals(header.getFilter().getBase())) {
-                    js.append(", dialog: 'fttd_").append(header.getField().getId())
+                if (FilterBase.DATABASE.equals(column.getFilter().getBase())) {
+                    js.append(", dialog: 'fttd_").append(column.getField().getId())
                         .append("', headerClass:'eFapsFiltered'\n");
-                } else if (FilterType.PICKLIST.equals(header.getFilter().getType())) {
-                    js.append(", dataType: 'enum'\n");
-                    final List<String> picklist = uiGrid.getFilterPickList(header);
-                    if (CollectionUtils.isNotEmpty(picklist)) {
-                        js.append(", enumOptions: ['")
-                            .append(StringUtils.join(picklist, "','"))
-                            .append("']");
+                }
+                if (column.getDataType() != null) {
+                    js.append(", dataType: '").append(column.getDataType()).append("'\n");
+                    switch (column.getDataType()) {
+                        case "date":
+                            final String formatStr = Configuration.getAttribute(Configuration.ConfigAttribute.FORMAT_DATE);
+
+                            js.append(", dateParser: function(_value){ \n")
+                                .append(" var pattern = /(\\d\\d?)\\/(\\d{2})\\/(\\d{4})/;\n")
+                                .append("pattern.test(_value);\n")
+                                .append("var d = new Date();\n")
+                                .append("d.setDate(parseInt(RegExp.$1));\n")
+                                .append("d.setMonth(parseInt(RegExp.$2) - 1);\n")
+                                .append("d.setFullYear(parseInt(RegExp.$3));\n")
+                                .append("console.log(d);\n")
+                                .append("return d;\n")
+                                .append("}\n");
+                            break;
+                        default:
+                            break;
                     }
-                } else {
-                   // js.append(", filterable: false\n");
                 }
                 js.append("}");
                 j++;

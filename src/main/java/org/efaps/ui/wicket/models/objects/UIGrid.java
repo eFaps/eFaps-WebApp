@@ -61,7 +61,11 @@ import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.SelectBuilder;
 import org.efaps.ui.wicket.models.field.FieldConfiguration;
 import org.efaps.ui.wicket.models.field.JSField;
+import org.efaps.ui.wicket.models.field.factories.BooleanUIFactory;
+import org.efaps.ui.wicket.models.field.factories.DateUIFactory;
+import org.efaps.ui.wicket.models.field.factories.DecimalUIFactory;
 import org.efaps.ui.wicket.models.field.factories.IComponentFactory;
+import org.efaps.ui.wicket.models.field.factories.NumberUIFactory;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
@@ -259,6 +263,13 @@ public class UIGrid
                 jsField = null;
             } else {
                 _fields.put(_uiValue.getField().getId(), jsField);
+                if (fact instanceof DateUIFactory) {
+                    _column.setDataType("date");
+                } else if (fact instanceof DecimalUIFactory || fact instanceof NumberUIFactory) {
+                    _column.setDataType("number");
+                } else if (fact instanceof BooleanUIFactory) {
+                    _column.setDataType("boolean");
+                }
             }
         }
         final String value;
@@ -795,6 +806,9 @@ public class UIGrid
          */
         private FieldConfiguration fieldConfig;
 
+        /** The data type. */
+        private String dataType;
+
         /**
          * Gets the field name.
          *
@@ -854,6 +868,27 @@ public class UIGrid
         protected Column setFieldConfig(final FieldConfiguration _fieldConfig)
         {
             this.fieldConfig = _fieldConfig;
+            return this;
+        }
+
+        /**
+         * Getter method for the instance variable {@link #dataType}.
+         *
+         * @return value of instance variable {@link #dataType}
+         */
+        public String getDataType()
+        {
+            return this.dataType;
+        }
+
+        /**
+         * Setter method for instance variable {@link #dataType}.
+         *
+         * @param _dataType value for instance variable {@link #dataType}
+         */
+        public Column setDataType(final String _dataType)
+        {
+            this.dataType = _dataType;
             return this;
         }
     }
