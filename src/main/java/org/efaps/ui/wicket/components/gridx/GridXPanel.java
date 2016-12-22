@@ -176,7 +176,7 @@ public class GridXPanel
 
                                 try {
                                     uiGrid.reload();
-                                    _target.appendJavaScript(getJavascript(uiGrid));
+                                    _target.appendJavaScript(GridXComponent.getDataReloadJS(uiGrid));
                                 } catch (final EFapsException e) {
                                     GridXPanel.LOG.error("Catched error", e);
                                 }
@@ -222,7 +222,7 @@ public class GridXPanel
 
                                 try {
                                     uiGrid.reload();
-                                    _target.appendJavaScript(getJavascript(uiGrid));
+                                    _target.appendJavaScript(GridXComponent.getDataReloadJS(uiGrid));
                                 } catch (final EFapsException e) {
                                     GridXPanel.LOG.error("Catched error", e);
                                 }
@@ -273,7 +273,7 @@ public class GridXPanel
 
                             try {
                                 uiGrid.reload();
-                                _target.appendJavaScript(getJavascript(uiGrid));
+                                _target.appendJavaScript(GridXComponent.getDataReloadJS(uiGrid));
                             } catch (final EFapsException e) {
                                 GridXPanel.LOG.error("Catched error", e);
                             }
@@ -295,22 +295,5 @@ public class GridXPanel
         }
     }
 
-    /**
-     * Gets the javascript.
-     *
-     * @param _uiGrid the ui grid
-     * @return the javascript
-     * @throws EFapsException on error
-     */
-    private CharSequence getJavascript(final UIGrid _uiGrid)
-        throws EFapsException
-    {
-        final StringBuilder js = new StringBuilder().append("require([").append("'dijit/registry']").append(
-                        ", function (registry) {\n").append("var grid = registry.byId('grid');\n").append("var items= ")
-                        .append(GridXComponent.getDataJS(_uiGrid)).append("grid.model.clearCache();\n").append(
-                                        "grid.model.store.setData(items);\n");
 
-        js.append("grid.body.refresh();\n").append("});");
-        return js;
-    }
 }

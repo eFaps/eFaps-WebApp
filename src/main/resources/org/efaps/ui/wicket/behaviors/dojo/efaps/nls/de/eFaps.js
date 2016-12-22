@@ -1,4 +1,6 @@
 define({
     gridConfigButtonLabel: "Spalten",
-    gridConfigToggleLabel: "Zeilenumbruch"
+    gridConfigToggleLabel: "Zeilenumbruch",
+    gridConfigPrintLabel: "Drucken",
+    gridConfigReloadLabel: "Neu laden"
 });

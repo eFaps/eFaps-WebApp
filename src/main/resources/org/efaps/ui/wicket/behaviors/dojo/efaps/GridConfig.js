@@ -22,10 +22,12 @@ define([
         //Labels
         buttonLabel: eFapsNLS.gridConfigButtonLabel,
         toggleLabel: eFapsNLS.gridConfigToggleLabel,
-        printDropDownLabel: "Print",
+        printDropDownLabel: eFapsNLS.gridConfigPrintLabel,
+        reloadLabel: eFapsNLS.gridConfigReloadLabel,
 
         grid: null,
         printItems: [],
+        reload: null,
 
         startup: function(){
             var t = this;
@@ -49,7 +51,8 @@ define([
                 tm = t.menu,
                 hC = g.hiddenColumns,
                 tB = t.toggleButton,
-                pM = t.printMenu;
+                pM = t.printMenu,
+                rB = t.reloadButton;
 
             array.forEach(g.structure, function(col){
                  var item = new CheckedMenuItem({
@@ -73,6 +76,8 @@ define([
             array.forEach(t.printItems, function(_item){
                  pM.addChild(_item);
             }, pM);
+
+            rB.onClick = t.reload;
         },
 
         check: function(_colId) {

@@ -57,6 +57,7 @@ import org.efaps.db.Context;
 import org.efaps.ui.wicket.behaviors.dojo.AbstractDojoBehavior;
 import org.efaps.ui.wicket.components.gridx.behaviors.OpenModalBehavior;
 import org.efaps.ui.wicket.components.gridx.behaviors.PrintBehavior;
+import org.efaps.ui.wicket.components.gridx.behaviors.ReloadBehavior;
 import org.efaps.ui.wicket.components.gridx.behaviors.SubmitBehavior;
 import org.efaps.ui.wicket.components.gridx.behaviors.SubmitModalBehavior;
 import org.efaps.ui.wicket.models.objects.UIGrid;
@@ -223,7 +224,9 @@ public class GridXComponent
 
             js.append("{pluginClass: QuickFilter, style: 'text-align: center;'}, \n")
                     .append("{ pluginClass: GridConfig, style: 'text-align: right;', printItems: [")
-                    .append(getPrintMenuItems()).append("]} \n")
+                    .append(getPrintMenuItems()).append("],\n")
+                    .append("reload : ").append(getBehavior(ReloadBehavior.class).getCallbackFunction())
+                    .append("} \n")
                     .append("],\n")
                 .append("barBottom: [\n")
                     .append("{pluginClass: Summary, style: 'text-align: right;'}\n")
@@ -577,6 +580,24 @@ public class GridXComponent
         }
         ret.append("]\n");
         return ret;
+    }
+
+    /**
+     * Gets the javascript.
+     *
+     * @param _uiGrid the ui grid
+     * @return the javascript
+     * @throws EFapsException on error
+     */
+    public static CharSequence getDataReloadJS(final UIGrid _uiGrid)
+        throws EFapsException
+    {
+        final StringBuilder js = new StringBuilder()
+                        .append("var grid = registry.byId('grid');\n").append("var items= ")
+                        .append(GridXComponent.getDataJS(_uiGrid)).append("grid.model.clearCache();\n")
+                        .append("grid.model.store.setData(items);\n")
+                        .append("grid.body.refresh();\n");
+        return DojoWrapper.require(js, DojoClasses.registry);
     }
 
     /**
