@@ -331,7 +331,13 @@ public class GridXComponent
         }
     }
 
-    protected CharSequence getPrintMenuItems(){
+    /**
+     * Gets the prints the menu items.
+     *
+     * @return the prints the menu items
+     */
+    protected CharSequence getPrintMenuItems()
+    {
         final StringBuilder ret = new StringBuilder();
         final PrintBehavior printBehavior = (PrintBehavior) getBehavior(PrintBehavior.class);
         final String[] mimes = new String[] {"PDF", "XLS"};
@@ -342,15 +348,36 @@ public class GridXComponent
             ret.append("new MenuItem({\n")
                 .append("label: \"").append(mime).append("\",\n")
                 .append("iconClass:\"eFapsMenuIcon eFapsMenuIcon").append(mime.toUpperCase()).append("\",\n")
-                .append("onClick:").append(printBehavior.getCallbackFunction(
-                                CallbackParameter.resolved("MIME","\"" + mime + "\"")))
+                .append("onClick: function(event) {\n")
+                    .append("var g = registry.byId('grid');\n")
+                    .append("var sr = g.select.row.getSelected();\n")
+                    .append("if (sr.length == 0) {\n")
+                    .append("array.forEach(g.rows(), function (_item, _id) {\n")
+                    .append("sr[_id] = _item.id;\n")
+                    .append("});\n")
+                    .append("}\n")
+                    .append("var cm = [];\n")
+                    .append("array.forEach(g.columns(), function (_item, _id) {\n")
+                    .append("cm[_id] = _item.id;\n")
+                    .append("});\n")
+                    .append(printBehavior.getCallbackFunctionBody(
+                            CallbackParameter.resolved("MIME", "\"" + mime + "\""), CallbackParameter.explicit("sr"),
+                            CallbackParameter.explicit("cm")))
+                    .append("}\n")
                 .append("})\n");
         }
         return ret;
     }
 
-
-    protected CharSequence getMenu(final Set<DojoClass> _dojoClasses) throws EFapsException
+    /**
+     * Gets the menu.
+     *
+     * @param _dojoClasses the dojo classes
+     * @return the menu
+     * @throws EFapsException on error
+     */
+    protected CharSequence getMenu(final Set<DojoClass> _dojoClasses)
+        throws EFapsException
     {
         final StringBuilder ret = new StringBuilder();
         final UIGrid uiGrid = (UIGrid) getDefaultModelObject();
@@ -370,6 +397,13 @@ public class GridXComponent
         return ret;
     }
 
+    /**
+     * Gets the sub menu.
+     *
+     * @param _menu the menu
+     * @param _parent the parent
+     * @return the sub menu
+     */
     protected CharSequence getSubMenu(final AbstractMenu _menu,
                                       final String _parent)
     {
@@ -393,6 +427,13 @@ public class GridXComponent
         return js;
     }
 
+    /**
+     * Gets the menu item.
+     *
+     * @param _cmd the cmd
+     * @param _menuBar the menu bar
+     * @return the menu item
+     */
     protected CharSequence getMenuItem(final AbstractCommand _cmd,
                                        final boolean _menuBar)
     {
@@ -409,33 +450,27 @@ public class GridXComponent
                 .append("onClick: function(event) {\n")
                 .append("var rid = \"").append(rid).append("\";\n");
 
-        final GridXPanel panel = (GridXPanel) getParent();
-        panel.visitChildren(MenuItem.class, new IVisitor<MenuItem, Void>()
-        {
-
-            @Override
-            public void component(final MenuItem _item,
-                                  final IVisit<Void> visit)
-            {
-                if (Target.MODAL.equals(_cmd.getTarget())) {
-                    if (_cmd.isSubmit()) {
-                        js.append(_item.getBehaviors(SubmitModalBehavior.class).get(0).getCallbackFunctionBody(
-                                        CallbackParameter.explicit("rid")));
-                    } else {
-                        js.append(_item.getBehaviors(OpenModalBehavior.class).get(0).getCallbackFunctionBody(
-                                        CallbackParameter.explicit("rid")));
-                    }
-                } else if (_cmd.isSubmit()) {
-                    js.append(_item.getBehaviors(SubmitBehavior.class).get(0).getCallbackFunctionBody(CallbackParameter
-                                    .explicit("rid")));
-                }
+        if (Target.MODAL.equals(_cmd.getTarget())) {
+            if (_cmd.isSubmit()) {
+                js.append(getBehavior(SubmitModalBehavior.class).getCallbackFunctionBody(
+                                CallbackParameter.explicit("rid")));
+            } else {
+                js.append(getBehavior(OpenModalBehavior.class).getCallbackFunctionBody(
+                                CallbackParameter.explicit("rid")));
             }
-        });
+        } else if (_cmd.isSubmit()) {
+            js.append(getBehavior(SubmitBehavior.class).getCallbackFunctionBody(CallbackParameter.explicit("rid")));
+        }
         js.append("}\n").append("})\n");
         return js;
     }
 
-
+    /**
+     * Gets the behavior.
+     *
+     * @param _class the class
+     * @return the behavior
+     */
     protected AjaxEventBehavior getBehavior(final Class<? extends Behavior> _class)
     {
         final GridXPanel panel = (GridXPanel) getParent();
@@ -444,13 +479,13 @@ public class GridXComponent
 
             @Override
             public void component(final MenuItem _item,
-                                  final IVisit<AjaxEventBehavior> visit)
+                                  final IVisit<AjaxEventBehavior> _visit)
             {
                 final List<? extends Behavior> behaviors = _item.getBehaviors(_class);
                 if (CollectionUtils.isNotEmpty(behaviors)) {
-                    visit.stop((AjaxEventBehavior) behaviors.get(0));
+                    _visit.stop((AjaxEventBehavior) behaviors.get(0));
                 } else {
-                    visit.stop();
+                    _visit.stop();
                 }
             }
         });
@@ -498,7 +533,7 @@ public class GridXComponent
     /**
      * Gets the data JS.
      *
-     * @param _uiTable the ui table
+     * @param _uiGrid the ui grid
      * @return the data JS
      * @throws EFapsException on error
      */

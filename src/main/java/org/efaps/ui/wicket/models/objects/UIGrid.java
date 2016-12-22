@@ -78,13 +78,12 @@ import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class UIGrid.
  *
  * @author The eFaps Team
  */
-public class UIGrid
+public final class UIGrid
     extends AbstractUI
 {
 
@@ -648,9 +647,15 @@ public class UIGrid
         return ret;
     }
 
-
+    /**
+     * Prints the.
+     *
+     * @param _uiGrid the ui grid
+     * @return the file
+     */
     public static File print(final UIGrid _uiGrid)
     {
+        File ret = null;
         final String clazzName = Configuration.getAttribute(ConfigAttribute.GRIDPRINTESJP);
         try {
             final Class<?> clazz = Class.forName(clazzName);
@@ -658,17 +663,19 @@ public class UIGrid
             final Parameter param = new Parameter();
             param.put(ParameterValues.PARAMETERS, Context.getThreadContext().getParameters());
             param.put(ParameterValues.CLASS, _uiGrid);
-            event.execute(param);
-     } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-     } catch (final EFapsException e) {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-     }
-        return null;
+            final Return retu = event.execute(param);
+            if (retu != null) {
+                ret = (File) retu.get(ReturnValues.VALUES);
+            }
+        } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (final EFapsException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return ret;
     }
-
 
     /**
      * The Class Row.
@@ -913,8 +920,9 @@ public class UIGrid
          * Setter method for instance variable {@link #dataType}.
          *
          * @param _dataType value for instance variable {@link #dataType}
+         * @return the column
          */
-        public Column setDataType(final String _dataType)
+        protected Column setDataType(final String _dataType)
         {
             this.dataType = _dataType;
             return this;
@@ -1002,7 +1010,7 @@ public class UIGrid
         @Override
         public boolean equals(final Object _obj)
         {
-            boolean ret;
+            final boolean ret;
             if (_obj instanceof MapFilter) {
                 ret = ((MapFilter) _obj).getFieldId() == this.fieldId && super.equals(_obj);
             } else {
