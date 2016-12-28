@@ -9,6 +9,7 @@ public enum DojoClasses
     array("dojo/_base/array", "array"),
     lang("dojo/_base/lang", "lang"),
     json("dojo/_base/json","json"),
+    fx("dojo/_base/fx","fx"),
     aspect("dojo/aspect","aspect"),
     query("dojo/query","query"),
     domGeom("dojo/dom-geometry","domGeom"),

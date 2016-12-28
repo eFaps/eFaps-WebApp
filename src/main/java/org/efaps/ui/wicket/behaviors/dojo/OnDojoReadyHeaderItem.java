@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.behaviors.dojo;
@@ -29,12 +26,13 @@ import org.apache.wicket.markup.head.IReferenceHeaderItem;
 import org.apache.wicket.request.Response;
 import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.settings.JavaScriptLibrarySettings;
+import org.efaps.ui.wicket.util.DojoClasses;
+import org.efaps.ui.wicket.util.DojoWrapper;
 
 /**
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class OnDojoReadyHeaderItem
     extends HeaderItem
@@ -84,11 +82,10 @@ public class OnDojoReadyHeaderItem
     public void render(final Response _response)
     {
         final StringBuilder js = new StringBuilder()
-                        .append("require([\"dojo/ready\"]);")
-                        .append("dojo.ready(function() {")
+                        .append("ready(function() {")
                         .append(getJavaScript())
-                        .append(";});");
-        JavaScriptUtils.writeJavaScript(_response, js);
+                        .append("});");
+        JavaScriptUtils.writeJavaScript(_response, DojoWrapper.require(js, DojoClasses.ready));
     }
 
     /**

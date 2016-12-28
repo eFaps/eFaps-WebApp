@@ -3,7 +3,13 @@ var profile = (function(){
 
         releaseDir:"../resources/org/efaps/ui/wicket/behaviors/dojo",
 
-        optimize: "shrinksafe",
+        action: 'release',
+
+        optimize: 'closure',
+
+        layerOptimize: 'closure',
+
+        cssOptimize: 'comments',
 
         packages:[{
             name:"dojo",
@@ -27,20 +33,6 @@ var profile = (function(){
 
         selectorEngine:"lite",
 
-        defaultConfig:{
-            hasCache:{
-                // these are the values given above, not-built client code may test for these so they need to be available
-                'dojo-built':1,
-                'dojo-loader':1,
-                'dom':1,
-                'host-browser':1,
-
-                // default
-                "config-selectorEngine":"lite"
-            },
-            async:1
-        },
-
         dojoBootText:"require.boot && require.apply(null, require.boot);",
 
         // since this build it intended to be utilized with properly-expressed AMD modules;
@@ -51,101 +43,27 @@ var profile = (function(){
         // the settings below are optimized for the smallest AMD loader that is configurable
         // and include dom-ready support
         staticHasFeatures:{
-            // dojo/dojo
-            'config-dojo-loader-catches':0,
+            // The trace & log APIs are used for debugging the loader, so we do not need them in the build.
+            'dojo-trace-api': false,
+            'dojo-log-api': false,
+            // This causes normally private loader data to be exposed for debugging. In a release build, we do not need
+            // that either.
+            'dojo-publish-privates': false,
 
-            // dojo/dojo
-            'config-tlmSiblingOfDojo':0,
+            // This application is pure AMD, so get rid of the legacy loader.
+            'dojo-sync-loader': false,
 
-            // dojo/dojo
-            'dojo-amd-factory-scan':0,
+            // `dojo-xhr-factory` relies on `dojo-sync-loader`, which we have removed.
+            'dojo-xhr-factory': false,
 
-            // dojo/dojo
-            'dojo-combo-api':0,
-
-            // dojo/_base/config, dojo/dojo
-            'dojo-config-api':1,
-
-            // dojo/main
-            'dojo-config-require':0,
-
-            // dojo/_base/kernel
-            'dojo-debug-messages':0,
-
-            // dojo/dojo
-            'dojo-dom-ready-api':1,
-
-            // dojo/main
-            'dojo-firebug':0,
-
-            // dojo/_base/kernel
-            'dojo-guarantee-console':1,
-
-            // dojo/has
-            'dojo-has-api':1,
-
-            // dojo/dojo
-            'dojo-inject-api':1,
-
-            // dojo/_base/config, dojo/_base/kernel, dojo/_base/loader, dojo/ready
-            'dojo-loader':1,
-
-            // dojo/dojo
-            'dojo-log-api':0,
-
-            // dojo/_base/kernel
-            'dojo-modulePaths':0,
-
-            // dojo/_base/kernel
-            'dojo-moduleUrl':0,
-
-            // dojo/dojo
-            'dojo-publish-privates':0,
-
-            // dojo/dojo
-            'dojo-requirejs-api':0,
-
-            // dojo/dojo
-            'dojo-sniff':0,
-
-            // dojo/dojo, dojo/i18n, dojo/ready
-            'dojo-sync-loader':0,
-
-            // dojo/dojo
-            'dojo-test-sniff':0,
-
-            // dojo/dojo
-            'dojo-timeout-api':0,
-
-            // dojo/dojo
-            'dojo-trace-api':0,
-
-            // dojo/dojo
-            'dojo-undef-api':0,
-
-            // dojo/i18n
-            'dojo-v1x-i18n-Api':1,
-
-            // dojo/_base/xhr
-            'dojo-xhr-factory':0,
-
-            // dojo/_base/loader, dojo/dojo, dojo/on
-            'dom':1,
-
-            // dojo/dojo
-            'host-browser':1,
-
-            // dojo/_base/array, dojo/_base/connect, dojo/_base/kernel, dojo/_base/lang
-            'extend-dojo':1
+            // We are not loading tests in production, so we can get rid of some test sniffing code.
+            'dojo-test-sniff': false
         },
 
         layers:{
             "dojo/dojo":{
-                include:[],
-                customBase:1
-            },
-            "dojo/main":{
-                include:["dojo/selector/lite"]
+                 include: [ "dojo/loadInit", "dojo/text", "dojo/i18n" ],
+                 boot: true
             },
             "efaps/gridxLayer":{
                 include:["dijit/DropDownMenu","dijit/MenuBar","dijit/MenuBarItem","dijit/MenuItem","dijit/PopupMenuBarItem",
