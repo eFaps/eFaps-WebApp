@@ -62,7 +62,12 @@ var profile = (function(){
 
         layers:{
             "dojo/dojo":{
-                 include: [ "dojo/loadInit", "dojo/text", "dojo/i18n" ],
+                 include: [
+                     'dojo/dojo',
+                     'dojo/loadInit',
+                     'dojo/text', '
+                     'dojo/i18n'
+                 ],
                  boot: true
             },
             "efaps/gridxLayer":{
