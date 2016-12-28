@@ -65,7 +65,7 @@ var profile = (function(){
                  include: [
                      'dojo/dojo',
                      'dojo/loadInit',
-                     'dojo/text', '
+                     'dojo/text',
                      'dojo/i18n'
                  ],
                  boot: true
