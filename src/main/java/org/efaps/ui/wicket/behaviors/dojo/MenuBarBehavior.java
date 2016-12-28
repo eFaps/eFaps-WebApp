@@ -24,7 +24,7 @@ package org.efaps.ui.wicket.behaviors.dojo;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.head.IHeaderResponse;
-import org.apache.wicket.markup.head.JavaScriptHeaderItem;
+import org.efaps.ui.wicket.util.DojoClasses;
 
 
 /**
@@ -68,8 +68,8 @@ public class MenuBarBehavior
                            final IHeaderResponse _response)
     {
         super.renderHead(_component, _response);
-        _response.render(JavaScriptHeaderItem.forScript(
-                        "require([\"dijit/MenuBar\", \"dojo/parser\"]);", MenuBarBehavior.class.getName()));
+        _response.render(RequireHeaderItem.forClasses(DojoClasses.MenuBar, DojoClasses.parser));
+
         _response.render(OnDojoReadyHeaderItem.forScript(
                         "require([\"dojo/dom-style\"], function(domStyle){\n"
                             + "  domStyle.set(\"" + _component.getMarkupId(true) + "\",\"visibility\",\"visible\");\n"

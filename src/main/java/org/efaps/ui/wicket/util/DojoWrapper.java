@@ -82,7 +82,7 @@ public final class DojoWrapper
             {
                 return _arg0.getParameterName() == null && _arg1.getParameterName() == null || _arg0
                                 .getParameterName() != null && _arg1.getParameterName() != null ? 0
-                                                : (_arg0.getParameterName() == null ? 1 : -1);
+                                                : _arg0.getParameterName() == null ? 1 : -1;
             }
         });
         comparator.addComparator(new Comparator<DojoClass>()
@@ -110,7 +110,11 @@ public final class DojoWrapper
                 paras.append(dojoLibs.getParameterName());
             }
         }
-        ret.append("],").append(" function(").append(paras).append(") {\n").append(_script).append("});");
+        if (_script == null) {
+            ret.append("]);");
+        } else {
+            ret.append("],").append(" function(").append(paras).append(") {\n").append(_script).append("});");
+        }
         if (_layer != null) {
             ret.append("});");
         }

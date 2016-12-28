@@ -24,7 +24,7 @@ package org.efaps.ui.wicket.behaviors.dojo;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.head.IHeaderResponse;
-import org.apache.wicket.markup.head.JavaScriptHeaderItem;
+import org.efaps.ui.wicket.util.DojoClasses;
 
 
 /**
@@ -68,10 +68,6 @@ public class MenuItemBehavior
                            final IHeaderResponse _response)
     {
         super.renderHead(_component, _response);
-        _response.render(JavaScriptHeaderItem.forScript(
-                        "require([\"dijit/MenuItem\", \"dojo/parser\"]);",
-                        MenuItemBehavior.class.getName()));
+        _response.render(RequireHeaderItem.forClasses(DojoClasses.MenuItem, DojoClasses.parser));
     }
-
-
 }

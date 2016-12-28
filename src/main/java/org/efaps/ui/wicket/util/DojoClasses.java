@@ -10,6 +10,7 @@ public enum DojoClasses
     lang("dojo/_base/lang", "lang"),
     json("dojo/_base/json","json"),
     fx("dojo/_base/fx","fx"),
+    parser("dojo/parser", "parser"),
     aspect("dojo/aspect","aspect"),
     query("dojo/query","query"),
     domGeom("dojo/dom-geometry","domGeom"),
@@ -48,9 +49,13 @@ public enum DojoClasses
     TooltipDialog("dijit/TooltipDialog","TooltipDialog"),
     MenuBar("dijit/MenuBar","MenuBar"),
     PopupMenuBarItem("dijit/PopupMenuBarItem","PopupMenuBarItem"),
+    PopupMenuItem("dijit/PopupMenuItem","PopupMenuItem"),
     MenuItem("dijit/MenuItem","MenuItem"),
     DropDownMenu("dijit/DropDownMenu","DropDownMenu"),
-    MenuBarItem("dijit/MenuBarItem", "MenuBarItem");
+    MenuBarItem("dijit/MenuBarItem", "MenuBarItem"),
+    ToggleSplitter("dojox/layout/ToggleSplitter", "ToggleSplitter"),
+    ContentPane("dijit/layout/ContentPane"," ContentPane"),
+    BorderContainer("dijit/layout/BorderContainer", "BorderContainer");
 
     /** The lib name. */
     private final String className;

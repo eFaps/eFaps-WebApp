@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.request;
@@ -24,24 +21,32 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.wicket.ajax.AjaxRequestHandler;
+import org.apache.wicket.core.util.string.JavaScriptUtils;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.HeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.DecoratingHeaderResponse;
+import org.apache.wicket.request.Response;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.efaps.admin.program.bundle.BundleMaker;
 import org.efaps.admin.program.bundle.TempFileBundle;
 import org.efaps.ui.wicket.behaviors.dojo.AutoCompleteBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.AutoCompleteHeaderItem;
 import org.efaps.ui.wicket.behaviors.dojo.OnDojoReadyHeaderItem;
+import org.efaps.ui.wicket.behaviors.dojo.RequireHeaderItem;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.EFapsJavaScriptHeaderItem;
+import org.efaps.ui.wicket.util.DojoClass;
+import org.efaps.ui.wicket.util.DojoWrapper;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +55,6 @@ import org.slf4j.LoggerFactory;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class EFapsResourceAggregator
     extends DecoratingHeaderResponse
@@ -64,17 +68,22 @@ public class EFapsResourceAggregator
     /**
      * List of HeaderItems that will be rendered in on dojo ready script.
      */
-    private final List<OnDojoReadyHeaderItem> dojoReadyItems = new ArrayList<OnDojoReadyHeaderItem>();
+    private final List<OnDojoReadyHeaderItem> dojoReadyItems = new ArrayList<>();
 
     /**
     * List of HeaderItems that will be rendered in on dojo ready script.
     */
-    private final List<AutoCompleteHeaderItem> autoCompleteItems = new ArrayList<AutoCompleteHeaderItem>();
+    private final List<AutoCompleteHeaderItem> autoCompleteItems = new ArrayList<>();
 
     /**
      * List of HeaderItems that will be rendered file using the eFaps kernel.
      */
-    private final List<AbstractEFapsHeaderItem> eFapsHeaderItems = new ArrayList<AbstractEFapsHeaderItem>();
+    private final List<AbstractEFapsHeaderItem> eFapsHeaderItems = new ArrayList<>();
+
+    /**
+     * List of HeaderItems that will be rendered file using the eFaps kernel.
+     */
+    private final Set<RequireHeaderItem> requireHeaderItems = new HashSet<>();
 
     /**
      * @param _real orginial Response
@@ -99,6 +108,8 @@ public class EFapsResourceAggregator
             this.eFapsHeaderItems.add((AbstractEFapsHeaderItem) _item);
         } else if (_item instanceof AutoCompleteHeaderItem) {
             this.autoCompleteItems.add((AutoCompleteHeaderItem) _item);
+        } else if (_item instanceof RequireHeaderItem) {
+            this.requireHeaderItems.add((RequireHeaderItem) _item);
         } else {
             getRealResponse().render(_item);
         }
@@ -113,7 +124,7 @@ public class EFapsResourceAggregator
         renderCombinedEventScripts();
         renderEFapsHeaderItems();
         renderCombinedAutoCompleteScripts();
-
+        renderCombinedRequireScripts();
         super.close();
     }
 
@@ -133,8 +144,8 @@ public class EFapsResourceAggregator
             }
         });
 
-        final List<String> css = new ArrayList<String>();
-        final List<String> js = new ArrayList<String>();
+        final List<String> css = new ArrayList<>();
+        final List<String> js = new ArrayList<>();
         for (final AbstractEFapsHeaderItem item : this.eFapsHeaderItems) {
             if (item instanceof EFapsJavaScriptHeaderItem) {
                 js.add(item.getReference().getName());
@@ -209,5 +220,35 @@ public class EFapsResourceAggregator
                                 AutoCompleteHeaderItem.forScript(combinedScript.append("\n").toString(), types));
             }
         }
+    }
+
+    /**
+     * Render combined requir scripts.
+     */
+    private void renderCombinedRequireScripts()
+    {
+        final Set<DojoClass> dojoClasses = this.requireHeaderItems.stream().flatMap(o -> o.getDojoClasses().stream())
+                        .collect(Collectors.toSet());
+
+        getRealResponse().render(new HeaderItem()
+        {
+
+            /** The Constant serialVersionUID. */
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public Iterable<?> getRenderTokens()
+            {
+                return dojoClasses;
+            }
+
+            @Override
+            public void render(final Response _response)
+            {
+                JavaScriptUtils.writeJavaScript(_response,
+                                DojoWrapper.require(null, dojoClasses.toArray(new DojoClass[dojoClasses.size()])),
+                                RequireHeaderItem.class.getName());
+            }
+        });
     }
 }

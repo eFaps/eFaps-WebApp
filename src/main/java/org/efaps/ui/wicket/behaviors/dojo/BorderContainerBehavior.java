@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.behaviors.dojo;
@@ -24,9 +21,9 @@ import org.apache.wicket.Component;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
-import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.ResourceReference;
+import org.efaps.ui.wicket.util.DojoClasses;
 
 /**
  * Class renders a dojo border. It can be used to render a slipt between the
@@ -39,7 +36,6 @@ import org.apache.wicket.request.resource.ResourceReference;
  * the box.
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class BorderContainerBehavior
     extends AbstractDojoBehavior
@@ -144,14 +140,12 @@ public class BorderContainerBehavior
                            final IHeaderResponse _response)
     {
         super.renderHead(_component, _response);
-        final StringBuilder js = new StringBuilder()
+        new StringBuilder()
             .append("require([\"dijit/layout/BorderContainer\", \"dojo/parser\"");
         if (this.toggleSplitter) {
-            js.append(",\"dojox/layout/ToggleSplitter\"");
+            _response.render(RequireHeaderItem.forClasses(DojoClasses.ToggleSplitter));
             _response.render(CssHeaderItem.forReference(BorderContainerBehavior.CSS_SPLITTER));
         }
-        js.append("]);");
-
-        _response.render(JavaScriptHeaderItem.forScript(js, BorderContainerBehavior.class.getName()));
+        _response.render(RequireHeaderItem.forClasses(DojoClasses.BorderContainer, DojoClasses.parser));
     }
 }
