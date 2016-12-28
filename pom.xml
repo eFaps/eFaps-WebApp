@@ -211,6 +211,9 @@
                                 <exclude>eFaps-WebApp.profile.js</exclude>
                             </excludes>
                         </fileset>
+                        <fileset>
+                            <directory>src/main/resources/org/efaps/ui/wicket/behaviors/dojo</directory>
+                        </fileset>
                     </filesets>
                 </configuration>
             </plugin>
@@ -251,20 +254,19 @@
                     </execution>
                     <execution>
                         <id>WebApp Build</id>
-                        <phase>compile</phase>
+                        <phase>generate-resources</phase>
                         <configuration>
-                            <tasks>
-                                <parallel>
-                                    <java classname="org.mozilla.javascript.tools.shell.Main" fork="true" maxmemory="512m" failonerror="false"
-                                        classpath="${basedir}/src/main/js/util/shrinksafe/js.jar${path.separator}${basedir}/src/main/js/util/closureCompiler/compiler.jar${path.separator}${basedir}/src/main/js/util/shrinksafe/shrinksafe.jar">
-                                        <arg value="${basedir}/src/main/js/dojo/dojo.js"/>
-                                        <arg value="baseUrl=${basedir}/src/main/js/dojo"/>
-                                        <arg value="load=build"/>
-                                        <arg line="--profile ${basedir}/src/main/js/eFaps-WebApp.profile.js"/>
-                                        <arg value="--release"/>
-                                    </java>
-                                </parallel>
-                            </tasks>
+                             <target>
+                                <java classname="org.mozilla.javascript.tools.shell.Main" fork="true" maxmemory="512m" failonerror="false"
+                                    classpath="${basedir}/src/main/js/util/shrinksafe/js.jar${path.separator}${basedir}/src/main/js/util/closureCompiler/compiler.jar${path.separator}${basedir}/src/main/js/util/shrinksafe/shrinksafe.jar">
+                                    <arg value="${basedir}/src/main/js/dojo/dojo.js"/>
+                                    <arg value="baseUrl=${basedir}/src/main/js/dojo"/>
+                                    <arg value="load=build"/>
+                                    <arg value="--release"/>
+                                    <arg line="--profile ${basedir}/src/main/js/eFaps-WebApp.profile.js"/>
+                                    <arg value="--release"/>
+                                </java>
+                            </target>
                         </configuration>
                         <goals>
                             <goal>run</goal>

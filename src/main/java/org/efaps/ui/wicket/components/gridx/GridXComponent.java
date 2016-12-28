@@ -325,7 +325,8 @@ public class GridXComponent
             }
 
             final StringBuilder html = new StringBuilder().append("<script type=\"text/javascript\">")
-                            .append(DojoWrapper.require(js, dojoClasses.toArray(new DojoClass[dojoClasses.size()])))
+                            .append(DojoWrapper.require(js, "efaps/gridxLayer",
+                                            dojoClasses.toArray(new DojoClass[dojoClasses.size()])))
                             .append("\n</script>");
 
             replaceComponentTagBody(_markupStream, _openTag, html);

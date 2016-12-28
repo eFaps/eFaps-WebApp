@@ -1,3 +1,19 @@
+/*
+ * Copyright 2003 - 2016 The eFaps Team
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package org.efaps.ui.wicket.util;
 
 import java.util.Arrays;
@@ -14,9 +30,16 @@ public final class DojoWrapper
 {
 
     /**
+     * Instantiates a new dojo wrapper.
+     */
+    private DojoWrapper()
+    {
+
+    }
+
+    /**
      * Require.
      *
-     * @param _parameter the parameter
      * @param _script the script
      * @param _classes the classes
      * @return the char sequence
@@ -24,7 +47,27 @@ public final class DojoWrapper
     public static CharSequence require(final CharSequence _script,
                                        final DojoClass... _classes)
     {
-        final StringBuilder ret = new StringBuilder().append("require([");
+        return DojoWrapper.require(_script, null, _classes);
+    }
+
+    /**
+     * Require.
+     *
+     * @param _script the script
+     * @param _layer the layer
+     * @param _classes the classes
+     * @return the char sequence
+     */
+    public static CharSequence require(final CharSequence _script,
+                                       final String _layer,
+                                       final DojoClass... _classes)
+    {
+        final StringBuilder ret = new StringBuilder();
+        if (_layer != null) {
+            ret.append("require(['").append(_layer).append("'],function() {\n");
+        }
+
+        ret.append("require([");
         final StringBuilder paras = new StringBuilder();
         boolean first = true;
         final List<DojoClass> libs = Arrays.asList(_classes);
@@ -68,6 +111,9 @@ public final class DojoWrapper
             }
         }
         ret.append("],").append(" function(").append(paras).append(") {\n").append(_script).append("});");
+        if (_layer != null) {
+            ret.append("});");
+        }
         return ret;
     }
 }

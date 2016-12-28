@@ -1,5 +1,10 @@
 var profile = (function(){
     return {
+
+        releaseDir:"../resources/org/efaps/ui/wicket/behaviors/dojo",
+
+        optimize: "shrinksafe",
+
         packages:[{
             name:"dojo",
             location:"./dojo"

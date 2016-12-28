@@ -16,10 +16,6 @@ var profile = (function(){
 
             amd: function(filename, mid){
                 return !copyOnly(filename, mid);
-            },
-
-            miniExclude: function(filename, mid){
-                return nodeModulesRe.test(mid);
             }
         }
     };

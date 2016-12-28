@@ -1,4 +1,5 @@
 {
     "name": "eFaps-Dojo",
     "version": "1.0.0",
+    "dojoBuild": "efaps.profile.js"
 }
