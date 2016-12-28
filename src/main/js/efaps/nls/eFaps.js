@@ -6,5 +6,5 @@ define({root:
     gridConfigReloadLabel: "Reload"
 }),
 "de": true,
-"es": true,
+"es": true
 });

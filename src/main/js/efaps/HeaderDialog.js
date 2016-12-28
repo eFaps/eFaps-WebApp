@@ -10,23 +10,23 @@ define([
     "dojo/keys",
     "dijit/popup",
     "gridx/core/_Module",
-    "gridx/modules/HeaderRegions",
+    "gridx/modules/HeaderRegions"
 ], function(declare, event, parser, dom, aspect, registry, domConstruct, domClass, keys, popup, _Module){
 
 /*=====
     var HeaderMenu = declare(_Module, {
         // summary:
-        //		module name: headerMenu.
-        //		Add a dropdown menu button on header cell.
+        //        module name: headerMenu.
+        //        Add a dropdown menu button on header cell.
         // description:
-        //		Add a dropdown menu button on the header of any column that has a "menu" defined in structure.
-        //		The "menu" is a dijit/Menu widget or its ID. It can provide a "bindGrid" function with signature of
-        //		function(grid, column), so that some initialization work can be done when this menu is bound to grid.
+        //        Add a dropdown menu button on the header of any column that has a "menu" defined in structure.
+        //        The "menu" is a dijit/Menu widget or its ID. It can provide a "bindGrid" function with signature of
+        //        function(grid, column), so that some initialization work can be done when this menu is bound to grid.
     });
 
     HeaderMenu.__ColumnDefinition = declare([], {
         // menu: String|dijit.Menu
-        //		Any dijit.Menu widget or its ID.
+        //        Any dijit.Menu widget or its ID.
         menu: null
     });
 

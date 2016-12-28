@@ -125,7 +125,7 @@
                         <executions>
                             <execution>
                                 <id>download-dojo</id>
-                                <phase>generate-resources</phase>
+                                <phase>generate-sources</phase>
                                 <goals>
                                     <goal>download-single</goal>
                                 </goals>
@@ -158,7 +158,7 @@
                         <executions>
                             <execution>
                                 <id>download-gridx</id>
-                                <phase>generate-resources</phase>
+                                <phase>generate-sources</phase>
                                 <goals>
                                     <goal>download-single</goal>
                                 </goals>
