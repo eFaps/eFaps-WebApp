@@ -194,7 +194,10 @@ public final class Configuration
                         "Type of table used as default page table"),
         /** */
         GRIDPRINTESJP(false, true, "GridXPrinter", "org.efaps.esjp.ui.print.GridX", String.class,
-                        "Class name of the esjp to be invoked for printing GridX.");
+                        "Class name of the esjp to be invoked for printing GridX."),
+        /** */
+        GRIDCHECKOUTESJP(false, true, "GridXCheckout", "org.efaps.esjp.common.file.FileCheckout", String.class,
+                        "Class name of the esjp to be invoked for checkout in GridX.");
 
         /**
          * Stores the key for this Attribute..

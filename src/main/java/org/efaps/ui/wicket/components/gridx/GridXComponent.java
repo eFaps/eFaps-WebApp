@@ -26,6 +26,7 @@ import java.util.Set;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.Page;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
@@ -53,8 +54,11 @@ import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.admin.ui.AbstractMenu;
 import org.efaps.admin.ui.Menu;
 import org.efaps.api.ui.FilterBase;
+import org.efaps.api.ui.HRef;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.behaviors.dojo.AbstractDojoBehavior;
+import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
+import org.efaps.ui.wicket.components.gridx.behaviors.CheckoutBehavior;
 import org.efaps.ui.wicket.components.gridx.behaviors.OpenModalBehavior;
 import org.efaps.ui.wicket.components.gridx.behaviors.PrintBehavior;
 import org.efaps.ui.wicket.components.gridx.behaviors.ReloadBehavior;
@@ -148,7 +152,6 @@ public class GridXComponent
                     .append("? _itemB[_attr + '_sort'] : _itemB[_attr];\n")
                 .append("return strA < strB ? -1 : (strA > strB ? 1 : 0);\n")
                 .append("}\n")
-
                 .append("var store = new Memory({\n")
                 .append("data: ")
                 .append(GridXComponent.getDataJS(uiGrid))
@@ -171,10 +174,21 @@ public class GridXComponent
                     js.append(", style:'text-align:right'");
                 }
                 js.append(", comparator: cp\n");
-                if (column.getFieldConfig().getField().getReference() != null) {
+                if (column.getFieldConfig().getField().getReference() != null
+                                && StringUtils.containsIgnoreCase(column.getFieldConfig().getField().getReference(),
+                                                HRef.CHECKOUT.toString())) {
+                    final StaticImageComponent icon = new StaticImageComponent("icon",
+                                    column.getFieldConfig().getField().getIcon());
+                    js.append(", decorator: function(data, rowId, visualIndex, cell){\n")
+                        .append("return '<a href=\"\" onclick=\"return checkOut(").append("' + rowId + ',").append(j)
+                        .append(")\"><img src=\"").append(icon.getUrl()).append("\"></img>' + data + '</a>';\n")
+                        .append("}\n");
+
+                    ((CheckoutBehavior) getBehavior(CheckoutBehavior.class)).setRender(true);
+                } else if (column.getFieldConfig().getField().getReference() != null) {
                     js.append(", decorator: function(data, rowId, visualIndex, cell){\n")
                         .append("return '<a href=\"").append(
-                                    urlFor(ILinkListener.INTERFACE, new PageParameters()))
+                                urlFor(ILinkListener.INTERFACE, new PageParameters()))
                         .append("&rowId=").append("' + rowId + '")
                         .append("&colId=").append(j)
                         .append("\">' + data + '</a>';\n")

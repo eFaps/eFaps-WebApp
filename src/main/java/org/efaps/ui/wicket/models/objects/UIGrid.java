@@ -678,6 +678,36 @@ public final class UIGrid
     }
 
     /**
+     * Prints the.
+     *
+     * @param _uiGrid the ui grid
+     * @return the file
+     */
+    public static File checkout(final Instance _instance)
+    {
+        File ret = null;
+        final String clazzName = Configuration.getAttribute(ConfigAttribute.GRIDCHECKOUTESJP);
+        try {
+            final Class<?> clazz = Class.forName(clazzName);
+            final EventExecution event = (EventExecution) clazz.newInstance();
+            final Parameter param = new Parameter();
+            param.put(ParameterValues.PARAMETERS, Context.getThreadContext().getParameters());
+            param.put(ParameterValues.INSTANCE, _instance);
+            final Return retu = event.execute(param);
+            if (retu != null) {
+                ret = (File) retu.get(ReturnValues.VALUES);
+            }
+        } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (final EFapsException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return ret;
+    }
+
+    /**
      * The Class Row.
      *
      * @author The eFaps Team

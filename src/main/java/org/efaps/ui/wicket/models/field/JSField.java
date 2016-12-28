@@ -61,7 +61,6 @@ public class JSField
             {
                 return false;
             }
-
         }.setMode(TargetMode.VIEW), null, _value);
     }
 }

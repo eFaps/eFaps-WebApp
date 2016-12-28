@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.wicket.ajax.AjaxRequestHandler;
 import org.apache.wicket.core.util.string.JavaScriptUtils;
 import org.apache.wicket.markup.head.CssHeaderItem;
@@ -229,26 +230,27 @@ public class EFapsResourceAggregator
     {
         final Set<DojoClass> dojoClasses = this.requireHeaderItems.stream().flatMap(o -> o.getDojoClasses().stream())
                         .collect(Collectors.toSet());
-
-        getRealResponse().render(new HeaderItem()
-        {
-
-            /** The Constant serialVersionUID. */
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public Iterable<?> getRenderTokens()
+        if (CollectionUtils.isNotEmpty(dojoClasses)) {
+            getRealResponse().render(new HeaderItem()
             {
-                return dojoClasses;
-            }
 
-            @Override
-            public void render(final Response _response)
-            {
-                JavaScriptUtils.writeJavaScript(_response,
-                                DojoWrapper.require(null, dojoClasses.toArray(new DojoClass[dojoClasses.size()])),
-                                RequireHeaderItem.class.getName());
-            }
-        });
+                /** The Constant serialVersionUID. */
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                public Iterable<?> getRenderTokens()
+                {
+                    return dojoClasses;
+                }
+
+                @Override
+                public void render(final Response _response)
+                {
+                    JavaScriptUtils.writeJavaScript(_response,
+                                    DojoWrapper.require(null, dojoClasses.toArray(new DojoClass[dojoClasses.size()])),
+                                    RequireHeaderItem.class.getName());
+                }
+            });
+        }
     }
 }
