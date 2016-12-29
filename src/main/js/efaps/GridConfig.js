@@ -95,6 +95,6 @@ define([
                     item._setCheckedAttr(false);
                 }
             });
-        },
+        }
     });
 });
