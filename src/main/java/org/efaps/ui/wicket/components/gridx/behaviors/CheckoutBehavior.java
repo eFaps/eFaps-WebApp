@@ -20,13 +20,9 @@ package org.efaps.ui.wicket.components.gridx.behaviors;
 import java.io.File;
 import java.util.List;
 
-import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.IAjaxIndicatorAware;
-import org.apache.wicket.ajax.attributes.CallbackParameter;
-import org.apache.wicket.markup.head.IHeaderResponse;
-import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.util.string.StringValue;
 import org.apache.wicket.util.string.StringValueConversionException;
 import org.efaps.ui.wicket.EFapsSession;
@@ -55,9 +51,6 @@ public class CheckoutBehavior
      */
     private static final Logger LOG = LoggerFactory.getLogger(CheckoutBehavior.class);
 
-    /** The render. */
-    private boolean render;
-
     /**
      * @param _event
      */
@@ -85,22 +78,7 @@ public class CheckoutBehavior
                 }
             }
         } catch (final StringValueConversionException | EFapsException e) {
-            LOG.error("Catched error", e);
-        }
-    }
-
-    @Override
-    public void renderHead(final Component _component,
-                           final IHeaderResponse _response)
-    {
-        if (isRender()) {
-            super.renderHead(_component, _response);
-            final StringBuilder js = new StringBuilder()
-                            .append("function checkOut(rowId, colId) {\n")
-                            .append(getCallbackFunctionBody(CallbackParameter.explicit("rowId"),
-                            CallbackParameter.explicit("colId")))
-                            .append(" return false; }\n");
-            _response.render(JavaScriptHeaderItem.forScript(js, CheckoutBehavior.class.getName()));
+            CheckoutBehavior.LOG.error("Catched error", e);
         }
     }
 
@@ -108,25 +86,5 @@ public class CheckoutBehavior
     public String getAjaxIndicatorMarkupId()
     {
         return "eFapsVeil";
-    }
-
-    /**
-     * Getter method for the instance variable {@link #render}.
-     *
-     * @return value of instance variable {@link #render}
-     */
-    public boolean isRender()
-    {
-        return this.render;
-    }
-
-    /**
-     * Setter method for instance variable {@link #render}.
-     *
-     * @param _render value for instance variable {@link #render}
-     */
-    public void setRender(final boolean _render)
-    {
-        this.render = _render;
     }
 }

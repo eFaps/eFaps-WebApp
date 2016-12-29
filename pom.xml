@@ -2,7 +2,7 @@
 
 <!--
 
-  Copyright 2003 - 2015 The eFaps Team
+  Copyright 2003 - 2016 The eFaps Team
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -266,7 +266,6 @@
                                     <arg value="${basedir}/src/main/js/dojo/dojo.js"/>
                                     <arg value="baseUrl=${basedir}/src/main/js/dojo"/>
                                     <arg value="load=build"/>
-                                    <arg value="--release"/>
                                     <arg line="--profile ${basedir}/src/main/js/eFaps-WebApp.profile.js"/>
                                     <arg value="--release"/>
                                 </java>
@@ -280,12 +279,7 @@
             </plugin>
         </plugins>
     </build>
-
-    <!-- ************************************************************************
-        * Dependencies
-        ************************************************************************* -->
     <dependencies>
-
         <!-- eFaps kernel -->
         <dependency>
             <groupId>org.efaps</groupId>

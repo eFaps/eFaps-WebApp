@@ -1,18 +1,18 @@
-<div class="gridConfig" id="gridWidget_${id}" data-dojo-type="dijit/Toolbar">
+<div class="dijit" role="toolbar" tabIndex="${tabIndex}" data-dojo-attach-point="containerNode">
     <button data-dojo-type="dijit/form/ToggleButton" data-dojo-props="iconClass:'dijitDisabled dijitEditorIcon dijitEditorIconSelectAll', checked: true, showLabel: false"
-        data-dojo-attach-point="toggleButton">
-        ${toggleLabel}
+        data-dojo-attach-point="wrapButton">
+        ${nls.confWrap}
     </button>
     <button data-dojo-type="dijit/form/Button" data-dojo-props="iconClass:'eFapsMenuIcon eFapsMenuIconReload', showLabel: false"
         data-dojo-attach-point="reloadButton" type="button">
-        ${reloadLabel}
+        ${nls.confReload}
     </button>
     <div data-dojo-type="dijit/form/DropDownButton" data-dojo-props="iconClass:'dijitEditorIcon dijitEditorIconPrint', showLabel: false" data-dojo-attach-point="printDropDown" >
-        ${printDropDownLabel}
+        ${nls.confPrint}
         <div data-dojo-type="dijit/Menu" data-dojo-attach-point="printMenu"></div>
     </div>
     <div data-dojo-type="dijit/form/DropDownButton" data-dojo-attach-point="dropDownButton">
-        <span>${buttonLabel}</span>
+        <span>${nls.confColumns}</span>
         <div data-dojo-type="dijit/Menu" data-dojo-attach-point="menu"></div>
     </div>
 </div>

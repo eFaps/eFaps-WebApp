@@ -1,6 +1,6 @@
 define({
-    gridConfigButtonLabel: "Columnas",
-    gridConfigToggleLabel: "Ajustar líneas",
-    gridConfigPrintLabel: "Imprimir",
-    gridConfigReloadLabel: "Recargar"
+    confColumns: "Columnas",
+    confWrap: "Ajustar líneas",
+    confPrint: "Imprimir",
+    confReload: "Recargar"
 });

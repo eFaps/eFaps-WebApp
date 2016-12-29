@@ -16,15 +16,12 @@ define([
 ], function(declare, array, domClass, domGeom, on, _WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin, ToggleButton,
         CheckedMenuItem, MenuItem, Toolbar, template, eFapsNLS) {
 
-    return declare([_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin], {
+    return declare("efaps.GridConfig", [Toolbar, _WidgetsInTemplateMixin], {
         templateString: template,
 
+        baseClass: "dijitToolbar gridConfig",
         //Labels
-        buttonLabel: eFapsNLS.gridConfigButtonLabel,
-        toggleLabel: eFapsNLS.gridConfigToggleLabel,
-        printDropDownLabel: eFapsNLS.gridConfigPrintLabel,
-        reloadLabel: eFapsNLS.gridConfigReloadLabel,
-
+        nls: eFapsNLS,
         grid: null,
         printItems: [],
         reload: null,
@@ -50,7 +47,7 @@ define([
                 dn = t.domNode,
                 tm = t.menu,
                 hC = g.hiddenColumns,
-                tB = t.toggleButton,
+                tW = t.wrapButton,
                 pM = t.printMenu,
                 rB = t.reloadButton;
 
@@ -67,9 +64,9 @@ define([
                  this.addChild(item);
              }, tm);
 
-            on(tB, "click", function(evt){
-                domClass.toggle(tB.domNode, "dijitDisabled", !tB.checked);
-                domClass.toggle(g.bodyNode, "eFapsNoWrap", !tB.checked);
+            on(tW, "click", function(evt){
+                domClass.toggle(tW.domNode, "dijitDisabled", !tW.checked);
+                domClass.toggle(g.bodyNode, "eFapsNoWrap", !tW.checked);
                 g.resize();
             });
 
@@ -98,6 +95,6 @@ define([
                     item._setCheckedAttr(false);
                 }
             });
-        }
+        },
     });
 });

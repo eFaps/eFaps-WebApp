@@ -1,9 +1,9 @@
 define({root:
 ({
-    gridConfigButtonLabel: "Columns",
-    gridConfigToggleLabel: "Wrap/unwrap lines",
-    gridConfigPrintLabel: "Print",
-    gridConfigReloadLabel: "Reload"
+    confWrap: "Wrap/unwrap lines",
+    confReload: "Reload",
+    confPrint: "Print",
+    confColumns: "Columns"
 }),
 "de": true,
 "es": true

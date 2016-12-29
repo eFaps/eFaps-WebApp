@@ -160,6 +160,7 @@ public class GridXComponent
 
             boolean first = true;
             int j = 0;
+            final Set<Long> checkOutCols = new HashSet<>();
             for (final Column column : uiGrid.getColumns()) {
                 if (first) {
                     first = false;
@@ -180,11 +181,10 @@ public class GridXComponent
                     final StaticImageComponent icon = new StaticImageComponent("icon",
                                     column.getFieldConfig().getField().getIcon());
                     js.append(", decorator: function(data, rowId, visualIndex, cell){\n")
-                        .append("return '<a href=\"\" onclick=\"return checkOut(").append("' + rowId + ',").append(j)
-                        .append(")\"><img src=\"").append(icon.getUrl()).append("\"></img>' + data + '</a>';\n")
+                        .append("return '<span class=\"eFapsCheckout\"><img src=\"").append(icon.getUrl())
+                            .append("\"></img>' + data + '</span>';\n")
                         .append("}\n");
-
-                    ((CheckoutBehavior) getBehavior(CheckoutBehavior.class)).setRender(true);
+                    checkOutCols.add(column.getFieldConfig().getField().getId());
                 } else if (column.getFieldConfig().getField().getReference() != null) {
                     js.append(", decorator: function(data, rowId, visualIndex, cell){\n")
                         .append("return '<a href=\"").append(
@@ -237,7 +237,7 @@ public class GridXComponent
             }
 
             js.append("{pluginClass: QuickFilter, style: 'text-align: center;'}, \n")
-                    .append("{ pluginClass: GridConfig, style: 'text-align: right;', printItems: [")
+                    .append("{ pluginClass: \"efaps/GridConfig\", style: 'text-align: right;', printItems: [")
                     .append(getPrintMenuItems()).append("],\n")
                     .append("reload : ").append(getBehavior(ReloadBehavior.class).getCallbackFunction())
                     .append("} \n")
@@ -295,8 +295,21 @@ public class GridXComponent
                     .append("GridSort\n")
                     .append("]\n")
                 .append("});")
-                .append("grid.placeAt('").append(getMarkupId(true)).append("');\n")
-                .append("grid.startup();\n")
+                .append("grid.placeAt('").append(getMarkupId(true)).append("');\n");
+
+            for (final Long checkOutCol : checkOutCols) {
+                js.append("aspect.after(grid.body,'onAfterRow', function(_row){\n")
+                    .append("var rowId = _row.id;\n")
+                    .append("var cell =  _row.cell('").append(checkOutCol).append("', false);\n")
+                    .append("var colId = cell.column.index();\n")
+                    .append("query(\".eFapsCheckout\", cell.node()).on(\"click\", function(e) {\n")
+                    .append(getBehavior(CheckoutBehavior.class).getCallbackFunctionBody(
+                                CallbackParameter.explicit("rowId"), CallbackParameter.explicit("colId")))
+                    .append("});\n")
+                .append("},true);\n");
+            }
+
+            js.append("grid.startup();\n")
                 .append("ready(function(){")
                 .append("var bar = query('.eFapsFrameTitle') [0];\n")
                 .append("var pos = domGeom.position(bar);\n")
