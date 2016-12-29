@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev:1510 $
- * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
- * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.components.modalwindow;
@@ -23,6 +20,8 @@ package org.efaps.ui.wicket.components.modalwindow;
 import org.apache.wicket.Page;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.request.IRequestParameters;
+import org.apache.wicket.request.cycle.RequestCycle;
 import org.efaps.ui.wicket.models.objects.ICmdUIObject;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
@@ -38,7 +37,6 @@ import org.efaps.util.EFapsException;
  * Thic Class is used to create a page inside a modal window lazily.
  *
  * @author The eFaps Team
- * @version $Id:ModalWindowAjaxPageCreator.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class ModalWindowAjaxPageCreator
     implements ModalWindow.PageCreator
@@ -94,6 +92,10 @@ public class ModalWindowAjaxPageCreator
                     ret = new DialogPage(this.modalWindow.getPage().getPageReference(),
                                     uiform.getCommand().getName() + ".InvalidInstance", false, false);
                 } else {
+                    if (this.uiObject.getCommand().isSubmit()) {
+                        final IRequestParameters parameters = RequestCycle.get().getRequest().getRequestParameters();
+                        uiform.setSelected(parameters.getParameterValues("selectedRow"));
+                    }
                     ret = new FormPage(Model.of(uiform), this.modalWindow, this.modalWindow.getPage()
                                     .getPageReference());
                 }

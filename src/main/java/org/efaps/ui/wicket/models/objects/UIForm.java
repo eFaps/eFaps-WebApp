@@ -32,6 +32,7 @@ import java.util.UUID;
 import org.apache.commons.collections4.IteratorUtils;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.util.io.IClusterable;
+import org.apache.wicket.util.string.StringValue;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeSet;
 import org.efaps.admin.datamodel.Classification;
@@ -82,6 +83,7 @@ import org.slf4j.LoggerFactory;
  */
 public class UIForm
     extends AbstractUIPageObject
+    implements ISelectedRowObject
 {
 
     /**
@@ -142,6 +144,9 @@ public class UIForm
      * Is this form classified by classification.
      */
     private boolean classified = false;
+
+    /** The selected. */
+    private List<StringValue> selected;
 
     /**
      * Constructor.
@@ -671,7 +676,7 @@ public class UIForm
                     }
                     final Attribute attr;
                     if (field.getAttribute() == null && field.getSelect() != null && type != null) {
-                        final PrintQuery print = new PrintQuery(getInstance4Create(type));
+                        final PrintQuery print = new PrintQuery(AbstractInstanceObject.getInstance4Create(type));
                         print.addSelect(field.getSelect());
                         print.dryRun();
                         attr = print.getAttribute4Select(field.getSelect());
@@ -847,6 +852,27 @@ public class UIForm
     public boolean isClassified()
     {
         return this.classified;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #selected}.
+     *
+     * @return value of instance variable {@link #selected}
+     */
+    @Override
+    public List<StringValue> getSelected()
+    {
+        return this.selected;
+    }
+
+    /**
+     * Setter method for instance variable {@link #selected}.
+     *
+     * @param _selected value for instance variable {@link #selected}
+     */
+    public void setSelected(final List<StringValue> _selected)
+    {
+        this.selected = _selected;
     }
 
     /**

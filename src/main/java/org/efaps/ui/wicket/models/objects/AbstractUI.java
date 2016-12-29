@@ -9,7 +9,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 /**
  * The Class AbstractUI.
  */
-public class AbstractUI
+public abstract class AbstractUI
     implements Serializable
 {
 

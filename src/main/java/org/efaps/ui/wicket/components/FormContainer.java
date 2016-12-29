@@ -52,6 +52,7 @@ import org.efaps.ui.wicket.models.field.IUIElement;
 import org.efaps.ui.wicket.models.field.set.UIFieldSet;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.DropDownOption;
+import org.efaps.ui.wicket.models.objects.ISelectedRowObject;
 import org.efaps.ui.wicket.models.objects.UIFieldForm;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIForm.Element;
@@ -240,7 +241,6 @@ public class FormContainer
         // if their is a GridXComponent convert the ids to oids
         visitChildren(GridXComponent.class, new IVisitor<GridXComponent, Void>()
         {
-
             @Override
             public void component(final GridXComponent _gridX,
                                   final IVisit<Void> _visit)
@@ -254,11 +254,11 @@ public class FormContainer
                         for (final StringValue value : selectedRows) {
                             final UIGrid uiGrid = (UIGrid) _gridX.getDefaultModelObject();
                             final Row row = uiGrid.getValues().get(value.toInt());
-                            newValues.add(StringValue.valueOf (row.getInstance().getOid()));
+                            newValues.add(StringValue.valueOf(row.getInstance().getOid()));
                         }
                         parameters.setParameterValues("selectedRow", newValues);
                     }
-                } catch (StringValueConversionException | EFapsException e) {
+                } catch (final StringValueConversionException | EFapsException e) {
                     FormContainer.LOG.error("Catched exeption", e);
                 }
             }
@@ -276,6 +276,15 @@ public class FormContainer
                 ((EFapsRequestParametersAdapter) ((EFapsRequest) RequestCycle.get().getRequest())
                                 .getRequestParameters()).addParameterValue(key + "_eFapsPrevious",
                                                 ((DropDownOption) object).getValue());
+            }
+        }
+        if (getPage().getDefaultModelObject() instanceof ISelectedRowObject
+                        && ((ISelectedRowObject) getPage().getDefaultModelObject()).hasSelected()) {
+            final EFapsRequestParametersAdapter parameters = (EFapsRequestParametersAdapter) getRequest()
+                            .getRequestParameters();
+            if (parameters.getParameterValues("selectedRow") == null) {
+                parameters.setParameterValues("selectedRow",
+                                ((ISelectedRowObject) getPage().getDefaultModelObject()).getSelected());
             }
         }
         super.process(_submittingComponent);
