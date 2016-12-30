@@ -17,6 +17,7 @@
 
 package org.efaps.ui.wicket.components;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.link.ILinkListener;
@@ -81,7 +82,7 @@ public class LazyIframe
     @Override
     public void onLinkClicked()
     {
-        setResponsePage(this.frameProvider.getPage());
+        setResponsePage(this.frameProvider.getPage(this));
     }
 
     /**
@@ -93,6 +94,6 @@ public class LazyIframe
         /**
          * @return the page to be displayed
          */
-        Page getPage();
+        Page getPage(final Component _component);
     }
 }

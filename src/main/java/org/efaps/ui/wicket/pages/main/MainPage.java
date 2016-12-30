@@ -200,7 +200,7 @@ public class MainPage
             private static final long serialVersionUID = 1L;
 
             @Override
-            public Page getPage()
+            public Page getPage(final Component _component)
             {
                 Page error = null;
                 WebPage page = null;
@@ -473,7 +473,7 @@ public class MainPage
                     this.provider = (ILoginAlertProvider) clazz.newInstance();
                     this.esjpSnipplet = this.provider.getEsjpSnipplet("LoginAlert");
                 } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-                    LOG.error("Could not find/instantiate Provider Class", e);
+                    MainPage.LOG.error("Could not find/instantiate Provider Class", e);
                 }
             }
         }
@@ -495,7 +495,7 @@ public class MainPage
                         page = new AlertPage(Model.of(OpenWindowOnLoadBehavior.this.esjpSnipplet.getHtmlSnipplet()
                                         .toString()));
                     } catch (final EFapsBaseException e) {
-                        LOG.error("Catched error.", e);
+                        MainPage.LOG.error("Catched error.", e);
                         page = new UnexpectedErrorPage();
                     }
                     return page;
@@ -526,7 +526,7 @@ public class MainPage
                     _response.render(OnDomReadyHeaderItem.forScript(getCallbackScript()));
                 }
             } catch (final EFapsBaseException e) {
-                LOG.error("Catched error.", e);
+                MainPage.LOG.error("Catched error.", e);
             }
         }
     }

@@ -19,6 +19,7 @@ package org.efaps.ui.wicket.pages.content.grid.filter;
 
 
 
+import org.apache.wicket.PageReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -63,10 +64,12 @@ public class FormFilterPage
      *
      * @param _model the model
      * @param _uiGrid the ui grid
+     * @param _pageReference the page ref
      * @throws EFapsException on error
      */
     public FormFilterPage(final IModel<IMapFilter> _model,
-                          final UIGrid _uiGrid)
+                          final UIGrid _uiGrid,
+                          final PageReference _pageReference)
         throws EFapsException
     {
         setDefaultModel(Model.of(_uiGrid));
@@ -91,18 +94,19 @@ public class FormFilterPage
             {
                 try {
                     _model.getObject().putAll(ParameterUtil.parameter2Map(getRequest().getRequestParameters()));
-                    _uiGrid.reload();
+                    final UIGrid uiGrid = (UIGrid) _pageReference.getPage().getDefaultModelObject();
+                    uiGrid.reload();
 
                     final StringBuilder js = new StringBuilder()
                             .append("var grid =  registry.byId('grid');\n")
-                            .append("var items= ").append(GridXComponent.getDataJS(_uiGrid))
+                            .append("var items= ").append(GridXComponent.getDataJS(uiGrid))
                             .append("grid.model.clearCache();\n")
                             .append("grid.model.store.setData(items);\n")
                             .append("grid.body.refresh();\n");
 
                     _target.appendJavaScript(DojoWrapper.require(js, DojoClasses.registry));
                 } catch (final EFapsException e) {
-                    LOG.error("Catched error: ", e);
+                    FormFilterPage.LOG.error("Catched error: ", e);
                 }
             }
         });

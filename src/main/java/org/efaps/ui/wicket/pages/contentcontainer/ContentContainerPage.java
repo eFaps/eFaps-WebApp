@@ -21,6 +21,7 @@ package org.efaps.ui.wicket.pages.contentcontainer;
 
 import java.util.UUID;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -206,7 +207,7 @@ public class ContentContainerPage
             private static final long serialVersionUID = 1L;
 
             @Override
-            public Page getPage()
+            public Page getPage(final Component _component)
             {
                 Page error = null;
                 AbstractContentPage page = null;

@@ -75,12 +75,12 @@ public class FormFilterPanel
             private static final long serialVersionUID = 1L;
 
             @Override
-            public Page getPage()
+            public Page getPage(final Component _component)
             {
                 Page error = null;
                 WebPage page = null;
                 try {
-                    page = new FormFilterPage(_model, _uiGrid);
+                    page = new FormFilterPage(_model, _uiGrid, _component.getPage().getPageReference());
                 } catch (final EFapsException e) {
                     error = new ErrorPage(e);
                 }
