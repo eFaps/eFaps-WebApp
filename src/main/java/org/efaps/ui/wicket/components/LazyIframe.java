@@ -48,6 +48,18 @@ public class LazyIframe
      *
      * @param _wicketId         wicket id of this component
      * @param _frameProvider    Provider for the frame
+     */
+    public LazyIframe(final String _wicketId,
+                      final IFrameProvider _frameProvider)
+    {
+        this(_wicketId, _frameProvider, null);
+    }
+
+    /**
+     * Instantiates a new lazy iframe.
+     *
+     * @param _wicketId         wicket id of this component
+     * @param _frameProvider    Provider for the frame
      * @param _frameMarkupId the frame markup id
      */
     public LazyIframe(final String _wicketId,
@@ -56,7 +68,9 @@ public class LazyIframe
     {
         super(_wicketId);
         this.frameProvider = _frameProvider;
-        add(new LazyIframeBehavior(_frameMarkupId));
+        if (_frameMarkupId != null) {
+            add(new LazyIframeBehavior(_frameMarkupId));
+        }
         setOutputMarkupId(true);
     }
 

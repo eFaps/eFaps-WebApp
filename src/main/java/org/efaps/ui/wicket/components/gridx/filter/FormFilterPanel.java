@@ -18,17 +18,28 @@
 package org.efaps.ui.wicket.components.gridx.filter;
 
 import org.apache.commons.lang.RandomStringUtils;
+import org.apache.wicket.Component;
 import org.apache.wicket.Page;
+import org.apache.wicket.markup.head.CssHeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.html.WebPage;
+import org.apache.wicket.markup.html.link.ILinkListener;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.request.resource.CssResourceReference;
+import org.apache.wicket.request.resource.ResourceReference;
 import org.efaps.api.ui.IMapFilter;
+import org.efaps.ui.wicket.behaviors.dojo.AbstractDojoBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior;
 import org.efaps.ui.wicket.components.LazyIframe;
 import org.efaps.ui.wicket.components.LazyIframe.IFrameProvider;
 import org.efaps.ui.wicket.models.objects.UIGrid;
 import org.efaps.ui.wicket.pages.content.grid.filter.FormFilterPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.ui.wicket.util.DojoClasses;
+import org.efaps.ui.wicket.util.DojoWrapper;
 import org.efaps.util.EFapsException;
 
 /**
@@ -40,10 +51,10 @@ public class FormFilterPanel
     extends GenericPanel<IMapFilter>
 {
 
-    /**
-     * Id of the Iframe.
-     */
-    public static final String IFRAME_ID = "eFapsFilterFrame";
+    /** The Constant CSS. */
+    public static final ResourceReference CSS = new CssResourceReference(AbstractDojoBehavior.class,
+                    "dojox/layout/resources/ResizeHandle.css");
+
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
@@ -60,10 +71,8 @@ public class FormFilterPanel
                            final UIGrid _uiGrid)
     {
         super(_wicketId);
-        final String id = RandomStringUtils.randomAlphabetic(8);
         final LazyIframe frame = new LazyIframe("content", new IFrameProvider()
         {
-
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -78,10 +87,57 @@ public class FormFilterPanel
                 }
                 return error == null ? page : error;
             }
-        }, id);
+        });
+        final String id = RandomStringUtils.randomAlphabetic(8);
         frame.setMarkupId(id);
         frame.setOutputMarkupId(true);
         frame.add(new ContentPaneBehavior(null, false));
+        frame.add(new LoadFormBehavior());
+        frame.setDefaultModel(_model);
         this.add(frame);
+    }
+
+    @Override
+    public void renderHead(final IHeaderResponse _response)
+    {
+        super.renderHead(_response);
+        _response.render(CssHeaderItem.forReference(FormFilterPanel.CSS));
+    }
+
+    /**
+     * The Class LoadFormBehavior.
+     *
+     */
+    public static class LoadFormBehavior
+        extends AbstractDojoBehavior
+    {
+        /** The Constant serialVersionUID. */
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public void renderHead(final Component _component,
+                               final IHeaderResponse _response)
+        {
+            super.renderHead(_component, _response);
+            final String fttd = "fttd_" + ((IMapFilter) _component.getDefaultModelObject()).getFieldId();
+
+            final StringBuilder js = new StringBuilder()
+                .append("ready(function() {\n")
+                .append("var pd = registry.byId(\"").append(fttd).append("\");\n")
+                .append("var rh = new ResizeHandle({\n")
+                .append(" targetId: \"").append(fttd).append("\"\n")
+                .append(" }).placeAt(\"").append(fttd).append("\");\n")
+                .append("aspect.before(pd, 'onOpen', function() {\n")
+                .append("registry.byId(\"").append(_component.getMarkupId())
+                .append("\").set(\"content\", domConstruct.create(\"iframe\", {")
+                .append("\"src\": \"").append(_component.urlFor(ILinkListener.INTERFACE, new PageParameters()))
+                .append("\",\"style\": \"border: 0; width: 100%; height: 99%\", \"nodeId\": \"jan\"")
+                .append("}));\n")
+                .append("});\n")
+                .append("});");
+            _response.render(JavaScriptHeaderItem.forScript(DojoWrapper.require(js, DojoClasses.ready,
+                            DojoClasses.registry, DojoClasses.aspect, DojoClasses.domConstruct,
+                            DojoClasses.ResizeHandle), _component.getMarkupId() + "-Script"));
+        }
     }
 }

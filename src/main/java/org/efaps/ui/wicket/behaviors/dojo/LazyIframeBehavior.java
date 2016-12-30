@@ -23,6 +23,8 @@ import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.html.link.ILinkListener;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.efaps.ui.wicket.util.DojoClasses;
+import org.efaps.ui.wicket.util.DojoWrapper;
 
 
 /**
@@ -62,7 +64,6 @@ public class LazyIframeBehavior
         return this.frameMarkupId;
     }
 
-
     /**
      * Setter method for instance variable {@link #frameMarkupId}.
      *
@@ -85,8 +86,6 @@ public class LazyIframeBehavior
     {
         super.renderHead(_component, _response);
         final StringBuilder js = new StringBuilder()
-            .append("require([\"dojo/ready\",\"dijit/registry\",\"dojo/dom-construct\"],")
-            .append(" function(ready, registry, domConstruct) {")
             .append("ready(function() {")
             .append("registry.byId(\"").append(_component.getMarkupId())
             .append("\").set(\"content\", domConstruct.create(\"iframe\", {");
@@ -98,7 +97,8 @@ public class LazyIframeBehavior
         js.append("\"src\": \"").append(_component.urlFor(ILinkListener.INTERFACE, new PageParameters()))
             .append("\",\"style\": \"border: 0; width: 100%; height: 99%\", \"nodeId\": \"jan\"")
             .append("}));")
-            .append("});});");
-        _response.render(JavaScriptHeaderItem.forScript(js, _component.getMarkupId()));
+            .append("});");
+        _response.render(JavaScriptHeaderItem.forScript(DojoWrapper.require(js, DojoClasses.ready,
+                        DojoClasses.registry, DojoClasses.domConstruct), _component.getMarkupId() + "-Script"));
     }
 }

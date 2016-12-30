@@ -246,30 +246,30 @@ public class GridXPanel
                             final GridXPanel gridpanel = findParent(GridXPanel.class);
                             final UIGrid uiGrid = gridpanel.getModelObject();
                             form.visitChildren(CheckBoxMultipleChoice.class,
-                                            new IVisitor<CheckBoxMultipleChoice<?>, Void>()
-                                            {
+                                        new IVisitor<CheckBoxMultipleChoice<?>, Void>()
+                                        {
 
-                                                @Override
-                                                public void component(final CheckBoxMultipleChoice<?> _checkBox,
-                                                                      final IVisit<Void> _visit)
-                                                {
-                                                    try {
-                                                        final ListFilterPanel filterPanel = _checkBox.findParent(
-                                                                        ListFilterPanel.class);
-                                                        @SuppressWarnings("unchecked")
-                                                        final List<IOption> sel = (List<IOption>) _checkBox
-                                                                        .getDefaultModelObject();
-                                                        for (final IOption option : filterPanel.getModelObject()) {
-                                                            final Method method = option.getClass().getMethod(
-                                                                            "setSelected", boolean.class);
-                                                            method.invoke(option, sel.contains(option));
-                                                        }
-                                                    } catch (final IllegalAccessException | InvocationTargetException
-                                                                    | NoSuchMethodException e) {
-                                                        GridXPanel.LOG.error("Catched error", e);
+                                            @Override
+                                            public void component(final CheckBoxMultipleChoice<?> _checkBox,
+                                                                  final IVisit<Void> _visit)
+                                            {
+                                                try {
+                                                    final ListFilterPanel filterPanel = _checkBox.findParent(
+                                                                    ListFilterPanel.class);
+                                                    @SuppressWarnings("unchecked")
+                                                    final List<IOption> sel = (List<IOption>) _checkBox
+                                                                    .getDefaultModelObject();
+                                                    for (final IOption option : filterPanel.getModelObject()) {
+                                                        final Method method = option.getClass().getMethod(
+                                                                        "setSelected", boolean.class);
+                                                        method.invoke(option, sel.contains(option));
                                                     }
+                                                } catch (final IllegalAccessException | InvocationTargetException
+                                                                | NoSuchMethodException e) {
+                                                    GridXPanel.LOG.error("Catched error", e);
                                                 }
-                                            });
+                                            }
+                                        });
 
                             try {
                                 uiGrid.reload();
@@ -294,6 +294,4 @@ public class GridXPanel
             }
         }
     }
-
-
 }
