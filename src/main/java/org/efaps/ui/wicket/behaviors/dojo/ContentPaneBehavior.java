@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev:1510 $
- * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
- * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.behaviors.dojo;
@@ -30,7 +27,6 @@ import org.efaps.ui.wicket.util.DojoClasses;
  * This class turns a Component into a Dojo-ContentPane.
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class ContentPaneBehavior
     extends AbstractDojoBehavior
@@ -114,6 +110,9 @@ public class ContentPaneBehavior
     /** The splitter state. */
     private final String splitterState;
 
+    /** The js executeable. */
+    private boolean jsExecuteable;
+
     /**
      * Constructor.
      *
@@ -162,7 +161,7 @@ public class ContentPaneBehavior
                                final ComponentTag _tag)
     {
         super.onComponentTag(_component, _tag);
-        _tag.put("data-dojo-type", "dijit/layout/ContentPane");
+        _tag.put("data-dojo-type", isJsExecuteable() ? "dojox/layout/ContentPane" : "dijit/layout/ContentPane");
 
         if (this.region != null) {
             _tag.append("data-dojo-props", "region: '" + this.region.getKey() + "'", ",");
@@ -214,6 +213,29 @@ public class ContentPaneBehavior
                            final IHeaderResponse _response)
     {
         super.renderHead(_component, _response);
-        _response.render(RequireHeaderItem.forClasses(DojoClasses.ContentPane, DojoClasses.parser));
+        _response.render(RequireHeaderItem.forClasses(
+                        isJsExecuteable() ? DojoClasses.ContentPaneX : DojoClasses.ContentPane, DojoClasses.parser));
+    }
+
+    /**
+     * Getter method for the instance variable {@link #jsExecuteable}.
+     *
+     * @return value of instance variable {@link #jsExecuteable}
+     */
+    public boolean isJsExecuteable()
+    {
+        return this.jsExecuteable;
+    }
+
+
+    /**
+     * Setter method for instance variable {@link #jsExecuteable}.
+     *
+     * @param _jsExecuteable value for instance variable {@link #jsExecuteable}
+     */
+    public ContentPaneBehavior setJsExecuteable(final boolean _jsExecuteable)
+    {
+        this.jsExecuteable = _jsExecuteable;
+        return this;
     }
 }

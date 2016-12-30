@@ -20,14 +20,18 @@ package org.efaps.ui.wicket.components.table.header;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.request.component.IRequestablePage;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import org.efaps.admin.ui.AbstractCommand.SortDirection;
 import org.efaps.ui.wicket.models.objects.AbstractUIHeaderObject;
 import org.efaps.ui.wicket.models.objects.UIForm;
+import org.efaps.ui.wicket.models.objects.UIGrid;
 import org.efaps.ui.wicket.models.objects.UITableHeader;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
+import org.efaps.ui.wicket.pages.content.grid.GridPage;
+import org.efaps.ui.wicket.pages.content.grid.filter.FormFilterPage;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.content.table.filter.FilterPage;
@@ -72,7 +76,7 @@ public class SortLink
     @Override
     public void onClick()
     {
-        final AbstractUIHeaderObject uiHeaderObject = (AbstractUIHeaderObject) (this.findParent(HeaderPanel.class))
+        final AbstractUIHeaderObject uiHeaderObject = (AbstractUIHeaderObject) this.findParent(HeaderPanel.class)
                         .getDefaultModelObject();
         final UITableHeader uiTableHeader = super.getModelObject();
         uiHeaderObject.setSortKey(uiTableHeader.getFieldName());
@@ -94,7 +98,7 @@ public class SortLink
             uiHeaderObject.setSortDirection(uiTableHeader.getSortDirection());
             uiHeaderObject.sort();
 
-            AbstractContentPage page;
+            IRequestablePage page;
             if (getPage() instanceof TablePage) {
                 page = new TablePage(Model.of(uiHeaderObject),
                                 ((AbstractContentPage) getPage()).getModalWindow(),
@@ -104,7 +108,7 @@ public class SortLink
                                 ((AbstractContentPage) getPage()).getModalWindow(),
                                 ((AbstractContentPage) getPage()).getCalledByPageReference());
             } else if (getPage() instanceof FilterPage) {
-                page = (AbstractContentPage) getPage();
+                page = getPage();
                 getPage().visitChildren(HeaderPanel.class, new IVisitor<HeaderPanel, HeaderPanel>()
                 {
                     @Override
@@ -120,11 +124,14 @@ public class SortLink
                         }
                     }
                 });
+            } else if (getPage() instanceof FormFilterPage) {
+                page = new GridPage((IModel<UIGrid>) ((FormFilterPage) getPage()).getDefaultModel());
             } else {
                 page = new FormPage(Model.of((UIForm) getPage().getDefaultModelObject()),
                                 ((AbstractContentPage) getPage()).getModalWindow(),
                                 ((AbstractContentPage) getPage()).getCalledByPageReference());
             }
+
             getRequestCycle().setResponsePage(page);
         } catch (final EFapsException e) {
             LOG.error("Catched error: ", e);

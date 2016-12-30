@@ -55,7 +55,6 @@ public class FormFilterPanel
     public static final ResourceReference CSS = new CssResourceReference(AbstractDojoBehavior.class,
                     "dojox/layout/resources/ResizeHandle.css");
 
-
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
 
@@ -87,11 +86,12 @@ public class FormFilterPanel
                 }
                 return error == null ? page : error;
             }
-        });
+        }, null, false);
+
         final String id = RandomStringUtils.randomAlphabetic(8);
         frame.setMarkupId(id);
         frame.setOutputMarkupId(true);
-        frame.add(new ContentPaneBehavior(null, false));
+        frame.add(new ContentPaneBehavior(null, false).setJsExecuteable(true));
         frame.add(new LoadFormBehavior());
         frame.setDefaultModel(_model);
         this.add(frame);
@@ -124,20 +124,14 @@ public class FormFilterPanel
             final StringBuilder js = new StringBuilder()
                 .append("ready(function() {\n")
                 .append("var pd = registry.byId(\"").append(fttd).append("\");\n")
-                .append("var rh = new ResizeHandle({\n")
-                .append(" targetId: \"").append(fttd).append("\"\n")
-                .append(" }).placeAt(\"").append(fttd).append("\");\n")
                 .append("aspect.before(pd, 'onOpen', function() {\n")
-                .append("registry.byId(\"").append(_component.getMarkupId())
-                .append("\").set(\"content\", domConstruct.create(\"iframe\", {")
-                .append("\"src\": \"").append(_component.urlFor(ILinkListener.INTERFACE, new PageParameters()))
-                .append("\",\"style\": \"border: 0; width: 100%; height: 99%\", \"nodeId\": \"jan\"")
-                .append("}));\n")
+                .append("registry.byId(\"").append(_component.getMarkupId()).append("\").set(\"href\",\"")
+                .append(_component.urlFor(ILinkListener.INTERFACE, new PageParameters())).append("\");\n")
                 .append("});\n")
                 .append("});");
             _response.render(JavaScriptHeaderItem.forScript(DojoWrapper.require(js, DojoClasses.ready,
-                            DojoClasses.registry, DojoClasses.aspect, DojoClasses.domConstruct,
-                            DojoClasses.ResizeHandle), _component.getMarkupId() + "-Script"));
+                            DojoClasses.registry, DojoClasses.aspect, DojoClasses.domConstruct),
+                            _component.getMarkupId() + "-Script"));
         }
     }
 }

@@ -17,6 +17,8 @@
 
 package org.efaps.ui.wicket.pages.content.grid.filter;
 
+
+
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -32,8 +34,12 @@ import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIGrid;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
+import org.efaps.ui.wicket.util.DojoClasses;
+import org.efaps.ui.wicket.util.DojoWrapper;
 import org.efaps.ui.wicket.util.ParameterUtil;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Class FormFilterPage.
@@ -48,6 +54,11 @@ public class FormFilterPage
     private static final long serialVersionUID = 1L;
 
     /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(FormFilterPage.class);
+
+    /**
      * Instantiates a new form filter page.
      *
      * @param _model the model
@@ -58,6 +69,7 @@ public class FormFilterPage
                           final UIGrid _uiGrid)
         throws EFapsException
     {
+        setDefaultModel(Model.of(_uiGrid));
         final String cmdName = Field.get(_model.getObject().getFieldId()).getProperty(UIFormFieldProperty.FILTER_CMD);
         final Command cmd = Command.get(cmdName);
         final UIForm uiform = new UIForm(cmd.getUUID(), null);
@@ -82,16 +94,15 @@ public class FormFilterPage
                     _uiGrid.reload();
 
                     final StringBuilder js = new StringBuilder()
-                            .append("var grid =  window.parent.dijit.registry.byId('grid');\n")
+                            .append("var grid =  registry.byId('grid');\n")
                             .append("var items= ").append(GridXComponent.getDataJS(_uiGrid))
                             .append("grid.model.clearCache();\n")
                             .append("grid.model.store.setData(items);\n")
                             .append("grid.body.refresh();\n");
 
-                    _target.appendJavaScript(js);
+                    _target.appendJavaScript(DojoWrapper.require(js, DojoClasses.registry));
                 } catch (final EFapsException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    LOG.error("Catched error: ", e);
                 }
             }
         });

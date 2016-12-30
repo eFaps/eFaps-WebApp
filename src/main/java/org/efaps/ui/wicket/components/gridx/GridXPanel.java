@@ -120,6 +120,7 @@ public class GridXPanel
             container.add(form);
             switch (field.getFilter().getType()) {
                 case FREETEXT:
+                    container.add(new WebMarkupContainer("formFilter"));
                     if (_model.getObject().isDateFilter(filter)) {
                         form.add(new DateFilterPanel("filter", Model.of((IMapFilter) filter)));
                         form.add(new AjaxButton<IMapFilter>("btn", Model.of((IMapFilter) filter), Button.ICON.ACCEPT
@@ -232,6 +233,7 @@ public class GridXPanel
                     }
                     break;
                 case STATUS:
+                    container.add(new WebMarkupContainer("formFilter"));
                     form.add(new ListFilterPanel("filter", new Model<>((IListFilter) filter)));
                     form.add(new AjaxButton<IListFilter>("btn", new Model<>((IListFilter) filter), Button.ICON.ACCEPT
                                     .getReference())
@@ -281,13 +283,15 @@ public class GridXPanel
                     });
                     break;
                 case FORM:
-                    form.add(new FormFilterPanel("filter", new Model<>((IMapFilter) filter), getModelObject()));
-                    form.add(new WebMarkupContainer("btn"));
+                    form.setVisible(false);
+                    container.add(new FormFilterPanel("formFilter", new Model<>((IMapFilter) filter),
+                                    getModelObject()));
                     break;
                 case CLASSIFICATION:
                 case PICKLIST:
                 case NONE:
                 default:
+                    container.add(new WebMarkupContainer("formFilter"));
                     form.add(new WebMarkupContainer("filter"));
                     form.add(new WebMarkupContainer("btn"));
                     break;

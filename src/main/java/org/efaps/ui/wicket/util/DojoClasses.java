@@ -55,9 +55,8 @@ public enum DojoClasses
     MenuBarItem("dijit/MenuBarItem", "MenuBarItem"),
     ToggleSplitter("dojox/layout/ToggleSplitter", "ToggleSplitter"),
     ContentPane("dijit/layout/ContentPane"," ContentPane"),
-    BorderContainer("dijit/layout/BorderContainer", "BorderContainer"),
-    ResizeHandle("dojox/layout/ResizeHandle", "ResizeHandle");
-
+    ContentPaneX("dojox/layout/ContentPane"," ContentPane"),
+    BorderContainer("dijit/layout/BorderContainer", "BorderContainer");
 
     /** The lib name. */
     private final String className;
