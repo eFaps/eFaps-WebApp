@@ -174,8 +174,95 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <activation>
+                <property>
+                    <name>!nojs</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-clean-plugin</artifactId>
+                        <configuration>
+                            <filesets>
+                                <fileset>
+                                    <directory>src/main/js</directory>
+                                    <excludes>
+                                        <exclude>efaps/**</exclude>
+                                        <exclude>eFaps-WebApp.profile.js</exclude>
+                                        <exclude>.gitignore</exclude>
+                                    </excludes>
+                                </fileset>
+                                <fileset>
+                                    <directory>src/main/resources/org/efaps/ui/wicket/behaviors/dojo</directory>
+                                    <excludes>
+                                        <exclude>.gitignore</exclude>
+                                    </excludes>
+                                </fileset>
+                            </filesets>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>1.7</version>
+                        <executions>
+                            <execution>
+                                <id>unpack-gridx</id>
+                                <configuration>
+                                    <target>
+                                        <untar compression="gzip" src="lib/gridx-${gridx.version}.tar.gz"
+                                            dest="src/main/js/gridx">
+                                            <cutdirsmapper dirs="1" />
+                                        </untar>
+                                    </target>
+                                </configuration>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>unpack-dojo</id>
+                                <configuration>
+                                    <target>
+                                        <untar compression="gzip"
+                                            src="lib/dojo-release-${dojo.version}-src.tar.gz" dest="src/main/js">
+                                            <cutdirsmapper dirs="1" />
+                                        </untar>
+                                    </target>
+                                </configuration>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>WebApp Build</id>
+                                <phase>generate-resources</phase>
+                                <configuration>
+                                     <target>
+                                        <java classname="org.mozilla.javascript.tools.shell.Main" fork="true" maxmemory="512m" failonerror="false"
+                                            classpath="${basedir}/src/main/js/util/shrinksafe/js.jar${path.separator}${basedir}/src/main/js/util/closureCompiler/compiler.jar${path.separator}${basedir}/src/main/js/util/shrinksafe/shrinksafe.jar">
+                                            <arg value="${basedir}/src/main/js/dojo/dojo.js"/>
+                                            <arg value="baseUrl=${basedir}/src/main/js/dojo"/>
+                                            <arg value="load=build"/>
+                                            <arg line="--profile ${basedir}/src/main/js/eFaps-WebApp.profile.js"/>
+                                            <arg value="--release"/>
+                                        </java>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
-
     <build>
         <!-- required that the template files for wicket are copied -->
         <resources>
@@ -198,86 +285,6 @@
                 </excludes>
             </resource>
         </resources>
-
-        <plugins>
-            <plugin>
-                <artifactId>maven-clean-plugin</artifactId>
-                <configuration>
-                    <filesets>
-                        <fileset>
-                            <directory>src/main/js</directory>
-                            <excludes>
-                                <exclude>efaps/**</exclude>
-                                <exclude>eFaps-WebApp.profile.js</exclude>
-                                <exclude>.gitignore</exclude>
-                            </excludes>
-                        </fileset>
-                        <fileset>
-                            <directory>src/main/resources/org/efaps/ui/wicket/behaviors/dojo</directory>
-                            <excludes>
-                                <exclude>.gitignore</exclude>
-                            </excludes>
-                        </fileset>
-                    </filesets>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.7</version>
-                <executions>
-                    <execution>
-                        <id>unpack-gridx</id>
-                        <configuration>
-                            <target>
-                                <untar compression="gzip" src="lib/gridx-${gridx.version}.tar.gz"
-                                    dest="src/main/js/gridx">
-                                    <cutdirsmapper dirs="1" />
-                                </untar>
-                            </target>
-                        </configuration>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>unpack-dojo</id>
-                        <configuration>
-                            <target>
-                                <untar compression="gzip"
-                                    src="lib/dojo-release-${dojo.version}-src.tar.gz" dest="src/main/js">
-                                    <cutdirsmapper dirs="1" />
-                                </untar>
-                            </target>
-                        </configuration>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>WebApp Build</id>
-                        <phase>generate-resources</phase>
-                        <configuration>
-                             <target>
-                                <java classname="org.mozilla.javascript.tools.shell.Main" fork="true" maxmemory="512m" failonerror="false"
-                                    classpath="${basedir}/src/main/js/util/shrinksafe/js.jar${path.separator}${basedir}/src/main/js/util/closureCompiler/compiler.jar${path.separator}${basedir}/src/main/js/util/shrinksafe/shrinksafe.jar">
-                                    <arg value="${basedir}/src/main/js/dojo/dojo.js"/>
-                                    <arg value="baseUrl=${basedir}/src/main/js/dojo"/>
-                                    <arg value="load=build"/>
-                                    <arg line="--profile ${basedir}/src/main/js/eFaps-WebApp.profile.js"/>
-                                    <arg value="--release"/>
-                                </java>
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
     </build>
     <dependencies>
         <!-- eFaps kernel -->
