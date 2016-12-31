@@ -68,7 +68,7 @@ public class AjaxPickerButton
     }
 
     @Override
-    public void onSubmit(final AjaxRequestTarget _target)
+    public void onRequest(final AjaxRequestTarget _target)
     {
         final ModalWindowContainer modal;
         if (getPage() instanceof MainPage) {
@@ -87,7 +87,7 @@ public class AjaxPickerButton
             modal.setWindowClosedCallback(new PickerCallBack(null, getPage().getPageReference()));
             modal.show(_target);
         } catch (final EFapsException e) {
-            LOG.error("Error on submit", e);
+            AjaxPickerButton.LOG.error("Error on submit", e);
         }
     }
 }

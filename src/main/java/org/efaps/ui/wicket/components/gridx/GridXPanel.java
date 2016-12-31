@@ -131,7 +131,7 @@ public class GridXPanel
                             private static final long serialVersionUID = 1L;
 
                             @Override
-                            public void onSubmit(final AjaxRequestTarget _target)
+                            public void onRequest(final AjaxRequestTarget _target)
                             {
                                 final GridXPanel gridpanel = findParent(GridXPanel.class);
                                 final UIGrid uiGrid = gridpanel.getModelObject();
@@ -193,7 +193,7 @@ public class GridXPanel
                             private static final long serialVersionUID = 1L;
 
                             @Override
-                            public void onSubmit(final AjaxRequestTarget _target)
+                            public void onRequest(final AjaxRequestTarget _target)
                             {
                                 final GridXPanel gridpanel = findParent(GridXPanel.class);
                                 final UIGrid uiGrid = gridpanel.getModelObject();
@@ -243,7 +243,7 @@ public class GridXPanel
                         private static final long serialVersionUID = 1L;
 
                         @Override
-                        public void onSubmit(final AjaxRequestTarget _target)
+                        public void onRequest(final AjaxRequestTarget _target)
                         {
                             final GridXPanel gridpanel = findParent(GridXPanel.class);
                             final UIGrid uiGrid = gridpanel.getModelObject();

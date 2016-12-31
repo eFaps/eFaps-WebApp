@@ -82,15 +82,14 @@ public class FormFilterPage
         add(formContainer);
         FormPage.updateFormContainer(formPage, formContainer, uiform);
 
-        formContainer.add(new AjaxButton<IMapFilter>("btn", _model, Button.ICON.ACCEPT
-                        .getReference())
+        formContainer.add(new AjaxButton<IMapFilter>("btn", _model, Button.ICON.ACCEPT.getReference())
         {
 
             /** The Constant serialVersionUID. */
             private static final long serialVersionUID = 1L;
 
             @Override
-            public void onSubmit(final AjaxRequestTarget _target)
+            public void onRequest(final AjaxRequestTarget _target)
             {
                 try {
                     _model.getObject().putAll(ParameterUtil.parameter2Map(getRequest().getRequestParameters()));

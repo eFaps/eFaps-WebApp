@@ -18,6 +18,7 @@
 
 package org.efaps.ui.wicket.components.button;
 
+import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.IAjaxIndicatorAware;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
@@ -27,6 +28,7 @@ import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
@@ -186,7 +188,7 @@ public abstract class AjaxButton<T>
      *
      * @param _target AjaxRequestTarget
      */
-    public abstract void onSubmit(final AjaxRequestTarget _target);
+    public abstract void onRequest(AjaxRequestTarget _target);
 
     /**
      * Update ajax attributes.
@@ -198,6 +200,25 @@ public abstract class AjaxButton<T>
         // to be able to overwrite
     }
 
+    /**
+     * Gets the form.
+     *
+     * @return the form
+     */
+    public Form<?> getForm()
+    {
+        return null;
+    }
+
+    /**
+     * Checks if is submit.
+     *
+     * @return true, if is submit
+     */
+    protected boolean isSubmit()
+    {
+        return true;
+    }
 
     /**
      * Underlying link.
@@ -244,30 +265,55 @@ public abstract class AjaxButton<T>
         protected void onInitialize()
         {
             super.onInitialize();
-
-            add(new AjaxFormSubmitBehavior("click")
-            {
-                private static final long serialVersionUID = 1L;
-
-                @Override
-                protected void onSubmit(final AjaxRequestTarget _target)
+            final AjaxButton<?> pBtn = findParent(AjaxButton.class);
+            if (pBtn.isSubmit()) {
+                add(new AjaxFormSubmitBehavior("click")
                 {
-                    findParent(AjaxButton.class).onSubmit(_target);
-                }
+                    private static final long serialVersionUID = 1L;
 
-                @Override
-                public boolean getDefaultProcessing()
-                {
-                    return findParent(AjaxButton.class).getDefaultProcessing();
-                }
+                    @Override
+                    protected void onSubmit(final AjaxRequestTarget _target)
+                    {
+                        pBtn.onRequest(_target);
+                    }
 
-                @Override
-                protected void updateAjaxAttributes(final AjaxRequestAttributes _attributes)
-                {
-                    super.updateAjaxAttributes(_attributes);
-                    findParent(AjaxButton.class).updateAjaxAttributes(_attributes);
-                }
-            });
+                    @Override
+                    public boolean getDefaultProcessing()
+                    {
+                        return pBtn.getDefaultProcessing();
+                    }
+
+                    @Override
+                    protected void updateAjaxAttributes(final AjaxRequestAttributes _attributes)
+                    {
+                        super.updateAjaxAttributes(_attributes);
+                        pBtn.updateAjaxAttributes(_attributes);
+                    }
+
+                    @Override
+                    protected Form<?> findForm() {
+                        Form<?> ret;
+                        if (pBtn.getForm() != null) {
+                            ret = pBtn.getForm();
+                        } else {
+                            ret = super.findForm();
+                        }
+                        return ret;
+                    }
+                });
+            } else {
+                add(new AjaxEventBehavior("click") {
+
+                    /** The Constant serialVersionUID. */
+                    private static final long serialVersionUID = 1L;
+
+                    @Override
+                    protected void onEvent(final AjaxRequestTarget _target)
+                    {
+                        pBtn.onRequest(_target);
+                    }
+                });
+            }
         }
     }
 

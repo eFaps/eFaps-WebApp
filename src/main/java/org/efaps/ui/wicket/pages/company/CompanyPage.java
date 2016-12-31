@@ -22,32 +22,30 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 
-import org.apache.wicket.Component;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow.WindowClosedCallback;
 import org.apache.wicket.extensions.markup.html.form.select.IOptionRenderer;
 import org.apache.wicket.extensions.markup.html.form.select.Select;
 import org.apache.wicket.extensions.markup.html.form.select.SelectOptions;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.head.IHeaderResponse;
-import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.io.IClusterable;
+import org.apache.wicket.util.visit.IVisit;
+import org.apache.wicket.util.visit.IVisitor;
 import org.efaps.admin.access.AccessCache;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.user.Company;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.components.LabelComponent;
+import org.efaps.ui.wicket.components.button.AjaxButton;
 import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
@@ -86,7 +84,7 @@ public class CompanyPage
     /**
      * Constructor adding all Components to this Page.
      *
-     * @param _modal modal window
+     * @param _calledByReference the called by reference
      */
     public CompanyPage(final PageReference _calledByReference)
     {
@@ -104,24 +102,12 @@ public class CompanyPage
 
             private static final long serialVersionUID = 1L;
 
-            /**
-             * Implemented only for API reason.
-             *
-             * @see org.apache.wicket.ajax.form.AjaxFormSubmitBehavior#onError(org.apache.wicket.ajax.AjaxRequestTarget)
-             * @param _target
-             */
             @Override
             protected void onSubmit()
             {
                 // nothing must be done
             }
 
-            /**
-             * Disable normal submit, because ajax is used.
-             *
-             * @see org.apache.wicket.markup.html.form.Form#onComponentTag(org.apache.wicket.markup.ComponentTag)
-             * @param _tag
-             */
             @Override
             protected void onComponentTag(final ComponentTag _tag)
             {
@@ -145,12 +131,12 @@ public class CompanyPage
             @Override
             public IModel<CompanyObject> getModel(final CompanyObject _company)
             {
-                return new Model<CompanyObject>(_company);
+                return new Model<>(_company);
             }
         };
 
         CompanyObject selected = null;
-        final List<CompanyObject> companies = new ArrayList<CompanyObject>();
+        final List<CompanyObject> companies = new ArrayList<>();
         try {
             for (final Long comp : Context.getThreadContext().getPerson().getCompanies()) {
                 final CompanyObject compObj = new CompanyObject(Company.get(comp));
@@ -175,22 +161,15 @@ public class CompanyPage
         });
         @SuppressWarnings({ "rawtypes", "unchecked" })
         final IModel<Collection<? extends CompanyObject>> model = new Model((Serializable) companies);
-        final SelectOptions<CompanyObject> options = new SelectOptions<CompanyObject>("manychoices", model, renderer);
+        final SelectOptions<CompanyObject> options = new SelectOptions<>("manychoices", model, renderer);
 
-        final Select<CompanyObject> choices = new Select<CompanyObject>("choices", Model.of(selected));
+        final Select<CompanyObject> choices = new Select<>("choices", Model.of(selected));
         form.add(choices);
 
         choices.add(options);
 
-        final AjaxSubmitLink ajaxGoOnLink = new AjaxSubmitLink(Button.LINKID, form);
-        this.add(new Button("submitButton", ajaxGoOnLink,
-                        DBProperties.getProperty("org.efaps.ui.wicket.pages.company.next.Label"),
-                        Button.ICON.ACCEPT.getReference()));
-
-        final AjaxCloseLink ajaxCloseLink = new AjaxCloseLink(Button.LINKID);
-        this.add(new Button("closeButton", ajaxCloseLink,
-                        DBProperties.getProperty("org.efaps.ui.wicket.pages.company.cancel.Label"),
-                        Button.ICON.CANCEL.getReference()));
+        add(new AjaxSubmitBtn("submitButton"));
+        add(new AjaxCloseBtn("closeButton"));
     }
 
     @Override
@@ -203,7 +182,7 @@ public class CompanyPage
     /**
      * Class to pass the companies as a serializable Object.
      */
-    private final class CompanyObject
+    private static final class CompanyObject
         implements IClusterable
     {
 
@@ -251,80 +230,80 @@ public class CompanyPage
     /**
      * Class used to submit this page.
      */
-    public class AjaxSubmitLink
-        extends WebMarkupContainer
+    public class AjaxSubmitBtn
+        extends AjaxButton<Void>
     {
 
         /** Needed for serialization. */
         private static final long serialVersionUID = 1L;
 
         /**
-         * @param _wicketId wicket id of this component
-         * @param _form form this link submits
+         * Instantiates a new ajax submit btn.
          *
+         * @param _wicketId wicket id of this component
          */
-        public AjaxSubmitLink(final String _wicketId,
-                              final Form<Object> _form)
+        public AjaxSubmitBtn(final String _wicketId)
         {
-            super(_wicketId);
-            final AjaxFormSubmitBehavior behavior = new AjaxFormSubmitBehavior(_form, "click")
+            super(_wicketId,  Button.ICON.ACCEPT.getReference(),
+                            DBProperties.getProperty("org.efaps.ui.wicket.pages.company.next.Label"));
+        }
+
+        @Override
+        public Form<?> getForm()
+        {
+            return getPage().visitChildren(Form.class, new IVisitor<Form<?>, Form<?>>()
+            {
+                @Override
+                public void component(final Form<?> _form,
+                                      final IVisit<Form<?>> _visit)
+                {
+                    _visit.stop(_form);
+                }
+            });
+        }
+
+        @Override
+        public void onRequest(final AjaxRequestTarget _target)
+        {
+            final CompanyObject obj = getPage().visitChildren(Select.class,
+                            new IVisitor<Select<CompanyObject>, CompanyObject>()
+                            {
+
+                                @Override
+                                public void component(final Select<CompanyObject> _select,
+                                                      final IVisit<CompanyObject> _visit)
+                                {
+                                    _visit.stop((CompanyObject) _select.getDefaultModelObject());
+                                }
+                            });
+
+            try {
+                Context.getThreadContext().setUserAttribute(Context.CURRENTCOMPANY, obj.id);
+                AccessCache.clean4Person(Context.getThreadContext().getPersonId());
+            } catch (final EFapsException e) {
+                throw new RestartResponseException(new ErrorPage(e));
+            }
+            final ModalWindowContainer modal = ((MainPage) CompanyPage.this.calledByReference.getPage()).getModal();
+            modal.close(_target);
+            modal.setWindowClosedCallback(new WindowClosedCallback()
             {
 
                 private static final long serialVersionUID = 1L;
 
-                /**
-                 * Implemented only for API reason.
-                 *
-                 * @param _target
-                 */
                 @Override
-                protected void onError(final AjaxRequestTarget _target)
+                public void onClose(final AjaxRequestTarget _target)
                 {
-                    // Not used here
+                    setResponsePage(getApplication().getHomePage());
                 }
-
-                /**
-                 * Close the form and set the current company.
-                 *
-                 * @param _target
-                 */
-                @Override
-                protected void onSubmit(final AjaxRequestTarget _target)
-                {
-                    final Iterator<? extends Component> iter = _form.iterator();
-                    final Component comp = iter.next();
-                    final CompanyObject obj = (CompanyObject) comp.getDefaultModelObject();
-                    try {
-                        Context.getThreadContext().setUserAttribute(Context.CURRENTCOMPANY, obj.id);
-                        AccessCache.clean4Person(Context.getThreadContext().getPersonId());
-                    } catch (final EFapsException e) {
-                        throw new RestartResponseException(new ErrorPage(e));
-                    }
-                    final ModalWindowContainer modal = ((MainPage) CompanyPage.this.calledByReference.getPage())
-                                    .getModal();
-                    modal.close(_target);
-                    modal.setWindowClosedCallback(new WindowClosedCallback()
-                    {
-
-                        private static final long serialVersionUID = 1L;
-
-                        @Override
-                        public void onClose(final AjaxRequestTarget _target)
-                        {
-                            setResponsePage(getApplication().getHomePage());
-                        }
-                    });
-                }
-            };
-            this.add(behavior);
+            });
         }
     }
 
     /**
      * AjaxLink that closes the ModalWindow this Page was opened in.
      */
-    public class AjaxCloseLink
-        extends AjaxLink<Object>
+    public class AjaxCloseBtn
+        extends AjaxButton<Void>
     {
 
         /** Needed for serialization. */
@@ -333,22 +312,23 @@ public class CompanyPage
         /**
          * @param _wicketId wicket id of this component
          */
-        public AjaxCloseLink(final String _wicketId)
+        public AjaxCloseBtn(final String _wicketId)
         {
-            super(_wicketId);
+            super(_wicketId, Button.ICON.CANCEL.getReference(),
+                            DBProperties.getProperty("org.efaps.ui.wicket.pages.company.cancel.Label"));
         }
 
-        /**
-         * Close the form without reload.
-         *
-         * @see org.apache.wicket.ajax.markup.html.AjaxLink#onClick(org.apache.wicket.ajax.AjaxRequestTarget)
-         * @param _target request target
-         */
         @Override
-        public void onClick(final AjaxRequestTarget _target)
+        public void onRequest(final AjaxRequestTarget _target)
         {
             final ModalWindowContainer modal = ((MainPage) CompanyPage.this.calledByReference.getPage()).getModal();
             modal.close(_target);
+        }
+
+        @Override
+        protected boolean isSubmit()
+        {
+            return false;
         }
     }
 }

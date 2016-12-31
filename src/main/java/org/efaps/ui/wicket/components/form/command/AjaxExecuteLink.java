@@ -73,7 +73,7 @@ public class AjaxExecuteLink
      * @param _target   AjaxRequestTarget
      */
     @Override
-    public void onSubmit(final AjaxRequestTarget _target)
+    public void onRequest(final AjaxRequestTarget _target)
     {
         final UICmdField uiObject = (UICmdField) getDefaultModelObject();
         final StringBuilder snip = new StringBuilder();
