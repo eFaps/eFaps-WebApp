@@ -16,33 +16,18 @@
  */
 
 
-package org.efaps.ui.wicket.behaviors.update;
-
-import org.apache.wicket.Component;
-import org.apache.wicket.ajax.AjaxRequestTarget;
+package org.efaps.ui.wicket.models.objects;
 
 
 /**
- * TODO comment!
+ * The Enum PagePosition.
  *
  * @author The eFaps Team
  */
-public interface IRemoteUpdateListener
+public enum PagePosition
 {
-    /**
-     * Key for the parameter passed by the UserInterface.
-     */
-    String PARAMETERKEY = "eFapsULKey";
-
-    /**
-     * @return key that is a unique identifier for this IMenuUpdateListener.
-     */
-    String getKey();
-
-    /**
-     * @param _component component the vent belongs to
-     * @param _target the AjaxTarget
-     */
-    void onEvent(Component _component,
-                 AjaxRequestTarget _target);
+    /** The content. */
+    CONTENT,
+    /** The tree. */
+    TREE;
 }

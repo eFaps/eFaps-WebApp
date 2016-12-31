@@ -164,7 +164,7 @@ public class ModalWindowContainer
         final StringBuilder javascript = new StringBuilder();
         if (getPage() instanceof GridPage) {
             final UIGrid uiGrid = (UIGrid) getPage().getDefaultModelObject();
-            final GridPage gridPage = new GridPage(Model.of(UIGrid.get(uiGrid.getCmdUUID())));
+            final GridPage gridPage = new GridPage(Model.of(UIGrid.get(uiGrid.getCmdUUID(), uiGrid.getPagePosition())));
             final IRequestHandler handler = new RenderPageRequestHandler(new PageProvider(gridPage));
             final String url = getRequestCycle().urlFor(handler).toString();
 

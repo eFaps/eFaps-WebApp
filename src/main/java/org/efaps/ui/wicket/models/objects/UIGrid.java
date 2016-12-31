@@ -18,6 +18,7 @@ package org.efaps.ui.wicket.models.objects;
 
 import java.io.File;
 import java.io.Serializable;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -51,6 +52,7 @@ import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.Table;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.admin.ui.field.Filter;
+import org.efaps.admin.user.Role;
 import org.efaps.api.ci.UITableFieldProperty;
 import org.efaps.api.ui.FilterBase;
 import org.efaps.api.ui.IFilter;
@@ -58,10 +60,14 @@ import org.efaps.api.ui.IFilterList;
 import org.efaps.api.ui.IListFilter;
 import org.efaps.api.ui.IMapFilter;
 import org.efaps.api.ui.IOption;
+import org.efaps.beans.ValueList;
+import org.efaps.beans.valueparser.ParseException;
+import org.efaps.beans.valueparser.ValueParser;
 import org.efaps.db.AbstractPrintQuery;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.MultiPrintQuery;
+import org.efaps.db.PrintQuery;
 import org.efaps.db.SelectBuilder;
 import org.efaps.ui.wicket.models.field.FieldConfiguration;
 import org.efaps.ui.wicket.models.field.JSField;
@@ -109,6 +115,12 @@ public final class UIGrid
 
     /** The filter list. */
     private final FilterList filterList = new FilterList();
+
+    /** The call instance. */
+    private Instance callInstance;
+
+    /** The pageposition. */
+    private PagePosition pagePosition;
 
     /**
      * Instantiates a new UI grid.
@@ -315,7 +327,8 @@ public final class UIGrid
         throws EFapsException
     {
         final List<Return> ret = getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
-                        ParameterValues.INSTANCE, null,
+                        ParameterValues.INSTANCE, getCallInstance(),
+                        ParameterValues.CALL_INSTANCE, getCallInstance(),
                         ParameterValues.PARAMETERS, Context.getThreadContext().getParameters(),
                         ParameterValues.CLASS, this,
                         ParameterValues.OTHERS, this.filterList);
@@ -433,10 +446,12 @@ public final class UIGrid
      * Sets the cmd UUID.
      *
      * @param _cmdUUID the new cmd UUID
+     * @return the UI grid
      */
-    public void setCmdUUID(final UUID _cmdUUID)
+    public UIGrid setCmdUUID(final UUID _cmdUUID)
     {
         this.cmdUUID = _cmdUUID;
+        return this;
     }
 
     /**
@@ -540,7 +555,24 @@ public final class UIGrid
                             ? getCommand().getName() + ".Title"
                             : getCommand().getTargetTitle();
             title = DBProperties.getProperty(key);
-        } catch (final Exception e) {
+            if (title != null && getCallInstance() != null) {
+                final PrintQuery print = new PrintQuery(getCallInstance());
+                final ValueParser parser = new ValueParser(new StringReader(title));
+                final ValueList list = parser.ExpressionString();
+                list.makeSelect(print);
+                if (print.execute()) {
+                    title = list.makeString(getCallInstance(), print, TargetMode.VIEW);
+                }
+                // Administration
+                if (Configuration.getAttributeAsBoolean(Configuration.ConfigAttribute.SHOW_OID)
+                                && Context.getThreadContext()
+                                                .getPerson()
+                                                .isAssigned(Role.get(UUID
+                                                                .fromString("1d89358d-165a-4689-8c78-fc625d37aacd")))) {
+                    title = title + " " + getCallInstance().getOid();
+                }
+            }
+        } catch (final EFapsException | ParseException e) {
             throw new RestartResponseException(new ErrorPage(new EFapsException(this.getClass(), "",
                             "Error reading the Title")));
         }
@@ -617,6 +649,48 @@ public final class UIGrid
     }
 
     /**
+     * Getter method for the instance variable {@link #callInstance}.
+     *
+     * @return value of instance variable {@link #callInstance}
+     */
+    public Instance getCallInstance()
+    {
+        return this.callInstance;
+    }
+
+    /**
+     * Setter method for instance variable {@link #callInstance}.
+     *
+     * @param _callInstance value for instance variable {@link #callInstance}
+     * @return the UI grid
+     */
+    public UIGrid setCallInstance(final Instance _callInstance)
+    {
+        this.callInstance = _callInstance;
+        return this;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #pagePosition}.
+     *
+     * @return value of instance variable {@link #pagePosition}
+     */
+    public PagePosition getPagePosition()
+    {
+        return this.pagePosition;
+    }
+
+    /**
+     * Setter method for instance variable {@link #pagePosition}.
+     *
+     * @param _pagePosition value for instance variable {@link #pagePosition}
+     */
+    public void setPagePosition(final PagePosition _pagePosition)
+    {
+        this.pagePosition = _pagePosition;
+    }
+
+    /**
      * Reload.
      *
      * @throws EFapsException the e faps exception
@@ -637,13 +711,14 @@ public final class UIGrid
      * Gets the.
      *
      * @param _commandUUID the command UUID
+     * @param _pagePosition the page position
      * @return the UI grid
-     * @throws EFapsException the e faps exception
      */
-    public static UIGrid get(final UUID _commandUUID)
+    public static UIGrid get(final UUID _commandUUID,
+                             final PagePosition _pagePosition)
     {
         final UIGrid ret = new UIGrid();
-        ret.setCmdUUID(_commandUUID);
+        ret.setCmdUUID(_commandUUID).setPagePosition(_pagePosition);;
         return ret;
     }
 
@@ -668,11 +743,9 @@ public final class UIGrid
                 ret = (File) retu.get(ReturnValues.VALUES);
             }
         } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            UIGrid.LOG.error("Catched", e);
         } catch (final EFapsException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            UIGrid.LOG.error("Catched", e);
         }
         return ret;
     }
@@ -680,7 +753,7 @@ public final class UIGrid
     /**
      * Prints the.
      *
-     * @param _uiGrid the ui grid
+     * @param _instance the instance
      * @return the file
      */
     public static File checkout(final Instance _instance)
@@ -698,11 +771,9 @@ public final class UIGrid
                 ret = (File) retu.get(ReturnValues.VALUES);
             }
         } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            UIGrid.LOG.error("Catched", e);
         } catch (final EFapsException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            UIGrid.LOG.error("Catched", e);
         }
         return ret;
     }
@@ -1047,6 +1118,12 @@ public final class UIGrid
                 ret = super.equals(_obj);
             }
             return ret;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return super.hashCode() + Long.valueOf(this.fieldId).intValue();
         }
     }
 

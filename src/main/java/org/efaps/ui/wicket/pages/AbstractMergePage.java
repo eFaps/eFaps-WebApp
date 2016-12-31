@@ -139,7 +139,7 @@ public abstract class AbstractMergePage
         MarkupContainer ret = null;
         for (final Component child : _childs) {
             if (child instanceof HtmlHeaderContainer) {
-                ret = this.add2Page(child);
+                ret = add2Page(child);
             } else {
                 ret = this.body.add(_childs);
             }

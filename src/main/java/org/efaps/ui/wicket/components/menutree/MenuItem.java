@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.components.menutree;
@@ -35,15 +32,21 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.ILinkListener;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
+import org.efaps.ui.wicket.models.objects.PagePosition;
+import org.efaps.ui.wicket.models.objects.UIGrid;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
+import org.efaps.ui.wicket.pages.content.grid.GridPage;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.ui.wicket.util.Configuration;
+import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +55,6 @@ import org.slf4j.LoggerFactory;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class MenuItem
     extends Panel
@@ -78,15 +80,17 @@ public class MenuItem
     private final MenuTree tree;
 
     /**
-     * @param _id
-     * @param _tree
-     * @param _model
+     * Instantiates a new menu item.
+     *
+     * @param _wicketID the wicket ID
+     * @param _tree the tree
+     * @param _model the model
      */
-    public MenuItem(final String _id,
+    public MenuItem(final String _wicketID,
                     final MenuTree _tree,
                     final IModel<UIMenuItem> _model)
     {
-        super(_id, _model);
+        super(_wicketID, _model);
         this.tree = _tree;
         setOutputMarkupId(true);
         add(new SelectedAttributeModifier());
@@ -142,6 +146,9 @@ public class MenuItem
 
     }
 
+    /**
+     * The Class Item.
+     */
     public class Item
         extends WebMarkupContainer
         implements ILinkListener
@@ -174,8 +181,13 @@ public class MenuItem
                         page = new StructurBrowserPage(menuItem.getCommandUUID(),
                                         menuItem.getInstanceKey(), getPage().getPageReference());
                     } else {
-                        page = new TablePage(menuItem.getCommandUUID(), menuItem.getInstanceKey(), getPage()
+                        if ("GridX".equals(Configuration.getAttribute(ConfigAttribute.TABLEDEFAULTTYPETREE))) {
+                            page = new GridPage(Model.of(UIGrid.get(menuItem.getCommandUUID(), PagePosition.TREE)
+                                            .setCallInstance(menuItem.getInstance())));
+                        } else {
+                            page = new TablePage(menuItem.getCommandUUID(), menuItem.getInstanceKey(), getPage()
                                         .getPageReference());
+                        }
                     }
                 } else {
                     page = new FormPage(menuItem.getCommandUUID(), menuItem.getInstanceKey(), getPage()
@@ -188,13 +200,14 @@ public class MenuItem
         }
     }
 
+    /**
+     * The Class SelectedAttributeModifier.
+     */
     public static class SelectedAttributeModifier
         extends Behavior
     {
 
-        /**
-         *
-         */
+        /** The Constant serialVersionUID. */
         private static final long serialVersionUID = 1L;
 
         @Override
@@ -211,13 +224,19 @@ public class MenuItem
         }
     }
 
+    /**
+     * The Class ItemBehavior.
+     */
     private final class ItemBehavior
         extends AjaxEventBehavior
     {
 
         private static final long serialVersionUID = 1L;
 
-        public ItemBehavior()
+        /**
+         * Instantiates a new item behavior.
+         */
+        ItemBehavior()
         {
             super("click");
         }
@@ -235,7 +254,6 @@ public class MenuItem
             final UIMenuItem menuItem = (UIMenuItem) MenuItem.this.tree.getSelected().getDefaultModelObject();
             menuItem.setSelected(true);
         }
-
 
         /**
          * Add a script that sets the content of the iframe of the ContentContainer.

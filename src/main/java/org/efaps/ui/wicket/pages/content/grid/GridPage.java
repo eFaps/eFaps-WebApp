@@ -30,6 +30,8 @@ import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Class GridPage.
@@ -47,6 +49,11 @@ public class GridPage
      * Reference to the style sheet.
      */
     private static final EFapsContentReference CSS = new EFapsContentReference(GridPage.class, "GridPage.css");
+
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(GridPage.class);
 
     /**
      * Instantiates a new grid page.
@@ -75,11 +82,12 @@ public class GridPage
                 }
             };
             add(form);
+
+            @SuppressWarnings("unchecked")
             final GridXPanel panel = new GridXPanel("gridPanel", (IModel<UIGrid>) getDefaultModel());
             form.add(panel);
         } catch (final EFapsException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            GridPage.LOG.error("Catched", e);
         }
     }
 
@@ -90,5 +98,4 @@ public class GridPage
         _response.render(AbstractEFapsHeaderItem.forCss(GridPage.CSS));
         _response.render(AbstractEFapsHeaderItem.forCss(AbstractContentPage.CSS));
     }
-
 }

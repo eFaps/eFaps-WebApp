@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 
@@ -23,18 +20,24 @@ package org.efaps.ui.wicket.components.menutree;
 
 import java.util.Iterator;
 
+import org.apache.wicket.MetaDataKey;
+import org.apache.wicket.RestartResponseException;
+import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.util.string.StringValue;
+import org.efaps.admin.ui.Menu;
+import org.efaps.db.Instance;
 import org.efaps.ui.wicket.behaviors.update.AbstractRemoteUpdateBehavior;
 import org.efaps.ui.wicket.behaviors.update.IRemoteUpdateListener;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
+import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 /**
  * Behavior used to update the MenuTree remotely.
@@ -42,6 +45,14 @@ import org.efaps.ui.wicket.models.objects.UIMenuItem;
 public class MenuUpdateBehavior
     extends AbstractRemoteUpdateBehavior
 {
+
+    /** The Constant ROLE. */
+    public static final MetaDataKey<Instance> METAKEY = new MetaDataKey<Instance>() {
+
+        /** The Constant serialVersionUID. */
+        private static final long serialVersionUID = 1L;
+    };
+
     /**
      * The Name of the function to be called.
      */
@@ -52,6 +63,10 @@ public class MenuUpdateBehavior
      */
     public static final String PARAMETERKEY4UPDATE = "self";
 
+    /**
+     * The Name of the function to be called.
+     */
+    public static final String PARAMETERKEY4INSTANCE = "instance";
 
     /**
      * Needed for serialization.
@@ -65,7 +80,7 @@ public class MenuUpdateBehavior
     {
         super(MenuUpdateBehavior.FUNCTION_NAME);
     }
-
+    @SuppressWarnings("checkstyle:illegalcatch")
     @Override
     protected void respond(final AjaxRequestTarget _target)
     {
@@ -86,6 +101,27 @@ public class MenuUpdateBehavior
                     if (desc.requeryLabel()) {
                         tree.updateNode(desc, _target);
                     }
+                }
+            }
+        } else if (MenuUpdateBehavior.PARAMETERKEY4INSTANCE.equals(key.toString())) {
+            final Instance instance = Session.get().getMetaData(MenuUpdateBehavior.METAKEY);
+            if (instance != null && instance.isValid()) {
+                try {
+                    Menu menu = null;
+                    try {
+                        menu = Menu.getTypeTreeMenu(instance.getType());
+                    } catch (final Exception e) {
+                        throw new RestartResponseException(new ErrorPage(e));
+                    }
+                    if (menu == null) {
+                        final Exception ex = new Exception("no tree menu defined for type " + instance.getType()
+                                        .getName());
+                        throw new RestartResponseException(new ErrorPage(ex));
+                    }
+                    final MenuTree menutree = (MenuTree) getComponent();
+                    menutree.addChildMenu(menu.getUUID(), instance.getOid(), _target);
+                } catch (final CacheReloadException e) {
+                    throw new RestartResponseException(new ErrorPage(e));
                 }
             }
         }

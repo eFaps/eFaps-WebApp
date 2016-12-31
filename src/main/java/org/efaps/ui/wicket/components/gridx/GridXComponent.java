@@ -42,6 +42,7 @@ import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.ILinkListener;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.ResourceReference;
@@ -58,19 +59,25 @@ import org.efaps.api.ui.HRef;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.behaviors.dojo.AbstractDojoBehavior;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
+import org.efaps.ui.wicket.components.gridx.behaviors.CallUpdateTreeMenuBehavior;
 import org.efaps.ui.wicket.components.gridx.behaviors.CheckoutBehavior;
 import org.efaps.ui.wicket.components.gridx.behaviors.OpenModalBehavior;
 import org.efaps.ui.wicket.components.gridx.behaviors.PrintBehavior;
 import org.efaps.ui.wicket.components.gridx.behaviors.ReloadBehavior;
 import org.efaps.ui.wicket.components.gridx.behaviors.SubmitBehavior;
 import org.efaps.ui.wicket.components.gridx.behaviors.SubmitModalBehavior;
+import org.efaps.ui.wicket.models.objects.PagePosition;
 import org.efaps.ui.wicket.models.objects.UIGrid;
 import org.efaps.ui.wicket.models.objects.UIGrid.Cell;
 import org.efaps.ui.wicket.models.objects.UIGrid.Column;
+import org.efaps.ui.wicket.pages.content.form.FormPage;
+import org.efaps.ui.wicket.pages.content.grid.GridPage;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
+import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.util.Configuration;
+import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 import org.efaps.ui.wicket.util.DojoClass;
 import org.efaps.ui.wicket.util.DojoClasses;
 import org.efaps.ui.wicket.util.DojoWrapper;
@@ -549,8 +556,30 @@ public class GridXComponent
 
                 Page page;
                 try {
-                    page = new ContentContainerPage(menu.getUUID(), cell.getInstance().getKey(),
-                                    getPage() instanceof StructurBrowserPage);
+                    switch (uiGrid.getPagePosition()) {
+                        case TREE:
+                            if (menu.getTargetTable() != null) {
+                                if (menu.getTargetStructurBrowserField() == null) {
+                                    if ("GridX".equals(Configuration.getAttribute(
+                                                    ConfigAttribute.TABLEDEFAULTTYPETREE))) {
+                                        page = new GridPage(Model.of(UIGrid.get(menu.getUUID(), PagePosition.TREE)
+                                                        .setCallInstance(cell.getInstance())));
+                                    } else {
+                                        page = new TablePage(menu.getUUID(), cell.getInstance().getOid());
+                                    }
+                                } else {
+                                    page = new StructurBrowserPage(menu.getUUID(), cell.getInstance().getOid());
+                                }
+                            } else {
+                                page = new FormPage(menu.getUUID(), cell.getInstance().getOid());
+                            }
+                            page.add(new CallUpdateTreeMenuBehavior(cell.getInstance()));
+                            break;
+                        case CONTENT:
+                        default:
+                            page = new ContentContainerPage(menu.getUUID(), cell.getInstance().getKey(), false);
+                            break;
+                    }
                 } catch (final EFapsException e) {
                     page = new ErrorPage(e);
                 }
@@ -656,6 +685,4 @@ public class GridXComponent
             }
         }
     }
-
-
 }

@@ -34,7 +34,6 @@ import java.util.Stack;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.wicket.Component;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.Session;
 import org.apache.wicket.protocol.http.WebSession;
@@ -93,16 +92,6 @@ public class EFapsSession
 
     /** The execution bridges. */
     private List<IExecutionBridge> executionBridges = Collections.synchronizedList(new ArrayList<IExecutionBridge>());
-
-    /**
-     * This instance Map is a Cache for Components, which must be able to be
-     * accessed from various PageMaps.
-     *
-     * @see #getFromCache(String)
-     * @see #putIntoCache(String, Component)
-     * @see #removeFromCache(String)
-     */
-    private final Map<String, Component> componentcache = new HashMap<>();
 
     /**
      * This instance variable holds the Name of the logged in user. It is also
@@ -276,43 +265,6 @@ public class EFapsSession
         final Stack<IRecent> clone = (Stack<IRecent>) this.recentStack.clone();
         Collections.reverse(clone);
         return clone;
-    }
-
-    /**
-     * This Method stores a Component in the Cache.
-     *
-     * @param _key Key the Component should be stored in
-     * @param _component Component to be stored
-     * @see #componentcache
-     */
-    public void putIntoCache(final String _key,
-                             final Component _component)
-    {
-        this.componentcache.remove(_key);
-        this.componentcache.put(_key, _component);
-    }
-
-    /**
-     * Retrieve a Component from the ComponentCache.
-     *
-     * @param _key Key of the Component to be retrieved
-     * @return Component if found, else null
-     * @see #componentcache
-     */
-    public Component getFromCache(final String _key)
-    {
-        return this.componentcache.get(_key);
-    }
-
-    /**
-     * Remove a Component from the ComponentCache.
-     *
-     * @param _key Key to the Component to be removed
-     * @see #componentcache
-     */
-    public void removeFromCache(final String _key)
-    {
-        this.componentcache.remove(_key);
     }
 
     /**

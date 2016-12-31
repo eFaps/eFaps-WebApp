@@ -35,6 +35,7 @@ import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.components.IRecent;
+import org.efaps.ui.wicket.models.objects.PagePosition;
 import org.efaps.ui.wicket.models.objects.UIGrid;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
@@ -89,8 +90,8 @@ public class LinkItem
                     page = new StructurBrowserPage(model.getCommandUUID(), model.getInstanceKey(), getPage()
                                     .getPageReference());
                 } else {
-                    if ("GridX".equals(Configuration.getAttribute(ConfigAttribute.TABLEDEFAULTTYPE))) {
-                        page = new GridPage(Model.of(UIGrid.get(command.getUUID())));
+                    if ("GridX".equals(Configuration.getAttribute(ConfigAttribute.TABLEDEFAULTTYPECONTENT))) {
+                        page = new GridPage(Model.of(UIGrid.get(command.getUUID(), PagePosition.CONTENT)));
                     } else {
                         page = new TablePage(model.getCommandUUID(), model.getInstanceKey(),
                                         getPage().getPageReference());
@@ -137,8 +138,8 @@ public class LinkItem
                                 model.getInstanceKey());
                 setResponsePage(page);
             } else {
-                if ("GridX".equals(Configuration.getAttribute(ConfigAttribute.TABLEDEFAULTTYPE))) {
-                    final GridPage page = new GridPage(Model.of(UIGrid.get(command.getUUID())));
+                if ("GridX".equals(Configuration.getAttribute(ConfigAttribute.TABLEDEFAULTTYPECONTENT))) {
+                    final GridPage page = new GridPage(Model.of(UIGrid.get(command.getUUID(), PagePosition.CONTENT)));
                     setResponsePage(page);
                 } else {
                     final TablePage page = new TablePage(model.getCommandUUID(), model.getInstanceKey());
