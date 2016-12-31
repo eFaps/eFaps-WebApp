@@ -47,7 +47,7 @@ define([
                 dn = t.domNode,
                 tm = t.menu,
                 hC = g.hiddenColumns,
-                tW = t.wrapButton,
+                wB = t.wrapButton,
                 pM = t.printMenu,
                 rB = t.reloadButton;
 
@@ -64,9 +64,21 @@ define([
                  this.addChild(item);
              }, tm);
 
-            on(tW, "click", function(evt){
-                domClass.toggle(tW.domNode, "dijitDisabled", !tW.checked);
-                domClass.toggle(g.bodyNode, "eFapsNoWrap", !tW.checked);
+            if(g.persist){
+                var d = g.persist.registerAndLoad('wrapButton', function(){
+                    return wB.checked;
+                });
+                if (d != null && d != wB.checked) {
+                    wB.setChecked(d);
+                    domClass.toggle(wB.domNode, "dijitDisabled", !wB.checked);
+                    domClass.toggle(g.bodyNode, "eFapsNoWrap", !wB.checked);
+                    g.resize();
+                }
+            }
+
+            on(wB, "click", function(evt){
+                domClass.toggle(wB.domNode, "dijitDisabled", !wB.checked);
+                domClass.toggle(g.bodyNode, "eFapsNoWrap", !wB.checked);
                 g.resize();
             });
 
