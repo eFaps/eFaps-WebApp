@@ -20,11 +20,13 @@
 
 package org.efaps.ui.wicket.behaviors.dojo;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.WicketEventJQueryResourceReference;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.HeaderItem;
@@ -195,7 +197,7 @@ public abstract class AbstractDojoBehavior
         public Iterable<?> getRenderTokens()
         {
             final String url = Strings.stripJSessionId(getUrl());
-            List<String> ret;
+            final List<String> ret;
             if (Strings.isEmpty(this.id)) {
                 ret = Collections.singletonList("javascript-" + url);
             } else {
@@ -251,6 +253,14 @@ public abstract class AbstractDojoBehavior
             final IRequestHandler handler = new ResourceReferenceRequestHandler(getReference(),
                             new PageParameters());
             return RequestCycle.get().urlFor(handler).toString();
+        }
+
+        @Override
+        public List<HeaderItem> getDependencies()
+        {
+            final List<HeaderItem> ret = new ArrayList<>();
+            ret.addAll(WicketEventJQueryResourceReference.get().getDependencies());
+            return ret;
         }
     }
 }
