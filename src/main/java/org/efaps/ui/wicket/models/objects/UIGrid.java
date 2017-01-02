@@ -45,6 +45,7 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.Command;
@@ -718,7 +719,7 @@ public final class UIGrid
                              final PagePosition _pagePosition)
     {
         final UIGrid ret = new UIGrid();
-        ret.setCmdUUID(_commandUUID).setPagePosition(_pagePosition);;
+        ret.setCmdUUID(_commandUUID).setPagePosition(_pagePosition);
         return ret;
     }
 
@@ -733,7 +734,9 @@ public final class UIGrid
         File ret = null;
         final String clazzName = Configuration.getAttribute(ConfigAttribute.GRIDPRINTESJP);
         try {
-            final Class<?> clazz = Class.forName(clazzName);
+            UIGrid.LOG.debug("Print method executed for {}", _uiGrid);
+
+            final Class<?> clazz = Class.forName(clazzName, false, EFapsClassLoader.getInstance());
             final EventExecution event = (EventExecution) clazz.newInstance();
             final Parameter param = new Parameter();
             param.put(ParameterValues.PARAMETERS, Context.getThreadContext().getParameters());
@@ -761,7 +764,9 @@ public final class UIGrid
         File ret = null;
         final String clazzName = Configuration.getAttribute(ConfigAttribute.GRIDCHECKOUTESJP);
         try {
-            final Class<?> clazz = Class.forName(clazzName);
+            UIGrid.LOG.debug("Checkout method executed for {}", _instance);
+
+            final Class<?> clazz = Class.forName(clazzName, false, EFapsClassLoader.getInstance());
             final EventExecution event = (EventExecution) clazz.newInstance();
             final Parameter param = new Parameter();
             param.put(ParameterValues.PARAMETERS, Context.getThreadContext().getParameters());
