@@ -80,7 +80,7 @@ var profile = (function(){
                          "gridx/modules/Persist","gridx/modules/RowHeader","gridx/modules/SingleSort","gridx/modules/VirtualVScroller",
                          "gridx/modules/dnd/Column","gridx/modules/extendedSelect/Cell","gridx/modules/extendedSelect/Column",
                          "gridx/modules/extendedSelect/Row","gridx/modules/filter/FilterBar","gridx/modules/move/Column",
-                         "gridx/support/QuickFilter","gridx/support/Summary", "dijit/form/NumberTextBox"],
+                         "gridx/support/QuickFilter","gridx/support/Summary", "dijit/form/NumberTextBox", "gridx/modules/ColumnLock"],
                 includeLocales:['es','de','en'],
                 localeList:['es','de','en']
             }
