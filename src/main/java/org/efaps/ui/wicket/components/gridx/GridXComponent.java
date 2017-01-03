@@ -149,7 +149,7 @@ public class GridXComponent
                             DojoClasses.GridConfig, DojoClasses.GridSort, DojoClasses.Summary, DojoClasses.QuickFilter,
                             DojoClasses.Bar, DojoClasses.Persist, DojoClasses.Filter, DojoClasses.FilterBar,
                             DojoClasses.DropDownButton, DojoClasses.TextBox, DojoClasses.TooltipDialog,
-                            DojoClasses.ready, DojoClasses.domGeom);
+                            DojoClasses.ready, DojoClasses.domGeom, DojoClasses.ColumnLock);
 
             final StringBuilder js = new StringBuilder()
                 .append("var cp = function(_attr, _itemA, _itemB) {\n")
@@ -254,6 +254,7 @@ public class GridXComponent
                     .append("],\n")
                 .append("modules: [\n")
                     .append("VirtualVScroller,\n")
+                    .append("ColumnLock,\n")
                     .append("ColumnResizer,\n")
                     .append("SingleSort,\n")
                     .append("MoveColumn,\n")

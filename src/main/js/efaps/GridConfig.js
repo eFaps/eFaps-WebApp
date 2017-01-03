@@ -7,14 +7,16 @@ define([
     "dijit/_WidgetBase",
     "dijit/_TemplatedMixin",
     "dijit/_WidgetsInTemplateMixin",
+    "dijit/form/Button",
     "dijit/form/ToggleButton",
+    "dijit/form/NumberSpinner",
     "dijit/CheckedMenuItem",
     "dijit/MenuItem",
     "dijit/Toolbar",
     "dojo/text!./templates/GridConfig.html",
     "dojo/i18n!./nls/eFaps"
-], function(declare, array, domClass, domGeom, on, _WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin, ToggleButton,
-        CheckedMenuItem, MenuItem, Toolbar, template, eFapsNLS) {
+], function(declare, array, domClass, domGeom, on, _WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin, Button, ToggleButton,
+        NumberSpinner, CheckedMenuItem, MenuItem, Toolbar, template, eFapsNLS) {
 
     return declare("efaps.GridConfig", [Toolbar, _WidgetsInTemplateMixin], {
         templateString: template,
@@ -45,11 +47,13 @@ define([
         refresh: function() {
             var t = this, g = t.grid,
                 dn = t.domNode,
-                tm = t.menu,
+                tm = t.columnMenu,
                 hC = g.hiddenColumns,
                 wB = t.wrapButton,
                 pM = t.printMenu,
-                rB = t.reloadButton;
+                rB = t.reloadButton,
+                lB = t.lockColumnButton,
+                uB = t.unlockColumnButton;
 
             array.forEach(g.structure, function(col){
                  var item = new CheckedMenuItem({
@@ -74,12 +78,24 @@ define([
                     domClass.toggle(g.bodyNode, "eFapsNoWrap", !wB.checked);
                     g.resize();
                 }
+                if (g.columnLock.count > 0) {
+                    dijit.byId('integerspinner').set('value', g.columnLock.count);
+                }
             }
 
             on(wB, "click", function(evt){
                 domClass.toggle(wB.domNode, "dijitDisabled", !wB.checked);
                 domClass.toggle(g.bodyNode, "eFapsNoWrap", !wB.checked);
                 g.resize();
+            });
+
+            on(lB, "click", function(evt){
+                var c = dijit.byId('integerspinner').get('value');
+                g.columnLock.lock(c);
+            });
+
+            on(uB, "click", function(evt){
+                g.columnLock.unlock();
             });
 
             array.forEach(t.printItems, function(_item){
@@ -91,7 +107,7 @@ define([
 
         check: function(_colId) {
             var t = this,
-                items = t.menu.getChildren();
+                items = t.columnMenu.getChildren();
             array.forEach(items, function(item){
                 if (_colId == item.colId) {
                     item._setCheckedAttr(true);
@@ -101,7 +117,7 @@ define([
 
         uncheck: function(_colId) {
             var t = this,
-                items = t.menu.getChildren();
+                items = t.columnMenu.getChildren();
             array.forEach(items, function(item){
                 if (_colId == item.colId) {
                     item._setCheckedAttr(false);

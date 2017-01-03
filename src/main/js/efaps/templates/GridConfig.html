@@ -13,6 +13,21 @@
     </div>
     <div data-dojo-type="dijit/form/DropDownButton" data-dojo-props="iconClass:'eFapsMenuIcon eFapsMenuIconColumns', showLabel: false" data-dojo-attach-point="dropDownButton">
         <span>${nls.confColumns}</span>
-        <div data-dojo-type="dijit/Menu" data-dojo-attach-point="menu"></div>
+        <div data-dojo-type="dijit/Menu" data-dojo-attach-point="columnMenu"></div>
+    </div>
+    <div data-dojo-type="dijit/form/DropDownButton" data-dojo-props="iconClass:'eFapsMenuIcon eFapsDropDownIconLockColumns', showLabel: false" data-dojo-attach-point="lockDropDownButton">
+        <span>${nls.confLockColumns}</span>
+        <div data-dojo-type="dijit/TooltipDialog">
+            <label for="integerspinner">${nls.confSpinnerLabel}</label>
+            <div id="integerspinner" data-dojo-type="dijit.form.NumberSpinner" data-dojo-props="
+                constraints: {max:100,min: 1},
+                value: 1,
+                style: 'width: 30px'
+            "></div>
+            <div style="text-align: center;">
+                <div data-dojo-type="dijit.form.Button" data-dojo-props="iconClass:'eFapsMenuIcon eFapsMenuIconLockColumns', showLabel: false" data-dojo-attach-point="lockColumnButton">${nls.confLockBtn}</div>
+                <div data-dojo-type="dijit.form.Button" data-dojo-props="iconClass:'eFapsMenuIcon eFapsMenuIconUnlockColumns', showLabel: false" data-dojo-attach-point="unlockColumnButton">${nls.conUnlockBtn}</div>
+            </div>
+        </div>
     </div>
 </div>

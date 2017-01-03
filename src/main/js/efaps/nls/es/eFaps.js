@@ -2,5 +2,9 @@ define({
     confColumns: "Columnas",
     confWrap: "Ajustar líneas",
     confPrint: "Imprimir",
-    confReload: "Recargar"
+    confReload: "Recargar",
+    confLockColumns: "Bloquear Columnas",
+    confSpinnerLabel: "Columnas a bloquear:",
+    confLockBtn: "Bloquear Columnas",
+    conUnlockBtn: "Desatar Columnas"
 });

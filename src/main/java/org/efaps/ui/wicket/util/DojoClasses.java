@@ -25,6 +25,7 @@ public enum DojoClasses
     Grid("gridx/Grid","Grid"),
     VirtualVScroller("gridx/modules/VirtualVScroller","VirtualVScroller"),
     ColumnResizer("gridx/modules/ColumnResizer","ColumnResizer"),
+    ColumnLock("gridx/modules/ColumnLock","ColumnLock"),
     HScroller("gridx/modules/HScroller","HScroller"),
     SingleSort("gridx/modules/SingleSort","SingleSort"),
     MoveColumn("gridx/modules/move/Column","MoveColumn"),
