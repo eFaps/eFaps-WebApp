@@ -88,7 +88,7 @@ public class ModalVisitor
             @Override
             public Instance getInstance()
             {
-                return null;
+                return uiGrid.getCallInstance();
             }
 
             @Override
