@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.components.picker;
@@ -33,6 +30,7 @@ import org.efaps.ui.wicket.components.modalwindow.ModalWindowAjaxPageCreator;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.field.IPickable;
 import org.efaps.ui.wicket.models.field.UIPicker;
+import org.efaps.ui.wicket.models.objects.PagePosition;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
@@ -44,7 +42,6 @@ import org.slf4j.LoggerFactory;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class AjaxPickerLink
     extends WebComponent
@@ -157,25 +154,28 @@ public class AjaxPickerLink
         @Override
         protected void onEvent(final AjaxRequestTarget _target)
         {
-            ModalWindowContainer modal;
+            final ModalWindowContainer modal;
+            final PagePosition pagePosition;
             if (getPage() instanceof MainPage) {
                 modal = ((MainPage) getPage()).getModal();
+                pagePosition = PagePosition.CONTENTMODAL;
             } else {
                 modal = ((AbstractContentPage) getPage()).getModal();
+                pagePosition = PagePosition.TREEMODAL;
             }
             modal.reset();
             try {
                 final UIPicker picker = ((IPickable) getDefaultModelObject()).getPicker();
                 picker.setUserinterfaceId(this.targetMarkupId);
                 picker.setParentParameters(Context.getThreadContext().getParameters());
-                final PageCreator pageCreator = new ModalWindowAjaxPageCreator(picker, modal);
+                final PageCreator pageCreator = new ModalWindowAjaxPageCreator(picker, modal, pagePosition);
                 modal.setPageCreator(pageCreator);
                 modal.setInitialHeight(picker.getWindowHeight());
                 modal.setInitialWidth(picker.getWindowWidth());
                 modal.setWindowClosedCallback(new PickerCallBack(this.targetMarkupId, getPage().getPageReference()));
                 modal.show(_target);
             } catch (final EFapsException e) {
-                LOG.error("Error on submit", e);
+                AjaxPickerLink.LOG.error("Error on submit", e);
             }
         }
     }

@@ -26,8 +26,12 @@ package org.efaps.ui.wicket.models.objects;
  */
 public enum PagePosition
 {
-    /** The content. */
+    /** Page is in the main content area. */
     CONTENT,
-    /** The tree. */
-    TREE;
+    /** Page is in the modal belonging to the main content area. */
+    CONTENTMODAL,
+    /** Page is in the tree area. */
+    TREE,
+    /** Page is in the modal belonging to the tree area. */
+    TREEMODAL;
 }

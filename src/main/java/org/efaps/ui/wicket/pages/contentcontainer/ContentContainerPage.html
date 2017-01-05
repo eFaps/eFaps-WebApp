@@ -2,7 +2,7 @@
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <!--
 
-  Copyright 2003 - 2014 The eFaps Team
+  Copyright 2003 - 2016 The eFaps Team
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -16,11 +16,6 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 
-  Author:          The eFaps Team
-  Revision:        $Rev$
-  Last Changed:    $Date$
-  Last Changed By: $Author$
-
 -->
 
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org">
@@ -29,8 +24,8 @@
         <script type="dojo/method">
             this._splitterClass = "dojox.layout.ToggleSplitter";
         </script>
-        <div wicket:id="centerPanel"></div>
-        <div wicket:id="leftPanel"></div>
+        <div wicket:id="centerPanel" class="eFapsCenterPanel"></div>
+        <div wicket:id="leftPanel" class="eFapsLeftPanel"></div>
     </div>
 </body>
 </html>

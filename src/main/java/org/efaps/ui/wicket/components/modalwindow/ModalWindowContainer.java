@@ -36,6 +36,7 @@ import org.efaps.admin.ui.Menu;
 import org.efaps.ui.wicket.components.menutree.MenuUpdateBehavior;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.models.objects.ICmdUIObject;
+import org.efaps.ui.wicket.models.objects.IPageObject;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIGrid;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
@@ -159,22 +160,58 @@ public class ModalWindowContainer
      * @return JavaScript
      * @throws EFapsException
      */
-    public String getReloadJavaScript(final ICmdUIObject _uiObject)
+    public CharSequence getReloadJavaScript(final ICmdUIObject _uiObject)
     {
         final StringBuilder javascript = new StringBuilder();
-        if (getPage() instanceof GridPage) {
-            final UIGrid uiGrid = (UIGrid) getPage().getDefaultModelObject();
-            final GridPage gridPage = new GridPage(Model.of(UIGrid.get(uiGrid.getCmdUUID(), uiGrid.getPagePosition())));
-            final IRequestHandler handler = new RenderPageRequestHandler(new PageProvider(gridPage));
-            final String url = getRequestCycle().urlFor(handler).toString();
+        if (_uiObject instanceof IPageObject) {
+            try {
+                Page page;
+                if (getPage().getDefaultModelObject() instanceof UIGrid) {
+                    final UIGrid uiGrid = (UIGrid) getPage().getDefaultModelObject();
+                    page = new GridPage(Model.of(UIGrid.get(uiGrid.getCmdUUID(), uiGrid.getPagePosition())));
+                } else if (getPage().getDefaultModelObject() instanceof UIForm) {
+                    final UIForm uiForm = (UIForm) getPage().getDefaultModelObject();
+                    uiForm.resetModel();
+                    page = new FormPage(Model.of(uiForm));
+                } else {
+                    page = new ErrorPage(null);
+                }
 
-            javascript.append(DojoWrapper.require(new StringBuilder()
-                    .append(" top.dijit.registry.byId(\"mainPanel\").set(\"content\",")
-                    .append(" domConstruct.create(\"iframe\",{")
-                        .append("\"id\": \"").append(MainPage.IFRAME_ID)
-                        .append("\",\"src\": \"./wicket/").append(url)
-                        .append("\",\"style\": \"border: 0; width: 100%; height: 99%\" }")
-                        .append("))"), DojoClasses.domConstruct));
+                final IRequestHandler handler = new RenderPageRequestHandler(new PageProvider(page));
+                final String url = getRequestCycle().urlFor(handler).toString();
+
+                switch (((IPageObject) _uiObject).getPagePosition()) {
+                    case TREE:
+                    case TREEMODAL:
+                        javascript
+                            .append("var mF = top.dojo.doc.getElementById(\"").append(MainPage.IFRAME_ID)
+                                .append("\");\n")
+                            .append("if (mF != null) {\n")
+                            .append("mF.contentWindow.dojo.query('.dijitContentPane.eFapsCenterPanel')")
+                                .append(".forEach(function(_p){\n")
+                            .append("var d = mF.contentWindow.dijit.registry.byNode(_p);\n")
+                            .append("d.set('content', domConstruct.create('iframe', {\n")
+                            .append("\"src\": \"").append(url)
+                            .append("\",\"style\": \"border: 0; width: 100%; height: 99%\"}")
+                            .append("));\n")
+                            .append("});\n")
+                            .append("mF.contentWindow.").append(MenuUpdateBehavior.FUNCTION_NAME).append("(\"")
+                            .append(MenuUpdateBehavior.PARAMETERKEY4UPDATE).append("\");\n")
+                            .append("}");
+                        break;
+                    case CONTENT:
+                    case CONTENTMODAL:
+                    default:
+                        javascript.append(" top.dijit.registry.byId(\"mainPanel\").set(\"content\",")
+                            .append(" domConstruct.create(\"iframe\",{")
+                            .append("\"id\": \"").append(MainPage.IFRAME_ID)
+                            .append("\",\"src\": \"./wicket/").append(url)
+                            .append("\",\"style\": \"border: 0; width: 100%; height: 99%\" }")
+                            .append("))");
+                }
+            } catch (final EFapsException e) {
+                throw new RestartResponseException(new ErrorPage(e));
+            }
         } else {
             final AbstractUIPageObject uiObject = (AbstractUIPageObject) getPage().getDefaultModelObject();
 
@@ -215,7 +252,7 @@ public class ModalWindowContainer
                     final String url = getRequestCycle().urlFor(handler).toString();
                     if (calledByPageRef != null && calledByPageRef.getPage() instanceof ContentContainerPage && !tree) {
                         final String panelId = ((ContentContainerPage) calledByPageRef.getPage()).getCenterPanelId();
-                        javascript.append("require([\"dojo/dom-construct\"], function(domConstruct){")
+                        javascript
                             .append("var mF = top.dojo.doc.getElementById(\"").append(MainPage.IFRAME_ID).append("\");")
                             .append("if (mF != null) {")
                             .append("mF.contentWindow.dijit.registry.byId(\"").append(panelId)
@@ -226,17 +263,15 @@ public class ModalWindowContainer
                                 .append(")); ")
                             .append("mF.contentWindow.").append(MenuUpdateBehavior.FUNCTION_NAME).append("(\"")
                             .append(MenuUpdateBehavior.PARAMETERKEY4UPDATE).append("\");")
-                            .append("}")
-                            .append("});");
+                            .append("}");
                     } else {
-                        javascript.append("require([\"dojo/dom-construct\"], function(domConstruct){")
+                        javascript
                             .append(" top.dijit.registry.byId(\"mainPanel\").set(\"content\",")
                                 .append(" domConstruct.create(\"iframe\",{")
                                     .append("\"id\": \"").append(MainPage.IFRAME_ID)
                                     .append("\",\"src\": \"./wicket/").append(url)
                                     .append("\",\"style\": \"border: 0; width: 100%; height: 99%\" }")
-                                 .append("))")
-                            .append("});");
+                                 .append("))");
                     }
                 } catch (final EFapsException e) {
                     throw new RestartResponseException(new ErrorPage(e));
@@ -249,20 +284,19 @@ public class ModalWindowContainer
                     // touch the page to ensure that the pagemanager stores it to be accessible
                     getSession().getPageManager().touchPage(page);
                     final String url = getRequestCycle().urlFor(handler).toString();
-                    javascript.append("require([\"dojo/dom-construct\"], function(domConstruct){")
+                    javascript
                         .append(" top.dijit.registry.byId(\"mainPanel\").set(\"content\",")
                             .append(" domConstruct.create(\"iframe\",{")
                                 .append("\"id\": \"").append(MainPage.IFRAME_ID)
                                 .append("\",\"src\": \"./wicket/").append(url)
                                 .append("\",\"style\": \"border: 0; width: 100%; height: 99%\" }")
-                             .append("))")
-                        .append("});");
+                             .append("))");
                 } catch (final EFapsException e) {
                     throw new RestartResponseException(new ErrorPage(e));
                 }
             }
         }
-        return javascript.toString();
+        return DojoWrapper.require(javascript, DojoClasses.domConstruct);
     }
 
     /**

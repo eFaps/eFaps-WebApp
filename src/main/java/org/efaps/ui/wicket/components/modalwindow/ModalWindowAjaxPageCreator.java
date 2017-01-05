@@ -23,6 +23,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.efaps.ui.wicket.models.objects.ICmdUIObject;
+import org.efaps.ui.wicket.models.objects.PagePosition;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.models.objects.UITable;
@@ -57,17 +58,23 @@ public class ModalWindowAjaxPageCreator
      */
     private final ModalWindowContainer modalWindow;
 
+    /** The page position. */
+    private final PagePosition pagePosition;
+
     /**
      * Constructor.
      *
      * @param _uiObject object for the page to create
      * @param _modalWindow modal window the page will be created in
+     * @param _pagePosition the page position
      */
     public ModalWindowAjaxPageCreator(final ICmdUIObject _uiObject,
-                                      final ModalWindowContainer _modalWindow)
+                                      final ModalWindowContainer _modalWindow,
+                                      final PagePosition _pagePosition)
     {
         this.uiObject = _uiObject;
         this.modalWindow = _modalWindow;
+        this.pagePosition = _pagePosition;
     }
 
     /**
@@ -83,7 +90,8 @@ public class ModalWindowAjaxPageCreator
             final String instKey = this.uiObject.getInstance() == null ? null : this.uiObject.getInstance().getKey();
 
             if (this.uiObject.getCommand().getTargetTable() == null) {
-                final UIForm uiform = new UIForm(this.uiObject.getCommand().getUUID(), instKey);
+                final UIForm uiform = new UIForm(this.uiObject.getCommand().getUUID(), instKey)
+                                .setPagePosition(this.pagePosition);
                 uiform.setPicker(this.uiObject);
                 if (!uiform.isInitialized()) {
                     uiform.execute();

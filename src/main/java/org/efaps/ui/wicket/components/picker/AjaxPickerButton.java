@@ -26,6 +26,7 @@ import org.efaps.ui.wicket.components.modalwindow.ModalWindowAjaxPageCreator;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.field.IPickable;
 import org.efaps.ui.wicket.models.field.UIPicker;
+import org.efaps.ui.wicket.models.objects.PagePosition;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.util.EFapsException;
@@ -71,16 +72,19 @@ public class AjaxPickerButton
     public void onRequest(final AjaxRequestTarget _target)
     {
         final ModalWindowContainer modal;
+        final PagePosition pagePosition;
         if (getPage() instanceof MainPage) {
             modal = ((MainPage) getPage()).getModal();
+            pagePosition = PagePosition.CONTENTMODAL;
         } else {
             modal = ((AbstractContentPage) getPage()).getModal();
+            pagePosition = PagePosition.TREEMODAL;
         }
         modal.reset();
         try {
             final UIPicker picker = ((IPickable) getDefaultModelObject()).getPicker();
             picker.setParentParameters(Context.getThreadContext().getParameters());
-            final PageCreator pageCreator = new ModalWindowAjaxPageCreator(picker, modal);
+            final PageCreator pageCreator = new ModalWindowAjaxPageCreator(picker, modal, pagePosition);
             modal.setPageCreator(pageCreator);
             modal.setInitialHeight(picker.getWindowHeight());
             modal.setInitialWidth(picker.getWindowWidth());

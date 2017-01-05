@@ -24,6 +24,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.IRequestParameters;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowAjaxPageCreator;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
+import org.efaps.ui.wicket.models.objects.PagePosition;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.dialog.DialogPage;
@@ -90,15 +91,18 @@ public class OpenModalItem
         @Override
         protected void onEvent(final AjaxRequestTarget _target)
         {
-            ModalWindowContainer modal;
+            final ModalWindowContainer modal;
+            final PagePosition pagePosition;
             if (getPage() instanceof MainPage) {
                 modal = ((MainPage) getPage()).getModal();
+                pagePosition = PagePosition.CONTENTMODAL;
             } else {
                 modal = ((AbstractContentPage) getPage()).getModal();
+                pagePosition = PagePosition.TREEMODAL;
             }
             modal.reset();
             final ModalWindowAjaxPageCreator pageCreator = new ModalWindowAjaxPageCreator((UIMenuItem) super
-                            .getComponent().getDefaultModelObject(), modal);
+                            .getComponent().getDefaultModelObject(), modal, pagePosition);
             modal.setPageCreator(pageCreator);
             modal.setInitialHeight(((UIMenuItem) getDefaultModelObject()).getWindowHeight());
             modal.setInitialWidth(((UIMenuItem) getDefaultModelObject()).getWindowWidth());
@@ -150,15 +154,18 @@ public class OpenModalItem
                 check = true;
             }
             final ModalWindowContainer modal;
+            final PagePosition pagePosition;
             if (getPage() instanceof MainPage) {
                 modal = ((MainPage) getPage()).getModal();
+                pagePosition = PagePosition.CONTENTMODAL;
             } else {
                 modal = ((AbstractContentPage) getPage()).getModal();
+                pagePosition = PagePosition.TREEMODAL;
             }
             if (check) {
                 modal.reset();
                 final ModalWindowAjaxPageCreator pageCreator = new ModalWindowAjaxPageCreator((UIMenuItem) super
-                                .getComponent().getDefaultModelObject(), modal);
+                                .getComponent().getDefaultModelObject(), modal, pagePosition);
                 modal.setPageCreator(pageCreator);
                 modal.setInitialHeight(((UIMenuItem) getDefaultModelObject()).getWindowHeight());
                 modal.setInitialWidth(((UIMenuItem) getDefaultModelObject()).getWindowWidth());

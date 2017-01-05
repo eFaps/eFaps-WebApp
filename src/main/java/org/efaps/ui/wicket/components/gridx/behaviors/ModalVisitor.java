@@ -32,6 +32,7 @@ import org.efaps.db.Instance;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowAjaxPageCreator;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.objects.ICmdUIObject;
+import org.efaps.ui.wicket.models.objects.PagePosition;
 import org.efaps.ui.wicket.models.objects.UIGrid;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
@@ -57,6 +58,16 @@ public class ModalVisitor
         final StringValue rid = para.getParameterValue("rid");
         final UIGrid uiGrid = (UIGrid) _modal.getPage().getDefaultModelObject();
         final Long cmdId = uiGrid.getID4Random(rid.toString());
+        final PagePosition pagePosition;
+
+        switch(uiGrid.getPagePosition()) {
+            case TREE:
+                pagePosition = PagePosition.TREEMODAL;
+                break;
+            case CONTENT:
+            default:
+                pagePosition = PagePosition.CONTENTMODAL;
+        }
 
         final ModalWindowAjaxPageCreator pageCreator = new ModalWindowAjaxPageCreator(new ICmdUIObject()
         {
@@ -87,7 +98,7 @@ public class ModalVisitor
             {
                 return null;
             }
-        }, _modal);
+        }, _modal, pagePosition);
         try {
             final Command cmd = Command.get(cmdId);
             _modal.setInitialHeight(cmd.getWindowHeight());
