@@ -42,12 +42,12 @@ public interface ISelectedRowObject
     /**
      * Adds the selected.
      *
-     * @param __values the values
+     * @param _values the values
      * @return the i selected row object
      */
-    default ISelectedRowObject addSelected(final StringValue... __values)
+    default ISelectedRowObject addSelected(final StringValue... _values)
     {
-        Collections.addAll(getSelected(), __values);
+        Collections.addAll(getSelected(), _values);
         return this;
     };
 

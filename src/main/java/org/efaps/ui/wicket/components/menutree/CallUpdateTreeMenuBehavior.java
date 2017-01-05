@@ -15,7 +15,7 @@
  *
  */
 
-package org.efaps.ui.wicket.components.gridx.behaviors;
+package org.efaps.ui.wicket.components.menutree;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.Session;
@@ -23,7 +23,6 @@ import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.efaps.db.Instance;
-import org.efaps.ui.wicket.components.menutree.MenuUpdateBehavior;
 import org.efaps.ui.wicket.pages.main.MainPage;
 
 /**

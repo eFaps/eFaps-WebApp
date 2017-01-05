@@ -32,8 +32,8 @@ import org.efaps.util.EFapsException;
  *
  * @author The eFaps Team
  */
-public class IconMenuContentAjaxLink
-    extends MenuContentAjaxLink
+public class IconMenuContentLink
+    extends MenuContentLink
 {
 
     /**
@@ -50,7 +50,7 @@ public class IconMenuContentAjaxLink
      * @param _icon the icon
      * @throws EFapsException on error
      */
-    public IconMenuContentAjaxLink(final String _wicketId,
+    public IconMenuContentLink(final String _wicketId,
                                    final IModel<AbstractUIField> _model,
                                    final String _content,
                                    final String _icon)

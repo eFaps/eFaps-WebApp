@@ -34,14 +34,16 @@ import org.efaps.ui.wicket.components.links.ContentContainerLink;
 import org.efaps.ui.wicket.components.links.IconCheckOutLink;
 import org.efaps.ui.wicket.components.links.IconContentContainerLink;
 import org.efaps.ui.wicket.components.links.IconLoadInTargetAjaxLink;
-import org.efaps.ui.wicket.components.links.IconMenuContentAjaxLink;
+import org.efaps.ui.wicket.components.links.IconMenuContentLink;
 import org.efaps.ui.wicket.components.links.LoadInTargetAjaxLink;
 import org.efaps.ui.wicket.components.links.LoadInTargetAjaxLink.ScriptTarget;
-import org.efaps.ui.wicket.components.links.MenuContentAjaxLink;
+import org.efaps.ui.wicket.components.links.MenuContentLink;
 import org.efaps.ui.wicket.components.split.header.RecentLink;
 import org.efaps.ui.wicket.components.values.LabelField;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
+import org.efaps.ui.wicket.models.objects.IPageObject;
+import org.efaps.ui.wicket.models.objects.PagePosition;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
@@ -152,10 +154,17 @@ public final class HRefFactory
                     }
                 }
 
-                // ajax if the page or the reference is a ContentContainerPage,
-                // or the table was called as part of a WizardCall meaning connect is done
-                // or it was opened after a form in modal mode
-                boolean ajax = page != null && (page instanceof ContentContainerPage
+                // first priority is the pagePosition than..
+                boolean ajax = page != null
+                                && ((Component) page).getDefaultModelObject() instanceof IPageObject
+                                && PagePosition.TREE.equals(((IPageObject) ((Component) page).getDefaultModelObject())
+                                                .getPagePosition());
+
+                if (!ajax) {
+                    // ajax if the page or the reference is a ContentContainerPage,
+                //  or the table was called as part of a WizardCall meaning connect is done
+                //  or it was opened after a form in modal mode
+                    ajax = page != null && (page instanceof ContentContainerPage
                                 || calledByPage instanceof ContentContainerPage)
                                 || page instanceof TablePage
                                         && ((AbstractUIPageObject) ((Component) page).getDefaultModelObject())
@@ -169,7 +178,7 @@ public final class HRefFactory
                             && calledByPage instanceof TablePage
                             && ((TablePage) calledByPage).getCalledByPageReference() != null
                             && !(((TablePage) calledByPage).getCalledByPageReference().getPage() instanceof MainPage);
-
+                }
                 // verify ajax by checking if is not a recent link
                 if (ajax && RequestCycle.get().getActiveRequestHandler() instanceof IComponentRequestHandler) {
                     ajax = ajax && !(((IComponentRequestHandler) RequestCycle.get().getActiveRequestHandler())
@@ -193,7 +202,7 @@ public final class HRefFactory
                                         && ((UIStructurBrowser) _uiField.getParent()).isBrowserField(_uiField)) {
                             ret = new LoadInTargetAjaxLink(_wicketId, Model.of(_uiField), content, ScriptTarget.TOP);
                         } else {
-                            ret = new MenuContentAjaxLink(_wicketId, Model.of(_uiField), content);
+                            ret = new MenuContentLink(_wicketId, Model.of(_uiField), content);
                         }
                     } else if (isInPopUp) {
                         ret = new LoadInTargetAjaxLink(_wicketId, Model.of(_uiField), content, ScriptTarget.OPENER);
@@ -202,7 +211,7 @@ public final class HRefFactory
                     }
                 } else {
                     if (ajax) {
-                        ret = new IconMenuContentAjaxLink(_wicketId, Model.of(_uiField), content, icon);
+                        ret = new IconMenuContentLink(_wicketId, Model.of(_uiField), content, icon);
                     } else if (isInPopUp) {
                         ret = new IconLoadInTargetAjaxLink(_wicketId, Model.of(_uiField), content,
                                         ScriptTarget.OPENER, icon);

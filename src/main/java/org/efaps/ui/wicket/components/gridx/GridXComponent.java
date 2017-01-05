@@ -59,14 +59,15 @@ import org.efaps.api.ui.HRef;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.behaviors.dojo.AbstractDojoBehavior;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
-import org.efaps.ui.wicket.components.gridx.behaviors.CallUpdateTreeMenuBehavior;
 import org.efaps.ui.wicket.components.gridx.behaviors.CheckoutBehavior;
 import org.efaps.ui.wicket.components.gridx.behaviors.OpenModalBehavior;
 import org.efaps.ui.wicket.components.gridx.behaviors.PrintBehavior;
 import org.efaps.ui.wicket.components.gridx.behaviors.ReloadBehavior;
 import org.efaps.ui.wicket.components.gridx.behaviors.SubmitBehavior;
 import org.efaps.ui.wicket.components.gridx.behaviors.SubmitModalBehavior;
+import org.efaps.ui.wicket.components.menutree.CallUpdateTreeMenuBehavior;
 import org.efaps.ui.wicket.models.objects.PagePosition;
+import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIGrid;
 import org.efaps.ui.wicket.models.objects.UIGrid.Cell;
 import org.efaps.ui.wicket.models.objects.UIGrid.Column;
@@ -572,7 +573,9 @@ public class GridXComponent
                                     page = new StructurBrowserPage(menu.getUUID(), cell.getInstance().getOid());
                                 }
                             } else {
-                                page = new FormPage(menu.getUUID(), cell.getInstance().getOid());
+                                final UIForm uiForm = new UIForm(menu.getUUID(), cell.getInstance().getOid())
+                                                .setPagePosition(PagePosition.TREE);
+                                page = new FormPage(Model.of(uiForm));
                             }
                             page.add(new CallUpdateTreeMenuBehavior(cell.getInstance()));
                             break;

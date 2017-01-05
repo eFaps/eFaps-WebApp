@@ -92,6 +92,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class UIGrid
     extends AbstractUI
+    implements IPageObject
 {
 
     /** The Constant serialVersionUID. */
@@ -676,6 +677,7 @@ public final class UIGrid
      *
      * @return value of instance variable {@link #pagePosition}
      */
+    @Override
     public PagePosition getPagePosition()
     {
         return this.pagePosition;

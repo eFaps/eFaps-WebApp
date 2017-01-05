@@ -83,7 +83,7 @@ import org.slf4j.LoggerFactory;
  */
 public class UIForm
     extends AbstractUIPageObject
-    implements ISelectedRowObject
+    implements ISelectedRowObject, IPageObject
 {
 
     /**
@@ -147,6 +147,9 @@ public class UIForm
 
     /** The selected. */
     private List<StringValue> selected;
+
+    /** The pageposition. */
+    private PagePosition pagePosition;
 
     /**
      * Constructor.
@@ -873,6 +876,24 @@ public class UIForm
     public void setSelected(final List<StringValue> _selected)
     {
         this.selected = _selected;
+    }
+
+    @Override
+    public PagePosition getPagePosition()
+    {
+        return this.pagePosition;
+    }
+
+    /**
+     * Setter method for instance variable {@link #pagePosition}.
+     *
+     * @param _pagePosition value for instance variable {@link #pagePosition}
+     * @return the UI form
+     */
+    public UIForm setPagePosition(final PagePosition _pagePosition)
+    {
+        this.pagePosition = _pagePosition;
+        return this;
     }
 
     /**
