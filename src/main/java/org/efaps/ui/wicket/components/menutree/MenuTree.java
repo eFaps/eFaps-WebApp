@@ -36,10 +36,13 @@ import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.ILinkListener;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import org.efaps.ui.wicket.behaviors.update.IRemoteUpdateListener;
 import org.efaps.ui.wicket.behaviors.update.IRemoteUpdateable;
+import org.efaps.ui.wicket.models.objects.PagePosition;
+import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
@@ -99,7 +102,7 @@ public class MenuTree
     /**
      * Mapping of a key to menuitem.
      */
-    private final Map<String, UIMenuItem> key2uimenuItem = new HashMap<String, UIMenuItem>();
+    private final Map<String, UIMenuItem> key2uimenuItem = new HashMap<>();
 
     /**
      * Constructor used for a new MenuTree.
@@ -346,8 +349,9 @@ public class MenuTree
                                     .getPageReference());
                 }
             } else {
-                page = new FormPage(menuItem.getCommandUUID(), menuItem.getInstanceKey(), getPage()
-                                .getPageReference());
+                final UIForm uiForm = new UIForm(menuItem.getCommandUUID(), menuItem.getInstanceKey())
+                                .setPagePosition(PagePosition.TREE);
+                page = new FormPage(Model.of(uiForm), getPage().getPageReference());
             }
         } catch (final EFapsException e) {
             page = new ErrorPage(e);

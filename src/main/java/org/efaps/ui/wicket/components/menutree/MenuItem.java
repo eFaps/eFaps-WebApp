@@ -36,6 +36,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
 import org.efaps.ui.wicket.models.objects.PagePosition;
+import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIGrid;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
@@ -190,8 +191,9 @@ public class MenuItem
                         }
                     }
                 } else {
-                    page = new FormPage(menuItem.getCommandUUID(), menuItem.getInstanceKey(), getPage()
-                                    .getPageReference());
+                    final UIForm uiForm = new UIForm(menuItem.getCommandUUID(),  menuItem.getInstanceKey())
+                                    .setPagePosition(PagePosition.TREE) ;
+                    page = new FormPage(Model.of(uiForm), getPage().getPageReference());
                 }
             } catch (final EFapsException e) {
                 page = new ErrorPage(e);

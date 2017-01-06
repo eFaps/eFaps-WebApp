@@ -35,6 +35,7 @@ import org.efaps.ui.wicket.behaviors.update.AbstractRemoteUpdateListenerBehavior
 import org.efaps.ui.wicket.components.menutree.MenuTree;
 import org.efaps.ui.wicket.components.menutree.MenuUpdateBehavior;
 import org.efaps.ui.wicket.models.EmbeddedLink;
+import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
@@ -219,7 +220,8 @@ public class LinkElementComponent
                                                 link.getInstanceKey(), calledByPageRef);
                             }
                         } else {
-                            page = new FormPage(menu.getUUID(), link.getInstanceKey(), calledByPageRef);
+                            final UIForm uiForm = new UIForm(menu.getUUID(), link.getInstanceKey());
+                            page = new FormPage(Model.of(uiForm), calledByPageRef);
                         }
                     } catch (final EFapsException e) {
                         page = new ErrorPage(e);

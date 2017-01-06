@@ -25,6 +25,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.http.ClientProperties;
 import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.efaps.admin.ui.AbstractCommand;
@@ -39,6 +40,8 @@ import org.efaps.ui.wicket.components.LazyIframe;
 import org.efaps.ui.wicket.components.LazyIframe.IFrameProvider;
 import org.efaps.ui.wicket.components.menutree.MenuTree;
 import org.efaps.ui.wicket.components.split.SidePanel;
+import org.efaps.ui.wicket.models.objects.PagePosition;
+import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
@@ -213,7 +216,8 @@ public class ContentContainerPage
                 AbstractContentPage page = null;
                 try {
                     if (ContentContainerPage.this.webForm) {
-                        page = new FormPage(uuid4NewPage, _instanceKey, getPageReference());
+                        final UIForm uiForm = new UIForm(uuid4NewPage, _instanceKey).setPagePosition(PagePosition.TREE);
+                        page = new FormPage(Model.of(uiForm), getPageReference());
                     } else {
                         if (getCommand(uuid4NewPage).getTargetStructurBrowserField() == null) {
                             page = new TablePage(uuid4NewPage, _instanceKey, getPageReference());

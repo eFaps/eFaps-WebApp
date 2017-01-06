@@ -79,6 +79,8 @@ import org.efaps.ui.wicket.models.field.IUIElement;
 import org.efaps.ui.wicket.models.field.set.UIFieldSet;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
+import org.efaps.ui.wicket.models.objects.IPageObject;
+import org.efaps.ui.wicket.models.objects.PagePosition;
 import org.efaps.ui.wicket.models.objects.UIFieldForm;
 import org.efaps.ui.wicket.models.objects.UIFieldTable;
 import org.efaps.ui.wicket.models.objects.UIForm;
@@ -178,10 +180,10 @@ public class AjaxSubmitCloseBehavior
         AjaxSubmitCloseBehavior.LOG.trace("entering onSubmit");
         final String[] oids = ParameterUtil.parameter2Array(
                         getComponent().getRequest().getRequestParameters(), "selectedRow");
-        final Map<String, String[]> others = new HashMap<String, String[]>();
+        final Map<String, String[]> others = new HashMap<>();
         others.put("selectedRow", oids);
 
-        final List<Classification> classifications = new ArrayList<Classification>();
+        final List<Classification> classifications = new ArrayList<>();
         try {
             if (this.uiObject instanceof UIForm) {
                 final UIForm uiform = (UIForm) this.uiObject;
@@ -210,8 +212,11 @@ public class AjaxSubmitCloseBehavior
                             newUIObject = new UITable(this.uiObject.getTargetCmdUUID(), this.uiObject
                                             .getInstanceKey(), this.uiObject.getOpenerId());
                         } else {
+                            final PagePosition pp = this.uiObject instanceof IPageObject
+                                            ? ((IPageObject) this.uiObject).getPagePosition() : PagePosition.CONTENT;
                             newUIObject = new UIForm(this.uiObject.getTargetCmdUUID(), this.uiObject
-                                            .getInstanceKey(), this.uiObject.getOpenerId());
+                                            .getInstanceKey(), this.uiObject.getOpenerId())
+                                            .setPagePosition(pp);
                         }
 
                         final UIWizardObject wizard = new UIWizardObject(newUIObject);
@@ -644,7 +649,7 @@ public class AjaxSubmitCloseBehavior
     private List<FormPanel> getFormPanels()
     {
         AjaxSubmitCloseBehavior.LOG.trace("entering getFormPanels");
-        final List<FormPanel> ret = new ArrayList<FormPanel>();
+        final List<FormPanel> ret = new ArrayList<>();
         final Iterator<?> iterator = getForm().iterator();
         while (iterator.hasNext()) {
             final Object object = iterator.next();

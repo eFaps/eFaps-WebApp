@@ -37,10 +37,13 @@ import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.link.ILinkListener;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.util.SetModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.efaps.ui.wicket.components.menutree.MenuTree;
 import org.efaps.ui.wicket.components.menutree.TreeMenuModel;
+import org.efaps.ui.wicket.models.objects.PagePosition;
+import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
@@ -86,7 +89,7 @@ public class StructurBrowserTree
                                final IModel<UIStructurBrowser> _model)
     {
         super(_wicketId, new StructurBrowserProvider(_model),
-                        new SetModel<UIStructurBrowser>(_model.getObject().getExpandedBrowsers()));
+                        new SetModel<>(_model.getObject().getExpandedBrowsers()));
         if ("human".equals(Configuration.getAttribute(ConfigAttribute.STRUCTREE_CLASS))) {
             add(new HumanTheme());
         } else if ("windows".equals(Configuration.getAttribute(ConfigAttribute.STRUCTREE_CLASS))) {
@@ -173,8 +176,9 @@ public class StructurBrowserTree
                                         .getPageReference());
                     }
                 } else {
-                    page = new FormPage(uiStrBrws.getCommandUUID(), uiStrBrws.getInstanceKey(), getPage()
-                                    .getPageReference());
+                    final UIForm uiForm = new UIForm(uiStrBrws.getCommandUUID(), uiStrBrws.getInstanceKey())
+                                    .setPagePosition(PagePosition.CONTENT);
+                    page = new FormPage(Model.of(uiForm), getPage().getPageReference());
                 }
             } catch (final EFapsException e) {
                 page = new ErrorPage(e);

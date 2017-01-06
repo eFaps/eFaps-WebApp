@@ -18,7 +18,6 @@
 package org.efaps.ui.wicket.pages.content.form;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Page;
@@ -69,18 +68,6 @@ public class FormPage
     private static final long serialVersionUID = 8884911406648729094L;
 
     /**
-     * @param _commandUUID UUID of the command
-     * @param _instanceKey oid of the instance
-     * @throws EFapsException on error
-     */
-    public FormPage(final UUID _commandUUID,
-                    final String _instanceKey)
-        throws EFapsException
-    {
-        this(Model.of(new UIForm(_commandUUID, _instanceKey)));
-    }
-
-    /**
      * @param _model model for the page
      * @throws EFapsException on error
      */
@@ -88,20 +75,6 @@ public class FormPage
         throws EFapsException
     {
         this(_model, (ModalWindowContainer) null);
-    }
-
-    /**
-     * @param _commandUUID UUID of the command
-     * @param _oid oid of the instance
-     * @param _modalWindow modal window of this page
-     * @throws EFapsException on error
-     */
-    public FormPage(final UUID _commandUUID,
-                    final String _oid,
-                    final ModalWindowContainer _modalWindow)
-        throws EFapsException
-    {
-        this(Model.of(new UIForm(_commandUUID, _oid)), _modalWindow);
     }
 
     /**
@@ -115,35 +88,6 @@ public class FormPage
     {
         super(_model, _modalWindow);
         this.addComponents();
-    }
-
-    /**
-     * @param _commandUUID UUID of the command
-     * @param _oid oid of the instance
-     * @param _openerId id of the opener
-     * @throws EFapsException on error
-     */
-    public FormPage(final UUID _commandUUID,
-                    final String _oid,
-                    final String _openerId)
-        throws EFapsException
-    {
-        super(Model.of(new UIForm(_commandUUID, _oid, _openerId)), null);
-        this.addComponents();
-    }
-
-    /**
-     * @param _commandUUID      UUID of the command
-     * @param _instanceKey      oid of the instance
-     * @param _pageReference    Refercne to the page that opened
-     * @throws EFapsException on error
-     */
-    public FormPage(final UUID _commandUUID,
-                    final String _instanceKey,
-                    final PageReference _pageReference)
-        throws EFapsException
-    {
-        this(Model.of(new UIForm(_commandUUID, _instanceKey)), _pageReference);
     }
 
     /**
@@ -172,7 +116,6 @@ public class FormPage
         super(_model, _modalWindow, _pageReference);
         this.addComponents();
     }
-
 
     /**
      * Method to add the components to this page.

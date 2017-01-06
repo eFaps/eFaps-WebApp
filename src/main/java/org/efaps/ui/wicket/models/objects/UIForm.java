@@ -881,7 +881,15 @@ public class UIForm
     @Override
     public PagePosition getPagePosition()
     {
-        return this.pagePosition;
+        PagePosition ret;
+        if (this.pagePosition == null) {
+            //TODO remove
+            UIForm.LOG.error("MISSING PAGEPOSITION!!!");
+            ret = PagePosition.CONTENT;
+        } else {
+            ret = this.pagePosition;
+        }
+        return ret;
     }
 
     /**

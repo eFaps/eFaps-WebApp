@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.behaviors;
@@ -37,7 +34,6 @@ import org.efaps.ui.wicket.EFapsSession;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class AjaxDownloadBehavior
     extends AbstractAjaxBehavior
@@ -173,15 +169,17 @@ public class AjaxDownloadBehavior
     /**
      * Script that searches for an existing iframe to use it for the download of the frame.
      * If it does not exist it will be created.
+     *
+     * @param _url the url
      * @return the callback script
      */
     protected String getCallBackScript(final String _url)
     {
         final StringBuilder js = new StringBuilder()
             .append("require(['dojo/_base/window','dojo/dom','dojo/dom-construct'], ")
-                .append("function (win, dom, domConstruct) {\n" )
-            .append("win.withDoc(top.dojo.doc, function () {\n" )
-            .append("var node = dom.byId('downloadFrame');\n" )
+                .append("function (win, dom, domConstruct) {\n")
+            .append("win.withDoc(top.dojo.doc, function () {\n")
+            .append("var node = dom.byId('downloadFrame');\n")
             .append("if (node == null) {\n")
             .append("node = domConstruct.place('<iframe id=\"downloadFrame\" src=\"about:blank\" ")
                 .append("style=\"position: absolute; left: 1px; top: 1px; height: 1px; width: 1px; ")
