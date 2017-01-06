@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev:1510 $
- * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
- * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.components.modalwindow;
@@ -59,7 +56,6 @@ import org.efaps.util.EFapsException;
  * This is a wrapper class for a modal window.
  *
  * @author The eFaps Team
- * @version $Id:ModalWindowContainer.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class ModalWindowContainer
     extends AbstractModalWindow
@@ -165,10 +161,11 @@ public class ModalWindowContainer
         final StringBuilder javascript = new StringBuilder();
         if (_uiObject instanceof IPageObject) {
             try {
-                Page page;
+                final Page page;
                 if (getPage().getDefaultModelObject() instanceof UIGrid) {
                     final UIGrid uiGrid = (UIGrid) getPage().getDefaultModelObject();
-                    page = new GridPage(Model.of(UIGrid.get(uiGrid.getCmdUUID(), uiGrid.getPagePosition())));
+                    page = new GridPage(Model.of(UIGrid.get(uiGrid.getCmdUUID(), uiGrid.getPagePosition())
+                                    .setCallInstance(uiGrid.getCallInstance())));
                 } else if (getPage().getDefaultModelObject() instanceof UIForm) {
                     final UIForm uiForm = (UIForm) getPage().getDefaultModelObject();
                     uiForm.resetModel();

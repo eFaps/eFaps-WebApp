@@ -21,6 +21,7 @@ import java.io.File;
 import java.util.List;
 
 import org.apache.wicket.Page;
+import org.apache.wicket.PageReference;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.IAjaxIndicatorAware;
@@ -46,6 +47,7 @@ import org.efaps.ui.wicket.pages.dialog.DialogPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.util.ParameterUtil;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -110,25 +112,8 @@ public class SubmitBehavior
                                         public void component(final ModalWindowContainer _modal,
                                                               final IVisit<Void> _visit)
                                         {
-                                            _modal.setPageCreator(new ModalWindow.PageCreator()
-                                            {
-
-                                                private static final long serialVersionUID = 1L;
-
-                                                @Override
-                                                public Page createPage()
-                                                {
-                                                    Page page = null;
-                                                    try {
-                                                        page = new DialogPage(getComponent().getPage()
-                                                                        .getPageReference(), UICmdObject.getModel(
-                                                                                        cmdId), oids);
-                                                    } catch (final EFapsException e) {
-                                                        page = new ErrorPage(e);
-                                                    }
-                                                    return page;
-                                                }
-                                            });
+                                            _modal.setPageCreator(new AskDialogPageCreator(getComponent().getPage()
+                                                            .getPageReference(), cmdId, oids));
                                             _modal.setInitialHeight(150);
                                             _modal.setInitialWidth(350);
                                             _modal.show(_target);
@@ -172,19 +157,8 @@ public class SubmitBehavior
                                     public void component(final ModalWindowContainer _modal,
                                                           final IVisit<Void> _visit)
                                     {
-                                        _modal.setPageCreator(new ModalWindow.PageCreator()
-                                        {
-
-                                            private static final long serialVersionUID = 1L;
-
-                                            @Override
-                                            public Page createPage()
-                                            {
-                                                return new DialogPage(getComponent().getPage().getPageReference(),
-                                                                "SubmitSelectedRows.fail" + cmd.getSubmitSelectedRows(),
-                                                                false, false);
-                                            }
-                                        });
+                                        _modal.setPageCreator(new WarnDialogPageCreator(getComponent().getPage()
+                                                        .getPageReference(), cmd.getSubmitSelectedRows()));
                                         _modal.setInitialHeight(150);
                                         _modal.setInitialWidth(350);
                                         _modal.show(_target);
@@ -201,5 +175,90 @@ public class SubmitBehavior
     public String getAjaxIndicatorMarkupId()
     {
         return "eFapsVeil";
+    }
+
+    /**
+     * The Class DialogPageCreate.
+     */
+    static class AskDialogPageCreator
+        implements ModalWindow.PageCreator
+    {
+
+        /** The Constant serialVersionUID. */
+        private static final long serialVersionUID = 1L;
+
+        /** The page ref. */
+        private final PageReference pageRef;
+
+        /** The rows. */
+        private final long cmdId;
+
+        /** The oids. */
+        private final String[] oids;
+
+        /**
+         * Instantiates a new ask dialog page creator.
+         *
+         * @param _pageReference the page reference
+         * @param _cmdId the cmd id
+         * @param _oids the oids
+         */
+        public AskDialogPageCreator(final PageReference _pageReference,
+                                    final Long _cmdId,
+                                    final String[] _oids)
+        {
+            this.pageRef = _pageReference;
+            this.cmdId = _cmdId;
+            this.oids = _oids;
+        }
+
+        @Override
+        public Page createPage()
+        {
+            Page ret;
+            try {
+                ret = new DialogPage(this.pageRef, UICmdObject.getModel(this.cmdId), this.oids);
+            } catch (final CacheReloadException e) {
+                ret = new ErrorPage(e);
+            }
+            return ret;
+        }
+    }
+
+
+    /**
+     * The Class DialogPageCreate.
+     */
+    static class WarnDialogPageCreator
+        implements ModalWindow.PageCreator
+    {
+
+        /** The Constant serialVersionUID. */
+        private static final long serialVersionUID = 1L;
+
+        /** The page ref. */
+        private final PageReference pageRef;
+
+        /** The rows. */
+        private final int rows;
+
+        /**
+         * Instantiates a new dialog page create.
+         *
+         * @param _pageRef the page ref
+         * @param _rows the rows
+         */
+        WarnDialogPageCreator(final PageReference _pageRef,
+                              final int _rows)
+        {
+            this.pageRef = _pageRef;
+            this.rows = _rows;
+        }
+
+        @Override
+        public Page createPage()
+        {
+            return new DialogPage(this.pageRef, "SubmitSelectedRows.fail" + this.rows, false, false);
+        }
     }
 }
