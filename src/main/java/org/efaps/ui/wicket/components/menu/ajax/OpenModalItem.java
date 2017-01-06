@@ -24,6 +24,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.IRequestParameters;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowAjaxPageCreator;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
+import org.efaps.ui.wicket.models.objects.IPageObject;
 import org.efaps.ui.wicket.models.objects.PagePosition;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
@@ -98,7 +99,19 @@ public class OpenModalItem
                 pagePosition = PagePosition.CONTENTMODAL;
             } else {
                 modal = ((AbstractContentPage) getPage()).getModal();
-                pagePosition = PagePosition.TREEMODAL;
+                if (getPage().getDefaultModelObject() instanceof IPageObject) {
+                    switch (((IPageObject) getPage().getDefaultModelObject()).getPagePosition()) {
+                        case TREE:
+                            pagePosition = PagePosition.TREEMODAL;
+                            break;
+                        case CONTENT:
+                        default:
+                            pagePosition = PagePosition.CONTENTMODAL;
+                            break;
+                    }
+                } else {
+                    pagePosition = PagePosition.TREEMODAL;
+                }
             }
             modal.reset();
             final ModalWindowAjaxPageCreator pageCreator = new ModalWindowAjaxPageCreator((UIMenuItem) super
@@ -160,7 +173,19 @@ public class OpenModalItem
                 pagePosition = PagePosition.CONTENTMODAL;
             } else {
                 modal = ((AbstractContentPage) getPage()).getModal();
-                pagePosition = PagePosition.TREEMODAL;
+                if (getPage().getDefaultModelObject() instanceof IPageObject) {
+                    switch (((IPageObject) getPage().getDefaultModelObject()).getPagePosition()) {
+                        case TREE:
+                            pagePosition = PagePosition.TREEMODAL;
+                            break;
+                        case CONTENT:
+                        default:
+                            pagePosition = PagePosition.CONTENTMODAL;
+                            break;
+                    }
+                } else {
+                    pagePosition = PagePosition.TREEMODAL;
+                }
             }
             if (check) {
                 modal.reset();

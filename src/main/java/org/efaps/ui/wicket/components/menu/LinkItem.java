@@ -36,6 +36,7 @@ import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.components.IRecent;
 import org.efaps.ui.wicket.models.objects.PagePosition;
+import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIGrid;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
@@ -99,8 +100,9 @@ public class LinkItem
                 }
                 setResponsePage(page);
             } else if (command.getTargetForm() != null || command.getTargetSearch() != null) {
-                final FormPage page = new FormPage(model.getCommandUUID(), model.getInstanceKey(), getPage()
-                                .getPageReference());
+                final UIForm uiForm = new UIForm(model.getCommandUUID(),
+                                model.getInstanceKey()).setPagePosition(PagePosition.CONTENT);
+                final FormPage page = new FormPage(Model.of(uiForm), getPage().getPageReference());
                 setResponsePage(page);
             } else {
                 try {
@@ -147,7 +149,9 @@ public class LinkItem
                 }
             }
         } else if (command.getTargetForm() != null) {
-            final FormPage page = new FormPage(model.getCommandUUID(), model.getInstanceKey());
+            final UIForm uiForm = new UIForm(model.getCommandUUID(),
+                            model.getInstanceKey()).setPagePosition(PagePosition.CONTENT);
+            final FormPage page = new FormPage(Model.of(uiForm));
             setResponsePage(page);
         }
     }
