@@ -47,10 +47,13 @@ import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.dashboard.DashboardPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.ui.wicket.pages.error.UnexpectedErrorPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.ui.wicket.util.DojoClasses;
 import org.efaps.ui.wicket.util.DojoWrapper;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is a wrapper class for a modal window.
@@ -64,6 +67,11 @@ public class ModalWindowContainer
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(ModalWindowContainer.class);
 
     /**
      * Stores if the child mut be reloaded.
@@ -162,16 +170,22 @@ public class ModalWindowContainer
         if (_uiObject instanceof IPageObject) {
             try {
                 final Page page;
-                if (getPage().getDefaultModelObject() instanceof UIGrid) {
-                    final UIGrid uiGrid = (UIGrid) getPage().getDefaultModelObject();
+                final Object modelObject = getPage().getDefaultModelObject();
+                if (modelObject instanceof UIGrid) {
+                    final UIGrid uiGrid = (UIGrid) modelObject;
                     page = new GridPage(Model.of(UIGrid.get(uiGrid.getCmdUUID(), uiGrid.getPagePosition())
                                     .setCallInstance(uiGrid.getCallInstance())));
-                } else if (getPage().getDefaultModelObject() instanceof UIForm) {
-                    final UIForm uiForm = (UIForm) getPage().getDefaultModelObject();
+                } else if (modelObject instanceof UIForm) {
+                    final UIForm uiForm = (UIForm) modelObject;
                     uiForm.resetModel();
                     page = new FormPage(Model.of(uiForm));
+                } else if (modelObject instanceof UITable) {
+                    page = new TablePage(Model.of((UITable) modelObject));
+                } else if (modelObject instanceof UIStructurBrowser) {
+                    page = new StructurBrowserPage(Model.of((UIStructurBrowser) modelObject));
                 } else {
-                    page = new ErrorPage(null);
+                    ModalWindowContainer.LOG.error("NO PAGE");
+                    page = new UnexpectedErrorPage();
                 }
 
                 final IRequestHandler handler = new RenderPageRequestHandler(new PageProvider(page));
