@@ -147,7 +147,8 @@ public class GridXComponent
                             DojoClasses.HScroller, DojoClasses.SingleSort, DojoClasses.SyncCache,
                             DojoClasses.HeaderDialog, DojoClasses.MoveColumn, DojoClasses.SelectColumn,
                             DojoClasses.SelectCell, DojoClasses.DnDColumn, DojoClasses.HiddenColumns,
-                            DojoClasses.GridConfig, DojoClasses.GridSort, DojoClasses.Summary, DojoClasses.QuickFilter,
+                            DojoClasses.GridConfig, DojoClasses.GridSort, DojoClasses.Summary,
+                            DojoClasses.GridQuickFilter,
                             DojoClasses.Bar, DojoClasses.Persist, DojoClasses.Filter, DojoClasses.FilterBar,
                             DojoClasses.DropDownButton, DojoClasses.TextBox, DojoClasses.TooltipDialog,
                             DojoClasses.ready, DojoClasses.domGeom, DojoClasses.ColumnLock);
@@ -244,7 +245,7 @@ public class GridXComponent
                 js.append("{plugin: pMenuBar, style: 'text-align: left;'}, \n");
             }
 
-            js.append("{pluginClass: QuickFilter, style: 'text-align: center;'}, \n")
+            js.append("{pluginClass: GridQuickFilter, style: 'text-align: center;'}, \n")
                     .append("{ pluginClass: \"efaps/GridConfig\", style: 'text-align: right;', printItems: [")
                     .append(getPrintMenuItems()).append("],\n")
                     .append("reload : ").append(getBehavior(ReloadBehavior.class).getCallbackFunction())

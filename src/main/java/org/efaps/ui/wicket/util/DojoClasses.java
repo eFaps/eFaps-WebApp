@@ -39,6 +39,7 @@ public enum DojoClasses
     HeaderDialog("efaps/HeaderDialog","HeaderDialog"),
     GridConfig("efaps/GridConfig","GridConfig"),
     GridSort("efaps/GridSort","GridSort"),
+    GridQuickFilter("efaps/GridQuickFilter","GridQuickFilter"),
     Summary("gridx/support/Summary","Summary"),
     QuickFilter("gridx/support/QuickFilter","QuickFilter"),
     Bar("gridx/modules/Bar","Bar"),

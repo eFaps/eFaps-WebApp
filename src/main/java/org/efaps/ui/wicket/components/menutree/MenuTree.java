@@ -43,13 +43,17 @@ import org.efaps.ui.wicket.behaviors.update.IRemoteUpdateListener;
 import org.efaps.ui.wicket.behaviors.update.IRemoteUpdateable;
 import org.efaps.ui.wicket.models.objects.PagePosition;
 import org.efaps.ui.wicket.models.objects.UIForm;
+import org.efaps.ui.wicket.models.objects.UIGrid;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
+import org.efaps.ui.wicket.pages.content.grid.GridPage;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.ui.wicket.util.Configuration;
+import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 
@@ -151,8 +155,8 @@ public class MenuTree
         menuItem.setHeader(true);
         boolean hasDefault = false;
         for (final UIMenuItem childItem : menuItem.getChildren()) {
-            if ((_selectCmdUUID == null && childItem.isDefaultSelected())
-                            || (_selectCmdUUID != null && _selectCmdUUID.equals(childItem.getCommandUUID()))) {
+            if (_selectCmdUUID == null && childItem.isDefaultSelected()
+                            || _selectCmdUUID != null && _selectCmdUUID.equals(childItem.getCommandUUID())) {
                 hasDefault = true;
                 childItem.setSelected(true);
             }
@@ -345,8 +349,13 @@ public class MenuTree
                     page = new StructurBrowserPage(menuItem.getCommandUUID(),
                                     menuItem.getInstanceKey(), getPage().getPageReference());
                 } else {
-                    page = new TablePage(menuItem.getCommandUUID(), menuItem.getInstanceKey(), getPage()
+                    if ("GridX".equals(Configuration.getAttribute(ConfigAttribute.TABLEDEFAULTTYPETREE))) {
+                        page = new GridPage(Model.of(UIGrid.get(menuItem.getCommandUUID(), PagePosition.TREE)
+                                        .setCallInstance(menuItem.getInstance())));
+                    } else {
+                        page = new TablePage(menuItem.getCommandUUID(), menuItem.getInstanceKey(), getPage()
                                     .getPageReference());
+                    }
                 }
             } else {
                 final UIForm uiForm = new UIForm(menuItem.getCommandUUID(), menuItem.getInstanceKey())
