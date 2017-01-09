@@ -17,6 +17,7 @@
 
 package org.efaps.ui.wicket;
 
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -84,6 +85,8 @@ import org.efaps.ui.wicket.request.EFapsResourceAggregator;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This Class presents the WebApplication for eFaps using the Wicket-Framework. <br/>
@@ -98,15 +101,33 @@ public class EFapsApplication
     /** The max inactive interval. */
     private static int MAXINACTIVEINTERVAL = 0;
 
+    /**
+     * Logger for this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(EFapsApplication.class);
+
     /** The executor service. */
     private final ExecutorService executorService = new ThreadPoolExecutor(10, 10, 0L, TimeUnit.MILLISECONDS,
                     new LinkedBlockingQueue<Runnable>(), new ThreadFactory()
                     {
+
                         @Override
                         public Thread newThread(final Runnable _r)
                         {
                             final Thread ret = Executors.defaultThreadFactory().newThread(_r);
                             ret.setName("eFaps-Process-" + ret.getId());
+                            ret.setContextClassLoader(EFapsClassLoader.getInstance());
+                            ret.setUncaughtExceptionHandler(new UncaughtExceptionHandler()
+                            {
+
+                                @Override
+                                public void uncaughtException(final Thread _thread,
+                                                              final Throwable _throwable)
+                                {
+                                    EFapsApplication.LOG.error("Caught error from Thread '{}'", _thread.getName());
+                                    EFapsApplication.LOG.error("->", _throwable);
+                                }
+                            });
                             return ret;
                         }
                     });
@@ -250,8 +271,8 @@ public class EFapsApplication
     public WebRequest newWebRequest(final HttpServletRequest _servletRequest,
                                     final String _filterPath)
     {
-        if (MAXINACTIVEINTERVAL == 0) {
-            MAXINACTIVEINTERVAL = _servletRequest.getSession().getMaxInactiveInterval();
+        if (EFapsApplication.MAXINACTIVEINTERVAL == 0) {
+            EFapsApplication.MAXINACTIVEINTERVAL = _servletRequest.getSession().getMaxInactiveInterval();
         }
         return new EFapsRequest(_servletRequest, _filterPath);
     }
@@ -332,7 +353,7 @@ public class EFapsApplication
      */
     public static int getMaxInactiveInterval()
     {
-        return MAXINACTIVEINTERVAL;
+        return EFapsApplication.MAXINACTIVEINTERVAL;
     }
 
     /**
