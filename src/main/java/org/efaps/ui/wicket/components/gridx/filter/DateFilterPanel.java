@@ -19,6 +19,7 @@ package org.efaps.ui.wicket.components.gridx.filter;
 
 import java.util.Date;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.datetime.StyleDateConverter;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.GenericPanel;
@@ -54,8 +55,10 @@ public class DateFilterPanel
         throws EFapsException
     {
         super(_id, _model);
-        final DateTime fromDate = new DateTime(getModelObject().get("from"));
-        final DateTime toDate = new DateTime(getModelObject().get("to"));
+        final DateTime fromDate = StringUtils.isNotEmpty((CharSequence) getModelObject().get("from"))
+                        ? new DateTime(getModelObject().get("from")) : null;
+        final DateTime toDate = StringUtils.isNotEmpty((CharSequence) getModelObject().get("to"))
+                        ? new DateTime(getModelObject().get("to")) : null;
 
         this.add(new Label("textFrom", DBProperties.getProperty("FilterPage.textFrom")));
         this.add(new Label("textTo", DBProperties.getProperty("FilterPage.textTo")));
