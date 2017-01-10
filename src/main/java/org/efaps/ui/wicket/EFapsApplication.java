@@ -176,7 +176,7 @@ public class EFapsApplication
 
         getJavaScriptLibrarySettings().setJQueryReference(new DynamicJQueryResourceReference());
 
-        getApplicationSettings().setPageExpiredErrorPage(LoginPage.class);
+        getApplicationSettings().setPageExpiredErrorPage(MainPage.class);
         getApplicationSettings().setInternalErrorPage(UnexpectedErrorPage.class);
 
         final CompoundClassResolver resolver = new CompoundClassResolver();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket;
@@ -31,6 +28,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -39,6 +40,7 @@ import org.apache.wicket.Session;
 import org.apache.wicket.protocol.http.WebSession;
 import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
+import org.apache.wicket.protocol.ws.api.HttpSessionCopy;
 import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.cycle.RequestCycle;
@@ -60,6 +62,8 @@ import org.efaps.ui.wicket.request.EFapsRequest;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 import org.efaps.util.EFapsException;
+import org.keycloak.adapters.servlet.OIDCFilterSessionStore.SerializableKeycloakAccount;
+import org.keycloak.adapters.spi.KeycloakAccount;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +73,6 @@ import org.slf4j.LoggerFactory;
  * login/logout a User.
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class EFapsSession
     extends WebSession
@@ -278,9 +281,23 @@ public class EFapsSession
         boolean ret = false;
         if (this.userName != null) {
             ret = true;
+        } else {
+            final HttpServletRequest httpRequest = ((ServletWebRequest) RequestCycle.get().getRequest())
+                            .getContainerRequest();
+            final HttpSession httpSession = httpRequest.getSession(false);
+            if (httpSession != null && !(httpSession instanceof HttpSessionCopy)) {
+                final SerializableKeycloakAccount account = (SerializableKeycloakAccount) httpSession.getAttribute(
+                                KeycloakAccount.class.getName());
+                if (account != null) {
+                    this.userName = account.getPrincipal().getName();
+                    openContext();
+                    setAttribute(EFapsSession.LOGIN_ATTRIBUTE_NAME, this.userName);
+                    RegistryManager.registerUserSession(this.userName, getId());
+                    ret = true;
+                }
+            }
         }
         return ret;
-
     }
 
     /**
@@ -312,7 +329,6 @@ public class EFapsSession
      */
     public final void logout()
     {
-
         if (this.sessionAttributes.containsKey(UserAttributesSet.CONTEXTMAPKEY)) {
             try {
                 UsageRegistry.store();
@@ -323,11 +339,18 @@ public class EFapsSession
             } finally {
                 this.sessionAttributes.clear();
                 removeAttribute(EFapsSession.LOGIN_ATTRIBUTE_NAME);
-                invalidate();
             }
         }
-        closeContext();
         this.userName = null;
+        final HttpServletRequest httpRequest = ((ServletWebRequest) RequestCycle.get().getRequest())
+                        .getContainerRequest();
+        try {
+            httpRequest.logout();
+        } catch (final ServletException e) {
+            EFapsSession.LOG.error("Catched erroror for logout", e);
+        }
+        closeContext();
+        invalidate();
     }
 
     /**
@@ -511,6 +534,10 @@ public class EFapsSession
     {
         EFapsSession.LOG.trace("Session invalidated: {}", this);
         RegistryManager.removeUserSession(getId());
+        // invalidation came from other process
+        if (this.userName != null) {
+            this.userName = null;
+        }
         super.onInvalidate();
     }
 
