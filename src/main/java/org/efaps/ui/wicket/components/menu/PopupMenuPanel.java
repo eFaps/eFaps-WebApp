@@ -29,6 +29,7 @@ import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.behaviors.dojo.PopupMenuBarItemBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.PopupMenuItemBehavior;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.util.IdGenerator;
 import org.efaps.util.cache.CacheReloadException;
 
@@ -101,7 +102,8 @@ public class PopupMenuPanel
                 final UIMenuItem uiItem = (UIMenuItem) getDefaultModelObject();
                 final StringBuilder html = new StringBuilder();
                 if (PopupMenuPanel.this.menuBarItem && uiItem.getImage() != null) {
-                    html.append("<img src=\"/..").append(uiItem.getImage()).append("\" class=\"eFapsMenuImage\"/>");
+                    html.append("<img src=\"").append(EFapsContentReference.getImageURL(uiItem.getImage()))
+                        .append("\" class=\"eFapsMenuImage\"/>");
                 } else if (!PopupMenuPanel.this.menuBarItem) {
                     if (uiItem.getImage() == null) {
                         html.append("<div class=\"eFapsMenuImagePlaceHolder\">").append("&nbsp;</div>");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.components.button;
@@ -23,15 +20,14 @@ package org.efaps.ui.wicket.components.button;
 import org.apache.wicket.Component;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.ComponentTag;
-import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
+import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 
 /**
  * @author The eFaps Team
- * @version $Id$
  */
 public class ButtonStyleBehavior
     extends Behavior
@@ -53,7 +49,7 @@ public class ButtonStyleBehavior
                            final IHeaderResponse _response)
     {
         super.renderHead(_component, _response);
-        _response.render(CssHeaderItem.forUrl(ButtonStyleBehavior.CSS.getStaticContentUrl()));
+        _response.render(AbstractEFapsHeaderItem.forCss(ButtonStyleBehavior.CSS));
     }
 
     @Override

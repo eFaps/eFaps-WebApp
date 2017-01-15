@@ -67,7 +67,6 @@ import org.efaps.ui.wicket.models.field.IHidden;
 import org.efaps.ui.wicket.models.field.UIField;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
-import org.efaps.util.RequestHandler;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -277,7 +276,7 @@ public class UIStructurBrowser
      * Set of expanded UIStructurBrowser. Used on ly for the root node to be able
      * to initialize correctly the Tree for the UserInterface.
      */
-    private final Set<UIStructurBrowser> expandedBrowsers = new HashSet<UIStructurBrowser>();
+    private final Set<UIStructurBrowser> expandedBrowsers = new HashSet<>();
 
     /**
      * Standard constructor, if called this StructurBrowserModel will be defined
@@ -406,11 +405,11 @@ public class UIStructurBrowser
         final List<Return> ret;
         try {
             if (getTableUUID() == null) {
-                final Map<Instance, Boolean> map = new LinkedHashMap<Instance, Boolean>();
+                final Map<Instance, Boolean> map = new LinkedHashMap<>();
                 map.put(getInstance(), null);
                 executeTree(map, false);
             } else {
-                final Map<Instance, Boolean> map = new LinkedHashMap<Instance, Boolean>();
+                final Map<Instance, Boolean> map = new LinkedHashMap<>();
                 if (!isCreateMode()) {
                     ret = getObject4Event().executeEvents(EventType.UI_TABLE_EVALUATE, ParameterValues.CLASS, this,
                                 ParameterValues.INSTANCE, getInstance());
@@ -434,7 +433,7 @@ public class UIStructurBrowser
                                final boolean _expand)
     {
         try {
-            final List<Instance> instances = new ArrayList<Instance>();
+            final List<Instance> instances = new ArrayList<>();
             for (final Instance inst : _map.keySet()) {
                 instances.add(inst);
             }
@@ -456,7 +455,7 @@ public class UIStructurBrowser
                     child.setParent(checkForChildren(instance));
                 }
                 child.setImage(Image.getTypeIcon(instance.getType()) != null ? Image.getTypeIcon(instance.getType())
-                                .getUrl() : null);
+                                .getName() : null);
             }
         } catch (final EFapsException e) {
             throw new RestartResponseException(new ErrorPage(e));
@@ -479,7 +478,7 @@ public class UIStructurBrowser
                                     final boolean _expand)
     {
         try {
-            final List<Instance> instances = new ArrayList<Instance>();
+            final List<Instance> instances = new ArrayList<>();
             for (final Instance inst : _map.keySet()) {
                 instances.add(inst);
             }
@@ -591,7 +590,7 @@ public class UIStructurBrowser
                                 child.setParent(checkForChildren(instance));
                             }
                             child.setImage(Image.getTypeIcon(instance.getType()) != null ? Image.getTypeIcon(
-                                            instance.getType()).getUrl() : null);
+                                            instance.getType()).getName() : null);
                             child.setBrowserFieldIndex(child.getColumns().size());
                         }
                         if (field.isHiddenDisplay(getMode())) {
@@ -1157,7 +1156,7 @@ public class UIStructurBrowser
     private void setImage(final String _url)
     {
         if (_url != null) {
-            this.image = RequestHandler.replaceMacrosInUrl(_url);
+            this.image = _url;
         }
     }
 
@@ -1281,7 +1280,7 @@ public class UIStructurBrowser
                 if (Context.getThreadContext().containsSessionAttribute(getCacheKey())) {
                     sessMap = (Map<String, Boolean>) Context.getThreadContext().getSessionAttribute(getCacheKey());
                 } else {
-                    sessMap = new HashMap<String, Boolean>();
+                    sessMap = new HashMap<>();
                 }
                 sessMap.put(getInstanceKey(), isExpanded());
                 Context.getThreadContext().setSessionAttribute(getCacheKey(), sessMap);

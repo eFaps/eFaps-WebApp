@@ -53,7 +53,7 @@ public abstract class AbstractUIFactory
                             && _uiField.getInstance().getType() != null) {
                 final Image image = Image.getTypeIcon(_uiField.getInstance().getType());
                 if (image != null) {
-                    icon = image.getUrl();
+                    icon = image.getName();
                 }
             }
             final String readonly = getReadOnlyValue(_uiField);

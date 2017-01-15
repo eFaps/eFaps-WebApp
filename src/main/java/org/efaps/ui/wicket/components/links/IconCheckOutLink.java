@@ -24,6 +24,7 @@ import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
 import org.efaps.ui.wicket.components.values.LabelField;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
 
 /**
@@ -51,13 +52,13 @@ public class IconCheckOutLink
      * @throws EFapsException the e faps exception
      */
     public IconCheckOutLink(final String _wicketId,
-                                    final IModel<AbstractUIField> _model,
-                                    final String _content,
-                                    final String _icon)
+                            final IModel<AbstractUIField> _model,
+                            final String _content,
+                            final String _icon)
         throws EFapsException
     {
         super(_wicketId, _model, _content);
-        add(new StaticImageComponent("icon", _icon));
+        add(new StaticImageComponent("icon", new EFapsContentReference(_icon)));
         add(new LabelField("labelField", Model.of(getContent()), _model.getObject()));
     }
 

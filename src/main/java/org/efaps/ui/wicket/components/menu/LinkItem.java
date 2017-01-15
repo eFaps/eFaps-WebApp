@@ -45,6 +45,7 @@ import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 import org.efaps.util.EFapsException;
@@ -180,7 +181,8 @@ public class LinkItem
         if (getModelObject().getImage() == null) {
             html.append("<div class=\"eFapsMenuImagePlaceHolder\">").append("&nbsp;</div>");
         } else {
-            html.append("<img src=\"/..").append(getModelObject().getImage()).append("\" class=\"eFapsMenuImage\"/>");
+            html.append("<img src=\"").append(EFapsContentReference.getImageURL(getModelObject().getImage()))
+                .append("\" class=\"eFapsMenuImage\"/>");
         }
         html.append("<span class=\"eFapsMenuLabel\">").append(getModelObject().getLabel()).append("</span>");
         replaceComponentTagBody(_markupStream, _openTag, html);

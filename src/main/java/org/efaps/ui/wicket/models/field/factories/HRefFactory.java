@@ -115,7 +115,7 @@ public final class HRefFactory
                             && _uiField.getInstance().getType() != null) {
                 final Image image = Image.getTypeIcon(_uiField.getInstance().getType());
                 if (image != null) {
-                    icon = image.getUrl();
+                    icon = image.getName();
                 }
             }
             String content = null;

@@ -448,7 +448,7 @@ public class UITable
                     if (field.isShowTypeIcon()) {
                         final Image image = Image.getTypeIcon(instance.getType());
                         if (image != null) {
-                            image.getUrl();
+                            image.getName();
                         }
                     }
 

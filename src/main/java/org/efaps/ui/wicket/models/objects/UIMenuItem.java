@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.models.objects;
@@ -51,7 +48,6 @@ import org.slf4j.LoggerFactory;
  * and in {@link #org.efaps.ui.wicket.components.menutree.MenuTree}.
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class UIMenuItem
     extends AbstractUIObject
@@ -90,7 +86,7 @@ public class UIMenuItem
     /**
      * All childs of this menu item.
      */
-    private final List<UIMenuItem> children = new ArrayList<UIMenuItem>();
+    private final List<UIMenuItem> children = new ArrayList<>();
 
     /**
      * this instance variable stores in the case that this MenuItem is part of
@@ -212,7 +208,7 @@ public class UIMenuItem
 
 
     private List<UIMenuItem>getDescendants(final UIMenuItem _menuItem) {
-        final List<UIMenuItem> ret = new ArrayList<UIMenuItem>();
+        final List<UIMenuItem> ret = new ArrayList<>();
         ret.add(_menuItem);
         for (final UIMenuItem menuItem : _menuItem.getChildren()) {
             ret.addAll(getDescendants(menuItem));
@@ -283,7 +279,7 @@ public class UIMenuItem
         if (getInstance() != null) {
             final Image imageTmp = Image.getTypeIcon(getInstance().getType());
             if (imageTmp != null) {
-                ret = imageTmp.getUrl();
+                ret = imageTmp.getName();
             }
         }
         return ret;

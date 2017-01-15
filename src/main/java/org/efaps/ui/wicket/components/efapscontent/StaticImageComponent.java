@@ -33,18 +33,17 @@ import org.efaps.ui.wicket.resources.EFapsContentReference;
 public class StaticImageComponent
     extends WebComponent
 {
+
     /**
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
 
-    /**
-     * URL for the static image.
-     */
-    private String url;
+    /** The reference. */
+    private EFapsContentReference reference;
 
     /**
-     * @param _wicketid     wicket id for the component
+     * @param _wicketid wicket id for the component
      */
     public StaticImageComponent(final String _wicketid)
     {
@@ -52,49 +51,22 @@ public class StaticImageComponent
     }
 
     /**
-     * @param _wicketid     wicket id for the component
-     * @param _scope        class scope used to determine the url
-     * @param _name         name of the image to be used
-     */
-    public StaticImageComponent(final String _wicketid,
-                                final Class<?> _scope,
-                                final String _name)
-    {
-        this(_wicketid, _scope.getPackage().getName() + "." + _name);
-    }
-
-    /**
-     * @param _wicketid     wicket id for the component
-     * @param _url          url to the image
-     */
-    public StaticImageComponent(final String _wicketid,
-                                final String _url)
-    {
-        super(_wicketid);
-        this.url = _url;
-    }
-
-    /**
-     * @param _wicketid     wicket id for the component
-     * @param _reference    reference to the content
+     * @param _wicketid wicket id for the component
+     * @param _reference reference to the content
      */
     public StaticImageComponent(final String _wicketid,
                                 final EFapsContentReference _reference)
     {
         super(_wicketid);
-        this.url = _reference.getImageUrl();
+        this.reference = _reference;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.wicket.Component#onComponentTag(org.apache.wicket.markup.ComponentTag)
-     */
     @Override
     protected void onComponentTag(final ComponentTag _tag)
     {
         super.onComponentTag(_tag);
         checkComponentTag(_tag, "img");
-        _tag.put("src", this.url);
+        _tag.put("src", getUrl());
     }
 
     /**
@@ -104,24 +76,14 @@ public class StaticImageComponent
      */
     public String getUrl()
     {
-        return this.url;
+        return this.reference.getImageUrl();
     }
 
     /**
-     * This is the setter method for the instance variable {@link #url}.
-     *
-     * @param _url the url to set
-     */
-    public void setUrl(final String _url)
-    {
-        this.url = _url;
-    }
-
-    /**
-     * @param _reference    reference to be set
+     * @param _reference reference to be set
      */
     public void setReference(final EFapsContentReference _reference)
     {
-        this.url = _reference.getImageUrl();
+        this.reference = _reference;
     }
 }

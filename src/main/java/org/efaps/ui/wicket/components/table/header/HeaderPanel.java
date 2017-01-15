@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev:1510 $
- * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
- * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.components.table.header;
@@ -31,7 +28,6 @@ import org.apache.wicket.ajax.attributes.CallbackParameter;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
-import org.apache.wicket.markup.head.PriorityHeaderItem;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
@@ -60,7 +56,6 @@ import org.efaps.util.cache.CacheReloadException;
  * This class renders the Header of a Table.
  *
  * @author The eFaps Team
- * @version $Id:TableHeaderPanel.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class HeaderPanel
     extends Panel
@@ -258,26 +253,16 @@ public class HeaderPanel
         return this.tablePanel instanceof StructurBrowserTreeTable;
     }
 
-
-    /*
-     * (non-Javadoc)
-     * @see
-     * org.apache.wicket.Component#renderHead(org.apache.wicket.markup.head.
-     * IHeaderResponse)
-     */
     @Override
     public void renderHead(final IHeaderResponse _response)
     {
         super.renderHead(_response);
-        _response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forUrl(HeaderPanel.JAVASCRIPT
-                        .getStaticContentUrl())));
         final AbstractUIHeaderObject uitable = (AbstractUIHeaderObject) super.getDefaultModelObject();
         _response.render(CssHeaderItem.forCSS(this.css, HeaderPanel.class.getName() + "_css_" + uitable.getTableId()));
         _response.render(JavaScriptHeaderItem.forScript(getScript(),
                         HeaderPanel.class.getName() + "_js_" + uitable.getTableId()));
         _response.render(AbstractEFapsHeaderItem.forJavaScript(HeaderPanel.JAVASCRIPT));
     }
-
 
     /**
      * @return the javascript

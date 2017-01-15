@@ -24,6 +24,7 @@ import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
 import org.efaps.ui.wicket.components.values.LabelField;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
 
 /**
@@ -45,6 +46,8 @@ public class IconLoadInTargetAjaxLink
      * @param _model the _model
      * @param _content the _content
      * @param _target the _target
+     * @param _icon the icon
+     * @throws EFapsException on error
      */
     public IconLoadInTargetAjaxLink(final String _wicketId,
                                     final IModel<AbstractUIField> _model,
@@ -54,7 +57,7 @@ public class IconLoadInTargetAjaxLink
         throws EFapsException
     {
         super(_wicketId, _model, _content, _target);
-        add(new StaticImageComponent("icon", _icon));
+        add(new StaticImageComponent("icon", new EFapsContentReference(_icon)));
         add(new LabelField("labelField", Model.of(getContent()), _model.getObject()));
     }
 

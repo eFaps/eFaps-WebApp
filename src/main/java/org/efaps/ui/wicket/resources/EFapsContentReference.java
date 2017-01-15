@@ -20,15 +20,13 @@
 
 package org.efaps.ui.wicket.resources;
 
+import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.util.io.IClusterable;
-import org.efaps.util.RequestHandler;
 
 /**
  * This class is used as a Reference to an Object in the eFaps-DataBase.<br>
  *
  * @author The eFaps Team
- * @version $Id: EFapsContentReference.java 3447 2009-11-29 22:46:39Z tim.moxter
- *          $
  */
 public class EFapsContentReference
     implements IClusterable
@@ -85,7 +83,7 @@ public class EFapsContentReference
      */
     public String getImageUrl()
     {
-        return RequestHandler.replaceMacrosInUrl(RequestHandler.URL_IMAGE + this.name);
+        return EFapsContentReference.getImageURL(this.name);
     }
 
     /**
@@ -95,6 +93,28 @@ public class EFapsContentReference
      */
     public String getStaticContentUrl()
     {
-        return RequestHandler.replaceMacrosInUrl(RequestHandler.URL_STATIC + this.name);
+        return EFapsContentReference.getContentURL(this.name);
+    }
+
+    /**
+     * Gets the image URL.
+     *
+     * @param _name the name
+     * @return the image URL
+     */
+    public static String getImageURL(final String _name)
+    {
+        return RequestCycle.get().getUrlRenderer().renderContextRelativeUrl("servlet/image/" + _name);
+    }
+
+    /**
+     * Gets the content URL.
+     *
+     * @param _name the name
+     * @return the content URL
+     */
+    public static String getContentURL(final String _name)
+    {
+        return RequestCycle.get().getUrlRenderer().renderContextRelativeUrl("servlet/static/" + _name);
     }
 }

@@ -91,20 +91,15 @@ public class MenuBarPanel
                     Component item = null;
                     if (childItem.getReference() != null) {
                         childItem.setURL(childItem.getReference());
-                        if (childItem.getReference().equals(
-                                        "/" + getSession().getApplication().getApplicationKey() + "/logout?")) {
+                        if (childItem.getReference().endsWith("/logout")) {
                             item = new LogOutItem(idGenerator.newChildId(), Model.of(childItem));
-                        } else if (childItem.getReference().equals(
-                                        "/" + getSession().getApplication().getApplicationKey() + "/setcompany?")) {
+                        } else if (childItem.getReference().endsWith("/setcompany")) {
                             item = new SetCompanyItem(idGenerator.newChildId(), Model.of(childItem));
-                        } else if (childItem.getReference().equals(
-                                        "/" + getSession().getApplication().getApplicationKey() + "/home?")) {
+                        } else if (childItem.getReference().endsWith("/home")) {
                             item = new HomeItem(idGenerator.newChildId(), Model.of(childItem));
-                        } else if (childItem.getReference().equals(
-                                        "/" + getSession().getApplication().getApplicationKey() + "/taskadmin?")) {
+                        } else if (childItem.getReference().endsWith("/taskadmin")) {
                             item = new TaskAdminItem(idGenerator.newChildId(), Model.of(childItem));
-                        } else if (childItem.getReference().equals(
-                                        "/" + getSession().getApplication().getApplicationKey() + "/connection?")) {
+                        } else if (childItem.getReference().endsWith("/connection")) {
                             item = new ConnectionItem(idGenerator.newChildId(), Model.of(childItem));
                         }
                     }

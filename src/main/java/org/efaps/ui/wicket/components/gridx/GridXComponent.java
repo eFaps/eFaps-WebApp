@@ -77,6 +77,7 @@ import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 import org.efaps.ui.wicket.util.DojoClass;
@@ -188,7 +189,7 @@ public class GridXComponent
                                 && StringUtils.containsIgnoreCase(column.getFieldConfig().getField().getReference(),
                                                 HRef.CHECKOUT.toString())) {
                     final StaticImageComponent icon = new StaticImageComponent("icon",
-                                    column.getFieldConfig().getField().getIcon());
+                                    new EFapsContentReference(column.getFieldConfig().getField().getIcon()));
                     js.append(", decorator: function(data, rowId, visualIndex, cell){\n")
                         .append("return '<span class=\"eFapsCheckout\"><img src=\"").append(icon.getUrl())
                             .append("\"></img>' + data + '</span>';\n")

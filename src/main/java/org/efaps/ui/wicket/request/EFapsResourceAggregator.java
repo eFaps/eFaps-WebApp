@@ -39,12 +39,12 @@ import org.apache.wicket.request.Response;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.efaps.admin.program.bundle.BundleMaker;
 import org.efaps.admin.program.bundle.TempFileBundle;
+import org.efaps.ui.wicket.EFapsApplication;
 import org.efaps.ui.wicket.behaviors.dojo.AutoCompleteBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.AutoCompleteHeaderItem;
 import org.efaps.ui.wicket.behaviors.dojo.OnDojoReadyHeaderItem;
 import org.efaps.ui.wicket.behaviors.dojo.RequireHeaderItem;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
-import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.EFapsJavaScriptHeaderItem;
 import org.efaps.ui.wicket.util.DojoClass;
 import org.efaps.ui.wicket.util.DojoWrapper;
@@ -159,14 +159,15 @@ public class EFapsResourceAggregator
                 final String key = BundleMaker.getBundleKey(css, TempFileBundle.class);
                 final TempFileBundle bundle = (TempFileBundle) BundleMaker.getBundle(key);
                 bundle.setContentType("text/css");
-                getRealResponse().render(CssHeaderItem.forUrl(new EFapsContentReference(key).getStaticContentUrl()));
+                getRealResponse().render(CssHeaderItem.forUrl(EFapsApplication.get().getServletContext()
+                                .getContextPath() + "/servlet/static/" + key));
             }
             if (!js.isEmpty()) {
                 final String key = BundleMaker.getBundleKey(js, TempFileBundle.class);
                 final TempFileBundle bundle = (TempFileBundle) BundleMaker.getBundle(key);
                 bundle.setContentType("text/javascript");
-                getRealResponse().render(
-                                JavaScriptHeaderItem.forUrl(new EFapsContentReference(key).getStaticContentUrl()));
+                getRealResponse().render(JavaScriptHeaderItem.forUrl(EFapsApplication.get().getServletContext()
+                                .getContextPath() + "/servlet/static/" + key));
             }
         } catch (final EFapsException e) {
             EFapsResourceAggregator.LOG.error("Error on rendering eFaps Header items: ", e);

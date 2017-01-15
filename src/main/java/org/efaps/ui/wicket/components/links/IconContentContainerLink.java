@@ -25,6 +25,7 @@ import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
 import org.efaps.ui.wicket.components.values.LabelField;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
 
 /**
@@ -58,7 +59,7 @@ public class IconContentContainerLink
         throws EFapsException
     {
         super(_wicketId, _model, _content);
-        add(new StaticImageComponent("icon", _icon));
+        add(new StaticImageComponent("icon", new EFapsContentReference(_icon)));
         add(new LabelField("labelField", Model.of(getContent()), _model.getObject()));
     }
 

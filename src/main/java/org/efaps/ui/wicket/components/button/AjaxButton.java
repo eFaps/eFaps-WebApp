@@ -24,7 +24,6 @@ import org.apache.wicket.ajax.IAjaxIndicatorAware;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.markup.ComponentTag;
-import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -32,6 +31,7 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
+import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 
 
@@ -169,7 +169,7 @@ public abstract class AjaxButton<T>
     public void renderHead(final IHeaderResponse _response)
     {
         super.renderHead(_response);
-        _response.render(CssHeaderItem.forUrl(ButtonStyleBehavior.CSS.getStaticContentUrl()));
+        _response.render(AbstractEFapsHeaderItem.forCss(ButtonStyleBehavior.CSS));
     }
 
     /**

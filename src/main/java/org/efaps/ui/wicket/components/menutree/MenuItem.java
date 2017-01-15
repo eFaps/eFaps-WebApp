@@ -106,19 +106,19 @@ public class MenuItem
         if (_model.getObject().isHeader()) {
             label.add(AttributeModifier.append("class", "eFapsMenuTreeHeader"));
 
-            String imageUrl = _model.getObject().getImage();
-            if (imageUrl == null) {
+            String image = _model.getObject().getImage();
+            if (image == null) {
                 try {
-                    imageUrl = _model.getObject().getTypeImage();
+                    image = _model.getObject().getTypeImage();
                 } catch (final EFapsException e) {
                     MenuItem.LOG.error("Error on retrieving the image for a image: {}",
                                     _model.getObject().getImage());
                 }
             }
-            if (imageUrl == null) {
+            if (image == null) {
                 link.add(new WebMarkupContainer("icon").setVisible(false));
             } else {
-                link.add(new StaticImageComponent("icon", imageUrl));
+                link.add(new StaticImageComponent("icon", new EFapsContentReference(image)));
             }
 
         } else {
