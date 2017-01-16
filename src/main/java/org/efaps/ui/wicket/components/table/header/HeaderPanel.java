@@ -28,6 +28,7 @@ import org.apache.wicket.ajax.attributes.CallbackParameter;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
+import org.apache.wicket.markup.head.PriorityHeaderItem;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
@@ -261,7 +262,7 @@ public class HeaderPanel
         _response.render(CssHeaderItem.forCSS(this.css, HeaderPanel.class.getName() + "_css_" + uitable.getTableId()));
         _response.render(JavaScriptHeaderItem.forScript(getScript(),
                         HeaderPanel.class.getName() + "_js_" + uitable.getTableId()));
-        _response.render(AbstractEFapsHeaderItem.forJavaScript(HeaderPanel.JAVASCRIPT));
+        _response.render(new PriorityHeaderItem(AbstractEFapsHeaderItem.forJavaScript(HeaderPanel.JAVASCRIPT)));
     }
 
     /**

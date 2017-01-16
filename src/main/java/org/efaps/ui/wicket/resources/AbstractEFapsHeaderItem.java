@@ -21,7 +21,6 @@ package org.efaps.ui.wicket.resources;
 import java.util.Collections;
 
 import org.apache.wicket.markup.head.HeaderItem;
-import org.apache.wicket.request.Response;
 
 
 /**
@@ -85,15 +84,6 @@ public abstract class AbstractEFapsHeaderItem
     public Iterable<?> getRenderTokens()
     {
         return Collections.emptyList();
-    }
-
-    /**
-     * @param _response Response object
-     */
-    @Override
-    public void render(final Response _response)
-    {
-        // no rendering must be done
     }
 
     /**

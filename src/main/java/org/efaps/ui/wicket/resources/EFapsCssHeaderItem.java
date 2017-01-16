@@ -17,6 +17,8 @@
 
 package org.efaps.ui.wicket.resources;
 
+import org.apache.wicket.request.Response;
+
 /**
  * TODO comment!
  *
@@ -36,5 +38,11 @@ public class EFapsCssHeaderItem
     public EFapsCssHeaderItem(final EFapsContentReference _reference)
     {
        super(_reference);
+    }
+
+    @Override
+    public void render(final Response _response)
+    {
+        // no rendering necessary
     }
 }

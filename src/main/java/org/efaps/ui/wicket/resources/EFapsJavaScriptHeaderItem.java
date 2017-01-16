@@ -15,9 +15,14 @@
  *
  */
 
-
 package org.efaps.ui.wicket.resources;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.wicket.core.util.string.JavaScriptUtils;
+import org.apache.wicket.request.Response;
+import org.efaps.ui.wicket.EFapsApplication;
 
 /**
  * TODO comment!
@@ -27,6 +32,7 @@ package org.efaps.ui.wicket.resources;
 public class EFapsJavaScriptHeaderItem
     extends AbstractEFapsHeaderItem
 {
+
     /**
      *
      */
@@ -37,6 +43,24 @@ public class EFapsJavaScriptHeaderItem
      */
     public EFapsJavaScriptHeaderItem(final EFapsContentReference _reference)
     {
-       super(_reference);
+        super(_reference);
+    }
+
+    /**
+     * @return empty Collection because no rendering will be donw
+     */
+    @Override
+    public Iterable<?> getRenderTokens()
+    {
+        final List<String> ret = new ArrayList<>();
+        ret.add(getReference().getName());
+        return ret;
+    }
+
+    @Override
+    public void render(final Response _response)
+    {
+        JavaScriptUtils.writeJavaScriptUrl(_response, EFapsApplication.get().getServletContext().getContextPath()
+                        + "/servlet/static/" + getReference().getName());
     }
 }
