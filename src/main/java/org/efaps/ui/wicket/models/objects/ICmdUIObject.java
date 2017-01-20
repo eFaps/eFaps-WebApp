@@ -58,12 +58,13 @@ public interface ICmdUIObject
      * This method throws an eFpasError to provide the possibility for different
      * responses in the components.
      *
+     * @param _eventType the event type
      * @param _objectTuples n tuples of ParamterValue and Object
-     * @throws EFapsException on error
      * @return List of Returns
+     * @throws EFapsException on error
      */
-    List<Return> executeEvents(final EventType _eventType,
-                               final Object... _objectTuples)
+    List<Return> executeEvents(EventType _eventType,
+                               Object... _objectTuples)
         throws EFapsException;
 
 }

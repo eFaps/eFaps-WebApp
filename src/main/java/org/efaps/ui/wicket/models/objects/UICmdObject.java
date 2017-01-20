@@ -1,3 +1,19 @@
+/*
+ * Copyright 2003 - 2017 The eFaps Team
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package org.efaps.ui.wicket.models.objects;
 
 import java.util.ArrayList;
@@ -18,7 +34,7 @@ import org.efaps.util.EFapsException;
 /**
  * The Class UICmdObject.
  */
-public class UICmdObject
+public final class UICmdObject
     implements ICmdUIObject
 {
 
@@ -28,6 +44,14 @@ public class UICmdObject
     /** The cmd id. */
     private final long cmdId;
 
+    /** The instance. */
+    private Instance instance;
+
+    /**
+     * Instantiates a new UI cmd object.
+     *
+     * @param _cmdId the cmd id
+     */
     private UICmdObject(final Long _cmdId)
     {
         this.cmdId = _cmdId;
@@ -43,7 +67,19 @@ public class UICmdObject
     @Override
     public Instance getInstance()
     {
-        return null;
+        return this.instance;
+    }
+
+    /**
+     * Setter method for instance variable {@link #instance}.
+     *
+     * @param _instance value for instance variable {@link #instance}
+     * @return the UI cmd object
+     */
+    public UICmdObject setInstance(final Instance _instance)
+    {
+        this.instance = _instance;
+        return this;
     }
 
     /**
@@ -71,6 +107,12 @@ public class UICmdObject
                 }
             }
             param.put(ParameterValues.PARAMETERS, Context.getThreadContext().getParameters());
+            if (getInstance() != null) {
+                final String[] contextoid = { getInstance().getOid() };
+                Context.getThreadContext().getParameters().put("oid", contextoid);
+                param.put(ParameterValues.CALL_INSTANCE, getInstance());
+                param.put(ParameterValues.INSTANCE, getInstance());
+            }
             ret = getCommand().executeEvents(_eventType, param);
         }
         return ret;
@@ -92,10 +134,12 @@ public class UICmdObject
      * Gets the model.
      *
      * @param _cmdId the cmd id
+     * @param _instance the instance
      * @return the model
      */
-    public static IModel<ICmdUIObject> getModel(final Long _cmdId)
+    public static IModel<ICmdUIObject> getModel(final Long _cmdId,
+                                                final Instance _instance)
     {
-        return Model.<ICmdUIObject>of(UICmdObject.get(_cmdId));
+        return Model.<ICmdUIObject>of(UICmdObject.get(_cmdId).setInstance(_instance));
     }
 }

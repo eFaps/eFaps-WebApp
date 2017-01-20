@@ -119,13 +119,13 @@ public abstract class AbstractDojoBehavior
         final String clazz = Configuration.getAttribute(ConfigAttribute.DOJO_CLASS);
 
         ResourceReference reference = null;
-        if (clazz.equals("tundra")) {
+        if ("tundra".equals(clazz)) {
             reference = AbstractDojoBehavior.CSS_TUNDRA;
-        } else if (clazz.equals("claro")) {
+        } else if ("claro".equals(clazz)) {
             reference = AbstractDojoBehavior.CSS_CLARO;
-        } else if (clazz.equals("nihilo")) {
+        } else if ("nihilo".equals(clazz)) {
             reference = AbstractDojoBehavior.CSS_NIHILO;
-        } else if (clazz.equals("soria")) {
+        } else if ("soria".equals(clazz)) {
             reference = AbstractDojoBehavior.CSS_TUNDRA;
         }
         if (reference != null) {

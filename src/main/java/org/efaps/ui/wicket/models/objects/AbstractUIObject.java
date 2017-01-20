@@ -467,7 +467,7 @@ public abstract class AbstractUIObject
         throws EFapsException
     {
         List<Return> ret = new ArrayList<>();
-        AbstractCommand command;
+        final AbstractCommand command;
         if (this.callingCmdUUID == null) {
             command = this.getCommand();
         } else {
@@ -493,7 +493,6 @@ public abstract class AbstractUIObject
             }
             ret = command.executeEvents(_eventType, param);
         }
-
         return ret;
     }
 

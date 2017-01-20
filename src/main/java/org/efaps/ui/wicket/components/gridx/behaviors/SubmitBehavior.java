@@ -37,6 +37,7 @@ import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.Command;
+import org.efaps.db.Instance;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.objects.UICmdObject;
@@ -113,7 +114,9 @@ public class SubmitBehavior
                                                               final IVisit<Void> _visit)
                                         {
                                             _modal.setPageCreator(new AskDialogPageCreator(getComponent().getPage()
-                                                            .getPageReference(), cmdId, oids));
+                                                            .getPageReference(), cmdId, oids,
+                                                            ((UIGrid) getComponent().getPage().getDefaultModelObject())
+                                                                .getCallInstance()));
                                             _modal.setInitialHeight(150);
                                             _modal.setInitialWidth(350);
                                             _modal.show(_target);
@@ -196,20 +199,26 @@ public class SubmitBehavior
         /** The oids. */
         private final String[] oids;
 
+        /** The instance. */
+        private final Instance instance;
+
         /**
          * Instantiates a new ask dialog page creator.
          *
          * @param _pageReference the page reference
          * @param _cmdId the cmd id
          * @param _oids the oids
+         * @param _instance the instance
          */
-        public AskDialogPageCreator(final PageReference _pageReference,
-                                    final Long _cmdId,
-                                    final String[] _oids)
+        AskDialogPageCreator(final PageReference _pageReference,
+                             final Long _cmdId,
+                             final String[] _oids,
+                             final Instance _instance)
         {
             this.pageRef = _pageReference;
             this.cmdId = _cmdId;
             this.oids = _oids;
+            this.instance = _instance;
         }
 
         @Override
@@ -217,7 +226,7 @@ public class SubmitBehavior
         {
             Page ret;
             try {
-                ret = new DialogPage(this.pageRef, UICmdObject.getModel(this.cmdId), this.oids);
+                ret = new DialogPage(this.pageRef, UICmdObject.getModel(this.cmdId, this.instance), this.oids);
             } catch (final CacheReloadException e) {
                 ret = new ErrorPage(e);
             }
