@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.models.objects;
@@ -35,7 +32,6 @@ import org.apache.wicket.util.io.IClusterable;
  * accessed using methods like previous.
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class UIWizardObject
     implements IClusterable
@@ -49,51 +45,51 @@ public class UIWizardObject
     /**
      * Mapping between UIObject and parameters.
      */
-    private final Map<AbstractUIObject, Map<String, String[]>> parameters
-            = new HashMap<AbstractUIObject, Map<String, String[]>>();
+    private final Map<IWizardElement, Map<String, String[]>> parameters
+            = new HashMap<>();
 
     /**
      * List of UIObjects in this wizard.
      */
-    private final List<AbstractUIPageObject> uiObjects = new ArrayList<AbstractUIPageObject>();
+    private final List<IWizardElement> elements = new ArrayList<>();
 
     /**
      * Current UIObject.
      */
-    private AbstractUIObject current = null;
+    private IWizardElement current = null;
 
     /**
      * Constructor setting the current UIObject.
      *
-     * @param _uiObject current UIOBject
+     * @param _element current UIOBject
      */
-    public UIWizardObject(final AbstractUIPageObject _uiObject)
+    public UIWizardObject(final IWizardElement _element)
     {
-        this.uiObjects.add(_uiObject);
-        this.current = _uiObject;
+        this.elements.add(_element);
+        this.current = _element;
     }
 
     /**
      * Add a UIOBject to the list of objects.
      *
-     * @param _uiObject Object to add
+     * @param _element Object to add
      */
-    public void add(final AbstractUIPageObject _uiObject)
+    public void add(final IWizardElement _element)
     {
-        this.uiObjects.add(_uiObject);
+        this.elements.add(_element);
     }
 
     /**
      * Insert a UIObject before the current one.
      *
-     * @param _uiObject Object to insert
+     * @param _element Object to insert
      */
-    public void insertBefore(final AbstractUIPageObject _uiObject)
+    public void insertBefore(final IWizardElement _element)
     {
         int i = 0;
-        for (final AbstractUIObject uiObject : this.uiObjects) {
+        for (final IWizardElement uiObject : this.elements) {
             if (uiObject == this.current) {
-                this.uiObjects.add(i, _uiObject);
+                this.elements.add(i, _element);
                 break;
             }
             i++;
@@ -105,10 +101,10 @@ public class UIWizardObject
      *
      * @return previous object
      */
-    public AbstractUIPageObject getPrevious()
+    public IWizardElement getPrevious()
     {
-        AbstractUIPageObject ret = null;
-        for (final AbstractUIPageObject uiObject : this.uiObjects) {
+        IWizardElement ret = null;
+        for (final IWizardElement uiObject : this.elements) {
             if (uiObject == this.current) {
                 break;
             } else {
@@ -122,34 +118,33 @@ public class UIWizardObject
     /**
      * Add parameters.
      *
-     * @param _uiObject object used as key
+     * @param _element object used as key
      * @param _parameters parameters
      */
-    public void addParameters(final AbstractUIObject _uiObject,
+    public void addParameters(final IWizardElement _element,
                               final Map<String, String[]> _parameters)
     {
-        this.parameters.put(_uiObject, _parameters);
+        this.parameters.put(_element, _parameters);
     }
 
     /**
      * Get a parameter map from the mapping.
      *
-     * @param _uiObject key fot the parameter map.
+     * @param _element key fot the parameter map.
      * @return parameter map
      */
-    public Map<String, String[]> getParameters(final AbstractUIObject _uiObject)
+    public Map<String, String[]> getParameters(final IWizardElement _element)
     {
-        return this.parameters.get(_uiObject);
+        return this.parameters.get(_element);
     }
 
-
     /**
-     * Getter method for the instance variable {@link #uiObjects}.
+     * Getter method for the instance variable {@link #elements}.
      *
-     * @return value of instance variable {@link #uiObjects}
+     * @return value of instance variable {@link #elements}
      */
-    public List<AbstractUIPageObject> getUIPageObjects()
+    public List<IWizardElement> getWizardElement()
     {
-        return this.uiObjects;
+        return this.elements;
     }
 }

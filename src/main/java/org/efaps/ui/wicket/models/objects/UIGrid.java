@@ -92,7 +92,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class UIGrid
     extends AbstractUI
-    implements IPageObject
+    implements IPageObject, IWizardElement
 {
 
     /** The Constant serialVersionUID. */
@@ -708,6 +708,18 @@ public final class UIGrid
             Context.getThreadContext().setSessionAttribute(getCacheKey(CacheKey.DBFILTER), this.filterList);
             load();
         }
+    }
+
+    @Override
+    public boolean isWizardCall()
+    {
+        return false;
+    }
+
+    @Override
+    public UIWizardObject getUIWizardObject()
+    {
+        return null;
     }
 
     /**

@@ -60,6 +60,7 @@ import org.efaps.db.Context;
 import org.efaps.ui.wicket.behaviors.dojo.AbstractDojoBehavior;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
 import org.efaps.ui.wicket.components.gridx.behaviors.CheckoutBehavior;
+import org.efaps.ui.wicket.components.gridx.behaviors.OpenInOpenerBehavior;
 import org.efaps.ui.wicket.components.gridx.behaviors.OpenModalBehavior;
 import org.efaps.ui.wicket.components.gridx.behaviors.PrintBehavior;
 import org.efaps.ui.wicket.components.gridx.behaviors.ReloadBehavior;
@@ -171,6 +172,7 @@ public class GridXComponent
             boolean first = true;
             int j = 0;
             final Set<Long> checkOutCols = new HashSet<>();
+            final Set<Long> linkCols = new HashSet<>();
             for (final Column column : uiGrid.getColumns()) {
                 if (first) {
                     first = false;
@@ -196,13 +198,21 @@ public class GridXComponent
                         .append("}\n");
                     checkOutCols.add(column.getFieldConfig().getField().getId());
                 } else if (column.getFieldConfig().getField().getReference() != null) {
-                    js.append(", decorator: function(data, rowId, visualIndex, cell){\n")
-                        .append("return '<a href=\"").append(
-                                urlFor(ILinkListener.INTERFACE, new PageParameters()))
-                        .append("&rowId=").append("' + rowId + '")
-                        .append("&colId=").append(j)
-                        .append("\">' + data + '</a>';\n")
+                    if (PagePosition.POPUP.equals(uiGrid.getPagePosition())) {
+                        linkCols.add(column.getFieldConfig().getField().getId());
+                        js.append(", decorator: function(data, rowId, visualIndex, cell){\n")
+                        .append("return '<a href=\"#\">' + data + '</a>';\n")
                         .append("}\n");
+
+                    } else {
+                        js.append(", decorator: function(data, rowId, visualIndex, cell){\n")
+                            .append("return '<a href=\"").append(
+                                    urlFor(ILinkListener.INTERFACE, new PageParameters()))
+                            .append("&rowId=").append("' + rowId + '")
+                            .append("&colId=").append(j)
+                            .append("\">' + data + '</a>';\n")
+                            .append("}\n");
+                    }
                 }
                 if (FilterBase.DATABASE.equals(column.getFilter().getBase())) {
                     js.append(", dialog: 'fttd_").append(column.getField().getId())
@@ -317,7 +327,19 @@ public class GridXComponent
                     .append(getBehavior(CheckoutBehavior.class).getCallbackFunctionBody(
                                 CallbackParameter.explicit("rowId"), CallbackParameter.explicit("colId")))
                     .append("});\n")
-                .append("},true);\n");
+                    .append("},true);\n");
+            }
+
+            for (final Long linkCol : linkCols) {
+                js.append("aspect.after(grid.body,'onAfterRow', function(_row){\n")
+                    .append("var rowId = _row.id;\n")
+                    .append("var cell =  _row.cell('").append(linkCol).append("', false);\n")
+                    .append("var colId = cell.column.index();\n")
+                    .append("query(\"a\", cell.node()).on(\"click\", function(e) {\n")
+                    .append(getBehavior(OpenInOpenerBehavior.class).getCallbackFunctionBody(
+                                CallbackParameter.explicit("rowId"), CallbackParameter.explicit("colId")))
+                    .append("});\n")
+                    .append("},true);\n");
             }
 
             js.append("grid.startup();\n")

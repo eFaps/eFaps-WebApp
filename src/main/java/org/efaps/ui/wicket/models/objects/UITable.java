@@ -82,6 +82,7 @@ import org.slf4j.LoggerFactory;
  */
 public class UITable
     extends AbstractUIHeaderObject
+    implements IPageObject, IWizardElement
 {
     /**
      * Logging instance used in this class.
@@ -123,6 +124,9 @@ public class UITable
 
     /** The enforce sorted. */
     private boolean enforceSorted = false;
+
+    /** The page position. */
+    private PagePosition pagePosition;
 
     /**
      * Constructor setting the uuid and Key of the instance.
@@ -951,6 +955,47 @@ public class UITable
                 }
             }
         }
+    }
+
+    @Override
+    public PagePosition getPagePosition()
+    {
+        final PagePosition ret;
+        if (this.pagePosition == null) {
+            //TODO remove
+            UITable.LOG.error("MISSING PAGEPOSITION!!!");
+            ret = PagePosition.CONTENT;
+        } else {
+            ret = this.pagePosition;
+        }
+        return ret;
+    }
+
+    /**
+     * Setter method for instance variable {@link #pagePosition}.
+     *
+     * @param _pagePosition value for instance variable {@link #pagePosition}
+     * @return the UI form
+     */
+    public UITable setPagePosition(final PagePosition _pagePosition)
+    {
+        this.pagePosition = _pagePosition;
+        return this;
+    }
+
+    @Override
+    public boolean isWizardCall()
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+
+    @Override
+    public UIWizardObject getUIWizardObject()
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     /**

@@ -39,6 +39,7 @@ import org.efaps.ui.wicket.models.objects.PagePosition;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIGrid;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
+import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.grid.GridPage;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
@@ -59,6 +60,7 @@ public class LinkItem
     extends Link<UIMenuItem>
     implements IRecent
 {
+
     /**
      * Needed for serialization.
      */
@@ -86,6 +88,8 @@ public class LinkItem
         final UIMenuItem model = super.getModelObject();
         try {
             final AbstractCommand command = model.getCommand();
+            final PagePosition pagePosition = isPopup() ? PagePosition.POPUP : PagePosition.CONTENT;
+
             if (command.getTargetTable() != null) {
                 final WebPage page;
                 if (command.getTargetStructurBrowserField() != null) {
@@ -93,16 +97,17 @@ public class LinkItem
                                     .getPageReference());
                 } else {
                     if ("GridX".equals(Configuration.getAttribute(ConfigAttribute.TABLEDEFAULTTYPECONTENT))) {
-                        page = new GridPage(Model.of(UIGrid.get(command.getUUID(), PagePosition.CONTENT)));
+                        page = new GridPage(Model.of(UIGrid.get(command.getUUID(), pagePosition)));
                     } else {
-                        page = new TablePage(model.getCommandUUID(), model.getInstanceKey(),
-                                        getPage().getPageReference());
+                        final UITable uiTable = new UITable(model.getCommandUUID(), model.getInstanceKey())
+                                        .setPagePosition(pagePosition);
+                        page = new TablePage(Model.of(uiTable), null, getPage().getPageReference());
                     }
                 }
                 setResponsePage(page);
             } else if (command.getTargetForm() != null || command.getTargetSearch() != null) {
-                final UIForm uiForm = new UIForm(model.getCommandUUID(),
-                                model.getInstanceKey()).setPagePosition(PagePosition.CONTENT);
+                final UIForm uiForm = new UIForm(model.getCommandUUID(), model.getInstanceKey()).setPagePosition(
+                                pagePosition);
                 final FormPage page = new FormPage(Model.of(uiForm), getPage().getPageReference());
                 setResponsePage(page);
             } else {
@@ -111,8 +116,8 @@ public class LinkItem
                     if (command.isTargetShowFile()) {
                         final Object object = rets.get(0).get(ReturnValues.VALUES);
                         if (object instanceof File) {
-                            getRequestCycle().scheduleRequestHandlerAfterCurrent(
-                                            new RedirectRequestHandler("/usage.html"));
+                            getRequestCycle().scheduleRequestHandlerAfterCurrent(new RedirectRequestHandler(
+                                            "/usage.html"));
                         }
                     }
                 } catch (final EFapsException e) {
@@ -137,8 +142,8 @@ public class LinkItem
         _openComponent.getPage();
         if (command.getTargetTable() != null) {
             if (command.getTargetStructurBrowserField() != null) {
-                final StructurBrowserPage page = new StructurBrowserPage(model.getCommandUUID(),
-                                model.getInstanceKey());
+                final StructurBrowserPage page = new StructurBrowserPage(model.getCommandUUID(), model
+                                .getInstanceKey());
                 setResponsePage(page);
             } else {
                 if ("GridX".equals(Configuration.getAttribute(ConfigAttribute.TABLEDEFAULTTYPECONTENT))) {
@@ -150,8 +155,8 @@ public class LinkItem
                 }
             }
         } else if (command.getTargetForm() != null) {
-            final UIForm uiForm = new UIForm(model.getCommandUUID(),
-                            model.getInstanceKey()).setPagePosition(PagePosition.CONTENT);
+            final UIForm uiForm = new UIForm(model.getCommandUUID(), model.getInstanceKey()).setPagePosition(
+                            PagePosition.CONTENT);
             final FormPage page = new FormPage(Model.of(uiForm));
             setResponsePage(page);
         }
@@ -181,8 +186,8 @@ public class LinkItem
         if (getModelObject().getImage() == null) {
             html.append("<div class=\"eFapsMenuImagePlaceHolder\">").append("&nbsp;</div>");
         } else {
-            html.append("<img src=\"").append(EFapsContentReference.getImageURL(getModelObject().getImage()))
-                .append("\" class=\"eFapsMenuImage\"/>");
+            html.append("<img src=\"").append(EFapsContentReference.getImageURL(getModelObject().getImage())).append(
+                            "\" class=\"eFapsMenuImage\"/>");
         }
         html.append("<span class=\"eFapsMenuLabel\">").append(getModelObject().getLabel()).append("</span>");
         replaceComponentTagBody(_markupStream, _openTag, html);
@@ -191,15 +196,23 @@ public class LinkItem
     @Override
     protected CharSequence getOnClickScript(final CharSequence _url)
     {
-        final StringBuilder js = new StringBuilder()
-            .append("require([\"dijit/registry\",\"dojo/dom-construct\"], function(registry, domConstruct){ ")
-            .append("registry.byId(\"").append("mainPanel")
-            .append("\").set(\"content\", domConstruct.create(\"iframe\", {")
-            .append("\"id\": \"").append(MainPage.IFRAME_ID)
-            .append("\",\"src\": \"").append(_url)
-            .append("\",\"style\": \"border: 0; width: 100%; height: 99%\"")
-            .append(",\"id\": \"").append(MainPage.IFRAME_ID).append("\"")
-            .append("}));});");
+        final StringBuilder js = new StringBuilder().append(
+                        "require([\"dijit/registry\",\"dojo/dom-construct\"], function(registry, domConstruct){ ")
+                        .append("registry.byId(\"").append("mainPanel").append(
+                                        "\").set(\"content\", domConstruct.create(\"iframe\", {").append("\"id\": \"")
+                        .append(MainPage.IFRAME_ID).append("\",\"src\": \"").append(_url).append(
+                                        "\",\"style\": \"border: 0; width: 100%; height: 99%\"").append(",\"id\": \"")
+                        .append(MainPage.IFRAME_ID).append("\"").append("}));});");
         return js;
+    }
+
+    /**
+     * Checks if is popup.
+     *
+     * @return true, if is popup
+     */
+    protected boolean isPopup()
+    {
+        return false;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,20 +20,24 @@ package org.efaps.ui.wicket.models.objects;
 
 
 /**
- * The Enum PagePosition.
+ * The Interface IWizardElement.
  *
  * @author The eFaps Team
  */
-public enum PagePosition
+public interface IWizardElement
 {
-    /** Page is in the main content area. */
-    CONTENT,
-    /** Page is in the modal belonging to the main content area. */
-    CONTENTMODAL,
-    /** Page is in an popup. */
-    POPUP,
-    /** Page is in the tree area. */
-    TREE,
-    /** Page is in the modal belonging to the tree area. */
-    TREEMODAL;
+
+    /**
+     * Checks if is wizard call.
+     *
+     * @return true, if is wizard call
+     */
+    boolean isWizardCall();
+
+    /**
+     * Gets the UI wizard object.
+     *
+     * @return the UI wizard object
+     */
+    UIWizardObject getUIWizardObject();
 }

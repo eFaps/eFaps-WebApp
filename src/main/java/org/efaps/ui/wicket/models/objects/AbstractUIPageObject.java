@@ -314,7 +314,7 @@ public abstract class AbstractUIPageObject
     protected Object getValue4Wizard(final String _key)
     {
         Object ret = null;
-        final Map<String, String[]> para = this.wizard.getParameters(this);
+        final Map<String, String[]> para = this.wizard.getParameters((IWizardElement) this);
         if (para != null && para.containsKey(_key)) {
             final String[] value = para.get(_key);
             ret = value[0];

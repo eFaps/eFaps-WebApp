@@ -18,6 +18,7 @@ package org.efaps.ui.wicket.components.gridx;
 
 import org.apache.wicket.markup.html.WebComponent;
 import org.efaps.ui.wicket.components.gridx.behaviors.CheckoutBehavior;
+import org.efaps.ui.wicket.components.gridx.behaviors.OpenInOpenerBehavior;
 import org.efaps.ui.wicket.components.gridx.behaviors.OpenModalBehavior;
 import org.efaps.ui.wicket.components.gridx.behaviors.PrintBehavior;
 import org.efaps.ui.wicket.components.gridx.behaviors.ReloadBehavior;
@@ -48,5 +49,6 @@ public class MenuItem
         add(new PrintBehavior());
         add(new ReloadBehavior());
         add(new CheckoutBehavior());
+        add(new OpenInOpenerBehavior());
     }
 }

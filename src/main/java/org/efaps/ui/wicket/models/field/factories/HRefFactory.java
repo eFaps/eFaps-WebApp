@@ -42,7 +42,9 @@ import org.efaps.ui.wicket.components.split.header.RecentLink;
 import org.efaps.ui.wicket.components.values.LabelField;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
+import org.efaps.ui.wicket.models.objects.ICmdUIObject;
 import org.efaps.ui.wicket.models.objects.IPageObject;
+import org.efaps.ui.wicket.models.objects.IWizardElement;
 import org.efaps.ui.wicket.models.objects.PagePosition;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
@@ -188,10 +190,10 @@ public final class HRefFactory
                 // check if for searchmode the page is in an pop up window
                 boolean isInPopUp = false;
                 if (_uiField.getParent().isSearchMode()) {
-                    if (((AbstractUIPageObject) _uiField.getParent()).isPartOfWizardCall()) {
-                        final AbstractUIPageObject pageObj = ((AbstractUIPageObject) _uiField.getParent()).getWizard()
-                                        .getUIPageObjects().get(0);
-                        isInPopUp = Target.POPUP.equals(pageObj.getTarget());
+                    if (((IWizardElement) _uiField.getParent()).isWizardCall()) {
+                        final IWizardElement pageObj = ((IWizardElement) _uiField
+                                        .getParent()).getUIWizardObject().getWizardElement().get(0);
+                        isInPopUp = Target.POPUP.equals(((ICmdUIObject) pageObj).getCommand().getTarget());
                     }
                 }
 

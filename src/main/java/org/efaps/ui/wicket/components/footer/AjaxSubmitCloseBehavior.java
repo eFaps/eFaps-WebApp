@@ -80,6 +80,7 @@ import org.efaps.ui.wicket.models.field.set.UIFieldSet;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.models.objects.IPageObject;
+import org.efaps.ui.wicket.models.objects.IWizardElement;
 import org.efaps.ui.wicket.models.objects.PagePosition;
 import org.efaps.ui.wicket.models.objects.UIFieldForm;
 import org.efaps.ui.wicket.models.objects.UIFieldTable;
@@ -219,10 +220,10 @@ public class AjaxSubmitCloseBehavior
                                             .setPagePosition(pp);
                         }
 
-                        final UIWizardObject wizard = new UIWizardObject(newUIObject);
+                        final UIWizardObject wizard = new UIWizardObject((IWizardElement) newUIObject);
                         this.uiObject.setWizard(wizard);
-                        wizard.addParameters(this.uiObject, Context.getThreadContext().getParameters());
-                        wizard.insertBefore(this.uiObject);
+                        wizard.addParameters((IWizardElement) this.uiObject, Context.getThreadContext().getParameters());
+                        wizard.insertBefore((IWizardElement) this.uiObject);
                         newUIObject.setWizard(wizard);
                         newUIObject.setPartOfWizardCall(true);
                         newUIObject.setRenderRevise(this.uiObject.isTargetCmdRevise());

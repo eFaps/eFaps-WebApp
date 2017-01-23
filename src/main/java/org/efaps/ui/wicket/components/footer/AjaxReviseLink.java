@@ -19,15 +19,18 @@ package org.efaps.ui.wicket.components.footer;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
+import org.efaps.ui.wicket.models.objects.IWizardElement;
 import org.efaps.ui.wicket.models.objects.UIForm;
+import org.efaps.ui.wicket.models.objects.UIGrid;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.models.objects.UIWizardObject;
-import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
+import org.efaps.ui.wicket.pages.content.grid.GridPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
@@ -41,6 +44,7 @@ import org.efaps.util.EFapsException;
 public class AjaxReviseLink
     extends AjaxLink<AbstractUIObject>
 {
+
     /**
      * Needed for serialization.
      */
@@ -53,7 +57,7 @@ public class AjaxReviseLink
     public AjaxReviseLink(final String _wicketId,
                           final AbstractUIObject _uiObject)
     {
-        super(_wicketId, new Model<AbstractUIObject>(_uiObject));
+        super(_wicketId, new Model<>(_uiObject));
     }
 
     /**
@@ -67,16 +71,19 @@ public class AjaxReviseLink
     {
         final AbstractUIPageObject uiobject = (AbstractUIPageObject) getDefaultModelObject();
         final UIWizardObject wizard = uiobject.getWizard();
-        final AbstractUIPageObject prevObject = wizard.getPrevious();
-        prevObject.setPartOfWizardCall(true);
-        prevObject.resetModel();
+        final IWizardElement prevObject = wizard.getPrevious();
+        //prevObject.setPartOfWizardCall(true);
         final FooterPanel footer = findParent(FooterPanel.class);
         final ModalWindowContainer modal = footer.getModalWindow();
-        final AbstractContentPage page;
+        final WebPage page;
         try {
             if (prevObject instanceof UITable) {
+                ((UITable) prevObject).resetModel();
                 page = new TablePage(Model.of((UITable) prevObject), modal);
+            } else if (prevObject instanceof UIGrid) {
+                page = new GridPage(Model.of((UIGrid) prevObject));
             } else {
+                ((UIForm) prevObject).resetModel();
                 page = new FormPage(Model.of((UIForm) prevObject), modal);
             }
             getRequestCycle().setResponsePage(page);

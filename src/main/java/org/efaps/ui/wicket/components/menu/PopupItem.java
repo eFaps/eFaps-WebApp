@@ -65,4 +65,15 @@ public class PopupItem
     {
         return null;
     }
+
+    /**
+     * Checks if is popup.
+     *
+     * @return true, if is popup
+     */
+    @Override
+    protected boolean isPopup()
+    {
+        return true;
+    }
 }

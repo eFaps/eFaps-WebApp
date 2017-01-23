@@ -200,6 +200,10 @@ public final class Configuration
                         "Type of table used as tree page table"),
 
         /** */
+        TABLEDEFAULTTYPESEARCH(false, true, "TableDefaultType4Search", "Table", String.class,
+                        "Type of table used as tree page table"),
+
+        /** */
         GRIDPRINTESJP(false, true, "GridXPrinter", "org.efaps.esjp.ui.print.GridX", String.class,
                         "Class name of the esjp to be invoked for printing GridX."),
         /** */

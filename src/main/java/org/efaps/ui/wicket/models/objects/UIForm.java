@@ -83,7 +83,7 @@ import org.slf4j.LoggerFactory;
  */
 public class UIForm
     extends AbstractUIPageObject
-    implements ISelectedRowObject, IPageObject
+    implements ISelectedRowObject, IPageObject, IWizardElement
 {
 
     /**
@@ -881,7 +881,7 @@ public class UIForm
     @Override
     public PagePosition getPagePosition()
     {
-        PagePosition ret;
+        final PagePosition ret;
         if (this.pagePosition == null) {
             //TODO remove
             UIForm.LOG.error("MISSING PAGEPOSITION!!!");
@@ -1137,5 +1137,19 @@ public class UIForm
         {
             return this.element;
         }
+    }
+
+    @Override
+    public boolean isWizardCall()
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public UIWizardObject getUIWizardObject()
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

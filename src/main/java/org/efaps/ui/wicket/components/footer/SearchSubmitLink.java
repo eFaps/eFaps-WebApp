@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.components.footer;
@@ -28,21 +25,27 @@ import org.apache.wicket.model.Model;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
+import org.efaps.ui.wicket.models.objects.IPageObject;
+import org.efaps.ui.wicket.models.objects.IWizardElement;
+import org.efaps.ui.wicket.models.objects.UIGrid;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.models.objects.UIWizardObject;
+import org.efaps.ui.wicket.pages.content.grid.GridPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.ui.wicket.util.Configuration;
+import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 import org.efaps.util.EFapsException;
 
 /**
  * Link used to submit a Search.
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class SearchSubmitLink
     extends AjaxSubmitLink
 {
+
     /**
      * Needed for serialization.
      */
@@ -70,23 +73,33 @@ public class SearchSubmitLink
         super.onSubmit(_target, _form);
         final AbstractUIPageObject uiObject = (AbstractUIPageObject) getDefaultModelObject();
         try {
-            final UITable newTable = new UITable(uiObject.getCommandUUID(), uiObject.getInstanceKey(), uiObject
-                            .getOpenerId());
-            final UIWizardObject wizard = new UIWizardObject(newTable);
-            uiObject.setWizard(wizard);
-            wizard.addParameters(uiObject, Context.getThreadContext().getParameters());
-            wizard.insertBefore(uiObject);
-            newTable.setWizard(wizard);
-            newTable.setPartOfWizardCall(true);
-            newTable.setRenderRevise(uiObject.isTargetCmdRevise());
-            if (uiObject.isSubmit()) {
-                newTable.setSubmit(true);
-                newTable.setCallingCommandUUID(uiObject.getCallingCommandUUID());
+            if ("GridX".equals(Configuration.getAttribute(ConfigAttribute.TABLEDEFAULTTYPESEARCH))) {
+                final UITable newTable = new UITable(uiObject.getCommandUUID(), uiObject.getInstanceKey(), uiObject
+                                .getOpenerId());
+                final UIWizardObject wizard = new UIWizardObject(newTable);
+                uiObject.setWizard(wizard);
+                wizard.addParameters((IWizardElement) uiObject, Context.getThreadContext().getParameters());
+                wizard.insertBefore((IWizardElement) uiObject);
+                newTable.setWizard(wizard);
+                newTable.setPartOfWizardCall(true);
+                newTable.setRenderRevise(uiObject.isTargetCmdRevise());
+                if (uiObject.isSubmit()) {
+                    newTable.setSubmit(true);
+                    newTable.setCallingCommandUUID(uiObject.getCallingCommandUUID());
+                }
+                final FooterPanel footer = findParent(FooterPanel.class);
+                final ModalWindowContainer modal = footer.getModalWindow();
+                final TablePage page = new TablePage(Model.of(newTable), modal);
+                getRequestCycle().setResponsePage(page);
+            } else {
+                final UIGrid uiGrid = UIGrid.get(uiObject.getCommandUUID(), ((IPageObject) uiObject).getPagePosition());
+                final UIWizardObject wizard = new UIWizardObject(uiGrid);
+                wizard.addParameters((IWizardElement) uiObject, Context.getThreadContext().getParameters());
+                wizard.insertBefore((IWizardElement) uiObject);
+
+                final GridPage page = new GridPage(Model.of(uiGrid));
+                getRequestCycle().setResponsePage(page);
             }
-            final FooterPanel footer = findParent(FooterPanel.class);
-            final ModalWindowContainer modal = footer.getModalWindow();
-            final TablePage page = new TablePage(Model.of(newTable), modal);
-            getRequestCycle().setResponsePage(page);
         } catch (final EFapsException e) {
             getRequestCycle().setResponsePage(new ErrorPage(e));
         }
