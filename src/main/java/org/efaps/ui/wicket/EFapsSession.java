@@ -281,7 +281,7 @@ public class EFapsSession
         boolean ret = false;
         if (this.userName != null) {
             ret = true;
-        } else {
+        } else if (!isSessionInvalidated())  {
             final HttpServletRequest httpRequest = ((ServletWebRequest) RequestCycle.get().getRequest())
                             .getContainerRequest();
             final HttpSession httpSession = httpRequest.getSession(false);
@@ -339,18 +339,11 @@ public class EFapsSession
             } finally {
                 this.sessionAttributes.clear();
                 removeAttribute(EFapsSession.LOGIN_ATTRIBUTE_NAME);
+                invalidate();
             }
         }
-        this.userName = null;
-        final HttpServletRequest httpRequest = ((ServletWebRequest) RequestCycle.get().getRequest())
-                        .getContainerRequest();
-        try {
-            httpRequest.logout();
-        } catch (final ServletException e) {
-            EFapsSession.LOG.error("Catched erroror for logout", e);
-        }
         closeContext();
-        invalidate();
+        this.userName = null;
     }
 
     /**
@@ -539,6 +532,14 @@ public class EFapsSession
             this.userName = null;
         }
         super.onInvalidate();
+        final HttpServletRequest httpRequest = ((ServletWebRequest) RequestCycle.get().getRequest())
+                        .getContainerRequest();
+        try {
+            httpRequest.logout();
+        } catch (final ServletException e) {
+            EFapsSession.LOG.error("Catched erroror for logout", e);
+        }
+        invalidateNow();
     }
 
     @Override

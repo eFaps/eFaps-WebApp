@@ -57,6 +57,8 @@ public final class Configuration
         /** */
         LOGINALERT_PROVIDER(false, true, "LoginAlert.Provider", "org.efaps.esjp.common.loginalert.AlertProvider",
                         String.class, "Class name of the AlertProvider class"),
+        /** */
+        LOGOUT_URL(false, true, "LogoutURL", "", String.class, "URL to redirect to on logout."),
 
         /**  */
         RECENTCACHESIZE(false, true, "RecentCacheSize", "5", Integer.class,

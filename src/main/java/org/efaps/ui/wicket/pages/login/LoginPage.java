@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,13 +93,13 @@ public class LoginPage
             protected void onSubmit()
             {
                 super.onSubmit();
-                final EFapsSession session = (EFapsSession) this.getSession();
+                final EFapsSession session = (EFapsSession) getSession();
                 session.login();
                 if (session.isLogedIn()) {
-                    this.getRequestCycle().setResponsePage(new GatherInfoPage());
+                    getRequestCycle().setResponsePage(new GatherInfoPage());
                 } else {
                     final LoginPage page = new LoginPage(true);
-                    this.getRequestCycle().setResponsePage(page);
+                    getRequestCycle().setResponsePage(page);
                 }
             }
         };
@@ -134,7 +134,10 @@ public class LoginPage
         } else {
             this.add(new WebMarkupContainer("msg").setVisible(false));
         }
-        this.setStatelessHint(true);
+        setStatelessHint(true);
+        if (EFapsSession.get().isLogedIn()) {
+            getRequestCycle().setResponsePage(new GatherInfoPage());
+        }
     }
 
     @Override

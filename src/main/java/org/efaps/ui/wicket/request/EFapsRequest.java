@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.request;
@@ -33,7 +30,6 @@ import org.apache.wicket.util.lang.Bytes;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class EFapsRequest
     extends ServletWebRequest
@@ -52,6 +48,12 @@ public class EFapsRequest
                         final String _filterPrefix)
     {
         super(_httpServletRequest, _filterPrefix);
+    }
+
+    @Override
+    public boolean isAjax()
+    {
+        return super.isAjax() && !getUrl().toString().contains("wicket/bookmarkable/");
     }
 
     @Override
