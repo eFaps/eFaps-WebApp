@@ -265,7 +265,7 @@ public class GridXComponent
 
             js.append("{pluginClass: GridQuickFilter, style: 'text-align: center;'}, \n")
                     .append("{ pluginClass: \"efaps/GridConfig\", style: 'text-align: right;', printItems: [")
-                    .append(getPrintMenuItems()).append("],\n")
+                    .append(getPrintMenuItems(dojoClasses)).append("],\n")
                     .append("reload : ").append(getBehavior(ReloadBehavior.class).getCallbackFunction())
                     .append("} \n")
                     .append("],\n")
@@ -410,9 +410,10 @@ public class GridXComponent
      *
      * @return the prints the menu items
      */
-    protected CharSequence getPrintMenuItems()
+    protected CharSequence getPrintMenuItems(final Set<DojoClass> _dojoClasses)
     {
         final StringBuilder ret = new StringBuilder();
+        Collections.addAll(_dojoClasses, DojoClasses.MenuItem);
         final PrintBehavior printBehavior = (PrintBehavior) getBehavior(PrintBehavior.class);
         final String[] mimes = new String[] {"PDF", "XLS"};
         for (final String mime : mimes) {
