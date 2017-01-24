@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,6 +83,7 @@ public class DialogPage
      * @param _pageReference Reference to the page that opened this dialog
      * @param _model the MenuItem that called this DialogPage
      * @param _oids oids which must be past on, in case of submit
+     * @throws CacheReloadException the cache reload exception
      */
     public DialogPage(final PageReference _pageReference,
                       final IModel<ICmdUIObject> _model,
@@ -165,7 +166,7 @@ public class DialogPage
     public static String getLabel(final String _cmdName,
                                    final String _keytype)
     {
-        String ret;
+        final String ret;
         if (DBProperties.hasProperty(_cmdName + ".Button." + _keytype)) {
             ret = DBProperties.getProperty(_cmdName + ".Button." + _keytype);
         } else {
@@ -202,16 +203,16 @@ public class DialogPage
         {
             final AbstractContentPage page = (AbstractContentPage) DialogPage.this.pageReference.getPage();
 
-            final AjaxSubmitCloseButton beh = page.visitChildren(new IVisitor<Component, AjaxSubmitCloseButton>()
-            {
-                @Override
-                public void component(final Component _component,
-                                      final IVisit<AjaxSubmitCloseButton> _visit)
+            final AjaxSubmitCloseButton beh = page.visitChildren(AjaxSubmitCloseButton.class,
+                            new IVisitor<Component, AjaxSubmitCloseButton>()
                 {
-                   _visit.stop((AjaxSubmitCloseButton) _component);
-                }
-            });
-
+                    @Override
+                    public void component(final Component _component,
+                                          final IVisit<AjaxSubmitCloseButton> _visit)
+                    {
+                        _visit.stop((AjaxSubmitCloseButton) _component);
+                    }
+                });
             beh.setValidated(true);
             final ModalWindowContainer modal = page.getModal();
             modal.close(_target);
@@ -245,14 +246,14 @@ public class DialogPage
         {
             DialogPage.this.pageReference.getPage().visitChildren(ModalWindowContainer.class,
                             new IVisitor<ModalWindowContainer, Void>()
-                            {
-                                @Override
-                                public void component(final ModalWindowContainer _modal,
-                                                      final IVisit<Void> _visit)
-                                {
-                                    _modal.close(_target);
-                                }
-                            });
+                {
+                    @Override
+                    public void component(final ModalWindowContainer _modal,
+                                          final IVisit<Void> _visit)
+                    {
+                        _modal.close(_target);
+                    }
+                });
 
             final StringBuilder bldr = new StringBuilder();
             bldr.append("var cD = top.frames[0].document").append(".getElementById('eFapsContentDiv');")

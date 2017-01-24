@@ -39,6 +39,7 @@ import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.AjaxCallListener;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
+import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow.WindowClosedCallback;
 import org.apache.wicket.feedback.FeedbackCollector;
@@ -426,24 +427,30 @@ public class AjaxSubmitCloseButton
     {
         AjaxSubmitCloseButton.LOG.trace("entering executeEvents");
         boolean ret = true;
-        final List<Return> returns;
-        final ICmdUIObject  cmdUIObject = (ICmdUIObject) getPage().getDefaultModelObject();
+        ;
+        final ICmdUIObject cmdUIObject = (ICmdUIObject) getPage().getDefaultModelObject();
         TargetMode mode;
         if (cmdUIObject instanceof IModeObject) {
             mode = ((IModeObject) cmdUIObject).getMode();
         } else {
             mode = TargetMode.UNKNOWN;
         }
-        if (_classifications.size() > 0) {
-            returns = cmdUIObject.executeEvents(EventType.UI_COMMAND_EXECUTE,
-                            ParameterValues.OTHERS, _other,
-                            ParameterValues.ACCESSMODE, mode,
-                            ParameterValues.CLASSIFICATIONS, _classifications);
-        } else {
-            returns = cmdUIObject.executeEvents(EventType.UI_COMMAND_EXECUTE,
-                            ParameterValues.OTHERS, _other,
-                            ParameterValues.ACCESSMODE, mode);
+        final List<Object> tuplets = new ArrayList<>();
+        tuplets.add(ParameterValues.OTHERS);
+        tuplets.add(_other);
+        tuplets.add(ParameterValues.ACCESSMODE);
+        tuplets.add(mode);
+
+        if (cmdUIObject instanceof AbstractUIPageObject) {
+            tuplets.add(ParameterValues.OIDMAP4UI);
+            tuplets.add(((AbstractUIPageObject) getForm().getPage().getDefaultModelObject()).getUiID2Oid());
         }
+        if (_classifications.size() > 0) {
+            tuplets.add(ParameterValues.CLASSIFICATIONS);
+            tuplets.add(_classifications);
+        }
+
+        final List<Return> returns = cmdUIObject.executeEvents(EventType.UI_COMMAND_EXECUTE,tuplets.toArray());
 
         for (final Return oneReturn : returns) {
             if (oneReturn.get(ReturnValues.TRUE) == null && !oneReturn.isEmpty()
@@ -568,17 +575,30 @@ public class AjaxSubmitCloseButton
         AjaxSubmitCloseButton.LOG.trace("entering validateForm");
         boolean ret = true;
         if (!this.validated) {
-            final List<Return> returns;
-            if (_classifications.size() > 0) {
-                returns = ((ICmdUIObject) getPage().getDefaultModelObject()).executeEvents(EventType.UI_VALIDATE,
-                                ParameterValues.OTHERS, _other,
-                                ParameterValues.CLASSIFICATIONS, _classifications,
-                                ParameterValues.OIDMAP4UI,
-                                    ((AbstractUIPageObject) getForm().getPage().getDefaultModelObject()).getUiID2Oid());
+            TargetMode mode;
+            if (getForm().getPage().getDefaultModelObject() instanceof IModeObject) {
+                mode = ((IModeObject) getForm().getPage().getDefaultModelObject()).getMode();
             } else {
-                returns = ((ICmdUIObject) getPage().getDefaultModelObject()).executeEvents(EventType.UI_VALIDATE,
-                                ParameterValues.OTHERS, _other);
+                mode = TargetMode.UNKNOWN;
             }
+
+            final List<Object> tuplets = new ArrayList<>();
+            tuplets.add(ParameterValues.OTHERS);
+            tuplets.add(_other);
+            tuplets.add(ParameterValues.ACCESSMODE);
+            tuplets.add(mode);
+
+            if (getPage().getDefaultModelObject() instanceof AbstractUIPageObject) {
+                tuplets.add(ParameterValues.OIDMAP4UI);
+                tuplets.add(((AbstractUIPageObject) getForm().getPage().getDefaultModelObject()).getUiID2Oid());
+            }
+            if (_classifications.size() > 0) {
+                tuplets.add(ParameterValues.CLASSIFICATIONS);
+                tuplets.add(_classifications);
+            }
+
+            final List<Return> returns = ((ICmdUIObject) getPage().getDefaultModelObject())
+                            .executeEvents(EventType.UI_VALIDATE, tuplets.toArray());
 
             boolean goOn = true;
             boolean sniplett = false;
@@ -722,7 +742,17 @@ public class AjaxSubmitCloseButton
      */
     protected CharSequence getExecuteScript()
     {
-        final CharSequence ajaxAttributes = "asd";
-        return "new Wicket.Ajax.Call().ajax(" + ajaxAttributes + ");";
+        final CharSequence script = visitChildren(ButtonLink.class, new IVisitor<ButtonLink<?>, CharSequence>()
+        {
+
+            @Override
+            public void component(final org.efaps.ui.wicket.components.button.AjaxButton.ButtonLink<?> _btl,
+                                  final IVisit<CharSequence> _visit)
+            {
+                final AjaxFormSubmitBehavior behavior = _btl.getBehaviors(AjaxFormSubmitBehavior.class).get(0);
+                _visit.stop(behavior.getCallbackScript());
+            }
+        });
+        return script.toString().replaceFirst("Wicket\\.Ajax\\.", "new Wicket.Ajax.Call().");
     }
 }
