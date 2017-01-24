@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev:1510 $
- * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
- * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.components.footer;
@@ -29,17 +26,18 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.efaps.admin.dbproperty.DBProperties;
-import org.efaps.ui.wicket.components.FormContainer;
+import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
-import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
-import org.efaps.ui.wicket.models.objects.UIForm;
+import org.efaps.ui.wicket.models.objects.ICmdUIObject;
+import org.efaps.ui.wicket.models.objects.IWizardElement;
+import org.efaps.ui.wicket.models.objects.UIGrid;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.dialog.DialogPage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
-import org.efaps.util.cache.CacheReloadException;
+import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +47,6 @@ import org.slf4j.LoggerFactory;
  * the Footer like submit, cancel and so on.
  *
  * @author The eFaps Team
- * @version $Id:FooterPanel.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class FooterPanel
     extends Panel
@@ -88,28 +85,27 @@ public class FooterPanel
      * @param _wicketId wicket id of the Component
      * @param _model Model of the Component
      * @param _modalWindow ModalWindowContainer containing this FooterPanel
-     * @param _form FormContainer of the Page (needed to submit the Form)
-     * @throws CacheReloadException on error
+     * @throws EFapsException on error
      */
     public FooterPanel(final String _wicketId,
-                       final IModel<?> _model,
-                       final ModalWindowContainer _modalWindow,
-                       final FormContainer _form)
-        throws CacheReloadException
+                       final IModel<ICmdUIObject> _model,
+                       final ModalWindowContainer _modalWindow)
+        throws EFapsException
     {
         super(_wicketId, _model);
         this.modalWindow = _modalWindow;
 
-        final AbstractUIPageObject uiObject = (AbstractUIPageObject) super.getDefaultModelObject();
+        final ICmdUIObject cmdUIObject = (ICmdUIObject) super.getDefaultModelObject();
 
         // if we want a SucessDialog we add it here, it will be opened after
         // closing the window
-        if ("true".equals(uiObject.getCommand().getProperty("SuccessDialog"))) {
+        if ("true".equals(cmdUIObject.getCommand().getProperty("SuccessDialog"))) {
             FooterPanel.this.modalWindow.setWindowClosedCallback(new WindowClosedCallback()
             {
 
                 private static final long serialVersionUID = 1L;
 
+                @Override
                 public void onClose(final AjaxRequestTarget _target)
                 {
                     if (FooterPanel.this.success) {
@@ -124,18 +120,18 @@ public class FooterPanel
 
                             private static final long serialVersionUID = 1L;
 
+                            @Override
                             public Page createPage()
                             {
                                 Page ret = null;
 
                                 try {
                                     ret = new DialogPage(((AbstractContentPage) getPage()).getPageReference(),
-                                                    uiObject.getCommand().getName()
+                                                    cmdUIObject.getCommand().getName()
                                                                     + ".Success", false, false);
-                                } catch (final CacheReloadException e) {
+                                } catch (final EFapsException e) {
                                     FooterPanel.LOG.error("Error on instanciation of page", e);
                                 }
-
                                 return ret;
                             }
                         });
@@ -149,56 +145,67 @@ public class FooterPanel
 
         String label = null;
         String closelabelkey = "Cancel";
-        if (uiObject.hasTargetCmd()) {
-            label = DBProperties.getProperty(uiObject.getTargetCmd().getName() + ".Label");
-        } else if (uiObject.isOpenedByPicker()) {
-            label = getLabel(uiObject.getCommand().getName(), "Picker");
-        } else if (uiObject.isCreateMode()) {
-            label = getLabel(uiObject.getCommand().getName(), "Create");
-        } else if (uiObject.isEditMode()) {
-            label = getLabel(uiObject.getCommand().getName(), "Edit");
-        } else if (uiObject.isSubmit() && uiObject instanceof UITable) {
-            label = getLabel(uiObject.getCommand().getName(), "Connect");
-        } else if (uiObject.isSearchMode()) {
-            label = getLabel(uiObject.getCommand().getName(), "Search");
+        if (cmdUIObject.getCommand().getTargetCommand() != null) {
+            label = DBProperties.getProperty(cmdUIObject.getCommand().getTargetCommand().getName() + ".Label");
+        } else {
+            switch (cmdUIObject.getCommand().getTargetMode()) {
+                case CREATE:
+                    label = getLabel(cmdUIObject, "Create");
+                    break;
+                case EDIT:
+                    label = getLabel(cmdUIObject, "Edit");
+                    break;
+                case SEARCH:
+                    label = getLabel(cmdUIObject, "Search");
+                    break;
+                case CONNECT:
+                    label = getLabel(cmdUIObject, "Connect");
+                    break;
+                default:
+                    break;
+            }
         }
         boolean prevAdded = false;
-        if (uiObject.hasTargetCmd()) {
-            final Button button = new Button("createeditsearch",
-                            new AjaxSubmitCloseLink(Button.LINKID, uiObject, _form),
-                            label, Button.ICON.NEXT.getReference());
-            add(button);
-        } else if ((uiObject.isSubmit() && uiObject instanceof UITable) || !uiObject.isSearchMode()) {
-            final Button button = new Button("createeditsearch",
-                            new AjaxSubmitCloseLink(Button.LINKID, uiObject, _form),
-                            label, Button.ICON.ACCEPT.getReference());
-            add(button);
-        } else if (uiObject.isSearchMode() && uiObject instanceof UIForm) {
-            final Button button = new Button("createeditsearch", new SearchSubmitLink(Button.LINKID, _model, _form),
-                            label, Button.ICON.NEXT.getReference());
-            add(button);
+        // star tof a new wisard call
+        if (cmdUIObject.getCommand().getTargetCommand() != null) {
+            add(new AjaxSubmitCloseButton("createeditsearch", _model, Button.ICON.NEXT.getReference(), label));
+        } else if (cmdUIObject instanceof IWizardElement && ((IWizardElement) cmdUIObject).isWizardCall()) {
+            // this is searchmode: on first call show form, on second show table
+            final IWizardElement first = ((IWizardElement) cmdUIObject).getUIWizardObject().getWizardElement().get(0);
+            if (TargetMode.SEARCH.equals(((ICmdUIObject) first).getCallingCommand().getTargetMode())) {
+                add(new WebMarkupContainer("createeditsearch").setVisible(false));
+            } else {
+                add(new AjaxSubmitCloseButton("createeditsearch", _model, Button.ICON.ACCEPT.getReference(),
+                                getLabel(cmdUIObject, "Connect")));
+                if (cmdUIObject instanceof UIGrid) {
+                    ((UIGrid) cmdUIObject).setShowCheckBoxes(true);
+                }
+            }
+        } else if ((cmdUIObject.getCommand().isSubmit() && cmdUIObject instanceof UITable) || !TargetMode.SEARCH.equals(
+                        cmdUIObject.getCommand().getTargetMode())) {
+            add(new AjaxSubmitCloseButton("createeditsearch", _model, Button.ICON.ACCEPT.getReference(), label));
+        } else if (TargetMode.SEARCH.equals(cmdUIObject.getCommand().getTargetMode())
+                        && cmdUIObject.getCommand().getTargetForm() != null) {
+            add(new AjaxSearchSubmitButton("createeditsearch", _model, Button.ICON.NEXT.getReference(), label));
         } else {
             closelabelkey = "Close";
-            label = getLabel(uiObject.getCommand().getName(), "Revise");
-            final Button button = new Button("createeditsearch", new AjaxReviseLink(Button.LINKID, uiObject),
-                            label, Button.ICON.PREVIOUS.getReference());
-            add(button);
+            label = getLabel(cmdUIObject, "Revise");
+            add(new AjaxReviseButton("createeditsearch", _model, Button.ICON.PREVIOUS.getReference(), label));
             prevAdded = true;
         }
 
         if (_modalWindow == null) {
-            add(new Button("cancel", new ClosePopUpLink(Button.LINKID, uiObject), getLabel(uiObject.getCommand()
-                            .getName(), closelabelkey), Button.ICON.CANCEL.getReference()));
+            add(new ClosePopUpButton("cancel", _model, Button.ICON.CANCEL.getReference(), getLabel(cmdUIObject,
+                            closelabelkey)));
         } else {
-            add(new Button("cancel", new AjaxCancelLink(Button.LINKID), getLabel(uiObject.getCommand().getName(),
-                            closelabelkey), Button.ICON.CANCEL.getReference()));
+            add(new AjaxCancelButton("cancel", _model, Button.ICON.CANCEL.getReference(), getLabel(cmdUIObject,
+                            closelabelkey)));
         }
 
-        if (uiObject.isPartOfWizardCall() && uiObject.isRenderRevise() && !prevAdded) {
-            label = getLabel(uiObject.getCommand().getName(), "Revise");
-            final Button prev = new Button("prev", new AjaxReviseLink(Button.LINKID, uiObject),
-                            label, Button.ICON.PREVIOUS.getReference());
-            this.add(prev);
+        if (cmdUIObject instanceof IWizardElement && ((IWizardElement) cmdUIObject).isWizardCall() && cmdUIObject
+                        .getCommand().isTargetCmdRevise() && !prevAdded) {
+            label = getLabel(cmdUIObject, "Revise");
+            add(new AjaxReviseButton("prev", _model, Button.ICON.PREVIOUS.getReference(), label));
         } else {
             add(new WebMarkupContainer("prev").setVisible(false));
         }
@@ -219,17 +226,18 @@ public class FooterPanel
     /**
      * Method that searches a DBProperty for the Label.
      *
-     * @param _cmdName Name of the CommandAbstract the Label should be searched
-     *            for
+     * @param _cmdObject the cmd object
      * @param _keytype what Label should be searched
      * @return if found DBProperty of the CommandAbstract, else a Default
+     * @throws EFapsException on error
      */
-    private String getLabel(final String _cmdName,
+    private String getLabel(final ICmdUIObject _cmdObject,
                             final String _keytype)
+        throws EFapsException
     {
-        String ret;
-        if (DBProperties.hasProperty(_cmdName + ".Button." + _keytype)) {
-            ret = DBProperties.getProperty(_cmdName + ".Button." + _keytype);
+        final String ret;
+        if (DBProperties.hasProperty(_cmdObject.getCommand().getName()  + ".Button." + _keytype)) {
+            ret = DBProperties.getProperty(_cmdObject.getCommand().getName() + ".Button." + _keytype);
         } else {
             ret = DBProperties.getProperty("default.Button." + _keytype);
         }

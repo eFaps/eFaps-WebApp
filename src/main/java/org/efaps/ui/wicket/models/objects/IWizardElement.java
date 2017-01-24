@@ -40,4 +40,12 @@ public interface IWizardElement
      * @return the UI wizard object
      */
     UIWizardObject getUIWizardObject();
+
+    /**
+     * Sets the UI wizard object.
+     *
+     * @param _uiWizardObject the ui wizard object
+     * @return the i wizard element
+     */
+    IWizardElement setUIWizardObject(UIWizardObject _uiWizardObject);
 }

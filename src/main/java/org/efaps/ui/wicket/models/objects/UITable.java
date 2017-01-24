@@ -128,6 +128,8 @@ public class UITable
     /** The page position. */
     private PagePosition pagePosition;
 
+    private UIWizardObject uiWizardObject;
+
     /**
      * Constructor setting the uuid and Key of the instance.
      *
@@ -986,16 +988,20 @@ public class UITable
     @Override
     public boolean isWizardCall()
     {
-        // TODO Auto-generated method stub
-        return false;
+        return getUIWizardObject() != null;
     }
-
 
     @Override
     public UIWizardObject getUIWizardObject()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return this.uiWizardObject;
+    }
+
+    @Override
+    public IWizardElement setUIWizardObject(final UIWizardObject _uiWizardObject)
+    {
+        this.uiWizardObject = _uiWizardObject;
+        return this;
     }
 
     /**

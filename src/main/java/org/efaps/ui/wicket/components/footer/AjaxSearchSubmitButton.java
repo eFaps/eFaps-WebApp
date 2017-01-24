@@ -18,13 +18,12 @@
 package org.efaps.ui.wicket.components.footer;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
+import org.efaps.ui.wicket.models.objects.ICmdUIObject;
 import org.efaps.ui.wicket.models.objects.IPageObject;
 import org.efaps.ui.wicket.models.objects.IWizardElement;
 import org.efaps.ui.wicket.models.objects.UIGrid;
@@ -33,6 +32,7 @@ import org.efaps.ui.wicket.models.objects.UIWizardObject;
 import org.efaps.ui.wicket.pages.content.grid.GridPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 import org.efaps.util.EFapsException;
@@ -42,8 +42,8 @@ import org.efaps.util.EFapsException;
  *
  * @author The eFaps Team
  */
-public class SearchSubmitLink
-    extends AjaxSubmitLink
+public class AjaxSearchSubmitButton
+    extends AbstractFooterButton<ICmdUIObject>
 {
 
     /**
@@ -56,24 +56,31 @@ public class SearchSubmitLink
      *
      * @param _wicketId wicket id of this component
      * @param _model model for this component
-     * @param _form form of this submit link
+     * @param _eFapsContentReference the e faps content reference
+     * @param _label the label
      */
-    public SearchSubmitLink(final String _wicketId,
-                            final IModel<?> _model,
-                            final Form<?> _form)
+    public AjaxSearchSubmitButton(final String _wicketId,
+                                  final IModel<ICmdUIObject> _model,
+                                  final EFapsContentReference _eFapsContentReference,
+                                  final String _label)
     {
-        super(_wicketId, _form);
-        super.setDefaultModel(_model);
+        super(_wicketId, _model, _eFapsContentReference, _label);
     }
 
     @Override
-    protected void onSubmit(final AjaxRequestTarget _target,
-                            final Form<?> _form)
+    public void onRequest(final AjaxRequestTarget _target)
     {
-        super.onSubmit(_target, _form);
         final AbstractUIPageObject uiObject = (AbstractUIPageObject) getDefaultModelObject();
         try {
             if ("GridX".equals(Configuration.getAttribute(ConfigAttribute.TABLEDEFAULTTYPESEARCH))) {
+                final UIGrid uiGrid = UIGrid.get(uiObject.getCommandUUID(), ((IPageObject) uiObject).getPagePosition());
+                final UIWizardObject wizard = new UIWizardObject(uiGrid);
+                wizard.addParameters((IWizardElement) uiObject, Context.getThreadContext().getParameters());
+                wizard.insertBefore((IWizardElement) uiObject);
+
+                final GridPage page = new GridPage(Model.of(uiGrid));
+                getRequestCycle().setResponsePage(page);
+            } else {
                 final UITable newTable = new UITable(uiObject.getCommandUUID(), uiObject.getInstanceKey(), uiObject
                                 .getOpenerId());
                 final UIWizardObject wizard = new UIWizardObject(newTable);
@@ -91,24 +98,9 @@ public class SearchSubmitLink
                 final ModalWindowContainer modal = footer.getModalWindow();
                 final TablePage page = new TablePage(Model.of(newTable), modal);
                 getRequestCycle().setResponsePage(page);
-            } else {
-                final UIGrid uiGrid = UIGrid.get(uiObject.getCommandUUID(), ((IPageObject) uiObject).getPagePosition());
-                final UIWizardObject wizard = new UIWizardObject(uiGrid);
-                wizard.addParameters((IWizardElement) uiObject, Context.getThreadContext().getParameters());
-                wizard.insertBefore((IWizardElement) uiObject);
-
-                final GridPage page = new GridPage(Model.of(uiGrid));
-                getRequestCycle().setResponsePage(page);
             }
         } catch (final EFapsException e) {
             getRequestCycle().setResponsePage(new ErrorPage(e));
         }
-    }
-
-    @Override
-    protected void onError(final AjaxRequestTarget _target,
-                           final Form<?> _form)
-    {
-        // Nothing must be done
     }
 }

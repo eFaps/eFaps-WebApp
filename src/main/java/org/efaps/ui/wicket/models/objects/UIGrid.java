@@ -92,7 +92,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class UIGrid
     extends AbstractUI
-    implements IPageObject, IWizardElement
+    implements IPageObject, IWizardElement, ICmdUIObject
 {
 
     /** The Constant serialVersionUID. */
@@ -123,6 +123,12 @@ public final class UIGrid
 
     /** The pageposition. */
     private PagePosition pagePosition;
+
+    /** The ui wizard object. */
+    private UIWizardObject uiWizardObject;
+
+    /** The show check boxes. */
+    private Boolean showCheckBoxes;
 
     /**
      * Instantiates a new UI grid.
@@ -424,6 +430,7 @@ public final class UIGrid
      * @return the command
      * @throws CacheReloadException the cache reload exception
      */
+    @Override
     public AbstractCommand getCommand()
         throws CacheReloadException
     {
@@ -490,7 +497,17 @@ public final class UIGrid
     public boolean isShowCheckBoxes()
         throws CacheReloadException
     {
-        return getCommand().isTargetShowCheckBoxes();
+        return this.showCheckBoxes == null ? getCommand().isTargetShowCheckBoxes() : this.showCheckBoxes;
+    }
+
+    /**
+     * Setter method for instance variable {@link #showCheckBoxes}.
+     *
+     * @param _showCheckBoxes value for instance variable {@link #showCheckBoxes}
+     */
+    public void setShowCheckBoxes(final Boolean _showCheckBoxes)
+    {
+        this.showCheckBoxes = _showCheckBoxes;
     }
 
     /**
@@ -650,6 +667,13 @@ public final class UIGrid
         return ret;
     }
 
+    @Override
+    public Instance getInstance()
+        throws EFapsException
+    {
+        return getCallInstance();
+    }
+
     /**
      * Getter method for the instance variable {@link #callInstance}.
      *
@@ -713,13 +737,29 @@ public final class UIGrid
     @Override
     public boolean isWizardCall()
     {
-        return false;
+        return getUIWizardObject() != null;
     }
 
     @Override
     public UIWizardObject getUIWizardObject()
     {
-        return null;
+        return this.uiWizardObject;
+    }
+
+    @Override
+    public IWizardElement setUIWizardObject(final UIWizardObject _uiWizardObject)
+    {
+        this.uiWizardObject = _uiWizardObject;
+        return this;
+    }
+
+    @Override
+    public List<Return> executeEvents(final EventType _eventType,
+                                      final Object... _objectTuples)
+        throws EFapsException
+    {
+        final List<Return> ret = new ArrayList<>();
+        return ret;
     }
 
     /**

@@ -198,20 +198,27 @@ public class GridXComponent
                         .append("}\n");
                     checkOutCols.add(column.getFieldConfig().getField().getId());
                 } else if (column.getFieldConfig().getField().getReference() != null) {
-                    if (PagePosition.POPUP.equals(uiGrid.getPagePosition())) {
-                        linkCols.add(column.getFieldConfig().getField().getId());
-                        js.append(", decorator: function(data, rowId, visualIndex, cell){\n")
-                        .append("return '<a href=\"#\">' + data + '</a>';\n")
-                        .append("}\n");
-
-                    } else {
-                        js.append(", decorator: function(data, rowId, visualIndex, cell){\n")
-                            .append("return '<a href=\"").append(
+                    switch (uiGrid.getPagePosition()) {
+                        case POPUP:
+                            linkCols.add(column.getFieldConfig().getField().getId());
+                            js.append(", decorator: function(data, rowId, visualIndex, cell){\n")
+                                .append("return '<a href=\"#\">' + data + '</a>';\n")
+                                .append("}\n");
+                            break;
+                        case CONTENT:
+                        case TREE:
+                            js.append(", decorator: function(data, rowId, visualIndex, cell){\n")
+                                .append("return '<a href=\"").append(
                                     urlFor(ILinkListener.INTERFACE, new PageParameters()))
-                            .append("&rowId=").append("' + rowId + '")
-                            .append("&colId=").append(j)
-                            .append("\">' + data + '</a>';\n")
-                            .append("}\n");
+                                .append("&rowId=").append("' + rowId + '")
+                                .append("&colId=").append(j)
+                                .append("\">' + data + '</a>';\n")
+                                .append("}\n");
+                            break;
+                        case CONTENTMODAL:
+                        case TREEMODAL:
+                        default:
+                            break;
                     }
                 }
                 if (FilterBase.DATABASE.equals(column.getFilter().getBase())) {
@@ -283,10 +290,8 @@ public class GridXComponent
                     .append("Persist\n");
 
             if (uiGrid.isShowCheckBoxes()) {
-
                 Collections.addAll(dojoClasses, DojoClasses.IndirectSelect, DojoClasses.RowHeader,
                                 DojoClasses.SelectRow);
-
                 js.append(", IndirectSelect,\n")
                     .append("SelectRow,\n")
                     .append("RowHeader,\n");
@@ -343,19 +348,24 @@ public class GridXComponent
             }
 
             js.append("grid.startup();\n")
-                .append("ready(function(){")
+                .append("var rg = function() {\n")
                 .append("var bar = query('.eFapsFrameTitle') [0];\n")
                 .append("var pos = domGeom.position(bar);\n")
                 .append("var vs = win.getBox();\n")
-                .append("var hh = vs.h - pos.h -pos.y;\n")
+                .append("var hh = vs.h - pos.h - pos.y;\n")
+                .append("var ft = query('.eFapsFooter')[0];\n")
+                .append("if (typeof ft != 'undefined') {\n")
+                .append("var ftPos = domGeom.position(ft);\n")
+                .append("hh = hh - ftPos.h;\n")
+                .append("\n")
+                .append("}\n")
                 .append("registry.byId('grid').resize({h:hh});")
+                .append("}\n")
+                .append("ready(function(){")
+                .append("rg();\n")
                 .append("});")
                 .append("on(window, 'resize', function() {\n")
-                .append("var bar = query('.eFapsFrameTitle') [0];\n")
-                .append("var pos = domGeom.position(bar);\n")
-                .append("var vs = win.getBox();\n")
-                .append("var hh = vs.h - pos.h -pos.y;\n")
-                .append("registry.byId('grid').resize({h:hh});")
+                .append("rg();\n")
                 .append("});\n");
             if (uiGrid.isShowCheckBoxes()) {
                 js.append("aspect.after(grid.select.row, 'onSelectionChange', function (_defferd) {\n")

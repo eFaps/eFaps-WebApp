@@ -67,6 +67,7 @@ public class UIWizardObject
     {
         this.elements.add(_element);
         this.current = _element;
+        _element.setUIWizardObject(this);
     }
 
     /**
@@ -77,6 +78,7 @@ public class UIWizardObject
     public void add(final IWizardElement _element)
     {
         this.elements.add(_element);
+        _element.setUIWizardObject(this);
     }
 
     /**

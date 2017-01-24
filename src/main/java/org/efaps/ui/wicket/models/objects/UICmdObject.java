@@ -47,6 +47,9 @@ public final class UICmdObject
     /** The instance. */
     private Instance instance;
 
+    /** The call cmdid. */
+    private long callCmdId;
+
     /**
      * Instantiates a new UI cmd object.
      *
@@ -79,6 +82,25 @@ public final class UICmdObject
     public UICmdObject setInstance(final Instance _instance)
     {
         this.instance = _instance;
+        return this;
+    }
+
+    @Override
+    public AbstractCommand getCallingCommand()
+        throws EFapsException
+    {
+        return Command.get(this.callCmdId);
+    }
+
+    /**
+     * Sets the calling command.
+     *
+     * @param _callCmdId the call cmd id
+     * @return the UI cmd object
+     */
+    public UICmdObject setCallingCommand(final Long _callCmdId)
+    {
+        this.callCmdId = _callCmdId;
         return this;
     }
 

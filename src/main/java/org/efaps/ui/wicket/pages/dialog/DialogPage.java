@@ -40,7 +40,7 @@ import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.ui.wicket.behaviors.dojo.RequireBehavior;
 import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.button.Button;
-import org.efaps.ui.wicket.components.footer.AjaxSubmitCloseBehavior;
+import org.efaps.ui.wicket.components.footer.AjaxSubmitCloseButton;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.modalwindow.UpdateParentCallback;
 import org.efaps.ui.wicket.models.objects.ICmdUIObject;
@@ -202,18 +202,13 @@ public class DialogPage
         {
             final AbstractContentPage page = (AbstractContentPage) DialogPage.this.pageReference.getPage();
 
-            final AjaxSubmitCloseBehavior beh = page.visitChildren(new IVisitor<Component, AjaxSubmitCloseBehavior>()
+            final AjaxSubmitCloseButton beh = page.visitChildren(new IVisitor<Component, AjaxSubmitCloseButton>()
             {
-
                 @Override
                 public void component(final Component _component,
-                                      final IVisit<AjaxSubmitCloseBehavior> _visit)
+                                      final IVisit<AjaxSubmitCloseButton> _visit)
                 {
-                    final List<AjaxSubmitCloseBehavior> behaviors = _component
-                                    .getBehaviors(AjaxSubmitCloseBehavior.class);
-                    if (!behaviors.isEmpty()) {
-                        _visit.stop(behaviors.get(0));
-                    }
+                   _visit.stop((AjaxSubmitCloseButton) _component);
                 }
             });
 

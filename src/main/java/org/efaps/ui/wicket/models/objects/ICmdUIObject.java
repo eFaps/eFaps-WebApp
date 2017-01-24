@@ -67,4 +67,26 @@ public interface ICmdUIObject
                                Object... _objectTuples)
         throws EFapsException;
 
+    /**
+     * @return the command that called this CommandModel
+     * @throws EFapsException on error
+     */
+    default AbstractCommand getCallingCommand()
+        throws EFapsException
+    {
+        return null;
+    }
+
+    /**
+     * Checks for calling command.
+     *
+     * @return true, if successful
+     * @throws EFapsException on error
+     */
+    default boolean hasCallingCommand()
+        throws EFapsException
+    {
+        return getCallingCommand() != null;
+    }
+
 }

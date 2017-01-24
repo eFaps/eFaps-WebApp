@@ -41,6 +41,7 @@ import org.efaps.ui.wicket.components.menu.MenuBarPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
+import org.efaps.ui.wicket.models.objects.ICmdUIObject;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIHeading;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
@@ -208,10 +209,10 @@ public abstract class AbstractContentPage
             exLink.setVisible(false);
         }
         add(exLink);
-        WebMarkupContainer footerpanel;
+        final WebMarkupContainer footerpanel;
         if (uiObject.isCreateMode() || uiObject.isEditMode() || uiObject.isSearchMode()
                         || uiObject.isOpenedByPicker()) {
-            footerpanel = new FooterPanel("footer", getDefaultModel(), this.modalWindow, _form);
+            footerpanel = new FooterPanel("footer", (IModel<ICmdUIObject>) getDefaultModel(), this.modalWindow);
         } else {
             footerpanel = new WebMarkupContainer("footer");
             footerpanel.setVisible(false);

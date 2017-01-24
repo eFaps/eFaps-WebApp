@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,40 +13,47 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.components.footer;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.model.IModel;
+import org.efaps.ui.wicket.models.objects.ICmdUIObject;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
 
 /**
  * Link using Ajax to close the ModalWindow the FooterPanel was opened in.
  *
  * @author The eFaps Team
- * @version $Id$
  */
-public class AjaxCancelLink
-    extends AjaxLink<Object>
+public class AjaxCancelButton
+    extends AbstractFooterButton<ICmdUIObject>
 {
+
     /**
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
 
     /**
+     * Instantiates a new ajax cancel button.
+     *
      * @param _wicketid ic of the component
+     * @param _model the model
+     * @param _eFapsContentReference the e faps content reference
+     * @param _label the label
      */
-    public AjaxCancelLink(final String _wicketid)
+    public AjaxCancelButton(final String _wicketid,
+                            final IModel<ICmdUIObject> _model,
+                            final EFapsContentReference _eFapsContentReference,
+                            final String _label)
     {
-        super(_wicketid);
+        super(_wicketid, _model, _eFapsContentReference, _label);
     }
 
     @Override
-    public void onClick(final AjaxRequestTarget _target)
+    public void onRequest(final AjaxRequestTarget _target)
     {
         final FooterPanel footer = this.findParent(FooterPanel.class);
         footer.getModalWindow().setReloadChild(false);

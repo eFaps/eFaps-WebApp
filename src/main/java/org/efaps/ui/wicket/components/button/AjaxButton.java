@@ -191,6 +191,17 @@ public abstract class AjaxButton<T>
     public abstract void onRequest(AjaxRequestTarget _target);
 
     /**
+     * Listener method invoked on the ajax request generated when
+     * the user clicks the link.
+     *
+     * @param _target AjaxRequestTarget
+     */
+    public void onError(final AjaxRequestTarget _target) {
+
+    }
+
+
+    /**
      * Update ajax attributes.
      *
      * @param _attributes the attributes
@@ -278,6 +289,12 @@ public abstract class AjaxButton<T>
                     }
 
                     @Override
+                    protected void onError(final AjaxRequestTarget _target)
+                    {
+                        pBtn.onError(_target);
+                    }
+
+                    @Override
                     public boolean getDefaultProcessing()
                     {
                         return pBtn.getDefaultProcessing();
@@ -291,8 +308,9 @@ public abstract class AjaxButton<T>
                     }
 
                     @Override
-                    protected Form<?> findForm() {
-                        Form<?> ret;
+                    protected Form<?> findForm()
+                    {
+                        final Form<?> ret;
                         if (pBtn.getForm() != null) {
                             ret = pBtn.getForm();
                         } else {

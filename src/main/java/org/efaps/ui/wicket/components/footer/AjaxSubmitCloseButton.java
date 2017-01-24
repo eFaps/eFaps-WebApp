@@ -39,7 +39,6 @@ import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.AjaxCallListener;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
-import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow.WindowClosedCallback;
 import org.apache.wicket.feedback.FeedbackCollector;
@@ -48,6 +47,7 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.ValidationErrorFeedback;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.util.string.StringValue;
@@ -79,6 +79,7 @@ import org.efaps.ui.wicket.models.field.IUIElement;
 import org.efaps.ui.wicket.models.field.set.UIFieldSet;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
+import org.efaps.ui.wicket.models.objects.ICmdUIObject;
 import org.efaps.ui.wicket.models.objects.IPageObject;
 import org.efaps.ui.wicket.models.objects.IWizardElement;
 import org.efaps.ui.wicket.models.objects.PagePosition;
@@ -99,6 +100,7 @@ import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.dialog.DialogPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.request.EFapsRequestParametersAdapter;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.util.ParameterUtil;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
@@ -109,15 +111,14 @@ import org.slf4j.LoggerFactory;
  * actions like executing the related esjp etc.
  *
  * @author The eFaps Team
- * @version $Id$
  */
-public class AjaxSubmitCloseBehavior
-    extends AjaxFormSubmitBehavior
+public class AjaxSubmitCloseButton
+    extends AbstractFooterButton<ICmdUIObject>
 {
     /**
      * Logging instance used in this class.
      */
-    private static final Logger LOG = LoggerFactory.getLogger(AjaxSubmitCloseBehavior.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AjaxSubmitCloseButton.class);
 
     /**
      * Needed for serialization.
@@ -125,27 +126,24 @@ public class AjaxSubmitCloseBehavior
     private static final long serialVersionUID = 1L;
 
     /**
-     * Instance variable storing the model, because the super classes of a
-     * behavior, doesn't store the model.
-     */
-    private final AbstractUIPageObject uiObject;
-
-    /**
      * Has this form been already validated.
      */
     private boolean validated = false;
 
     /**
-     * Constructor.
+     * Instantiates a new ajax submit close button.
      *
-     * @param _uiobject UUIOBject
-     * @param _form form
+     * @param _wicketId the wicket id
+     * @param _model the model
+     * @param _reference the reference
+     * @param _label the label
      */
-    public AjaxSubmitCloseBehavior(final AbstractUIPageObject _uiobject,
-                                   final FormContainer _form)
+    public AjaxSubmitCloseButton(final String _wicketId,
+                                 final IModel<ICmdUIObject> _model,
+                                 final EFapsContentReference _reference,
+                                 final String _label)
     {
-        super(_form, "click");
-        this.uiObject = _uiobject;
+       super(_wicketId, _model, _reference, _label);
     }
 
     /**
@@ -169,25 +167,24 @@ public class AjaxSubmitCloseBehavior
             .append("})\n")));
     }
 
-
     /**
      * On submit the action must be done.
      *
      * @param _target AjaxRequestTarget
      */
     @Override
-    protected void onSubmit(final AjaxRequestTarget _target)
+    public void onRequest(final AjaxRequestTarget _target)
     {
-        AjaxSubmitCloseBehavior.LOG.trace("entering onSubmit");
-        final String[] oids = ParameterUtil.parameter2Array(
-                        getComponent().getRequest().getRequestParameters(), "selectedRow");
+        AjaxSubmitCloseButton.LOG.trace("entering onSubmit");
+        final String[] oids = ParameterUtil.parameter2Array(getRequest().getRequestParameters(), "selectedRow");
         final Map<String, String[]> others = new HashMap<>();
         others.put("selectedRow", oids);
 
+        final ICmdUIObject cmdUIObject = (ICmdUIObject) getDefaultModelObject();
         final List<Classification> classifications = new ArrayList<>();
         try {
-            if (this.uiObject instanceof UIForm) {
-                final UIForm uiform = (UIForm) this.uiObject;
+            if (cmdUIObject instanceof UIForm) {
+                final UIForm uiform = (UIForm) cmdUIObject;
                 others.putAll(uiform.getNewValues());
                 // if the form contains classifications, they are added to a list and passed on to the esjp
                 if (uiform.isClassified()) {
@@ -206,32 +203,30 @@ public class AjaxSubmitCloseBehavior
                     // to be able to see the changes the context must be commited and reopened
                     ((EFapsSession) Session.get()).saveContext();
 
-                    if (this.uiObject.hasTargetCmd()) {
-                        final AbstractCommand targetCmd = this.uiObject.getTargetCmd();
+                    if (cmdUIObject.getCommand().getTargetCommand() != null) {
+                        final AbstractCommand targetCmd = cmdUIObject.getCommand().getTargetCommand();
                         final AbstractUIPageObject newUIObject;
                         if (targetCmd.getTargetTable() != null) {
-                            newUIObject = new UITable(this.uiObject.getTargetCmdUUID(), this.uiObject
-                                            .getInstanceKey(), this.uiObject.getOpenerId());
+                            newUIObject = new UITable(cmdUIObject.getCommand().getTargetCommand().getUUID(),
+                                            cmdUIObject.getInstance().getOid());
                         } else {
-                            final PagePosition pp = this.uiObject instanceof IPageObject
-                                            ? ((IPageObject) this.uiObject).getPagePosition() : PagePosition.CONTENT;
-                            newUIObject = new UIForm(this.uiObject.getTargetCmdUUID(), this.uiObject
-                                            .getInstanceKey(), this.uiObject.getOpenerId())
+                            final PagePosition pp = cmdUIObject instanceof IPageObject
+                                            ? ((IPageObject) cmdUIObject).getPagePosition() : PagePosition.CONTENT;
+                            newUIObject = new UIForm(cmdUIObject.getCommand().getTargetCommand().getUUID(),
+                                            cmdUIObject.getInstance().getOid())
                                             .setPagePosition(pp);
                         }
-
                         final UIWizardObject wizard = new UIWizardObject((IWizardElement) newUIObject);
-                        this.uiObject.setWizard(wizard);
-                        wizard.addParameters((IWizardElement) this.uiObject, Context.getThreadContext().getParameters());
-                        wizard.insertBefore((IWizardElement) this.uiObject);
+                        wizard.addParameters((IWizardElement) cmdUIObject, Context.getThreadContext().getParameters());
+                        wizard.insertBefore((IWizardElement) cmdUIObject);
                         newUIObject.setWizard(wizard);
                         newUIObject.setPartOfWizardCall(true);
-                        newUIObject.setRenderRevise(this.uiObject.isTargetCmdRevise());
-                        if (this.uiObject.isSubmit()) {
+                        newUIObject.setRenderRevise(cmdUIObject.getCommand().isTargetCmdRevise());
+                        if (cmdUIObject.getCommand().isSubmit()) {
                             newUIObject.setSubmit(true);
-                            newUIObject.setCallingCommandUUID(this.uiObject.getCallingCommandUUID());
+                            //newUIObject.setCallingCommandUUID(this.uiObject.getCallingCommandUUID());
                         }
-                        final FooterPanel footer = getComponent().findParent(FooterPanel.class);
+                        final FooterPanel footer = findParent(FooterPanel.class);
                         final ModalWindowContainer modal = footer.getModalWindow();
                         final AbstractContentPage page;
                         if (targetCmd.getTargetTable() != null) {
@@ -239,26 +234,24 @@ public class AjaxSubmitCloseBehavior
                         } else {
                             page = new FormPage(Model.of((UIForm) newUIObject), modal);
                         }
-                        if (this.uiObject.getCommand().isTargetShowFile()) {
+                        if (cmdUIObject.getCommand().isTargetShowFile()) {
                             page.getDownloadBehavior().initiate();
                         }
-                        getComponent().getPage().getRequestCycle().setResponsePage(page);
+                        getRequestCycle().setResponsePage(page);
                     } else {
-                        final FooterPanel footer = getComponent().findParent(FooterPanel.class);
+                        final FooterPanel footer = findParent(FooterPanel.class);
                         // if inside a modal
-                        if (this.uiObject.getCommand().getTarget() == Target.MODAL
-                                        || this.uiObject.getCallingCommand() != null
-                                                && this.uiObject.getCallingCommand().getTarget() == Target.MODAL) {
-                            footer.getModalWindow().setReloadChild(!this.uiObject.getCommand().isNoUpdateAfterCmd());
-                            footer.getModalWindow().setTargetShowFile(this.uiObject.getCommand().isTargetShowFile());
-                            footer.getModalWindow().close(_target, this.uiObject);
+                        if (cmdUIObject.getCommand().getTarget() == Target.MODAL) {
+                            footer.getModalWindow().setReloadChild(!cmdUIObject.getCommand().isNoUpdateAfterCmd());
+                            footer.getModalWindow().setTargetShowFile(cmdUIObject.getCommand().isTargetShowFile());
+                            footer.getModalWindow().close(_target, cmdUIObject);
                         }
                         footer.setSuccess(true);
                     }
                 }
             }
         } catch (final EFapsException e) {
-            final ModalWindowContainer modal = ((AbstractContentPage) getComponent().getPage()).getModal();
+            final ModalWindowContainer modal = ((AbstractContentPage) getPage()).getModal();
             modal.setPageCreator(new ModalWindow.PageCreator() {
 
                 private static final long serialVersionUID = 1L;
@@ -283,13 +276,13 @@ public class AjaxSubmitCloseBehavior
     private boolean convertDateFieldValues(final AjaxRequestTarget _target)
         throws EFapsException
     {
-        AjaxSubmitCloseBehavior.LOG.trace("entering convertDateFieldValues");
+        AjaxSubmitCloseButton.LOG.trace("entering convertDateFieldValues");
         boolean ret = true;
         final StringBuilder html = new StringBuilder();
         html.append("<table class=\"eFapsValidateFieldValuesTable\">");
 
-        final EFapsRequestParametersAdapter parameters = (EFapsRequestParametersAdapter) getComponent()
-                        .getRequest().getRequestParameters();
+        final EFapsRequestParametersAdapter parameters = (EFapsRequestParametersAdapter)
+                        getRequest().getRequestParameters();
         final Set<String> names = parameters.getParameterNames();
         for (final DateTimePanel datepicker : ((FormContainer) getForm()).getDateComponents()) {
             if (names.contains(datepicker.getDateFieldName())) {
@@ -323,11 +316,10 @@ public class AjaxSubmitCloseBehavior
     private boolean convertFieldValues(final AjaxRequestTarget _target)
         throws EFapsException
     {
-        AjaxSubmitCloseBehavior.LOG.trace("entering convertFieldValues");
-        final EFapsRequestParametersAdapter parameters = (EFapsRequestParametersAdapter) getComponent()
-                        .getRequest().getRequestParameters();
+        AjaxSubmitCloseButton.LOG.trace("entering convertFieldValues");
+        final EFapsRequestParametersAdapter parameters = (EFapsRequestParametersAdapter) getRequest()
+                        .getRequestParameters();
         final FormContainer frmContainer = (FormContainer) getForm();
-
         for (final IValueConverter converter : frmContainer.getValueConverters()) {
             converter.convertValue(parameters);
         }
@@ -339,8 +331,9 @@ public class AjaxSubmitCloseBehavior
      *
      * @param _target AjaxRequestTarget
      */
+
     @Override
-    protected void onError(final AjaxRequestTarget _target)
+    public void onError(final AjaxRequestTarget _target)
     {
         final FeedbackCollector collector = new FeedbackCollector(getForm().getPage());
         final List<FeedbackMessage> msgs = collector.collect();
@@ -429,7 +422,7 @@ public class AjaxSubmitCloseBehavior
                                   final List<Classification> _classifications)
         throws EFapsException
     {
-        AjaxSubmitCloseBehavior.LOG.trace("entering executeEvents");
+        AjaxSubmitCloseButton.LOG.trace("entering executeEvents");
         boolean ret = true;
         final List<Return> returns;
         final AbstractUIPageObject uiPageObject = (AbstractUIPageObject) getForm().getPage().getDefaultModelObject();
@@ -463,7 +456,7 @@ public class AjaxSubmitCloseBehavior
                             && uiPageObject.isTargetShowFile()) {
                 if (oneReturn.get(ReturnValues.VALUES) instanceof File) {
                     final File file = (File) oneReturn.get(ReturnValues.VALUES);
-                    ((EFapsSession) getComponent().getSession()).setFile(file);
+                    ((EFapsSession) getSession()).setFile(file);
                 }
             }
             if (oneReturn.get(ReturnValues.INSTANCE) != null) {
@@ -488,9 +481,9 @@ public class AjaxSubmitCloseBehavior
     private boolean validateFieldValues(final AjaxRequestTarget _target)
         throws EFapsException
     {
-        AjaxSubmitCloseBehavior.LOG.trace("entering validateFieldValues");
+        AjaxSubmitCloseButton.LOG.trace("entering validateFieldValues");
         boolean ret = true;
-        final AbstractUIObject uiobject = (AbstractUIObject) getForm().getPage().getDefaultModelObject();
+        final ICmdUIObject uiobject = (ICmdUIObject) getPage().getDefaultModelObject();
         final StringBuilder html = new StringBuilder();
         html.append("<table class=\"eFapsValidateFieldValuesTable\">");
         if (uiobject instanceof UIForm) {
@@ -517,7 +510,7 @@ public class AjaxSubmitCloseBehavior
                                     final UIForm _uiform)
         throws EFapsException
     {
-        AjaxSubmitCloseBehavior.LOG.trace("entering evalFormElement");
+        AjaxSubmitCloseButton.LOG.trace("entering evalFormElement");
         boolean ret = true;
         for (final Element element : _uiform.getElements()) {
             if (element.getType().equals(ElementType.FORM)) {
@@ -564,21 +557,19 @@ public class AjaxSubmitCloseBehavior
                                  final List<Classification> _classifications)
         throws EFapsException
     {
-        AjaxSubmitCloseBehavior.LOG.trace("entering validateForm");
+        AjaxSubmitCloseButton.LOG.trace("entering validateForm");
         boolean ret = true;
         if (!this.validated) {
             final List<Return> returns;
             if (_classifications.size() > 0) {
-                returns = ((AbstractUIObject) getForm().getPage().getDefaultModelObject()).validate(
+                returns = ((ICmdUIObject) getPage().getDefaultModelObject()).executeEvents(EventType.UI_VALIDATE,
                                 ParameterValues.OTHERS, _other,
                                 ParameterValues.CLASSIFICATIONS, _classifications,
                                 ParameterValues.OIDMAP4UI,
                                     ((AbstractUIPageObject) getForm().getPage().getDefaultModelObject()).getUiID2Oid());
             } else {
-                returns = ((AbstractUIObject) getForm().getPage().getDefaultModelObject()).validate(
-                                ParameterValues.OTHERS, _other,
-                                ParameterValues.OIDMAP4UI,
-                                ((AbstractUIPageObject) getForm().getPage().getDefaultModelObject()).getUiID2Oid());
+                returns = ((ICmdUIObject) getPage().getDefaultModelObject()).executeEvents(EventType.UI_VALIDATE,
+                                ParameterValues.OTHERS, _other);
             }
 
             boolean goOn = true;
@@ -619,10 +610,10 @@ public class AjaxSubmitCloseBehavior
      */
     private boolean checkForRequired(final AjaxRequestTarget _target)
     {
-        AjaxSubmitCloseBehavior.LOG.trace("entering checkForRequired");
+        AjaxSubmitCloseButton.LOG.trace("entering checkForRequired");
         boolean ret = true;
         if (!(getForm().getParent().getDefaultModel() instanceof TableModel)) {
-            final IRequestParameters parameters = getComponent().getRequest().getRequestParameters();
+            final IRequestParameters parameters = getRequest().getRequestParameters();
             final List<FormPanel> panels = getFormPanels();
             for (final FormPanel panel : panels) {
                 for (final Entry<String, Label> entry : panel.getRequiredComponents().entrySet()) {
@@ -649,7 +640,7 @@ public class AjaxSubmitCloseBehavior
      */
     private List<FormPanel> getFormPanels()
     {
-        AjaxSubmitCloseBehavior.LOG.trace("entering getFormPanels");
+        AjaxSubmitCloseButton.LOG.trace("entering getFormPanels");
         final List<FormPanel> ret = new ArrayList<>();
         final Iterator<?> iterator = getForm().iterator();
         while (iterator.hasNext()) {
@@ -683,7 +674,7 @@ public class AjaxSubmitCloseBehavior
                             final boolean _isSniplett,
                             final boolean _goOnButton)
     {
-        final ModalWindowContainer modal = ((AbstractContentPage) getComponent().getPage()).getModal();
+        final ModalWindowContainer modal = ((AbstractContentPage) getPage()).getModal();
 
         modal.setInitialWidth(350);
         modal.setInitialHeight(200);
@@ -695,7 +686,7 @@ public class AjaxSubmitCloseBehavior
             @Override
             public Page createPage()
             {
-                return new DialogPage(((AbstractContentPage) getComponent().getPage()).getPageReference(),
+                return new DialogPage(((AbstractContentPage) getPage()).getPageReference(),
                                 _key, _isSniplett, _goOnButton);
             }
         });
@@ -709,7 +700,7 @@ public class AjaxSubmitCloseBehavior
                 @Override
                 public void onClose(final AjaxRequestTarget _target)
                 {
-                    if (AjaxSubmitCloseBehavior.this.validated) {
+                    if (AjaxSubmitCloseButton.this.validated) {
                         _target.appendJavaScript(getExecuteScript());
                     }
                 }
@@ -723,7 +714,7 @@ public class AjaxSubmitCloseBehavior
      */
     protected CharSequence getExecuteScript()
     {
-        final CharSequence ajaxAttributes = renderAjaxAttributes(getComponent());
+        final CharSequence ajaxAttributes = "asd";
         return "new Wicket.Ajax.Call().ajax(" + ajaxAttributes + ");";
     }
 }

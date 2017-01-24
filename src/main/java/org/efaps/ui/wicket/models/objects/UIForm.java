@@ -151,6 +151,8 @@ public class UIForm
     /** The pageposition. */
     private PagePosition pagePosition;
 
+    private UIWizardObject uiWizardObject;
+
     /**
      * Constructor.
      *
@@ -904,6 +906,25 @@ public class UIForm
         return this;
     }
 
+    @Override
+    public boolean isWizardCall()
+    {
+        return getUIWizardObject() != null;
+    }
+
+    @Override
+    public UIWizardObject getUIWizardObject()
+    {
+        return this.uiWizardObject;
+    }
+
+    @Override
+    public IWizardElement setUIWizardObject(final UIWizardObject _uiWizardObject)
+    {
+        this.uiWizardObject = _uiWizardObject;
+        return this;
+    }
+
     /**
      * Class is used as store for one Row in the UIForm.
      */
@@ -1137,19 +1158,5 @@ public class UIForm
         {
             return this.element;
         }
-    }
-
-    @Override
-    public boolean isWizardCall()
-    {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public UIWizardObject getUIWizardObject()
-    {
-        // TODO Auto-generated method stub
-        return null;
     }
 }

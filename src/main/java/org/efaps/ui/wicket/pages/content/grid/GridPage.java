@@ -18,10 +18,13 @@ package org.efaps.ui.wicket.pages.content.grid;
 
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.components.FormContainer;
+import org.efaps.ui.wicket.components.footer.FooterPanel;
 import org.efaps.ui.wicket.components.gridx.GridXPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.objects.UIGrid;
@@ -86,6 +89,17 @@ public class GridPage
             @SuppressWarnings("unchecked")
             final GridXPanel panel = new GridXPanel("gridPanel", (IModel<UIGrid>) getDefaultModel());
             form.add(panel);
+
+            final UIGrid uiGrid = (UIGrid) getDefaultModelObject();
+            switch (uiGrid.getCommand().getTargetMode()) {
+                case CONNECT:
+                case SEARCH:
+                    form.add(new FooterPanel("footer", Model.of(uiGrid), null));
+                    break;
+                default:
+                    form.add(new WebMarkupContainer("footer").setVisible(false));
+                    break;
+            }
         } catch (final EFapsException e) {
             GridPage.LOG.error("Catched", e);
         }
