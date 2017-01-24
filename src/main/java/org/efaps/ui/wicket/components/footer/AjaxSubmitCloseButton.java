@@ -60,9 +60,8 @@ import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractCommand;
-import org.efaps.admin.ui.AbstractCommand.Target;
+import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.db.Context;
-import org.efaps.db.Instance;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.autocomplete.AutoCompleteComboBox;
@@ -80,6 +79,7 @@ import org.efaps.ui.wicket.models.field.set.UIFieldSet;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.models.objects.ICmdUIObject;
+import org.efaps.ui.wicket.models.objects.IModeObject;
 import org.efaps.ui.wicket.models.objects.IPageObject;
 import org.efaps.ui.wicket.models.objects.IWizardElement;
 import org.efaps.ui.wicket.models.objects.PagePosition;
@@ -241,7 +241,9 @@ public class AjaxSubmitCloseButton
                     } else {
                         final FooterPanel footer = findParent(FooterPanel.class);
                         // if inside a modal
-                        if (cmdUIObject.getCommand().getTarget() == Target.MODAL) {
+                        if (PagePosition.CONTENTMODAL.equals(((IPageObject) getPage().getDefaultModelObject())
+                                        .getPagePosition()) || PagePosition.TREEMODAL.equals(((IPageObject) getPage()
+                                                        .getDefaultModelObject()).getPagePosition())) {
                             footer.getModalWindow().setReloadChild(!cmdUIObject.getCommand().isNoUpdateAfterCmd());
                             footer.getModalWindow().setTargetShowFile(cmdUIObject.getCommand().isTargetShowFile());
                             footer.getModalWindow().close(_target, cmdUIObject);
@@ -425,18 +427,22 @@ public class AjaxSubmitCloseButton
         AjaxSubmitCloseButton.LOG.trace("entering executeEvents");
         boolean ret = true;
         final List<Return> returns;
-        final AbstractUIPageObject uiPageObject = (AbstractUIPageObject) getForm().getPage().getDefaultModelObject();
-        if (_classifications.size() > 0) {
-            returns = uiPageObject.executeEvents(ParameterValues.OTHERS, _other,
-                            ParameterValues.ACCESSMODE, uiPageObject.getMode(),
-                            ParameterValues.CLASSIFICATIONS, _classifications,
-                            ParameterValues.OIDMAP4UI,
-                                    ((AbstractUIPageObject) getForm().getPage().getDefaultModelObject()).getUiID2Oid());
+        final ICmdUIObject  cmdUIObject = (ICmdUIObject) getPage().getDefaultModelObject();
+        TargetMode mode;
+        if (cmdUIObject instanceof IModeObject) {
+            mode = ((IModeObject) cmdUIObject).getMode();
         } else {
-            returns = uiPageObject.executeEvents(ParameterValues.OTHERS, _other,
-                            ParameterValues.ACCESSMODE, uiPageObject.getMode(),
-                            ParameterValues.OIDMAP4UI,
-                            ((AbstractUIPageObject) getForm().getPage().getDefaultModelObject()).getUiID2Oid());
+            mode = TargetMode.UNKNOWN;
+        }
+        if (_classifications.size() > 0) {
+            returns = cmdUIObject.executeEvents(EventType.UI_COMMAND_EXECUTE,
+                            ParameterValues.OTHERS, _other,
+                            ParameterValues.ACCESSMODE, mode,
+                            ParameterValues.CLASSIFICATIONS, _classifications);
+        } else {
+            returns = cmdUIObject.executeEvents(EventType.UI_COMMAND_EXECUTE,
+                            ParameterValues.OTHERS, _other,
+                            ParameterValues.ACCESSMODE, mode);
         }
 
         for (final Return oneReturn : returns) {
@@ -453,21 +459,23 @@ public class AjaxSubmitCloseButton
                 ret = false;
                 break;
             } else if (oneReturn.get(ReturnValues.TRUE) != null && !oneReturn.isEmpty()
-                            && uiPageObject.isTargetShowFile()) {
+                            && cmdUIObject.getCommand().isTargetShowFile()) {
                 if (oneReturn.get(ReturnValues.VALUES) instanceof File) {
                     final File file = (File) oneReturn.get(ReturnValues.VALUES);
                     ((EFapsSession) getSession()).setFile(file);
                 }
             }
             if (oneReturn.get(ReturnValues.INSTANCE) != null) {
-                uiPageObject.setInstanceKey(((Instance) oneReturn.get(ReturnValues.INSTANCE)).getKey());
+                //cmdUIObject. .setInstanceKey(((Instance) oneReturn.get(ReturnValues.INSTANCE)).getKey());
             }
         }
 
-        if (uiPageObject.isOpenedByPicker()) {
+        if (cmdUIObject instanceof AbstractUIPageObject && ((AbstractUIPageObject) cmdUIObject).isOpenedByPicker()) {
             final PageReference pageRef = ((AbstractContentPage) getForm().getPage()).getCalledByPageReference();
-            uiPageObject.getPicker().executeEvents(EventType.UI_COMMAND_EXECUTE, ParameterValues.OTHERS, _other);
-            ((AbstractUIObject) pageRef.getPage().getDefaultModelObject()).setPicker(uiPageObject.getPicker());
+            ((AbstractUIPageObject) cmdUIObject).getPicker().executeEvents(EventType.UI_COMMAND_EXECUTE,
+                            ParameterValues.OTHERS, _other);
+            ((AbstractUIObject) pageRef.getPage().getDefaultModelObject()).setPicker(
+                            ((AbstractUIPageObject) cmdUIObject).getPicker());
         }
         return ret;
     }

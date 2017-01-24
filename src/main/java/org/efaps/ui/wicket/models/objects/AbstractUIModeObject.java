@@ -33,6 +33,7 @@ import org.efaps.util.cache.CacheReloadException;
  */
 public abstract class AbstractUIModeObject
     extends AbstractInstanceObject
+    implements IModeObject
 {
     /**
      * Needed for serialization.

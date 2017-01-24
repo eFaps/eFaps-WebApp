@@ -758,7 +758,13 @@ public final class UIGrid
                                       final Object... _objectTuples)
         throws EFapsException
     {
-        final List<Return> ret = new ArrayList<>();
+        List<Return> ret;
+        if (isWizardCall()) {
+            ret = ((ICmdUIObject) getUIWizardObject().getWizardElement().get(0)).executeEvents(_eventType,
+                            _objectTuples);
+        } else {
+            ret = getCommand().executeEvents(_eventType, _objectTuples);
+        }
         return ret;
     }
 
