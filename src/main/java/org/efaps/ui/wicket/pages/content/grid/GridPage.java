@@ -65,6 +65,18 @@ public class GridPage
      */
     public GridPage(final IModel<UIGrid> _model)
     {
+        this(_model, null);
+    }
+
+    /**
+     * Instantiates a new grid page.
+     *
+     * @param _model the model
+     * @param _modal the modal window this page is opened in to have a handle on it
+     */
+    public GridPage(final IModel<UIGrid> _model,
+                    final ModalWindowContainer _modal)
+    {
         super(_model);
         try {
             add2Page(new Label("pageTitle", DBProperties.getProperty("Logo.Version.Label")));
@@ -94,7 +106,7 @@ public class GridPage
             switch (uiGrid.getCommand().getTargetMode()) {
                 case CONNECT:
                 case SEARCH:
-                    form.add(new FooterPanel("footer", Model.of(uiGrid), null));
+                    form.add(new FooterPanel("footer", Model.of(uiGrid), _modal));
                     break;
                 default:
                     form.add(new WebMarkupContainer("footer").setVisible(false));

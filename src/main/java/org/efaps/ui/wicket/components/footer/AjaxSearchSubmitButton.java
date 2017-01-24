@@ -77,8 +77,9 @@ public class AjaxSearchSubmitButton
                 final UIWizardObject wizard = new UIWizardObject(uiGrid);
                 wizard.addParameters((IWizardElement) uiObject, Context.getThreadContext().getParameters());
                 wizard.insertBefore((IWizardElement) uiObject);
-
-                final GridPage page = new GridPage(Model.of(uiGrid));
+                final FooterPanel footer = findParent(FooterPanel.class);
+                final ModalWindowContainer modal = footer.getModalWindow();
+                final GridPage page = new GridPage(Model.of(uiGrid), modal);
                 getRequestCycle().setResponsePage(page);
             } else {
                 final UITable newTable = new UITable(uiObject.getCommandUUID(), uiObject.getInstanceKey(), uiObject
