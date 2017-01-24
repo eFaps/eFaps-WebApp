@@ -282,19 +282,37 @@ public class EFapsSession
         if (this.userName != null) {
             ret = true;
         } else if (!isSessionInvalidated())  {
-            final HttpServletRequest httpRequest = ((ServletWebRequest) RequestCycle.get().getRequest())
-                            .getContainerRequest();
-            final HttpSession httpSession = httpRequest.getSession(false);
-            if (httpSession != null && !(httpSession instanceof HttpSessionCopy)) {
-                final SerializableKeycloakAccount account = (SerializableKeycloakAccount) httpSession.getAttribute(
-                                KeycloakAccount.class.getName());
-                if (account != null) {
-                    this.userName = account.getPrincipal().getName();
-                    openContext();
+            ret = lazyLogin();
+        }
+        return ret;
+    }
+
+    /**
+     * Lazy login is used in copmination with a Single Sign On mechanism.
+     *
+     * @return true, if successful
+     */
+    private final boolean lazyLogin()
+    {
+        boolean ret = false;
+        final HttpServletRequest httpRequest = ((ServletWebRequest) RequestCycle.get().getRequest())
+                        .getContainerRequest();
+        final HttpSession httpSession = httpRequest.getSession(false);
+        if (httpSession != null && !(httpSession instanceof HttpSessionCopy)) {
+            final SerializableKeycloakAccount account = (SerializableKeycloakAccount) httpSession.getAttribute(
+                            KeycloakAccount.class.getName());
+            if (account != null) {
+                this.userName = account.getPrincipal().getName();
+                openContext();
+                try {
+                    Person.reset(this.userName);
                     setAttribute(EFapsSession.LOGIN_ATTRIBUTE_NAME, this.userName);
-                    RegistryManager.registerUserSession(this.userName, getId());
-                    ret = true;
+                    this.sessionAttributes.put(UserAttributesSet.CONTEXTMAPKEY, new UserAttributesSet(this.userName));
+                } catch (final EFapsException e) {
+                    EFapsSession.LOG.error("Problems with setting UserAttribues.", e);
                 }
+                RegistryManager.registerUserSession(this.userName, getId());
+                ret = true;
             }
         }
         return ret;
@@ -374,7 +392,7 @@ public class EFapsSession
 
             try {
                 // on a new login the cache for Person is reseted
-                Person.initialize();
+                Person.reset(_name);
                 final EFapsApplication app = (EFapsApplication) getApplication();
                 final LoginHandler loginHandler = new LoginHandler(app.getApplicationKey());
                 final Person person = loginHandler.checkLogin(_name, _passwd);
