@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.TreeMap;
 
 import org.apache.commons.collections4.comparators.ComparatorChain;
 
@@ -47,7 +48,21 @@ public final class DojoWrapper
     public static CharSequence require(final CharSequence _script,
                                        final DojoClass... _classes)
     {
-        return DojoWrapper.require(_script, null, _classes);
+        final TreeMap<Double, DojoLayer> layers = new TreeMap<>();
+        for (final DojoLayer layer : DojoLayer.values()) {
+            long count = 0;
+            for (final DojoClass dojoClass : _classes) {
+                if (layer.getDojoClasses().contains(dojoClass)) {
+                    count++;
+                }
+            }
+            if (count > 0) {
+                final double weight = (double) count / (double) layer.getDojoClasses().size();
+                layers.put(weight, layer);
+            }
+        }
+        return DojoWrapper.require(_script, layers.isEmpty() ? null
+                        : layers.descendingMap().values().iterator().next().getName(), _classes);
     }
 
     /**

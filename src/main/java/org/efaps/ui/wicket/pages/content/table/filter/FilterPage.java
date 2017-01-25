@@ -28,13 +28,10 @@ import org.apache.wicket.Component;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.CheckBox;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
@@ -45,7 +42,7 @@ import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.api.ui.FilterBase;
 import org.efaps.api.ui.FilterType;
 import org.efaps.ui.wicket.components.FormContainer;
-import org.efaps.ui.wicket.components.button.Button;
+import org.efaps.ui.wicket.components.button.AjaxButton;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.modalwindow.UpdateParentCallback;
@@ -105,33 +102,34 @@ public class FilterPage
         switch (_uitableHeader.getFilter().getType()) {
             case CLASSIFICATION:
                 panel = new ClassificationPanel("filterPanel", Model.of(_uitableHeader));
-                panel.add(new AttributeAppender("class", new Model<String>(FilterType.CLASSIFICATION.toString()), " "));
+                panel.add(new AttributeAppender("class", new Model<>(FilterType.CLASSIFICATION.toString()), " "));
                 break;
             case PICKLIST:
                 panel = new PickerPanel("filterPanel", Model.of(_uitableHeader));
-                panel.add(new AttributeAppender("class", new Model<String>(FilterType.PICKLIST.toString()), " "));
+                panel.add(new AttributeAppender("class", new Model<>(FilterType.PICKLIST.toString()), " "));
                 break;
             case STATUS:
                 panel = new StatusPanel("filterPanel", Model.of(_uitableHeader));
-                panel.add(new AttributeAppender("class", new Model<String>(FilterType.STATUS.toString()), " "));
+                panel.add(new AttributeAppender("class", new Model<>(FilterType.STATUS.toString()), " "));
                 break;
             case FORM:
                 panel = new FormFilterPanel("filterPanel", Model.of(_uitableHeader), _pageReference);
-                panel.add(new AttributeAppender("class", new Model<String>(FilterType.FORM.toString()), " "));
+                panel.add(new AttributeAppender("class", new Model<>(FilterType.FORM.toString()), " "));
                 break;
             default:
                 panel = new FreeTextPanel("filterPanel", Model.of(_uitableHeader));
                 break;
         }
         form.add(panel);
-        final AjaxButton ajaxbutton = new AjaxButton(Button.LINKID, form)
+
+        form.add(new AjaxButton<Void>("submitButton", AjaxButton.ICON.ACCEPT.getReference(),
+                        DBProperties.getProperty("FilterPage.Button.filter"))
         {
 
             private static final long serialVersionUID = 1L;
 
             @Override
-            protected void onSubmit(final AjaxRequestTarget _target,
-                                    final Form<?> _form)
+            public void onRequest(final AjaxRequestTarget _target)
             {
                 try {
                     final AbstractContentPage page = (AbstractContentPage) FilterPage.this.getCalledByPageReference()
@@ -173,7 +171,7 @@ public class FilterPage
                             if (selection.size() == picklist.size()) {
                                 uiTable.removeFilter(_uitableHeader);
                             } else {
-                                final Set<Object> filterList = new HashSet<Object>();
+                                final Set<Object> filterList = new HashSet<>();
                                 for (final StringValue value : selection) {
                                     final Integer intpos = Integer.valueOf(value.toString());
                                     filterList.add(picklist.get(intpos));
@@ -206,7 +204,7 @@ public class FilterPage
                                              && !_uitableHeader.getFilter().isRequired()) {
                                 uiTable.removeFilter(_uitableHeader);
                             } else {
-                                final Set<Object> filterList = new HashSet<Object>();
+                                final Set<Object> filterList = new HashSet<>();
                                 for (final StringValue value : selection) {
                                     final Integer intpos = Integer.valueOf(value.toString());
                                     filterList.addAll(sets.get(intpos).getIds());
@@ -276,7 +274,7 @@ public class FilterPage
                                 }
                             });
 
-                        final Map<String, Boolean> modes = new HashMap<String, Boolean>();
+                        final Map<String, Boolean> modes = new HashMap<>();
                         modes.put("expertMode", false);
                         modes.put("ignoreCase", false);
 
@@ -308,28 +306,19 @@ public class FilterPage
                     throw new RestartResponseException(new ErrorPage(e));
                 }
             }
-
-            @Override
-            protected void onError(final AjaxRequestTarget _target,
-                                   final Form<?> _form)
-            {
-                // Nothing done here
-            }
-        };
-
-        form.add(new Button("submitButton", ajaxbutton, DBProperties.getProperty("FilterPage.Button.filter"),
-                            Button.ICON.ACCEPT.getReference()));
+        });
 
         if (_uitableHeader.getFilter().isRequired()) {
             form.add(new WebMarkupContainer("clearButton").setVisible(false));
         } else {
-            final AjaxLink<Object> ajaxclear = new AjaxLink<Object>(Button.LINKID)
+            form.add(new AjaxButton<Object>("clearButton", AjaxButton.ICON.DELETE.getReference(),
+                            DBProperties.getProperty("FilterPage.Button.clear"))
             {
 
                 private static final long serialVersionUID = 1L;
 
                 @Override
-                public void onClick(final AjaxRequestTarget _target)
+                public void onRequest(final AjaxRequestTarget _target)
                 {
                     final UITable uiTable = (UITable) _pageReference.getPage().getDefaultModelObject();
                     uiTable.removeFilter(_uitableHeader);
@@ -341,27 +330,35 @@ public class FilterPage
                                     modal, _uitableHeader.getFilter().getBase().equals(FilterBase.DATABASE)));
                     modal.close(_target);
                 }
-            };
 
-            form.add(new Button("clearButton", ajaxclear, DBProperties.getProperty("FilterPage.Button.clear"),
-                                Button.ICON.DELETE.getReference()));
+                @Override
+                protected boolean isSubmit()
+                {
+                    return false;
+                }
+            });
         }
-        final AjaxLink<Object> ajaxcancel = new AjaxLink<Object>(Button.LINKID)
+        form.add(new AjaxButton<Object>("closeButton", AjaxButton.ICON.CANCEL.getReference(),
+                        DBProperties.getProperty("FilterPage.Button.cancel"))
         {
 
             private static final long serialVersionUID = 1L;
 
             @Override
-            public void onClick(final AjaxRequestTarget _target)
+            public void onRequest(final AjaxRequestTarget _target)
             {
                 final ModalWindowContainer modal = ((AbstractContentPage) FilterPage.this.getCalledByPageReference()
                                 .getPage()).getModal();
                 modal.setUpdateParent(false);
                 modal.close(_target);
             }
-        };
-        form.add(new Button("closeButton", ajaxcancel, DBProperties.getProperty("FilterPage.Button.cancel"),
-                            Button.ICON.CANCEL.getReference()));
+
+            @Override
+            protected boolean isSubmit()
+            {
+                return false;
+            }
+        });
     }
 
     @Override

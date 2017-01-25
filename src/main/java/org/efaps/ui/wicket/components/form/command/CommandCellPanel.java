@@ -26,7 +26,7 @@ import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.autocomplete.AutoCompleteComboBox;
-import org.efaps.ui.wicket.components.button.Button;
+import org.efaps.ui.wicket.components.button.AjaxButton;
 import org.efaps.ui.wicket.models.field.IAutoComplete;
 import org.efaps.ui.wicket.models.field.UICmdField;
 import org.efaps.ui.wicket.models.objects.UIForm;
@@ -80,7 +80,7 @@ public class CommandCellPanel
             command.setVisible(false);
             EFapsContentReference reference = null;
             if (uiField.getButtonIcon() != null) {
-                reference = Button.ICON.valueOf(uiField.getButtonIcon()).getReference();
+                reference = AjaxButton.ICON.valueOf(uiField.getButtonIcon()).getReference();
             }
             add(new AjaxExecuteLink("execute", _model, reference, uiField.getLabel()));
         } else {

@@ -1,64 +1,93 @@
+/*
+ * Copyright 2003 - 2017 The eFaps Team
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package org.efaps.ui.wicket.util;
 
 /**
  * The Enum DojoClasses.
  */
+@SuppressWarnings("checkstyle:javadocvariable")
 public enum DojoClasses
     implements DojoClass
 {
-    array("dojo/_base/array", "array"),
-    lang("dojo/_base/lang", "lang"),
-    json("dojo/_base/json","json"),
-    fx("dojo/_base/fx","fx"),
-    parser("dojo/parser", "parser"),
-    aspect("dojo/aspect","aspect"),
-    query("dojo/query","query"),
-    domGeom("dojo/dom-geometry","domGeom"),
-    domConstruct("dojo/dom-construct","domConstruct"),
-    win("dojo/window","win"),
-    domStyle("dojo/dom-style","domStyle"),
-    ready("dojo/ready","ready"),
-    on("dojo/on","on"),
-    registry("dijit/registry","registry"),
-    Memory("dojo/store/Memory","Memory"),
-    SyncCache("gridx/core/model/cache/Sync","Cache"),
-    Grid("gridx/Grid","Grid"),
-    VirtualVScroller("gridx/modules/VirtualVScroller","VirtualVScroller"),
-    ColumnResizer("gridx/modules/ColumnResizer","ColumnResizer"),
-    ColumnLock("gridx/modules/ColumnLock","ColumnLock"),
-    HScroller("gridx/modules/HScroller","HScroller"),
-    SingleSort("gridx/modules/SingleSort","SingleSort"),
-    MoveColumn("gridx/modules/move/Column","MoveColumn"),
-    SelectColumn("gridx/modules/extendedSelect/Column","SelectColumn"),
-    SelectCell("gridx/modules/extendedSelect/Cell","SelectCell"),
-    SelectRow("gridx/modules/extendedSelect/Row","SelectRow"),
-    DnDColumn("gridx/modules/dnd/Column","DnDColumn"),
-    HiddenColumns("gridx/modules/HiddenColumns","HiddenColumns"),
-    IndirectSelect("gridx/modules/IndirectSelect","IndirectSelect"),
-    RowHeader("gridx/modules/RowHeader","RowHeader"),
-    HeaderDialog("efaps/HeaderDialog","HeaderDialog"),
-    GridConfig("efaps/GridConfig","GridConfig"),
-    GridSort("efaps/GridSort","GridSort"),
-    GridQuickFilter("efaps/GridQuickFilter","GridQuickFilter"),
-    Summary("gridx/support/Summary","Summary"),
-    QuickFilter("gridx/support/QuickFilter","QuickFilter"),
-    Bar("gridx/modules/Bar","Bar"),
-    Filter("gridx/modules/Filter","Filter"),
-    FilterBar("gridx/modules/filter/FilterBar","FilterBar"),
-    Persist("gridx/modules/Persist","Persist"),
-    DropDownButton ("dijit/form/DropDownButton","DropDownButton"),
-    TextBox("dijit/form/TextBox","TextBox"),
-    TooltipDialog("dijit/TooltipDialog","TooltipDialog"),
-    MenuBar("dijit/MenuBar","MenuBar"),
-    PopupMenuBarItem("dijit/PopupMenuBarItem","PopupMenuBarItem"),
-    PopupMenuItem("dijit/PopupMenuItem","PopupMenuItem"),
-    MenuItem("dijit/MenuItem","MenuItem"),
-    DropDownMenu("dijit/DropDownMenu","DropDownMenu"),
+
+    BackgroundIframe("dijit/BackgroundIframe", "BackgroundIframe"),
+    Bar("gridx/modules/Bar", "Bar"),
+    BorderContainer("dijit/layout/BorderContainer", "BorderContainer"),
+    ColumnLock("gridx/modules/ColumnLock", "ColumnLock"),
+    ColumnResizer("gridx/modules/ColumnResizer", "ColumnResizer"),
+    ContentPane("dijit/layout/ContentPane", " ContentPane"),
+    ContentPaneX("dojox/layout/ContentPane", " ContentPane"),
+    DnDColumn("gridx/modules/dnd/Column", "DnDColumn"),
+    DnDSource("dojo/dnd/Source", "DnDSource"),
+    DropDownButton("dijit/form/DropDownButton", "DropDownButton"),
+    DropDownMenu("dijit/DropDownMenu", "DropDownMenu"),
+    Filter("gridx/modules/Filter", "Filter"),
+    FilterBar("gridx/modules/filter/FilterBar", "FilterBar"),
+    Grid("gridx/Grid", "Grid"),
+    GridConfig("efaps/GridConfig", "GridConfig"),
+    GridQuickFilter("efaps/GridQuickFilter", "GridQuickFilter"),
+    GridSort("efaps/GridSort", "GridSort"),
+    HScroller("gridx/modules/HScroller", "HScroller"),
+    HeaderDialog("efaps/HeaderDialog", "HeaderDialog"),
+    HiddenColumns("gridx/modules/HiddenColumns", "HiddenColumns"),
+    IndirectSelect("gridx/modules/IndirectSelect", "IndirectSelect"),
+    Memory("dojo/store/Memory", "Memory"),
+    MenuBar("dijit/MenuBar", "MenuBar"),
     MenuBarItem("dijit/MenuBarItem", "MenuBarItem"),
+    MenuItem("dijit/MenuItem", "MenuItem"),
+    MoveColumn("gridx/modules/move/Column", "MoveColumn"),
+    NodeListDom("dojo/NodeList-dom", null),
+    NodeListTraverse("dojo/NodeList-traverse", null),
+    Persist("gridx/modules/Persist", "Persist"),
+    PopupMenuBarItem("dijit/PopupMenuBarItem", "PopupMenuBarItem"),
+    PopupMenuItem("dijit/PopupMenuItem", "PopupMenuItem"),
+    QuickFilter("gridx/support/QuickFilter", "QuickFilter"),
+    RowHeader("gridx/modules/RowHeader", "RowHeader"),
+    SelectCell("gridx/modules/extendedSelect/Cell", "SelectCell"),
+    SelectColumn("gridx/modules/extendedSelect/Column", "SelectColumn"),
+    SelectRow("gridx/modules/extendedSelect/Row", "SelectRow"),
+    SingleSort("gridx/modules/SingleSort", "SingleSort"),
+    Summary("gridx/support/Summary", "Summary"),
+    SyncCache("gridx/core/model/cache/Sync", "Cache"),
+    TextBox("dijit/form/TextBox", "TextBox"),
     ToggleSplitter("dojox/layout/ToggleSplitter", "ToggleSplitter"),
-    ContentPane("dijit/layout/ContentPane"," ContentPane"),
-    ContentPaneX("dojox/layout/ContentPane"," ContentPane"),
-    BorderContainer("dijit/layout/BorderContainer", "BorderContainer");
+    TooltipDialog("dijit/TooltipDialog", "TooltipDialog"),
+    VirtualVScroller("gridx/modules/VirtualVScroller", "VirtualVScroller"),
+    array("dojo/_base/array", "array"),
+    aspect("dojo/aspect", "aspect"),
+    baseWindow("dojo/_base/window", "baseWindow"),
+    dom("dojo/dom", "dom"),
+    domAttr("dojo/dom-attr", "domAttr"),
+    domClass("dojo/dom-class", "domClass"),
+    domConstruct("dojo/dom-construct", "domConstruct"),
+    domGeom("dojo/dom-geometry", "domGeom"),
+    domReady("dojo/domReady!", null),
+    domStyle("dojo/dom-style", "domStyle"),
+    fx("dojo/_base/fx", "fx"),
+    json("dojo/_base/json", "json"),
+    lang("dojo/_base/lang", "lang"),
+    on("dojo/on", "on"),
+    parser("dojo/parser", "parser"),
+    popup("dijit/popup", "popup"),
+    query("dojo/query", "query"),
+    ready("dojo/ready", "ready"),
+    registry("dijit/registry", "registry"),
+    topic("dojo/topic", "topic"),
+    win("dojo/window", "win");
 
     /** The lib name. */
     private final String className;
@@ -69,8 +98,8 @@ public enum DojoClasses
     /**
      * Instantiates a new dojo libs.
      *
-     * @param _libName the lib name
-     * @param _paraName the para name
+     * @param _className the class name
+     * @param _parameterName the parameter name
      */
     DojoClasses(final String _className,
                 final String _parameterName)
@@ -90,10 +119,4 @@ public enum DojoClasses
     {
         return this.parameterName;
     }
-
-
-
-
-
-
 }

@@ -140,8 +140,6 @@ public class BorderContainerBehavior
                            final IHeaderResponse _response)
     {
         super.renderHead(_component, _response);
-        new StringBuilder()
-            .append("require([\"dijit/layout/BorderContainer\", \"dojo/parser\"");
         if (this.toggleSplitter) {
             _response.render(RequireHeaderItem.forClasses(DojoClasses.ToggleSplitter));
             _response.render(CssHeaderItem.forReference(BorderContainerBehavior.CSS_SPLITTER));

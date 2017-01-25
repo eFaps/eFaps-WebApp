@@ -20,6 +20,8 @@ import org.apache.wicket.Component;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.efaps.ui.wicket.behaviors.dojo.AbstractDojoBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.OnDojoReadyHeaderItem;
+import org.efaps.ui.wicket.util.DojoClasses;
+import org.efaps.ui.wicket.util.DojoWrapper;
 
 /**
  * The Class PreviousValueBehavior.
@@ -79,8 +81,6 @@ public class PreviousValueBehavior
     protected CharSequence getJavaScript(final String _markupId)
     {
         final StringBuilder ret = new StringBuilder()
-            .append("require([\"dojo/on\", \"dojo/dom\", \"dojo/dom-construct\", \"dojo/dom-attr\"],")
-            .append("function(on, dom, domConstruct, domAttr) {")
             .append("if (\"SELECT\" == dom.byId('").append(_markupId).append("').tagName) {")
             .append("on(dom.byId('").append(_markupId).append("'), \"focus\", function(){")
             .append("if (!dojo.byId('").append(_markupId).append("_previous')) {")
@@ -92,6 +92,6 @@ public class PreviousValueBehavior
             .append("});")
             .append("}")
             .append("});");
-        return ret.toString();
+        return DojoWrapper.require(ret, DojoClasses.on, DojoClasses.dom, DojoClasses.domConstruct, DojoClasses.domAttr);
     }
 }

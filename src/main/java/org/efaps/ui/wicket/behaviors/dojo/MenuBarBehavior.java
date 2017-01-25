@@ -25,6 +25,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.efaps.ui.wicket.util.DojoClasses;
+import org.efaps.ui.wicket.util.DojoWrapper;
 
 
 /**
@@ -70,11 +71,10 @@ public class MenuBarBehavior
         super.renderHead(_component, _response);
         _response.render(RequireHeaderItem.forClasses(DojoClasses.MenuBar, DojoClasses.parser));
 
-        _response.render(OnDojoReadyHeaderItem.forScript(
-                        "require([\"dojo/dom-style\"], function(domStyle){\n"
-                            + "  domStyle.set(\"" + _component.getMarkupId(true) + "\",\"visibility\",\"visible\");\n"
+        _response.render(OnDojoReadyHeaderItem.forScript(DojoWrapper.require(
+                            "  domStyle.set(\"" + _component.getMarkupId(true) + "\",\"visibility\",\"visible\");\n"
                             + "  domStyle.set(\"" + _component.getMarkupId(true) + "\",\"position\",\"\");\n"
                             + "  domStyle.set(\"" + _component.getMarkupId(true) + "\",\"left\",\"\");\n"
-                            + "});"));
+                            , DojoClasses.domStyle)));
     }
 }

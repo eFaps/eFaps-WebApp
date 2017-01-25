@@ -29,6 +29,8 @@ import org.apache.wicket.request.resource.ContentDisposition;
 import org.apache.wicket.util.resource.FileResourceStream;
 import org.apache.wicket.util.resource.IResourceStream;
 import org.efaps.ui.wicket.EFapsSession;
+import org.efaps.ui.wicket.util.DojoClasses;
+import org.efaps.ui.wicket.util.DojoWrapper;
 
 /**
  * TODO comment!
@@ -173,11 +175,9 @@ public class AjaxDownloadBehavior
      * @param _url the url
      * @return the callback script
      */
-    protected String getCallBackScript(final String _url)
+    protected CharSequence getCallBackScript(final String _url)
     {
         final StringBuilder js = new StringBuilder()
-            .append("require(['dojo/_base/window','dojo/dom','dojo/dom-construct'], ")
-                .append("function (win, dom, domConstruct) {\n")
             .append("win.withDoc(top.dojo.doc, function () {\n")
             .append("var node = dom.byId('downloadFrame');\n")
             .append("if (node == null) {\n")
@@ -186,8 +186,7 @@ public class AjaxDownloadBehavior
                 .append("visibility: hidden\">', win.body());\n")
             .append("}\n")
             .append("node.src='").append(_url).append("';")
-            .append("});\n")
-            .append("});");
-        return js.toString();
+            .append("});\n");
+        return DojoWrapper.require(js, DojoClasses.baseWindow, DojoClasses.dom, DojoClasses.domConstruct);
     }
 }

@@ -30,6 +30,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
+import org.efaps.ui.wicket.util.DojoClasses;
+import org.efaps.ui.wicket.util.DojoWrapper;
 
 /**
  * This Class renders a Link which removes a Child from a MenuTree.
@@ -74,16 +76,14 @@ public class AjaxRemoveLink
         final MenuTree menuTree = findParent(MenuTree.class);
         final String key = RandomStringUtils.randomAlphabetic(6);
         menuTree.add(key, (UIMenuItem) getDefaultModelObject());
-        js.append("require([\"dijit/registry\",\"dojo/dom-construct\"], function(registry, domConstruct){ ")
-            .append("registry.byId(\"").append(((ContentContainerPage) getPage()).getCenterPanelId())
+        js.append("registry.byId(\"").append(((ContentContainerPage) getPage()).getCenterPanelId())
             .append("\").set(\"content\", domConstruct.create(\"iframe\", {")
             .append("\"src\": \"")
             .append(menuTree.urlFor(ILinkListener.INTERFACE, new PageParameters()))
             .append("&D=").append(key)
             .append("\",\"style\": \"border: 0; width: 100%; height: 99%\"")
-            .append("})); ")
-            .append("});");
-        listener.onBefore(js);
+            .append("})); ");
+        listener.onBefore(DojoWrapper.require(js, DojoClasses.registry, DojoClasses.domConstruct));
         _attributes.getAjaxCallListeners().add(listener);
     }
 }

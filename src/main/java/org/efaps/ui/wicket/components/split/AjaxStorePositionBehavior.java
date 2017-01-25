@@ -34,6 +34,8 @@ import org.apache.wicket.util.time.Duration;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
+import org.efaps.ui.wicket.util.DojoClasses;
+import org.efaps.ui.wicket.util.DojoWrapper;
 
 /**
  * Class renders an ajax post link which is used to store the position of the
@@ -115,8 +117,7 @@ public class AjaxStorePositionBehavior
         final String leftPanelId = _component.getMarkupId(true);
         final String topPanelId = ((SidePanel) _component).getTopPanelId();
 
-        final StringBuilder js = new StringBuilder()
-            .append("require([\"dojo/ready\", \"dijit/registry\"]);\n");
+        final StringBuilder js = new StringBuilder();
         if (this.vertical) {
             js.append("var storePosV = ")
                 .append(getCallbackFunction(
@@ -145,7 +146,6 @@ public class AjaxStorePositionBehavior
             .append("storePosH(lp.domNode.clientWidth);")
             .append("});\n");
 
-
         if (this.vertical) {
             js.append(" dojo.connect(vs, \"onOpen\",function(pane){\n")
                 .append("storePosV(pane.domNode.clientHeight);")
@@ -157,8 +157,8 @@ public class AjaxStorePositionBehavior
                 .append("storePosV(tp.domNode.clientHeight);")
                 .append("});\n");
         }
-        js.append("});");
-        return js.toString();
+        js.append("}");
+        return DojoWrapper.require(js, DojoClasses.registry, DojoClasses.ready);
     }
 
     @Override

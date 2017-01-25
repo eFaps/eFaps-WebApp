@@ -102,6 +102,8 @@ import org.efaps.ui.wicket.pages.dialog.DialogPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.request.EFapsRequestParametersAdapter;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.ui.wicket.util.DojoClasses;
+import org.efaps.ui.wicket.util.DojoWrapper;
 import org.efaps.ui.wicket.util.ParameterUtil;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
@@ -161,11 +163,9 @@ public class AjaxSubmitCloseButton
     protected void updateAjaxAttributes(final AjaxRequestAttributes _attributes)
     {
         super.updateAjaxAttributes(_attributes);
-        _attributes.getAjaxCallListeners().add(new AjaxCallListener().onBefore(new StringBuilder()
-            .append("require([\"dojo/topic\"], function(topic){\n")
+        _attributes.getAjaxCallListeners().add(new AjaxCallListener().onBefore(DojoWrapper.require(new StringBuilder()
             .append("topic.publish(\"eFaps/submitClose")
-            .append("\");\n")
-            .append("})\n")));
+            .append("\");\n"), DojoClasses.topic)));
     }
 
     /**
@@ -347,11 +347,9 @@ public class AjaxSubmitCloseButton
             if (!(msg.getReporter() instanceof Form)) {
                 if (msg.getReporter() instanceof AutoCompleteComboBox) {
                     final StringBuilder js = new StringBuilder()
-                                .append("require(['dojo/dom','dojo/dom-class'], function (dom, domClass) {")
-                                    .append("domClass.add(dom.byId('").append(msg.getReporter().getMarkupId())
-                                    .append("').parentNode, 'invalid');")
-                                .append("});");
-                    _target.prependJavaScript(js);
+                                .append("domClass.add(dom.byId('").append(msg.getReporter().getMarkupId())
+                                .append("').parentNode, 'invalid');");
+                    _target.prependJavaScript(DojoWrapper.require(js, DojoClasses.dom, DojoClasses.domClass));
                 } else {
                     msg.getReporter().add(AttributeModifier.append("class", "invalid"));
                     _target.add(msg.getReporter());

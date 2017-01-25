@@ -23,7 +23,8 @@ package org.efaps.ui.wicket.behaviors.dojo;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.head.IHeaderResponse;
-import org.apache.wicket.markup.head.JavaScriptHeaderItem;
+import org.efaps.ui.wicket.util.DojoClasses;
+import org.efaps.ui.wicket.util.DojoWrapper;
 
 /**
  * This class renders the drag and drop ability from the DojoToolKit to a component.<br>
@@ -134,19 +135,18 @@ public class DnDBehavior
                            final IHeaderResponse _response)
     {
         super.renderHead(_component, _response);
-        _response.render(JavaScriptHeaderItem.forScript("require([\"dojo/dnd/Source\",\"dojo/parser\"]);",
-                        DnDBehavior.class.toString()));
+        _response.render(RequireHeaderItem.forClasses(DojoClasses.DnDSource, DojoClasses.parser));
+
+
         if (this.type == DnDBehavior.BehaviorType.SOURCE) {
             final StringBuilder js = new StringBuilder()
-                .append("require([\"dojo/aspect\",\"dojo/dom\",\"dojo/dnd/Source\"], ")
-                .append("function(aspect,dom){\n")
                 .append("var nSrc = new dojo.dnd.Source(dom.byId('").append(_component.getMarkupId(true)).append("'),")
                 .append("{ accept: ['" + this.dndType + "']});")
                 .append(" aspect.after(nSrc,\"onDrop\", function(){\n")
                 .append(this.appendJavaScript)
-                .append("\n});")
-                .append("});");
-            _response.render(OnDojoReadyHeaderItem.forScript(js.toString()));
+                .append("\n});");
+            _response.render(OnDojoReadyHeaderItem.forScript(DojoWrapper.require(js, DojoClasses.aspect,
+                            DojoClasses.dom, DojoClasses.DnDSource)));
         }
     }
 

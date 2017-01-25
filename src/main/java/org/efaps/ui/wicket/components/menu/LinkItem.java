@@ -49,6 +49,8 @@ import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
+import org.efaps.ui.wicket.util.DojoClasses;
+import org.efaps.ui.wicket.util.DojoWrapper;
 import org.efaps.util.EFapsException;
 
 /**
@@ -196,14 +198,13 @@ public class LinkItem
     @Override
     protected CharSequence getOnClickScript(final CharSequence _url)
     {
-        final StringBuilder js = new StringBuilder().append(
-                        "require([\"dijit/registry\",\"dojo/dom-construct\"], function(registry, domConstruct){ ")
+        final StringBuilder js = new StringBuilder()
                         .append("registry.byId(\"").append("mainPanel").append(
                                         "\").set(\"content\", domConstruct.create(\"iframe\", {").append("\"id\": \"")
                         .append(MainPage.IFRAME_ID).append("\",\"src\": \"").append(_url).append(
                                         "\",\"style\": \"border: 0; width: 100%; height: 99%\"").append(",\"id\": \"")
-                        .append(MainPage.IFRAME_ID).append("\"").append("}));});");
-        return js;
+                        .append(MainPage.IFRAME_ID).append("\"").append("}));");
+        return DojoWrapper.require(js, DojoClasses.registry, DojoClasses.domConstruct);
     }
 
     /**

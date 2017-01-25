@@ -32,7 +32,6 @@ import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import org.efaps.bpm.BPM;
 import org.efaps.ui.wicket.components.button.AjaxButton;
-import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.components.modalwindow.AbstractModalWindow;
 import org.efaps.ui.wicket.models.objects.UIProcessInstanceLog;
 
@@ -114,7 +113,7 @@ public class ActionPanel
             public void onClick(final AjaxRequestTarget _target)
             {
                 modal.setContent(new AjaxButton<UIProcessInstanceLog>(modal.getContentId(), _model,
-                                Button.ICON.ACCEPT.getReference(), "OK")
+                                AjaxButton.ICON.ACCEPT.getReference(), "OK")
                 {
 
                     private static final long serialVersionUID = 1L;

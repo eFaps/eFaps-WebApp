@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.components.classification;
@@ -23,7 +20,6 @@ package org.efaps.ui.wicket.components.classification;
 import org.apache.wicket.Page;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
@@ -31,7 +27,7 @@ import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.components.FormContainer;
-import org.efaps.ui.wicket.components.button.Button;
+import org.efaps.ui.wicket.components.button.AjaxButton;
 import org.efaps.ui.wicket.models.objects.UIClassification;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
@@ -45,7 +41,6 @@ import org.efaps.util.cache.CacheReloadException;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class ClassificationTreePanel
     extends Panel
@@ -86,8 +81,7 @@ public class ClassificationTreePanel
         } else {
             label = DBProperties.getProperty("default.Button.ClassTreeUpdate");
         }
-        add(new Button("submitClose", new AjaxSubmitCloseLink(Button.LINKID, _model),
-                        label, Button.ICON.ACCEPT.getReference()));
+        add(new AjaxSubmitCloseLink("submitClose", _model, label));
     }
 
     /**
@@ -112,7 +106,7 @@ public class ClassificationTreePanel
      * Render a link that submits an closes the form.
      */
     public class AjaxSubmitCloseLink
-        extends AjaxLink<UIClassification>
+        extends AjaxButton<UIClassification>
     {
 
         /**
@@ -123,11 +117,13 @@ public class ClassificationTreePanel
         /**
          * @param _wicketId wicket id for this component
          * @param _model model for tihs component
+         * @param _label
          */
         public AjaxSubmitCloseLink(final String _wicketId,
-                                   final IModel<UIClassification> _model)
+                                   final IModel<UIClassification> _model,
+                                   final String _label)
         {
-            super(_wicketId, _model);
+            super(_wicketId, _model, AjaxButton.ICON.ACCEPT.getReference(), _label);
         }
 
         /**
@@ -135,7 +131,7 @@ public class ClassificationTreePanel
          * @param _target ajax request target
          */
         @Override
-        public void onClick(final AjaxRequestTarget _target)
+        public void onRequest(final AjaxRequestTarget _target)
         {
             if (ClassificationTreePanel.this.changed) {
                 final Page page = getPage();

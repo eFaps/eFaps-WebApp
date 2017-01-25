@@ -29,6 +29,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.efaps.json.index.result.DimValue;
 import org.efaps.ui.wicket.components.search.IndexSearch.DimTreeNode;
+import org.efaps.ui.wicket.util.DojoClasses;
+import org.efaps.ui.wicket.util.DojoWrapper;
 
 /**
  * The Class DimValuePanel.
@@ -92,7 +94,8 @@ public class DimValuePanel
             };
 
             @Override
-            protected String getModelValue() {
+            protected String getModelValue()
+            {
                 final Boolean val = (Boolean) getDefaultModelObject();
                 final String ret;
                 if (BooleanUtils.isFalse(val)) {
@@ -113,7 +116,7 @@ public class DimValuePanel
      *
      * @return the java script
      */
-    private StringBuilder getJavaScript()
+    private CharSequence getJavaScript()
     {
 
         final String divId = get("triStateDiv").getMarkupId(true);
@@ -121,8 +124,6 @@ public class DimValuePanel
         final String valId = get("triStateDiv:triStateValue").getMarkupId(true);
 
         final StringBuilder ret = new StringBuilder()
-                .append("require(['dojo/dom-class', 'dojo/dom', 'dojo/on', 'dojo/query', 'dojo/NodeList-traverse',")
-                .append("'dojo/domReady!'], function (domClass, dom, on, query) {\n")
                 .append("switch (dom.byId('").append(valId).append("').value)")
                 .append("{")
                 .append("case 'on':")
@@ -136,8 +137,8 @@ public class DimValuePanel
                 .append("default:")
                 .append("dom.byId('").append(valId).append("').value = 'on';")
                 .append("domClass.add('").append(divId).append("', 'on');")
-                .append("}")
-                .append("});");
-        return ret;
+                .append("}");
+        return  DojoWrapper.require(ret, DojoClasses.domClass, DojoClasses.dom, DojoClasses.on,
+                        DojoClasses.query, DojoClasses.NodeListTraverse, DojoClasses.domReady);
     }
 }

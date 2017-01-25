@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,6 @@ import org.efaps.api.ui.IMapFilter;
 import org.efaps.api.ui.IOption;
 import org.efaps.ui.wicket.behaviors.dojo.AbstractDojoBehavior;
 import org.efaps.ui.wicket.components.button.AjaxButton;
-import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.gridx.filter.DateFilterPanel;
 import org.efaps.ui.wicket.components.gridx.filter.FormFilterPanel;
@@ -123,7 +122,7 @@ public class GridXPanel
                     container.add(new WebMarkupContainer("formFilter"));
                     if (_model.getObject().isDateFilter(filter)) {
                         form.add(new DateFilterPanel("filter", Model.of((IMapFilter) filter)));
-                        form.add(new AjaxButton<IMapFilter>("btn", Model.of((IMapFilter) filter), Button.ICON.ACCEPT
+                        form.add(new AjaxButton<IMapFilter>("btn", Model.of((IMapFilter) filter), AjaxButton.ICON.ACCEPT
                                         .getReference())
                         {
 
@@ -185,7 +184,7 @@ public class GridXPanel
                         });
                     } else {
                         form.add(new TextFilterPanel("filter", Model.of((IMapFilter) filter)));
-                        form.add(new AjaxButton<IMapFilter>("btn", Model.of((IMapFilter) filter), Button.ICON.ACCEPT
+                        form.add(new AjaxButton<IMapFilter>("btn", Model.of((IMapFilter) filter), AjaxButton.ICON.ACCEPT
                                         .getReference())
                         {
 
@@ -235,8 +234,8 @@ public class GridXPanel
                 case STATUS:
                     container.add(new WebMarkupContainer("formFilter"));
                     form.add(new ListFilterPanel("filter", new Model<>((IListFilter) filter)));
-                    form.add(new AjaxButton<IListFilter>("btn", new Model<>((IListFilter) filter), Button.ICON.ACCEPT
-                                    .getReference())
+                    form.add(new AjaxButton<IListFilter>("btn", new Model<>((IListFilter) filter),
+                                    AjaxButton.ICON.ACCEPT.getReference())
                     {
 
                         /** The Constant serialVersionUID. */
@@ -249,29 +248,29 @@ public class GridXPanel
                             final UIGrid uiGrid = gridpanel.getModelObject();
                             form.visitChildren(CheckBoxMultipleChoice.class,
                                         new IVisitor<CheckBoxMultipleChoice<?>, Void>()
-                                        {
+                                {
 
-                                            @Override
-                                            public void component(final CheckBoxMultipleChoice<?> _checkBox,
-                                                                  final IVisit<Void> _visit)
-                                            {
-                                                try {
-                                                    final ListFilterPanel filterPanel = _checkBox.findParent(
-                                                                    ListFilterPanel.class);
-                                                    @SuppressWarnings("unchecked")
-                                                    final List<IOption> sel = (List<IOption>) _checkBox
-                                                                    .getDefaultModelObject();
-                                                    for (final IOption option : filterPanel.getModelObject()) {
-                                                        final Method method = option.getClass().getMethod(
-                                                                        "setSelected", boolean.class);
-                                                        method.invoke(option, sel.contains(option));
-                                                    }
-                                                } catch (final IllegalAccessException | InvocationTargetException
-                                                                | NoSuchMethodException e) {
-                                                    GridXPanel.LOG.error("Catched error", e);
-                                                }
+                                    @Override
+                                    public void component(final CheckBoxMultipleChoice<?> _checkBox,
+                                                          final IVisit<Void> _visit)
+                                    {
+                                        try {
+                                            final ListFilterPanel filterPanel = _checkBox.findParent(
+                                                            ListFilterPanel.class);
+                                            @SuppressWarnings("unchecked")
+                                            final List<IOption> sel = (List<IOption>) _checkBox
+                                                            .getDefaultModelObject();
+                                            for (final IOption option : filterPanel.getModelObject()) {
+                                                final Method method = option.getClass().getMethod(
+                                                                "setSelected", boolean.class);
+                                                method.invoke(option, sel.contains(option));
                                             }
-                                        });
+                                        } catch (final IllegalAccessException | InvocationTargetException
+                                                        | NoSuchMethodException e) {
+                                            GridXPanel.LOG.error("Catched error", e);
+                                        }
+                                    }
+                                });
 
                             try {
                                 uiGrid.reload();

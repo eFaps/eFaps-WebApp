@@ -41,47 +41,6 @@ public class Button
     public static final String LINKID = "buttonLink";
 
     /**
-     * Reference to an icon in the eFaps Database.
-     */
-    public enum ICON {
-        /** accept.png. */
-        ACCEPT("accept.png"),
-        /** add.png. */
-        ADD("add.png"),
-        /** cancel.png. */
-        CANCEL("cancel.png"),
-        /** delete.png. */
-        DELETE("delete.png"),
-        /** next.png. */
-        NEXT("next.png"),
-        /** previous. */
-        PREVIOUS("previous.png");
-
-        /**
-         * reference.
-         */
-        private final EFapsContentReference reference;
-
-        /**
-         * @param _image image
-         */
-        private ICON(final String _image)
-        {
-            this.reference = new EFapsContentReference(Button.class, _image);
-        }
-
-        /**
-         * Getter method for the instance variable {@link #reference}.
-         *
-         * @return value of instance variable {@link #reference}
-         */
-        public EFapsContentReference getReference()
-        {
-            return this.reference;
-        }
-    }
-
-    /**
      * Needed foer serialization.
      */
     private static final long serialVersionUID = 1L;
@@ -89,12 +48,6 @@ public class Button
 
     private final ButtonImage imagediv = new ButtonImage("icon");
 
-    public Button(final String _wicketId,
-                  final WebMarkupContainer _link,
-                  final String _label)
-    {
-        this(_wicketId, _link, _label, null);
-    }
 
     public Button(final String _wicketId,
                   final WebMarkupContainer _link,

@@ -96,7 +96,7 @@ public class IndexSearch
     {
         final StringBuilder ret = new StringBuilder();
         try {
-            String clazzname;
+            final String clazzname;
             if (EFapsSystemConfiguration.get().containsAttributeValue("org.efaps.kernel.index.QueryBuilder")) {
                 clazzname = EFapsSystemConfiguration.get().getAttributeValue("org.efaps.kernel.index.QueryBuilder");
             } else {
@@ -107,10 +107,10 @@ public class IndexSearch
             final Method method = clazz.getMethod("getQuery4DimValues", String.class, List.class, List.class);
             final Object newQuery = method.invoke(obj, getCurrentQuery(), getIncluded(), getExcluded());
             ret.append(newQuery);
-        } catch (EFapsException | ClassNotFoundException | InstantiationException | IllegalAccessException
+        } catch (final EFapsException | ClassNotFoundException | InstantiationException | IllegalAccessException
                         | NoSuchMethodException | SecurityException | IllegalArgumentException
                         | InvocationTargetException e) {
-            LOG.error("Catched", e);
+            IndexSearch.LOG.error("Catched", e);
             ret.append(getCurrentQuery());
         }
         return ret.toString();
@@ -168,7 +168,7 @@ public class IndexSearch
             getDataProvider().setElements(this.result.getElements());
             fillDimensionProvider(!getCurrentQuery().equals(getPreviousQuery()));
         } catch (final EFapsException e) {
-            LOG.error("Catched", e);
+            IndexSearch.LOG.error("Catched", e);
         }
     }
 

@@ -70,6 +70,23 @@ var profile = (function(){
                  ],
                  boot: true
             },
+            "efaps/baseLayer":{
+                include:[
+                    "dijit/BackgroundIframe",
+                    "dijit/DropDownMenu",
+                    "dijit/MenuBar",
+                    "dijit/MenuBarItem",
+                    "dijit/MenuItem",
+                    "dijit/PopupMenuBarItem",
+                    "dijit/PopupMenuItem",
+                    "dijit/layout/BorderContainer",
+                    "dijit/layout/ContentPane",
+                    "dojo/parser",
+                    "dojo/ready"
+                ],
+                includeLocales:['es','de','en'],
+                localeList:['es','de','en']
+            },
             "efaps/gridxLayer":{
                 include:[
                     "dojo/_base/array",

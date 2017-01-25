@@ -45,6 +45,7 @@ import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.bpm.BPM;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.behaviors.dojo.AbstractDojoBehavior;
+import org.efaps.ui.wicket.components.button.AjaxButton;
 import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
@@ -103,7 +104,7 @@ public class TaskPage
 
         add(new FeedbackPanel("feedback").setOutputMarkupId(true));
 
-        final Form<TaskSummary> form = new Form<TaskSummary>("form");
+        final Form<TaskSummary> form = new Form<>("form");
         add(form);
 
         final RefreshingView<UIGroup> groupRepeater = new RefreshingView<UIGroup>(
@@ -115,10 +116,10 @@ public class TaskPage
             @Override
             protected Iterator<IModel<UIGroup>> getItemModels()
             {
-                final List<IModel<UIGroup>> ret = new ArrayList<IModel<UIGroup>>();
+                final List<IModel<UIGroup>> ret = new ArrayList<>();
                 final List<?> groups = (List<?>) getDefaultModelObject();
                 for (final Object group : groups) {
-                    ret.add(new Model<UIGroup>((UIGroup) group));
+                    ret.add(new Model<>((UIGroup) group));
                 }
                 return ret.iterator();
             }
@@ -141,7 +142,7 @@ public class TaskPage
                 }
 
                 form.add(new Button("aprove", new DecisionLink(Button.LINKID, _taskObjModel, _pageReference, true),
-                                aprove, Button.ICON.ACCEPT.getReference()));
+                                aprove, AjaxButton.ICON.ACCEPT.getReference()));
             } else {
                 form.add(new WebMarkupContainer("aprove").setVisible(false));
             }
@@ -152,7 +153,7 @@ public class TaskPage
                     reject = DBProperties.getProperty("org.efaps.ui.wicket.pages.task.TaskPage.default.Button.reject");
                 }
                 form.add(new Button("reject", new DecisionLink(Button.LINKID, _taskObjModel, _pageReference, false),
-                                reject, Button.ICON.CANCEL.getReference()));
+                                reject, AjaxButton.ICON.CANCEL.getReference()));
             } else {
                 form.add(new WebMarkupContainer("reject").setVisible(false));
             }
@@ -163,7 +164,7 @@ public class TaskPage
                     claim = DBProperties.getProperty("org.efaps.ui.wicket.pages.task.TaskPage.default.Button.claim");
                 }
                 form.add(new Button("claim", new ClaimLink(Button.LINKID, _taskObjModel, _pageReference),
-                                claim, Button.ICON.NEXT.getReference()));
+                                claim, AjaxButton.ICON.NEXT.getReference()));
             } else {
                 form.add(new WebMarkupContainer("claim").setVisible(false));
             }
@@ -175,8 +176,8 @@ public class TaskPage
                                     .getProperty("org.efaps.ui.wicket.pages.task.TaskPage.default.Button.delegate");
                 }
                 form.add(new Button("delegate", new DelegateLink(Button.LINKID, _taskObjModel, form, _pageReference),
-                                delegate, Button.ICON.ADD.getReference()));
-                final DropDownChoice<DelegatePerson> choice = new DropDownChoice<DelegatePerson>("delegateChoice",
+                                delegate, AjaxButton.ICON.ADD.getReference()));
+                final DropDownChoice<DelegatePerson> choice = new DropDownChoice<>("delegateChoice",
                                 DelegatePerson.getModel(), _taskObjModel.getObject().getDelegateRoles(),
                                 new DelegatePersonRenderer());
                 form.add(choice);
@@ -194,7 +195,7 @@ public class TaskPage
                                     .getProperty("org.efaps.ui.wicket.pages.task.TaskPage.default.Button.release");
                 }
                 form.add(new Button("release", new ReleaseLink(Button.LINKID, _taskObjModel, _pageReference),
-                                release, Button.ICON.PREVIOUS.getReference()));
+                                release, AjaxButton.ICON.PREVIOUS.getReference()));
             } else {
                 form.add(new WebMarkupContainer("release").setVisible(false));
             }
@@ -206,7 +207,7 @@ public class TaskPage
                                     .getProperty("org.efaps.ui.wicket.pages.task.TaskPage.default.Button.stop");
                 }
                 form.add(new Button("stop", new StopLink(Button.LINKID, _taskObjModel, _pageReference),
-                                release, Button.ICON.CANCEL.getReference()));
+                                release, AjaxButton.ICON.CANCEL.getReference()));
             } else {
                 form.add(new WebMarkupContainer("stop").setVisible(false));
             }
@@ -218,7 +219,7 @@ public class TaskPage
                                     .getProperty("org.efaps.ui.wicket.pages.task.TaskPage.default.Button.exit");
                 }
                 form.add(new Button("exit", new ExitLink(Button.LINKID, _taskObjModel, _pageReference),
-                                release, Button.ICON.CANCEL.getReference()));
+                                release, AjaxButton.ICON.CANCEL.getReference()));
             } else {
                 form.add(new WebMarkupContainer("exit").setVisible(false));
             }
@@ -260,10 +261,10 @@ public class TaskPage
         @Override
         protected Iterator<IModel<AbstractUIField>> getItemModels()
         {
-            final List<IModel<AbstractUIField>> ret = new ArrayList<IModel<AbstractUIField>>();
+            final List<IModel<AbstractUIField>> ret = new ArrayList<>();
             final List<?> values = (List<?>) getDefaultModelObject();
             for (final Object value : values) {
-                ret.add(new Model<AbstractUIField>((AbstractUIField) value));
+                ret.add(new Model<>((AbstractUIField) value));
             }
             return ret.iterator();
         }
@@ -322,7 +323,7 @@ public class TaskPage
                 @Override
                 protected void onEvent(final AjaxRequestTarget _target)
                 {
-                    final Map<String, Object> values = new HashMap<String, Object>();
+                    final Map<String, Object> values = new HashMap<>();
                     try {
                         BPM.executeTask(((UITaskObject) getComponent().getDefaultModelObject()).getUITaskSummary()
                                         .getTaskSummary(),

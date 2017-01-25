@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * limitations under the License.
  *
  */
-
 
 package org.efaps.ui.wicket.components.button;
 
@@ -45,6 +44,47 @@ import org.efaps.ui.wicket.resources.EFapsContentReference;
 public abstract class AjaxButton<T>
     extends GenericPanel<T>
 {
+
+    /**
+     * Reference to an icon in the eFaps Database.
+     */
+    public enum ICON {
+        /** accept.png. */
+        ACCEPT("accept.png"),
+        /** add.png. */
+        ADD("add.png"),
+        /** cancel.png. */
+        CANCEL("cancel.png"),
+        /** delete.png. */
+        DELETE("delete.png"),
+        /** next.png. */
+        NEXT("next.png"),
+        /** previous. */
+        PREVIOUS("previous.png");
+
+        /**
+         * reference.
+         */
+        private final EFapsContentReference reference;
+
+        /**
+         * @param _image image
+         */
+        ICON(final String _image)
+        {
+            this.reference = new EFapsContentReference(AjaxButton.class, _image);
+        }
+
+        /**
+         * Getter method for the instance variable {@link #reference}.
+         *
+         * @return value of instance variable {@link #reference}
+         */
+        public EFapsContentReference getReference()
+        {
+            return this.reference;
+        }
+    }
 
     /**
      *
@@ -196,10 +236,10 @@ public abstract class AjaxButton<T>
      *
      * @param _target AjaxRequestTarget
      */
-    public void onError(final AjaxRequestTarget _target) {
-
+    public void onError(final AjaxRequestTarget _target)
+    {
+        // to be used by implementations
     }
-
 
     /**
      * Update ajax attributes.

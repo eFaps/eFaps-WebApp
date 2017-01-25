@@ -24,6 +24,8 @@ package org.efaps.ui.wicket.behaviors.dojo;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
+import org.efaps.ui.wicket.util.DojoClasses;
+import org.efaps.ui.wicket.util.DojoWrapper;
 
 
 /**
@@ -64,8 +66,6 @@ public class MessageListenerBehavior
     private static CharSequence getScript(final Component _component)
     {
         final StringBuilder js = new StringBuilder()
-            .append("require([\"dojo/dom\",\"dojo/dom-style\", \"dojo/on\"],")
-            .append("function(dom,domStyle,on){\n")
             .append("on(window, \"message\", function(event) {\n")
             .append("var node = dom.byId('").append(_component.getMarkupId(true)).append("');\n")
             .append("if (event.data==\"\") {\n")
@@ -74,8 +74,7 @@ public class MessageListenerBehavior
             .append("domStyle.set(node, \"display\", \"block\");\n")
             .append("node.innerHTML = event.data;\n")
             .append("}\n")
-            .append("});")
             .append("});");
-        return js;
+        return DojoWrapper.require(js, DojoClasses.dom, DojoClasses.domStyle, DojoClasses.on);
     }
 }

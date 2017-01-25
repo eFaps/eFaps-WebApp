@@ -27,7 +27,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
-import org.efaps.ui.wicket.components.button.Button;
+import org.efaps.ui.wicket.components.button.AjaxButton;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.objects.ICmdUIObject;
 import org.efaps.ui.wicket.models.objects.IWizardElement;
@@ -168,14 +168,14 @@ public class FooterPanel
         boolean prevAdded = false;
         // star tof a new wisard call
         if (cmdUIObject.getCommand().getTargetCommand() != null) {
-            add(new AjaxSubmitCloseButton("createeditsearch", _model, Button.ICON.NEXT.getReference(), label));
+            add(new AjaxSubmitCloseButton("createeditsearch", _model, AjaxButton.ICON.NEXT.getReference(), label));
         } else if (cmdUIObject instanceof IWizardElement && ((IWizardElement) cmdUIObject).isWizardCall()) {
             // this is searchmode: on first call show form, on second show table
             final IWizardElement first = ((IWizardElement) cmdUIObject).getUIWizardObject().getWizardElement().get(0);
             if (TargetMode.SEARCH.equals(((ICmdUIObject) first).getCallingCommand().getTargetMode())) {
                 add(new WebMarkupContainer("createeditsearch").setVisible(false));
             } else {
-                add(new AjaxSubmitCloseButton("createeditsearch", _model, Button.ICON.ACCEPT.getReference(),
+                add(new AjaxSubmitCloseButton("createeditsearch", _model, AjaxButton.ICON.ACCEPT.getReference(),
                                 getLabel(cmdUIObject, "Connect")));
                 if (cmdUIObject instanceof UIGrid) {
                     ((UIGrid) cmdUIObject).setShowCheckBoxes(true);
@@ -183,29 +183,29 @@ public class FooterPanel
             }
         } else if ((cmdUIObject.getCommand().isSubmit() && cmdUIObject instanceof UITable) || !TargetMode.SEARCH.equals(
                         cmdUIObject.getCommand().getTargetMode())) {
-            add(new AjaxSubmitCloseButton("createeditsearch", _model, Button.ICON.ACCEPT.getReference(), label));
+            add(new AjaxSubmitCloseButton("createeditsearch", _model, AjaxButton.ICON.ACCEPT.getReference(), label));
         } else if (TargetMode.SEARCH.equals(cmdUIObject.getCommand().getTargetMode())
                         && cmdUIObject.getCommand().getTargetForm() != null) {
-            add(new AjaxSearchSubmitButton("createeditsearch", _model, Button.ICON.NEXT.getReference(), label));
+            add(new AjaxSearchSubmitButton("createeditsearch", _model, AjaxButton.ICON.NEXT.getReference(), label));
         } else {
             closelabelkey = "Close";
             label = getLabel(cmdUIObject, "Revise");
-            add(new AjaxReviseButton("createeditsearch", _model, Button.ICON.PREVIOUS.getReference(), label));
+            add(new AjaxReviseButton("createeditsearch", _model, AjaxButton.ICON.PREVIOUS.getReference(), label));
             prevAdded = true;
         }
 
         if (_modalWindow == null) {
-            add(new ClosePopUpButton("cancel", _model, Button.ICON.CANCEL.getReference(), getLabel(cmdUIObject,
+            add(new ClosePopUpButton("cancel", _model, AjaxButton.ICON.CANCEL.getReference(), getLabel(cmdUIObject,
                             closelabelkey)));
         } else {
-            add(new AjaxCancelButton("cancel", _model, Button.ICON.CANCEL.getReference(), getLabel(cmdUIObject,
+            add(new AjaxCancelButton("cancel", _model, AjaxButton.ICON.CANCEL.getReference(), getLabel(cmdUIObject,
                             closelabelkey)));
         }
 
         if (cmdUIObject instanceof IWizardElement && ((IWizardElement) cmdUIObject).isWizardCall() && cmdUIObject
                         .getCommand().isTargetCmdRevise() && !prevAdded) {
             label = getLabel(cmdUIObject, "Revise");
-            add(new AjaxReviseButton("prev", _model, Button.ICON.PREVIOUS.getReference(), label));
+            add(new AjaxReviseButton("prev", _model, AjaxButton.ICON.PREVIOUS.getReference(), label));
         } else {
             add(new WebMarkupContainer("prev").setVisible(false));
         }

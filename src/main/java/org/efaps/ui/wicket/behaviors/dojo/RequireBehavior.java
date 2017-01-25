@@ -30,7 +30,6 @@ import org.apache.wicket.markup.head.JavaScriptHeaderItem;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class RequireBehavior
     extends AbstractDojoBehavior
@@ -41,8 +40,6 @@ public class RequireBehavior
      */
     private static final long serialVersionUID = 1L;
     private final String[] packages;
-
-
 
     public RequireBehavior(final String... _packages)
     {

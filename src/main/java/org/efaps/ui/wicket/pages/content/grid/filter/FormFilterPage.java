@@ -29,7 +29,6 @@ import org.efaps.api.ci.UIFormFieldProperty;
 import org.efaps.api.ui.IMapFilter;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.button.AjaxButton;
-import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.components.gridx.GridXComponent;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIGrid;
@@ -82,7 +81,7 @@ public class FormFilterPage
         add(formContainer);
         FormPage.updateFormContainer(formPage, formContainer, uiform);
 
-        formContainer.add(new AjaxButton<IMapFilter>("btn", _model, Button.ICON.ACCEPT.getReference())
+        formContainer.add(new AjaxButton<IMapFilter>("btn", _model, AjaxButton.ICON.ACCEPT.getReference())
         {
 
             /** The Constant serialVersionUID. */

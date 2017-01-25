@@ -39,6 +39,7 @@ import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.ui.wicket.behaviors.dojo.RequireBehavior;
 import org.efaps.ui.wicket.components.LabelComponent;
+import org.efaps.ui.wicket.components.button.AjaxButton;
 import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.components.footer.AjaxSubmitCloseButton;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
@@ -49,6 +50,8 @@ import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.ui.wicket.util.DojoClasses;
+import org.efaps.ui.wicket.util.DojoWrapper;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 
@@ -100,11 +103,11 @@ public class DialogPage
             add(new Label("textLabel", DBProperties.getProperty(cmdName + ".Question")).setOutputMarkupId(true));
 
             add(new Button("submitButton", new AjaxSubmitLink(Button.LINKID, _model, _oids),
-                            DialogPage.getLabel(cmdName, "Submit"), Button.ICON.ACCEPT.getReference())
+                            DialogPage.getLabel(cmdName, "Submit"), AjaxButton.ICON.ACCEPT.getReference())
                             .setOutputMarkupId(true));
 
             add(new Button("closeButton", new AjaxCloseLink(Button.LINKID), DialogPage.getLabel(cmdName, "Cancel"),
-                            Button.ICON.CANCEL.getReference()));
+                            AjaxButton.ICON.CANCEL.getReference()));
             add(new RequireBehavior("dojo/query", "dojo/NodeList-dom"));
         } catch (final EFapsException e) {
             // TODO Auto-generated catch block
@@ -136,14 +139,14 @@ public class DialogPage
         if (_goOn) {
             final AjaxGoOnLink ajaxGoOnLink = new AjaxGoOnLink(Button.LINKID);
             this.add(new Button("submitButton", ajaxGoOnLink, DialogPage.getLabel(_value, "Create"),
-                            Button.ICON.ACCEPT.getReference()));
+                            AjaxButton.ICON.ACCEPT.getReference()));
         } else {
             this.add(new WebMarkupContainer("submitButton").setVisible(false));
         }
 
         final AjaxCloseLink ajaxCloseLink = new AjaxCloseLink(Button.LINKID);
         this.add(new Button("closeButton", ajaxCloseLink, DialogPage.getLabel(_value, "Close"),
-                        Button.ICON.CANCEL.getReference()));
+                        AjaxButton.ICON.CANCEL.getReference()));
 
         ajaxCloseLink.add(new KeyListenerBehavior());
     }
@@ -314,18 +317,18 @@ public class DialogPage
 
                     DialogPage.this.pageReference.getPage().visitChildren(ModalWindowContainer.class,
                                     new IVisitor<ModalWindowContainer, Void>()
-                                    {
+                        {
 
-                                        @Override
-                                        public void component(final ModalWindowContainer _modal,
-                                                              final IVisit<Void> _visit)
-                                        {
-                                            _modal.setWindowClosedCallback(new UpdateParentCallback(
-                                                            DialogPage.this.pageReference, _modal));
-                                            _modal.setUpdateParent(true);
-                                            _modal.close(_target);
-                                        }
-                                    });
+                            @Override
+                            public void component(final ModalWindowContainer _modal,
+                                                  final IVisit<Void> _visit)
+                            {
+                                _modal.setWindowClosedCallback(new UpdateParentCallback(
+                                                DialogPage.this.pageReference, _modal));
+                                _modal.setUpdateParent(true);
+                                _modal.close(_target);
+                            }
+                        });
                 }
             } catch (final EFapsException e) {
                 throw new RestartResponseException(new ErrorPage(e));
@@ -385,10 +388,8 @@ public class DialogPage
                 });
                 if (!goOn) {
                     final StringBuilder js = new StringBuilder()
-                        .append("require([\"dojo/query\", \"dojo/NodeList-dom\"], function(query){")
-                        .append(" query(\".eFapsWarnDialogButton1\").style(\"display\", \"none\");")
-                        .append(" });");
-                    _target.appendJavaScript(js);
+                        .append(" query(\".eFapsWarnDialogButton1\").style(\"display\", \"none\");");
+                    _target.appendJavaScript(DojoWrapper.require(js, DojoClasses.query, DojoClasses.NodeListDom));
                 }
             }
             return ret;

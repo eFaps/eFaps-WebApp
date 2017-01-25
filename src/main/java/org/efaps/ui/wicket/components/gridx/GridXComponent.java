@@ -395,8 +395,7 @@ public class GridXComponent
             }
 
             final StringBuilder html = new StringBuilder().append("<script type=\"text/javascript\">")
-                            .append(DojoWrapper.require(js, "efaps/gridxLayer",
-                                            dojoClasses.toArray(new DojoClass[dojoClasses.size()])))
+                            .append(DojoWrapper.require(js, dojoClasses.toArray(new DojoClass[dojoClasses.size()])))
                             .append("\n</script>");
 
             replaceComponentTagBody(_markupStream, _openTag, html);
@@ -408,6 +407,7 @@ public class GridXComponent
     /**
      * Gets the prints the menu items.
      *
+     * @param _dojoClasses the dojo classes
      * @return the prints the menu items
      */
     protected CharSequence getPrintMenuItems(final Set<DojoClass> _dojoClasses)

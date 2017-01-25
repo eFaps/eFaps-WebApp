@@ -46,7 +46,6 @@ import org.efaps.admin.user.Company;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.button.AjaxButton;
-import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
@@ -244,7 +243,7 @@ public class CompanyPage
          */
         public AjaxSubmitBtn(final String _wicketId)
         {
-            super(_wicketId,  Button.ICON.ACCEPT.getReference(),
+            super(_wicketId, AjaxButton.ICON.ACCEPT.getReference(),
                             DBProperties.getProperty("org.efaps.ui.wicket.pages.company.next.Label"));
         }
 
@@ -267,15 +266,15 @@ public class CompanyPage
         {
             final CompanyObject obj = getPage().visitChildren(Select.class,
                             new IVisitor<Select<CompanyObject>, CompanyObject>()
-                            {
+                {
 
-                                @Override
-                                public void component(final Select<CompanyObject> _select,
-                                                      final IVisit<CompanyObject> _visit)
-                                {
-                                    _visit.stop((CompanyObject) _select.getDefaultModelObject());
-                                }
-                            });
+                    @Override
+                    public void component(final Select<CompanyObject> _select,
+                                          final IVisit<CompanyObject> _visit)
+                    {
+                        _visit.stop((CompanyObject) _select.getDefaultModelObject());
+                    }
+                });
 
             try {
                 Context.getThreadContext().setUserAttribute(Context.CURRENTCOMPANY, obj.id);
@@ -314,7 +313,7 @@ public class CompanyPage
          */
         public AjaxCloseBtn(final String _wicketId)
         {
-            super(_wicketId, Button.ICON.CANCEL.getReference(),
+            super(_wicketId, AjaxButton.ICON.CANCEL.getReference(),
                             DBProperties.getProperty("org.efaps.ui.wicket.pages.company.cancel.Label"));
         }
 

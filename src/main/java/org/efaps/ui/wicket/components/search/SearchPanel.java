@@ -38,6 +38,8 @@ import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.Command;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
+import org.efaps.ui.wicket.util.DojoClasses;
+import org.efaps.ui.wicket.util.DojoWrapper;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,9 +76,9 @@ public class SearchPanel
                             Configuration.getAttribute(ConfigAttribute.INDEXACCESSCMD)));
             access = cmd.hasAccess(TargetMode.VIEW, null);
         } catch (final EFapsException e) {
-            LOG.error("Catched error during access control to index.", e);
+            SearchPanel.LOG.error("Catched error during access control to index.", e);
         }
-        this.setVisible(access);
+        setVisible(access);
         final Model<IndexSearch> searchModel = Model.of(new IndexSearch());
         final ResultPanel resultPanel = new ResultPanel("result", searchModel);
         resultPanel.setOutputMarkupPlaceholderTag(true).setVisible(false);
@@ -118,12 +120,7 @@ public class SearchPanel
                     _target.add(resultPanel);
 
                     final StringBuilder js = new StringBuilder();
-                    js.append("require(['dijit/TooltipDialog', 'dijit/popup', 'dojo/dom', 'dijit/registry',")
-                            .append("'dojo/_base/window', 'dojo/window', 'dojo/query',")
-                            .append("'dojo/dom-construct', 'dojo/NodeList-dom'],")
-                            .append("function(TooltipDialog, popup, dom, registry, baseWindow, win, ")
-                            .append(" query, domConstruct){\n")
-                        .append("var rN = dom.byId('").append(resultPanel.getMarkupId()).append("');\n")
+                    js.append("var rN = dom.byId('").append(resultPanel.getMarkupId()).append("');\n")
                         .append("var dialog = registry.byId(rN.id);")
                         .append("if (typeof(dialog) !== \"undefined\") {\n")
                         .append("popup.close(dialog);")
@@ -152,9 +149,10 @@ public class SearchPanel
                         .append("")
                         .append("},\n")
                         .append("around: dom.byId('").append(form.getMarkupId()).append("')")
-                        .append("});")
                         .append("});");
-                    _target.appendJavaScript(js);
+                    _target.appendJavaScript(DojoWrapper.require(js, DojoClasses.TooltipDialog, DojoClasses.popup,
+                                    DojoClasses.dom,DojoClasses.registry, DojoClasses.win, DojoClasses.baseWindow,
+                                    DojoClasses.query, DojoClasses.domConstruct, DojoClasses.NodeListDom));
                 }
             }
 

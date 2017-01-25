@@ -31,6 +31,8 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.behaviors.dojo.OnDojoReadyHeaderItem;
 import org.efaps.ui.wicket.models.objects.UIHeading;
+import org.efaps.ui.wicket.util.DojoClasses;
+import org.efaps.ui.wicket.util.DojoWrapper;
 
 /**
  * Class is used to render a panel containing a title for a page or a subtitle
@@ -66,7 +68,6 @@ public class HeadingPanel
     {
         super.renderHead(_response);
         final StringBuilder js = new StringBuilder()
-            .append("function toggleSection(_nodeID){")
             .append("require([\"dojo/query\", \"dojo/dom\", \"dojo/dom-class\", \"dojo/NodeList-traverse\"],")
             .append("function(query, dom, domClass){\n")
             .append("var add = true;\n")
@@ -82,15 +83,19 @@ public class HeadingPanel
             .append("domClass.toggle(_node, \"eFapsHiddenSection\");\n")
             .append("}\n")
             .append("}});\n")
-            .append("});\n")
-            .append("}\n");
-        _response.render(JavaScriptHeaderItem.forScript(js, HeadingPanel.class.getName()));
+            .append("});\n");
+
+        final StringBuilder js2 = new StringBuilder().append("function toggleSection(_nodeID){")
+            .append(DojoWrapper.require(js, DojoClasses.query, DojoClasses.dom, DojoClasses.domClass,
+                        DojoClasses.NodeListTraverse)).append("}\n");
+
+        _response.render(JavaScriptHeaderItem.forScript(js2, HeadingPanel.class.getName()));
 
         if (((UIHeading) getDefaultModelObject()).isCollapsible()
                         && ((UIHeading) getDefaultModelObject()).getCollapsed()) {
-            final StringBuilder js2 = new StringBuilder();
-            js2.append("toggleSection('").append(getMarkupId(true)).append("');");
-            _response.render(OnDojoReadyHeaderItem.forScript(js2));
+            final StringBuilder js3 = new StringBuilder();
+            js3.append("toggleSection('").append(getMarkupId(true)).append("');");
+                _response.render(OnDojoReadyHeaderItem.forScript(js3));
         }
     }
 

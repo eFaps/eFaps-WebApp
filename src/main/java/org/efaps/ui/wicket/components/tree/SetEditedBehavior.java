@@ -26,6 +26,8 @@ import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
+import org.efaps.ui.wicket.util.DojoClasses;
+import org.efaps.ui.wicket.util.DojoWrapper;
 
 
 /**
@@ -63,9 +65,6 @@ public class SetEditedBehavior
     {
         final StringBuilder ret = new StringBuilder();
         ret.append("function eFapsSetEdited(_element){")
-            .append("require([\"dojo/dom\",\"dojo/query\",\"dojo/dom-style\",\"dojo/dom-class\",")
-            .append("\"dojo/NodeList-traverse\"],")
-            .append("function(_dom,_query, _style, _domClass) {")
             .append(" _query(_element).parents(\".tree-branch\").forEach(function(_node){")
             .append("_query(_node).children(\".tree-node\").forEach(function(_node2){")
             .append(" _query(_node2).children(\".tree-junction-expanded\").forEach(function(_node3){")
@@ -76,9 +75,9 @@ public class SetEditedBehavior
             .append(" _domClass.add(_node2,\"edited\");")
             .append(" });")
             .append("});")
-            .append(" });")
-             .append("};");
-        return ret;
+            .append(" });");
+        return DojoWrapper.require(ret, DojoClasses.dom, DojoClasses.query, DojoClasses.domStyle,
+                        DojoClasses.domClass, DojoClasses.NodeListTraverse);
     }
 
     @Override

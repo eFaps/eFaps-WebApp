@@ -53,6 +53,8 @@ import org.efaps.json.index.result.Element;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
+import org.efaps.ui.wicket.util.DojoClasses;
+import org.efaps.ui.wicket.util.DojoWrapper;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,7 +102,7 @@ public class ResultPanel
     {
         final List<IColumn<Element, Void>> columns = new ArrayList<>();
 
-        columns.add(new AbstractColumn<Element, Void>(new Model<String>(""))
+        columns.add(new AbstractColumn<Element, Void>(new Model<>(""))
         {
 
             private static final long serialVersionUID = 1L;
@@ -115,7 +117,7 @@ public class ResultPanel
         });
 
         if (_indexSearch.getSearch() == null || _indexSearch.getSearch().getResultFields().isEmpty()) {
-            columns.add(new PropertyColumn<Element, Void>(new Model<String>(""), "text"));
+            columns.add(new PropertyColumn<Element, Void>(new Model<>(""), "text"));
         } else {
             for (final Entry<String, Collection<String>> entry : _indexSearch.getSearch().getResultFields()
                             .entrySet()) {
@@ -123,11 +125,11 @@ public class ResultPanel
                                 .getValue()));
             }
         }
-        final DataTable<Element, Void> ret = new DataTable<Element, Void>("table", columns, _indexSearch
+        final DataTable<Element, Void> ret = new DataTable<>("table", columns, _indexSearch
                         .getDataProvider(), _indexSearch.getSearch() == null ? 100
                                         : _indexSearch.getSearch().getNumHits());
 
-        ret.addTopToolbar(new HeadersToolbar<Void>(ret, null));
+        ret.addTopToolbar(new HeadersToolbar<>(ret, null));
         return ret;
     }
 
@@ -154,7 +156,7 @@ public class ResultPanel
                         _component.setVisible(false);
                     }
                 } catch (final EFapsException e) {
-                    LOG.error("Catched error", e);
+                    ResultPanel.LOG.error("Catched error", e);
                 }
                 _visit.dontGoDeeper();
             }
@@ -277,9 +279,7 @@ public class ResultPanel
             }
 
             final StringBuilder js = new StringBuilder();
-            js.append("require(['dijit/TooltipDialog','dijit/popup','dojo/dom','dijit/registry',")
-                .append("'dojo/dom-construct'], function (TooltipDialog, popup, dom, registry, domConstruct) {\n")
-                .append("var rN = dom.byId('").append(resultPanel.getMarkupId()).append("');\n")
+            js.append("var rN = dom.byId('").append(resultPanel.getMarkupId()).append("');\n")
                 .append("var dialog = registry.byId(rN.id);\n")
                 .append("popup.close(dialog);\n")
                 .append("registry.byId(\"").append("mainPanel")
@@ -288,9 +288,9 @@ public class ResultPanel
                 .append("\",\"src\": \"").append(pageUrl)
                 .append("\",\"style\": \"border: 0; width: 100%; height: 99%\"")
                 .append(",\"id\": \"").append(MainPage.IFRAME_ID).append("\"")
-                .append("}));")
-                .append("});\n");
-            _target.appendJavaScript(js);
+                .append("}));");
+            _target.appendJavaScript(DojoWrapper.require(js, DojoClasses.TooltipDialog, DojoClasses.popup,
+                            DojoClasses.dom, DojoClasses.domConstruct, DojoClasses.registry));
         }
     }
 

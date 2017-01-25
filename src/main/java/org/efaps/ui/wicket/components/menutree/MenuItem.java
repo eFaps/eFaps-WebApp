@@ -48,6 +48,8 @@ import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
+import org.efaps.ui.wicket.util.DojoClasses;
+import org.efaps.ui.wicket.util.DojoWrapper;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -267,15 +269,13 @@ public class MenuItem
             super.updateAjaxAttributes(_attributes);
             final AjaxCallListener listener = new AjaxCallListener();
             final StringBuilder js = new StringBuilder();
-            js.append("require([\"dijit/registry\",\"dojo/dom-construct\"], function(registry, domConstruct){ ")
-                .append("registry.byId(\"").append(((ContentContainerPage) getPage()).getCenterPanelId())
+            js.append("registry.byId(\"").append(((ContentContainerPage) getPage()).getCenterPanelId())
                 .append("\").set(\"content\", domConstruct.create(\"iframe\", {")
                 .append("\"src\": \"")
                 .append(getComponent().urlFor(ILinkListener.INTERFACE, new PageParameters()))
                 .append("\",\"style\": \"border: 0; width: 100%; height: 99%\"")
-                .append("})); ")
-                .append("});");
-            listener.onAfter(js);
+                .append("})); ");
+            listener.onAfter(DojoWrapper.require(js, DojoClasses.registry, DojoClasses.domConstruct));
             _attributes.getAjaxCallListeners().add(listener);
         }
     }
