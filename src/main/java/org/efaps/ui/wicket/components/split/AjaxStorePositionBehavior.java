@@ -157,8 +157,8 @@ public class AjaxStorePositionBehavior
                 .append("storePosV(tp.domNode.clientHeight);")
                 .append("});\n");
         }
-        js.append("}");
-        return DojoWrapper.require(js, DojoClasses.registry, DojoClasses.ready);
+        js.append("});");
+        return js.toString();
     }
 
     @Override

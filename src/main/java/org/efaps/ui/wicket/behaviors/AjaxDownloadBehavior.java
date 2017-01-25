@@ -178,7 +178,7 @@ public class AjaxDownloadBehavior
     protected CharSequence getCallBackScript(final String _url)
     {
         final StringBuilder js = new StringBuilder()
-            .append("win.withDoc(top.dojo.doc, function () {\n")
+            .append("baseWindow.withDoc(top.dojo.doc, function () {\n")
             .append("var node = dom.byId('downloadFrame');\n")
             .append("if (node == null) {\n")
             .append("node = domConstruct.place('<iframe id=\"downloadFrame\" src=\"about:blank\" ")
