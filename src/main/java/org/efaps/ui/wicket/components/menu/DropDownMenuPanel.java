@@ -72,12 +72,9 @@ public class DropDownMenuPanel
                 Component item = null;
                 if (childItem.getReference() != null) {
                     childItem.setURL(childItem.getReference());
-                    if (childItem.getReference().equals(
-                                    "/" + getSession().getApplication().getApplicationKey() + "/taskadmin?")) {
+                    if (childItem.getReference().endsWith("/taskadmin")) {
                         item = new TaskAdminItem(_idGenerator.newChildId(), Model.of(childItem));
-                    }
-                    if (childItem.getReference().equals(
-                                    "/" + getSession().getApplication().getApplicationKey() + "/connection?")) {
+                    } else if (childItem.getReference().endsWith("/connection")) {
                         item = new ConnectionItem(_idGenerator.newChildId(), Model.of(childItem));
                     }
                 }
