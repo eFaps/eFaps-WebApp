@@ -35,5 +35,7 @@ public enum PagePosition
     /** Page is in the tree area. */
     TREE,
     /** Page is in the modal belonging to the tree area. */
-    TREEMODAL;
+    TREEMODAL,
+    /** Page is opened as a modal in picker mode.*/
+    PICKER;
 }

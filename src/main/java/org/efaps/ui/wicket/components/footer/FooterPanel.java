@@ -26,6 +26,7 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.efaps.admin.dbproperty.DBProperties;
+import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.ui.wicket.components.button.AjaxButton;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
@@ -172,11 +173,19 @@ public class FooterPanel
         } else if (cmdUIObject instanceof IWizardElement && ((IWizardElement) cmdUIObject).isWizardCall()) {
             // this is searchmode: on first call show form, on second show table
             final IWizardElement first = ((IWizardElement) cmdUIObject).getUIWizardObject().getWizardElement().get(0);
-            if (TargetMode.SEARCH.equals(((ICmdUIObject) first).getCallingCommand().getTargetMode())) {
+            AbstractCommand cmd;
+            if (((ICmdUIObject) first).hasCallingCommand()) {
+                cmd = ((ICmdUIObject) first).getCallingCommand();
+            } else {
+                cmd = ((ICmdUIObject) first).getCommand();
+            }
+            if (TargetMode.SEARCH.equals(cmd.getTargetMode())) {
                 add(new WebMarkupContainer("createeditsearch").setVisible(false));
             } else {
+                // check for connect
+                final boolean isConnect = cmd.getTargetForm() != null && cmd.getTargetTable() != null;
                 add(new AjaxSubmitCloseButton("createeditsearch", _model, AjaxButton.ICON.ACCEPT.getReference(),
-                                getLabel(cmdUIObject, "Connect")));
+                                isConnect ? getLabel(cmdUIObject, "Connect") : label));
                 if (cmdUIObject instanceof UIGrid) {
                     ((UIGrid) cmdUIObject).setShowCheckBoxes(true);
                 }

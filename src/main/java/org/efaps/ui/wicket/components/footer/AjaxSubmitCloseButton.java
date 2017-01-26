@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2017 eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.components.footer;
@@ -63,6 +60,7 @@ import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.db.Context;
+import org.efaps.db.Instance;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.autocomplete.AutoCompleteComboBox;
@@ -74,6 +72,7 @@ import org.efaps.ui.wicket.components.values.DropDownField;
 import org.efaps.ui.wicket.components.values.ErrorMessageResource;
 import org.efaps.ui.wicket.components.values.IFieldConfig;
 import org.efaps.ui.wicket.components.values.IValueConverter;
+import org.efaps.ui.wicket.models.AbstractInstanceObject;
 import org.efaps.ui.wicket.models.field.IFilterable;
 import org.efaps.ui.wicket.models.field.IUIElement;
 import org.efaps.ui.wicket.models.field.set.UIFieldSet;
@@ -209,12 +208,14 @@ public class AjaxSubmitCloseButton
                         final AbstractUIPageObject newUIObject;
                         if (targetCmd.getTargetTable() != null) {
                             newUIObject = new UITable(cmdUIObject.getCommand().getTargetCommand().getUUID(),
-                                            cmdUIObject.getInstance().getOid());
+                                            cmdUIObject.getInstance() == null ? null
+                                                            : cmdUIObject.getInstance().getOid());
                         } else {
                             final PagePosition pp = cmdUIObject instanceof IPageObject
                                             ? ((IPageObject) cmdUIObject).getPagePosition() : PagePosition.CONTENT;
                             newUIObject = new UIForm(cmdUIObject.getCommand().getTargetCommand().getUUID(),
-                                            cmdUIObject.getInstance().getOid())
+                                            cmdUIObject.getInstance() == null ? null
+                                                            : cmdUIObject.getInstance().getOid())
                                             .setPagePosition(pp);
                         }
                         final UIWizardObject wizard = new UIWizardObject((IWizardElement) newUIObject);
@@ -242,12 +243,17 @@ public class AjaxSubmitCloseButton
                     } else {
                         final FooterPanel footer = findParent(FooterPanel.class);
                         // if inside a modal
-                        if (PagePosition.CONTENTMODAL.equals(((IPageObject) getPage().getDefaultModelObject())
-                                        .getPagePosition()) || PagePosition.TREEMODAL.equals(((IPageObject) getPage()
-                                                        .getDefaultModelObject()).getPagePosition())) {
-                            footer.getModalWindow().setReloadChild(!cmdUIObject.getCommand().isNoUpdateAfterCmd());
-                            footer.getModalWindow().setTargetShowFile(cmdUIObject.getCommand().isTargetShowFile());
-                            footer.getModalWindow().close(_target, cmdUIObject);
+
+                        switch (((IPageObject) getPage().getDefaultModelObject()).getPagePosition()) {
+                            case PICKER:
+                            case CONTENTMODAL:
+                            case TREEMODAL:
+                                footer.getModalWindow().setReloadChild(!cmdUIObject.getCommand().isNoUpdateAfterCmd());
+                                footer.getModalWindow().setTargetShowFile(cmdUIObject.getCommand().isTargetShowFile());
+                                footer.getModalWindow().close(_target, cmdUIObject);
+                                break;
+                            default:
+                                break;
                         }
                         footer.setSuccess(true);
                     }
@@ -425,9 +431,8 @@ public class AjaxSubmitCloseButton
     {
         AjaxSubmitCloseButton.LOG.trace("entering executeEvents");
         boolean ret = true;
-        ;
         final ICmdUIObject cmdUIObject = (ICmdUIObject) getPage().getDefaultModelObject();
-        TargetMode mode;
+        final TargetMode mode;
         if (cmdUIObject instanceof IModeObject) {
             mode = ((IModeObject) cmdUIObject).getMode();
         } else {
@@ -448,7 +453,7 @@ public class AjaxSubmitCloseButton
             tuplets.add(_classifications);
         }
 
-        final List<Return> returns = cmdUIObject.executeEvents(EventType.UI_COMMAND_EXECUTE,tuplets.toArray());
+        final List<Return> returns = cmdUIObject.executeEvents(EventType.UI_COMMAND_EXECUTE, tuplets.toArray());
 
         for (final Return oneReturn : returns) {
             if (oneReturn.get(ReturnValues.TRUE) == null && !oneReturn.isEmpty()
@@ -470,8 +475,9 @@ public class AjaxSubmitCloseButton
                     ((EFapsSession) getSession()).setFile(file);
                 }
             }
-            if (oneReturn.get(ReturnValues.INSTANCE) != null) {
-                //cmdUIObject. .setInstanceKey(((Instance) oneReturn.get(ReturnValues.INSTANCE)).getKey());
+            if (oneReturn.get(ReturnValues.INSTANCE) != null && cmdUIObject instanceof AbstractInstanceObject) {
+                ((AbstractInstanceObject) cmdUIObject).setInstanceKey(((Instance) oneReturn.get(ReturnValues.INSTANCE))
+                                .getKey());
             }
         }
 
@@ -573,7 +579,7 @@ public class AjaxSubmitCloseButton
         AjaxSubmitCloseButton.LOG.trace("entering validateForm");
         boolean ret = true;
         if (!this.validated) {
-            TargetMode mode;
+            final TargetMode mode;
             if (getForm().getPage().getDefaultModelObject() instanceof IModeObject) {
                 mode = ((IModeObject) getForm().getPage().getDefaultModelObject()).getMode();
             } else {

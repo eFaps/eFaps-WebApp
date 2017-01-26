@@ -109,7 +109,8 @@ public class ModalWindowAjaxPageCreator
                 }
             } else {
                 if (this.uiObject.getCommand().getTargetStructurBrowserField() == null) {
-                    final UITable uitable = new UITable(this.uiObject.getCommand().getUUID(), instKey);
+                    final UITable uitable = new UITable(this.uiObject.getCommand().getUUID(), instKey)
+                                    .setPagePosition(this.pagePosition);
                     uitable.setPicker(this.uiObject);
                     ret = new TablePage(Model.of(uitable), this.modalWindow, this.modalWindow.getPage()
                                     .getPageReference());

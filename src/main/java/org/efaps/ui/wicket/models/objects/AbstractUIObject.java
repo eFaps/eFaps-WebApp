@@ -228,9 +228,12 @@ public abstract class AbstractUIObject
     public AbstractCommand getCallingCommand()
         throws CacheReloadException
     {
-        AbstractCommand cmd = Command.get(this.callingCmdUUID);
-        if (cmd == null) {
-            cmd = Menu.get(this.callingCmdUUID);
+        AbstractCommand cmd = null;
+        if (getCallingCommandUUID() != null) {
+            cmd = Command.get(getCallingCommandUUID());
+            if (cmd == null) {
+                cmd = Menu.get(getCallingCommandUUID());
+            }
         }
         return cmd;
     }

@@ -155,20 +155,17 @@ public class AjaxPickerLink
         protected void onEvent(final AjaxRequestTarget _target)
         {
             final ModalWindowContainer modal;
-            final PagePosition pagePosition;
             if (getPage() instanceof MainPage) {
                 modal = ((MainPage) getPage()).getModal();
-                pagePosition = PagePosition.CONTENTMODAL;
             } else {
                 modal = ((AbstractContentPage) getPage()).getModal();
-                pagePosition = PagePosition.TREEMODAL;
             }
             modal.reset();
             try {
                 final UIPicker picker = ((IPickable) getDefaultModelObject()).getPicker();
                 picker.setUserinterfaceId(this.targetMarkupId);
                 picker.setParentParameters(Context.getThreadContext().getParameters());
-                final PageCreator pageCreator = new ModalWindowAjaxPageCreator(picker, modal, pagePosition);
+                final PageCreator pageCreator = new ModalWindowAjaxPageCreator(picker, modal, PagePosition.PICKER);
                 modal.setPageCreator(pageCreator);
                 modal.setInitialHeight(picker.getWindowHeight());
                 modal.setInitialWidth(picker.getWindowWidth());
