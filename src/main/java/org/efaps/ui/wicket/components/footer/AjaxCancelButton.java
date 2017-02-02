@@ -50,6 +50,7 @@ public class AjaxCancelButton
                             final String _label)
     {
         super(_wicketid, _model, _eFapsContentReference, _label);
+        setSubmit(false);
     }
 
     @Override

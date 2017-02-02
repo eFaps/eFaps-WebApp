@@ -92,6 +92,9 @@ public abstract class AjaxButton<T>
      */
     private static final long serialVersionUID = 1L;
 
+    /** The submit. */
+    private boolean submit = true;
+
     /**
      * Instantiates a new ajax button.
      *
@@ -268,7 +271,18 @@ public abstract class AjaxButton<T>
      */
     protected boolean isSubmit()
     {
-        return true;
+        return this.submit;
+    }
+
+    /**
+     * Setter method for instance variable {@link #submit}.
+     *
+     * @param _submit value for instance variable {@link #submit}
+     */
+    public AjaxButton<T> setSubmit(final boolean _submit)
+    {
+        this.submit = _submit;
+        return this;
     }
 
     /**
