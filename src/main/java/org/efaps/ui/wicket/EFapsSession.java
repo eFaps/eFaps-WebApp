@@ -27,6 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -57,11 +58,13 @@ import org.efaps.ui.wicket.connectionregistry.RegistryManager;
 import org.efaps.ui.wicket.models.EmbeddedLink;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.ui.wicket.pages.info.GatherInfoPage;
 import org.efaps.ui.wicket.request.EFapsMultipartRequest;
 import org.efaps.ui.wicket.request.EFapsRequest;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 import org.efaps.util.EFapsException;
+import org.efaps.util.UUIDUtil;
 import org.keycloak.adapters.servlet.OIDCFilterSessionStore.SerializableKeycloakAccount;
 import org.keycloak.adapters.spi.KeycloakAccount;
 import org.slf4j.Logger;
@@ -292,7 +295,7 @@ public class EFapsSession
      *
      * @return true, if successful
      */
-    private final boolean lazyLogin()
+    private boolean lazyLogin()
     {
         boolean ret = false;
         final HttpServletRequest httpRequest = ((ServletWebRequest) RequestCycle.get().getRequest())
@@ -302,17 +305,55 @@ public class EFapsSession
             final SerializableKeycloakAccount account = (SerializableKeycloakAccount) httpSession.getAttribute(
                             KeycloakAccount.class.getName());
             if (account != null) {
-                this.userName = account.getPrincipal().getName();
-                openContext();
                 try {
-                    Person.reset(this.userName);
-                    setAttribute(EFapsSession.LOGIN_ATTRIBUTE_NAME, this.userName);
-                    this.sessionAttributes.put(UserAttributesSet.CONTEXTMAPKEY, new UserAttributesSet(this.userName));
+                    Context context = null;
+                    if (Context.isTMActive()) {
+                        context = Context.getThreadContext();
+                    } else {
+                        context = Context.begin();
+                    }
+                    boolean ok = false;
+                    final String uernameTmp = account.getPrincipal().getName();
+                    try {
+                        Person.reset(uernameTmp);
+                        if (UUIDUtil.isUUID(uernameTmp)) {
+                            ok = Person.get(UUID.fromString(uernameTmp)) != null;
+                        } else {
+                            ok = Person.get(uernameTmp) != null;
+                        }
+                    } finally {
+                        if (ok && context.allConnectionClosed() && Context.isTMActive()) {
+                            Context.commit();
+                        } else {
+                            if (Context.isTMMarkedRollback()) {
+                                EFapsSession.LOG.error("transaction is marked to roll back");
+                            } else if (!context.allConnectionClosed()) {
+                                EFapsSession.LOG.error("not all connection to database are closed");
+                            } else {
+                                EFapsSession.LOG.error("transaction manager in undefined status");
+                            }
+                            Context.rollback();
+                        }
+                        if (ok) {
+                            this.userName = uernameTmp;
+                        }
+                    }
                 } catch (final EFapsException e) {
-                    EFapsSession.LOG.error("Problems with setting UserAttribues.", e);
+                    EFapsSession.LOG.error("could not verify person", e);
                 }
-                RegistryManager.registerUserSession(this.userName, getId());
-                ret = true;
+                if (this.userName != null) {
+                    openContext();
+                    try {
+                        setAttribute(EFapsSession.LOGIN_ATTRIBUTE_NAME, this.userName);
+                        this.sessionAttributes.put(UserAttributesSet.CONTEXTMAPKEY, new UserAttributesSet(
+                                        this.userName));
+                    } catch (final EFapsException e) {
+                        EFapsSession.LOG.error("Problems with setting UserAttribues.", e);
+                    }
+                    RegistryManager.registerUserSession(this.userName, getId());
+                    ret = true;
+                    RequestCycle.get().setResponsePage(GatherInfoPage.class);
+                }
             }
         }
         return ret;

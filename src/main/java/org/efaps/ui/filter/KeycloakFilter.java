@@ -64,20 +64,20 @@ public class KeycloakFilter
     }
 
     @Override
-    public void doFilter(final ServletRequest req,
-                         final ServletResponse res,
-                         final FilterChain chain)
+    public void doFilter(final ServletRequest _req,
+                         final ServletResponse _res,
+                         final FilterChain _chain)
         throws IOException, ServletException
     {
-        LOG.debug("Keycloak OIDC Filter");
-        final HttpServletRequest request = (HttpServletRequest) req;
-        final HttpServletResponse response = (HttpServletResponse) res;
+        KeycloakFilter.LOG.debug("Keycloak OIDC Filter");
+        final HttpServletRequest request = (HttpServletRequest) _req;
+        final HttpServletResponse response = (HttpServletResponse) _res;
 
         final OIDCServletHttpFacade facade = new OIDCServletHttpFacade(request, response);
         final KeycloakDeployment deployment = this.deploymentContext.resolveDeployment(facade);
         if (deployment == null || !deployment.isConfigured()) {
             response.sendError(403);
-            LOG.debug("deployment not configured");
+            KeycloakFilter.LOG.debug("deployment not configured");
             return;
         }
 
@@ -93,12 +93,12 @@ public class KeycloakFilter
             }
 
             @Override
-            public void logoutHttpSessions(final List<String> ids)
+            public void logoutHttpSessions(final List<String> _ids)
             {
-                LOG.debug("**************** logoutHttpSessions");
+                KeycloakFilter.LOG.debug("**************** logoutHttpSessions");
                 // System.err.println("**************** logoutHttpSessions");
-                for (final String id : ids) {
-                    LOG.debug("removed idMapper: " + id);
+                for (final String id : _ids) {
+                    KeycloakFilter.LOG.debug("removed idMapper: " + id);
                     KeycloakFilter.this.idMapper.removeSession(id);
                 }
 
@@ -118,7 +118,7 @@ public class KeycloakFilter
                         request, 8443);
         final AuthOutcome outcome = authenticator.authenticate();
         if (outcome == AuthOutcome.AUTHENTICATED) {
-            LOG.debug("AUTHENTICATED");
+            KeycloakFilter.LOG.debug("AUTHENTICATED");
             if (facade.isEnded()) {
                 return;
             }
@@ -127,13 +127,13 @@ public class KeycloakFilter
                 return;
             } else {
                 final HttpServletRequestWrapper wrapper = tokenStore.buildWrapper();
-                chain.doFilter(wrapper, res);
+                _chain.doFilter(wrapper, _res);
                 return;
             }
         }
         final AuthChallenge challenge = authenticator.getChallenge();
         if (challenge != null) {
-            LOG.debug("challenge");
+            KeycloakFilter.LOG.debug("challenge");
             challenge.challenge(facade);
             return;
         }
