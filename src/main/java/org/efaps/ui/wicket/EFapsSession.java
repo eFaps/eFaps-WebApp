@@ -591,14 +591,17 @@ public class EFapsSession
             this.userName = null;
         }
         super.onInvalidate();
-        final HttpServletRequest httpRequest = ((ServletWebRequest) RequestCycle.get().getRequest())
-                        .getContainerRequest();
-        try {
-            httpRequest.logout();
-        } catch (final ServletException e) {
-            EFapsSession.LOG.error("Catched erroror for logout", e);
+        final RequestCycle cycle = RequestCycle.get();
+        if (cycle != null) {
+            final HttpServletRequest httpRequest = ((ServletWebRequest) RequestCycle.get().getRequest())
+                            .getContainerRequest();
+            try {
+                httpRequest.logout();
+            } catch (final ServletException e) {
+                EFapsSession.LOG.error("Catched erroror for logout", e);
+            }
+            invalidateNow();
         }
-        invalidateNow();
     }
 
     @Override

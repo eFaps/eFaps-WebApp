@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.keycloak.adapters.AuthenticatedActionsHandler;
 import org.keycloak.adapters.KeycloakDeployment;
 import org.keycloak.adapters.PreAuthActionsHandler;
@@ -131,11 +132,30 @@ public class KeycloakFilter
                 return;
             }
         }
-        final AuthChallenge challenge = authenticator.getChallenge();
-        if (challenge != null) {
-            KeycloakFilter.LOG.debug("challenge");
-            challenge.challenge(facade);
+        if (request.getQueryString() != null) {
+            final String uri = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
+                            + request.getContextPath();
+            final StringBuilder html = new StringBuilder()
+                            .append("<html> <head>")
+                            .append("<script type=\"text/javascript\" >")
+                            .append("function test4top() {\n")
+                            .append("  if(top!=self) {\n")
+                            .append("    top.location = \"").append(StringEscapeUtils.escapeJavaScript(uri))
+                                .append("\";")
+                            .append("  }\n")
+                            .append("}\n")
+                            .append("</script>\n</head>")
+                            .append("<body  onload=\"test4top()\"></body>")
+                            .append("</html> ");
+            response.getOutputStream().print(html.toString());
             return;
+        } else {
+            final AuthChallenge challenge = authenticator.getChallenge();
+            if (challenge != null) {
+                KeycloakFilter.LOG.debug("challenge");
+                challenge.challenge(facade);
+                return;
+            }
         }
         response.sendError(403);
     }
