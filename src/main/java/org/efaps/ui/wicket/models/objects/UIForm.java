@@ -151,6 +151,7 @@ public class UIForm
     /** The pageposition. */
     private PagePosition pagePosition;
 
+    /** The ui wizard object. */
     private UIWizardObject uiWizardObject;
 
     /**
@@ -402,7 +403,8 @@ public class UIForm
             final IFormElement element = iter2.next().getElement();
             if (element instanceof UIFieldForm) {
                 final String instanceKey = ((UIFieldForm) element).getInstanceKey();
-                if (instanceKey != null) {
+                final TargetMode mode = ((UIFieldForm) element).getMode();
+                if (instanceKey != null && !TargetMode.CREATE.equals(mode)) {
                     final UUID classUUID = ((UIFieldForm) element).getClassificationUUID();
                     uuid2InstanceKey.put(classUUID, instanceKey);
                 }

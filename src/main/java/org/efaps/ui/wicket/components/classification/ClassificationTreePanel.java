@@ -115,9 +115,11 @@ public class ClassificationTreePanel
         private static final long serialVersionUID = 1L;
 
         /**
+         * Instantiates a new ajax submit close link.
+         *
          * @param _wicketId wicket id for this component
          * @param _model model for tihs component
-         * @param _label
+         * @param _label the label
          */
         public AjaxSubmitCloseLink(final String _wicketId,
                                    final IModel<UIClassification> _model,

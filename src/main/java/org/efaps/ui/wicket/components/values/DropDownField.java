@@ -32,7 +32,6 @@ import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.IFormSubmittingComponent;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.efaps.admin.datamodel.ui.UIValue;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
 import org.efaps.api.ci.UIFormFieldProperty;
@@ -229,8 +228,7 @@ public class DropDownField
         }
         setModelObject(getConvertedInput());
         try {
-            this.uiField.setValue(UIValue.get(this.uiField.getValue().getField(), this.uiField.getValue()
-                            .getAttribute(), ((DropDownOption) getDefaultModelObject()).getValue()));
+            this.uiField.setValue(this.uiField.getValue().clone(((DropDownOption) getDefaultModelObject()).getValue()));
         } catch (final CacheReloadException e) {
             DropDownField.LOG.error("EFapsException", e);
         }
@@ -251,7 +249,7 @@ public class DropDownField
      */
     private static List<DropDownOption> getSelectChoices(final Map<Object, Object> _values)
     {
-        final List<DropDownOption> list = new ArrayList<DropDownOption>();
+        final List<DropDownOption> list = new ArrayList<>();
         for (final Entry<Object, Object> entry : _values.entrySet()) {
             list.add(new DropDownOption(String.valueOf(entry.getKey()),
                             String.valueOf(entry.getValue())));
