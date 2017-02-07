@@ -72,7 +72,7 @@ public class TransactionFilter
      * All uris which are not needed filtered by security check (password check)
      * are stored in this set variable.
      */
-    private final Set<String> exludeUris = new HashSet<String>();
+    private final Set<String> exludeUris = new HashSet<>();
 
     /**
      * The string is URI to which a forward must be made if the user is not
@@ -134,7 +134,7 @@ public class TransactionFilter
 
             locale = _request.getLocale();
 
-            final Map<String, String[]> params = new HashMap<String, String[]>(_request.getParameterMap());
+            final Map<String, String[]> params = new HashMap<>(_request.getParameterMap());
 
             context = Context.begin(getLoggedInUser(_request), locale, getContextSessionAttributes(_request), params,
                             null, Context.Inheritance.Inheritable);
@@ -151,13 +151,11 @@ public class TransactionFilter
                 ok = true;
             } finally {
 
-                if (ok && context.allConnectionClosed() && Context.isTMActive()) {
+                if (ok && Context.isTMActive()) {
                     Context.commit();
                 } else {
                     if (Context.isTMMarkedRollback()) {
                         TransactionFilter.LOG.error("transaction is marked to roll back");
-                    } else if (!context.allConnectionClosed()) {
-                        TransactionFilter.LOG.debug("not all connection to database are closed");
                     } else {
                         TransactionFilter.LOG.error("transaction manager in undefined status");
                     }
@@ -181,7 +179,7 @@ public class TransactionFilter
                         TransactionFilter.SESSION_CONTEXT_ATTRIBUTES);
 
         if (map == null) {
-            map = new HashMap<String, Object>();
+            map = new HashMap<>();
             _request.getSession().setAttribute(TransactionFilter.SESSION_CONTEXT_ATTRIBUTES, map);
         }
         // add the user attributes to the call

@@ -306,11 +306,10 @@ public class EFapsSession
                             KeycloakAccount.class.getName());
             if (account != null) {
                 try {
-                    Context context = null;
                     if (Context.isTMActive()) {
-                        context = Context.getThreadContext();
+                        Context.getThreadContext();
                     } else {
-                        context = Context.begin();
+                        Context.begin();
                     }
                     boolean ok = false;
                     final String uernameTmp = account.getPrincipal().getName();
@@ -322,13 +321,11 @@ public class EFapsSession
                             ok = Person.get(uernameTmp) != null;
                         }
                     } finally {
-                        if (ok && context.allConnectionClosed() && Context.isTMActive()) {
+                        if (ok && Context.isTMActive()) {
                             Context.commit();
                         } else {
                             if (Context.isTMMarkedRollback()) {
                                 EFapsSession.LOG.error("transaction is marked to roll back");
-                            } else if (!context.allConnectionClosed()) {
-                                EFapsSession.LOG.error("not all connection to database are closed");
                             } else {
                                 EFapsSession.LOG.error("transaction manager in undefined status");
                             }
@@ -422,12 +419,10 @@ public class EFapsSession
 
         boolean loginOk = false;
         try {
-            Context context = null;
-
             if (Context.isTMActive()) {
-                context = Context.getThreadContext();
+                Context.getThreadContext();
             } else {
-                context = Context.begin();
+                Context.begin();
             }
             boolean ok = false;
 
@@ -443,13 +438,11 @@ public class EFapsSession
                 }
                 ok = true;
             } finally {
-                if (ok && context.allConnectionClosed() && Context.isTMActive()) {
+                if (ok && Context.isTMActive()) {
                     Context.commit();
                 } else {
                     if (Context.isTMMarkedRollback()) {
                         EFapsSession.LOG.error("transaction is marked to roll back");
-                    } else if (!context.allConnectionClosed()) {
-                        EFapsSession.LOG.error("not all connection to database are closed");
                     } else {
                         EFapsSession.LOG.error("transaction manager in undefined status");
                     }

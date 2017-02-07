@@ -159,13 +159,11 @@ public abstract class AbstractAuthenticationFilter
                 ok = true;
             } finally {
 
-                if (ok && context.allConnectionClosed() && Context.isTMActive()) {
+                if (ok && Context.isTMActive()) {
                     Context.commit();
                 } else {
                     if (Context.isTMMarkedRollback()) {
                         AbstractAuthenticationFilter.LOG.error("transaction is marked to roll back");
-                    } else if (!context.allConnectionClosed()) {
-                        AbstractAuthenticationFilter.LOG.error("not all connection to database are closed");
                     } else {
                         AbstractAuthenticationFilter.LOG.error("transaction manager in undefined status");
                     }
