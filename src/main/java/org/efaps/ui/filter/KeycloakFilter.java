@@ -30,6 +30,9 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.wicket.core.util.string.JavaScriptUtils;
+import org.apache.wicket.request.http.WebRequest;
 import org.keycloak.adapters.AuthenticatedActionsHandler;
 import org.keycloak.adapters.KeycloakDeployment;
 import org.keycloak.adapters.PreAuthActionsHandler;
@@ -133,10 +136,22 @@ public class KeycloakFilter
             }
         }
         if (request.getQueryString() != null) {
+            final boolean ajax = BooleanUtils.toBoolean(request.getHeader(WebRequest.HEADER_AJAX)) || BooleanUtils
+                            .toBoolean(request.getParameter(WebRequest.PARAM_AJAX));
+
             final String uri = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
                             + request.getContextPath();
-            final StringBuilder html = new StringBuilder()
-                            .append("<html> <head>")
+            final StringBuilder html = new StringBuilder();
+            if (ajax) {
+                html.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
+                    .append("<ajax-response><evaluate>")
+                    .append(JavaScriptUtils.SCRIPT_CONTENT_PREFIX)
+                    .append("  top.location = \"").append(StringEscapeUtils.escapeJavaScript(uri)).append("\";")
+                    .append(JavaScriptUtils.SCRIPT_CONTENT_SUFFIX)
+                    .append("</evaluate></ajax-response>");
+
+            } else {
+                html.append("<html> <head>")
                             .append("<script type=\"text/javascript\" >")
                             .append("function test4top() {\n")
                             .append("  if(top!=self) {\n")
@@ -147,6 +162,7 @@ public class KeycloakFilter
                             .append("</script>\n</head>")
                             .append("<body  onload=\"test4top()\"></body>")
                             .append("</html> ");
+            }
             response.getOutputStream().print(html.toString());
             return;
         } else {
