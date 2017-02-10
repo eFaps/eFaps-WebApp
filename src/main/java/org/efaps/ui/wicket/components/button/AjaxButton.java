@@ -278,6 +278,7 @@ public abstract class AjaxButton<T>
      * Setter method for instance variable {@link #submit}.
      *
      * @param _submit value for instance variable {@link #submit}
+     * @return the ajax button< t>
      */
     public AjaxButton<T> setSubmit(final boolean _submit)
     {

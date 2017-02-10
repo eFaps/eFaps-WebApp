@@ -23,7 +23,6 @@ import org.apache.wicket.Component;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
@@ -40,7 +39,6 @@ import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.ui.wicket.behaviors.dojo.RequireBehavior;
 import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.button.AjaxButton;
-import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.components.footer.AjaxSubmitCloseButton;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.modalwindow.UpdateParentCallback;
@@ -54,6 +52,8 @@ import org.efaps.ui.wicket.util.DojoClasses;
 import org.efaps.ui.wicket.util.DojoWrapper;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This Page renders a Dialog for Userinterference.<br>
@@ -70,8 +70,12 @@ public class DialogPage
     public static final EFapsContentReference CSS = new EFapsContentReference(DialogPage.class, "DialogPage.css");
 
     /**
-     *
+     * Logger for this class.
      */
+    private static final Logger LOG = LoggerFactory.getLogger(DialogPage.class);
+
+
+    /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
 
     /**
@@ -102,16 +106,13 @@ public class DialogPage
 
             add(new Label("textLabel", DBProperties.getProperty(cmdName + ".Question")).setOutputMarkupId(true));
 
-            add(new Button("submitButton", new AjaxSubmitLink(Button.LINKID, _model, _oids),
-                            DialogPage.getLabel(cmdName, "Submit"), AjaxButton.ICON.ACCEPT.getReference())
-                            .setOutputMarkupId(true));
+            add(new AjaxSubmitBtn("submitButton",  _model, _oids, DialogPage.getLabel(cmdName, "Submit")));
 
-            add(new Button("closeButton", new AjaxCloseLink(Button.LINKID), DialogPage.getLabel(cmdName, "Cancel"),
-                            AjaxButton.ICON.CANCEL.getReference()));
+            add(new AjaxCloseBtn("closeButton", DialogPage.getLabel(cmdName, "Cancel")));
+
             add(new RequireBehavior("dojo/query", "dojo/NodeList-dom"));
         } catch (final EFapsException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            DialogPage.LOG.error("Catched", e);
         }
     }
 
@@ -137,18 +138,14 @@ public class DialogPage
             this.add(new Label("textLabel", DBProperties.getProperty(_value + ".Message")));
         }
         if (_goOn) {
-            final AjaxGoOnLink ajaxGoOnLink = new AjaxGoOnLink(Button.LINKID);
-            this.add(new Button("submitButton", ajaxGoOnLink, DialogPage.getLabel(_value, "Create"),
-                            AjaxButton.ICON.ACCEPT.getReference()));
+            final AjaxGoOnBtn ajaxGoOnLink = new AjaxGoOnBtn("submitButton", DialogPage.getLabel(_value, "Create"));
+            add(ajaxGoOnLink);
         } else {
             this.add(new WebMarkupContainer("submitButton").setVisible(false));
         }
-
-        final AjaxCloseLink ajaxCloseLink = new AjaxCloseLink(Button.LINKID);
-        this.add(new Button("closeButton", ajaxCloseLink, DialogPage.getLabel(_value, "Close"),
-                        AjaxButton.ICON.CANCEL.getReference()));
-
-        ajaxCloseLink.add(new KeyListenerBehavior());
+        final AjaxCloseBtn btn = new AjaxCloseBtn("closeButton", DialogPage.getLabel(_value, "Close"));
+        btn.add(new KeyListenerBehavior());
+        add(btn);
     }
 
     @Override
@@ -181,28 +178,27 @@ public class DialogPage
     /**
      * AjaxLink that closes the ModalWindow this Page was opened in.
      */
-    public class AjaxGoOnLink
-        extends AjaxLink<Object>
+    public class AjaxGoOnBtn
+        extends AjaxButton<Void>
     {
 
         /** Needed for serialization. */
         private static final long serialVersionUID = 1L;
 
         /**
-         * @param _wicketId wicket id of this component
+         * Instantiates a new ajax go on btn.
          *
+         * @param _wicketId wicket id of this component
+         * @param _label the label
          */
-        public AjaxGoOnLink(final String _wicketId)
+        public AjaxGoOnBtn(final String _wicketId,
+                           final String _label)
         {
-            super(_wicketId);
+            super(_wicketId, AjaxButton.ICON.ACCEPT.getReference(), _label);
         }
 
-        /**
-         * @see org.apache.wicket.ajax.markup.html.AjaxLink#onClick(org.apache.wicket.ajax.AjaxRequestTarget)
-         * @param _target AjaxRequestTarget
-         */
         @Override
-        public void onClick(final AjaxRequestTarget _target)
+        public void onRequest(final AjaxRequestTarget _target)
         {
             final AbstractContentPage page = (AbstractContentPage) DialogPage.this.pageReference.getPage();
 
@@ -225,19 +221,24 @@ public class DialogPage
     /**
      * AjaxLink that closes the ModalWindow this Page was opened in.
      */
-    public class AjaxCloseLink
-        extends AjaxLink<Object>
+    public class AjaxCloseBtn
+        extends AjaxButton<Void>
     {
 
         /** Needed for serialization. */
         private static final long serialVersionUID = 1L;
 
         /**
+         * Instantiates a new ajax close btn.
+         *
          * @param _wicketId wicket id of this component
+         * @param _label the label
          */
-        public AjaxCloseLink(final String _wicketId)
+        public AjaxCloseBtn(final String _wicketId,
+                            final String _label)
         {
-            super(_wicketId);
+            super(_wicketId, AjaxButton.ICON.CANCEL.getReference(), _label);
+            setSubmit(false);
         }
 
         /**
@@ -245,7 +246,7 @@ public class DialogPage
          * @param _target request target
          */
         @Override
-        public void onClick(final AjaxRequestTarget _target)
+        public void onRequest(final AjaxRequestTarget _target)
         {
             DialogPage.this.pageReference.getPage().visitChildren(ModalWindowContainer.class,
                             new IVisitor<ModalWindowContainer, Void>()
@@ -273,8 +274,8 @@ public class DialogPage
     /**
      * AjaxLink that submits the Parameters and closes the ModalWindow.
      */
-    public class AjaxSubmitLink
-        extends AjaxLink<ICmdUIObject>
+    public class AjaxSubmitBtn
+        extends AjaxButton<ICmdUIObject>
     {
 
         /** Needed for serialization. */
@@ -291,16 +292,21 @@ public class DialogPage
         private boolean validated = false;
 
         /**
+         * Instantiates a new ajax submit btn.
+         *
          * @param _wicketId wicket id of this component
          * @param _model model for this component
          * @param _oids oids
+         * @param _label the label
          */
-        public AjaxSubmitLink(final String _wicketId,
-                              final IModel<ICmdUIObject> _model,
-                              final String[] _oids)
+        public AjaxSubmitBtn(final String _wicketId,
+                             final IModel<ICmdUIObject> _model,
+                             final String[] _oids,
+                             final String _label)
         {
-            super(_wicketId, _model);
+            super(_wicketId, _model, AjaxButton.ICON.ACCEPT.getReference(), _label);
             this.oids = _oids;
+            setSubmit(false);
         }
 
         /**
@@ -308,7 +314,7 @@ public class DialogPage
          * @param _target request target
          */
         @Override
-        public void onClick(final AjaxRequestTarget _target)
+        public void onRequest(final AjaxRequestTarget _target)
         {
             final ICmdUIObject model = getModelObject();
             try {

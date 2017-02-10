@@ -128,6 +128,12 @@ public class ClassificationTreePanel
             super(_wicketId, _model, AjaxButton.ICON.ACCEPT.getReference(), _label);
         }
 
+        @Override
+        protected boolean getDefaultProcessing()
+        {
+            return false;
+        }
+
         /**
          * @see org.apache.wicket.ajax.markup.html.AjaxLink#onClick(org.apache.wicket.ajax.AjaxRequestTarget)
          * @param _target ajax request target
