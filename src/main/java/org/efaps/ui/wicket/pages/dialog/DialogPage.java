@@ -195,6 +195,7 @@ public class DialogPage
                            final String _label)
         {
             super(_wicketId, AjaxButton.ICON.ACCEPT.getReference(), _label);
+            setSubmit(false);
         }
 
         @Override
