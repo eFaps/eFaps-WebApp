@@ -5,11 +5,11 @@ var profile = (function(){
 
         action: 'release',
 
-        optimize: 'closure',
+    //    optimize: 'closure',
 
-        layerOptimize: 'closure',
+    //    layerOptimize: 'closure',
 
-        cssOptimize: 'comments',
+    //    cssOptimize: 'comments',
 
         packages:[{
             name:"dojo",

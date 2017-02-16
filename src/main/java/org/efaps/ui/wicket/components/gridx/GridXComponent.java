@@ -150,7 +150,7 @@ public class GridXComponent
                             DojoClasses.HeaderDialog, DojoClasses.MoveColumn, DojoClasses.SelectColumn,
                             DojoClasses.SelectCell, DojoClasses.DnDColumn, DojoClasses.HiddenColumns,
                             DojoClasses.GridConfig, DojoClasses.GridSort, DojoClasses.Summary,
-                            DojoClasses.GridQuickFilter,
+                            DojoClasses.GridQuickFilter, DojoClasses.GridSum,
                             DojoClasses.Bar, DojoClasses.Persist, DojoClasses.Filter, DojoClasses.FilterBar,
                             DojoClasses.DropDownButton, DojoClasses.TextBox, DojoClasses.TooltipDialog,
                             DojoClasses.ready, DojoClasses.domGeom, DojoClasses.ColumnLock);
@@ -287,6 +287,7 @@ public class GridXComponent
                     .append("FilterBar,\n")
                     .append("HScroller,\n")
                     .append("HiddenColumns,\n")
+                    .append("GridSum,\n")
                     .append("Persist\n");
 
             if (uiGrid.isShowCheckBoxes()) {

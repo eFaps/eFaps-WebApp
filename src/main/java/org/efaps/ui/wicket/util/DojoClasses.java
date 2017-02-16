@@ -41,6 +41,7 @@ public enum DojoClasses
     GridConfig("efaps/GridConfig", "GridConfig"),
     GridQuickFilter("efaps/GridQuickFilter", "GridQuickFilter"),
     GridSort("efaps/GridSort", "GridSort"),
+    GridSum("efaps/GridSum", "GridSum"),
     HScroller("gridx/modules/HScroller", "HScroller"),
     HeaderDialog("efaps/HeaderDialog", "HeaderDialog"),
     HiddenColumns("gridx/modules/HiddenColumns", "HiddenColumns"),
