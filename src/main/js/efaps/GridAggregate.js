@@ -30,7 +30,7 @@ return declare(_Module, {
         t.loaded.callback();
         t.aspect(g.model, 'onSizeChange', 'refresh');
         t.aspect(g.model, '_onParentSizeChange', 'refresh');
-        t.refresh();
+        t.aspect(g.move.column, 'onMoved', '_onMoved');
     },
 
     destroy: function(){
@@ -161,6 +161,24 @@ return declare(_Module, {
              sumNode.style.minWidth = headerNode.style.minWidth;
              sumNode.style.maxWidth = headerNode.style.maxWidth;
          });
+         t.refresh();
+    },
+
+    _onMoved: function() {
+        var t = this,
+            g = t.grid,
+            sb = ['<table role="presentation" border="0" cellpadding="0" cellspacing="0"><tr>'];
+
+         array.forEach(g._columns, function(col){
+             sb.push('<td id="', col._domId + "-aggr",
+                     '" role="columnsum" aria-readonly="true" tabindex="-1" colid="', col.id,
+                     '" class="gridxCell ',
+                     '" style="width:', col.width, ';min-width:', col.width, ';',
+                     '">', '&nbsp;', '</td>');
+         });
+         sb.push('</tr></table>');
+         t.innerNode.innerHTML = sb.join('');
+         t.refresh();
     }
 });
 });
