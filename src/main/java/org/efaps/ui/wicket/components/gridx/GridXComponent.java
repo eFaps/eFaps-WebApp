@@ -54,6 +54,7 @@ import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.admin.ui.AbstractMenu;
 import org.efaps.admin.ui.Menu;
+import org.efaps.api.ci.UITableFieldProperty;
 import org.efaps.api.ui.FilterBase;
 import org.efaps.api.ui.HRef;
 import org.efaps.db.Context;
@@ -150,7 +151,7 @@ public class GridXComponent
                             DojoClasses.HeaderDialog, DojoClasses.MoveColumn, DojoClasses.SelectColumn,
                             DojoClasses.SelectCell, DojoClasses.DnDColumn, DojoClasses.HiddenColumns,
                             DojoClasses.GridConfig, DojoClasses.GridSort, DojoClasses.Summary,
-                            DojoClasses.GridQuickFilter, DojoClasses.GridSum,
+                            DojoClasses.GridQuickFilter, DojoClasses.GridAggregate,
                             DojoClasses.Bar, DojoClasses.Persist, DojoClasses.Filter, DojoClasses.FilterBar,
                             DojoClasses.DropDownButton, DojoClasses.TextBox, DojoClasses.TooltipDialog,
                             DojoClasses.ready, DojoClasses.domGeom, DojoClasses.ColumnLock);
@@ -170,6 +171,7 @@ public class GridXComponent
                 .append("var structure = [\n");
 
             boolean first = true;
+            boolean aggregate = false;
             int j = 0;
             final Set<Long> checkOutCols = new HashSet<>();
             final Set<Long> linkCols = new HashSet<>();
@@ -246,6 +248,13 @@ public class GridXComponent
                             break;
                     }
                 }
+
+                if (column.getField().containsProperty(UITableFieldProperty.AGGREGATE)) {
+                    aggregate = true;
+                    js.append(", aggregate: '")
+                        .append(column.getField().getProperty(UITableFieldProperty.AGGREGATE))
+                        .append("'");
+                }
                 js.append("}");
                 j++;
             }
@@ -287,13 +296,16 @@ public class GridXComponent
                     .append("FilterBar,\n")
                     .append("HScroller,\n")
                     .append("HiddenColumns,\n")
-                    .append("GridSum,\n")
-                    .append("Persist\n");
+                    .append("Persist");
+
+            if (aggregate) {
+                js.append(",\n GridAggregate\n");
+            }
 
             if (uiGrid.isShowCheckBoxes()) {
                 Collections.addAll(dojoClasses, DojoClasses.IndirectSelect, DojoClasses.RowHeader,
                                 DojoClasses.SelectRow);
-                js.append(", IndirectSelect,\n")
+                js.append(",\n IndirectSelect,\n")
                     .append("SelectRow,\n")
                     .append("RowHeader,\n");
             }

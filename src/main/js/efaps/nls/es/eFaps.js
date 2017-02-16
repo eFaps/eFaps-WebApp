@@ -6,5 +6,7 @@ define({
     confLockColumns: "Bloquear Columnas",
     confSpinnerLabel: "Columnas a bloquear:",
     confLockBtn: "Bloquear Columnas",
-    conUnlockBtn: "Desatar Columnas"
+    conUnlockBtn: "Desatar Columnas",
+
+    aggregateSUM: "Total"
 });

@@ -7,7 +7,7 @@ var profile = (function(){
 
     //    optimize: 'closure',
 
-    //    layerOptimize: 'closure',
+        layerOptimize: false,
 
     //    cssOptimize: 'comments',
 

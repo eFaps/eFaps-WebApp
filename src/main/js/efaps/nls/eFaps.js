@@ -7,7 +7,9 @@ define({root:
     confLockColumns: "Lock Columns",
     confSpinnerLabel: "Columns to lock:",
     confLockBtn: "Lock Columns",
-    conUnlockBtn: "Unlock Columns"
+    conUnlockBtn: "Unlock Columns",
+    aggregateMsg: "${aggregate}: ${value}",
+    aggregateSUM: "SUM"
 }),
 "de": true,
 "es": true
