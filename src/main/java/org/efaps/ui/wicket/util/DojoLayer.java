@@ -37,7 +37,7 @@ public enum DojoLayer
                     DojoClasses.HScroller, DojoClasses.SingleSort, DojoClasses.SyncCache,
                     DojoClasses.HeaderDialog, DojoClasses.MoveColumn, DojoClasses.SelectColumn,
                     DojoClasses.SelectCell, DojoClasses.DnDColumn, DojoClasses.HiddenColumns,
-                    DojoClasses.GridConfig, DojoClasses.GridSort, DojoClasses.Summary,
+                    DojoClasses.GridConfig, DojoClasses.GridSort, DojoClasses.Summary, DojoClasses.GridAggregate,
                     DojoClasses.GridQuickFilter, DojoClasses.Bar, DojoClasses.Persist, DojoClasses.Filter,
                     DojoClasses.FilterBar, DojoClasses.DropDownButton, DojoClasses.TextBox, DojoClasses.TooltipDialog,
                     DojoClasses.ready, DojoClasses.domGeom, DojoClasses.ColumnLock, DojoClasses.MenuBar,

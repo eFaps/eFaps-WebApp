@@ -111,6 +111,7 @@ var profile = (function(){
                     "dijit/form/TextBox",
                     "dijit/registry",
                     "dijit/form/NumberTextBox",
+                    "efaps/GridAggregate",
                     "efaps/GridConfig",
                     "efaps/GridSort",
                     "efaps/GridQuickFilter",
