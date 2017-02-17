@@ -227,11 +227,11 @@ public class ContentPaneBehavior
         return this.jsExecuteable;
     }
 
-
     /**
      * Setter method for instance variable {@link #jsExecuteable}.
      *
      * @param _jsExecuteable value for instance variable {@link #jsExecuteable}
+     * @return the content pane behavior
      */
     public ContentPaneBehavior setJsExecuteable(final boolean _jsExecuteable)
     {

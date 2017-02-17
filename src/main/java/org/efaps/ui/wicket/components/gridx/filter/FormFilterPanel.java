@@ -18,6 +18,7 @@
 package org.efaps.ui.wicket.components.gridx.filter;
 
 import org.apache.commons.lang.RandomStringUtils;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.markup.head.CssHeaderItem;
@@ -30,6 +31,9 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.ResourceReference;
+import org.efaps.admin.ui.Command;
+import org.efaps.admin.ui.field.Field;
+import org.efaps.api.ci.UIFormFieldProperty;
 import org.efaps.api.ui.IMapFilter;
 import org.efaps.ui.wicket.behaviors.dojo.AbstractDojoBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior;
@@ -41,6 +45,7 @@ import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.util.DojoClasses;
 import org.efaps.ui.wicket.util.DojoWrapper;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * TODO comment!
@@ -64,10 +69,12 @@ public class FormFilterPanel
      * @param _wicketId the wicket id
      * @param _model the model
      * @param _uiGrid the ui grid
+     * @throws CacheReloadException
      */
     public FormFilterPanel(final String _wicketId,
                            final IModel<IMapFilter> _model,
                            final UIGrid _uiGrid)
+        throws CacheReloadException
     {
         super(_wicketId);
         final LazyIframe frame = new LazyIframe("content", new IFrameProvider()
@@ -95,6 +102,10 @@ public class FormFilterPanel
         frame.add(new LoadFormBehavior());
         frame.setDefaultModel(_model);
         this.add(frame);
+
+        final String cmdName = Field.get(_model.getObject().getFieldId()).getProperty(UIFormFieldProperty.FILTER_CMD);
+        final Command cmd = Command.get(cmdName);
+        this.add(AttributeModifier.append("style", "width:" + cmd.getWindowWidth() + "px"));
     }
 
     @Override

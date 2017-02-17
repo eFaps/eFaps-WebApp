@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ package org.efaps.ui.wicket.pages.content.grid.filter;
 
 import org.apache.wicket.PageReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.ui.Command;
@@ -81,7 +82,7 @@ public class FormFilterPage
         add(formContainer);
         FormPage.updateFormContainer(formPage, formContainer, uiform);
 
-        formContainer.add(new AjaxButton<IMapFilter>("btn", _model, AjaxButton.ICON.ACCEPT.getReference())
+        add(new AjaxButton<IMapFilter>("btn", _model, AjaxButton.ICON.ACCEPT.getReference())
         {
 
             /** The Constant serialVersionUID. */
@@ -106,6 +107,12 @@ public class FormFilterPage
                 } catch (final EFapsException e) {
                     FormFilterPage.LOG.error("Catched error: ", e);
                 }
+            }
+
+            @Override
+            public Form<?> getForm()
+            {
+                return formContainer;
             }
         });
     }
