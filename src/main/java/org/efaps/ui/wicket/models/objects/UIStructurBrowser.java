@@ -96,6 +96,7 @@ import org.slf4j.LoggerFactory;
  */
 public class UIStructurBrowser
     extends AbstractUIHeaderObject
+    implements IPageObject
 {
     /**
      * Enum is used to set for this UIStructurBrowser which status of execution
@@ -277,6 +278,9 @@ public class UIStructurBrowser
      * to initialize correctly the Tree for the UserInterface.
      */
     private final Set<UIStructurBrowser> expandedBrowsers = new HashSet<>();
+
+    /** The page position. */
+    private PagePosition pagePosition;
 
     /**
      * Standard constructor, if called this StructurBrowserModel will be defined
@@ -1361,6 +1365,32 @@ public class UIStructurBrowser
     protected void setLevel(final int _level)
     {
         this.level = _level;
+    }
+
+    @Override
+    public PagePosition getPagePosition()
+    {
+        final PagePosition ret;
+        if (this.pagePosition == null) {
+            //TODO remove
+            UIStructurBrowser.LOG.error("MISSING PAGEPOSITION!!!");
+            ret = PagePosition.CONTENT;
+        } else {
+            ret = this.pagePosition;
+        }
+        return ret;
+    }
+
+    /**
+     * Setter method for instance variable {@link #pagePosition}.
+     *
+     * @param _pagePosition value for instance variable {@link #pagePosition}
+     * @return the UI form
+     */
+    public UIStructurBrowser setPagePosition(final PagePosition _pagePosition)
+    {
+        this.pagePosition = _pagePosition;
+        return this;
     }
 
     /**

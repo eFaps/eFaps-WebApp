@@ -182,7 +182,9 @@ public class ModalWindowContainer
                 } else if (modelObject instanceof UITable) {
                     page = new TablePage(Model.of((UITable) modelObject));
                 } else if (modelObject instanceof UIStructurBrowser) {
-                    page = new StructurBrowserPage(Model.of((UIStructurBrowser) modelObject));
+                    final UIStructurBrowser uiStrBrws = (UIStructurBrowser) modelObject;
+                    uiStrBrws.resetModel();
+                    page = new StructurBrowserPage(Model.of(uiStrBrws));
                 } else {
                     ModalWindowContainer.LOG.error("NO PAGE");
                     page = new UnexpectedErrorPage();

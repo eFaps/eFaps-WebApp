@@ -39,6 +39,7 @@ import org.efaps.ui.wicket.models.objects.PagePosition;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIGrid;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
+import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.grid.GridPage;
@@ -95,8 +96,9 @@ public class LinkItem
             if (command.getTargetTable() != null) {
                 final WebPage page;
                 if (command.getTargetStructurBrowserField() != null) {
-                    page = new StructurBrowserPage(model.getCommandUUID(), model.getInstanceKey(), getPage()
-                                    .getPageReference());
+                    final UIStructurBrowser uiStrBrws = new UIStructurBrowser(model.getCommandUUID(),
+                                    model.getInstanceKey()).setPagePosition(pagePosition);
+                    page = new StructurBrowserPage(Model.of(uiStrBrws), getPage().getPageReference());
                 } else {
                     if ("GridX".equals(Configuration.getAttribute(ConfigAttribute.TABLEDEFAULTTYPECONTENT))) {
                         page = new GridPage(Model.of(UIGrid.get(command.getUUID(), pagePosition)));
