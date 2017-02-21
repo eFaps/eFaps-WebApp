@@ -209,9 +209,17 @@ public class FormContainer
             if (isMultiPart() && getRequest() instanceof MultipartServletWebRequest) {
                 for (final Entry<String, List<FileItem>> entry : ((MultipartServletWebRequest) getRequest()).getFiles()
                                 .entrySet()) {
+                    int i = -1;
+                    if (entry.getValue().size() > 1) {
+                        i = 0;
+                    }
                     for (final FileItem fileItem : entry.getValue()) {
-                        final FileParameter parameter = new FileParameter(entry.getKey(), fileItem);
-                        Context.getThreadContext().getFileParameters().put(entry.getKey(), parameter);
+                        final String key = i > -1 ? (entry.getKey() + "_" + i) : entry.getKey();
+                        final FileParameter parameter = new FileParameter(key, fileItem);
+                        Context.getThreadContext().getFileParameters().put(key, parameter);
+                        if (i > -1) {
+                            i++;
+                        }
                     }
                 }
 

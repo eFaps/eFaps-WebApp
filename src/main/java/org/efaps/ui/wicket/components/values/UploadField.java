@@ -18,6 +18,7 @@
 package org.efaps.ui.wicket.components.values;
 
 import org.apache.wicket.extensions.ajax.markup.html.form.upload.UploadProgressBar;
+import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
@@ -46,14 +47,17 @@ public class UploadField
      * Instantiates a new upload field.
      *
      * @param _wicketId the wicket id
+     * @param _model the model
+     * @param _multiple the multiple
      */
     public UploadField(final String _wicketId,
-                       final IModel<AbstractUIField> _model)
+                       final IModel<AbstractUIField> _model,
+                       final boolean _multiple)
     {
         super(_wicketId, _model);
         final Form<Void> form = new Form<>("form");
         add(form);
-        final FileUploadField upload = new FileUploadField("upload"){
+        final FileUploadField upload = new FileUploadField("upload") {
 
             /** The Constant serialVersionUID. */
             private static final long serialVersionUID = 1L;
@@ -63,7 +67,16 @@ public class UploadField
             {
                 return getFieldConfig().getName();
             }
-        } ;
+
+            @Override
+            protected void onComponentTag(final ComponentTag _tag)
+            {
+                super.onComponentTag(_tag);
+                if (_multiple) {
+                    _tag.put("multiple", "multiple");
+                }
+            }
+        };
         form.add(upload);
         form.add(new UploadProgressBar("progress", form, upload));
         this.fieldConfig = _model.getObject().getFieldConfiguration();

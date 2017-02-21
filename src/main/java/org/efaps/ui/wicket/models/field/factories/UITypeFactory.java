@@ -104,7 +104,10 @@ public final class UITypeFactory
                 ret = new NumberField(_wicketId, Model.of(_uiField), _uiField.getFieldConfiguration());
                 break;
             case UPLOAD:
-                ret = new UploadField(_wicketId, Model.of(_uiField));
+                ret = new UploadField(_wicketId, Model.of(_uiField), false);
+                break;
+            case UPLOADMULTIPLE:
+                ret = new UploadField(_wicketId, Model.of(_uiField), true);
                 break;
             default:
                 break;
