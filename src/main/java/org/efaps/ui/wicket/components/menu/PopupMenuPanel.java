@@ -108,7 +108,8 @@ public class PopupMenuPanel
                     if (uiItem.getImage() == null) {
                         html.append("<div class=\"eFapsMenuImagePlaceHolder\">").append("&nbsp;</div>");
                     } else {
-                        html.append("<img src=\"/..").append(uiItem.getImage()).append("\" class=\"eFapsMenuImage\"/>");
+                        html.append("<img src=\"").append(EFapsContentReference.getImageURL(uiItem.getImage())).append(
+                                        "\" class=\"eFapsMenuImage\"/>");
                     }
                 }
                 html.append("<span class=\"eFapsMenuLabel\">").append(uiItem.getLabel()).append("</span>");
