@@ -35,6 +35,7 @@ public enum DojoClasses
     DnDSource("dojo/dnd/Source", "DnDSource"),
     DropDownButton("dijit/form/DropDownButton", "DropDownButton"),
     DropDownMenu("dijit/DropDownMenu", "DropDownMenu"),
+    DialogX("dojox/widget/Dialog", " Dialog"),
     Filter("gridx/modules/Filter", "Filter"),
     FilterBar("gridx/modules/filter/FilterBar", "FilterBar"),
     Grid("gridx/Grid", "Grid"),

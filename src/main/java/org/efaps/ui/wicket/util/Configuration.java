@@ -208,7 +208,11 @@ public final class Configuration
                         "Class name of the esjp to be invoked for printing GridX."),
         /** */
         GRIDCHECKOUTESJP(false, true, "GridXCheckout", "org.efaps.esjp.common.file.FileCheckout", String.class,
-                        "Class name of the esjp to be invoked for checkout in GridX.");
+                        "Class name of the esjp to be invoked for checkout in GridX."),
+
+        /** */
+        HELPSNIPPROV(false, true, "HelpSnipplet", "org.efaps.esjp.common.help.HelpProvider", String.class,
+                        "Class name of the esjp to be invoked to create the html snipplet for Help.");
 
         /**
          * Stores the key for this Attribute..

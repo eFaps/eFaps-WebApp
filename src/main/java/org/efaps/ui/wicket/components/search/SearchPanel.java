@@ -151,7 +151,7 @@ public class SearchPanel
                         .append("around: dom.byId('").append(form.getMarkupId()).append("')")
                         .append("});");
                     _target.appendJavaScript(DojoWrapper.require(js, DojoClasses.TooltipDialog, DojoClasses.popup,
-                                    DojoClasses.dom,DojoClasses.registry, DojoClasses.win, DojoClasses.baseWindow,
+                                    DojoClasses.dom, DojoClasses.registry, DojoClasses.win, DojoClasses.baseWindow,
                                     DojoClasses.query, DojoClasses.domConstruct, DojoClasses.NodeListDom));
                 }
             }

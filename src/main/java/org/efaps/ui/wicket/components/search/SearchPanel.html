@@ -25,7 +25,8 @@
         <span id="searchIndicator" style="display: none;"></span>
         <span wicket:id="result"></span>
         <script type="text/javascript">
-require(['dijit/popup',
+ require(['efaps/baseLayer'],function() {
+        require(['dijit/popup',
          'dijit/registry',
          'dojo/_base/window',
          'dojo/window',
@@ -85,6 +86,7 @@ require(['dijit/popup',
              }
            });
          });
+ });
         </script>
     </wicket:panel>
 </html>
