@@ -150,7 +150,7 @@ public class RadioField
         final String ret;
         if (getFieldConfig().hasProperty(UIFormFieldProperty.RADIO_ROW_LENGTH)) {
             final int rowLength = Integer.parseInt(getFieldConfig().getProperty(UIFormFieldProperty.RADIO_ROW_LENGTH));
-            if (rowLength < 0 ||_index % rowLength == 0) {
+            if (rowLength < 0 || _index + 1 < rowLength || _index % rowLength == 0) {
                 ret = "";
             } else {
                 ret = getSuffix();
@@ -162,7 +162,7 @@ public class RadioField
     }
 
     /**
-     * The renderer for this checkbox.
+     * The renderer for this checkbo
      */
     public final class ChoiceRenderer
         implements IChoiceRenderer<RadioOption>
