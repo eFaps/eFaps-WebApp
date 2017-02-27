@@ -475,10 +475,12 @@ public class GridXComponent
 
             ret.append("var pMenuBar = new MenuBar({});\n");
             for (final AbstractCommand child : uiGrid.getCommand().getTargetMenu().getCommands()) {
-                if (child instanceof AbstractMenu) {
-                    ret.append(getSubMenu((AbstractMenu) child, "pMenuBar"));
-                } else {
-                    ret.append("pMenuBar.addChild(").append(getMenuItem(child, true)).append(");\n");
+                if (child.hasAccess(uiGrid.getCommand().getTargetMode(), uiGrid.getInstance())) {
+                    if (child instanceof AbstractMenu) {
+                        ret.append(getSubMenu((AbstractMenu) child, "pMenuBar"));
+                    } else {
+                        ret.append("pMenuBar.addChild(").append(getMenuItem(child, true)).append(");\n");
+                    }
                 }
             }
         }
@@ -491,21 +493,25 @@ public class GridXComponent
      * @param _menu the menu
      * @param _parent the parent
      * @return the sub menu
+     * @throws EFapsException on error
      */
     protected CharSequence getSubMenu(final AbstractMenu _menu,
                                       final String _parent)
+        throws EFapsException
     {
         final String var = RandomStringUtils.randomAlphabetic(4);
         final StringBuilder js = new StringBuilder();
         js.append("var ").append(var).append(" = new DropDownMenu({});\n");
-
+        final UIGrid uiGrid = (UIGrid) getDefaultModelObject();
         for (final AbstractCommand child : _menu.getCommands()) {
-            if (child instanceof AbstractMenu) {
-                js.append(getSubMenu((AbstractMenu) child, var));
-            } else {
-                js.append(var).append(".addChild(")
-                    .append(getMenuItem(child, false))
-                    .append(");\n");
+            if (child.hasAccess(uiGrid.getCommand().getTargetMode(), uiGrid.getInstance())) {
+                if (child instanceof AbstractMenu) {
+                    js.append(getSubMenu((AbstractMenu) child, var));
+                } else {
+                    js.append(var).append(".addChild(")
+                        .append(getMenuItem(child, false))
+                        .append(");\n");
+                }
             }
         }
         js.append(_parent).append(".addChild(new PopupMenuBarItem({\n")
