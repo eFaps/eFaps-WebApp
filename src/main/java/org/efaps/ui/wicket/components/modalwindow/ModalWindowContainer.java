@@ -180,7 +180,9 @@ public class ModalWindowContainer
                     uiForm.resetModel();
                     page = new FormPage(Model.of(uiForm));
                 } else if (modelObject instanceof UITable) {
-                    page = new TablePage(Model.of((UITable) modelObject));
+                    final UITable uiTable = (UITable) modelObject;
+                    uiTable.resetModel();
+                    page = new TablePage(Model.of(uiTable));
                 } else if (modelObject instanceof UIStructurBrowser) {
                     final UIStructurBrowser uiStrBrws = (UIStructurBrowser) modelObject;
                     uiStrBrws.resetModel();

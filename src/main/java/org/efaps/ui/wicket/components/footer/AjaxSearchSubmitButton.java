@@ -84,7 +84,7 @@ public class AjaxSearchSubmitButton
                 getRequestCycle().setResponsePage(page);
             } else {
                 final UITable newTable = new UITable(uiObject.getCommandUUID(), uiObject.getInstanceKey(), uiObject
-                                .getOpenerId());
+                                .getOpenerId()).setPagePosition(((IPageObject) uiObject).getPagePosition());
                 final UIWizardObject wizard = new UIWizardObject(newTable);
                 uiObject.setWizard(wizard);
                 wizard.addParameters((IWizardElement) uiObject, Context.getThreadContext().getParameters());
