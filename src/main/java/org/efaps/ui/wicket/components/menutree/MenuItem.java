@@ -39,6 +39,8 @@ import org.efaps.ui.wicket.models.objects.PagePosition;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIGrid;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
+import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
+import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.grid.GridPage;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
@@ -181,20 +183,24 @@ public class MenuItem
             try {
                 if (menuItem.getCommand().getTargetTable() != null) {
                     if (menuItem.getCommand().getTargetStructurBrowserField() != null) {
-                        page = new StructurBrowserPage(menuItem.getCommandUUID(),
-                                        menuItem.getInstanceKey(), getPage().getPageReference());
+                        final UIStructurBrowser uiStrBrws = new UIStructurBrowser(menuItem.getCommandUUID(),
+                                        menuItem.getInstanceKey())
+                                                        .setPagePosition(PagePosition.TREE);
+
+                        page = new StructurBrowserPage(Model.of(uiStrBrws), getPage().getPageReference());
                     } else {
                         if ("GridX".equals(Configuration.getAttribute(ConfigAttribute.TABLEDEFAULTTYPETREE))) {
                             page = new GridPage(Model.of(UIGrid.get(menuItem.getCommandUUID(), PagePosition.TREE)
                                             .setCallInstance(menuItem.getInstance())));
                         } else {
-                            page = new TablePage(menuItem.getCommandUUID(), menuItem.getInstanceKey(), getPage()
-                                        .getPageReference());
+                            final UITable uiTable = new UITable(menuItem.getCommandUUID(), menuItem.getInstanceKey())
+                                            .setPagePosition(PagePosition.TREE);
+                            page = new TablePage(Model.of(uiTable));
                         }
                     }
                 } else {
-                    final UIForm uiForm = new UIForm(menuItem.getCommandUUID(),  menuItem.getInstanceKey())
-                                    .setPagePosition(PagePosition.TREE) ;
+                    final UIForm uiForm = new UIForm(menuItem.getCommandUUID(), menuItem.getInstanceKey())
+                                    .setPagePosition(PagePosition.TREE);
                     page = new FormPage(Model.of(uiForm), getPage().getPageReference());
                 }
             } catch (final EFapsException e) {
