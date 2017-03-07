@@ -193,7 +193,11 @@ public final class HRefFactory
                     if (((IWizardElement) _uiField.getParent()).isWizardCall()) {
                         final IWizardElement pageObj = ((IWizardElement) _uiField
                                         .getParent()).getUIWizardObject().getWizardElement().get(0);
-                        isInPopUp = Target.POPUP.equals(((ICmdUIObject) pageObj).getCommand().getTarget());
+                        if (pageObj instanceof IPageObject) {
+                            isInPopUp = PagePosition.POPUP.equals(((IPageObject) pageObj).getPagePosition());
+                        } else {
+                            isInPopUp = Target.POPUP.equals(((ICmdUIObject) pageObj).getCommand().getTarget());
+                        }
                     }
                 }
 

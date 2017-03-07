@@ -20,11 +20,8 @@
 
 package org.efaps.ui.wicket.pages.content;
 
-import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.ajax.IAjaxIndicatorAware;
-import org.apache.wicket.markup.ComponentTag;
-import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -37,6 +34,7 @@ import org.efaps.ui.wicket.behaviors.SetMessageStatusBehavior;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.footer.FooterPanel;
 import org.efaps.ui.wicket.components.heading.HeadingPanel;
+import org.efaps.ui.wicket.components.help.HelpLink;
 import org.efaps.ui.wicket.components.menu.MenuBarPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
@@ -47,7 +45,6 @@ import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.models.objects.UISearchItem;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
-import org.efaps.ui.wicket.pages.help.HelpPage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
@@ -163,6 +160,7 @@ public abstract class AbstractContentPage
      * @param _form FormContainer
      * @throws EFapsException on error
      */
+    @SuppressWarnings("unchecked")
     protected void addComponents(final FormContainer _form)
         throws EFapsException
     {
@@ -190,31 +188,7 @@ public abstract class AbstractContentPage
                                             .getUUID(), uiObject.getInstanceKey()));
         }
         add(new MenuBarPanel("menu", model));
-        final WebMarkupContainer exLink;
-        if (HelpPage.hasHelp(uiObject.getCommand().getId())) {
-            exLink = new WebMarkupContainer("help")
-            {
-
-                /** The Constant serialVersionUID. */
-                private static final long serialVersionUID = 1L;
-
-                @Override
-                public void onComponentTagBody(final MarkupStream _markupStream,
-                                               final ComponentTag _tag)
-                {
-                    super.onComponentTag(_tag);
-                    replaceComponentTagBody(_markupStream, _tag, DBProperties.getProperty(
-                                    "org.efaps.ui.wicket.pages.content.AbstractContentPage.HelpLink"));
-                }
-            };
-            exLink.add(AttributeModifier.append("onclick", "top.eFaps.help('" + uiObject.getCommand().getId() + "')"));
-            exLink.add(AttributeModifier.append("class", "eFapsHelpLink"));
-
-        } else {
-            exLink = new WebMarkupContainer("help");
-            exLink.setVisible(false);
-        }
-        add(exLink);
+        add(new HelpLink("help", Model.of(uiObject.getCommand().getId())));
         final WebMarkupContainer footerpanel;
         if (uiObject.isCreateMode() || uiObject.isEditMode() || uiObject.isSearchMode()
                         || uiObject.isOpenedByPicker()) {

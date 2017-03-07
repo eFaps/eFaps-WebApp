@@ -33,7 +33,6 @@ import org.apache.wicket.ajax.attributes.AjaxRequestAttributes.Method;
 import org.apache.wicket.ajax.attributes.CallbackParameter;
 import org.apache.wicket.ajax.attributes.ThrottlingSettings;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.devutils.debugbar.DebugBar;
 import org.apache.wicket.event.IEvent;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
@@ -53,7 +52,6 @@ import org.apache.wicket.protocol.ws.api.WebSocketBehavior;
 import org.apache.wicket.protocol.ws.api.event.WebSocketPushPayload;
 import org.apache.wicket.protocol.ws.api.message.ConnectedMessage;
 import org.apache.wicket.protocol.ws.api.message.IWebSocketPushMessage;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.StringValue;
 import org.apache.wicket.util.time.Duration;
 import org.efaps.admin.EFapsSystemConfiguration;
@@ -74,6 +72,7 @@ import org.efaps.ui.wicket.behaviors.dojo.MessageListenerBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.RequireBehavior;
 import org.efaps.ui.wicket.components.LazyIframe;
 import org.efaps.ui.wicket.components.LazyIframe.IFrameProvider;
+import org.efaps.ui.wicket.components.help.ShowHelpBehavior;
 import org.efaps.ui.wicket.components.menu.LinkItem;
 import org.efaps.ui.wicket.components.menu.MenuBarPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
@@ -87,13 +86,10 @@ import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.dashboard.DashboardPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.pages.error.UnexpectedErrorPage;
-import org.efaps.ui.wicket.pages.help.HelpPage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
-import org.efaps.ui.wicket.util.DojoClasses;
-import org.efaps.ui.wicket.util.DojoWrapper;
 import org.efaps.util.EFapsBaseException;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
@@ -192,9 +188,7 @@ public class MainPage
 
         add(new RequireBehavior("dojo/dom", "dojo/_base/window"));
         add(new PreLoaderPanel("preloader"));
-
         add(new OpenWindowOnLoadBehavior());
-
         add(new ShowHelpBehavior());
 
         final WebMarkupContainer borderPanel = new WebMarkupContainer("borderPanel");
@@ -535,38 +529,6 @@ public class MainPage
             } catch (final EFapsBaseException e) {
                 MainPage.LOG.error("Catched error.", e);
             }
-        }
-    }
-
-    /**
-     * The Class ShowHelpBehavior.
-     */
-    public class ShowHelpBehavior
-        extends Behavior
-    {
-
-        /** The Constant serialVersionUID. */
-        private static final long serialVersionUID = 1L;
-
-        @Override
-        public void renderHead(final Component _component,
-                               final IHeaderResponse _response)
-        {
-            super.renderHead(_component, _response);
-            final StringBuilder fnct = new StringBuilder()
-                    .append("var eHDialog = new Dialog({")
-                    .append(" id: 'eFapsHelpDialog'")
-                    .append("});")
-                    .append("eFaps.help = function(_key){")
-                    .append("eHDialog.href=\"").append(urlFor(HelpPage.class, new PageParameters()))
-                    .append("?p=\" + _key").append(";")
-                    .append("eHDialog.show();")
-                    .append("};");
-
-            final StringBuilder js = new StringBuilder().append("var eFaps = eFaps || {};")
-                            .append(DojoWrapper.require(fnct, DojoClasses.popup, DojoClasses.DialogX));
-
-            _response.render(JavaScriptHeaderItem.forScript(js, ShowHelpBehavior.class.getSimpleName()));
         }
     }
 }

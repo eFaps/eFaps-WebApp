@@ -21,13 +21,8 @@ import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.efaps.admin.program.esjp.EFapsClassLoader;
-import org.efaps.api.ui.IHelpProvider;
+import org.efaps.ui.wicket.components.help.HelpUtil;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
-import org.efaps.ui.wicket.util.Configuration;
-import org.efaps.util.EFapsBaseException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The Class HelpPage.
@@ -42,11 +37,6 @@ public class HelpPage
     private static final long serialVersionUID = 1L;
 
     /**
-     * Logging instance used in this class.
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(HelpPage.class);
-
-    /**
      * Instantiates a new help page.
      *
      * @param _parameters the parameters
@@ -54,16 +44,8 @@ public class HelpPage
     public HelpPage(final PageParameters _parameters)
     {
         final StringBuilder html = new StringBuilder();
-        try {
-            final long cmdId = _parameters.get("p").toLong();
-            final Class<?> clazz = Class.forName(Configuration.getAttribute(Configuration.ConfigAttribute.HELPSNIPPROV),
-                            false, EFapsClassLoader.getInstance());
-            final IHelpProvider provider = (IHelpProvider) clazz.newInstance();
-            html.append(provider.getHelp(cmdId));
-        } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException
-                        | EFapsBaseException e) {
-            HelpPage.LOG.error("ClassNotFoundException", e);
-        }
+        final long cmdId = _parameters.get("p").toLong();
+        html.append(HelpUtil.getHelp(cmdId));
 
         final WebComponent markup = new WebComponent("helpContent")
         {
@@ -80,26 +62,5 @@ public class HelpPage
             }
         };
         add(markup);
-    }
-
-    /**
-     * Checks for help.
-     *
-     * @param _cmdId the cmd id
-     * @return true, if successful
-     */
-    public static boolean hasHelp(final Long _cmdId)
-    {
-        boolean ret = false;
-        try {
-            final Class<?> clazz = Class.forName(Configuration.getAttribute(Configuration.ConfigAttribute.HELPSNIPPROV),
-                            false, EFapsClassLoader.getInstance());
-            final IHelpProvider provider = (IHelpProvider) clazz.newInstance();
-            ret = provider.hasHelp(_cmdId);
-        } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException
-                        | EFapsBaseException e) {
-            HelpPage.LOG.error("ClassNotFoundException", e);
-        }
-        return ret;
     }
 }
