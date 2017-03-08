@@ -45,16 +45,19 @@ public class ShowHelpBehavior
     {
         super.renderHead(_component, _response);
         final StringBuilder fnct = new StringBuilder()
-                .append("var eHDialog = new Dialog({")
-                .append(" id: 'eFapsHelpDialog'")
-                .append("});")
-                .append("eFaps.help = function(_key){")
-                .append("eHDialog.href=\"").append(_component.urlFor(HelpPage.class, new PageParameters()))
-                .append("?p=\" + _key").append(";")
-                .append("eHDialog.show();")
-                .append("};");
+                .append("var eHDialog = new Dialog({\n")
+                .append(" id: 'eFapsHelpDialog',\n")
+                .append(" sizeToViewport: true, \n")
+                .append(" viewportPadding: 50 \n")
+                .append("});\n")
+                .append("eFaps.help = function(_key){\n")
+                .append("eHDialog.set('href',\"").append(_component.urlFor(HelpPage.class, new PageParameters()))
+                .append("?p=\" + _key").append(");\n")
+                .append("eHDialog.refresh();\n")
+                .append("eHDialog.show();\n")
+                .append("};\n");
 
-        final StringBuilder js = new StringBuilder().append("var eFaps = eFaps || {};")
+        final StringBuilder js = new StringBuilder().append("var eFaps = eFaps || {};\n")
                         .append(DojoWrapper.require(fnct, DojoClasses.popup, DojoClasses.DialogX));
 
         _response.render(JavaScriptHeaderItem.forScript(js, ShowHelpBehavior.class.getSimpleName()));
