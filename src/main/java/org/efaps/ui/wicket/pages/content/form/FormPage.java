@@ -30,6 +30,7 @@ import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.classification.ClassificationPathPanel;
 import org.efaps.ui.wicket.components.form.FormPanel;
+import org.efaps.ui.wicket.components.gridx.GridXPanel;
 import org.efaps.ui.wicket.components.heading.HeadingPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.table.TablePanel;
@@ -38,6 +39,7 @@ import org.efaps.ui.wicket.components.tree.StructurBrowserTreeTablePanel;
 import org.efaps.ui.wicket.models.field.IHidden;
 import org.efaps.ui.wicket.models.objects.UIClassification;
 import org.efaps.ui.wicket.models.objects.UIFieldForm;
+import org.efaps.ui.wicket.models.objects.UIFieldGrid;
 import org.efaps.ui.wicket.models.objects.UIFieldStructurBrowser;
 import org.efaps.ui.wicket.models.objects.UIFieldTable;
 import org.efaps.ui.wicket.models.objects.UIForm;
@@ -132,11 +134,11 @@ public class FormPage
         }
 
         final FormContainer form = new FormContainer("form");
-        add(form);
+        this.add(form);
         form.add(AttributeModifier.append("class", uiForm.getMode().toString()));
         if (uiForm.isMultiPart() && (uiForm.isCreateMode() || uiForm.isEditMode())) {
             form.setMultiPart(true);
-            form.setMaxSize(getApplication().getApplicationSettings().getDefaultMaximumUploadSize());
+            form.setMaxSize(this.getApplication().getApplicationSettings().getDefaultMaximumUploadSize());
         }
 
         super.addComponents(form);
@@ -172,58 +174,72 @@ public class FormPage
         final RepeatingView elementRepeater = new RepeatingView("elementRepeater");
         _form.add(elementRepeater);
         for (final Element element : _uiForm.getElements()) {
-            if (element.getType().equals(ElementType.FORM)) {
-                elementRepeater.add(new FormPanel(elementRepeater.newChildId(), _page, Model.of(_uiForm),
-                                (FormElement) element.getElement(), _form));
-            } else if (element.getType().equals(ElementType.HEADING)) {
-                final UIHeading headingmodel = (UIHeading) element.getElement();
-                elementRepeater.add(new HeadingPanel(elementRepeater.newChildId(), Model.of(headingmodel)));
-            } else if (element.getType().equals(ElementType.TABLE)) {
-                i++;
-                final UIFieldTable fieldTable = (UIFieldTable) element.getElement();
-                fieldTable.setTableId(i);
-                final TablePanel table = new TablePanel(elementRepeater.newChildId(),
-                                Model.of(fieldTable), _page);
-                final HeaderPanel header = new HeaderPanel(elementRepeater.newChildId(), table);
-                elementRepeater.add(header);
-                elementRepeater.add(table);
-            } else if (element.getType().equals(ElementType.CLASSIFICATION)) {
-                elementRepeater.add(new ClassificationPathPanel(elementRepeater.newChildId(),
-                                Model.of((UIClassification) element.getElement())));
-            } else if (element.getType().equals(ElementType.STRUCBRWS)) {
-                i++;
-                final UIFieldStructurBrowser strBrwsr = (UIFieldStructurBrowser) element.getElement();
-                strBrwsr.setTableId(i);
-                final StructurBrowserTreeTablePanel strucBrws = new StructurBrowserTreeTablePanel(
-                                elementRepeater.newChildId(), Model.of(strBrwsr));
-                elementRepeater.add(strucBrws);
-            } else if (element.getType().equals(ElementType.SUBFORM)) {
-                final UIFieldForm uiFieldForm = (UIFieldForm) element.getElement();
-                if (!uiFieldForm.isInitialized()) {
-                    if (uiFieldForm.getInstance() == null && uiFieldForm.isCreateMode()) {
-                        uiFieldForm.setInstanceKey(_uiForm.getInstanceKey());
+            switch (element.getType()) {
+                case FORM:
+                    elementRepeater.add(new FormPanel(elementRepeater.newChildId(), _page, Model.of(_uiForm),
+                                    (FormElement) element.getElement(), _form));
+                    break;
+                case HEADING:
+                    final UIHeading headingmodel = (UIHeading) element.getElement();
+                    elementRepeater.add(new HeadingPanel(elementRepeater.newChildId(), Model.of(headingmodel)));
+                    break;
+                case TABLE:
+                    i++;
+                    final UIFieldTable fieldTable = (UIFieldTable) element.getElement();
+                    fieldTable.setTableId(i);
+                    final TablePanel table = new TablePanel(elementRepeater.newChildId(),
+                                    Model.of(fieldTable), _page);
+                    final HeaderPanel header = new HeaderPanel(elementRepeater.newChildId(), table);
+                    elementRepeater.add(header);
+                    elementRepeater.add(table);
+                    break;
+                case GRID:
+                    final UIFieldGrid grid = (UIFieldGrid) element.getElement();
+                    final GridXPanel gridPanel = new GridXPanel(elementRepeater.newChildId(), Model.of(grid));
+                    elementRepeater.add(gridPanel);
+                    break;
+                case CLASSIFICATION:
+                    elementRepeater.add(new ClassificationPathPanel(elementRepeater.newChildId(),
+                                    Model.of((UIClassification) element.getElement())));
+                    break;
+                case STRUCBRWS:
+                    i++;
+                    final UIFieldStructurBrowser strBrwsr = (UIFieldStructurBrowser) element.getElement();
+                    strBrwsr.setTableId(i);
+                    final StructurBrowserTreeTablePanel strucBrws = new StructurBrowserTreeTablePanel(
+                                    elementRepeater.newChildId(), Model.of(strBrwsr));
+                    elementRepeater.add(strucBrws);
+                    break;
+                case SUBFORM:
+                    final UIFieldForm uiFieldForm = (UIFieldForm) element.getElement();
+                    if (!uiFieldForm.isInitialized()) {
+                        if (uiFieldForm.getInstance() == null && uiFieldForm.isCreateMode()) {
+                            uiFieldForm.setInstanceKey(_uiForm.getInstanceKey());
+                        }
+                        uiFieldForm.execute();
                     }
-                    uiFieldForm.execute();
-                }
-                final List<Element> elements = uiFieldForm.getElements();
-                for (final Element subElement : elements) {
-                    if (subElement.getType().equals(ElementType.FORM)) {
-                        elementRepeater.add(new FormPanel(elementRepeater.newChildId(), _page,
-                                        Model.of(uiFieldForm), (FormElement) subElement.getElement(), _form));
-                    } else if (subElement.getType().equals(ElementType.HEADING)) {
-                        final UIHeading headingmodel = (UIHeading) subElement.getElement();
-                        elementRepeater.add(new HeadingPanel(elementRepeater.newChildId(), Model.of(headingmodel)));
-                    } else if (subElement.getType().equals(ElementType.TABLE)) {
-                        i++;
-                        final UIFieldTable fieldTable = (UIFieldTable) subElement.getElement();
-                        fieldTable.setTableId(i);
-                        final TablePanel table = new TablePanel(elementRepeater.newChildId(),
-                                        Model.of(fieldTable), _page);
-                        final HeaderPanel header = new HeaderPanel(elementRepeater.newChildId(), table);
-                        elementRepeater.add(header);
-                        elementRepeater.add(table);
+                    final List<Element> elements = uiFieldForm.getElements();
+                    for (final Element subElement : elements) {
+                        if (subElement.getType().equals(ElementType.FORM)) {
+                            elementRepeater.add(new FormPanel(elementRepeater.newChildId(), _page, Model.of(
+                                            uiFieldForm), (FormElement) subElement.getElement(), _form));
+                        } else if (subElement.getType().equals(ElementType.HEADING)) {
+                            elementRepeater.add(new HeadingPanel(elementRepeater.newChildId(), Model.of(
+                                            (UIHeading) subElement.getElement())));
+                        } else if (subElement.getType().equals(ElementType.TABLE)) {
+                            i++;
+                            final UIFieldTable fieldTable2 = (UIFieldTable) subElement.getElement();
+                            fieldTable2.setTableId(i);
+                            final TablePanel table2 = new TablePanel(elementRepeater.newChildId(), Model.of(
+                                            fieldTable2), _page);
+                            final HeaderPanel header2 = new HeaderPanel(elementRepeater.newChildId(), table2);
+                            elementRepeater.add(header2);
+                            elementRepeater.add(table2);
+                        }
                     }
-                }
+                    break;
+                default:
+                    break;
             }
         }
     }

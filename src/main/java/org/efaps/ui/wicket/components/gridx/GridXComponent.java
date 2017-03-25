@@ -32,6 +32,8 @@ import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
+import org.apache.wicket.ajax.attributes.AjaxRequestAttributes.Method;
 import org.apache.wicket.ajax.attributes.CallbackParameter;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.ComponentTag;
@@ -69,6 +71,7 @@ import org.efaps.ui.wicket.components.gridx.behaviors.SubmitBehavior;
 import org.efaps.ui.wicket.components.gridx.behaviors.SubmitModalBehavior;
 import org.efaps.ui.wicket.components.menutree.CallUpdateTreeMenuBehavior;
 import org.efaps.ui.wicket.models.objects.PagePosition;
+import org.efaps.ui.wicket.models.objects.UIFieldGrid;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIGrid;
 import org.efaps.ui.wicket.models.objects.UIGrid.Cell;
@@ -135,11 +138,13 @@ public class GridXComponent
     }
 
     @Override
+    @SuppressWarnings("checkstyle:MethodLength")
     public void onComponentTagBody(final MarkupStream _markupStream,
                                    final ComponentTag _openTag)
     {
         try {
             final UIGrid uiGrid = (UIGrid) getDefaultModelObject();
+            final boolean isField = uiGrid instanceof UIFieldGrid;
 
             final Set<DojoClass> dojoClasses = new HashSet<>();
 
@@ -262,41 +267,50 @@ public class GridXComponent
             js.append("];\n")
                 .append("").append(getMenu(dojoClasses))
                 .append("var grid = Grid({")
-                .append("id: 'grid',")
+                .append("id: '").append(getGridId()).append("',")
                 .append("cacheClass: Cache,")
                 .append("store: store,")
-                .append("structure: structure,\n")
-                .append("barTop: [\n");
+                .append("structure: structure,\n");
 
-            if (dojoClasses.contains(DojoClasses.MenuBar)) {
-                js.append("{plugin: pMenuBar, style: 'text-align: left;'}, \n");
-            }
+            if (isField) {
+                js.append("autoHeight: true,\n");
+            } else {
+                js.append("barTop: [\n");
 
-            js.append("{pluginClass: GridQuickFilter, style: 'text-align: center;'}, \n")
+                if (dojoClasses.contains(DojoClasses.MenuBar)) {
+                    js.append("{plugin: pMenuBar, style: 'text-align: left;'}, \n");
+                }
+
+                js.append("{pluginClass: GridQuickFilter, style: 'text-align: center;'}, \n")
                     .append("{ pluginClass: \"efaps/GridConfig\", style: 'text-align: right;', printItems: [")
                     .append(getPrintMenuItems(dojoClasses)).append("],\n")
                     .append("reload : ").append(getBehavior(ReloadBehavior.class).getCallbackFunction())
                     .append("} \n")
                     .append("],\n")
-                .append("barBottom: [\n")
+                    .append("barBottom: [\n")
                     .append("{pluginClass: Summary, style: 'text-align: right;'}\n")
-                    .append("],\n")
-                .append("modules: [\n")
-                    .append("VirtualVScroller,\n")
-                    .append("ColumnLock,\n")
-                    .append("ColumnResizer,\n")
-                    .append("SingleSort,\n")
-                    .append("MoveColumn,\n")
-                    .append("SelectColumn,\n")
-                    .append("SelectCell,\n")
-                    .append("DnDColumn,\n")
-                    .append("HeaderDialog,\n")
-                    .append("Bar,\n")
-                    .append("Filter,\n")
-                    .append("FilterBar,\n")
-                    .append("HScroller,\n")
-                    .append("HiddenColumns,\n")
-                    .append("Persist");
+                    .append("],\n");
+            }
+
+            js.append("modules: [\n")
+                .append("VirtualVScroller,\n")
+                .append("ColumnLock,\n")
+                .append("ColumnResizer,\n")
+                .append("SingleSort,\n")
+                .append("MoveColumn,\n")
+                .append("SelectColumn,\n")
+                .append("SelectCell,\n")
+                .append("DnDColumn,\n")
+                .append("HeaderDialog,\n")
+                .append("Bar,\n")
+                .append("HScroller,\n")
+                .append("HiddenColumns,\n")
+                .append("Persist");
+
+            if (!isField) {
+                js.append(",\nFilter,\n")
+                    .append("FilterBar");
+            }
 
             if (aggregate) {
                 js.append(",\n GridAggregate\n");
@@ -326,7 +340,6 @@ public class GridXComponent
                 .append("}else{\n")
                 .append("value = {expires: -1};\n")
                 .append("}\n")
-
                 .append(getBehaviors(PersistAjaxBehavior.class).get(0).getCallbackFunctionBody(
                                 CallbackParameter.explicit("value")))
                 .append("},\n")
@@ -360,26 +373,30 @@ public class GridXComponent
                     .append("},true);\n");
             }
 
-            js.append("grid.startup();\n")
-                .append("var rg = function() {\n")
-                .append("var bar = query('.eFapsFrameTitle') [0];\n")
-                .append("var pos = domGeom.position(bar);\n")
-                .append("var vs = win.getBox();\n")
-                .append("var hh = vs.h - pos.h - pos.y;\n")
-                .append("var ft = query('.eFapsFooter')[0];\n")
-                .append("if (typeof ft != 'undefined') {\n")
-                .append("var ftPos = domGeom.position(ft);\n")
-                .append("hh = hh - ftPos.h;\n")
-                .append("\n")
-                .append("}\n")
-                .append("registry.byId('grid').resize({h:hh});")
-                .append("}\n")
-                .append("ready(function(){")
-                .append("rg();\n")
-                .append("});")
-                .append("on(window, 'resize', function() {\n")
-                .append("rg();\n")
-                .append("});\n");
+            js.append("grid.startup();\n");
+
+            if (!isField) {
+                js.append("var rg = function() {\n")
+                    .append("var bar = query('.eFapsFrameTitle') [0];\n")
+                    .append("var pos = domGeom.position(bar);\n")
+                    .append("var vs = win.getBox();\n")
+                    .append("var hh = vs.h - pos.h - pos.y;\n")
+                    .append("var ft = query('.eFapsFooter')[0];\n")
+                    .append("if (typeof ft != 'undefined') {\n")
+                    .append("var ftPos = domGeom.position(ft);\n")
+                    .append("hh = hh - ftPos.h;\n")
+                    .append("\n")
+                    .append("}\n")
+                    .append("registry.byId('").append(getGridId()).append("').resize({h:hh});")
+                    .append("}\n")
+                    .append("ready(function(){")
+                    .append("rg();\n")
+                    .append("});")
+                    .append("on(window, 'resize', function() {\n")
+                    .append("rg();\n")
+                    .append("});\n");
+            }
+
             if (uiGrid.isShowCheckBoxes()) {
                 js.append("aspect.after(grid.select.row, 'onSelectionChange', function (_defferd) {\n")
                     .append("query(\"input[name='selectedRow']\").forEach(domConstruct.destroy);\n")
@@ -394,11 +411,14 @@ public class GridXComponent
                     .append("});\n")
                     .append("grid.prevSelected = [];\n")
                     .append("var ftb = function () {\n")
-                    .append("registry.byId('grid').prevSelected = registry.byId('grid').select.row.getSelected();\n")
+                    .append("registry.byId('").append(getGridId())
+                        .append("').prevSelected = registry.byId('").append(getGridId())
+                        .append("').select.row.getSelected();\n")
                     .append("};\n")
                     .append("var fta = function () {\n")
-                    .append("array.forEach(registry.byId('grid').prevSelected, function (_item) {\n")
-                    .append("registry.byId('grid').select.row.selectById(_item);\n")
+                    .append("array.forEach(registry.byId('").append(getGridId())
+                        .append("').prevSelected, function (_item) {\n")
+                    .append("registry.byId('").append(getGridId()).append("').select.row.selectById(_item);\n")
                     .append("});\n")
                     .append("};\n")
                     .append("aspect.before(grid.filter, 'setFilter', ftb);\n")
@@ -469,7 +489,7 @@ public class GridXComponent
     {
         final StringBuilder ret = new StringBuilder();
         final UIGrid uiGrid = (UIGrid) getDefaultModelObject();
-        if (uiGrid.getCommand().getTargetMenu() != null) {
+        if (!(uiGrid instanceof UIFieldGrid) && uiGrid.getCommand().getTargetMenu() != null) {
             Collections.addAll(_dojoClasses, DojoClasses.MenuBar, DojoClasses.DropDownMenu, DojoClasses.MenuItem,
                             DojoClasses.PopupMenuBarItem, DojoClasses.MenuBarItem);
 
@@ -649,6 +669,31 @@ public class GridXComponent
     }
 
     /**
+     * Gets the grid id.
+     *
+     * @return the grid id
+     * @throws EFapsException on error
+     */
+    protected String getGridId()
+        throws EFapsException
+    {
+        return GridXComponent.getGridId((UIGrid) getDefaultModelObject());
+    }
+
+    /**
+     * Gets the grid id.
+     *
+     * @param _uiGrid the ui grid
+     * @return the grid id
+     * @throws EFapsException on error
+     */
+    public static String getGridId(final UIGrid _uiGrid)
+        throws EFapsException
+    {
+        return _uiGrid instanceof UIFieldGrid ? "grid_" + ((UIFieldGrid) _uiGrid).getFieldTable().getName() : "grid";
+    }
+
+    /**
      * Gets the data JS.
      *
      * @param _uiGrid the ui grid
@@ -726,6 +771,13 @@ public class GridXComponent
 
         /** The Constant serialVersionUID. */
         private static final long serialVersionUID = 1L;
+
+        @Override
+        protected void updateAjaxAttributes(final AjaxRequestAttributes _attributes)
+        {
+            super.updateAjaxAttributes(_attributes);
+            _attributes.setMethod(Method.POST);
+        }
 
         @Override
         protected void respond(final AjaxRequestTarget _target)

@@ -31,6 +31,7 @@ import java.util.UUID;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.RestartResponseException;
+import org.efaps.admin.AbstractAdminObject;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.DateTimeUI;
@@ -90,7 +91,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author The eFaps Team
  */
-public final class UIGrid
+public class UIGrid
     extends AbstractUI
     implements IPageObject, IWizardElement, ICmdUIObject
 {
@@ -135,7 +136,7 @@ public final class UIGrid
      *
      * @throws EFapsException the e faps exception
      */
-    private UIGrid()
+    protected UIGrid()
     {
     }
 
@@ -334,7 +335,7 @@ public final class UIGrid
     protected List<Instance> getInstances()
         throws EFapsException
     {
-        final List<Return> ret = getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
+        final List<Return> ret = getEventObject().executeEvents(EventType.UI_TABLE_EVALUATE,
                         ParameterValues.INSTANCE, getCallInstance(),
                         ParameterValues.CALL_INSTANCE, getCallInstance(),
                         ParameterValues.PARAMETERS, Context.getThreadContext().getParameters(),
@@ -440,6 +441,8 @@ public final class UIGrid
         }
         return cmd;
     }
+
+
 
     /**
      * Gets the cmd UUID.
@@ -711,10 +714,12 @@ public final class UIGrid
      * Setter method for instance variable {@link #pagePosition}.
      *
      * @param _pagePosition value for instance variable {@link #pagePosition}
+     * @return the UI grid
      */
-    public void setPagePosition(final PagePosition _pagePosition)
+    public UIGrid setPagePosition(final PagePosition _pagePosition)
     {
         this.pagePosition = _pagePosition;
+        return this;
     }
 
     /**
@@ -758,14 +763,26 @@ public final class UIGrid
                                       final Object... _objectTuples)
         throws EFapsException
     {
-        List<Return> ret;
+        final List<Return> ret;
         if (isWizardCall()) {
             ret = ((ICmdUIObject) getUIWizardObject().getWizardElement().get(0)).executeEvents(_eventType,
                             _objectTuples);
         } else {
-            ret = getCommand().executeEvents(_eventType, _objectTuples);
+            ret = getEventObject().executeEvents(_eventType, _objectTuples);
         }
         return ret;
+    }
+
+    /**
+     * Gets the event object.
+     *
+     * @return the event object
+     * @throws CacheReloadException the cache reload exception
+     */
+    public AbstractAdminObject getEventObject()
+        throws CacheReloadException
+    {
+        return getCommand();
     }
 
     /**
@@ -876,7 +893,6 @@ public final class UIGrid
             return this.instance;
         }
     }
-
 
     /**
      * The Class Cell.
@@ -1002,6 +1018,7 @@ public final class UIGrid
 
         /** The Constant serialVersionUID. */
         private static final long serialVersionUID = 1L;
+
         /**
          * Id of the field this UITableHeader belongs to.
          */

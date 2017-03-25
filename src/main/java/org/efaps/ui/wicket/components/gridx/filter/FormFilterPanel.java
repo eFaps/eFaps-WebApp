@@ -69,7 +69,7 @@ public class FormFilterPanel
      * @param _wicketId the wicket id
      * @param _model the model
      * @param _uiGrid the ui grid
-     * @throws CacheReloadException
+     * @throws CacheReloadException on error
      */
     public FormFilterPanel(final String _wicketId,
                            final IModel<IMapFilter> _model,

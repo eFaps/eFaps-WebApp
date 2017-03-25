@@ -70,6 +70,8 @@ import org.efaps.ui.wicket.models.field.set.UIFieldSet;
 import org.efaps.ui.wicket.models.field.set.UIFieldSetColHeader;
 import org.efaps.ui.wicket.models.field.set.UIFieldSetValue;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.ui.wicket.util.Configuration;
+import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
@@ -102,7 +104,9 @@ public class UIForm
         /** Element is SubForm. e.g. for classification */
         SUBFORM,
         /** Element is a table. */
-        TABLE
+        TABLE,
+        /** Element is a grid. */
+        GRID;
     }
 
     /**
@@ -240,7 +244,7 @@ public class UIForm
     {
         boolean ret = true;
         if (!isSearchMode()) {
-            final List<Return> returns = getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
+            final List<Return> returns = this.getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
                             ParameterValues.INSTANCE, getInstance(),
                             ParameterValues.PARAMETERS, Context.getThreadContext().getParameters(),
                             ParameterValues.CLASS, this);
@@ -251,7 +255,7 @@ public class UIForm
                         setInstanceKey(((Instance) object).getOid());
                     } else {
                         UIForm.LOG.error("The esjp called by Command '{}' must return a valid instance",
-                                        getCommand().getName());
+                                        this.getCommand().getName());
                     }
                 } else {
                     ret = false;
@@ -276,7 +280,7 @@ public class UIForm
         // evaluate the Form to make the query
         final PrintQuery print = new PrintQuery(getInstance());
         for (final Field field : form.getFields()) {
-            if (field.hasAccess(getMode(), getInstance(), getCommand(), getInstance())
+            if (field.hasAccess(getMode(), getInstance(), this.getCommand(), getInstance())
                             && !field.isNoneDisplay(getMode())) {
                 if (field.getSelect() != null) {
                     print.addSelect(field.getSelect());
@@ -307,7 +311,7 @@ public class UIForm
             boolean firstTable = true;
             for (final Field field : form.getFields()) {
                 final Instance instance = evaluateFieldInstance(print, field);
-                if (field.hasAccess(getMode(), instance, getCommand(), getInstance())
+                if (field.hasAccess(getMode(), instance, this.getCommand(), getInstance())
                                 && !field.isNoneDisplay(getMode())) {
                     if (field instanceof FieldGroup) {
                         final FieldGroup group = (FieldGroup) field;
@@ -321,14 +325,21 @@ public class UIForm
                         currentFormElement.setGroupCount(group.getGroupCount());
                     } else if (field instanceof FieldTable) {
                         if (((FieldTable) field).getTargetStructurBrowserField() == null) {
-                            final UIFieldTable uiFieldTable = new UIFieldTable(getCommandUUID(), getInstanceKey(),
-                                            (FieldTable) field);
-                            uiFieldTable.setMode(getMode());
-                            this.elements.add(new Element(UIForm.ElementType.TABLE, uiFieldTable));
-                            if (firstTable) {
-                                firstTable = false;
+                            if (isViewMode() && "GridX".equals(Configuration.getAttribute(
+                                            ConfigAttribute.TABLEDEFAULTTYPEFORM))) {
+                                final UIFieldGrid grid = UIFieldGrid.get(getCommandUUID(), getPagePosition(),
+                                                getInstance(), (FieldTable) field);
+                                this.elements.add(new Element(UIForm.ElementType.GRID, grid));
                             } else {
-                                uiFieldTable.setFirstTable(false);
+                                final UIFieldTable uiFieldTable = new UIFieldTable(getCommandUUID(),
+                                                getInstanceKey(), (FieldTable) field);
+                                uiFieldTable.setMode(getMode());
+                                this.elements.add(new Element(UIForm.ElementType.TABLE, uiFieldTable));
+                                if (firstTable) {
+                                    firstTable = false;
+                                } else {
+                                    uiFieldTable.setFirstTable(false);
+                                }
                             }
                         } else {
                             final UIFieldStructurBrowser uiFieldStrucBrws = new UIFieldStructurBrowser(
@@ -613,7 +624,7 @@ public class UIForm
         if (isCreateMode() || isEditMode()) {
             type = getCreateTargetType();
         } else {
-            final List<EventDefinition> events = getCommand().getEvents(EventType.UI_TABLE_EVALUATE);
+            final List<EventDefinition> events = this.getCommand().getEvents(EventType.UI_TABLE_EVALUATE);
             if (events != null) {
                 for (final EventDefinition eventDef : events) {
                     String tmp = eventDef.getProperty("Type");
@@ -638,8 +649,8 @@ public class UIForm
         UIClassification uiclass = null;
         boolean firstTable = true;
         for (final Field field : form.getFields()) {
-            if (field.hasAccess(getMode(), AbstractInstanceObject.getInstance4Create(type), getCommand(), getInstance())
-                            && !field.isNoneDisplay(getMode())) {
+            if (field.hasAccess(getMode(), AbstractInstanceObject.getInstance4Create(type), this.getCommand(),
+                            getInstance()) && !field.isNoneDisplay(getMode())) {
                 if (field instanceof FieldGroup) {
                     final FieldGroup group = (FieldGroup) field;
                     // in case that the first field is a group the element must be initiated
@@ -734,7 +745,7 @@ public class UIForm
             }
         }
         if (uiclass != null) {
-            final Set<Classification> clazzes = getCommand().getTargetCreateClassification();
+            final Set<Classification> clazzes = this.getCommand().getTargetCreateClassification();
             for (final Classification clazz : clazzes) {
                 uiclass.addSelectedUUID(clazz.getUUID());
                 Classification parent = clazz.getParentClassification();
@@ -760,7 +771,7 @@ public class UIForm
     protected Type getCreateTargetType()
         throws CacheReloadException
     {
-        return getCommand().getTargetCreateType();
+        return this.getCommand().getTargetCreateType();
     }
 
     /**

@@ -204,6 +204,10 @@ public final class Configuration
                         "Type of table used as tree page table"),
 
         /** */
+        TABLEDEFAULTTYPEFORM(false, true, "TableDefaultType4Form", "Table", String.class,
+                        "Type of table used as table inside a form"),
+
+        /** */
         GRIDPRINTESJP(false, true, "GridXPrinter", "org.efaps.esjp.ui.print.GridX", String.class,
                         "Class name of the esjp to be invoked for printing GridX."),
         /** */
@@ -214,10 +218,9 @@ public final class Configuration
         HELPSNIPPROV(false, true, "HelpSnipplet", "org.efaps.esjp.common.help.HelpProvider", String.class,
                         "Class name of the esjp to be invoked to create the html snipplet for Help."),
 
-        /** Admin_Program_MarkdownTree_Menu_Action_EditMarkdown */
+        /** Admin_Program_MarkdownTree_Menu_Action_EditMarkdown. */
         HELPEDITCMD(false, true, "HelpEditCommand", "a42e1651-a42e-42f2-9b7b-7f47599a13fd", String.class,
-                        "UUID of the Command that defines the form to be opened for edit.");
-
+                        "UUID of the Command that defines the form to be opened for edit help.");
 
         /**
          * Stores the key for this Attribute..
