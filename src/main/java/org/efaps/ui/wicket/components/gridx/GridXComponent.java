@@ -163,12 +163,21 @@ public class GridXComponent
 
             final StringBuilder js = new StringBuilder()
                 .append("var cp = function(_attr, _itemA, _itemB) {\n")
-                .append("var strA = _itemA.hasOwnProperty(_attr + '_sort')")
+                .append("    var strA = _itemA.hasOwnProperty(_attr + '_sort')")
                     .append(" ? _itemA[_attr + '_sort'] : _itemA[_attr];\n")
-                .append("var strB = _itemB.hasOwnProperty(_attr + '_sort') ")
+                .append("    var strB = _itemB.hasOwnProperty(_attr + '_sort') ")
                     .append("? _itemB[_attr + '_sort'] : _itemB[_attr];\n")
-                .append("return strA < strB ? -1 : (strA > strB ? 1 : 0);\n")
+                .append("    return strA < strB ? -1 : (strA > strB ? 1 : 0);\n")
                 .append("}\n")
+                // Configuration.getAttribute(Configuration.ConfigAttribute.FORMAT_DATE);
+                .append("var dp = function(_value){ \n")
+                    .append("    var pattern = /(\\d\\d?)\\/(\\d{2})\\/(\\d{4})/;\n")
+                    .append("    pattern.test(_value);\n")
+                    .append("    return new Date(parseInt(RegExp.$3), parseInt(RegExp.$2) - 1, parseInt(RegExp.$1));\n")
+                    .append("}\n")
+                .append("var cpd = function(_attr, _itemA, _itemB) {\n")
+                    .append("    return dp(_itemA[_attr]) - dp(_itemB[_attr]);\n")
+                    .append("}\n")
                 .append("var store = new Memory({\n")
                 .append("data: ")
                 .append(GridXComponent.getDataJS(uiGrid))
@@ -193,7 +202,6 @@ public class GridXComponent
                 if (!"left".equals(column.getField().getAlign())) {
                     js.append(", style:'text-align:right'");
                 }
-                js.append(", comparator: cp\n");
                 if (column.getFieldConfig().getField().getReference() != null
                                 && StringUtils.containsIgnoreCase(column.getFieldConfig().getField().getReference(),
                                                 HRef.CHECKOUT.toString())) {
@@ -236,22 +244,15 @@ public class GridXComponent
                     js.append(", dataType: '").append(column.getDataType()).append("'\n");
                     switch (column.getDataType()) {
                         case "date":
-                            Configuration.getAttribute(Configuration.ConfigAttribute.FORMAT_DATE);
-
-                            js.append(", dateParser: function(_value){ \n")
-                                .append(" var pattern = /(\\d\\d?)\\/(\\d{2})\\/(\\d{4})/;\n")
-                                .append("pattern.test(_value);\n")
-                                .append("var d = new Date();\n")
-                                .append("d.setDate(parseInt(RegExp.$1));\n")
-                                .append("d.setMonth(parseInt(RegExp.$2) - 1);\n")
-                                .append("d.setFullYear(parseInt(RegExp.$3));\n")
-                                .append("console.log(d);\n")
-                                .append("return d;\n")
-                                .append("}\n");
+                            js.append(", dateParser: dp \n")
+                                .append(", comparator: cpd\n");
                             break;
                         default:
+                            js.append(", comparator: cp\n");
                             break;
                     }
+                } else {
+                    js.append(", comparator: cp\n");
                 }
 
                 if (column.getField().containsProperty(UITableFieldProperty.AGGREGATE)) {
