@@ -27,6 +27,7 @@ import org.apache.wicket.model.Model;
 import org.efaps.admin.ui.Command;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.api.ci.UIFormFieldProperty;
+import org.efaps.api.ui.IFilter;
 import org.efaps.api.ui.IMapFilter;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.button.AjaxButton;
@@ -82,7 +83,8 @@ public class FormFilterPage
         add(formContainer);
         FormPage.updateFormContainer(formPage, formContainer, uiform);
 
-        add(new AjaxButton<IMapFilter>("btn", _model, AjaxButton.ICON.ACCEPT.getReference())
+        add(new AjaxButton<Long>("btn", Model.of(_model.getObject().getFieldId()),
+                        AjaxButton.ICON.ACCEPT.getReference())
         {
 
             /** The Constant serialVersionUID. */
@@ -92,8 +94,15 @@ public class FormFilterPage
             public void onRequest(final AjaxRequestTarget _target)
             {
                 try {
-                    _model.getObject().putAll(ParameterUtil.parameter2Map(getRequest().getRequestParameters()));
+                    final long fieldid = (long) getDefaultModelObject();
                     final UIGrid uiGrid = (UIGrid) _pageReference.getPage().getDefaultModelObject();
+                    for (final IFilter filter : uiGrid.getFilterList()) {
+                        if (filter.getFieldId() == fieldid) {
+                            ((IMapFilter) filter).clear();
+                            ((IMapFilter) filter).putAll(
+                                            ParameterUtil.parameter2Map(getRequest().getRequestParameters()));
+                        }
+                    }
                     uiGrid.reload();
 
                     final StringBuilder js = new StringBuilder()
