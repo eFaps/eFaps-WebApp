@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
  */
 
 package org.efaps.ui.wicket.components.tree;
+
+import java.util.Optional;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
@@ -77,7 +79,7 @@ public class StructurBrowserTreeTable
         throws CacheReloadException
     {
         super(_wicketId, new StructurBrowserProvider(_model),
-                        new SetModel<UIStructurBrowser>(_model.getObject().getExpandedBrowsers()));
+                        new SetModel<>(_model.getObject().getExpandedBrowsers()));
         if (_model.getObject() instanceof UIFieldStructurBrowser) {
             final FieldTable field = FieldTable.get(((UIFieldStructurBrowser) _model.getObject()).getFieldTabelId());
             this.topicName = field.getName();
@@ -113,13 +115,13 @@ public class StructurBrowserTreeTable
     {
         super.expand(_uiStrBrws);
         _uiStrBrws.setExpanded(true);
-        final AjaxRequestTarget target = getRequestCycle().find(AjaxRequestTarget.class);
+        final Optional<AjaxRequestTarget> optionalTarget = getRequestCycle().find(AjaxRequestTarget.class);
         final StringBuilder js = new StringBuilder()
                     .append("highlight();positionTableColumns(eFapsTable").append(_uiStrBrws.getTableId()).append(");")
                     .append("require([\"dojo/topic\"], function(topic){\n")
                     .append("topic.publish(\"eFaps/expand/").append(this.topicName).append("\");\n")
                     .append("})\n");
-        target.appendJavaScript(js);
+        optionalTarget.ifPresent(target -> target.appendJavaScript(js));
     }
 
     /**
@@ -133,13 +135,13 @@ public class StructurBrowserTreeTable
     {
         super.collapse(_uiStrBrws);
         _uiStrBrws.setExpanded(false);
-        final AjaxRequestTarget target = getRequestCycle().find(AjaxRequestTarget.class);
+        final Optional<AjaxRequestTarget> optionalTarget = getRequestCycle().find(AjaxRequestTarget.class);
         final StringBuilder js = new StringBuilder()
                     .append("positionTableColumns(eFapsTable").append(_uiStrBrws.getTableId()).append(");")
                     .append("require([\"dojo/topic\"], function(topic){\n")
                     .append("topic.publish(\"eFaps/collapse/").append(this.topicName).append("\");\n")
                     .append("})\n");
-        target.appendJavaScript(js);
+        optionalTarget.ifPresent(target -> target.appendJavaScript(js));
     }
 
     /**

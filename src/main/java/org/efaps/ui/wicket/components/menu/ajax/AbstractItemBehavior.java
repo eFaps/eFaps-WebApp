@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
-
 package org.efaps.ui.wicket.components.menu.ajax;
+
+import java.util.Optional;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxEventBehavior;
@@ -33,7 +31,6 @@ import org.efaps.ui.wicket.behaviors.dojo.OnDojoReadyHeaderItem;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public abstract class AbstractItemBehavior
     extends AjaxEventBehavior
@@ -60,11 +57,11 @@ public abstract class AbstractItemBehavior
         if (_component.isEnabledInHierarchy()) {
             final CharSequence js = getCallbackScript(_component);
 
-            final AjaxRequestTarget target = _component.getRequestCycle().find(AjaxRequestTarget.class);
-            if (target == null) {
-                _response.render(OnDojoReadyHeaderItem.forScript(js.toString()));
+            final Optional<AjaxRequestTarget> optional = _component.getRequestCycle().find(AjaxRequestTarget.class);
+            if (optional.isPresent()) {
+                optional.get().appendJavaScript(js);
             } else {
-                target.appendJavaScript(js);
+                _response.render(OnDojoReadyHeaderItem.forScript(js.toString()));
             }
         }
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 20217 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.behaviors.update;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
@@ -36,12 +34,10 @@ import org.apache.wicket.util.string.StringValue;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public abstract class AbstractRemoteUpdateBehavior
     extends AbstractDefaultAjaxBehavior
 {
-
     /**
      *
      */
@@ -50,7 +46,7 @@ public abstract class AbstractRemoteUpdateBehavior
     /**
      * Mapping from key to listener.
      */
-    private final Map<String, IRemoteUpdateListener> key2listener = new HashMap<String, IRemoteUpdateListener>();
+    private final Map<String, IRemoteUpdateListener> key2listener = new HashMap<>();
 
     /**
      * Name of the function.
@@ -106,17 +102,15 @@ public abstract class AbstractRemoteUpdateBehavior
                            final IHeaderResponse _response)
     {
         super.renderHead(_component, _response);
-
         if (_component.isEnabledInHierarchy()) {
             final CharSequence js = getCallbackScript(_component);
 
-            final AjaxRequestTarget target = _component.getRequestCycle().find(AjaxRequestTarget.class);
-            if (target == null) {
-                _response.render(JavaScriptHeaderItem.forScript(js.toString(), getClass().getName()));
+            final Optional<AjaxRequestTarget> optional = _component.getRequestCycle().find(AjaxRequestTarget.class);
+            if (optional.isPresent()) {
+                optional.get().appendJavaScript(js);
             } else {
-                target.appendJavaScript(js);
+                _response.render(JavaScriptHeaderItem.forScript(js.toString(), getClass().getName()));
             }
         }
     }
-
 }

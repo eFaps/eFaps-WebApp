@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,9 @@
 package org.efaps.ui.wicket.components;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.IRequestListener;
 import org.apache.wicket.Page;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.link.ILinkListener;
 import org.apache.wicket.util.io.IClusterable;
 import org.efaps.ui.wicket.behaviors.dojo.LazyIframeBehavior;
 
@@ -31,7 +31,7 @@ import org.efaps.ui.wicket.behaviors.dojo.LazyIframeBehavior;
  */
 public class LazyIframe
     extends WebMarkupContainer
-    implements ILinkListener
+    implements IRequestListener
 {
 
     /**
@@ -80,7 +80,7 @@ public class LazyIframe
     }
 
     @Override
-    public void onLinkClicked()
+    public void onRequest()
     {
         setResponsePage(this.frameProvider.getPage(this));
     }
@@ -92,8 +92,11 @@ public class LazyIframe
         extends IClusterable
     {
         /**
+         * Gets the page.
+         *
+         * @param _component the component
          * @return the page to be displayed
          */
-        Page getPage(final Component _component);
+        Page getPage(Component _component);
     }
 }

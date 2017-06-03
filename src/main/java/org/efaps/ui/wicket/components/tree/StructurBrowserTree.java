@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.components.tree;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.IRequestListener;
 import org.apache.wicket.Page;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxEventBehavior;
@@ -35,7 +33,6 @@ import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.link.ILinkListener;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.util.SetModel;
@@ -64,7 +61,6 @@ import org.efaps.util.cache.CacheReloadException;
  * on a Tristate.
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class StructurBrowserTree
     extends NestedTree<UIStructurBrowser>
@@ -133,7 +129,7 @@ public class StructurBrowserTree
      */
     public class ItemLink
         extends WebMarkupContainer
-        implements ILinkListener
+        implements IRequestListener
     {
 
         /**
@@ -161,7 +157,7 @@ public class StructurBrowserTree
         }
 
         @Override
-        public void onLinkClicked()
+        public void onRequest()
         {
             final UIStructurBrowser uiStrBrws = (UIStructurBrowser) getDefaultModelObject();
             Page page;
@@ -233,7 +229,7 @@ public class StructurBrowserTree
             js.append("dijit.registry.byId(\"").append(((ContentContainerPage) getPage()).getCenterPanelId())
                 .append("\").set(\"content\", dojo.create(\"iframe\", {")
                 .append("\"src\": \"")
-                .append(getComponent().urlFor(ILinkListener.INTERFACE, new PageParameters()))
+                .append(getComponent().urlForListener(new PageParameters()))
                 .append("\",\"style\": \"border: 0; width: 100%; height: 99%\"")
                 .append("})); ");
             listener.onAfter(js);

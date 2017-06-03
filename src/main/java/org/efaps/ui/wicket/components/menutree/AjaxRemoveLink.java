@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev:1510 $
- * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
- * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.components.menutree;
@@ -25,7 +22,6 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.AjaxCallListener;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.markup.html.link.ILinkListener;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
@@ -37,7 +33,6 @@ import org.efaps.ui.wicket.util.DojoWrapper;
  * This Class renders a Link which removes a Child from a MenuTree.
  *
  * @author The eFaps Team
- * @version $Id:AjaxRemoveLink.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class AjaxRemoveLink
     extends AjaxLink<UIMenuItem>
@@ -79,7 +74,7 @@ public class AjaxRemoveLink
         js.append("registry.byId(\"").append(((ContentContainerPage) getPage()).getCenterPanelId())
             .append("\").set(\"content\", domConstruct.create(\"iframe\", {")
             .append("\"src\": \"")
-            .append(menuTree.urlFor(ILinkListener.INTERFACE, new PageParameters()))
+            .append(menuTree.urlForListener(new PageParameters()))
             .append("&D=").append(key)
             .append("\",\"style\": \"border: 0; width: 100%; height: 99%\"")
             .append("})); ");

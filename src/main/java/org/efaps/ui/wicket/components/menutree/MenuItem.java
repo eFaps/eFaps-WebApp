@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.efaps.ui.wicket.components.menutree;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
+import org.apache.wicket.IRequestListener;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxEventBehavior;
@@ -29,7 +30,6 @@ import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.link.ILinkListener;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -156,7 +156,7 @@ public class MenuItem
      */
     public class Item
         extends WebMarkupContainer
-        implements ILinkListener
+        implements IRequestListener
     {
 
         /**
@@ -176,7 +176,7 @@ public class MenuItem
         }
 
         @Override
-        public void onLinkClicked()
+        public void onRequest()
         {
             final UIMenuItem menuItem = (UIMenuItem) getDefaultModelObject();
             Page page;
@@ -278,7 +278,7 @@ public class MenuItem
             js.append("registry.byId(\"").append(((ContentContainerPage) getPage()).getCenterPanelId())
                 .append("\").set(\"content\", domConstruct.create(\"iframe\", {")
                 .append("\"src\": \"")
-                .append(getComponent().urlFor(ILinkListener.INTERFACE, new PageParameters()))
+                .append(getComponent().urlForListener(new PageParameters()))
                 .append("\",\"style\": \"border: 0; width: 100%; height: 99%\"")
                 .append("})); ");
             listener.onAfter(DojoWrapper.require(js, DojoClasses.registry, DojoClasses.domConstruct));

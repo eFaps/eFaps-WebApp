@@ -197,6 +197,7 @@ public class EFapsApplication
         getDebugSettings().setDevelopmentUtilitiesEnabled(false);
 
         setPageManagerProvider(new EFapsPageManagerProvider(this));
+
         getStoreSettings().setMaxSizePerSession(Bytes.megabytes(Configuration.getAttributeAsInteger(
                         ConfigAttribute.STORE_MAXSIZEPERSESSION)));
         getStoreSettings().setInmemoryCacheSize(Configuration.getAttributeAsInteger(

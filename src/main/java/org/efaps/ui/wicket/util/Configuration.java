@@ -176,10 +176,10 @@ public final class Configuration
         USER_MENUACT(false, true, "ActivateUserMenu", "true", Boolean.class,
                         " Activate the UserMenu Mechanism. "),
         /***/
-        STORE_INMEMORYCACHE(false, false, "store.InMemoryCacheSize", "10", Integer.class,
+        STORE_INMEMORYCACHE(false, false, "store.InMemoryCacheSize", "50", Integer.class,
                         " The store inmemorycache. Servlet only!!"),
         /***/
-        STORE_MAXSIZEPERSESSION(false, false, "store.MaxSizePerSession(", "50", Integer.class,
+        STORE_MAXSIZEPERSESSION(false, false, "store.MaxSizePerSession(", "100", Integer.class,
                         " The store MaxSizePerSession in MB. Servlet only!!"),
 
         /** */

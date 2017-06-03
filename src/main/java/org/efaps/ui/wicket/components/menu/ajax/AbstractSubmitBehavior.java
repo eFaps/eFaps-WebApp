@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 
 package org.efaps.ui.wicket.components.menu.ajax;
+
+import java.util.Optional;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -34,7 +33,6 @@ import org.efaps.ui.wicket.pages.content.AbstractContentPage;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public abstract class AbstractSubmitBehavior
     extends AjaxFormSubmitBehavior
@@ -46,7 +44,9 @@ public abstract class AbstractSubmitBehavior
     private static final long serialVersionUID = 1L;
 
     /**
-     * @param _event
+     * Instantiates a new abstract submit behavior.
+     *
+     * @param _event the event
      */
     public AbstractSubmitBehavior(final String _event)
     {
@@ -59,12 +59,11 @@ public abstract class AbstractSubmitBehavior
     {
         if (_component.isEnabledInHierarchy()) {
             final CharSequence js = getCallbackScript(_component);
-
-            final AjaxRequestTarget target = _component.getRequestCycle().find(AjaxRequestTarget.class);
-            if (target == null) {
-                _response.render(OnDojoReadyHeaderItem.forScript(js.toString()));
+            final Optional<AjaxRequestTarget> optional = _component.getRequestCycle().find(AjaxRequestTarget.class);
+            if (optional.isPresent()) {
+                optional.get().appendJavaScript(js);
             } else {
-                target.appendJavaScript(js);
+                _response.render(OnDojoReadyHeaderItem.forScript(js.toString()));
             }
         }
     }

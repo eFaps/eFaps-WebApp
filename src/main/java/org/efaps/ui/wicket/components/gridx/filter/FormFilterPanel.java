@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.html.WebPage;
-import org.apache.wicket.markup.html.link.ILinkListener;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
@@ -137,7 +136,7 @@ public class FormFilterPanel
                 .append("var pd = registry.byId(\"").append(fttd).append("\");\n")
                 .append("aspect.before(pd, 'onOpen', function() {\n")
                 .append("registry.byId(\"").append(_component.getMarkupId()).append("\").set(\"href\",\"")
-                .append(_component.urlFor(ILinkListener.INTERFACE, new PageParameters())).append("\");\n")
+                .append(_component.urlForListener(new PageParameters())).append("\");\n")
                 .append("});\n")
                 .append("});");
             _response.render(JavaScriptHeaderItem.forScript(DojoWrapper.require(js, DojoClasses.ready,

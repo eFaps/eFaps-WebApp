@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ package org.efaps.ui.wicket.behaviors.dojo;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
-import org.apache.wicket.markup.html.link.ILinkListener;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.efaps.ui.wicket.util.DojoClasses;
 import org.efaps.ui.wicket.util.DojoWrapper;
@@ -94,7 +93,7 @@ public class LazyIframeBehavior
             js.append("\"id\": \"").append(this.frameMarkupId).append("\",");
         }
 
-        js.append("\"src\": \"").append(_component.urlFor(ILinkListener.INTERFACE, new PageParameters()))
+        js.append("\"src\": \"").append(_component.urlForListener(new PageParameters()))
             .append("\",\"style\": \"border: 0; width: 100%; height: 99%\", \"nodeId\": \"jan\"")
             .append("}));")
             .append("});");

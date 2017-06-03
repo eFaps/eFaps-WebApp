@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,13 +26,10 @@ import java.util.Map;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.Component;
+import org.apache.wicket.IRequestListener;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.json.JSONArray;
-import org.apache.wicket.ajax.json.JSONException;
-import org.apache.wicket.ajax.json.JSONObject;
-import org.apache.wicket.behavior.IBehaviorListener;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.page.XmlPartialPageUpdate;
@@ -57,6 +54,10 @@ import org.efaps.ui.wicket.util.EFapsKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.openjson.JSONArray;
+import com.github.openjson.JSONException;
+import com.github.openjson.JSONObject;
+
 /**
  * TODO comment!
  *
@@ -64,7 +65,7 @@ import org.slf4j.LoggerFactory;
  */
 public class AutoCompleteBehavior
     extends AbstractDojoBehavior
-    implements IBehaviorListener
+    implements IRequestListener
 {
     /**
      * Reference to the stylesheet.
@@ -349,7 +350,7 @@ public class AutoCompleteBehavior
             }
             _target.appendJSON(jsonArray.toString());
         } catch (final JSONException e) {
-            LOG.error("Catched JSONException", e);
+            AutoCompleteBehavior.LOG.error("Catched JSONException", e);
         }
     }
 
@@ -363,7 +364,7 @@ public class AutoCompleteBehavior
         if (getComponent() == null) {
             throw new IllegalArgumentException("Behavior must be bound to a component to create the URL");
         }
-        return getComponent().urlFor(this, IBehaviorListener.INTERFACE, new PageParameters());
+        return getComponent().urlForListener(this, new PageParameters());
     }
 
     /**
@@ -406,7 +407,7 @@ public class AutoCompleteBehavior
          * @param _input the choices
          * @return new Iteratro
          */
-        Iterator<Map<String, String>> getChoices(final String _input);
+        Iterator<Map<String, String>> getChoices(String _input);
 
         /**
          * @return the value for the current item

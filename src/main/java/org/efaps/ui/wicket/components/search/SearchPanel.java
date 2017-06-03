@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -97,13 +97,12 @@ public class SearchPanel
             private static final long serialVersionUID = 1L;
 
             @Override
-            protected void onSubmit(final AjaxRequestTarget _target,
-                                    final Form<?> _form)
+            protected void onSubmit(final AjaxRequestTarget _target)
             {
-                super.onSubmit(_target, _form);
+                super.onSubmit(_target);
                 final String query = (String) input.getDefaultModelObject();
                 if (StringUtils.isNotEmpty(query)) {
-                    final IndexSearch indexSearch = (IndexSearch) _form.getDefaultModelObject();
+                    final IndexSearch indexSearch = (IndexSearch) form.getDefaultModelObject();
                     indexSearch.setCurrentQuery(query);
                     indexSearch.search();
 

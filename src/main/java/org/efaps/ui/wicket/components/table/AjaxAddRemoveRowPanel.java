@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
  */
 
 package org.efaps.ui.wicket.components.table;
+
+import java.util.Optional;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
@@ -261,13 +263,13 @@ public class AjaxAddRemoveRowPanel
                 {
                     if (_component.isEnabledInHierarchy()) {
                         final CharSequence js = getCallbackScript(_component);
-
-                        final AjaxRequestTarget target = _component.getRequestCycle().find(AjaxRequestTarget.class);
-                        if (target == null) {
+                        final Optional<AjaxRequestTarget> optional = _component.getRequestCycle().find(
+                                        AjaxRequestTarget.class);
+                        if (optional.isPresent()) {
+                            optional.get().appendJavaScript(js);
+                        } else {
                             _response.render(JavaScriptHeaderItem.forScript(js.toString(),
                                             AjaxAddRemoveRowPanel.this.tableName));
-                        } else {
-                            target.appendJavaScript(js);
                         }
                     }
                 }

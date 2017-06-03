@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.components.menutree;
@@ -26,6 +23,7 @@ import java.util.UUID;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
+import org.apache.wicket.IRequestListener;
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.core.request.handler.IPartialPageRequestHandler;
@@ -34,7 +32,6 @@ import org.apache.wicket.extensions.markup.html.repeater.tree.Node;
 import org.apache.wicket.extensions.markup.html.repeater.tree.theme.HumanTheme;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.link.ILinkListener;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.visit.IVisit;
@@ -59,11 +56,10 @@ import org.efaps.util.cache.CacheReloadException;
 
 /**
  * @author The eFaps Team
- * @version $Id$
  */
 public class MenuTree
     extends NestedTree<UIMenuItem>
-    implements IRemoteUpdateable, ILinkListener
+    implements IRemoteUpdateable, IRequestListener
 {
 
     /**
@@ -331,7 +327,7 @@ public class MenuTree
     }
 
     @Override
-    public void onLinkClicked()
+    public void onRequest()
     {
         final String key = getRequest().getRequestParameters().getParameterValue("D").toString();
         final UIMenuItem currentItem = this.key2uimenuItem.get(key);

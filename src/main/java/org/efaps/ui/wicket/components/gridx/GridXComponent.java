@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.wicket.IRequestListener;
 import org.apache.wicket.Page;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
@@ -42,7 +43,6 @@ import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.link.ILinkListener;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
@@ -99,7 +99,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GridXComponent
     extends WebComponent
-    implements ILinkListener
+    implements IRequestListener
 {
 
     /**
@@ -224,7 +224,7 @@ public class GridXComponent
                         case TREE:
                             js.append(", decorator: function(data, rowId, visualIndex, cell){\n")
                                 .append("return '<a href=\"").append(
-                                    urlFor(ILinkListener.INTERFACE, new PageParameters()))
+                                    urlForListener(new PageParameters()))
                                 .append("&rowId=").append("' + rowId + '")
                                 .append("&colId=").append(j)
                                 .append("\">' + data + '</a>';\n")
@@ -607,7 +607,7 @@ public class GridXComponent
     }
 
     @Override
-    public void onLinkClicked()
+    public void onRequest()
     {
         final StringValue rowId = getRequest().getRequestParameters().getParameterValue("rowId");
         final StringValue colId = getRequest().getRequestParameters().getParameterValue("colId");

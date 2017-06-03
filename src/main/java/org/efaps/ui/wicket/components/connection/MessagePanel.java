@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,11 +80,10 @@ public class MessagePanel
             private static final long serialVersionUID = 1L;
 
             @Override
-            protected void onAfterSubmit(final AjaxRequestTarget _target,
-                                         final Form<?> _form)
+            protected void onAfterSubmit(final AjaxRequestTarget _target)
             {
                 final StringBuilder msg = new StringBuilder();
-                _form.visitChildren(TextArea.class, new IVisitor<TextArea<String>, Void>()
+                msgForm.visitChildren(TextArea.class, new IVisitor<TextArea<String>, Void>()
                 {
                     @Override
                     public void component(final TextArea<String> _textArea,
@@ -97,7 +96,7 @@ public class MessagePanel
                 });
 
                 if (msg.length() > 0) {
-                    _form.visitChildren(CheckBox.class, new IVisitor<CheckBox, Void>()
+                    msgForm.visitChildren(CheckBox.class, new IVisitor<CheckBox, Void>()
                     {
 
                         @Override
@@ -127,12 +126,11 @@ public class MessagePanel
             private static final long serialVersionUID = 1L;
 
             @Override
-            protected void onAfterSubmit(final AjaxRequestTarget _target,
-                                         final Form<?> _form)
+            protected void onAfterSubmit(final AjaxRequestTarget _target)
             {
 
                 final StringBuilder msg = new StringBuilder();
-                _form.visitChildren(TextArea.class, new IVisitor<TextArea<String>, Void>()
+                msgForm.visitChildren(TextArea.class, new IVisitor<TextArea<String>, Void>()
                 {
 
                     @Override

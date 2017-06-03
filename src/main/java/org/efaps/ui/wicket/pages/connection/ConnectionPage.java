@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2015 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.efaps.ui.wicket.pages.connection;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.wicket.PageReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -70,8 +71,8 @@ public class ConnectionPage
         throws EFapsException
     {
 
-        final List<ITab> tabs = new ArrayList<ITab>();
-        tabs.add(new AbstractTab(new Model<String>("Sessions"))
+        final List<ITab> tabs = new ArrayList<>();
+        tabs.add(new AbstractTab(new Model<>("Sessions"))
         {
 
             private static final long serialVersionUID = 1L;
@@ -90,7 +91,7 @@ public class ConnectionPage
         });
 
         if (Configuration.getAttributeAsBoolean(Configuration.ConfigAttribute.WEBSOCKET_ACTVATE)) {
-            tabs.add(new AbstractTab(new Model<String>("Message"))
+            tabs.add(new AbstractTab(new Model<>("Message"))
             {
 
                 private static final long serialVersionUID = 1L;
@@ -113,10 +114,10 @@ public class ConnectionPage
             private static final long serialVersionUID = 1L;
 
             @Override
-            protected void onAjaxUpdate(final AjaxRequestTarget _target)
+            protected void onAjaxUpdate(final Optional<AjaxRequestTarget> _optionalTarget)
             {
-                super.onAjaxUpdate(_target);
-                _target.addChildren(getPage(), FeedbackPanel.class);
+                super.onAjaxUpdate(_optionalTarget);
+                _optionalTarget.ifPresent(target -> target.addChildren(getPage(), FeedbackPanel.class));
             }
         });
         add(new FeedbackPanel("feedback").setOutputMarkupId(true));

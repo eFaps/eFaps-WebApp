@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 
 package org.efaps.ui.wicket.components.tabs;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.tabs.AjaxTabbedPanel;
@@ -35,7 +33,6 @@ import org.efaps.ui.wicket.pages.dashboard.DashboardPage;
  * Extending TabbedPanel to add full screen indicator.
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class AjaxIndicatingTabbedPanel
     extends AjaxTabbedPanel<ITab>
@@ -66,14 +63,12 @@ public class AjaxIndicatingTabbedPanel
             private static final long serialVersionUID = 1L;
 
             @Override
-            public void onClick(final AjaxRequestTarget _target)
+            public void onClick(final Optional<AjaxRequestTarget> _targetOptional)
             {
                 setSelectedTab(_index);
                 EFapsSession.get().setAttribute(DashboardPage.class.getName() + ".SelectedTab", _index);
-                if (_target != null) {
-                    _target.add(AjaxIndicatingTabbedPanel.this);
-                }
-                onAjaxUpdate(_target);
+                _targetOptional.ifPresent(target -> target.add(AjaxIndicatingTabbedPanel.this));
+                onAjaxUpdate(_targetOptional);
             }
         };
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,6 @@ import java.util.List;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.attributes.AjaxAttributeName;
-import org.apache.wicket.ajax.json.JSONException;
-import org.apache.wicket.ajax.json.JSONObject;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
@@ -39,6 +37,9 @@ import org.efaps.api.ui.IUserInterface;
 import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.field.FieldConfiguration;
+
+import com.github.openjson.JSONException;
+import com.github.openjson.JSONObject;
 
 
 /**
@@ -64,7 +65,6 @@ public class SnippletField
      *
      * @param _wicketId wicket if of this component
      * @param _model model for this component
-     * @param _labelModel label for this component
      * @param _uiField the ui field
      */
     public SnippletField(final String _wicketId,

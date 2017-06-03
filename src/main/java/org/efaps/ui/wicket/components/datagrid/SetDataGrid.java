@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@ import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.HiddenField;
 import org.apache.wicket.markup.html.form.IFormModelUpdateListener;
 import org.apache.wicket.markup.html.form.ILabelProvider;
@@ -141,10 +140,10 @@ public class SetDataGrid
             @Override
             protected Iterator<IModel<UIFieldSetColHeader>> getItemModels()
             {
-                final List<IModel<UIFieldSetColHeader>> ret = new ArrayList<IModel<UIFieldSetColHeader>>();
+                final List<IModel<UIFieldSetColHeader>> ret = new ArrayList<>();
                 final List<?> rows = (List<?>) getDefaultModelObject();
                 for (final Object row : rows) {
-                    ret.add(new Model<UIFieldSetColHeader>((UIFieldSetColHeader) row));
+                    ret.add(new Model<>((UIFieldSetColHeader) row));
                 }
                 return ret.iterator();
             }
@@ -167,10 +166,10 @@ public class SetDataGrid
             @Override
             protected Iterator<IModel<UIFieldSetRow>> getItemModels()
             {
-                final List<IModel<UIFieldSetRow>> ret = new ArrayList<IModel<UIFieldSetRow>>();
+                final List<IModel<UIFieldSetRow>> ret = new ArrayList<>();
                 final List<?> rows = (List<?>) getDefaultModelObject();
                 for (final Object row : rows) {
-                    ret.add(new Model<UIFieldSetRow>((UIFieldSetRow) row));
+                    ret.add(new Model<>((UIFieldSetRow) row));
                 }
                 return ret.iterator();
             }
@@ -241,7 +240,7 @@ public class SetDataGrid
         try {
             label = ((UIFieldSet) getDefaultModelObject()).getLabel();
         } catch (final EFapsException e) {
-            LOG.error("Catched", e);
+            SetDataGrid.LOG.error("Catched", e);
         }
         return Model.of(label);
     }
@@ -271,10 +270,10 @@ public class SetDataGrid
         @Override
         protected Iterator<IModel<UIFieldSetValue>> getItemModels()
         {
-            final List<IModel<UIFieldSetValue>> ret = new ArrayList<IModel<UIFieldSetValue>>();
+            final List<IModel<UIFieldSetValue>> ret = new ArrayList<>();
             final List<?> values = (List<?>) getDefaultModelObject();
             for (final Object value : values) {
-                ret.add(new Model<UIFieldSetValue>((UIFieldSetValue) value));
+                ret.add(new Model<>((UIFieldSetValue) value));
             }
             return ret.iterator();
         }
@@ -286,7 +285,7 @@ public class SetDataGrid
             try {
                 _item.add(value.getComponent("value"));
             } catch (final EFapsException e) {
-                LOG.error("Catched", e);
+                SetDataGrid.LOG.error("Catched", e);
             }
         }
     }
@@ -313,8 +312,7 @@ public class SetDataGrid
         }
 
         @Override
-        protected void onSubmit(final AjaxRequestTarget _target,
-                                final Form<?> _form)
+        protected void onSubmit(final AjaxRequestTarget _target)
         {
             final SetDataGrid grid = findParent(SetDataGrid.class);
             final UIFieldSet cellSet = (UIFieldSet) grid.getDefaultModelObject();
