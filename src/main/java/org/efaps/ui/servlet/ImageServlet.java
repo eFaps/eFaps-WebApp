@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev:1510 $
- * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
- * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.servlet;
@@ -50,7 +47,6 @@ import org.slf4j.LoggerFactory;
  * <code>/efaps/servlet/image/Admin_UI_Image</code>.
  *
  * @author The eFaps Team
- * @version $Id:ImageServlet.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class ImageServlet
     extends HttpServlet
@@ -69,7 +65,7 @@ public class ImageServlet
     /**
      * Name of the Cache.
      */
-    private static final String CACHENAME = "ImageServletCache";
+    private static final String CACHENAME = ImageServlet.class.getName() + ".Cache";;
 
     /**
      * Used as <code>null</code> for caching purpose.
@@ -206,6 +202,7 @@ public class ImageServlet
          * @return value of instance variable {@link #name}
          * @see #name
          */
+        @Override
         public String getName()
         {
             return this.name;
@@ -217,6 +214,7 @@ public class ImageServlet
          *
          * @return always <code>null</code>
          */
+        @Override
         public UUID getUUID()
         {
             return null;
@@ -228,6 +226,7 @@ public class ImageServlet
          *
          * @return always <code>0</code>
          */
+        @Override
         public long getId()
         {
             return 0;

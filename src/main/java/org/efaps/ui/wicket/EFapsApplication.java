@@ -273,7 +273,12 @@ public class EFapsApplication
                                     final String _filterPath)
     {
         if (EFapsApplication.MAXINACTIVEINTERVAL == 0) {
-            EFapsApplication.MAXINACTIVEINTERVAL = _servletRequest.getSession().getMaxInactiveInterval();
+            final int interval = _servletRequest.getSession().getMaxInactiveInterval();
+            if (interval == 0) {
+                EFapsApplication.MAXINACTIVEINTERVAL = -1;
+            } else {
+                EFapsApplication.MAXINACTIVEINTERVAL = interval;
+            }
         }
         return new EFapsRequest(_servletRequest, _filterPath);
     }
@@ -354,7 +359,7 @@ public class EFapsApplication
      */
     public static int getMaxInactiveInterval()
     {
-        return EFapsApplication.MAXINACTIVEINTERVAL;
+        return EFapsApplication.MAXINACTIVEINTERVAL < 0 ? 0 : EFapsApplication.MAXINACTIVEINTERVAL;
     }
 
     /**

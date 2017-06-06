@@ -61,6 +61,7 @@ import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.pages.info.GatherInfoPage;
 import org.efaps.ui.wicket.request.EFapsMultipartRequest;
 import org.efaps.ui.wicket.request.EFapsRequest;
+import org.efaps.ui.wicket.store.InfinispanPageStore;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 import org.efaps.util.EFapsException;
@@ -579,6 +580,7 @@ public class EFapsSession
     {
         EFapsSession.LOG.trace("Session invalidated: {}", this);
         RegistryManager.removeUserSession(getId());
+        InfinispanPageStore.removePages4Session(getId());
         // invalidation came from other process
         if (this.userName != null) {
             this.userName = null;

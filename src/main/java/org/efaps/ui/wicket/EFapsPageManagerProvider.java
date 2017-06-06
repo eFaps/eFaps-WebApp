@@ -20,8 +20,7 @@ import org.apache.wicket.Application;
 import org.apache.wicket.DefaultPageManagerProvider;
 import org.apache.wicket.pageStore.IDataStore;
 import org.apache.wicket.pageStore.IPageStore;
-import org.apache.wicket.serialize.ISerializer;
-import org.efaps.ui.wicket.store.EFapsPageStore;
+import org.efaps.ui.wicket.store.InfinispanPageStore;
 
 /**
  * The Class EFapsPageManagerProvider.
@@ -45,8 +44,6 @@ public class EFapsPageManagerProvider
     @Override
     protected IPageStore newPageStore(final IDataStore _dataStore)
     {
-        final int inmemoryCacheSize = this.application.getStoreSettings().getInmemoryCacheSize();
-        final ISerializer pageSerializer = this.application.getFrameworkSettings().getSerializer();
-        return new EFapsPageStore(pageSerializer, _dataStore, inmemoryCacheSize);
+        return new InfinispanPageStore();
     }
 }

@@ -88,12 +88,12 @@ public final class RegistryManager
                                            final String _sessionId)
     {
         if (EFapsApplication.getMaxInactiveInterval() > 0) {
-            getCache().put(_sessionId, new UserSession().setUserName(_userName).setSessionId(_sessionId), -1,
+            RegistryManager.getCache().put(_sessionId, new UserSession().setUserName(_userName).setSessionId(_sessionId), -1,
                             TimeUnit.MINUTES, EFapsApplication.getMaxInactiveInterval() + 600, TimeUnit.SECONDS);
         } else {
-            getCache().put(_sessionId, new UserSession().setUserName(_userName).setSessionId(_sessionId));
+            RegistryManager.getCache().put(_sessionId, new UserSession().setUserName(_userName).setSessionId(_sessionId));
         }
-        registerLogin4History(_userName, _sessionId);
+        RegistryManager.registerLogin4History(_userName, _sessionId);
     }
 
     /**
@@ -117,7 +117,7 @@ public final class RegistryManager
             method.invoke(obj, _userName, _sessionId, ipAddress);
         } catch (final ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException
                         | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-            LOG.error("Error on registering Login", e);
+            RegistryManager.LOG.error("Error on registering Login", e);
         }
     }
 
@@ -129,8 +129,8 @@ public final class RegistryManager
      */
     public static void registerActivity(final EFapsSession _session)
     {
-        if (_session.isLogedIn() && getCache().containsKey(_session.getId())) {
-            final UserSession userSession = getCache().get(_session.getId());
+        if (_session.isLogedIn() && RegistryManager.getCache().containsKey(_session.getId())) {
+            final UserSession userSession = RegistryManager.getCache().get(_session.getId());
             if (userSession.isInvalidated()) {
                 _session.invalidate();
             } else {
@@ -158,8 +158,8 @@ public final class RegistryManager
     public static void addMsgConnection(final String _sessionId,
                                         final IKey _key)
     {
-        if (getCache().containsKey(_sessionId)) {
-            getCache().get(_sessionId).setConnectionKey(_key);
+        if (RegistryManager.getCache().containsKey(_sessionId)) {
+            RegistryManager.getCache().get(_sessionId).setConnectionKey(_key);
         }
         RegistryManager.LOG.debug("Added Message Connection for Session: {}", _sessionId);
     }
@@ -171,8 +171,8 @@ public final class RegistryManager
      */
     public static void invalidateSession(final String _sessionId)
     {
-        if (getCache().containsKey(_sessionId)) {
-            getCache().get(_sessionId).markInvalid();
+        if (RegistryManager.getCache().containsKey(_sessionId)) {
+            RegistryManager.getCache().get(_sessionId).markInvalid();
         }
     }
 
@@ -183,9 +183,9 @@ public final class RegistryManager
      */
     public static void removeUserSession(final String _sessionId)
     {
-        if (getCache().containsKey(_sessionId)) {
-            registerLogout4History(getCache().get(_sessionId).getUserName(), _sessionId);
-            getCache().remove(_sessionId);
+        if (RegistryManager.getCache().containsKey(_sessionId)) {
+            RegistryManager.registerLogout4History(RegistryManager.getCache().get(_sessionId).getUserName(), _sessionId);
+            RegistryManager.getCache().remove(_sessionId);
         }
 
     }
@@ -211,13 +211,13 @@ public final class RegistryManager
         } catch (final ClassNotFoundException | EFapsException | InstantiationException | IllegalAccessException
                         | NoSuchMethodException | SecurityException | IllegalArgumentException
                         | InvocationTargetException e) {
-            LOG.error("Error on registering Logout", e);
+            RegistryManager.LOG.error("Error on registering Logout", e);
         } finally {
             if (contextOpened && Context.isThreadActive()) {
                 try {
                     Context.commit();
                 } catch (final EFapsException e) {
-                    LOG.error("Error on registering Logout", e);
+                    RegistryManager.LOG.error("Error on registering Logout", e);
                 }
             }
         }
@@ -231,7 +231,7 @@ public final class RegistryManager
     public static Set<String> getUsers()
     {
         final Set<String> ret = new HashSet<>();
-        for (final UserSession userSession : getCache().values()) {
+        for (final UserSession userSession : RegistryManager.getCache().values()) {
             ret.add(userSession.getUserName());
         }
         return ret;
@@ -244,7 +244,7 @@ public final class RegistryManager
      */
     public static Collection<UserSession> getUserSessions()
     {
-        return Collections.unmodifiableCollection(getCache().values());
+        return Collections.unmodifiableCollection(RegistryManager.getCache().values());
     }
 
     /**
@@ -256,7 +256,7 @@ public final class RegistryManager
     public static List<IWebSocketConnection> getConnections4User(final String _login)
     {
         final List<IWebSocketConnection> ret = new ArrayList<>();
-        final SearchManager searchManager = Search.getSearchManager(getCache());
+        final SearchManager searchManager = Search.getSearchManager(RegistryManager.getCache());
         final QueryBuilder qbldr = searchManager.buildQueryBuilderForClass(UserSession.class).get();
         final CacheQuery query = searchManager.getQuery(qbldr.keyword().onField("userName").matching(_login)
                         .createQuery());
@@ -286,8 +286,8 @@ public final class RegistryManager
     public static IWebSocketConnection getConnection4Session(final String _sessionId)
     {
         IWebSocketConnection ret = null;
-        if (getCache().containsKey(_sessionId)) {
-            final UserSession userSession = getCache().get(_sessionId);
+        if (RegistryManager.getCache().containsKey(_sessionId)) {
+            final UserSession userSession = RegistryManager.getCache().get(_sessionId);
             if (userSession.getConnectionKey() != null) {
                 final IWebSocketConnectionRegistry registry = WebSocketSettings.Holder.get(EFapsApplication.get())
                                 .getConnectionRegistry();
@@ -306,14 +306,16 @@ public final class RegistryManager
     private static Cache<String, UserSession> getCache()
     {
         // before the first use the Entity used for indexing must be added
-        if (!((EmbeddedCacheManager) InfinispanCache.get().getContainer()).cacheExists(SESSIONCACHE)) {
+        if (!((EmbeddedCacheManager) InfinispanCache.get().getContainer()).cacheExists(RegistryManager.SESSIONCACHE)) {
             final Configuration config = ((EmbeddedCacheManager) InfinispanCache.get().getContainer())
-                            .getCacheConfiguration(SESSIONCACHE);
+                            .getCacheConfiguration(RegistryManager.SESSIONCACHE);
             final ConfigurationBuilder bldr = new ConfigurationBuilder().read(config);
             bldr.indexing().addIndexedEntity(UserSession.class);
-            ((EmbeddedCacheManager) InfinispanCache.get().getContainer()).defineConfiguration(SESSIONCACHE, bldr
-                            .build());
+            ((EmbeddedCacheManager) InfinispanCache.get().getContainer()).undefineConfiguration(RegistryManager.SESSIONCACHE);
+
+            ((EmbeddedCacheManager) InfinispanCache.get().getContainer()).defineConfiguration(RegistryManager.SESSIONCACHE,
+                             bldr.build());
         }
-        return InfinispanCache.get().getIgnReCache(SESSIONCACHE);
+        return InfinispanCache.get().getIgnReCache(RegistryManager.SESSIONCACHE);
     }
 }
