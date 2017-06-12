@@ -67,6 +67,7 @@ public class KeycloakFilter
         super.init(_filterConfig);
     }
 
+    @SuppressWarnings("checkstyle:returncount")
     @Override
     public void doFilter(final ServletRequest _req,
                          final ServletResponse _res,
@@ -100,12 +101,10 @@ public class KeycloakFilter
             public void logoutHttpSessions(final List<String> _ids)
             {
                 KeycloakFilter.LOG.debug("**************** logoutHttpSessions");
-                // System.err.println("**************** logoutHttpSessions");
                 for (final String id : _ids) {
                     KeycloakFilter.LOG.debug("removed idMapper: " + id);
                     KeycloakFilter.this.idMapper.removeSession(id);
                 }
-
             }
         }, this.deploymentContext, facade);
 
