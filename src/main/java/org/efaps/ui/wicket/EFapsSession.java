@@ -46,7 +46,7 @@ import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.util.string.StringValue;
-import org.efaps.admin.access.AccessCache;
+import org.efaps.admin.access.user.AccessCache;
 import org.efaps.admin.user.Person;
 import org.efaps.admin.user.UserAttributesSet;
 import org.efaps.api.background.IExecutionBridge;

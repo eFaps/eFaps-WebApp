@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2015 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.util.io.IClusterable;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
-import org.efaps.admin.access.AccessCache;
+import org.efaps.admin.access.user.AccessCache;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.user.Company;
 import org.efaps.db.Context;
