@@ -82,7 +82,7 @@ public class KeycloakFilter
         final KeycloakDeployment deployment = this.deploymentContext.resolveDeployment(facade);
         if (deployment == null || !deployment.isConfigured()) {
             response.sendError(403);
-            KeycloakFilter.LOG.debug("deployment not configured");
+            KeycloakFilter.LOG.error("deployment not configured");
             return;
         }
 
@@ -135,6 +135,7 @@ public class KeycloakFilter
             }
         }
         if (request.getQueryString() != null) {
+            KeycloakFilter.LOG.debug("Evaluating Query String");
             final boolean ajax = BooleanUtils.toBoolean(request.getHeader(WebRequest.HEADER_AJAX)) || BooleanUtils
                             .toBoolean(request.getParameter(WebRequest.PARAM_AJAX));
 
@@ -148,7 +149,7 @@ public class KeycloakFilter
                     .append("  top.location = \"").append(StringEscapeUtils.escapeJavaScript(uri)).append("\";")
                     .append(JavaScriptUtils.SCRIPT_CONTENT_SUFFIX)
                     .append("</evaluate></ajax-response>");
-
+                KeycloakFilter.LOG.debug("Responding Ajax: {}", html);
             } else {
                 html.append("<html> <head>")
                             .append("<script type=\"text/javascript\" >")
@@ -161,6 +162,7 @@ public class KeycloakFilter
                             .append("</script>\n</head>")
                             .append("<body  onload=\"test4top()\"></body>")
                             .append("</html> ");
+                KeycloakFilter.LOG.debug("Responding html: {}", html);
             }
             response.getOutputStream().print(html.toString());
             return;
