@@ -354,6 +354,11 @@
             </exclusions>
         </dependency>
         <dependency>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-authz-client</artifactId>
+            <version>3.1.0.Final</version>
+        </dependency>
+        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
             <version>3.1.0</version>
