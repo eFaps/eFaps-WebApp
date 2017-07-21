@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>new Menu idea</title>
+    <script>
+        dojoConfig = {
+            parseOnLoad: true
+        }
+    </script>
+    <script src="http://ajax.googleapis.com/ajax/libs/dojo/1.12.1/dojo/dojo.js" data-dojo-config="async: true"></script>
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/dojo/1.12.1/dijit/themes/claro/claro.css" type="text/css" />
+    <script>
+        require(["dojo/parser", "dijit/layout/ContentPane", "dijit/layout/BorderContainer"]);
+    </script>
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .image {
+            width: 30px;
+            height: 100%;
+            display: inline-block;
+            background-repeat: no-repeat;
+        }
+
+        .administration {
+            background-image: url('./tasks.svg')
+        }
+
+        .contacts {
+            background-image: url('./network.svg')
+        }
+
+        .collapse {
+            background-image: url('./analytics.svg')
+        }
+
+        .menueentry {
+            background-color: #f5f5f5;
+            border: 1px solid;
+            border-color: #ddd;
+            border-radius: 3px;
+            margin-bottom: 4px;
+            font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
+            transition: height 2s;
+            padding: 5px;
+            overflow: hidden;
+        }
+
+        .title {
+            height: 30px;
+            display: flex;
+            width: 180px;
+        }
+
+        .menutitle {
+            line-height: 30px;
+            margin-left: 5px;
+        }
+
+        .nested {
+            background-color: #e8e8e7;
+            margin-top: 2px;
+        }
+        div#slideinHeader {
+            height: 40px;
+            overflow: hidden;
+        }
+        div#slideinHeader > div {
+            height: 38px;
+        }
+        div#slideinContent {
+            overflow-x: hidden;
+            overflow-y: auto;
+            padding-top: 0px;
+        }
+
+        div#slideinFooter {
+            height: 41px;
+            overflow: hidden;
+        }
+        div#slideinFooter > div {
+            height: 38px;
+        }
+        #borderContainer {
+            width: 100%;
+            height: 100%;
+        }
+
+        #slidein {
+            z-index: 5;
+            background-color: #ffffff;
+        }
+        .slideinElement {
+            border: 1px solid;
+            border-color: #ddd;
+            background-color: #f5f5f5;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+
+<body class="claro">
+    <div data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="design:'sidebar'" id="borderContainer">
+        <div id="slidein" data-dojo-type="dijit/layout/LayoutContainer" data-dojo-props="region:'leading'" style="width: 200px;">
+            <div id="slideinHeader" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'top'">
+                <div class="slideinElement">
+                </div>
+            </div>
+            <div id="slideinContent"  data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'"></div>
+            <div id="slideinFooter" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'bottom'">
+                <div class="slideinElement">
+                    <span class="image collapse" id="slideinCollapse"></span>
+                </div>
+            </div>
+        </div>
+        <div id="main" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="splitter:true, region:'center'">Hi, I'm center pane</div>
+    </div>
+    <script>
+        require(["dojo/ready", "dojo/aspect", "dijit/registry", "dojo/dom-construct", "dojo/dom", "dojo/fx","dojo/_base/fx", "dojo/on", "dojo/dom-style", "dojo/dom-geometry",
+            "dojo/query", "dojo/NodeList-fx", "dojo/NodeList-dom"
+        ], function(ready, aspect, registry, domConstruct, dom, fx,baseFx, on, domStyle, domGeom, query) {
+
+            var node = dom.byId("slideinContent");
+
+            var attrs = {
+                class: "menueentry"
+            };
+            var attrs2 = {
+                class: "title"
+            };
+
+
+            var m1 = domConstruct.create("div", attrs, node);
+            var m11 = domConstruct.create("div", attrs2, m1);
+            domConstruct.create("span", {
+                class: "image administration"
+            }, m11);
+            var m111 = domConstruct.create("span", {
+                class: "menutitle",
+                innerHTML: "Configuracion"
+            }, m11);
+            var m12 = domConstruct.create("div", {
+                class: "nested",
+                style: "display:none"
+            }, m1);
+            var m121 = domConstruct.create("div", attrs2, m12);
+            var m1211 = domConstruct.create("span", {
+                class: "menutitle",
+                innerHTML: "Definiciones"
+            }, m121);
+            var m1212 = domConstruct.create("div", attrs2, m12);
+            domConstruct.create("span", {
+                class: "menutitle",
+                innerHTML: "Commons"
+            }, m1212);
+
+
+
+            on(m11, "click", function(evt) {
+                if (domStyle.get(m12, "display") !== "none") {
+                    fx.wipeOut({
+                        node: m12
+                    }).play();
+                } else {
+                    fx.wipeIn({
+                        node: m12
+                    }).play();
+                }
+            });
+
+            var m2 = domConstruct.create("div", attrs, node);
+            var m21 = domConstruct.create("div", attrs2, m2);
+            domConstruct.create("span", {
+                class: "image contacts"
+            }, m21);
+
+            domConstruct.create("span", {
+                class: "menutitle",
+                innerHTML: "Contactos"
+            }, m21);
+
+            var m3 = domConstruct.create("div", attrs, node);
+            var m31 = domConstruct.create("div", attrs2, m3);
+            var m311 = domConstruct.create("span", {
+                innerHTML: "Menu 3"
+            }, m31);
+
+            var m4 = domConstruct.create("div", attrs, node);
+            var m41 = domConstruct.create("div", attrs2, m4);
+            var m411 = domConstruct.create("span", {
+                innerHTML: "Menu 4"
+            }, m41);
+
+
+            var m5 = domConstruct.create("div", attrs, node);
+            var m51 = domConstruct.create("div", attrs2, m5);
+            domConstruct.create("span", {
+                class: "image colapse"
+            }, m51);
+            var m511 = domConstruct.create("span", {
+                class: "menutitle",
+                innerHTML: "Colapsar"
+            }, m51);
+
+            on(dom.byId("slideinCollapse"), "click", function(evt) {
+                var anim;
+                if (domGeom.getContentBox(m5).w > 100) {
+                    anim = fx.combine([
+                        baseFx.animateProperty({
+                            node: "slidein",
+                            properties: {
+                                width: 56
+                            }
+                        }),
+                        baseFx.animateProperty({
+                            node: "slidein_splitter",
+                            properties: {
+                                left: 40
+                            }
+                        }),
+                        baseFx.animateProperty({
+                            node: "main",
+                            properties: {
+                                left: 60,
+                                width:1780
+                            }
+                        })
+                    ]);
+                } else {
+                    anim = fx.combine([
+                        baseFx.animateProperty({
+                            node: "slidein",
+                            properties: {
+                                width: 200
+                            }
+                        }),
+                        baseFx.animateProperty({
+                            node: "slidein_splitter",
+                            properties: {
+                                left: 40
+                            }
+                        }),
+                        baseFx.animateProperty({
+                            node: "main",
+                            properties: {
+                                left: 220
+                            }
+                        })
+                    ]);
+                }
+                aspect.after(anim, "onEnd", function(){
+                    registry.byId("borderContainer").resize();
+                });
+                anim.play();
+            });
+
+        });
+    </script>
+</body>
+
+</html>
