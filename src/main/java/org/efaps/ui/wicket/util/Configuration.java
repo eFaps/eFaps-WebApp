@@ -366,7 +366,8 @@ public final class Configuration
     {
         String ret = null;
         try {
-            ret = Configuration.getSysConfig().getAttributeValue(_attribute.getKey());
+            ret = Configuration.getSysConfig() == null ? null
+                : Configuration.getSysConfig().getAttributeValue(_attribute.getKey());
         } catch (final EFapsException e) {
             Configuration.LOG.warn("Catched error while reading Value from SystemConfiguration {}", _attribute, e);
         }
