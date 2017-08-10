@@ -113,6 +113,9 @@ public class ContentPaneBehavior
     /** The js executeable. */
     private boolean jsExecuteable;
 
+    /** The layout container. */
+    private boolean layoutContainer;
+
     /**
      * Constructor.
      *
@@ -161,8 +164,11 @@ public class ContentPaneBehavior
                                final ComponentTag _tag)
     {
         super.onComponentTag(_component, _tag);
-        _tag.put("data-dojo-type", isJsExecuteable() ? "dojox/layout/ContentPane" : "dijit/layout/ContentPane");
-
+        if (isLayoutContainer()) {
+            _tag.put("data-dojo-type", "dijit/layout/LayoutContainer");
+        } else {
+            _tag.put("data-dojo-type", isJsExecuteable() ? "dojox/layout/ContentPane" : "dijit/layout/ContentPane");
+        }
         if (this.region != null) {
             _tag.append("data-dojo-props", "region: '" + this.region.getKey() + "'", ",");
         }
@@ -196,10 +202,12 @@ public class ContentPaneBehavior
      * Setter method for instance variable {@link #width}.
      *
      * @param _width value for instance variable {@link #width}
+     * @return the content pane behavior
      */
-    public void setWidth(final String _width)
+    public ContentPaneBehavior setWidth(final String _width)
     {
         this.width = _width;
+        return this;
     }
 
     /**
@@ -214,7 +222,8 @@ public class ContentPaneBehavior
     {
         super.renderHead(_component, _response);
         _response.render(RequireHeaderItem.forClasses(
-                        isJsExecuteable() ? DojoClasses.ContentPaneX : DojoClasses.ContentPane, DojoClasses.parser));
+                        isJsExecuteable() ? DojoClasses.ContentPaneX : DojoClasses.ContentPane,
+                                        DojoClasses.LayoutContainer, DojoClasses.parser));
     }
 
     /**
@@ -236,6 +245,28 @@ public class ContentPaneBehavior
     public ContentPaneBehavior setJsExecuteable(final boolean _jsExecuteable)
     {
         this.jsExecuteable = _jsExecuteable;
+        return this;
+    }
+
+
+    /**
+     * Getter method for the instance variable {@link #layoutContainer}.
+     *
+     * @return value of instance variable {@link #layoutContainer}
+     */
+    public boolean isLayoutContainer()
+    {
+        return this.layoutContainer;
+    }
+
+    /**
+     * Setter method for instance variable {@link #layoutContainer}.
+     *
+     * @param _layoutContainer value for instance variable {@link #layoutContainer}
+     */
+    public ContentPaneBehavior setLayoutContainer(final boolean _layoutContainer)
+    {
+        this.layoutContainer = _layoutContainer;
         return this;
     }
 }

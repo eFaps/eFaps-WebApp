@@ -75,6 +75,7 @@ import org.efaps.ui.wicket.components.LazyIframe.IFrameProvider;
 import org.efaps.ui.wicket.components.help.ShowHelpBehavior;
 import org.efaps.ui.wicket.components.menu.LinkItem;
 import org.efaps.ui.wicket.components.menu.MenuBarPanel;
+import org.efaps.ui.wicket.components.menu.SlideInPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.preloader.PreLoaderPanel;
 import org.efaps.ui.wicket.components.search.SearchPanel;
@@ -190,10 +191,29 @@ public class MainPage
         add(new PreLoaderPanel("preloader"));
         add(new OpenWindowOnLoadBehavior());
         add(new ShowHelpBehavior());
+     // set the title for the Page
+        add2Page(new Label("pageTitle", DBProperties.getProperty("Logo.Version.Label")));
+
+        add(this.modal);
+        add(new ResizeEventBehavior());
+
+        try {
+            // only add the search if it is activated in the kernel
+            if (EFapsSystemConfiguration.get().getAttributeValueAsBoolean(KernelSettings.INDEXACTIVATE)) {
+                final SearchPanel search = new SearchPanel("search");
+                add(search);
+            } else {
+                add(new WebMarkupContainer("search").setVisible(false));
+            }
+        } catch (final EFapsException e1) {
+            MainPage.LOG.error("Error on retrieving setting for index", e1);
+        }
+
+        final boolean slidein = Configuration.getAttribute(ConfigAttribute.MAINMENU).equalsIgnoreCase("slidein");
 
         final WebMarkupContainer borderPanel = new WebMarkupContainer("borderPanel");
         this.add(borderPanel);
-        borderPanel.add(new BorderContainerBehavior(Design.HEADLINE, false));
+        borderPanel.add(new BorderContainerBehavior(slidein ? Design.SIDEBAR : Design.HEADLINE, false));
 
         final LazyIframe mainPanel = new LazyIframe("mainPanel", new IFrameProvider()
         {
@@ -215,47 +235,53 @@ public class MainPage
         }, MainPage.IFRAME_ID);
 
         borderPanel.add(mainPanel);
-        mainPanel.add(new ContentPaneBehavior(Region.CENTER, false));
-
-        final WebMarkupContainer headerPanel = new WebMarkupContainer("headerPanel");
-        borderPanel.add(headerPanel);
-        headerPanel.add(new ContentPaneBehavior(Region.TOP, false));
-
-        headerPanel.add(new MenuBarPanel("menubar", Model.of(new UIMenuItem(UUID
-                      .fromString(Configuration.getAttribute(ConfigAttribute.TOOLBAR))))));
-
-        // set the title for the Page
-        add2Page(new Label("pageTitle", DBProperties.getProperty("Logo.Version.Label")));
-
-        add(this.modal);
-        add(new ResizeEventBehavior());
-
-        try {
-            // only add the search if it is activated in the kernel
-            if (EFapsSystemConfiguration.get().getAttributeValueAsBoolean(KernelSettings.INDEXACTIVATE)) {
-                final SearchPanel search = new SearchPanel("search");
-                add(search);
-            } else {
-                add(new WebMarkupContainer("search").setVisible(false));
-            }
-        } catch (final EFapsException e1) {
-            MainPage.LOG.error("Error on retrieving setting for index", e1);
-        }
-
-        final WebMarkupContainer logo = new WebMarkupContainer("logo");
-        headerPanel.add(logo);
-
-        final Label welcome = new Label("welcome", DBProperties.getProperty("Logo.Welcome.Label"));
-        logo.add(welcome);
-
+        mainPanel.add(new ContentPaneBehavior(Region.CENTER, slidein));
         try {
             final Context context = Context.getThreadContext();
-            logo.add(new Label("firstname", context.getPerson().getFirstName()));
-            logo.add(new Label("lastname", context.getPerson().getLastName()));
-            final String companyName = context.getCompany() == null ? "" : context.getCompany().getName();
-            logo.add(new Label("company", companyName));
-            logo.add(new AttributeModifier("class",
-                            new Model<>("eFapsLogo " + companyName.replaceAll("\\W", ""))));
+            if (slidein) {
+                borderPanel.add(new WebMarkupContainer("headerPanel").setVisible(false));
+
+                final WebMarkupContainer slideinPane = new WebMarkupContainer("slideinPane");
+                slideinPane.add(new ContentPaneBehavior(Region.LEADING, false)
+                                .setLayoutContainer(true)
+                                .setWidth("200px"));
+                borderPanel.add(slideinPane);
+
+                final WebMarkupContainer slideinHeaderPanel = new WebMarkupContainer("slideinHeaderPane");
+                slideinHeaderPanel.add(new ContentPaneBehavior(Region.TOP, false));
+                slideinPane.add(slideinHeaderPanel);
+
+                final WebMarkupContainer slideinContentPane = new WebMarkupContainer("slideinContentPane");
+                slideinContentPane.add(new ContentPaneBehavior(Region.CENTER, false));
+                slideinPane.add(slideinContentPane);
+
+                slideinContentPane.add(new SlideInPanel("slideInPanel", Model.of(new UIMenuItem(UUID
+                                .fromString(Configuration.getAttribute(ConfigAttribute.TOOLBAR))))));
+
+                final WebMarkupContainer slideinFooterPane = new WebMarkupContainer("slideinFooterPane");
+                slideinFooterPane.add(new ContentPaneBehavior(Region.BOTTOM, false));
+                slideinPane.add(slideinFooterPane);
+
+            } else {
+                borderPanel.add(new WebMarkupContainer("slideinPanel").setVisible(false));
+                final WebMarkupContainer headerPanel = new WebMarkupContainer("headerPanel");
+                borderPanel.add(headerPanel);
+                headerPanel.add(new ContentPaneBehavior(Region.TOP, false));
+
+                headerPanel.add(new MenuBarPanel("menubar", Model.of(new UIMenuItem(UUID
+                          .fromString(Configuration.getAttribute(ConfigAttribute.TOOLBAR))))));
+                final WebMarkupContainer logo = new WebMarkupContainer("logo");
+                headerPanel.add(logo);
+                final Label welcome = new Label("welcome", DBProperties.getProperty("Logo.Welcome.Label"));
+                logo.add(welcome);
+                logo.add(new Label("firstname", context.getPerson().getFirstName()));
+                logo.add(new Label("lastname", context.getPerson().getLastName()));
+                final String companyName = context.getCompany() == null ? "" : context.getCompany().getName();
+                logo.add(new Label("company", companyName));
+                logo.add(new AttributeModifier("class",
+                                new Model<>("eFapsLogo " + companyName.replaceAll("\\W", ""))));
+            }
+
             final long usrId = context.getPersonId();
             // Admin_Common_SystemMessageAlert
             final LinkItem alert = new LinkItem("useralert",

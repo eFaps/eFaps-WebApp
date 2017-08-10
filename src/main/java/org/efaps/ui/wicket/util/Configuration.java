@@ -220,7 +220,10 @@ public final class Configuration
 
         /** Admin_Program_MarkdownTree_Menu_Action_EditMarkdown. */
         HELPEDITCMD(false, true, "HelpEditCommand", "a42e1651-a42e-42f2-9b7b-7f47599a13fd", String.class,
-                        "UUID of the Command that defines the form to be opened for edit help.");
+                        "UUID of the Command that defines the form to be opened for edit help."),
+
+        /** The mainmenu. */
+        MAINMENU(true, true, "MainMenuStyle", "", String.class, "Type of the Main Menu. ");
 
         /**
          * Stores the key for this Attribute..

@@ -105,7 +105,7 @@ public class PreLoaderPanel
             final StringBuilder js = new StringBuilder()
                 .append(" ready(function() {\n")
                 .append(" setTimeout(function hideLoader(){\n")
-                .append(" fx.fadeOut({\n")
+                .append(" baseFx.fadeOut({\n")
                 .append(" node: '").append(_component.getMarkupId(true)).append("',")
                 .append(" duration:1000,\n")
                 .append(" onEnd: function(n){\n")
@@ -113,8 +113,8 @@ public class PreLoaderPanel
                 .append(" }")
                 .append(" }).play();\n")
                 .append(" }, 250);});");
-            _response.render(JavaScriptHeaderItem.forScript(DojoWrapper.require(js, DojoClasses.ready, DojoClasses.fx),
-                            _component.getClass().getName() + "_" + _component.getMarkupId(true)));
+            _response.render(JavaScriptHeaderItem.forScript(DojoWrapper.require(js, DojoClasses.ready,
+                            DojoClasses.basefx), _component.getClass().getName() + "_" + _component.getMarkupId(true)));
         }
     }
 }

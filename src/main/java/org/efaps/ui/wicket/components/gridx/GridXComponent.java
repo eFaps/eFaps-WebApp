@@ -50,8 +50,6 @@ import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.util.string.StringValue;
 import org.apache.wicket.util.string.StringValueConversionException;
-import org.apache.wicket.util.visit.IVisit;
-import org.apache.wicket.util.visit.IVisitor;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.admin.ui.AbstractMenu;
@@ -159,7 +157,7 @@ public class GridXComponent
                             DojoClasses.GridQuickFilter, DojoClasses.GridAggregate,
                             DojoClasses.Bar, DojoClasses.Persist, DojoClasses.Filter, DojoClasses.FilterBar,
                             DojoClasses.DropDownButton, DojoClasses.TextBox, DojoClasses.TooltipDialog,
-                            DojoClasses.ready, DojoClasses.domGeom, DojoClasses.ColumnLock);
+                            DojoClasses.domGeom, DojoClasses.ColumnLock);
 
             final StringBuilder js = new StringBuilder()
                 .append("var cp = function(_attr, _itemA, _itemB) {\n")
@@ -589,19 +587,13 @@ public class GridXComponent
     protected AjaxEventBehavior getBehavior(final Class<? extends Behavior> _class)
     {
         final GridXPanel panel = (GridXPanel) getParent();
-        return panel.visitChildren(MenuItem.class, new IVisitor<MenuItem, AjaxEventBehavior>()
-        {
-
-            @Override
-            public void component(final MenuItem _item,
-                                  final IVisit<AjaxEventBehavior> _visit)
-            {
-                final List<? extends Behavior> behaviors = _item.getBehaviors(_class);
-                if (CollectionUtils.isNotEmpty(behaviors)) {
-                    _visit.stop((AjaxEventBehavior) behaviors.get(0));
-                } else {
-                    _visit.stop();
-                }
+        return panel.visitChildren(MenuItem.class, (_item,
+         _visit) -> {
+            final List<? extends Behavior> behaviors = _item.getBehaviors(_class);
+            if (CollectionUtils.isNotEmpty(behaviors)) {
+                _visit.stop((AjaxEventBehavior) behaviors.get(0));
+            } else {
+                _visit.stop();
             }
         });
     }
