@@ -22,6 +22,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.head.IHeaderResponse;
@@ -116,6 +117,7 @@ public class SlideIn
         js.append("var ").append(node1).append(" = domConstruct.create(\"div\", { class: \"menueentry\"}, sn);\n")
             .append("var ").append(node2).append(" = domConstruct.create(\"div\", { class: \"title\"}, ")
                 .append(node1).append(");\n")
+            .append(getImage(_menuItem, node2))
             .append("domConstruct.create(\"span\", { class: \"menutitle\", innerHTML: \"")
             .append(StringEscapeUtils.escapeEcmaScript(StringEscapeUtils.escapeHtml4(_menuItem.getLabel())))
             .append("\"} , ").append(node2).append("); \n")
@@ -161,11 +163,35 @@ public class SlideIn
                 .append("{ class: \"menueentry\"}, ").append(node1).append(");\n")
                 .append("var ").append(node3).append(" = domConstruct.create(\"div\", { class: \"title\"}, ")
                     .append(node2).append(");\n")
+                .append(getImage(childItem, node3))
                 .append("domConstruct.create(\"span\", { class: \"menutitle\", innerHTML: \"")
                 .append(StringEscapeUtils.escapeEcmaScript(StringEscapeUtils.escapeHtml4(childItem.getLabel())))
                 .append("\"} , ").append(node3).append("); \n")
                 .append(getSubMenuItem(childItem, node2, node3));
         }
+        return js;
+    }
+
+    /**
+     * Gets the image.
+     *
+     * @param _menuItem the menu item
+     * @param _node the node
+     * @return the image
+     */
+    private CharSequence getImage(final UIMenuItem _menuItem,
+                                  final String _node)
+    {
+        final String label = _menuItem.getLabel();
+        String content = "";
+        if (StringUtils.isNotEmpty(label)) {
+            content = StringUtils.left(label, 1);
+        }
+        final StringBuilder js = new StringBuilder();
+        js.append("domConstruct.create(\"span\", {\n")
+            .append("class: \"circle\"\n,")
+            .append("innerHTML: \"").append(content).append("\"\n")
+            .append("}, ").append(_node).append(");\n");
         return js;
     }
 }
