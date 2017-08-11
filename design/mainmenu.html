@@ -104,6 +104,17 @@
             background-color: #f5f5f5;
             border-radius: 3px;
         }
+        .circle {
+            width: 30px;
+            height: 30px;
+            display: inline-block;
+            background-color: red;
+            border-radius: 50%;
+            line-height: 30px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+        }
     </style>
 </head>
 
@@ -190,12 +201,18 @@
             var m3 = domConstruct.create("div", attrs, node);
             var m31 = domConstruct.create("div", attrs2, m3);
             var m311 = domConstruct.create("span", {
-                innerHTML: "Menu 3"
+                innerHTML: "Menu 3",
+
             }, m31);
 
             var m4 = domConstruct.create("div", attrs, node);
             var m41 = domConstruct.create("div", attrs2, m4);
+            domConstruct.create("span", {
+                class: "circle",
+                innerHTML: "M"
+            }, m41);
             var m411 = domConstruct.create("span", {
+                class: "menutitle",
                 innerHTML: "Menu 4"
             }, m41);
 

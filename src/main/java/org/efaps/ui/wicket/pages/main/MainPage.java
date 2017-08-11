@@ -263,7 +263,7 @@ public class MainPage
                 slideinPane.add(slideinFooterPane);
 
             } else {
-                borderPanel.add(new WebMarkupContainer("slideinPanel").setVisible(false));
+                borderPanel.add(new WebMarkupContainer("slideinPane").setVisible(false));
                 final WebMarkupContainer headerPanel = new WebMarkupContainer("headerPanel");
                 borderPanel.add(headerPanel);
                 headerPanel.add(new ContentPaneBehavior(Region.TOP, false));
