@@ -17,23 +17,43 @@
 package org.efaps.ui.wicket.components.menu;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.wicket.IRequestListener;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.util.string.StringValue;
+import org.efaps.admin.ui.AbstractCommand;
+import org.efaps.ui.wicket.models.objects.PagePosition;
+import org.efaps.ui.wicket.models.objects.UIForm;
+import org.efaps.ui.wicket.models.objects.UIGrid;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
+import org.efaps.ui.wicket.pages.content.form.FormPage;
+import org.efaps.ui.wicket.pages.content.grid.GridPage;
+import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
+import org.efaps.ui.wicket.pages.content.table.TablePage;
+import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.ui.wicket.util.Configuration;
+import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 import org.efaps.ui.wicket.util.DojoClass;
 import org.efaps.ui.wicket.util.DojoClasses;
 import org.efaps.ui.wicket.util.DojoWrapper;
+import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Class SlideIn.
@@ -42,15 +62,23 @@ import org.efaps.ui.wicket.util.DojoWrapper;
  */
 public class SlideIn
     extends WebComponent
+    implements IRequestListener
 {
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
+    /**
+     * Logger for this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(SlideIn.class);
 
     /**
      * Reference to the style sheet.
      */
     private static final EFapsContentReference CSS = new EFapsContentReference(SlideIn.class, "Slide.css");
+
+    /** The menu items. */
+    private final Map<String, UIMenuItem> menuItems = new HashMap<>();
 
     /**
      * Instantiates a new slide in.
@@ -85,7 +113,7 @@ public class SlideIn
         Collections.addAll(dojoClasses, DojoClasses.aspect, DojoClasses.ready, DojoClasses.registry,
                         DojoClasses.domConstruct, DojoClasses.dom, DojoClasses.fx, DojoClasses.basefx, DojoClasses.on,
                         DojoClasses.domStyle, DojoClasses.domGeom, DojoClasses.query, DojoClasses.NodeListDom,
-                        DojoClasses.NodeListFx);
+                        DojoClasses.NodeListFx, DojoClasses.domClass);
 
         final StringBuilder js = new StringBuilder()
                         .append("var sn = dom.byId('slidein');\n");
@@ -115,8 +143,11 @@ public class SlideIn
         final String node2 = RandomStringUtils.randomAlphabetic(3);
 
         js.append("var ").append(node1).append(" = domConstruct.create(\"div\", { class: \"menueentry\"}, sn);\n")
-            .append("var ").append(node2).append(" = domConstruct.create(\"div\", { class: \"title\"}, ")
-                .append(node1).append(");\n")
+            .append("var ").append(node2).append(" = domConstruct.create(\"div\", { class: \"title");
+        if (!_menuItem.getChildren().isEmpty()) {
+            js.append(" closed");
+        }
+        js.append("\"},").append(node1).append(");\n")
             .append(getImage(_menuItem, node2))
             .append("domConstruct.create(\"span\", { class: \"menutitle\", innerHTML: \"")
             .append(StringEscapeUtils.escapeEcmaScript(StringEscapeUtils.escapeHtml4(_menuItem.getLabel())))
@@ -140,16 +171,26 @@ public class SlideIn
         final StringBuilder js = new StringBuilder();
         final String node1 = RandomStringUtils.randomAlphabetic(3);
 
-        if (!_menuItem.getChildren().isEmpty()) {
+        if (_menuItem.getChildren().isEmpty()) {
+            js.append(" on(").append(_titleNode).append(", \"click\", function(evt) {\n")
+                  .append("registry.byId(\"").append("mainPanel").append(
+                          "\").set(\"content\", domConstruct.create(\"iframe\", {").append("\"id\": \"")
+                      .append(MainPage.IFRAME_ID).append("\",\"src\": \"").append(getUrl(_menuItem))
+                      .append("\",\"style\": \"border: 0; width: 100%; height: 99%\"").append(",\"id\": \"")
+                        .append(MainPage.IFRAME_ID).append("\"").append("}));")
+                .append("});\n");
+        } else {
             js.append("var ").append(node1).append(" = domConstruct.create(\"div\",")
                 .append("{ class: \"nested\", style: \"display:none\"}, ")
                 .append(_parentNode).append(");\n")
                 .append(" on(").append(_titleNode).append(", \"click\", function(evt) {\n")
                 .append("if (domStyle.get(").append(node1).append(", \"display\") !== \"none\") {\n")
+                .append(" domClass.replace(evt.currentTarget, \"closed\", \"open\"); \n")
                 .append("fx.wipeOut({\n")
                 .append("node: ").append(node1).append("\n")
                 .append("}).play();\n")
                 .append("} else {\n")
+                .append(" domClass.replace(evt.currentTarget, \"open\", \"closed\"); \n")
                 .append("fx.wipeIn({\n")
                 .append("node: ").append(node1).append("\n")
                 .append("}).play();\n")
@@ -161,8 +202,11 @@ public class SlideIn
             final String node3 = RandomStringUtils.randomAlphabetic(3);
             js.append("var ").append(node2).append(" = domConstruct.create(\"div\",")
                 .append("{ class: \"menueentry\"}, ").append(node1).append(");\n")
-                .append("var ").append(node3).append(" = domConstruct.create(\"div\", { class: \"title\"}, ")
-                    .append(node2).append(");\n")
+                .append("var ").append(node3).append(" = domConstruct.create(\"div\", { class: \"title");
+            if (!childItem.getChildren().isEmpty()) {
+                js.append(" closed");
+            }
+            js.append("\"},").append(node2).append(");\n")
                 .append(getImage(childItem, node3))
                 .append("domConstruct.create(\"span\", { class: \"menutitle\", innerHTML: \"")
                 .append(StringEscapeUtils.escapeEcmaScript(StringEscapeUtils.escapeHtml4(childItem.getLabel())))
@@ -170,6 +214,21 @@ public class SlideIn
                 .append(getSubMenuItem(childItem, node2, node3));
         }
         return js;
+    }
+
+    /**
+     * Gets the url.
+     *
+     * @param _menuItem the menu item
+     * @return the url
+     */
+    private CharSequence getUrl(final UIMenuItem _menuItem)
+    {
+        final PageParameters pageParameters = new PageParameters();
+        final String key = RandomStringUtils.randomAlphabetic(6);
+        this.menuItems.put(key, _menuItem);
+        pageParameters.add("m", key);
+        return urlForListener(pageParameters);
     }
 
     /**
@@ -185,13 +244,47 @@ public class SlideIn
         final String label = _menuItem.getLabel();
         String content = "";
         if (StringUtils.isNotEmpty(label)) {
-            content = StringUtils.left(label, 1);
+            content = StringUtils.left(label, 1).toUpperCase();
         }
         final StringBuilder js = new StringBuilder();
         js.append("domConstruct.create(\"span\", {\n")
-            .append("class: \"circle\"\n,")
+            .append("class: \"circle ").append(content).append(" \"\n,")
             .append("innerHTML: \"").append(content).append("\"\n")
             .append("}, ").append(_node).append(");\n");
         return js;
+    }
+
+    @Override
+    public void onRequest()
+    {
+        final StringValue key = getRequestCycle().getRequest().getQueryParameters().getParameterValue("m");
+        final UIMenuItem menuItem = this.menuItems.get(key.toString());
+
+        try {
+            final AbstractCommand command = menuItem.getCommand();
+            if (command.getTargetTable() != null) {
+                if (command.getTargetStructurBrowserField() != null) {
+                    final StructurBrowserPage page = new StructurBrowserPage(menuItem.getCommandUUID(), menuItem
+                                    .getInstanceKey());
+                    setResponsePage(page);
+                } else {
+                    if ("GridX".equals(Configuration.getAttribute(ConfigAttribute.TABLEDEFAULTTYPECONTENT))) {
+                        final GridPage page = new GridPage(Model.of(UIGrid.get(command.getUUID(),
+                                        PagePosition.CONTENT)));
+                        setResponsePage(page);
+                    } else {
+                        final TablePage page = new TablePage(menuItem.getCommandUUID(), menuItem.getInstanceKey());
+                        setResponsePage(page);
+                    }
+                }
+            } else if (command.getTargetForm() != null) {
+                final UIForm uiForm = new UIForm(menuItem.getCommandUUID(), menuItem.getInstanceKey()).setPagePosition(
+                                PagePosition.CONTENT);
+                final FormPage page = new FormPage(Model.of(uiForm));
+                setResponsePage(page);
+            }
+        } catch (final EFapsException e) {
+            SlideIn.LOG.error("Catched", e);
+        }
     }
 }
