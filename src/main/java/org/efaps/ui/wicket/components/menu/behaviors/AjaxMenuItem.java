@@ -14,36 +14,30 @@
  * limitations under the License.
  *
  */
-package org.efaps.ui.wicket.components.menu;
+package org.efaps.ui.wicket.components.menu.behaviors;
 
-import org.apache.wicket.markup.html.panel.GenericPanel;
-import org.apache.wicket.model.IModel;
-import org.efaps.ui.wicket.components.menu.behaviors.AjaxMenuItem;
-import org.efaps.ui.wicket.models.objects.UIMenuItem;
+import org.apache.wicket.markup.html.WebComponent;
 
 /**
- * The Class SlideInPanel.
+ * The Class AjaxMenuItem.
  *
  * @author The eFaps Team
  */
-public class SlideInPanel
-    extends GenericPanel<UIMenuItem>
+public class AjaxMenuItem
+    extends WebComponent
 {
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
 
     /**
-     * Instantiates a new slide in panel.
+     * Instantiates a new ajax menu item.
      *
      * @param _wicketId the wicket id
-     * @param _model the model
      */
-    public SlideInPanel(final String _wicketId,
-                        final IModel<UIMenuItem> _model)
+    public AjaxMenuItem(final String _wicketId)
     {
-        super(_wicketId, _model);
-        add(new SlideIn("slidein", _model));
-        add(new AjaxMenuItem("ajaxMenuItem"));
+        super(_wicketId);
+        add(new ExecBehavior());
     }
 }

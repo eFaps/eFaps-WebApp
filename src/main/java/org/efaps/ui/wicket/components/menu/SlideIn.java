@@ -19,13 +19,18 @@ package org.efaps.ui.wicket.components.menu;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.IRequestListener;
+import org.apache.wicket.ajax.AjaxEventBehavior;
+import org.apache.wicket.ajax.attributes.CallbackParameter;
+import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.head.IHeaderResponse;
@@ -35,6 +40,9 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.StringValue;
 import org.efaps.admin.ui.AbstractCommand;
+import org.efaps.admin.ui.AbstractCommand.Target;
+import org.efaps.ui.wicket.components.menu.behaviors.AjaxMenuItem;
+import org.efaps.ui.wicket.components.menu.behaviors.ExecBehavior;
 import org.efaps.ui.wicket.models.objects.PagePosition;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIGrid;
@@ -227,11 +235,7 @@ public class SlideIn
 
         if (_menuItem.getChildren().isEmpty()) {
             js.append(" on(").append(_titleNode).append(", \"click\", function(evt) {\n")
-                  .append("registry.byId(\"").append("mainPanel").append(
-                          "\").set(\"content\", domConstruct.create(\"iframe\", {").append("\"id\": \"")
-                      .append(MainPage.IFRAME_ID).append("\",\"src\": \"").append(getUrl(_menuItem))
-                      .append("\",\"style\": \"border: 0; width: 100%; height: 99%\"").append(",\"id\": \"")
-                        .append(MainPage.IFRAME_ID).append("\"").append("}));")
+                .append(getEventJs(_menuItem))
                 .append("});\n");
         } else {
             js.append("var ").append(node1).append(" = domConstruct.create(\"div\",")
@@ -276,13 +280,24 @@ public class SlideIn
      * @param _menuItem the menu item
      * @return the url
      */
-    private CharSequence getUrl(final UIMenuItem _menuItem)
+    private CharSequence getEventJs(final UIMenuItem _menuItem)
     {
-        final PageParameters pageParameters = new PageParameters();
         final String key = RandomStringUtils.randomAlphabetic(6);
         this.menuItems.put(key, _menuItem);
-        pageParameters.add("m", key);
-        return urlForListener(pageParameters);
+        final StringBuilder ret = new StringBuilder();
+        if (Target.HIDDEN == _menuItem.getTarget()) {
+            ret.append(getBehavior(ExecBehavior.class).getCallbackFunctionBody(CallbackParameter.converted("m",
+                            "\"" + key + "\"")));
+        } else {
+            final PageParameters pageParameters = new PageParameters();
+            pageParameters.add("m", key);
+            ret.append("registry.byId(\"").append("mainPanel").append(
+                            "\").set(\"content\", domConstruct.create(\"iframe\", {").append("\"id\": \"")
+                    .append(MainPage.IFRAME_ID).append("\",\"src\": \"").append(urlForListener(pageParameters))
+                    .append("\",\"style\": \"border: 0; width: 100%; height: 99%\"").append(",\"id\": \"")
+                    .append(MainPage.IFRAME_ID).append("\"").append("}));");
+        }
+        return ret;
     }
 
     /**
@@ -306,6 +321,26 @@ public class SlideIn
             .append("innerHTML: \"").append(content).append("\"\n")
             .append("}, ").append(_node).append(");\n");
         return js;
+    }
+
+    /**
+     * Gets the behavior.
+     *
+     * @param _class the class
+     * @return the behavior
+     */
+    protected AjaxEventBehavior getBehavior(final Class<? extends Behavior> _class)
+    {
+        final SlideInPanel panel = (SlideInPanel) getParent();
+        return panel.visitChildren(AjaxMenuItem.class, (_item,
+         _visit) -> {
+            final List<? extends Behavior> behaviors = _item.getBehaviors(_class);
+            if (CollectionUtils.isNotEmpty(behaviors)) {
+                _visit.stop((AjaxEventBehavior) behaviors.get(0));
+            } else {
+                _visit.stop();
+            }
+        });
     }
 
     @Override
@@ -340,5 +375,15 @@ public class SlideIn
         } catch (final EFapsException e) {
             SlideIn.LOG.error("Catched", e);
         }
+    }
+
+    /**
+     * Getter method for the instance variable {@link #menuItems}.
+     *
+     * @return value of instance variable {@link #menuItems}
+     */
+    public Map<String, UIMenuItem> getMenuItems()
+    {
+        return this.menuItems;
     }
 }
