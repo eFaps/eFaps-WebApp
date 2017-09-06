@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,6 +52,7 @@ import org.apache.wicket.protocol.ws.api.WebSocketBehavior;
 import org.apache.wicket.protocol.ws.api.event.WebSocketPushPayload;
 import org.apache.wicket.protocol.ws.api.message.ConnectedMessage;
 import org.apache.wicket.protocol.ws.api.message.IWebSocketPushMessage;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.StringValue;
 import org.apache.wicket.util.time.Duration;
 import org.efaps.admin.EFapsSystemConfiguration;
@@ -64,6 +65,7 @@ import org.efaps.api.ui.ILoginAlertProvider;
 import org.efaps.db.Context;
 import org.efaps.message.MessageStatusHolder;
 import org.efaps.ui.wicket.behaviors.SetMessageStatusBehavior;
+import org.efaps.ui.wicket.behaviors.dojo.AbstractDojoBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.BorderContainerBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.BorderContainerBehavior.Design;
 import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior;
@@ -87,6 +89,7 @@ import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.dashboard.DashboardPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.pages.error.UnexpectedErrorPage;
+import org.efaps.ui.wicket.pages.preferences.PreferencesPage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.util.Configuration;
@@ -191,11 +194,28 @@ public class MainPage
         add(new PreLoaderPanel("preloader"));
         add(new OpenWindowOnLoadBehavior());
         add(new ShowHelpBehavior());
-     // set the title for the Page
+        // set the title for the Page
         add2Page(new Label("pageTitle", DBProperties.getProperty("Logo.Version.Label")));
 
-        add(this.modal);
+        add(modal);
         add(new ResizeEventBehavior());
+
+        final LazyIframe preferences = new LazyIframe("preferences", new IFrameProvider()
+        {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public Page getPage(final Component _component)
+            {
+                Page error = null;
+                WebPage page = new PreferencesPage();
+                return error == null ? page : error;
+            }
+        }, "eFapsPreferences", false);
+        preferences.setOutputMarkupId(true);
+        preferences.add(new LoadPreferenceBehavior());
+        this.add(preferences);
+        System.out.println(preferences.urlForListener(new PageParameters()));
 
         try {
             // only add the search if it is activated in the kernel
@@ -313,9 +333,9 @@ public class MainPage
             add(socketMsgContainer);
             if (Configuration.getAttributeAsBoolean(ConfigAttribute.WEBSOCKET_ACTVATE)) {
                 socketMsgContainer.setOutputMarkupPlaceholderTag(true);
-                this.socketMsg = new Label("socketMsg", "none yet").setEscapeModelStrings(false);
-                this.socketMsg.setOutputMarkupPlaceholderTag(true);
-                this.socketMsg.add(new WebSocketBehavior()
+                socketMsg = new Label("socketMsg", "none yet").setEscapeModelStrings(false);
+                socketMsg.setOutputMarkupPlaceholderTag(true);
+                socketMsg.add(new WebSocketBehavior()
                 {
 
                     private static final long serialVersionUID = 1L;
@@ -326,7 +346,7 @@ public class MainPage
                         RegistryManager.addMsgConnection(_message.getSessionId(), _message.getKey());
                     }
                 });
-                socketMsgContainer.add(this.socketMsg);
+                socketMsgContainer.add(socketMsg);
 
                 final AjaxLink<Void> close = new AjaxLink<Void>("socketMsgClose") {
 
@@ -335,7 +355,7 @@ public class MainPage
                     @Override
                     public void onClick(final AjaxRequestTarget _target)
                     {
-                        final MarkupContainer msgContainer = MainPage.this.socketMsg.getParent();
+                        final MarkupContainer msgContainer = socketMsg.getParent();
                         msgContainer.add(new AttributeModifier("style", new Model<>("display:none")));
                         _target.add(msgContainer);
                     }
@@ -368,7 +388,7 @@ public class MainPage
      */
     public final ModalWindowContainer getModal()
     {
-        return this.modal;
+        return modal;
     }
 
     @Override
@@ -379,8 +399,8 @@ public class MainPage
             if (wsEvent != null) {
                 final IWebSocketPushMessage msg = wsEvent.getMessage();
                 if (msg instanceof PushMsg) {
-                    this.socketMsg.setDefaultModelObject(wsEvent.getMessage().toString());
-                    final MarkupContainer msgContainer = this.socketMsg.getParent();
+                    socketMsg.setDefaultModelObject(wsEvent.getMessage().toString());
+                    final MarkupContainer msgContainer = socketMsg.getParent();
                     msgContainer.add(new AttributeModifier("style", new Model<>("display:block")));
                     wsEvent.getHandler().add(msgContainer);
                 } else if (msg instanceof UIUserSession) {
@@ -497,8 +517,8 @@ public class MainPage
                 final Class<?> clazz;
                 try {
                     clazz = Class.forName(providerClass, false, EFapsClassLoader.getInstance());
-                    this.provider = (ILoginAlertProvider) clazz.newInstance();
-                    this.esjpSnipplet = this.provider.getEsjpSnipplet("LoginAlert");
+                    provider = (ILoginAlertProvider) clazz.newInstance();
+                    esjpSnipplet = provider.getEsjpSnipplet("LoginAlert");
                 } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException e) {
                     MainPage.LOG.error("Could not find/instantiate Provider Class", e);
                 }
@@ -519,7 +539,7 @@ public class MainPage
                 {
                     Page page;
                     try {
-                        page = new AlertPage(Model.of(OpenWindowOnLoadBehavior.this.esjpSnipplet.getHtmlSnipplet()
+                        page = new AlertPage(Model.of(esjpSnipplet.getHtmlSnipplet()
                                         .toString()));
                     } catch (final EFapsBaseException e) {
                         MainPage.LOG.error("Catched error.", e);
@@ -537,7 +557,7 @@ public class MainPage
                 @Override
                 public void onClose(final AjaxRequestTarget _target)
                 {
-                    OpenWindowOnLoadBehavior.this.provider.onClose();
+                    provider.onClose();
                 }
             });
 
@@ -549,7 +569,7 @@ public class MainPage
                                final IHeaderResponse _response)
         {
             try {
-                if (this.esjpSnipplet != null && this.esjpSnipplet.isVisible()) {
+                if (esjpSnipplet != null && esjpSnipplet.isVisible()) {
                     _response.render(OnDomReadyHeaderItem.forScript(getCallbackScript()));
                 }
             } catch (final EFapsBaseException e) {
@@ -557,4 +577,54 @@ public class MainPage
             }
         }
     }
+
+    /**
+     * The Class LoadFormBehavior.
+     *
+     */
+    public static class LoadPreferenceBehavior
+        extends AbstractDojoBehavior
+    {
+        /** The Constant serialVersionUID. */
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public void renderHead(final Component _component,
+                               final IHeaderResponse _response)
+        {
+            super.renderHead(_component, _response);
+           /* final StringBuilder js = new StringBuilder()
+                .append("ready(function() {\n")
+                .append("registry.byId(\"").append(_component.getMarkupId()).append("\").set(\"href\",\"")
+                .append(_component.urlForListener(new PageParameters())).append("\");\n")
+                .append("});");
+            _response.render(JavaScriptHeaderItem.forScript(DojoWrapper.require(js, DojoClasses.ready,
+                            DojoClasses.registry, DojoClasses.aspect, DojoClasses.domConstruct),
+                            _component.getMarkupId() + "-Script"));
+                            */
+            System.out.println(_component.urlForListener(new PageParameters()));
+        }
+    }
 }
+
+/*
+ require([
+'dijit/TooltipDialog',
+'dijit/popup',
+'dojo/on',
+'dojo/dom',
+'dojo/domReady!'
+], function (TooltipDialog, popup, on, dom) {
+  var myTooltipDialog = new TooltipDialog({
+    id: 'myTooltipDialog22',
+    style: 'width: 300px;',
+    href: './?3-1.-body-preferences',
+  });
+  popup.open({
+    popup: myTooltipDialog,
+    orient: ["below-centered", "above-centered"],
+    around: dom.byId('eFapsUserName')
+  });
+});
+
+ */
