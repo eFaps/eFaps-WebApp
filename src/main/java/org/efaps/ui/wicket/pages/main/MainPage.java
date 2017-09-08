@@ -21,6 +21,7 @@ import java.util.UUID;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
+import org.apache.wicket.IRequestListener;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.Page;
 import org.apache.wicket.RestartResponseException;
@@ -52,6 +53,7 @@ import org.apache.wicket.protocol.ws.api.WebSocketBehavior;
 import org.apache.wicket.protocol.ws.api.event.WebSocketPushPayload;
 import org.apache.wicket.protocol.ws.api.message.ConnectedMessage;
 import org.apache.wicket.protocol.ws.api.message.IWebSocketPushMessage;
+import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.StringValue;
 import org.apache.wicket.util.time.Duration;
@@ -94,6 +96,8 @@ import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
+import org.efaps.ui.wicket.util.DojoClasses;
+import org.efaps.ui.wicket.util.DojoWrapper;
 import org.efaps.util.EFapsBaseException;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
@@ -200,23 +204,6 @@ public class MainPage
         add(modal);
         add(new ResizeEventBehavior());
 
-        final LazyIframe preferences = new LazyIframe("preferences", new IFrameProvider()
-        {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public Page getPage(final Component _component)
-            {
-                Page error = null;
-                WebPage page = new PreferencesPage();
-                return error == null ? page : error;
-            }
-        }, "eFapsPreferences", false);
-        preferences.setOutputMarkupId(true);
-        preferences.add(new LoadPreferenceBehavior());
-        this.add(preferences);
-        System.out.println(preferences.urlForListener(new PageParameters()));
-
         try {
             // only add the search if it is activated in the kernel
             if (EFapsSystemConfiguration.get().getAttributeValueAsBoolean(KernelSettings.INDEXACTIVATE)) {
@@ -294,8 +281,13 @@ public class MainPage
                 headerPanel.add(logo);
                 final Label welcome = new Label("welcome", DBProperties.getProperty("Logo.Welcome.Label"));
                 logo.add(welcome);
-                logo.add(new Label("firstname", context.getPerson().getFirstName()));
-                logo.add(new Label("lastname", context.getPerson().getLastName()));
+
+                final Label userNameLabel = new Label("userName", String.format("%s %s",
+                    context.getPerson().getFirstName(), context.getPerson().getLastName()));
+                userNameLabel.setMarkupId("eFapsUserName");
+                userNameLabel.add(new LoadPreferenceBehavior());
+                logo.add(userNameLabel);
+
                 final String companyName = context.getCompany() == null ? "" : context.getCompany().getName();
                 logo.add(new Label("company", companyName));
                 logo.add(new AttributeModifier("class",
@@ -584,6 +576,7 @@ public class MainPage
      */
     public static class LoadPreferenceBehavior
         extends AbstractDojoBehavior
+        implements IRequestListener
     {
         /** The Constant serialVersionUID. */
         private static final long serialVersionUID = 1L;
@@ -593,38 +586,31 @@ public class MainPage
                                final IHeaderResponse _response)
         {
             super.renderHead(_component, _response);
-           /* final StringBuilder js = new StringBuilder()
+            final StringBuilder js = new StringBuilder()
                 .append("ready(function() {\n")
-                .append("registry.byId(\"").append(_component.getMarkupId()).append("\").set(\"href\",\"")
-                .append(_component.urlForListener(new PageParameters())).append("\");\n")
+                .append("var myTooltipDialog = new TooltipDialog({\n")
+                .append("  style: 'width: 300px;',\n")
+                .append("  href: '").append(_component.urlForListener(this, new PageParameters())).append("',\n")
+                .append("});\n")
+                .append(" on(dom.byId(\"").append(_component.getMarkupId(true)).append("\"), \"click\", function(evt){")
+                .append("popup.open({\n")
+                .append("  popup: myTooltipDialog,\n")
+                .append("  orient: [\"below-centered\", \"above-centered\"],\n")
+                .append("  around: dom.byId('eFapsUserName')\n")
+                .append("});\n")
+                .append("});")
                 .append("});");
+
             _response.render(JavaScriptHeaderItem.forScript(DojoWrapper.require(js, DojoClasses.ready,
-                            DojoClasses.registry, DojoClasses.aspect, DojoClasses.domConstruct),
+                            DojoClasses.registry, DojoClasses.dom, DojoClasses.domConstruct, DojoClasses.on,
+                            DojoClasses.TooltipDialog, DojoClasses.popup),
                             _component.getMarkupId() + "-Script"));
-                            */
-            System.out.println(_component.urlForListener(new PageParameters()));
+        }
+
+        @Override
+        public void onRequest()
+        {
+            RequestCycle.get().setResponsePage(new PreferencesPage());
         }
     }
 }
-
-/*
- require([
-'dijit/TooltipDialog',
-'dijit/popup',
-'dojo/on',
-'dojo/dom',
-'dojo/domReady!'
-], function (TooltipDialog, popup, on, dom) {
-  var myTooltipDialog = new TooltipDialog({
-    id: 'myTooltipDialog22',
-    style: 'width: 300px;',
-    href: './?3-1.-body-preferences',
-  });
-  popup.open({
-    popup: myTooltipDialog,
-    orient: ["below-centered", "above-centered"],
-    around: dom.byId('eFapsUserName')
-  });
-});
-
- */
