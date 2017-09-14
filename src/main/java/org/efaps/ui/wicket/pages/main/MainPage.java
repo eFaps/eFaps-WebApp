@@ -17,8 +17,11 @@
 
 package org.efaps.ui.wicket.pages.main;
 
+
+
 import java.util.UUID;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
@@ -211,7 +214,7 @@ public class MainPage
             MainPage.LOG.error("Error on retrieving setting for index", e1);
         }
 
-        final boolean slidein = Configuration.getAttribute(ConfigAttribute.MAINMENU).equalsIgnoreCase("slidein");
+        final boolean slidein = BooleanUtils.toBoolean(Configuration.getAttribute(ConfigAttribute.SLIDEINMENU));
 
         final WebMarkupContainer borderPanel = new WebMarkupContainer("borderPanel");
         this.add(borderPanel);

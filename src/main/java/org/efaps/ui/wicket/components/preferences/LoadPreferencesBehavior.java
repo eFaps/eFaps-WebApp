@@ -65,12 +65,19 @@ public class LoadPreferencesBehavior
                         .append("}, baseWindow.body());\n")
                         .append("query('.preferencesOverlay').on('click', function (e) {\n")
                         .append("popup.close(pttd);\n")
+                        .append("var dp = dom.byId('").append(componentId).append("');\n")
+                        .append("if (dp) {\n")
+                        .append("var nw = registry.findWidgets(dp);\n")
+                        .append("array.forEach(nw, function (w) {\n")
+                        .append("w.destroyRecursive();\n")
+                        .append("});\n")
+                        .append("}\n")
                         .append("domConstruct.destroy(e.target);\n")
                         .append("});\n")
                         .append("\n");
 
         _target.appendJavaScript(DojoWrapper.require(js, DojoClasses.registry, DojoClasses.dom, DojoClasses.query,
                         DojoClasses.domConstruct, DojoClasses.on, DojoClasses.TooltipDialog, DojoClasses.popup,
-                        DojoClasses.baseWindow));
+                        DojoClasses.baseWindow, DojoClasses.array));
     }
 }

@@ -223,7 +223,11 @@ public final class Configuration
                         "UUID of the Command that defines the form to be opened for edit help."),
 
         /** The mainmenu. */
-        MAINMENU(true, true, "MainMenuStyle", "", String.class, "Type of the Main Menu. ");
+        SLIDEINMENU(true, true, "ActivateSlideInMenu", "false", Boolean.class, "Activate the SlideIn Menu"),
+
+        /** */
+        PREF_PROVIDER(false, true, "Preferences.Provider", "org.efaps.esjp.common.preferences.PreferencesProvider",
+                        String.class, "Class name of the PreferencesProvider class");
 
         /**
          * Stores the key for this Attribute..
