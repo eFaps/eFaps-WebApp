@@ -46,6 +46,56 @@ public class SwitchBehavior
     /** The on. */
     private boolean on;
 
+    /** The left label. */
+    private String leftLabel;
+
+    /** The right label. */
+    private String rightLabel;
+
+    /**
+     * Gets the left label.
+     *
+     * @return the left label
+     */
+    public String getLeftLabel()
+    {
+        return this.leftLabel;
+    }
+
+    /**
+     * Sets the left label.
+     *
+     * @param _leftLabel the left label
+     * @return the switch behavior
+     */
+    public SwitchBehavior setLeftLabel(final String _leftLabel)
+    {
+        this.leftLabel = _leftLabel;
+        return this;
+    }
+
+    /**
+     * Gets the right label.
+     *
+     * @return the right label
+     */
+    public String getRightLabel()
+    {
+        return this.rightLabel;
+    }
+
+    /**
+     * Sets the right label.
+     *
+     * @param _rightLabel the right label
+     * @return the switch behavior
+     */
+    public SwitchBehavior setRightLabel(final String _rightLabel)
+    {
+        this.rightLabel = _rightLabel;
+        return this;
+    }
+
     /**
      * Checks if is on.
      *
@@ -106,5 +156,11 @@ public class SwitchBehavior
         _tag.put("data-dojo-type", "dojox/mobile/Switch");
         _tag.put("name", getInputName());
         _tag.put("value", isOn() ? "on" : "off");
+        if (getLeftLabel() != null) {
+            _tag.put("leftLabel", getLeftLabel());
+        }
+        if (getRightLabel() != null) {
+            _tag.put("rightLabel", getRightLabel());
+        }
     }
 }

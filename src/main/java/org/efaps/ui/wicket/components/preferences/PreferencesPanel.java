@@ -22,17 +22,24 @@ import java.util.Map;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.ILabelProvider;
 import org.apache.wicket.markup.html.panel.GenericPanel;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.request.cycle.RequestCycle;
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.api.ui.IPreferencesProvider;
 import org.efaps.ui.wicket.behaviors.dojo.SwitchBehavior;
 import org.efaps.ui.wicket.components.button.AjaxButton;
 import org.efaps.ui.wicket.components.button.AjaxButton.ICON;
 import org.efaps.ui.wicket.pages.main.MainPage;
+import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 import org.efaps.util.EFapsBaseException;
@@ -45,6 +52,11 @@ import org.slf4j.LoggerFactory;
 public class PreferencesPanel
     extends GenericPanel<Void>
 {
+    /**
+     * Reference to the style sheet.
+     */
+    private static final EFapsContentReference CSS = new EFapsContentReference(PreferencesPanel.class, "Preferences.css");
+
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
@@ -89,10 +101,60 @@ public class PreferencesPanel
         add(form);
 
         final boolean slideIn = BooleanUtils.toBoolean(prefMap.get(ConfigAttribute.SLIDEINMENU.getKey()));
-        final WebComponent slideInMenu = new WebComponent("slideInMenu");
-        slideInMenu.add(new SwitchBehavior().setInputName(ConfigAttribute.SLIDEINMENU.getKey()).setOn(slideIn));
+        final PreferenceComponent slideInMenu = new PreferenceComponent("slideInMenu")
+                        .setLabel(DBProperties.getProperty(ConfigAttribute.SLIDEINMENU.getKey() + ".Label"));
+        slideInMenu.add(new SwitchBehavior()
+                        .setInputName(ConfigAttribute.SLIDEINMENU.getKey())
+                        .setOn(slideIn)
+                        .setLeftLabel("Si")
+                        .setRightLabel("No"));
         form.add(slideInMenu);
         slideInMenu.setVisible(prefMap.containsKey(ConfigAttribute.SLIDEINMENU.getKey()));
+
+        final boolean tdtB = BooleanUtils.toBoolean(prefMap.get(ConfigAttribute.TABLEDEFAULTTYPECONTENT.getKey()));
+        final PreferenceComponent tdtContent = new PreferenceComponent("tableDefaultType4Content")
+                    .setLabel(DBProperties.getProperty(ConfigAttribute.TABLEDEFAULTTYPECONTENT.getKey() + ".Label"));
+        tdtContent.add(new SwitchBehavior()
+                        .setInputName(ConfigAttribute.TABLEDEFAULTTYPECONTENT.getKey())
+                        .setLeftLabel("Table")
+                        .setRightLabel("Grid")
+                        .setOn(tdtB));
+        form.add(tdtContent);
+        tdtContent.setVisible(prefMap.containsKey(ConfigAttribute.TABLEDEFAULTTYPECONTENT.getKey()));
+
+
+        final boolean tdtS = BooleanUtils.toBoolean(prefMap.get(ConfigAttribute.TABLEDEFAULTTYPESEARCH.getKey()));
+        final PreferenceComponent tdtSearch = new PreferenceComponent("tableDefaultType4Search")
+                    .setLabel(DBProperties.getProperty(ConfigAttribute.TABLEDEFAULTTYPESEARCH.getKey() + ".Label"));
+        tdtSearch.add(new SwitchBehavior()
+                        .setInputName(ConfigAttribute.TABLEDEFAULTTYPESEARCH.getKey())
+                        .setLeftLabel("Table")
+                        .setRightLabel("Grid")
+                        .setOn(tdtS));
+        form.add(tdtSearch);
+        tdtSearch.setVisible(prefMap.containsKey(ConfigAttribute.TABLEDEFAULTTYPESEARCH.getKey()));
+
+        final boolean tdtT = BooleanUtils.toBoolean(prefMap.get(ConfigAttribute.TABLEDEFAULTTYPETREE.getKey()));
+        final PreferenceComponent tdtTree = new PreferenceComponent("tableDefaultType4Tree")
+                    .setLabel(DBProperties.getProperty(ConfigAttribute.TABLEDEFAULTTYPETREE.getKey() + ".Label"));
+        tdtTree.add(new SwitchBehavior()
+                        .setInputName(ConfigAttribute.TABLEDEFAULTTYPETREE.getKey())
+                        .setLeftLabel("Table")
+                        .setRightLabel("Grid")
+                        .setOn(tdtT));
+        form.add(tdtTree);
+        tdtTree.setVisible(prefMap.containsKey(ConfigAttribute.TABLEDEFAULTTYPETREE.getKey()));
+
+        final boolean tdtF = BooleanUtils.toBoolean(prefMap.get(ConfigAttribute.TABLEDEFAULTTYPEFORM.getKey()));
+        final PreferenceComponent tdtForm = new PreferenceComponent("tableDefaultType4Form")
+                    .setLabel(DBProperties.getProperty(ConfigAttribute.TABLEDEFAULTTYPEFORM.getKey() + ".Label"));
+        tdtForm.add(new SwitchBehavior()
+                        .setInputName(ConfigAttribute.TABLEDEFAULTTYPEFORM.getKey())
+                        .setLeftLabel("Table")
+                        .setRightLabel("Grid")
+                        .setOn(tdtF));
+        form.add(tdtForm);
+        tdtForm.setVisible(prefMap.containsKey(ConfigAttribute.TABLEDEFAULTTYPEFORM.getKey()));
 
         final AjaxButton<Void> saveBtn = new AjaxButton<Void>("saveBtn", ICON.ACCEPT.getReference(), "Save")
         {
@@ -121,5 +183,59 @@ public class PreferencesPanel
             }
         };
         form.add(saveBtn);
+    }
+
+    /**
+     * Render to the web response the eFapsContentReference.
+     *
+     * @param _response Response object
+     */@Override
+    public void renderHead(final IHeaderResponse _response)
+    {
+        super.renderHead(_response);
+        _response.render(AbstractEFapsHeaderItem.forCss(CSS));
+    }
+
+    /**
+     * The Class PreferenceComponent.
+     */
+    public static class PreferenceComponent
+        extends WebComponent
+        implements ILabelProvider<String>
+    {
+
+        /** The Constant serialVersionUID. */
+        private static final long serialVersionUID = 1L;
+
+        /** The label. */
+        private String label;
+
+        /**
+         * Instantiates a new preference component.
+         *
+         * @param _wicketId the wicket id
+         */
+        public PreferenceComponent(final String _wicketId)
+        {
+            super(_wicketId);
+        }
+
+        /**
+         * Sets the label.
+         *
+         * @param _label the new label
+         * @return the preference component
+         */
+        public PreferenceComponent setLabel(final String _label)
+        {
+            this.label = _label;
+            return this;
+        }
+
+        @Override
+        public IModel<String> getLabel()
+        {
+            return Model.of(this.label);
+        }
     }
 }

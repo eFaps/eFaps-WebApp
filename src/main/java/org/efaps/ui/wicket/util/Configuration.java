@@ -192,19 +192,19 @@ public final class Configuration
         INDEXACCESSCMD(false, true, "IndexAccessCmd", "88c9ce19-d759-443e-b791-0e725fe58f52", String.class,
                         "UUID of the command that is used to define the access to the index search."),
         /** */
-        TABLEDEFAULTTYPECONTENT(false, true, "TableDefaultType4Content", "Table", String.class,
+        TABLEDEFAULTTYPECONTENT(true, true, "TableDefaultType4Content", "Table", String.class,
                         "Type of table used as default content  page table"),
 
         /** */
-        TABLEDEFAULTTYPETREE(false, true, "TableDefaultType4Tree", "Table", String.class,
+        TABLEDEFAULTTYPETREE(true, true, "TableDefaultType4Tree", "Table", String.class,
                         "Type of table used as tree page table"),
 
         /** */
-        TABLEDEFAULTTYPESEARCH(false, true, "TableDefaultType4Search", "Table", String.class,
+        TABLEDEFAULTTYPESEARCH(true, true, "TableDefaultType4Search", "Table", String.class,
                         "Type of table used as tree page table"),
 
         /** */
-        TABLEDEFAULTTYPEFORM(false, true, "TableDefaultType4Form", "Table", String.class,
+        TABLEDEFAULTTYPEFORM(true, true, "TableDefaultType4Form", "Table", String.class,
                         "Type of table used as table inside a form"),
 
         /** */
