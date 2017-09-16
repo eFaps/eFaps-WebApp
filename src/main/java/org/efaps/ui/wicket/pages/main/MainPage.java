@@ -256,6 +256,13 @@ public class MainPage
                 slideinHeaderPanel.add(new ContentPaneBehavior(Region.TOP, false));
                 slideinPane.add(slideinHeaderPanel);
 
+                final WebMarkupContainer slideinHeaderContent = new WebMarkupContainer("slideinHeaderContent");
+                slideinHeaderPanel.add(slideinHeaderContent);
+                final String companyName = context.getCompany() == null ? "" : context.getCompany().getName();
+                slideinHeaderContent.add(new AttributeModifier("class",
+                                new Model<>("eFapsLogo " + companyName.replaceAll("\\W", ""))));
+                slideinHeaderContent.add(new Label("company", companyName));
+
                 final WebMarkupContainer slideinContentPane = new WebMarkupContainer("slideinContentPane");
                 slideinContentPane.add(new ContentPaneBehavior(Region.CENTER, false));
                 slideinPane.add(slideinContentPane);
