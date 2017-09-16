@@ -267,6 +267,11 @@ public class MainPage
                 slideinFooterPane.add(new ContentPaneBehavior(Region.BOTTOM, false));
                 slideinPane.add(slideinFooterPane);
 
+                final Label userNameLabel = new Label("userName", String.format("%s %s",
+                                context.getPerson().getFirstName(), context.getPerson().getLastName()));
+                userNameLabel.setMarkupId("eFapsUserName");
+                userNameLabel.add(new LoadPreferencesBehavior());
+                slideinFooterPane.add(userNameLabel);
             } else {
                 borderPanel.add(new WebMarkupContainer("slideinPane").setVisible(false));
                 final WebMarkupContainer headerPanel = new WebMarkupContainer("headerPanel");
