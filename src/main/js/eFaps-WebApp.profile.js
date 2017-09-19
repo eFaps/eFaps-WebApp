@@ -7,7 +7,7 @@ var profile = (function(){
 
         optimize: 'closure',
 
-        layerOptimize: 'closure', //false
+        layerOptimize: 'closure', //empty to deactivate
 
         cssOptimize: 'comments',
 
