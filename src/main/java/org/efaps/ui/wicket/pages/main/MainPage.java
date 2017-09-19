@@ -214,6 +214,11 @@ public class MainPage
             MainPage.LOG.error("Error on retrieving setting for index", e1);
         }
 
+        final PreferencesPanel preferences = new PreferencesPanel("preferencesPanel");
+        preferences.setVisible(false);
+        preferences.setOutputMarkupPlaceholderTag(true);
+        add(preferences);
+
         final boolean slidein = BooleanUtils.toBoolean(Configuration.getAttribute(ConfigAttribute.SLIDEINMENU));
 
         final WebMarkupContainer borderPanel = new WebMarkupContainer("borderPanel");
@@ -277,7 +282,9 @@ public class MainPage
                 final Label userNameLabel = new Label("userName", String.format("%s %s",
                                 context.getPerson().getFirstName(), context.getPerson().getLastName()));
                 userNameLabel.setMarkupId("eFapsUserName");
-                userNameLabel.add(new LoadPreferencesBehavior());
+                if (preferences.hasPreferences()) {
+                    userNameLabel.add(new LoadPreferencesBehavior());
+                }
                 slideinFooterPane.add(userNameLabel);
             } else {
                 borderPanel.add(new WebMarkupContainer("slideinPane").setVisible(false));
@@ -295,7 +302,9 @@ public class MainPage
                 final Label userNameLabel = new Label("userName", String.format("%s %s",
                     context.getPerson().getFirstName(), context.getPerson().getLastName()));
                 userNameLabel.setMarkupId("eFapsUserName");
-                userNameLabel.add(new LoadPreferencesBehavior());
+                if (preferences.hasPreferences()) {
+                    userNameLabel.add(new LoadPreferencesBehavior());
+                }
                 logo.add(userNameLabel);
 
                 final String companyName = context.getCompany() == null ? "" : context.getCompany().getName();
@@ -366,10 +375,6 @@ public class MainPage
             } else {
                 socketMsgContainer.setVisible(false);
             }
-            final PreferencesPanel preferences = new PreferencesPanel("preferencesPanel");
-            preferences.setVisible(false);
-            preferences.setOutputMarkupPlaceholderTag(true);
-            add(preferences);
         } catch (final EFapsException e) {
             throw new RestartResponseException(new ErrorPage(e));
         }

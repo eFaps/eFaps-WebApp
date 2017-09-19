@@ -24,6 +24,7 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebComponent;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.ILabelProvider;
 import org.apache.wicket.markup.html.panel.GenericPanel;
@@ -55,8 +56,8 @@ public class PreferencesPanel
     /**
      * Reference to the style sheet.
      */
-    private static final EFapsContentReference CSS = new EFapsContentReference(PreferencesPanel.class, "Preferences.css");
-
+    private static final EFapsContentReference CSS = new EFapsContentReference(PreferencesPanel.class,
+                    "Preferences.css");
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
@@ -65,6 +66,9 @@ public class PreferencesPanel
      * Logging instance used in this class.
      */
     private static final Logger LOG = LoggerFactory.getLogger(PreferencesPanel.class);
+
+    /** The preferences. */
+    private boolean prefs;
 
     /**
      * Instantiates a new preferences panel.
@@ -80,6 +84,7 @@ public class PreferencesPanel
             final Class<?> clazz = Class.forName(providerClass, false, EFapsClassLoader.getInstance());
             final IPreferencesProvider provider = (IPreferencesProvider) clazz.newInstance();
             prefMap.putAll(provider.getPreferences());
+            this.prefs = !prefMap.isEmpty();
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
             LOG.error("Catched", e);
         } catch (final EFapsBaseException e) {
@@ -100,6 +105,10 @@ public class PreferencesPanel
         };
         add(form);
 
+        final WebMarkupContainer pref1 = new WebMarkupContainer("pref1");
+        form.add(pref1);
+        pref1.setVisible(prefMap.containsKey(ConfigAttribute.SLIDEINMENU.getKey()));
+
         final boolean slideIn = BooleanUtils.toBoolean(prefMap.get(ConfigAttribute.SLIDEINMENU.getKey()));
         final PreferenceComponent slideInMenu = new PreferenceComponent("slideInMenu")
                         .setLabel(DBProperties.getProperty(ConfigAttribute.SLIDEINMENU.getKey() + ".Label"));
@@ -108,21 +117,25 @@ public class PreferencesPanel
                         .setOn(slideIn)
                         .setLeftLabel("Si")
                         .setRightLabel("No"));
-        form.add(slideInMenu);
-        slideInMenu.setVisible(prefMap.containsKey(ConfigAttribute.SLIDEINMENU.getKey()));
+        pref1.add(slideInMenu);
 
+        final WebMarkupContainer pref2 = new WebMarkupContainer("pref2");
+        form.add(pref2);
+        pref2.setVisible(prefMap.containsKey(ConfigAttribute.TABLEDEFAULTTYPECONTENT.getKey()));
         final boolean tdtB = BooleanUtils.toBoolean(prefMap.get(ConfigAttribute.TABLEDEFAULTTYPECONTENT.getKey()));
         final PreferenceComponent tdtContent = new PreferenceComponent("tableDefaultType4Content")
-                    .setLabel(DBProperties.getProperty(ConfigAttribute.TABLEDEFAULTTYPECONTENT.getKey() + ".Label"));
+                .setLabel(DBProperties.getProperty(ConfigAttribute.TABLEDEFAULTTYPECONTENT.getKey() + ".Label"));
         tdtContent.add(new SwitchBehavior()
                         .setInputName(ConfigAttribute.TABLEDEFAULTTYPECONTENT.getKey())
                         .setLeftLabel("Table")
                         .setRightLabel("Grid")
                         .setOn(tdtB));
-        form.add(tdtContent);
-        tdtContent.setVisible(prefMap.containsKey(ConfigAttribute.TABLEDEFAULTTYPECONTENT.getKey()));
+        pref2.add(tdtContent);
 
 
+        final WebMarkupContainer pref3 = new WebMarkupContainer("pref3");
+        form.add(pref3);
+        pref3.setVisible(prefMap.containsKey(ConfigAttribute.TABLEDEFAULTTYPESEARCH.getKey()));
         final boolean tdtS = BooleanUtils.toBoolean(prefMap.get(ConfigAttribute.TABLEDEFAULTTYPESEARCH.getKey()));
         final PreferenceComponent tdtSearch = new PreferenceComponent("tableDefaultType4Search")
                     .setLabel(DBProperties.getProperty(ConfigAttribute.TABLEDEFAULTTYPESEARCH.getKey() + ".Label"));
@@ -131,9 +144,12 @@ public class PreferencesPanel
                         .setLeftLabel("Table")
                         .setRightLabel("Grid")
                         .setOn(tdtS));
-        form.add(tdtSearch);
-        tdtSearch.setVisible(prefMap.containsKey(ConfigAttribute.TABLEDEFAULTTYPESEARCH.getKey()));
+        pref3.add(tdtSearch);
 
+
+        final WebMarkupContainer pref4 = new WebMarkupContainer("pref4");
+        form.add(pref4);
+        pref4.setVisible(prefMap.containsKey(ConfigAttribute.TABLEDEFAULTTYPETREE.getKey()));
         final boolean tdtT = BooleanUtils.toBoolean(prefMap.get(ConfigAttribute.TABLEDEFAULTTYPETREE.getKey()));
         final PreferenceComponent tdtTree = new PreferenceComponent("tableDefaultType4Tree")
                     .setLabel(DBProperties.getProperty(ConfigAttribute.TABLEDEFAULTTYPETREE.getKey() + ".Label"));
@@ -142,9 +158,12 @@ public class PreferencesPanel
                         .setLeftLabel("Table")
                         .setRightLabel("Grid")
                         .setOn(tdtT));
-        form.add(tdtTree);
-        tdtTree.setVisible(prefMap.containsKey(ConfigAttribute.TABLEDEFAULTTYPETREE.getKey()));
+        pref4.add(tdtTree);
 
+
+        final WebMarkupContainer pref5 = new WebMarkupContainer("pref5");
+        form.add(pref5);
+        pref5.setVisible(prefMap.containsKey(ConfigAttribute.TABLEDEFAULTTYPEFORM.getKey()));
         final boolean tdtF = BooleanUtils.toBoolean(prefMap.get(ConfigAttribute.TABLEDEFAULTTYPEFORM.getKey()));
         final PreferenceComponent tdtForm = new PreferenceComponent("tableDefaultType4Form")
                     .setLabel(DBProperties.getProperty(ConfigAttribute.TABLEDEFAULTTYPEFORM.getKey() + ".Label"));
@@ -153,8 +172,7 @@ public class PreferencesPanel
                         .setLeftLabel("Table")
                         .setRightLabel("Grid")
                         .setOn(tdtF));
-        form.add(tdtForm);
-        tdtForm.setVisible(prefMap.containsKey(ConfigAttribute.TABLEDEFAULTTYPEFORM.getKey()));
+        pref5.add(tdtForm);
 
         final AjaxButton<Void> saveBtn = new AjaxButton<Void>("saveBtn", ICON.ACCEPT.getReference(), "Save")
         {
@@ -183,6 +201,16 @@ public class PreferencesPanel
             }
         };
         form.add(saveBtn);
+    }
+
+    /**
+     * Checks for preferences.
+     *
+     * @return true, if successful
+     */
+    public boolean hasPreferences()
+    {
+        return this.prefs;
     }
 
     /**
