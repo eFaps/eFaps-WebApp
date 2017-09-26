@@ -50,10 +50,12 @@ import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIGrid;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.models.objects.UITable;
+import org.efaps.ui.wicket.pages.connection.ConnectionPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.grid.GridPage;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
+import org.efaps.ui.wicket.pages.dashboard.DashboardPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
@@ -369,29 +371,35 @@ public class SlideIn
         final StringValue key = getRequestCycle().getRequest().getQueryParameters().getParameterValue("m");
         final UIMenuItem menuItem = this.menuItems.get(key.toString());
         try {
-            final AbstractCommand command = menuItem.getCommand();
-            final PagePosition pagePosition = Target.POPUP.equals(menuItem.getTarget())
-                            ? PagePosition.POPUP : PagePosition.CONTENT;
-            if (command.getTargetTable() != null) {
-                if (command.getTargetStructurBrowserField() != null) {
-                    final StructurBrowserPage page = new StructurBrowserPage(menuItem.getCommandUUID(), menuItem
-                                    .getInstanceKey());
-                    setResponsePage(page);
-                } else {
-                    if ("GridX".equals(Configuration.getAttribute(ConfigAttribute.TABLEDEFAULTTYPECONTENT))) {
-                        final GridPage page = new GridPage(Model.of(UIGrid.get(command.getUUID(), pagePosition)));
+            if (StringUtils.endsWith(menuItem.getReference(), "/home")) {
+                setResponsePage(new DashboardPage(getPage().getPageReference()));
+            } else if (StringUtils.endsWith(menuItem.getReference(), "/connection")) {
+                setResponsePage(new ConnectionPage(getPage().getPageReference()));
+            } else {
+                final AbstractCommand command = menuItem.getCommand();
+                final PagePosition pagePosition = Target.POPUP.equals(menuItem.getTarget())
+                                ? PagePosition.POPUP : PagePosition.CONTENT;
+                if (command.getTargetTable() != null) {
+                    if (command.getTargetStructurBrowserField() != null) {
+                        final StructurBrowserPage page = new StructurBrowserPage(menuItem.getCommandUUID(), menuItem
+                                        .getInstanceKey());
                         setResponsePage(page);
                     } else {
-                        final TablePage page = new TablePage(Model.of(new UITable(menuItem.getCommandUUID(),
-                                        menuItem.getInstanceKey()).setPagePosition(pagePosition)));
-                        setResponsePage(page);
+                        if ("GridX".equals(Configuration.getAttribute(ConfigAttribute.TABLEDEFAULTTYPECONTENT))) {
+                            final GridPage page = new GridPage(Model.of(UIGrid.get(command.getUUID(), pagePosition)));
+                            setResponsePage(page);
+                        } else {
+                            final TablePage page = new TablePage(Model.of(new UITable(menuItem.getCommandUUID(),
+                                            menuItem.getInstanceKey()).setPagePosition(pagePosition)));
+                            setResponsePage(page);
+                        }
                     }
+                } else if (command.getTargetForm() != null  || command.getTargetSearch() != null) {
+                    final UIForm uiForm = new UIForm(menuItem.getCommandUUID(), menuItem.getInstanceKey())
+                                    .setPagePosition(pagePosition);
+                    final FormPage page = new FormPage(Model.of(uiForm));
+                    setResponsePage(page);
                 }
-            } else if (command.getTargetForm() != null  || command.getTargetSearch() != null) {
-                final UIForm uiForm = new UIForm(menuItem.getCommandUUID(), menuItem.getInstanceKey())
-                                .setPagePosition(pagePosition);
-                final FormPage page = new FormPage(Model.of(uiForm));
-                setResponsePage(page);
             }
         } catch (final EFapsException e) {
             SlideIn.LOG.error("Catched", e);
