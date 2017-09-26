@@ -42,6 +42,7 @@ import org.efaps.ui.wicket.models.objects.PagePosition;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIGrid;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
+import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.grid.GridPage;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
@@ -349,8 +350,8 @@ public class MenuTree
                         page = new GridPage(Model.of(UIGrid.get(menuItem.getCommandUUID(), PagePosition.TREE)
                                         .setCallInstance(menuItem.getInstance())));
                     } else {
-                        page = new TablePage(menuItem.getCommandUUID(), menuItem.getInstanceKey(), getPage()
-                                    .getPageReference());
+                        page = new TablePage(Model.of(new UITable(menuItem.getCommandUUID(), menuItem.getInstanceKey())
+                                        .setPagePosition(PagePosition.TREE)), getPage().getPageReference());
                     }
                 }
             } else {

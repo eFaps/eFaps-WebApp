@@ -161,6 +161,11 @@ public final class HRefFactory
                                 && ((Component) page).getDefaultModelObject() instanceof IPageObject
                                 && PagePosition.TREE.equals(((IPageObject) ((Component) page).getDefaultModelObject())
                                                 .getPagePosition());
+                if (!ajax) {
+                    ajax = _uiField.getParent() != null
+                                && _uiField.getParent() instanceof IPageObject
+                                && PagePosition.TREE.equals(((IPageObject) _uiField.getParent()).getPagePosition());
+                }
 
                 if (!ajax) {
                     // ajax if the page or the reference is a ContentContainerPage,
