@@ -14,31 +14,8 @@
  * limitations under the License.
  *
  */
-package org.efaps.ui.wicket.components.menu.behaviors;
-
-import org.apache.wicket.markup.html.WebComponent;
 
 /**
- * The Class AjaxMenuItem.
- *
- * @author The eFaps Team
+ * Behaviors for the Slidin Menu.
  */
-public class AjaxMenuItem
-    extends WebComponent
-{
-
-    /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * Instantiates a new ajax menu item.
-     *
-     * @param _wicketId the wicket id
-     */
-    public AjaxMenuItem(final String _wicketId)
-    {
-        super(_wicketId);
-        add(new ExecBehavior());
-        add(new OpenModalBehavior());
-    }
-}
+package org.efaps.ui.wicket.components.menu.behaviors;

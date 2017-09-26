@@ -35,6 +35,7 @@ import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebComponent;
+import org.apache.wicket.markup.html.link.PopupSettings;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
@@ -43,10 +44,12 @@ import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.ui.wicket.components.menu.behaviors.AjaxMenuItem;
 import org.efaps.ui.wicket.components.menu.behaviors.ExecBehavior;
+import org.efaps.ui.wicket.components.menu.behaviors.OpenModalBehavior;
 import org.efaps.ui.wicket.models.objects.PagePosition;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIGrid;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
+import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.grid.GridPage;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
@@ -285,17 +288,34 @@ public class SlideIn
         final String key = RandomStringUtils.randomAlphabetic(6);
         this.menuItems.put(key, _menuItem);
         final StringBuilder ret = new StringBuilder();
-        if (Target.HIDDEN == _menuItem.getTarget()) {
-            ret.append(getBehavior(ExecBehavior.class).getCallbackFunctionBody(CallbackParameter.converted("m",
-                            "\"" + key + "\"")));
-        } else {
-            final PageParameters pageParameters = new PageParameters();
-            pageParameters.add("m", key);
-            ret.append("registry.byId(\"").append("mainPanel").append(
-                            "\").set(\"content\", domConstruct.create(\"iframe\", {").append("\"id\": \"")
-                    .append(MainPage.IFRAME_ID).append("\",\"src\": \"").append(urlForListener(pageParameters))
-                    .append("\",\"style\": \"border: 0; width: 100%; height: 99%\"").append(",\"id\": \"")
-                    .append(MainPage.IFRAME_ID).append("\"").append("}));");
+        switch (_menuItem.getTarget()) {
+            case HIDDEN:
+                ret.append(getBehavior(ExecBehavior.class).getCallbackFunctionBody(CallbackParameter.converted("m",
+                                "\"" + key + "\"")));
+                break;
+            case MODAL:
+                ret.append(getBehavior(OpenModalBehavior.class).getCallbackFunctionBody(CallbackParameter.converted("m",
+                                "\"" + key + "\"")));
+                break;
+            case POPUP:
+                final PageParameters popupPageParameters = new PageParameters();
+                popupPageParameters.add("m", key);
+                final PopupSettings popupSettings = new PopupSettings();
+                popupSettings.setHeight(_menuItem.getWindowHeight());
+                popupSettings.setWidth(_menuItem.getWindowWidth());
+                popupSettings.setTarget("'" + urlForListener(popupPageParameters) + "'");
+                popupSettings.setWindowName("eFapsPopup");
+                ret.append("(function () {").append(popupSettings.getPopupJavaScript()).append("}) ();");
+                break;
+            default:
+                final PageParameters pageParameters = new PageParameters();
+                pageParameters.add("m", key);
+                ret.append("registry.byId(\"").append("mainPanel").append(
+                                "\").set(\"content\", domConstruct.create(\"iframe\", {").append("\"id\": \"")
+                        .append(MainPage.IFRAME_ID).append("\",\"src\": \"").append(urlForListener(pageParameters))
+                        .append("\",\"style\": \"border: 0; width: 100%; height: 99%\"").append(",\"id\": \"")
+                        .append(MainPage.IFRAME_ID).append("\"").append("}));");
+                break;
         }
         return ret;
     }
@@ -348,9 +368,10 @@ public class SlideIn
     {
         final StringValue key = getRequestCycle().getRequest().getQueryParameters().getParameterValue("m");
         final UIMenuItem menuItem = this.menuItems.get(key.toString());
-
         try {
             final AbstractCommand command = menuItem.getCommand();
+            final PagePosition pagePosition = Target.POPUP.equals(menuItem.getTarget())
+                            ? PagePosition.POPUP : PagePosition.CONTENT;
             if (command.getTargetTable() != null) {
                 if (command.getTargetStructurBrowserField() != null) {
                     final StructurBrowserPage page = new StructurBrowserPage(menuItem.getCommandUUID(), menuItem
@@ -358,17 +379,17 @@ public class SlideIn
                     setResponsePage(page);
                 } else {
                     if ("GridX".equals(Configuration.getAttribute(ConfigAttribute.TABLEDEFAULTTYPECONTENT))) {
-                        final GridPage page = new GridPage(Model.of(UIGrid.get(command.getUUID(),
-                                        PagePosition.CONTENT)));
+                        final GridPage page = new GridPage(Model.of(UIGrid.get(command.getUUID(), pagePosition)));
                         setResponsePage(page);
                     } else {
-                        final TablePage page = new TablePage(menuItem.getCommandUUID(), menuItem.getInstanceKey());
+                        final TablePage page = new TablePage(Model.of(new UITable(menuItem.getCommandUUID(),
+                                        menuItem.getInstanceKey()).setPagePosition(pagePosition)));
                         setResponsePage(page);
                     }
                 }
-            } else if (command.getTargetForm() != null) {
-                final UIForm uiForm = new UIForm(menuItem.getCommandUUID(), menuItem.getInstanceKey()).setPagePosition(
-                                PagePosition.CONTENT);
+            } else if (command.getTargetForm() != null  || command.getTargetSearch() != null) {
+                final UIForm uiForm = new UIForm(menuItem.getCommandUUID(), menuItem.getInstanceKey())
+                                .setPagePosition(pagePosition);
                 final FormPage page = new FormPage(Model.of(uiForm));
                 setResponsePage(page);
             }
