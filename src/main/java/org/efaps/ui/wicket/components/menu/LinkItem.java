@@ -154,7 +154,9 @@ public class LinkItem
                     final GridPage page = new GridPage(Model.of(UIGrid.get(command.getUUID(), PagePosition.CONTENT)));
                     setResponsePage(page);
                 } else {
-                    final TablePage page = new TablePage(model.getCommandUUID(), model.getInstanceKey());
+                    final UITable uiTable = new UITable(model.getCommandUUID(), model.getInstanceKey())
+                                    .setPagePosition( PagePosition.CONTENT);
+                    final TablePage page = new TablePage(Model.of(uiTable));
                     setResponsePage(page);
                 }
             }

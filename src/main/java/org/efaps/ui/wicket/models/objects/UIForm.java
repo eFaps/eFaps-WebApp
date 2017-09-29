@@ -20,7 +20,6 @@ package org.efaps.ui.wicket.models.objects;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -333,6 +332,7 @@ public class UIForm
                             } else {
                                 final UIFieldTable uiFieldTable = new UIFieldTable(getCommandUUID(),
                                                 getInstanceKey(), (FieldTable) field);
+                                uiFieldTable.setPagePosition(getPagePosition());
                                 uiFieldTable.setMode(getMode());
                                 this.elements.add(new Element(UIForm.ElementType.TABLE, uiFieldTable));
                                 if (firstTable) {
@@ -597,17 +597,9 @@ public class UIForm
         for (final UIClassification child : _uiclass.getChildren()) {
             ret.addAll(getClassElements(child, _uuid2InstanceKey));
         }
-        Collections.sort(ret, new Comparator<Element>()
-        {
-
-            @Override
-            public int compare(final Element _o1,
-                               final Element _o2)
-            {
-                return ((UIFieldForm) _o1.getElement()).getWeight().compareTo(
-                                ((UIFieldForm) _o2.getElement()).getWeight());
-            }
-        });
+        Collections.sort(ret, (_o1,
+         _o2) -> ((UIFieldForm) _o1.getElement()).getWeight().compareTo(
+                        ((UIFieldForm) _o2.getElement()).getWeight()));
         return ret;
     }
 
