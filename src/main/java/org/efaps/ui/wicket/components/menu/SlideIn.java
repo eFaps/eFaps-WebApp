@@ -49,6 +49,7 @@ import org.efaps.ui.wicket.models.objects.PagePosition;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIGrid;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
+import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.pages.connection.ConnectionPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
@@ -381,8 +382,8 @@ public class SlideIn
                                 ? PagePosition.POPUP : PagePosition.CONTENT;
                 if (command.getTargetTable() != null) {
                     if (command.getTargetStructurBrowserField() != null) {
-                        final StructurBrowserPage page = new StructurBrowserPage(menuItem.getCommandUUID(), menuItem
-                                        .getInstanceKey());
+                        final StructurBrowserPage page = new StructurBrowserPage(Model.of(new UIStructurBrowser(menuItem
+                                        .getCommandUUID(), menuItem.getInstanceKey()).setPagePosition(pagePosition)));
                         setResponsePage(page);
                     } else {
                         if ("GridX".equals(Configuration.getAttribute(ConfigAttribute.TABLEDEFAULTTYPECONTENT))) {

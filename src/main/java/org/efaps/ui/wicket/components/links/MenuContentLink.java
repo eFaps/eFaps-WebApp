@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,8 @@ import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.field.FieldConfiguration;
 import org.efaps.ui.wicket.models.objects.PagePosition;
 import org.efaps.ui.wicket.models.objects.UIForm;
+import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
+import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
@@ -123,7 +125,7 @@ public class MenuContentLink
     {
         super.onComponentTag(_tag);
         _tag.setName("a");
-        _tag.put("href", "#");;
+        _tag.put("href", "#");
         onComponentTagInternal(_tag);
     }
 
@@ -185,14 +187,17 @@ public class MenuContentLink
             try {
                 if (menu.getTargetTable() != null) {
                     if (menu.getTargetStructurBrowserField() == null) {
-                        page = new TablePage(menu.getUUID(), uiField.getInstanceKey(), getPage().getPageReference());
+                        final UITable uiTable = new UITable(menu.getUUID(), uiField.getInstanceKey()).setPagePosition(
+                                        PagePosition.TREE);
+                        page = new TablePage(Model.of(uiTable), getPage().getPageReference());
                     } else {
-                        page = new StructurBrowserPage(menu.getUUID(),
-                                        uiField.getInstanceKey(), getPage().getPageReference());
+                        final UIStructurBrowser uiStructurBrowser = new UIStructurBrowser(menu.getUUID(), uiField
+                                        .getInstanceKey()).setPagePosition(PagePosition.TREE);
+                        page = new StructurBrowserPage(Model.of(uiStructurBrowser), getPage().getPageReference());
                     }
                 } else {
-                    final UIForm uiForm = new UIForm(menu.getUUID(),  uiField.getInstanceKey())
-                                    .setPagePosition(PagePosition.TREE);
+                    final UIForm uiForm = new UIForm(menu.getUUID(), uiField.getInstanceKey()).setPagePosition(
+                                    PagePosition.TREE);
                     page = new FormPage(Model.of(uiForm));
                 }
             } catch (final EFapsException e) {

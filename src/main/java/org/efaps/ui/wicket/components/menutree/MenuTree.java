@@ -24,6 +24,7 @@ import java.util.UUID;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.IRequestListener;
+import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.core.request.handler.IPartialPageRequestHandler;
@@ -34,14 +35,13 @@ import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.util.visit.IVisit;
-import org.apache.wicket.util.visit.IVisitor;
 import org.efaps.ui.wicket.behaviors.update.IRemoteUpdateListener;
 import org.efaps.ui.wicket.behaviors.update.IRemoteUpdateable;
 import org.efaps.ui.wicket.models.objects.PagePosition;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIGrid;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
+import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.grid.GridPage;
@@ -247,21 +247,15 @@ public class MenuTree
                 old = true;
                 child.setSelected(true);
                 menuItem.setSelected(false);
-                visitChildren(MenuItem.class, new IVisitor<MenuItem, Void>()
-                {
-
-                    @Override
-                    public void component(final MenuItem _comp,
-                                          final IVisit<Void> _visit)
-                    {
-                        final Object object = _comp.getDefaultModelObject();
-                        if (object != null && object instanceof UIMenuItem) {
-                            if (((UIMenuItem) object).isSelected()) {
-                                _target.add(getSelected());
-                                setSelected(_comp);
-                                _target.add(getSelected());
-                                _visit.stop();
-                            }
+                visitChildren(MenuItem.class, (_comp,
+                 _visit) -> {
+                    final Object object = _comp.getDefaultModelObject();
+                    if (object != null && object instanceof UIMenuItem) {
+                        if (((UIMenuItem) object).isSelected()) {
+                            _target.add(getSelected());
+                            setSelected(_comp);
+                            _target.add(getSelected());
+                            _visit.stop();
                         }
                     }
                 });
@@ -299,17 +293,11 @@ public class MenuTree
         if (nested) {
             expand(ancestor);
             ancestor.setSelected(true);
-            visitChildren(MenuItem.class, new IVisitor<MenuItem, Void>()
-            {
-
-                @Override
-                public void component(final MenuItem _comp,
-                                      final IVisit<Void> _visit)
-                {
-                    if (_comp.getDefaultModelObject().equals(ancestor)) {
-                        setSelected(_comp);
-                        _visit.stop();
-                    }
+            visitChildren(MenuItem.class, (_comp,
+             _visit) -> {
+                if (_comp.getDefaultModelObject().equals(ancestor)) {
+                    setSelected(_comp);
+                    _visit.stop();
                 }
             });
         } else {
@@ -343,8 +331,9 @@ public class MenuTree
         try {
             if (menuItem.getCommand().getTargetTable() != null) {
                 if (menuItem.getCommand().getTargetStructurBrowserField() != null) {
-                    page = new StructurBrowserPage(menuItem.getCommandUUID(),
-                                    menuItem.getInstanceKey(), getPage().getPageReference());
+                    page = new StructurBrowserPage(Model.of(new UIStructurBrowser(menuItem.getCommandUUID(),
+                                    menuItem.getInstanceKey()).setPagePosition(PagePosition.TREE)),
+                                    getPage().getPageReference());
                 } else {
                     if ("GridX".equals(Configuration.getAttribute(ConfigAttribute.TABLEDEFAULTTYPETREE))) {
                         page = new GridPage(Model.of(UIGrid.get(menuItem.getCommandUUID(), PagePosition.TREE)
@@ -395,28 +384,16 @@ public class MenuTree
     {
         if (_target != null) {
             final IModel<UIMenuItem> model = getProvider().model(_menuItem);
-            visitChildren(Node.class, new IVisitor<Node<UIMenuItem>, Void>()
-            {
-
-                @Override
-                public void component(final Node<UIMenuItem> _node,
-                                      final IVisit<Void> _visit)
-                {
-                    if (model.equals(_node.getModel())) {
-                        _target.add(_node);
-                        _node.visitChildren(Label.class, new IVisitor<Label, Void>()
-                        {
-                            @Override
-                            public void component(final Label _label,
-                                                  final IVisit<Void> _visit)
-                            {
-                                _label.setDefaultModelObject(((UIMenuItem) _node.getDefaultModelObject()).getLabel());
-                            }
-                        });
-                        _visit.stop();
-                    }
-                    _visit.dontGoDeeper();
+            visitChildren(Node.class, (_node,
+                            _visit) -> {
+                if (model.equals(((Node<?>) _node).getModel())) {
+                    _target.add(_node);
+                    ((MarkupContainer) _node).visitChildren(Label.class, (_label,
+                                    _visit1) -> _label.setDefaultModelObject(
+                                                    ((UIMenuItem) _node.getDefaultModelObject()).getLabel()));
+                    _visit.stop();
                 }
+                _visit.dontGoDeeper();
             });
             model.detach();
         }

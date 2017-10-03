@@ -184,8 +184,7 @@ public class MenuItem
                 if (menuItem.getCommand().getTargetTable() != null) {
                     if (menuItem.getCommand().getTargetStructurBrowserField() != null) {
                         final UIStructurBrowser uiStrBrws = new UIStructurBrowser(menuItem.getCommandUUID(),
-                                        menuItem.getInstanceKey())
-                                                        .setPagePosition(PagePosition.TREE);
+                                        menuItem.getInstanceKey()).setPagePosition(PagePosition.TREE);
 
                         page = new StructurBrowserPage(Model.of(uiStrBrws), getPage().getPageReference());
                     } else {

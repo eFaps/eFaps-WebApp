@@ -49,8 +49,6 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.util.string.StringValue;
-import org.apache.wicket.util.visit.IVisit;
-import org.apache.wicket.util.visit.IVisitor;
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventType;
@@ -206,13 +204,14 @@ public class AjaxSubmitCloseButton
                     if (cmdUIObject.getCommand().getTargetCommand() != null) {
                         final AbstractCommand targetCmd = cmdUIObject.getCommand().getTargetCommand();
                         final AbstractUIPageObject newUIObject;
+                        final PagePosition pp = cmdUIObject instanceof IPageObject
+                                        ? ((IPageObject) cmdUIObject).getPagePosition() : PagePosition.CONTENT;
                         if (targetCmd.getTargetTable() != null) {
                             newUIObject = new UITable(cmdUIObject.getCommand().getTargetCommand().getUUID(),
                                             cmdUIObject.getInstance() == null ? null
-                                                            : cmdUIObject.getInstance().getOid());
+                                                            : cmdUIObject.getInstance().getOid())
+                                            .setPagePosition(pp);
                         } else {
-                            final PagePosition pp = cmdUIObject instanceof IPageObject
-                                            ? ((IPageObject) cmdUIObject).getPagePosition() : PagePosition.CONTENT;
                             newUIObject = new UIForm(cmdUIObject.getCommand().getTargetCommand().getUUID(),
                                             cmdUIObject.getInstance() == null ? null
                                                             : cmdUIObject.getInstance().getOid())
@@ -387,28 +386,14 @@ public class AjaxSubmitCloseButton
         html.append("</table>");
         showDialog(_target, html.toString(), true, false);
 
-        // after every commit the fieldset must be resteted
-        getForm().getPage().visitChildren(SetDataGrid.class, new IVisitor<SetDataGrid, Void>()
-        {
-
-            @Override
-            public void component(final SetDataGrid _setDataGrid,
-                                  final IVisit<Void> _visit)
-            {
-                final UIFieldSet fieldSet = (UIFieldSet) _setDataGrid.getDefaultModelObject();
-                fieldSet.resetIndex();
-            }
+        // after every commit the fieldset must be reseted
+        getForm().getPage().visitChildren(SetDataGrid.class, (_setDataGrid,
+                        _visit) -> {
+            final UIFieldSet fieldSet = (UIFieldSet) _setDataGrid.getDefaultModelObject();
+            fieldSet.resetIndex();
         });
-        getForm().getPage().visitChildren(DropDownField.class, new IVisitor<DropDownField, Void>()
-        {
-
-            @Override
-            public void component(final DropDownField _dropDown,
-                                  final IVisit<Void> _visit)
-            {
-                _dropDown.setConverted(false);
-            }
-        });
+        getForm().getPage().visitChildren(DropDownField.class, (_dropDown,
+                        _visit) -> ((DropDownField) _dropDown).setConverted(false));
     }
 
     /**
@@ -551,12 +536,10 @@ public class AjaxSubmitCloseButton
                     final Iterator<UITableHeader> headerIter = headers.iterator();
                     for (final IFilterable filterable : uiRow.getCells()) {
                         headerIter.next();
-
-                        }
                     }
                 }
             }
-
+        }
         return ret;
     }
 
@@ -746,16 +729,10 @@ public class AjaxSubmitCloseButton
      */
     protected CharSequence getExecuteScript()
     {
-        final CharSequence script = visitChildren(ButtonLink.class, new IVisitor<ButtonLink<?>, CharSequence>()
-        {
-
-            @Override
-            public void component(final org.efaps.ui.wicket.components.button.AjaxButton.ButtonLink<?> _btl,
-                                  final IVisit<CharSequence> _visit)
-            {
-                final AjaxFormSubmitBehavior behavior = _btl.getBehaviors(AjaxFormSubmitBehavior.class).get(0);
-                _visit.stop(behavior.getCallbackScript());
-            }
+        final CharSequence script = visitChildren(ButtonLink.class, (_btl,
+         _visit) -> {
+            final AjaxFormSubmitBehavior behavior = _btl.getBehaviors(AjaxFormSubmitBehavior.class).get(0);
+            _visit.stop(behavior.getCallbackScript());
         });
         return script.toString().replaceFirst("Wicket\\.Ajax\\.", "new Wicket.Ajax.Call().");
     }

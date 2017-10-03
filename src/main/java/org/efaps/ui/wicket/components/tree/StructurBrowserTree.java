@@ -42,6 +42,7 @@ import org.efaps.ui.wicket.components.menutree.TreeMenuModel;
 import org.efaps.ui.wicket.models.objects.PagePosition;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
+import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
@@ -164,12 +165,13 @@ public class StructurBrowserTree
             try {
                 if (uiStrBrws.getCommand().getTargetTable() != null) {
                     if (uiStrBrws.getCommand().getTargetStructurBrowserField() != null) {
-                        page = new StructurBrowserPage(uiStrBrws.getCommandUUID(),
-                                        uiStrBrws.getInstanceKey(), getPage()
+                        page = new StructurBrowserPage(Model.of(new UIStructurBrowser(uiStrBrws.getCommandUUID(),
+                                        uiStrBrws.getInstanceKey()).setPagePosition(PagePosition.CONTENT)), getPage()
                                                         .getPageReference());
                     } else {
-                        page = new TablePage(uiStrBrws.getCommandUUID(), uiStrBrws.getInstanceKey(), getPage()
-                                        .getPageReference());
+                        page = new TablePage(Model.of(new UITable(uiStrBrws.getCommandUUID(), uiStrBrws
+                                        .getInstanceKey()).setPagePosition(PagePosition.CONTENT)), getPage()
+                                                        .getPageReference());
                     }
                 } else {
                     final UIForm uiForm = new UIForm(uiStrBrws.getCommandUUID(), uiStrBrws.getInstanceKey())
