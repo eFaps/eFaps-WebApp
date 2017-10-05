@@ -171,8 +171,20 @@ public class GridXComponent
                 .append("var dp = function(_value){ \n")
                     .append("    var pattern = /(\\d\\d?)\\/(\\d{2})\\/(\\d{4})/;\n")
                     .append("    pattern.test(_value);\n")
-                    .append("    return new Date(parseInt(RegExp.$3), parseInt(RegExp.$2) - 1, parseInt(RegExp.$1));\n")
+                    .append("    var d = new Date(parseInt(RegExp.$3), parseInt(RegExp.$2) - 1, parseInt(RegExp.$1));\n")
+                    .append("    return d;")
                     .append("}\n")
+
+                .append("var dtp = function(_value){ \n")
+                    .append("    var pattern = /(\\d\\d?)\\/(\\d{2})\\/(\\d{4}) (\\d{2}):(\\d{2}):(\\d{2}) ([AP]M)/;\n")
+                    .append("    pattern.test(_value);\n")
+                    .append("    var d = new Date(parseInt(RegExp.$3), parseInt(RegExp.$2) - 1, parseInt(RegExp.$1));\n")
+                    .append("    d.setHours(parseInt(RegExp.$4) + (RegExp.$7 == 'PM' ? 12 : 0));\n")
+                    .append("    d.setMinutes(parseInt(RegExp.$5));\n")
+                    .append("    d.setSeconds(parseInt(RegExp.$6));\n")
+                    .append("    return d;")
+                    .append("}\n")
+
                 .append("var cpd = function(_attr, _itemA, _itemB) {\n")
                     .append("    return dp(_itemA[_attr]) - dp(_itemB[_attr]);\n")
                     .append("}\n")
@@ -243,6 +255,10 @@ public class GridXComponent
                     switch (column.getDataType()) {
                         case "date":
                             js.append(", dateParser: dp \n")
+                                .append(", comparator: cpd\n");
+                            break;
+                        case "datetime":
+                            js.append(", datetimeParser: dtp \n")
                                 .append(", comparator: cpd\n");
                             break;
                         default:

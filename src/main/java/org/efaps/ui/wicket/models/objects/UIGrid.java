@@ -74,6 +74,7 @@ import org.efaps.db.SelectBuilder;
 import org.efaps.ui.wicket.models.field.FieldConfiguration;
 import org.efaps.ui.wicket.models.field.JSField;
 import org.efaps.ui.wicket.models.field.factories.BooleanUIFactory;
+import org.efaps.ui.wicket.models.field.factories.DateTimeUIFactory;
 import org.efaps.ui.wicket.models.field.factories.DateUIFactory;
 import org.efaps.ui.wicket.models.field.factories.DecimalUIFactory;
 import org.efaps.ui.wicket.models.field.factories.IComponentFactory;
@@ -291,6 +292,8 @@ public class UIGrid
                 _fields.put(_uiValue.getField().getId(), jsField);
                 if (fact instanceof DateUIFactory) {
                     _column.setDataType("date");
+                } else if (fact instanceof DateTimeUIFactory) {
+                    _column.setDataType("datetime");
                 } else if (fact instanceof DecimalUIFactory || fact instanceof NumberUIFactory) {
                     _column.setDataType("number");
                 } else if (fact instanceof BooleanUIFactory) {
