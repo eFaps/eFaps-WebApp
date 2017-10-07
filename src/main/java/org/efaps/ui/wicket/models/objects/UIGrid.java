@@ -280,6 +280,7 @@ public class UIGrid
         throws EFapsException
     {
         JSField jsField;
+        Object sortValue = _sortValue;
         if (_fields.containsKey(_uiValue.getField().getId())) {
             jsField = _fields.get(_uiValue.getField().getId());
         } else {
@@ -296,6 +297,7 @@ public class UIGrid
                     _column.setDataType("datetime");
                 } else if (fact instanceof DecimalUIFactory || fact instanceof NumberUIFactory) {
                     _column.setDataType("number");
+
                 } else if (fact instanceof BooleanUIFactory) {
                     _column.setDataType("boolean");
                 }
@@ -307,6 +309,11 @@ public class UIGrid
         } else {
             jsField.setValue(_uiValue);
             value = jsField.getFactory().getStringValue(jsField);
+            if (sortValue == null
+                            && (jsField.getFactory() instanceof DecimalUIFactory
+                                            || jsField.getFactory() instanceof NumberUIFactory)) {
+                sortValue = jsField.getFactory().getCompareValue(jsField);
+            }
         }
         return  new Cell().setValue(value)
                         .setSortValue(_sortValue)
