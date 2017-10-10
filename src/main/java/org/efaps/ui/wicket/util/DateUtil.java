@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.util;
@@ -31,7 +28,6 @@ import org.joda.time.format.DateTimeFormatter;
  * Singelton class for date functions.
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public final class DateUtil
 {
@@ -75,5 +71,73 @@ public final class DateUtil
                         .getLocale()));
         fmt.withLocale(Context.getThreadContext().getLocale());
         return _value.toString(fmt);
+    }
+
+    /**
+     * Gets the date time formatter.
+     *
+     * @return the date time formatter
+     * @throws EFapsException the e faps exception
+     */
+    public static DateTimeFormatter getDateFormatter()
+        throws EFapsException
+    {
+        final String formatStr = Configuration.getAttribute(Configuration.ConfigAttribute.FORMAT_DATE);
+        final DateTimeFormatter ret;
+        if (formatStr.matches("^[S,M,L,F,-]{2}$")) {
+            ret = DateTimeFormat.forStyle(formatStr);
+        } else {
+            ret = DateTimeFormat.forPattern(formatStr);
+        }
+        return ret.withLocale(Context.getThreadContext().getLocale());
+    }
+
+    /**
+     * Gets the date pattern.
+     *
+     * @return the date pattern
+     * @throws EFapsException the e faps exception
+     */
+    public static String getDatePattern()
+        throws EFapsException
+    {
+        final String formatStr = Configuration.getAttribute(Configuration.ConfigAttribute.FORMAT_DATE);
+        return formatStr.matches("^[S,M,L,F,-]{2}$")
+                        ? DateTimeFormat.patternForStyle(formatStr, Context.getThreadContext().getLocale())
+                        : formatStr;
+    }
+
+    /**
+     * Gets the date time formatter.
+     *
+     * @return the date time formatter
+     * @throws EFapsException the e faps exception
+     */
+    public static DateTimeFormatter getDateTimeFormatter()
+        throws EFapsException
+    {
+        final String formatStr = Configuration.getAttribute(Configuration.ConfigAttribute.FORMAT_DATETIME);
+        final DateTimeFormatter ret;
+        if (formatStr.matches("^[S,M,L,F,-]{2}$")) {
+            ret = DateTimeFormat.forStyle(formatStr);
+        } else {
+            ret = DateTimeFormat.forPattern(formatStr);
+        }
+        return ret.withLocale(Context.getThreadContext().getLocale());
+    }
+
+    /**
+     * Gets the date pattern.
+     *
+     * @return the date pattern
+     * @throws EFapsException the e faps exception
+     */
+    public static String getDateTimePattern()
+        throws EFapsException
+    {
+        final String formatStr = Configuration.getAttribute(Configuration.ConfigAttribute.FORMAT_DATETIME);
+        return formatStr.matches("^[S,M,L,F,-]{2}$")
+                        ? DateTimeFormat.patternForStyle(formatStr, Context.getThreadContext().getLocale())
+                        : formatStr;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,11 +24,9 @@ import org.efaps.admin.datamodel.ui.DateTimeUI;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
-import org.efaps.ui.wicket.util.Configuration;
+import org.efaps.ui.wicket.util.DateUtil;
 import org.efaps.util.EFapsException;
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 
 /**
@@ -92,14 +90,7 @@ public final class DateTimeUIFactory
         if (valueTmp instanceof DateTime) {
             final DateTime datetime = (DateTime) valueTmp;
             final DateTime dateTmp = datetime.withChronology(Context.getThreadContext().getChronology());
-            final String formatStr = Configuration.getAttribute(Configuration.ConfigAttribute.FORMAT_DATETIME);
-            final DateTimeFormatter formatter;
-            if (formatStr.matches("^[S,M,L,F,-]{2}$")) {
-                formatter = DateTimeFormat.forStyle(formatStr);
-            } else {
-                formatter = DateTimeFormat.forPattern(formatStr);
-            }
-            strValue = dateTmp.toString(formatter.withLocale(Context.getThreadContext().getLocale()));
+            strValue = dateTmp.toString(DateUtil.getDateTimeFormatter());
         }
         return strValue;
     }

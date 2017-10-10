@@ -18,6 +18,7 @@
 
 package org.efaps.ui.wicket.components.gridx;
 
+import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -83,6 +84,7 @@ import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
+import org.efaps.ui.wicket.util.DateUtil;
 import org.efaps.ui.wicket.util.DojoClass;
 import org.efaps.ui.wicket.util.DojoClasses;
 import org.efaps.ui.wicket.util.DojoWrapper;
@@ -157,9 +159,23 @@ public class GridXComponent
                             DojoClasses.GridQuickFilter, DojoClasses.GridAggregate,
                             DojoClasses.Bar, DojoClasses.Persist, DojoClasses.Filter, DojoClasses.FilterBar,
                             DojoClasses.DropDownButton, DojoClasses.TextBox, DojoClasses.TooltipDialog,
-                            DojoClasses.domGeom, DojoClasses.ColumnLock);
+                            DojoClasses.domGeom, DojoClasses.ColumnLock, DojoClasses.DateLocale);
+
+            final DecimalFormat format = (DecimalFormat) DecimalFormat.getInstance(
+                            Context.getThreadContext().getLocale());
+            final char decSep = format.getDecimalFormatSymbols().getDecimalSeparator();
+            final char grpSep = format.getDecimalFormatSymbols().getGroupingSeparator();
 
             final StringBuilder js = new StringBuilder()
+                .append("var cpn = function(_attr, _itemA, _itemB) {\n")
+                .append("    var valA = _itemA.hasOwnProperty(_attr + '_sort')")
+                    .append(" ? _itemA[_attr + '_sort'] : parseFloat(String(_itemA[_attr]).replace('")
+                    .append(grpSep).append("',''").append(").replace('").append(decSep).append("','.'").append("));\n")
+                .append("    var valB = _itemB.hasOwnProperty(_attr + '_sort') ")
+                    .append(" ? _itemB[_attr + '_sort'] : parseFloat(String(_itemB[_attr]).replace('")
+                    .append(grpSep).append("',''").append(").replace('").append(decSep).append("','.'").append("));\n")
+                .append("    return valA < valB ? -1 : (valA > valB ? 1 : 0);\n")
+                .append("}\n")
                 .append("var cp = function(_attr, _itemA, _itemB) {\n")
                 .append("    var strA = _itemA.hasOwnProperty(_attr + '_sort')")
                     .append(" ? _itemA[_attr + '_sort'] : _itemA[_attr];\n")
@@ -167,26 +183,19 @@ public class GridXComponent
                     .append("? _itemB[_attr + '_sort'] : _itemB[_attr];\n")
                 .append("    return strA < strB ? -1 : (strA > strB ? 1 : 0);\n")
                 .append("}\n")
-                // Configuration.getAttribute(Configuration.ConfigAttribute.FORMAT_DATE);
                 .append("var dp = function(_value){ \n")
-                    .append("    var pattern = /(\\d\\d?)\\/(\\d{2})\\/(\\d{4})/;\n")
-                    .append("    pattern.test(_value);\n")
-                    .append("    var d = new Date(parseInt(RegExp.$3), parseInt(RegExp.$2) - 1, parseInt(RegExp.$1));\n")
-                    .append("    return d;")
+                    .append("return dateLocale.parse(_value, { datePattern: \"").append(DateUtil.getDatePattern())
+                        .append("\", selector: \"date\" });")
                     .append("}\n")
-
                 .append("var dtp = function(_value){ \n")
-                    .append("    var pattern = /(\\d\\d?)\\/(\\d{2})\\/(\\d{4}) (\\d{2}):(\\d{2}):(\\d{2}) ([AP]M)/;\n")
-                    .append("    pattern.test(_value);\n")
-                    .append("    var d = new Date(parseInt(RegExp.$3), parseInt(RegExp.$2) - 1, parseInt(RegExp.$1));\n")
-                    .append("    d.setHours(parseInt(RegExp.$4) + (RegExp.$7 == 'PM' ? 12 : 0));\n")
-                    .append("    d.setMinutes(parseInt(RegExp.$5));\n")
-                    .append("    d.setSeconds(parseInt(RegExp.$6));\n")
-                    .append("    return d;")
-                    .append("}\n")
-
+                    .append("return dateLocale.parse(_value, { datePattern: \"").append(DateUtil.getDateTimePattern())
+                        .append("\", selector: \"date\", am: \"AM\", pm: \"PM\" });")
+                .append("}\n")
                 .append("var cpd = function(_attr, _itemA, _itemB) {\n")
                     .append("    return dp(_itemA[_attr]) - dp(_itemB[_attr]);\n")
+                    .append("}\n")
+                .append("var cpdt = function(_attr, _itemA, _itemB) {\n")
+                    .append("    return dtp(_itemA[_attr]) - dtp(_itemB[_attr]);\n")
                     .append("}\n")
                 .append("var store = new Memory({\n")
                 .append("data: ")
@@ -254,12 +263,15 @@ public class GridXComponent
                     js.append(", dataType: '").append(column.getDataType()).append("'\n");
                     switch (column.getDataType()) {
                         case "date":
-                            js.append(", dateParser: dp \n")
-                                .append(", comparator: cpd\n");
+                            js.append(", dateParser: dp,\n")
+                                .append("comparator: cpd\n");
                             break;
                         case "datetime":
-                            js.append(", datetimeParser: dtp \n")
-                                .append(", comparator: cpd\n");
+                            js.append(", datetimeParser: dtp,\n")
+                                .append("comparator: cpdt\n");
+                            break;
+                        case "number":
+                            js.append(", comparator: cpn\n");
                             break;
                         default:
                             js.append(", comparator: cp\n");
