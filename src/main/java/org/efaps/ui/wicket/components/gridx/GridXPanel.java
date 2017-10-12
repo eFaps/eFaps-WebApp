@@ -33,8 +33,6 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.string.StringValue;
-import org.apache.wicket.util.visit.IVisit;
-import org.apache.wicket.util.visit.IVisitor;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.api.ui.IFilter;
@@ -81,7 +79,7 @@ public class GridXPanel
      */
     public GridXPanel(final String _wicketId,
                       final IModel<UIGrid> _model)
-        throws EFapsException
+                    throws EFapsException
     {
         super(_wicketId, _model);
         add(new AbstractDojoBehavior()
@@ -134,49 +132,45 @@ public class GridXPanel
                             {
                                 final GridXPanel gridpanel = findParent(GridXPanel.class);
                                 final UIGrid uiGrid = gridpanel.getModelObject();
-
-                                form.visitChildren(DateTimePanel.class, new IVisitor<DateTimePanel, Void>()
-                                {
-
-                                    @Override
-                                    public void component(final DateTimePanel _datePanel,
-                                                          final IVisit<Void> _visit)
-                                    {
-                                        try {
-                                            if ("dateFrom".equals(_datePanel.getId())) {
-                                                final List<StringValue> tmp = getRequest().getRequestParameters()
-                                                                .getParameterValues(_datePanel.getDateFieldName());
-                                                if (!tmp.isEmpty()) {
-                                                    final List<StringValue> fromTmp = _datePanel.getDateAsString(tmp,
-                                                                    null, null, null);
-                                                    if (!fromTmp.isEmpty()) {
-                                                        final String from = fromTmp.get(0).toString();
-                                                        final DateTime date = DateTimeUtil.translateFromUI(from);
-                                                        ((IMapFilter) filter).put("from", date.toString());
-                                                    }
-                                                }
-                                            } else {
-                                                final List<StringValue> tmp = getRequest().getRequestParameters()
-                                                                .getParameterValues(_datePanel.getDateFieldName());
-                                                if (!tmp.isEmpty()) {
-                                                    final List<StringValue> toTmp = _datePanel.getDateAsString(tmp,
-                                                                    null, null, null);
-                                                    if (toTmp != null) {
-                                                        final String to = toTmp.get(0).toString();
-                                                        final DateTime date = DateTimeUtil.translateFromUI(to);
-                                                        ((IMapFilter) filter).put("to", date.toString());
-                                                    }
+                                form.visitChildren(DateTimePanel.class, (_datePanel,
+                                                                         _visit) -> {
+                                    try {
+                                        if ("dateFrom".equals(_datePanel.getId())) {
+                                            final List<StringValue> tmp1 = getRequest().getRequestParameters()
+                                                            .getParameterValues(((DateTimePanel) _datePanel)
+                                                                            .getDateFieldName());
+                                            if (!tmp1.isEmpty()) {
+                                                final List<StringValue> fromTmp = ((DateTimePanel) _datePanel)
+                                                                .getDateAsString(tmp1, null, null, null);
+                                                if (!fromTmp.isEmpty()) {
+                                                    final String from = fromTmp.get(0).toString();
+                                                    final DateTime date1 = DateTimeUtil.translateFromUI(from);
+                                                    ((IMapFilter) filter).put("from", date1.toString());
                                                 }
                                             }
-                                        } catch (final EFapsException e) {
-                                            GridXPanel.LOG.error("Catched error", e);
+                                        } else {
+                                            final List<StringValue> tmp2 = getRequest().getRequestParameters()
+                                                            .getParameterValues(((DateTimePanel) _datePanel)
+                                                                            .getDateFieldName());
+                                            if (!tmp2.isEmpty()) {
+                                                final List<StringValue> toTmp = ((DateTimePanel) _datePanel)
+                                                                .getDateAsString(tmp2, null, null, null);
+                                                if (toTmp != null) {
+                                                    final String to = toTmp.get(0).toString();
+                                                    final DateTime date2 = DateTimeUtil.translateFromUI(to);
+                                                    ((IMapFilter) filter).put("to", date2.toString());
+                                                }
+                                            }
                                         }
+                                    } catch (final EFapsException e) {
+                                        GridXPanel.LOG.error("Catched error", e);
                                     }
                                 });
 
                                 try {
+                                    final boolean updateColumns = uiGrid.getValues().size() == 0;
                                     uiGrid.reload();
-                                    _target.appendJavaScript(GridXComponent.getDataReloadJS(uiGrid));
+                                    _target.appendJavaScript(GridXComponent.getDataReloadJS(uiGrid, updateColumns));
                                 } catch (final EFapsException e) {
                                     GridXPanel.LOG.error("Catched error", e);
                                 }
@@ -197,32 +191,20 @@ public class GridXPanel
                                 final GridXPanel gridpanel = findParent(GridXPanel.class);
                                 final UIGrid uiGrid = gridpanel.getModelObject();
 
-                                form.visitChildren(TextField.class, new IVisitor<TextField<String>, Void>()
-                                {
-
-                                    @Override
-                                    public void component(final TextField<String> _text,
-                                                          final IVisit<Void> _visit)
-                                    {
-                                        ((IMapFilter) filter).put("from", _text.getModelObject());
-                                        ((IMapFilter) filter).put("filter", _text.getModelObject());
-                                    }
+                                form.visitChildren(TextField.class, (_text,
+                                                                     _visit) -> {
+                                    ((IMapFilter) filter).put("from", ((TextField<?>) _text).getModelObject());
+                                    ((IMapFilter) filter).put("filter", ((TextField<?>) _text).getModelObject());
                                 });
 
-                                form.visitChildren(CheckBox.class, new IVisitor<CheckBox, Void>()
-                                {
-
-                                    @Override
-                                    public void component(final CheckBox _checkBox,
-                                                          final IVisit<Void> _visit)
-                                    {
-                                        ((IMapFilter) filter).put(_checkBox.getId(), _checkBox.getModelObject());
-                                    }
-                                });
+                                form.visitChildren(CheckBox.class, (_checkBox,
+                                                                    _visit) -> ((IMapFilter) filter)
+                                                .put(_checkBox.getId(), ((CheckBox) _checkBox).getModelObject()));
 
                                 try {
+                                    final boolean updateColumns = uiGrid.getValues().size() == 0;
                                     uiGrid.reload();
-                                    _target.appendJavaScript(GridXComponent.getDataReloadJS(uiGrid));
+                                    _target.appendJavaScript(GridXComponent.getDataReloadJS(uiGrid, updateColumns));
                                 } catch (final EFapsException e) {
                                     GridXPanel.LOG.error("Catched error", e);
                                 }
@@ -246,35 +228,26 @@ public class GridXPanel
                         {
                             final GridXPanel gridpanel = findParent(GridXPanel.class);
                             final UIGrid uiGrid = gridpanel.getModelObject();
-                            form.visitChildren(CheckBoxMultipleChoice.class,
-                                        new IVisitor<CheckBoxMultipleChoice<?>, Void>()
-                                {
-
-                                    @Override
-                                    public void component(final CheckBoxMultipleChoice<?> _checkBox,
-                                                          final IVisit<Void> _visit)
-                                    {
-                                        try {
-                                            final ListFilterPanel filterPanel = _checkBox.findParent(
-                                                            ListFilterPanel.class);
-                                            @SuppressWarnings("unchecked")
-                                            final List<IOption> sel = (List<IOption>) _checkBox
-                                                            .getDefaultModelObject();
-                                            for (final IOption option : filterPanel.getModelObject()) {
-                                                final Method method = option.getClass().getMethod(
-                                                                "setSelected", boolean.class);
-                                                method.invoke(option, sel.contains(option));
-                                            }
-                                        } catch (final IllegalAccessException | InvocationTargetException
-                                                        | NoSuchMethodException e) {
-                                            GridXPanel.LOG.error("Catched error", e);
-                                        }
+                            form.visitChildren(CheckBoxMultipleChoice.class, (_checkBox,
+                                                                              _visit) -> {
+                                try {
+                                    final ListFilterPanel filterPanel = _checkBox.findParent(ListFilterPanel.class);
+                                    @SuppressWarnings("unchecked")
+                                    final List<IOption> sel = (List<IOption>) _checkBox.getDefaultModelObject();
+                                    for (final IOption option : filterPanel.getModelObject()) {
+                                        final Method method = option.getClass().getMethod("setSelected", boolean.class);
+                                        method.invoke(option, sel.contains(option));
                                     }
-                                });
+                                } catch (final IllegalAccessException | InvocationTargetException
+                                                | NoSuchMethodException e) {
+                                    GridXPanel.LOG.error("Catched error", e);
+                                }
+                            });
 
                             try {
+                                final boolean updateColumns = uiGrid.getValues().size() == 0;
                                 uiGrid.reload();
-                                _target.appendJavaScript(GridXComponent.getDataReloadJS(uiGrid));
+                                _target.appendJavaScript(GridXComponent.getDataReloadJS(uiGrid, updateColumns));
                             } catch (final EFapsException e) {
                                 GridXPanel.LOG.error("Catched error", e);
                             }

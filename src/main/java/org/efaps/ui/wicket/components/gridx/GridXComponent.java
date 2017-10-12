@@ -400,7 +400,13 @@ public class GridXComponent
                     .append("},true);\n");
             }
 
-            js.append("grid.startup();\n");
+            js.append("grid.startup();\n")
+                .append("grid.comparators = {\n")
+                .append("date : cpd,\n")
+                .append("numeric : cpn,\n")
+                .append("datetime : cpdt,\n")
+                .append("string : cp\n")
+                .append("}\n");
 
             if (!isField) {
                 js.append("var rg = function() {\n")
@@ -767,18 +773,35 @@ public class GridXComponent
      * Gets the javascript.
      *
      * @param _uiGrid the ui grid
+     * @param _updateColumns the update columns
      * @return the javascript
      * @throws EFapsException on error
      */
-    public static CharSequence getDataReloadJS(final UIGrid _uiGrid)
+    public static CharSequence getDataReloadJS(final UIGrid _uiGrid,
+                                               final boolean _updateColumns)
         throws EFapsException
     {
         final StringBuilder js = new StringBuilder()
-                        .append("var grid = registry.byId('grid');\n").append("var items= ")
-                        .append(GridXComponent.getDataJS(_uiGrid)).append("grid.model.clearCache();\n")
-                        .append("grid.model.store.setData(items);\n")
-                        .append("grid.body.refresh();\n");
-        return DojoWrapper.require(js, DojoClasses.registry);
+            .append("var grid = registry.byId('grid');\n")
+            .append("var items= ").append(GridXComponent.getDataJS(_uiGrid))
+            .append("grid.model.clearCache();\n");
+
+        if (_updateColumns) {
+            js.append("array.forEach(grid.structure, function(entry){\n");
+            for (final Column column : _uiGrid.getColumns()) {
+                if (column.getDataType() != null) {
+                    js.append("if ('").append(column.getField().getId()).append("'== entry.id) {\n")
+                        .append("entry.dataType='").append(column.getDataType()).append("';\n")
+                        .append("entry.comparator = grid.comparators.").append(column.getDataType()).append(";\n")
+                        .append("}\n");
+                }
+            }
+            js.append("});\n")
+                .append("grid.setColumns(grid.structure);\n");
+        }
+        js.append("grid.model.store.setData(items);\n")
+            .append("grid.body.refresh();\n");
+        return DojoWrapper.require(js, DojoClasses.registry, DojoClasses.array);
     }
 
     /**

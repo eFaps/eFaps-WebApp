@@ -58,7 +58,7 @@ public class ReloadBehavior
         try {
             final UIGrid uiGrid = (UIGrid) getComponent().getPage().getDefaultModelObject();
             uiGrid.reload();
-            _target.appendJavaScript(GridXComponent.getDataReloadJS(uiGrid));
+            _target.appendJavaScript(GridXComponent.getDataReloadJS(uiGrid, false));
         } catch (final EFapsException e) {
             LOG.error("Catched ", e);
         }
