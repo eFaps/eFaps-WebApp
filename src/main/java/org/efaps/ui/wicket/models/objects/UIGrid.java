@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -251,7 +251,8 @@ public class UIGrid
 
                     final UIValue uiValue = UIValue.get(field, attr, value)
                                     .setInstance(instance)
-                                    .setRequestInstances(multi.getInstanceList());
+                                    .setRequestInstances(multi.getInstanceList())
+                                    .setCallInstance(getCallInstance());
 
                     final Cell cell = getCell(column, uiValue, sortValue, jsFields);
                     if (column.getFieldConfig().getField().getReference() != null) {
