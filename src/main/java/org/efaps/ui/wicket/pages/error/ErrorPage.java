@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev:1510 $
- * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
- * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.pages.error;
@@ -25,7 +22,6 @@ import java.util.Date;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.datetime.markup.html.basic.DateLabel;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
@@ -41,13 +37,13 @@ import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wicketstuff.datetime.markup.html.basic.DateLabel;
 
 /**
  * This Page is the ErrorPage for the eFaps-Webapplication.<br>
- * It renders a Page that shows the EFapsException in a userfriendly way.
+ * It renders a Page that shows the EFapsException in a user friendly way.
  *
  * @author The eFaps Team
- * @version $Id:ErrorPage.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class ErrorPage
     extends WebPage
@@ -104,8 +100,8 @@ public class ErrorPage
         }
 
         final StackTraceElement[] traceElements = _exception.getStackTrace();
-        for (int i = 0; i < traceElements.length; i++) {
-            errorAdvanced += traceElements[i].toString() + "\n";
+        for (final StackTraceElement traceElement : traceElements) {
+            errorAdvanced += traceElement.toString() + "\n";
         }
 
      // set the title for the Page
@@ -132,7 +128,7 @@ public class ErrorPage
             public void onClick(final AjaxRequestTarget _target)
             {
                 this.expanded = !this.expanded;
-                String text;
+                final String text;
                 if (this.expanded) {
                     text = "less";
                 } else {

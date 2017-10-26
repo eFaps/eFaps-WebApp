@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 
@@ -25,23 +22,22 @@ import java.util.Date;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.wicket.datetime.markup.html.basic.DateLabel;
 import org.apache.wicket.markup.html.pages.AbstractErrorPage;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.http.WebResponse;
+import org.wicketstuff.datetime.markup.html.basic.DateLabel;
 
 
 /**
- * TODO comment!
+ * TODO comment!.
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class UnexpectedErrorPage
     extends AbstractErrorPage
 {
     /**
-     * Needed foer serialization.
+     * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
 

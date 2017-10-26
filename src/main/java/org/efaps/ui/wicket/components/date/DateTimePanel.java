@@ -23,9 +23,6 @@ import java.util.List;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.behavior.AttributeAppender;
-import org.apache.wicket.datetime.DateConverter;
-import org.apache.wicket.datetime.StyleDateConverter;
-import org.apache.wicket.datetime.markup.html.form.DateTextField;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebComponent;
@@ -56,6 +53,9 @@ import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wicketstuff.datetime.DateConverter;
+import org.wicketstuff.datetime.StyleDateConverter;
+import org.wicketstuff.datetime.markup.html.form.DateTextField;
 
 /**
  * Class to render a datefield with picker and in case that a time is wanted
@@ -106,13 +106,14 @@ public class DateTimePanel
     private FieldConfiguration fieldConfig;
 
     /**
+     * Instantiates a new date time panel.
+     *
      * @param _wicketId wicket id of this component
+     * @param _model the model
+     * @param _fieldConf the field conf
      * @param _dateObject object containing a DateTime, if null or not DateTime
      *                       a new DateTime will be instantiated
-     * @param _fieldName Name of the field this DateTimePanel belongs to
-     * @param _fieldLabel Label to e used in case of error
      * @param _time must the time be rendered also
-     * @param _inputSize size of the input
      * @throws EFapsException on error
      */
     public DateTimePanel(final String _wicketId,

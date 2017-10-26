@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ package org.efaps.ui.wicket.components.gridx.filter;
 import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.wicket.datetime.StyleDateConverter;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
@@ -32,6 +31,7 @@ import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.models.field.FieldConfiguration;
 import org.efaps.util.EFapsException;
 import org.joda.time.DateTime;
+import org.wicketstuff.datetime.StyleDateConverter;
 
 /**
  * The Class DatePanel.
