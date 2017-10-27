@@ -36,6 +36,7 @@ import org.apache.wicket.ajax.attributes.AjaxRequestAttributes.Method;
 import org.apache.wicket.ajax.attributes.CallbackParameter;
 import org.apache.wicket.ajax.attributes.ThrottlingSettings;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.devutils.debugbar.DebugBar;
 import org.apache.wicket.event.IEvent;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
@@ -202,11 +203,16 @@ public class MainPage
         add(this.modal);
         add(new ResizeEventBehavior());
 
+        final boolean slidein = BooleanUtils.toBoolean(Configuration.getAttribute(ConfigAttribute.SLIDEINMENU));
+
         try {
             // only add the search if it is activated in the kernel
             if (EFapsSystemConfiguration.get().getAttributeValueAsBoolean(KernelSettings.INDEXACTIVATE)) {
                 final SearchPanel search = new SearchPanel("search");
                 add(search);
+                if (slidein) {
+                    search.add(new AttributeAppender("class", "slideinSearch", " "));
+                }
             } else {
                 add(new WebMarkupContainer("search").setVisible(false));
             }
@@ -218,8 +224,6 @@ public class MainPage
         preferences.setVisible(false);
         preferences.setOutputMarkupPlaceholderTag(true);
         add(preferences);
-
-        final boolean slidein = BooleanUtils.toBoolean(Configuration.getAttribute(ConfigAttribute.SLIDEINMENU));
 
         final WebMarkupContainer borderPanel = new WebMarkupContainer("borderPanel");
         this.add(borderPanel);
