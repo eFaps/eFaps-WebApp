@@ -127,6 +127,7 @@ public final class Configuration
                         "Class name of the DashboardProvider class"),
         /** MainToolBar. */
         TOOLBAR(false, true,  "MainToolBar", "87001cc3-c45c-44de-b8f1-776df507f268", String.class, ""),
+
         /** */
         BPM_DEFAULTTASKFROM(false, true, "BPM.DefaultTaskForm", "c34e35ad-93ed-4190-887d-5be9a2302edf",
                         String.class,
@@ -223,7 +224,10 @@ public final class Configuration
                         "UUID of the Command that defines the form to be opened for edit help."),
 
         /** The mainmenu. */
-        SLIDEINMENU(true, true, "ActivateSlideInMenu", "false", Boolean.class, "Activate the SlideIn Menu"),
+        SLIDEIN(true, true, "ActivateSlideInMenu", "false", Boolean.class, "Activate the SlideIn Menu"),
+
+        /** Menu used for SlideIn. */
+        SLIDEINMENU(false, true,  "SlideInMenu", "", String.class, "Menu used for SlideIn"),
 
         /** */
         PREF_PROVIDER(false, true, "Preferences.Provider", "org.efaps.esjp.common.preferences.PreferencesProvider",

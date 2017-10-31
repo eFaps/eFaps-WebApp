@@ -16,6 +16,8 @@
  */
 package org.efaps.ui.wicket.components.menu;
 
+import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,9 +26,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.RandomStringGenerator;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.wicket.IRequestListener;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.attributes.CallbackParameter;
@@ -42,6 +44,10 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.StringValue;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractCommand.Target;
+import org.efaps.ci.CIAdminUserInterface;
+import org.efaps.db.Checkout;
+import org.efaps.db.InstanceQuery;
+import org.efaps.db.QueryBuilder;
 import org.efaps.ui.wicket.components.menu.behaviors.AjaxMenuItem;
 import org.efaps.ui.wicket.components.menu.behaviors.ExecBehavior;
 import org.efaps.ui.wicket.components.menu.behaviors.OpenModalBehavior;
@@ -93,6 +99,9 @@ public class SlideIn
 
     /** The menu items. */
     private final Map<String, UIMenuItem> menuItems = new HashMap<>();
+
+    /** The generator. */
+    private final RandomStringGenerator generator = new RandomStringGenerator.Builder().withinRange('a', 'z').build();
 
     /**
      * Instantiates a new slide in.
@@ -207,8 +216,8 @@ public class SlideIn
     {
         final StringBuilder js = new StringBuilder();
 
-        final String node1 = RandomStringUtils.randomAlphabetic(3);
-        final String node2 = RandomStringUtils.randomAlphabetic(3);
+        final String node1 = this.generator.generate(4);
+        final String node2 = this.generator.generate(4);
 
         js.append("var ").append(node1).append(" = domConstruct.create(\"div\", { class: \"menueentry\"}, sn);\n")
             .append("var ").append(node2).append(" = domConstruct.create(\"div\", { class: \"title");
@@ -237,7 +246,7 @@ public class SlideIn
                                         final String _titleNode)
     {
         final StringBuilder js = new StringBuilder();
-        final String node1 = RandomStringUtils.randomAlphabetic(3);
+        final String node1 = this.generator.generate(4);
 
         if (_menuItem.getChildren().isEmpty()) {
             js.append(" on(").append(_titleNode).append(", \"click\", function(evt) {\n")
@@ -262,8 +271,8 @@ public class SlideIn
                 .append("});\n");
         }
         for (final UIMenuItem childItem : _menuItem.getChildren()) {
-            final String node2 = RandomStringUtils.randomAlphabetic(3);
-            final String node3 = RandomStringUtils.randomAlphabetic(3);
+            final String node2 = this.generator.generate(4);
+            final String node3 = this.generator.generate(4);
             js.append("var ").append(node2).append(" = domConstruct.create(\"div\",")
                 .append("{ class: \"menueentry\"}, ").append(node1).append(");\n")
                 .append("var ").append(node3).append(" = domConstruct.create(\"div\", { class: \"title");
@@ -288,7 +297,7 @@ public class SlideIn
      */
     private CharSequence getEventJs(final UIMenuItem _menuItem)
     {
-        final String key = RandomStringUtils.randomAlphabetic(6);
+        final String key = this.generator.generate(8);
         this.menuItems.put(key, _menuItem);
         final StringBuilder ret = new StringBuilder();
         switch (_menuItem.getTarget()) {
@@ -339,10 +348,31 @@ public class SlideIn
             content = StringUtils.left(label, 1).toUpperCase();
         }
         final StringBuilder js = new StringBuilder();
-        js.append("domConstruct.create(\"span\", {\n")
-            .append("class: \"circle ").append(content).append(" \"\n,")
-            .append("innerHTML: \"").append(content).append("\"\n")
-            .append("}, ").append(_node).append(");\n");
+        if (StringUtils.isNotEmpty(_menuItem.getImage()) && _menuItem.getImage().endsWith(".svg")) {
+            try {
+                final QueryBuilder querBldr = new QueryBuilder(CIAdminUserInterface.Image);
+                querBldr.addWhereAttrEqValue(CIAdminUserInterface.Image.Name, _menuItem.getImage());
+                final InstanceQuery query = querBldr.getQuery();
+                query.execute();
+                if (query.next()) {
+                    final Checkout checkout = new Checkout(query.getCurrentValue());
+                    final ByteArrayOutputStream os = new ByteArrayOutputStream();
+                    checkout.execute(os);
+                    final String svg = new String(os.toByteArray(), StandardCharsets.UTF_8);
+                    js.append("domConstruct.create(\"span\", {\n")
+                        .append("innerHTML: \"").append(StringEscapeUtils.escapeEcmaScript(svg)).append("\"\n")
+                        .append("}, ").append(_node).append(");\n");
+                }
+            } catch (final EFapsException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        } else {
+            js.append("domConstruct.create(\"span\", {\n")
+                .append("class: \"circle ").append(content).append(" \"\n,")
+                .append("innerHTML: \"").append(content).append("\"\n")
+                .append("}, ").append(_node).append(");\n");
+        }
         return js;
     }
 

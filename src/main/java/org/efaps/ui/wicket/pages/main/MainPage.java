@@ -99,6 +99,7 @@ import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 import org.efaps.util.EFapsBaseException;
 import org.efaps.util.EFapsException;
+import org.efaps.util.UUIDUtil;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -203,7 +204,7 @@ public class MainPage
         add(this.modal);
         add(new ResizeEventBehavior());
 
-        final boolean slidein = BooleanUtils.toBoolean(Configuration.getAttribute(ConfigAttribute.SLIDEINMENU));
+        final boolean slidein = BooleanUtils.toBoolean(Configuration.getAttribute(ConfigAttribute.SLIDEIN));
 
         try {
             // only add the search if it is activated in the kernel
@@ -275,9 +276,11 @@ public class MainPage
                 final WebMarkupContainer slideinContentPane = new WebMarkupContainer("slideinContentPane");
                 slideinContentPane.add(new ContentPaneBehavior(Region.CENTER, false));
                 slideinPane.add(slideinContentPane);
-
-                slideinContentPane.add(new SlideInPanel("slideInPanel", Model.of(new UIMenuItem(UUID
-                                .fromString(Configuration.getAttribute(ConfigAttribute.TOOLBAR))))));
+                final String menuUUID = UUIDUtil.isUUID(Configuration.getAttribute(ConfigAttribute.SLIDEINMENU))
+                                ? Configuration.getAttribute(ConfigAttribute.SLIDEINMENU)
+                                : Configuration.getAttribute(ConfigAttribute.TOOLBAR);
+                slideinContentPane.add(new SlideInPanel("slideInPanel", Model.of(new UIMenuItem(
+                                UUID.fromString(menuUUID)))));
 
                 final WebMarkupContainer slideinFooterPane = new WebMarkupContainer("slideinFooterPane");
                 slideinFooterPane.add(new ContentPaneBehavior(Region.BOTTOM, false));
@@ -296,8 +299,8 @@ public class MainPage
                 borderPanel.add(headerPanel);
                 headerPanel.add(new ContentPaneBehavior(Region.TOP, false));
 
-                headerPanel.add(new MenuBarPanel("menubar", Model.of(new UIMenuItem(UUID
-                          .fromString(Configuration.getAttribute(ConfigAttribute.TOOLBAR))))));
+                headerPanel.add(new MenuBarPanel("menubar", Model.of(new UIMenuItem(UUID.fromString(
+                                Configuration.getAttribute(ConfigAttribute.TOOLBAR))))));
                 final WebMarkupContainer logo = new WebMarkupContainer("logo");
                 headerPanel.add(logo);
                 final Label welcome = new Label("welcome", DBProperties.getProperty("Logo.Welcome.Label"));

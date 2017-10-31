@@ -107,13 +107,13 @@ public class PreferencesPanel
 
         final WebMarkupContainer pref1 = new WebMarkupContainer("pref1");
         form.add(pref1);
-        pref1.setVisible(prefMap.containsKey(ConfigAttribute.SLIDEINMENU.getKey()));
+        pref1.setVisible(prefMap.containsKey(ConfigAttribute.SLIDEIN.getKey()));
 
-        final boolean slideIn = BooleanUtils.toBoolean(prefMap.get(ConfigAttribute.SLIDEINMENU.getKey()));
+        final boolean slideIn = BooleanUtils.toBoolean(prefMap.get(ConfigAttribute.SLIDEIN.getKey()));
         final PreferenceComponent slideInMenu = new PreferenceComponent("slideInMenu")
-                        .setLabel(DBProperties.getProperty(ConfigAttribute.SLIDEINMENU.getKey() + ".Label"));
+                        .setLabel(DBProperties.getProperty(ConfigAttribute.SLIDEIN.getKey() + ".Label"));
         slideInMenu.add(new SwitchBehavior()
-                        .setInputName(ConfigAttribute.SLIDEINMENU.getKey())
+                        .setInputName(ConfigAttribute.SLIDEIN.getKey())
                         .setOn(slideIn)
                         .setLeftLabel("Si")
                         .setRightLabel("No"));
@@ -131,7 +131,6 @@ public class PreferencesPanel
                         .setRightLabel("Grid")
                         .setOn(tdtB));
         pref2.add(tdtContent);
-
 
         final WebMarkupContainer pref3 = new WebMarkupContainer("pref3");
         form.add(pref3);
