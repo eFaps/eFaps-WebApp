@@ -17,10 +17,13 @@
 
 package org.efaps.ui.wicket;
 
-import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -32,7 +35,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.wicket.Application;
 import org.apache.wicket.Component;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
@@ -44,8 +46,6 @@ import org.apache.wicket.authorization.Action;
 import org.apache.wicket.authorization.IAuthorizationStrategy;
 import org.apache.wicket.event.IEvent;
 import org.apache.wicket.javascript.DefaultJavaScriptCompressor;
-import org.apache.wicket.markup.head.IHeaderResponse;
-import org.apache.wicket.markup.html.IHeaderResponseDecorator;
 import org.apache.wicket.markup.html.IPackageResourceGuard;
 import org.apache.wicket.markup.html.SecurePackageResourceGuard;
 import org.apache.wicket.markup.html.WebPage;
@@ -61,12 +61,12 @@ import org.apache.wicket.request.http.WebRequest;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.IResource;
 import org.apache.wicket.resource.DynamicJQueryResourceReference;
-import org.apache.wicket.response.filter.IResponseFilter;
 import org.apache.wicket.util.lang.Bytes;
 import org.apache.wicket.util.string.AppendingStringBuffer;
 import org.efaps.admin.AppConfigHandler;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.api.background.IJob;
+import org.efaps.api.ui.ILoginProvider;
 import org.efaps.db.Context;
 import org.efaps.jaas.AppAccessHandler;
 import org.efaps.ui.filter.AbstractFilter;
@@ -84,12 +84,14 @@ import org.efaps.ui.wicket.request.EFapsRequestCycleListener;
 import org.efaps.ui.wicket.request.EFapsResourceAggregator;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
+import org.efaps.ui.wicket.util.RandomUtil;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This Class presents the WebApplication for eFaps using the Wicket-Framework. <br/>
+ * This Class presents the WebApplication for eFaps using the Wicket-Framework.
+ * <br/>
  * It is the first class which is instantiated from the WicketServlet. Here the
  * Sessions for each user a created and basic Settings are set.
  *
@@ -98,6 +100,7 @@ import org.slf4j.LoggerFactory;
 public class EFapsApplication
     extends WebApplication
 {
+
     /** The max inactive interval. */
     private static int MAXINACTIVEINTERVAL = 0;
 
@@ -108,29 +111,20 @@ public class EFapsApplication
 
     /** The executor service. */
     private final ExecutorService executorService = new ThreadPoolExecutor(10, 10, 0L, TimeUnit.MILLISECONDS,
-                    new LinkedBlockingQueue<Runnable>(), new ThreadFactory()
-                    {
-
-                        @Override
-                        public Thread newThread(final Runnable _r)
-                        {
-                            final Thread ret = Executors.defaultThreadFactory().newThread(_r);
-                            ret.setName("eFaps-Process-" + ret.getId());
-                            ret.setContextClassLoader(EFapsClassLoader.getInstance());
-                            ret.setUncaughtExceptionHandler(new UncaughtExceptionHandler()
-                            {
-
-                                @Override
-                                public void uncaughtException(final Thread _thread,
-                                                              final Throwable _throwable)
-                                {
-                                    EFapsApplication.LOG.error("Caught error from Thread '{}'", _thread.getName());
-                                    EFapsApplication.LOG.error("->", _throwable);
-                                }
-                            });
-                            return ret;
-                        }
+                    new LinkedBlockingQueue<Runnable>(), (ThreadFactory) _r -> {
+                        final Thread ret = Executors.defaultThreadFactory().newThread(_r);
+                        ret.setName("eFaps-Process-" + ret.getId());
+                        ret.setContextClassLoader(EFapsClassLoader.getInstance());
+                        ret.setUncaughtExceptionHandler((_thread,
+                                                         _throwable) -> {
+                            EFapsApplication.LOG.error("Caught error from Thread '{}'", _thread.getName());
+                            EFapsApplication.LOG.error("->", _throwable);
+                        });
+                        return ret;
                     });
+
+    /** The loginProviders. */
+    private final List<ILoginProvider> loginProviders = new ArrayList<>();
 
     /**
      * @see org.apache.wicket.Application#getHomePage()
@@ -169,8 +163,8 @@ public class EFapsApplication
             }
         }
         if (!map.containsKey(AppConfigHandler.Parameter.TEMPFOLDER.getKey())) {
-            map.put(AppConfigHandler.Parameter.TEMPFOLDER.getKey(),
-                            getStoreSettings().getFileStoreFolder().toURI().toString());
+            map.put(AppConfigHandler.Parameter.TEMPFOLDER.getKey(), getStoreSettings().getFileStoreFolder().toURI()
+                            .toString());
         }
         AppConfigHandler.init(map);
 
@@ -181,7 +175,9 @@ public class EFapsApplication
 
         final CompoundClassResolver resolver = new CompoundClassResolver();
         resolver.add(new DefaultClassResolver());
-        resolver.add(new AbstractClassResolver() {
+        resolver.add(new AbstractClassResolver()
+        {
+
             @Override
             public ClassLoader getClassLoader()
             {
@@ -222,30 +218,23 @@ public class EFapsApplication
             ((SecurePackageResourceGuard) guard).addPattern("+*.svg");
         }
 
-        setHeaderResponseDecorator(new IHeaderResponseDecorator()
-        {
+        setHeaderResponseDecorator(_response -> new EFapsResourceAggregator(_response));
+        getRequestCycleSettings().addResponseFilter(_responseBuffer -> {
+            final AppendingStringBuffer ret;
+            if (RequestCycle.get().getActiveRequestHandler() instanceof ACAjaxRequestTarget) {
+                ret = new AppendingStringBuffer().append(_responseBuffer.subSequence(0, _responseBuffer.length()
+                                - XmlPartialPageUpdate.END_ROOT_ELEMENT.length()));
+            } else {
+                ret = _responseBuffer;
+            }
+            return ret;
+        });
 
-            @Override
-            public IHeaderResponse decorate(final IHeaderResponse _response)
-            {
-                return new EFapsResourceAggregator(_response);
-            }
-        });
-        getRequestCycleSettings().addResponseFilter(new IResponseFilter()
-        {
-            @Override
-            public AppendingStringBuffer filter(final AppendingStringBuffer _responseBuffer)
-            {
-                final AppendingStringBuffer ret;
-                if (RequestCycle.get().getActiveRequestHandler() instanceof ACAjaxRequestTarget) {
-                    ret = new AppendingStringBuffer().append(_responseBuffer.subSequence(0,
-                                    _responseBuffer.length() - XmlPartialPageUpdate.END_ROOT_ELEMENT.length()));
-                } else {
-                    ret = _responseBuffer;
-                }
-                return ret;
-            }
-        });
+        final ServiceLoader<ILoginProvider> serviceLoaderLogins = ServiceLoader.load(ILoginProvider.class);
+        for (final ILoginProvider loginProvider : serviceLoaderLogins) {
+            LOG.info("[{}] registered: {}", getName(), loginProvider);
+            this.loginProviders.add(loginProvider);
+        }
     }
 
     /**
@@ -263,8 +252,8 @@ public class EFapsApplication
     }
 
     /**
-     * @param _servletRequest   request
-     * @param _filterPath       path
+     * @param _servletRequest request
+     * @param _filterPath path
      *
      * @return a new WebRequest
      */
@@ -328,7 +317,7 @@ public class EFapsApplication
         // register bridge on session
         if (_jobName == null) {
             bridge.setJobName("EFapsJob-" + EFapsSession.get().countJobs() + 1 + "-"
-                        + RandomStringUtils.randomAlphanumeric(4));
+                            + RandomUtil.randomAlphanumeric(4));
         } else {
             bridge.setJobName(_jobName);
         }
@@ -340,6 +329,16 @@ public class EFapsApplication
         // run the task
         this.executorService.execute(new JobRunnable(_job, bridge));
         return bridge;
+    }
+
+    /**
+     * Gets the loginProviders.
+     *
+     * @return the loginProviders
+     */
+    public List<ILoginProvider> getLoginProviders()
+    {
+        return Collections.unmodifiableList(this.loginProviders);
     }
 
     /**
@@ -402,8 +401,8 @@ public class EFapsApplication
         {
             boolean ret = true;
             if (WebPage.class.isAssignableFrom(_componentClass)) {
-                if (((EFapsSession) Session.get()).isLogedIn()
-                                || EFapsNoAuthorizationNeededInterface.class.isAssignableFrom(_componentClass)) {
+                if (((EFapsSession) Session.get()).isLogedIn() || EFapsNoAuthorizationNeededInterface.class
+                                .isAssignableFrom(_componentClass)) {
                     ret = true;
                 } else {
                     throw new RestartResponseAtInterceptPageException(LoginPage.class);
