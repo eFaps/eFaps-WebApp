@@ -29,6 +29,14 @@ public final class RandomUtil
     private static RandomStringGenerator ALPHANUMERIC = new RandomStringGenerator.Builder()
                     .filteredBy(CharacterPredicates.LETTERS, CharacterPredicates.DIGITS).build();
 
+    /** The Alphabetic. */
+    private static RandomStringGenerator ALPHABETIC = new RandomStringGenerator.Builder()
+                    .filteredBy(CharacterPredicates.LETTERS).build();
+
+    /** The Alphabetic. */
+    private static RandomStringGenerator NUMERIC = new RandomStringGenerator.Builder()
+                    .filteredBy(CharacterPredicates.DIGITS).build();
+
     /**
      * Instantiates a new random.
      */
@@ -46,4 +54,24 @@ public final class RandomUtil
     public static String randomAlphanumeric(final int _lenght) {
         return ALPHANUMERIC.generate(_lenght);
     }
+
+    /**
+     * Random alphabetic.
+     *
+     * @param _lenght the lenght
+     * @return the string
+     */
+    public static String randomAlphabetic(final int _lenght) {
+        return ALPHABETIC.generate(_lenght);
+    }
+
+    /**
+    * Random alphabetic.
+    *
+    * @param _lenght the lenght
+    * @return the string
+    */
+   public static String randomNumeric(final int _lenght) {
+       return NUMERIC.generate(_lenght);
+   }
 }

@@ -27,7 +27,6 @@ import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.text.RandomStringGenerator;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.wicket.IRequestListener;
 import org.apache.wicket.ajax.AjaxEventBehavior;
@@ -71,6 +70,7 @@ import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 import org.efaps.ui.wicket.util.DojoClass;
 import org.efaps.ui.wicket.util.DojoClasses;
 import org.efaps.ui.wicket.util.DojoWrapper;
+import org.efaps.ui.wicket.util.RandomUtil;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,9 +99,6 @@ public class SlideIn
 
     /** The menu items. */
     private final Map<String, UIMenuItem> menuItems = new HashMap<>();
-
-    /** The generator. */
-    private final RandomStringGenerator generator = new RandomStringGenerator.Builder().withinRange('a', 'z').build();
 
     /**
      * Instantiates a new slide in.
@@ -216,8 +213,8 @@ public class SlideIn
     {
         final StringBuilder js = new StringBuilder();
 
-        final String node1 = this.generator.generate(4);
-        final String node2 = this.generator.generate(4);
+        final String node1 = RandomUtil.randomAlphabetic(4);
+        final String node2 = RandomUtil.randomAlphabetic(4);
 
         js.append("var ").append(node1).append(" = domConstruct.create(\"div\", { class: \"menueentry\"}, sn);\n")
             .append("var ").append(node2).append(" = domConstruct.create(\"div\", { class: \"title");
@@ -246,7 +243,7 @@ public class SlideIn
                                         final String _titleNode)
     {
         final StringBuilder js = new StringBuilder();
-        final String node1 = this.generator.generate(4);
+        final String node1 = RandomUtil.randomAlphabetic(4);
 
         if (_menuItem.getChildren().isEmpty()) {
             js.append(" on(").append(_titleNode).append(", \"click\", function(evt) {\n")
@@ -271,8 +268,8 @@ public class SlideIn
                 .append("});\n");
         }
         for (final UIMenuItem childItem : _menuItem.getChildren()) {
-            final String node2 = this.generator.generate(4);
-            final String node3 = this.generator.generate(4);
+            final String node2 = RandomUtil.randomAlphabetic(4);
+            final String node3 = RandomUtil.randomAlphabetic(4);
             js.append("var ").append(node2).append(" = domConstruct.create(\"div\",")
                 .append("{ class: \"menueentry\"}, ").append(node1).append(");\n")
                 .append("var ").append(node3).append(" = domConstruct.create(\"div\", { class: \"title");
@@ -297,7 +294,7 @@ public class SlideIn
      */
     private CharSequence getEventJs(final UIMenuItem _menuItem)
     {
-        final String key = this.generator.generate(8);
+        final String key = RandomUtil.randomAlphabetic(8);
         this.menuItems.put(key, _menuItem);
         final StringBuilder ret = new StringBuilder();
         switch (_menuItem.getTarget()) {
