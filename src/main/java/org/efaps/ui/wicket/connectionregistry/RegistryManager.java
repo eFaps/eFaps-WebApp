@@ -88,10 +88,12 @@ public final class RegistryManager
                                            final String _sessionId)
     {
         if (EFapsApplication.getMaxInactiveInterval() > 0) {
-            RegistryManager.getCache().put(_sessionId, new UserSession().setUserName(_userName).setSessionId(_sessionId), -1,
+            RegistryManager.getCache().put(_sessionId,
+                            new UserSession().setUserName(_userName).setSessionId(_sessionId), -1,
                             TimeUnit.MINUTES, EFapsApplication.getMaxInactiveInterval() + 600, TimeUnit.SECONDS);
         } else {
-            RegistryManager.getCache().put(_sessionId, new UserSession().setUserName(_userName).setSessionId(_sessionId));
+            RegistryManager.getCache().put(_sessionId,
+                            new UserSession().setUserName(_userName).setSessionId(_sessionId));
         }
         RegistryManager.registerLogin4History(_userName, _sessionId);
     }
@@ -184,7 +186,8 @@ public final class RegistryManager
     public static void removeUserSession(final String _sessionId)
     {
         if (RegistryManager.getCache().containsKey(_sessionId)) {
-            RegistryManager.registerLogout4History(RegistryManager.getCache().get(_sessionId).getUserName(), _sessionId);
+            RegistryManager.registerLogout4History(
+                            RegistryManager.getCache().get(_sessionId).getUserName(), _sessionId);
             RegistryManager.getCache().remove(_sessionId);
         }
 
@@ -258,9 +261,9 @@ public final class RegistryManager
         final List<IWebSocketConnection> ret = new ArrayList<>();
         final SearchManager searchManager = Search.getSearchManager(RegistryManager.getCache());
         final QueryBuilder qbldr = searchManager.buildQueryBuilderForClass(UserSession.class).get();
-        final CacheQuery query = searchManager.getQuery(qbldr.keyword().onField("userName").matching(_login)
+        final CacheQuery<?> query = searchManager.getQuery(qbldr.keyword().onField("userName").matching(_login)
                         .createQuery());
-        try (final ResultIterator iter = query.iterator()) {
+        try (ResultIterator<?> iter = query.iterator()) {
             while (iter.hasNext()) {
                 final UserSession userSession = (UserSession) iter.next();
                 if (userSession.getConnectionKey() != null) {
@@ -311,10 +314,11 @@ public final class RegistryManager
                             .getCacheConfiguration(RegistryManager.SESSIONCACHE);
             final ConfigurationBuilder bldr = new ConfigurationBuilder().read(config);
             bldr.indexing().addIndexedEntity(UserSession.class);
-            ((EmbeddedCacheManager) InfinispanCache.get().getContainer()).undefineConfiguration(RegistryManager.SESSIONCACHE);
+            ((EmbeddedCacheManager) InfinispanCache.get().getContainer()).undefineConfiguration(
+                            RegistryManager.SESSIONCACHE);
 
-            ((EmbeddedCacheManager) InfinispanCache.get().getContainer()).defineConfiguration(RegistryManager.SESSIONCACHE,
-                             bldr.build());
+            ((EmbeddedCacheManager) InfinispanCache.get().getContainer()).defineConfiguration(
+                            RegistryManager.SESSIONCACHE, bldr.build());
         }
         return InfinispanCache.get().getIgnReCache(RegistryManager.SESSIONCACHE);
     }

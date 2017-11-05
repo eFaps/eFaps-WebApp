@@ -25,9 +25,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.wicket.IRequestListener;
 import org.apache.wicket.Page;
 import org.apache.wicket.RestartResponseException;
@@ -89,6 +88,7 @@ import org.efaps.ui.wicket.util.DojoClass;
 import org.efaps.ui.wicket.util.DojoClasses;
 import org.efaps.ui.wicket.util.DojoWrapper;
 import org.efaps.util.EFapsException;
+import org.efaps.util.RandomUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -552,7 +552,7 @@ public class GridXComponent
                                       final String _parent)
         throws EFapsException
     {
-        final String var = RandomStringUtils.randomAlphabetic(4);
+        final String var = RandomUtil.randomAlphabetic(4);
         final StringBuilder js = new StringBuilder();
         js.append("var ").append(var).append(" = new DropDownMenu({});\n");
         final UIGrid uiGrid = (UIGrid) getDefaultModelObject();

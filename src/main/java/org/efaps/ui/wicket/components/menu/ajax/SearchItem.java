@@ -97,6 +97,7 @@ public class SearchItem
                 getRequestCycle().setResponsePage(new FormPage(Model.of(uiform),
                                 ((AbstractContentPage) getPage()).getModalWindow()));
             } catch (final EFapsException e) {
+                LOG.error("Catched error", e);
                 throw new RestartResponseException(new ErrorPage(e));
             }
         }

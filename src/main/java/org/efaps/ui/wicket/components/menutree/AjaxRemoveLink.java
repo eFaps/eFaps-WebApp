@@ -17,7 +17,6 @@
 
 package org.efaps.ui.wicket.components.menutree;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.AjaxCallListener;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
@@ -28,6 +27,7 @@ import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.util.DojoClasses;
 import org.efaps.ui.wicket.util.DojoWrapper;
+import org.efaps.util.RandomUtil;
 
 /**
  * This Class renders a Link which removes a Child from a MenuTree.
@@ -69,7 +69,7 @@ public class AjaxRemoveLink
         final AjaxCallListener listener = new AjaxCallListener();
         final StringBuilder js = new StringBuilder();
         final MenuTree menuTree = findParent(MenuTree.class);
-        final String key = RandomStringUtils.randomAlphabetic(6);
+        final String key = RandomUtil.randomAlphabetic(6);
         menuTree.add(key, (UIMenuItem) getDefaultModelObject());
         js.append("registry.byId(\"").append(((ContentContainerPage) getPage()).getCenterPanelId())
             .append("\").set(\"content\", domConstruct.create(\"iframe\", {")

@@ -506,7 +506,7 @@ public class ConnectionRegistry
     {
         final ConcurrentMap<String, Long> lastactive = Session.get().getApplication()
                         .getMetaData(ConnectionRegistry.LASTACTIVE);
-        Map<String, Long> ret;
+        final Map<String, Long> ret;
         if (lastactive == null) {
             ret = Collections.unmodifiableMap(Collections.<String, Long>emptyMap());
         } else {
@@ -526,8 +526,8 @@ public class ConnectionRegistry
         final ConcurrentMap<String, Long> keepalive = _application.getMetaData(ConnectionRegistry.KEEPALIVE);
         if (keepalive != null) {
             for (final Entry<String, Long> entry : keepalive.entrySet()) {
-                if (reference - entry.getValue() >
-                        Configuration.getAttributeAsInteger(ConfigAttribute.WEBSOCKET_KATH) * 1000) {
+                if (reference - entry.getValue()
+                                > Configuration.getAttributeAsInteger(ConfigAttribute.WEBSOCKET_KATH) * 1000) {
                     final IKey key = sessionId2key.get(entry.getKey());
                     if (key != null) {
                         final IWebSocketConnectionRegistry registry = WebSocketSettings.Holder.get(
@@ -576,7 +576,7 @@ public class ConnectionRegistry
         /**
          * @param _applicationKey key to the application this task belong to
          */
-        public KeepAliveTask(final String _applicationKey)
+        KeepAliveTask(final String _applicationKey)
         {
             this.applicationKey = _applicationKey;
         }

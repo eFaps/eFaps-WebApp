@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,19 +21,18 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.ILabelProvider;
 import org.apache.wicket.markup.html.form.Radio;
 import org.apache.wicket.markup.html.form.RadioGroup;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.util.visit.IVisit;
-import org.apache.wicket.util.visit.IVisitor;
 import org.efaps.ui.wicket.models.field.FieldConfiguration;
 import org.efaps.ui.wicket.request.EFapsRequestParametersAdapter;
+import org.efaps.util.RandomUtil;
 
 /**
  * TODO comment!
@@ -64,11 +63,14 @@ public class BooleanField
     private String inputName;
 
     /**
+     * Instantiates a new boolean field.
+     *
      * @param _wicketId wicket id for this component
      * @param _value value of this component
      * @param _choices choices
      * @param _fieldConfiguration configuration for this field
      * @param _label label for this field
+     * @param _uniqueName the unique name
      */
     public BooleanField(final String _wicketId,
                         final Object _value,
@@ -84,7 +86,7 @@ public class BooleanField
         this.label = _label;
         // make a unique name if in a fieldset
         this.inputName = _fieldConfiguration.getName()
-                        + (_uniqueName ? "_" + RandomStringUtils.randomAlphabetic(4) : "");
+                        + (_uniqueName ? "_" + RandomUtil.randomAlphabetic(4) : "");
         final RadioGroup<Boolean> radioGroup = new RadioGroup<Boolean>("radioGroup") {
 
             /** The Constant serialVersionUID. */
@@ -192,18 +194,12 @@ public class BooleanField
         return ret;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void convertInput()
     {
-        setConvertedInput(visitChildren(RadioGroup.class, new IVisitor<RadioGroup<Boolean>, Boolean>()
-        {
-            @Override
-            public void component(final RadioGroup<Boolean> _radioGroup,
-                                  final IVisit<Boolean> _visit)
-            {
-                _visit.stop(_radioGroup.getConvertedInput());
-            }
-        }));
+        setConvertedInput(visitChildren(RadioGroup.class, (_radioGroup, _visit) -> _visit.stop(
+                        ((FormComponent<Boolean>) _radioGroup).getConvertedInput())));
 
         // if a unique name was generated set the values in teh parameters
         if (!getFieldConfiguration().getName().equals(this.inputName)) {

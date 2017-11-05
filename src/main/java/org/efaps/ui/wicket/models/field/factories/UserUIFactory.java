@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ package org.efaps.ui.wicket.models.field.factories;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang3.text.StrSubstitutor;
+import org.apache.commons.text.StrSubstitutor;
 import org.apache.wicket.Component;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.EFapsSystemConfiguration;
@@ -83,7 +83,7 @@ public final class UserUIFactory
             if (display == null) {
                 display = "${LASTNAME}, ${FIRSTNAME}";
             }
-            final Map<String, String> values = new HashMap<String, String>();
+            final Map<String, String> values = new HashMap<>();
             for (final AttrName attr : AttrName.values()) {
                 values.put(attr.name(), person.getAttrValue(attr));
             }

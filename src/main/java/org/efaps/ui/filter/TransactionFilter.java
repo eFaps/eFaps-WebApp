@@ -103,7 +103,7 @@ public class TransactionFilter
 
         this.notLoggedInForward = "/" + _filterConfig.getInitParameter(TransactionFilter.INIT_PARAM_URL_LOGIN_PAGE);
 
-        if ((this.notLoggedInForward == null) || (this.notLoggedInForward.length() == 0)) {
+        if (this.notLoggedInForward == null || this.notLoggedInForward.length() == 0) {
             throw new ServletException("Init parameter " + "'" + TransactionFilter.INIT_PARAM_URL_LOGIN_PAGE
                                         + "' not defined");
         }
@@ -120,15 +120,12 @@ public class TransactionFilter
      * @throws ServletException on error
      *
      */
-    @SuppressWarnings("unchecked")
     @Override
     protected void doFilter(final HttpServletRequest _request,
                             final HttpServletResponse _response,
                             final FilterChain _chain)
         throws IOException, ServletException
     {
-
-        Context context = null;
         try {
             Locale locale = null;
 
@@ -136,9 +133,8 @@ public class TransactionFilter
 
             final Map<String, String[]> params = new HashMap<>(_request.getParameterMap());
 
-            context = Context.begin(getLoggedInUser(_request), locale, getContextSessionAttributes(_request), params,
+            Context.begin(getLoggedInUser(_request), locale, getContextSessionAttributes(_request), params,
                             null, Context.Inheritance.Inheritable);
-
         } catch (final EFapsException e) {
             TransactionFilter.LOG.error("could not initialise the context", e);
             throw new ServletException(e);

@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang3.RandomStringUtils;
+import org.efaps.util.RandomUtil;
 
 /**
  * The Class AbstractUI.
@@ -27,7 +27,7 @@ public abstract class AbstractUI
      */
     public String getRandom4ID(final Long _id)
     {
-        final String rid = RandomStringUtils.randomAlphanumeric(8);
+        final String rid = RandomUtil.randomAlphanumeric(8);
         this.random2id.put(rid, _id);
         return rid;
     };

@@ -20,7 +20,7 @@ package org.efaps.ui.wicket.models;
 import java.io.Serializable;
 import java.util.Formatter;
 
-import org.apache.commons.lang3.RandomStringUtils;
+import org.efaps.util.RandomUtil;
 
 /**
  * TODO comment!
@@ -87,7 +87,7 @@ public class EmbeddedLink
     /**
      * The id of this embedded link.
      */
-    private final String id = RandomStringUtils.randomAlphanumeric(8);
+    private final String id = RandomUtil.randomAlphanumeric(8);
 
     /**
      * The html tag to be used.

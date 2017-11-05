@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import java.util.Map.Entry;
 import java.util.Random;
 import java.util.UUID;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Type;
@@ -43,6 +42,7 @@ import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.models.field.IHidden;
 import org.efaps.util.EFapsException;
+import org.efaps.util.RandomUtil;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -416,7 +416,7 @@ public abstract class AbstractUIPageObject
      */
     public String registerOID(final String _oid)
     {
-        final String ret = RandomStringUtils.randomAlphanumeric(8);
+        final String ret = RandomUtil.randomAlphanumeric(8);
         getUiID2Oid().put(ret, _oid);
         return ret;
     }
@@ -435,7 +435,9 @@ public abstract class AbstractUIPageObject
     }
 
     /**
-     * @param _multi multiprint
+     * Evaluate field instance.
+     *
+     * @param _print the print
      * @param _field field the instance is wanted for
      * @return instance for the field
      * @throws EFapsException on erro

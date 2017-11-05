@@ -24,7 +24,6 @@ import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.pages.BrowserInfoForm;
-import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.protocol.http.ClientProperties;
@@ -80,7 +79,7 @@ public class GatherInfoPage
             }
         };
 
-        meta.add(AttributeModifier.replace("content", new AbstractReadOnlyModel<String>()
+        meta.add(AttributeModifier.replace("content", new IModel<String>()
         {
             private static final long serialVersionUID = 1L;
 
@@ -97,7 +96,7 @@ public class GatherInfoPage
 
         add(new Label("label", DBProperties.getProperty("gatherInfoPage.message")).setEscapeModelStrings(false));
 
-        final IModel<ClientProperties> properties = new AbstractReadOnlyModel<ClientProperties>()
+        final IModel<ClientProperties> properties = new IModel<ClientProperties>()
         {
             private static final long serialVersionUID = 1L;
 

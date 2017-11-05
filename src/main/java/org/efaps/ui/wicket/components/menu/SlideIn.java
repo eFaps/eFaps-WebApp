@@ -70,8 +70,8 @@ import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 import org.efaps.ui.wicket.util.DojoClass;
 import org.efaps.ui.wicket.util.DojoClasses;
 import org.efaps.ui.wicket.util.DojoWrapper;
-import org.efaps.ui.wicket.util.RandomUtil;
 import org.efaps.util.EFapsException;
+import org.efaps.util.RandomUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

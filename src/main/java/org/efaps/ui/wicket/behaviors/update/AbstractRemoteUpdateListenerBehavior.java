@@ -20,9 +20,9 @@
 
 package org.efaps.ui.wicket.behaviors.update;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.behavior.Behavior;
+import org.efaps.util.RandomUtil;
 
 /**
  * TODO comment!
@@ -42,7 +42,7 @@ public abstract class AbstractRemoteUpdateListenerBehavior
     /**
      * Random key to uniquely identify this listener.
      */
-    private final String key = RandomStringUtils.randomAlphanumeric(8);
+    private final String key = RandomUtil.randomAlphanumeric(8);
 
     /**
      * Component this behavior belongs to.

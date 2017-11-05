@@ -19,9 +19,11 @@
 package org.efaps.ui.wicket.components.values;
 
 
+import com.github.openjson.JSONException;
+import com.github.openjson.JSONObject;
+
 import java.util.List;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.attributes.AjaxAttributeName;
 import org.apache.wicket.behavior.Behavior;
@@ -37,9 +39,7 @@ import org.efaps.api.ui.IUserInterface;
 import org.efaps.ui.wicket.behaviors.AjaxFieldUpdateBehavior;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.field.FieldConfiguration;
-
-import com.github.openjson.JSONException;
-import com.github.openjson.JSONObject;
+import org.efaps.util.RandomUtil;
 
 
 /**
@@ -85,7 +85,7 @@ public class SnippletField
 
             final String tmpId;
             if (html.contains(IUserInterface.EFAPSTMPTAG)) {
-                tmpId = RandomStringUtils.randomAlphanumeric(12);
+                tmpId = RandomUtil.randomAlphanumeric(12);
                 setDefaultModelObject(html.replace(IUserInterface.EFAPSTMPTAG, " id=\"" + tmpId + "\" "));
             } else {
                 tmpId = null;

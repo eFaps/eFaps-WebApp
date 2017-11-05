@@ -84,8 +84,8 @@ import org.efaps.ui.wicket.request.EFapsRequestCycleListener;
 import org.efaps.ui.wicket.request.EFapsResourceAggregator;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
-import org.efaps.ui.wicket.util.RandomUtil;
 import org.efaps.util.EFapsException;
+import org.efaps.util.RandomUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

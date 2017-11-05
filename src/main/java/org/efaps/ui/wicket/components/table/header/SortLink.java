@@ -21,8 +21,6 @@ import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.component.IRequestablePage;
-import org.apache.wicket.util.visit.IVisit;
-import org.apache.wicket.util.visit.IVisitor;
 import org.efaps.admin.ui.AbstractCommand.SortDirection;
 import org.efaps.ui.wicket.models.objects.AbstractUIHeaderObject;
 import org.efaps.ui.wicket.models.objects.UIForm;
@@ -73,6 +71,7 @@ public class SortLink
     /**
      * @see org.apache.wicket.markup.html.link.Link#onClick()
      */
+    @SuppressWarnings("unchecked")
     @Override
     public void onClick()
     {
@@ -109,19 +108,13 @@ public class SortLink
                                 ((AbstractContentPage) getPage()).getCalledByPageReference());
             } else if (getPage() instanceof FilterPage) {
                 page = getPage();
-                getPage().visitChildren(HeaderPanel.class, new IVisitor<HeaderPanel, HeaderPanel>()
-                {
-                    @Override
-                    public void component(final HeaderPanel _child,
-                                          final IVisit<HeaderPanel> _visit)
-                    {
-                        try {
-                            final HeaderPanel replacement = new HeaderPanel(_child.getId(), _child.getTablePanel(),
-                                            _child.getDefaultModel());
-                            _child.replaceWith(replacement);
-                        } catch (final CacheReloadException e) {
-                            LOG.error("Catched error: ", e);
-                        }
+                getPage().visitChildren(HeaderPanel.class, (_child, _visit) -> {
+                    try {
+                        final HeaderPanel replacement = new HeaderPanel(_child.getId(),
+                                        ((HeaderPanel) _child).getTablePanel(), _child.getDefaultModel());
+                        _child.replaceWith(replacement);
+                    } catch (final CacheReloadException e) {
+                        LOG.error("Catched error: ", e);
                     }
                 });
             } else if (getPage() instanceof FormFilterPage) {
