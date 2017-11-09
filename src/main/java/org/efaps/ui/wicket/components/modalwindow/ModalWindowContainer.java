@@ -236,7 +236,7 @@ public class ModalWindowContainer
                     if (calledByPageRef != null && calledByPageRef.getPage() instanceof AbstractContentPage) {
                         calledByPageRef = ((AbstractContentPage) calledByPageRef.getPage()).getCalledByPageReference();
                     }
-                    final String href = _uiObject.getCommand().getReference();
+                    final String href = _uiObject.getCommand() == null ? null : _uiObject.getCommand().getReference();
                     final Page page;
                     boolean tree = false;
                     if ("TREE?".equalsIgnoreCase(href) && _uiObject.getInstance() != null
