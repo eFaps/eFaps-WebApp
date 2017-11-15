@@ -273,6 +273,10 @@ public class GridXComponent
                         case "number":
                             js.append(", comparator: cpn\n");
                             break;
+                        case "enum":
+                            js.append(", enumOptions: ['").append(StringUtils.join(column.getEnumValues(), "','"))
+                                .append("']").append(", comparator: cp\n");
+                            break;
                         default:
                             js.append(", comparator: cp\n");
                             break;

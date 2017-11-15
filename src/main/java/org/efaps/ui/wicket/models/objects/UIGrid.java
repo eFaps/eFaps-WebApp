@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -298,7 +299,10 @@ public class UIGrid
                 } else if (fact instanceof DecimalUIFactory || fact instanceof NumberUIFactory) {
                     _column.setDataType("number");
                 } else if (fact instanceof BooleanUIFactory) {
-                    _column.setDataType("boolean");
+                    _column.setDataType("enum");
+                    @SuppressWarnings("unchecked")
+                    final Map<String, ?> values = (Map<String, ?>) _uiValue.getReadOnlyValue(TargetMode.VIEW);
+                    _column.setEnumValues(values.keySet());
                 }
             }
         }
@@ -1031,6 +1035,9 @@ public class UIGrid
         /** The data type. */
         private String dataType;
 
+        /** The enum values. */
+        private Collection<String> enumValues;
+
         /**
          * Gets the field name.
          *
@@ -1113,6 +1120,26 @@ public class UIGrid
         {
             this.dataType = _dataType;
             return this;
+        }
+
+        /**
+         * Gets the enum values.
+         *
+         * @return the enum values
+         */
+        public Collection<String> getEnumValues()
+        {
+            return this.enumValues;
+        }
+
+        /**
+         * Sets the enum values.
+         *
+         * @param _enumValues the new enum values
+         */
+        protected void setEnumValues(final Collection<String> _enumValues)
+        {
+            this.enumValues = _enumValues;
         }
     }
 
