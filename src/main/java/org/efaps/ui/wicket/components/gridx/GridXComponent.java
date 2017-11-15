@@ -18,11 +18,16 @@
 
 package org.efaps.ui.wicket.components.gridx;
 
+import com.github.openjson.JSONArray;
+import com.github.openjson.JSONObject;
+import com.github.openjson.JSONTokener;
+
 import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -342,24 +347,7 @@ public class GridXComponent
             }
 
             js.append("],\n")
-                .append("persistGet: function(_key) {");
-
-            if (Context.getThreadContext().containsUserAttribute(uiGrid.getCacheKey(UIGrid.CacheKey.GRIDX))) {
-                js.append("return ").append(Context.getThreadContext().getUserAttribute(
-                                uiGrid.getCacheKey(UIGrid.CacheKey.GRIDX)));
-            }
-
-            js.append("},\n")
-                .append("persistPut: function(_key, _value, _options) {\n")
-                .append("var value;")
-                .append("if(_value && lang.isObject(_value)){\n")
-                .append("value = json.toJson(_value);\n")
-                .append("}else{\n")
-                .append("value = {expires: -1};\n")
-                .append("}\n")
-                .append(getBehaviors(PersistAjaxBehavior.class).get(0).getCallbackFunctionBody(
-                                CallbackParameter.explicit("value")))
-                .append("},\n")
+                .append(getPersistenceScript(uiGrid))
                 .append("modelExtensions: [\n")
                     .append("GridSort\n")
                     .append("]\n")
@@ -458,6 +446,53 @@ public class GridXComponent
         } catch (final EFapsException e) {
             GridXComponent.LOG.error("Catched error", e);
         }
+    }
+
+    /**
+     * Gets the persistence script.
+     *
+     * @param _uiGrid the ui grid
+     * @return the persistence script
+     * @throws EFapsException the e faps exception
+     */
+    protected CharSequence getPersistenceScript(final UIGrid _uiGrid)
+        throws EFapsException
+    {
+        final StringBuilder ret = new StringBuilder();
+        ret.append("persistGet: function(_key) {");
+        if (Context.getThreadContext().containsUserAttribute(_uiGrid.getCacheKey(UIGrid.CacheKey.GRIDX))) {
+            final Set<Long> colIds = _uiGrid.getColumns()
+                            .stream()
+                            .map(col -> col.getField().getId())
+                            .collect(Collectors.toSet());
+            boolean add = true;
+            final JSONObject json = new JSONObject(new JSONTokener(Context.getThreadContext().getUserAttribute(
+                            _uiGrid.getCacheKey(UIGrid.CacheKey.GRIDX))));
+            final JSONArray columnsArray = json.getJSONArray("column");
+            for (int i = 0; i < columnsArray.length(); i++) {
+                final JSONObject colObj = (JSONObject) columnsArray.get(i);
+                final Long colid = colObj.getLong("id");
+                if (!colIds.contains(colid)) {
+                    add = false;
+                    break;
+                }
+            }
+            if (add) {
+                ret.append("return ").append(json.toString());
+            }
+        }
+        ret.append("},\n")
+            .append("persistPut: function(_key, _value, _options) {\n")
+            .append("  var value;")
+            .append("  if(_value && lang.isObject(_value)){\n")
+            .append("    value = json.toJson(_value);\n")
+            .append("  }else{\n")
+            .append("    value = {expires: -1};\n")
+            .append("  }\n")
+            .append(getBehaviors(PersistAjaxBehavior.class).get(0).getCallbackFunctionBody(
+                        CallbackParameter.explicit("value")))
+            .append("},\n");
+        return ret;
     }
 
     /**
