@@ -323,36 +323,22 @@ public class GridXComponent
                     .append("],\n");
             }
 
-            js.append("modules: [\n")
-                .append("VirtualVScroller,\n")
-                .append("ColumnLock,\n")
-                .append("ColumnResizer,\n")
-                .append("SingleSort,\n")
-                .append("MoveColumn,\n")
-                .append("SelectColumn,\n")
-                .append("SelectCell,\n")
-                .append("DnDColumn,\n")
-                .append("HeaderDialog,\n")
-                .append("Bar,\n")
-                .append("HScroller,\n")
-                .append("HiddenColumns,\n")
-                .append("Persist");
+            js.append("modules: [")
+                .append("VirtualVScroller, ColumnLock, ColumnResizer, SingleSort, MoveColumn, SelectColumn, ")
+                .append("SelectCell, DnDColumn, HeaderDialog, Bar, HScroller, HiddenColumns, Persist");
 
             if (!isField) {
-                js.append(",\nFilter,\n")
-                    .append("FilterBar");
+                js.append(", Filter, FilterBar");
             }
 
             if (aggregate) {
-                js.append(",\n GridAggregate\n");
+                js.append(", GridAggregate");
             }
 
             if (uiGrid.isShowCheckBoxes()) {
                 Collections.addAll(dojoClasses, DojoClasses.IndirectSelect, DojoClasses.RowHeader,
-                                DojoClasses.SelectRow);
-                js.append(",\n IndirectSelect,\n")
-                    .append("SelectRow,\n")
-                    .append("RowHeader,\n");
+                                DojoClasses.ExtendedSelectRow);
+                js.append(", IndirectSelect, SelectRow, RowHeader");
             }
 
             js.append("],\n")
