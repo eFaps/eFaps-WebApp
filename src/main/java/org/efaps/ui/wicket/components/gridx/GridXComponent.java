@@ -483,10 +483,12 @@ public class GridXComponent
                     final JSONArray conditionsArray = filterBar.getJSONArray("conditions");
                     for (int i = 0; i < conditionsArray.length(); i++) {
                         final JSONObject colObj = (JSONObject) conditionsArray.get(i);
-                        final Long colid = colObj.getLong("colId");
-                        if (!colIds.contains(colid)) {
-                            add = false;
-                            break;
+                        if (colObj.has("colId")) {
+                            final Long colid = colObj.getLong("colId");
+                            if (!colIds.contains(colid)) {
+                                add = false;
+                                break;
+                            }
                         }
                     }
                 }
