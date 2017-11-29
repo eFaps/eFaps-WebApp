@@ -30,7 +30,7 @@ public enum DojoLayer
 {
 
     /** The GridXLayer. */
-    GridXLayer("efaps/gridxLayer",  DojoClasses.array, DojoClasses.lang, DojoClasses.json, DojoClasses.aspect,
+    GridXLayer("efaps/gridxLayer", DojoClasses.array, DojoClasses.lang, DojoClasses.json, DojoClasses.aspect,
                     DojoClasses.query, DojoClasses.domConstruct, DojoClasses.win, DojoClasses.domStyle,
                     DojoClasses.ready, DojoClasses.on, DojoClasses.registry, DojoClasses.Memory,
                     DojoClasses.Grid, DojoClasses.VirtualVScroller, DojoClasses.ColumnResizer,
@@ -49,7 +49,15 @@ public enum DojoLayer
     BaseLayer("efaps/baseLayer", DojoClasses.BackgroundIframe, DojoClasses.DropDownMenu, DojoClasses.MenuBar,
                     DojoClasses.MenuBarItem, DojoClasses.MenuItem, DojoClasses.PopupMenuBarItem,
                     DojoClasses.PopupMenuItem, DojoClasses.BorderContainer, DojoClasses.ContentPane,
-                    DojoClasses.parser, DojoClasses.ready);
+                    DojoClasses.parser, DojoClasses.ready),
+
+    /** The Chart layer. */
+    ChartLayer("efaps/chartLayer", DojoClasses.ChartDefault, DojoClasses.MouseIndicator, DojoClasses.Highlight,
+                    DojoClasses.Chart, DojoClasses.SelectableLegend, DojoClasses.Legend, DojoClasses.Tooltip,
+                    DojoClasses.StackedBars, DojoClasses.ClusteredBars, DojoClasses.Bars, DojoClasses.StackedColumns,
+                    DojoClasses.ClusteredColumns, DojoClasses.Columns, DojoClasses.Lines, DojoClasses.StackedLines,
+                    DojoClasses.Areas, DojoClasses.StackedAreas, DojoClasses.Magnify, DojoClasses.PiePlot,
+                    DojoClasses.MoveSlice, DojoClasses.Julie, DojoClasses.ready);
 
     /** The name. */
     private final String name;

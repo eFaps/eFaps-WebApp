@@ -72,6 +72,9 @@ var profile = (function(){
             },
             "efaps/baseLayer":{
                 include:[
+                    "dijit/main",
+                    "dijit/popup",
+                    "dijit/place",
                     "dijit/BackgroundIframe",
                     "dijit/DropDownMenu",
                     "dijit/MenuBar",
@@ -79,10 +82,15 @@ var profile = (function(){
                     "dijit/MenuItem",
                     "dijit/PopupMenuBarItem",
                     "dijit/PopupMenuItem",
+                    "dijit/Viewport",
                     "dijit/layout/BorderContainer",
                     "dijit/layout/ContentPane",
                     "dojo/parser",
-                    "dojo/ready"
+                    "dojo/ready",
+                    "dojo/touch",
+                    "dojo/window",
+                    "dojox/fx",
+                    "dojox/widget/Dialog"
                 ],
                 includeLocales:['es','de','en'],
                 localeList:['es','de','en']
@@ -136,6 +144,45 @@ var profile = (function(){
                     "gridx/modules/move/Column",
                     "gridx/support/Summary",
                     "gridx/modules/ColumnLock"
+                ],
+                includeLocales:['es','de','en'],
+                localeList:['es','de','en']
+            },
+            "efaps/chartLayer":{
+                include:[
+                    "dojo/_base/array",
+                    "dojo/_base/json",
+                    "dojo/_base/lang",
+                    "dojo/aspect",
+                    "dojo/dom-construct",
+                    "dojo/dom-geometry",
+                    "dojo/dom-style",
+                    "dojo/on",
+                    "dojo/query",
+                    "dojo/ready",
+                    "dojox/gfx/svg",
+                    "dojox/gfx/path",
+                    "dojox/charting/axis2d/Default",
+                    "dojox/charting/action2d/MouseIndicator",
+                    "dojox/charting/action2d/Highlight",
+                    "dojox/charting/Chart",
+                    "dojox/charting/widget/SelectableLegend",
+                    "dojox/charting/widget/Legend",
+                    "dojox/charting/action2d/Tooltip",
+                    "dojox/charting/plot2d/StackedBars",
+                    "dojox/charting/plot2d/ClusteredBars",
+                    "dojox/charting/plot2d/Bars",
+                    "dojox/charting/plot2d/StackedColumns",
+                    "dojox/charting/plot2d/ClusteredColumns",
+                    "dojox/charting/plot2d/Columns",
+                    "dojox/charting/plot2d/Lines",
+                    "dojox/charting/plot2d/StackedLines",
+                    "dojox/charting/plot2d/Areas",
+                    "dojox/charting/plot2d/StackedAreas",
+                    "dojox/charting/action2d/Magnify",
+                    "dojox/charting/plot2d/Pie",
+                    "dojox/charting/action2d/MoveSlice",
+                    "dojox/charting/themes/Julie"
                 ],
                 includeLocales:['es','de','en'],
                 localeList:['es','de','en']

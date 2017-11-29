@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2015 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,7 @@
  *
  */
 
-
 package org.efaps.ui.wicket.util;
-
 
 /**
  * Due to the nested repeaters id collisions are produced.
@@ -27,8 +25,15 @@ package org.efaps.ui.wicket.util;
  */
 public class IdGenerator
 {
+
+    /** The child id counter. */
     private long childIdCounter = 0;
 
+    /**
+     * New child id.
+     *
+     * @return the string
+     */
     public String newChildId()
     {
         this.childIdCounter++;

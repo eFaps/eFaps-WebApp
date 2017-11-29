@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
- */
+*/
 
 package org.efaps.ui.wicket.util;
 
@@ -25,7 +22,6 @@ package org.efaps.ui.wicket.util;
  * esjp to a component or site in one place.
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public enum EFapsKey {
 
@@ -77,7 +73,7 @@ public enum EFapsKey {
     /**
      * @param _key key
      */
-    private EFapsKey(final String _key)
+    EFapsKey(final String _key)
     {
         this.key = _key;
     }

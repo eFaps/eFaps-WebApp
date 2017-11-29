@@ -438,7 +438,6 @@ public final class Configuration
         return Integer.valueOf(Configuration.getAttribute(_attribute));
     }
 
-
     /**
      * @param _attribute the attribute the value is search for
      * @return the value for the configuraion

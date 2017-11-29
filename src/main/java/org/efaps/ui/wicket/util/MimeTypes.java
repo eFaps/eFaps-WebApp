@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.util;
@@ -58,7 +55,7 @@ public enum MimeTypes
      * @param _ending ending
      * @param _contentType content type
      */
-    private MimeTypes(final String _ending, final String _contentType)
+    MimeTypes(final String _ending, final String _contentType)
     {
         this.ending = _ending;
         this.contentType = _contentType;
@@ -106,6 +103,6 @@ public enum MimeTypes
         /**
          * Mapping ending to MimeType.
          */
-        private static final Map<String, MimeTypes> ENDING2MIMETYPE = new HashMap<String, MimeTypes>();
+        private static final Map<String, MimeTypes> ENDING2MIMETYPE = new HashMap<>();
     }
 }

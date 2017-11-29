@@ -14,6 +14,7 @@
  * limitations under the License.
  *
  */
+
 package org.efaps.ui.wicket.util;
 
 /**
@@ -97,7 +98,29 @@ public enum DojoClasses
     ready("dojo/ready", "ready"),
     registry("dijit/registry", "registry"),
     topic("dojo/topic", "topic"),
-    win("dojo/window", "win");
+    win("dojo/window", "win"),
+
+    ChartDefault("dojox/charting/axis2d/Default", "Default"),
+    MouseIndicator("dojox/charting/action2d/MouseIndicator", "MouseIndicator"),
+    Highlight("dojox/charting/action2d/Highlight", "Highlight"),
+    Chart("dojox/charting/Chart", "Chart"),
+    SelectableLegend("dojox/charting/widget/SelectableLegend", "Legend"),
+    Legend("dojox/charting/widget/Legend", "Legend"),
+    Tooltip("dojox/charting/action2d/Tooltip", "Tooltip"),
+    StackedBars("dojox/charting/plot2d/StackedBars", "Bars"),
+    ClusteredBars("dojox/charting/plot2d/ClusteredBars", "Bars"),
+    Bars("dojox/charting/plot2d/Bars", "Bars"),
+    StackedColumns("dojox/charting/plot2d/StackedColumns", "Columns"),
+    ClusteredColumns("dojox/charting/plot2d/ClusteredColumns", "Columns"),
+    Columns("dojox/charting/plot2d/Columns", "Columns"),
+    Lines("dojox/charting/plot2d/Lines", "Lines"),
+    StackedLines("dojox/charting/plot2d/StackedLines", "Lines"),
+    Areas("dojox/charting/plot2d/Areas", "Lines"),
+    StackedAreas("dojox/charting/plot2d/StackedAreas", "Lines"),
+    Magnify("dojox/charting/action2d/Magnify", "Magnify"),
+    PiePlot("dojox/charting/plot2d/Pie", "PiePlot"),
+    MoveSlice("dojox/charting/action2d/MoveSlice", "MoveSlice"),
+    Julie("dojox/charting/themes/Julie", "theme");
 
     /** The lib name. */
     private final String className;

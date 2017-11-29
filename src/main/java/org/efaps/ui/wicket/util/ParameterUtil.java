@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.util;
@@ -31,10 +28,16 @@ import org.apache.wicket.util.string.StringValue;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public final class ParameterUtil
 {
+    /**
+     * Instantiates a new parameter util.
+     */
+    private ParameterUtil()
+    {
+    }
+
     /**
      * Get an array for the StringValues.
      *
@@ -69,18 +72,17 @@ public final class ParameterUtil
     /**
      * Get an array for the StringValues.
      *
-     * @param _parameters IRequestParameters
-     * @param _parameterName name of the Paramaters
+     * @param _values the values
      * @return always StringArray, if parameter does not exist an empty
      *         StringArray
      */
-    public static String[] stringValues2Array(final List<StringValue> values)
+    public static String[] stringValues2Array(final List<StringValue> _values)
     {
         final String[] ret;
-        if (values != null) {
-            ret = new String[values.size()];
+        if (_values != null) {
+            ret = new String[_values.size()];
             int i = 0;
-            for (final StringValue value : values) {
+            for (final StringValue value : _values) {
                 ret[i] = value.toString();
                 i++;
             }
