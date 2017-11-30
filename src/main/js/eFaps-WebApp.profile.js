@@ -142,6 +142,10 @@ var profile = (function(){
                     "gridx/modules/extendedSelect/Row",
                     "gridx/modules/filter/FilterBar",
                     "gridx/modules/move/Column",
+                    "gridx/modules/select/_Base",
+                    "gridx/modules/select/_RowCellBase",
+                    "gridx/modules/select/Cell",
+                    "gridx/modules/select/Column",
                     "gridx/support/Summary",
                     "gridx/modules/ColumnLock"
                 ],
