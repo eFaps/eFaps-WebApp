@@ -79,6 +79,7 @@ import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIGrid;
 import org.efaps.ui.wicket.models.objects.UIGrid.Cell;
 import org.efaps.ui.wicket.models.objects.UIGrid.Column;
+import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.grid.GridPage;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
@@ -709,7 +710,9 @@ public class GridXComponent
                                         page = new GridPage(Model.of(UIGrid.get(menu.getUUID(), PagePosition.TREE)
                                                         .setCallInstance(cell.getInstance())));
                                     } else {
-                                        page = new TablePage(menu.getUUID(), cell.getInstance().getOid());
+                                        final UITable uiTable = new UITable(menu.getUUID(), cell.getInstance().getOid())
+                                                        .setPagePosition(PagePosition.TREE);
+                                        page = new TablePage(Model.of(uiTable));
                                     }
                                 } else {
                                     page = new StructurBrowserPage(menu.getUUID(), cell.getInstance().getOid());

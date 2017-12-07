@@ -25,6 +25,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.http.ClientProperties;
 import org.apache.wicket.protocol.http.request.WebClientInfo;
@@ -32,6 +33,7 @@ import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Command;
 import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.Search;
+import org.efaps.db.Instance;
 import org.efaps.ui.wicket.behaviors.dojo.BorderContainerBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.BorderContainerBehavior.Design;
 import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior;
@@ -42,14 +44,18 @@ import org.efaps.ui.wicket.components.menutree.MenuTree;
 import org.efaps.ui.wicket.components.split.SidePanel;
 import org.efaps.ui.wicket.models.objects.PagePosition;
 import org.efaps.ui.wicket.models.objects.UIForm;
+import org.efaps.ui.wicket.models.objects.UIGrid;
+import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
-import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
+import org.efaps.ui.wicket.pages.content.grid.GridPage;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.ui.wicket.util.Configuration;
+import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 
@@ -213,14 +219,21 @@ public class ContentContainerPage
             public Page getPage(final Component _component)
             {
                 Page error = null;
-                AbstractContentPage page = null;
+                WebPage page = null;
                 try {
                     if (ContentContainerPage.this.webForm) {
                         final UIForm uiForm = new UIForm(uuid4NewPage, _instanceKey).setPagePosition(PagePosition.TREE);
                         page = new FormPage(Model.of(uiForm), getPageReference());
                     } else {
                         if (getCommand(uuid4NewPage).getTargetStructurBrowserField() == null) {
-                            page = new TablePage(uuid4NewPage, _instanceKey, getPageReference());
+                            if ("GridX".equals(Configuration.getAttribute(ConfigAttribute.TABLEDEFAULTTYPETREE))) {
+                                page = new GridPage(Model.of(UIGrid.get(uuid4NewPage, PagePosition.TREE)
+                                                .setCallInstance(Instance.get(_instanceKey))));
+                            } else {
+                                final UITable uiTable = new UITable(uuid4NewPage, _instanceKey)
+                                                .setPagePosition(PagePosition.TREE);
+                                page = new TablePage(Model.of(uiTable));
+                            }
                         } else {
                             page = new StructurBrowserPage(uuid4NewPage, _instanceKey, getPageReference());
                         }
