@@ -168,6 +168,10 @@ public class ContentPaneBehavior
             _tag.put("data-dojo-type", "dijit/layout/LayoutContainer");
         } else {
             _tag.put("data-dojo-type", isJsExecuteable() ? "dojox/layout/ContentPane" : "dijit/layout/ContentPane");
+
+            if (isJsExecuteable()) {
+                _tag.put("scriptHasHooks", "true");
+            }
         }
         if (this.region != null) {
             _tag.append("data-dojo-props", "region: '" + this.region.getKey() + "'", ",");
@@ -248,7 +252,6 @@ public class ContentPaneBehavior
         return this;
     }
 
-
     /**
      * Getter method for the instance variable {@link #layoutContainer}.
      *
@@ -263,6 +266,7 @@ public class ContentPaneBehavior
      * Setter method for instance variable {@link #layoutContainer}.
      *
      * @param _layoutContainer value for instance variable {@link #layoutContainer}
+     * @return the content pane behavior
      */
     public ContentPaneBehavior setLayoutContainer(final boolean _layoutContainer)
     {
