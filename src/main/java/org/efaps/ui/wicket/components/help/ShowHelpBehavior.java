@@ -45,16 +45,18 @@ public class ShowHelpBehavior
     {
         super.renderHead(_component, _response);
         final StringBuilder fnct = new StringBuilder()
-                .append("var eHDialog = new Dialog({\n")
+                .append("eFaps.help = function(_key){\n")
+                .append("if(!eFaps.HelpDialog) {\n")
+                .append("eFaps.HelpDialog = new Dialog({\n")
                 .append(" id: 'eFapsHelpDialog',\n")
                 .append(" sizeToViewport: true, \n")
                 .append(" viewportPadding: 50 \n")
                 .append("});\n")
-                .append("eFaps.help = function(_key){\n")
-                .append("eHDialog.set('href',\"").append(_component.urlFor(HelpPage.class, new PageParameters()))
+                .append("}\n")
+                .append("eFaps.HelpDialog.set('href',\"").append(_component.urlFor(HelpPage.class, new PageParameters()))
                 .append("?p=\" + _key").append(");\n")
-                .append("eHDialog.refresh();\n")
-                .append("eHDialog.show();\n")
+                .append("eFaps.HelpDialog.refresh();\n")
+                .append("eFaps.HelpDialog.show();\n")
                 .append("};\n");
 
         final StringBuilder js = new StringBuilder().append("var eFaps = eFaps || {};\n")
