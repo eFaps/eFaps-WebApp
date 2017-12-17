@@ -67,6 +67,7 @@ import org.efaps.api.ui.IEsjpSnipplet;
 import org.efaps.api.ui.ILoginAlertProvider;
 import org.efaps.db.Context;
 import org.efaps.message.MessageStatusHolder;
+import org.efaps.ui.wicket.behaviors.PersistUserAttributesBehavior;
 import org.efaps.ui.wicket.behaviors.SetMessageStatusBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.BorderContainerBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.BorderContainerBehavior.Design;
@@ -198,6 +199,7 @@ public class MainPage
         add(new PreLoaderPanel("preloader"));
         add(new OpenWindowOnLoadBehavior());
         add(new ShowHelpBehavior());
+        add(new PersistUserAttributesBehavior());
         // set the title for the Page
         add2Page(new Label("pageTitle", DBProperties.getProperty("Logo.Version.Label")));
 

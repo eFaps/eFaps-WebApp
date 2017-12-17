@@ -35,11 +35,7 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.apache.wicket.IRequestListener;
 import org.apache.wicket.Page;
 import org.apache.wicket.RestartResponseException;
-import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.ajax.AjaxEventBehavior;
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
-import org.apache.wicket.ajax.attributes.AjaxRequestAttributes.Method;
 import org.apache.wicket.ajax.attributes.CallbackParameter;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.ComponentTag;
@@ -133,7 +129,6 @@ public class GridXComponent
     {
         super(_wicketId, _model);
         setOutputMarkupId(true);
-        add(new PersistAjaxBehavior());
     }
 
     @Override
@@ -506,8 +501,8 @@ public class GridXComponent
             .append("  }else{\n")
             .append("    value = {expires: -1};\n")
             .append("  }\n")
-            .append(getBehaviors(PersistAjaxBehavior.class).get(0).getCallbackFunctionBody(
-                        CallbackParameter.explicit("value")))
+            .append("top.eFaps.persistUserAttr('")
+                .append(_uiGrid.getCacheKey(UIGrid.CacheKey.GRIDX)).append("', value);")
             .append("},\n");
         return ret;
     }
@@ -846,41 +841,5 @@ public class GridXComponent
         js.append("grid.model.store.setData(items);\n")
             .append("grid.body.refresh();\n");
         return DojoWrapper.require(js, DojoClasses.registry, DojoClasses.array);
-    }
-
-    /**
-     * The Class AjaxBehavior.
-     *
-     * @author The eFaps Team
-     */
-    public static class PersistAjaxBehavior
-        extends AbstractDefaultAjaxBehavior
-    {
-
-        /** The Constant serialVersionUID. */
-        private static final long serialVersionUID = 1L;
-
-        @Override
-        protected void updateAjaxAttributes(final AjaxRequestAttributes _attributes)
-        {
-            super.updateAjaxAttributes(_attributes);
-            _attributes.setMethod(Method.POST);
-        }
-
-        @Override
-        protected void respond(final AjaxRequestTarget _target)
-        {
-            try {
-                final StringValue value = getComponent().getRequest().getRequestParameters().getParameterValue(
-                                "value");
-                if (!value.isEmpty()) {
-                    final UIGrid uiGrid = (UIGrid) getComponent().getDefaultModelObject();
-                    Context.getThreadContext().setUserAttribute(uiGrid.getCacheKey(UIGrid.CacheKey.GRIDX), value
-                                .toString());
-                }
-            } catch (final EFapsException e) {
-                GridXComponent.LOG.error("Catched error", e);
-            }
-        }
     }
 }
