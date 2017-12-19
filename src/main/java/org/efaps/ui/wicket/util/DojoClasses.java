@@ -24,11 +24,11 @@ package org.efaps.ui.wicket.util;
 public enum DojoClasses
     implements DojoClass
 {
-
     BackgroundIframe("dijit/BackgroundIframe", "BackgroundIframe"),
     basefx("dojo/_base/fx", "baseFx"),
     Bar("gridx/modules/Bar", "Bar"),
     BorderContainer("dijit/layout/BorderContainer", "BorderContainer"),
+    CheckBox("dijit/form/CheckBox", "CheckBox"),
     ColumnLock("gridx/modules/ColumnLock", "ColumnLock"),
     ColumnResizer("gridx/modules/ColumnResizer", "ColumnResizer"),
     ContentPane("dijit/layout/ContentPane", " ContentPane"),
@@ -76,6 +76,8 @@ public enum DojoClasses
     Summary("gridx/support/Summary", "Summary"),
     SyncCache("gridx/core/model/cache/Sync", "Cache"),
     TextBox("dijit/form/TextBox", "TextBox"),
+    Tree("dijit/Tree", "Tree"),
+    ObjectStoreModel("dijit/tree/ObjectStoreModel", "ObjectStoreModel"),
     ToggleSplitter("dojox/layout/ToggleSplitter", "ToggleSplitter"),
     TooltipDialog("dijit/TooltipDialog", "TooltipDialog"),
     VirtualVScroller("gridx/modules/VirtualVScroller", "VirtualVScroller"),

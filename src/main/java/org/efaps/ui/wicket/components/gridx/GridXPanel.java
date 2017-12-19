@@ -19,7 +19,9 @@ package org.efaps.ui.wicket.components.gridx;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.UUID;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -35,6 +37,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.util.string.StringValue;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.field.Field;
+import org.efaps.api.ui.IClassificationFilter;
 import org.efaps.api.ui.IFilter;
 import org.efaps.api.ui.IListFilter;
 import org.efaps.api.ui.IMapFilter;
@@ -42,6 +45,7 @@ import org.efaps.api.ui.IOption;
 import org.efaps.ui.wicket.behaviors.dojo.AbstractDojoBehavior;
 import org.efaps.ui.wicket.components.button.AjaxButton;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
+import org.efaps.ui.wicket.components.gridx.filter.ClassificationFilter;
 import org.efaps.ui.wicket.components.gridx.filter.DateFilterPanel;
 import org.efaps.ui.wicket.components.gridx.filter.FormFilterPanel;
 import org.efaps.ui.wicket.components.gridx.filter.ListFilterPanel;
@@ -260,6 +264,37 @@ public class GridXPanel
                                     getModelObject()));
                     break;
                 case CLASSIFICATION:
+                    container.add(new WebMarkupContainer("formFilter"));
+                    form.add(new ClassificationFilter("filter", new Model<>((IClassificationFilter) filter)));
+                    form.add(new AjaxButton<IClassificationFilter>("btn", new Model<>((IClassificationFilter) filter),
+                                    AjaxButton.ICON.ACCEPT.getReference())
+                    {
+                        /** The Constant serialVersionUID. */
+                        private static final long serialVersionUID = 1L;
+
+                        @Override
+                        public void onRequest(final AjaxRequestTarget _target)
+                        {
+                          final List<StringValue> values = getPage().getRequest().getRequestParameters()
+                                          .getParameterValues(ClassificationFilter.INPUTNAME);
+                          ((IClassificationFilter) filter).clear();
+                          if (CollectionUtils.isNotEmpty(values)) {
+                              for (final StringValue value : values) {
+                                  ((IClassificationFilter) filter).add(UUID.fromString(value.toString()));
+                              }
+                          }
+                          try {
+                              final GridXPanel gridpanel = findParent(GridXPanel.class);
+                              final UIGrid uiGrid = gridpanel.getModelObject();
+                              final boolean updateColumns = uiGrid.getValues().size() == 0;
+                              uiGrid.reload();
+                              _target.appendJavaScript(GridXComponent.getDataReloadJS(uiGrid, updateColumns));
+                          } catch (final EFapsException e) {
+                              GridXPanel.LOG.error("Catched error", e);
+                          }
+                        }
+                    });
+                    break;
                 case PICKLIST:
                 case NONE:
                 default:

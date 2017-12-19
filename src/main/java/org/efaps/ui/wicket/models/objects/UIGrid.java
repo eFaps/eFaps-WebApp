@@ -58,6 +58,7 @@ import org.efaps.admin.ui.field.Filter;
 import org.efaps.admin.user.Role;
 import org.efaps.api.ci.UITableFieldProperty;
 import org.efaps.api.ui.FilterBase;
+import org.efaps.api.ui.IClassificationFilter;
 import org.efaps.api.ui.IFilter;
 import org.efaps.api.ui.IFilterList;
 import org.efaps.api.ui.IListFilter;
@@ -369,13 +370,15 @@ public class UIGrid
         final IFilter ret;
         switch (_field.getFilter().getType()) {
             case STATUS:
-            case CLASSIFICATION:
             case PICKLIST:
                 ret = new ListFilter(_field.getId());
                 break;
             case FREETEXT:
             case FORM:
                 ret = new MapFilter(_field.getId());
+                break;
+            case CLASSIFICATION:
+                ret = new ClassificationFilter(_field.getId());
                 break;
             case NONE:
             default:
@@ -1237,6 +1240,39 @@ public class UIGrid
         public int hashCode()
         {
             return super.hashCode() + Long.valueOf(this.fieldId).intValue();
+        }
+    }
+
+    /**
+     * The Class FilterList.
+     *
+     * @author The eFaps Team
+     */
+    public static class ClassificationFilter
+        extends HashSet<UUID>
+        implements IClassificationFilter
+    {
+
+        /** The Constant serialVersionUID. */
+        private static final long serialVersionUID = 1L;
+
+        /** The field id. */
+        private final long fieldId;
+
+        /**
+         * Instantiates a new map filter.
+         *
+         * @param _fieldId the field id
+         */
+        public ClassificationFilter(final long _fieldId)
+        {
+            this.fieldId = _fieldId;
+        }
+
+        @Override
+        public long getFieldId()
+        {
+            return this.fieldId;
         }
     }
 
