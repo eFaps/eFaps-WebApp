@@ -134,6 +134,9 @@ public class UIGrid
     /** The show check boxes. */
     private Boolean showCheckBoxes;
 
+    /** The columns up to date. */
+    private boolean columnsUpToDate;
+
     /**
      * Instantiates a new UI grid.
      *
@@ -178,25 +181,27 @@ public class UIGrid
                     }
                 }
             }
-            load();
+            final List<Instance> instances = getInstances();
+            setColumnsUpToDate(CollectionUtils.isNotEmpty(instances));
+            load(instances);
         }
     }
 
     /**
      * Load.
      *
+     * @param _instances the instances
      * @throws EFapsException the e faps exception
      */
-    protected void load()
+    protected void load(final List<Instance> _instances)
         throws EFapsException
     {
-        final List<Instance> instances = getInstances();
-        if (CollectionUtils.isNotEmpty(instances)) {
+        if (CollectionUtils.isNotEmpty(_instances)) {
             /** The factories. */
             final Map<Long, JSField> jsFields = new HashMap<>();
 
             final Set<String> altOIDSel = new HashSet<>();
-            final MultiPrintQuery multi = new MultiPrintQuery(instances);
+            final MultiPrintQuery multi = new MultiPrintQuery(_instances);
             for (final Column column : this.columns) {
                 final Field field = column.getField();
                 if (field.getSelect() != null) {
@@ -302,8 +307,8 @@ public class UIGrid
                 } else if (fact instanceof BooleanUIFactory) {
                     _column.setDataType("enum");
                     @SuppressWarnings("unchecked")
-                    final Map<String, ?> values = (Map<String, ?>) _uiValue.getReadOnlyValue(TargetMode.VIEW);
-                    _column.setEnumValues(values.keySet());
+                    final Map<String, ?> enumValues = (Map<String, ?>) _uiValue.getReadOnlyValue(TargetMode.VIEW);
+                    _column.setEnumValues(enumValues.keySet());
                 }
             }
         }
@@ -746,7 +751,7 @@ public class UIGrid
         } else {
             this.values.clear();
             Context.getThreadContext().setSessionAttribute(getCacheKey(CacheKey.DBFILTER), this.filterList);
-            load();
+            load(getInstances());
         }
     }
 
@@ -794,6 +799,26 @@ public class UIGrid
         throws CacheReloadException
     {
         return getCommand();
+    }
+
+    /**
+     * Checks if is columns up to date.
+     *
+     * @return the columns up to date
+     */
+    public boolean isColumnsUpToDate()
+    {
+        return this.columnsUpToDate;
+    }
+
+    /**
+     * Sets the columns up to date.
+     *
+     * @param _columnsUpToDate the new columns up to date
+     */
+    public void setColumnsUpToDate(final boolean _columnsUpToDate)
+    {
+        this.columnsUpToDate = _columnsUpToDate;
     }
 
     /**

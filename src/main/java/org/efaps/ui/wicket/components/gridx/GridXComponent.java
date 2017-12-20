@@ -57,6 +57,7 @@ import org.efaps.admin.ui.AbstractMenu;
 import org.efaps.admin.ui.Menu;
 import org.efaps.api.ci.UITableFieldProperty;
 import org.efaps.api.ui.FilterBase;
+import org.efaps.api.ui.FilterType;
 import org.efaps.api.ui.HRef;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.behaviors.dojo.AbstractDojoBehavior;
@@ -812,12 +813,10 @@ public class GridXComponent
      * Gets the javascript.
      *
      * @param _uiGrid the ui grid
-     * @param _updateColumns the update columns
      * @return the javascript
      * @throws EFapsException on error
      */
-    public static CharSequence getDataReloadJS(final UIGrid _uiGrid,
-                                               final boolean _updateColumns)
+    public static CharSequence getDataReloadJS(final UIGrid _uiGrid)
         throws EFapsException
     {
         final StringBuilder js = new StringBuilder()
@@ -825,7 +824,10 @@ public class GridXComponent
             .append("var items= ").append(GridXComponent.getDataJS(_uiGrid))
             .append("grid.model.clearCache();\n");
 
-        if (_updateColumns) {
+        if (!_uiGrid.isColumnsUpToDate()) {
+            // lazy setting of data type when first time data
+            final StringBuilder dialogJs = new StringBuilder();
+            _uiGrid.setColumnsUpToDate(true);
             js.append("array.forEach(grid.structure, function(entry){\n");
             for (final Column column : _uiGrid.getColumns()) {
                 if (column.getDataType() != null) {
@@ -834,12 +836,25 @@ public class GridXComponent
                         .append("entry.comparator = grid.comparators.").append(column.getDataType()).append(";\n")
                         .append("}\n");
                 }
+                if (!FilterType.NONE.equals(column.getFilter().getType())) {
+                    // to prevent jumping of the modal filter dialog, close and open it
+                    final String varName = RandomUtil.randomAlphabetic(4);
+                    dialogJs.append("var ").append(varName)
+                        .append(" = registry.byId('").append("fttd_" + column.getField().getId()).append("');\n")
+                        .append("if (!(").append(varName).append(".domNode.offsetHeight == 0 && ")
+                            .append(varName).append(".domNode.offsetWidth == 0)) {\n")
+                        .append(varName).append(".onBlur();\n")
+                        .append("var nl = query(\".gridxHeaderMenuBtn\", dom.byId('grid-")
+                            .append(column.getField().getId()).append("'));\n")
+                        .append("nl[0].click();\n")
+                        .append("}\n");
+                }
             }
             js.append("});\n")
-                .append("grid.setColumns(grid.structure);\n");
+                .append("grid.setColumns(grid.structure);\n").append(dialogJs);
         }
         js.append("grid.model.store.setData(items);\n")
             .append("grid.body.refresh();\n");
-        return DojoWrapper.require(js, DojoClasses.registry, DojoClasses.array);
+        return DojoWrapper.require(js, DojoClasses.registry, DojoClasses.array, DojoClasses.dom, DojoClasses.query);
     }
 }

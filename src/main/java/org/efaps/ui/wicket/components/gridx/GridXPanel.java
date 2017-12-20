@@ -172,9 +172,8 @@ public class GridXPanel
                                 });
 
                                 try {
-                                    final boolean updateColumns = uiGrid.getValues().size() == 0;
                                     uiGrid.reload();
-                                    _target.appendJavaScript(GridXComponent.getDataReloadJS(uiGrid, updateColumns));
+                                    _target.appendJavaScript(GridXComponent.getDataReloadJS(uiGrid));
                                 } catch (final EFapsException e) {
                                     GridXPanel.LOG.error("Catched error", e);
                                 }
@@ -206,9 +205,8 @@ public class GridXPanel
                                                 .put(_checkBox.getId(), ((CheckBox) _checkBox).getModelObject()));
 
                                 try {
-                                    final boolean updateColumns = uiGrid.getValues().size() == 0;
                                     uiGrid.reload();
-                                    _target.appendJavaScript(GridXComponent.getDataReloadJS(uiGrid, updateColumns));
+                                    _target.appendJavaScript(GridXComponent.getDataReloadJS(uiGrid));
                                 } catch (final EFapsException e) {
                                     GridXPanel.LOG.error("Catched error", e);
                                 }
@@ -249,9 +247,8 @@ public class GridXPanel
                             });
 
                             try {
-                                final boolean updateColumns = uiGrid.getValues().size() == 0;
                                 uiGrid.reload();
-                                _target.appendJavaScript(GridXComponent.getDataReloadJS(uiGrid, updateColumns));
+                                _target.appendJavaScript(GridXComponent.getDataReloadJS(uiGrid));
                             } catch (final EFapsException e) {
                                 GridXPanel.LOG.error("Catched error", e);
                             }
@@ -275,23 +272,22 @@ public class GridXPanel
                         @Override
                         public void onRequest(final AjaxRequestTarget _target)
                         {
-                          final List<StringValue> values = getPage().getRequest().getRequestParameters()
-                                          .getParameterValues(ClassificationFilter.INPUTNAME);
-                          ((IClassificationFilter) filter).clear();
-                          if (CollectionUtils.isNotEmpty(values)) {
-                              for (final StringValue value : values) {
-                                  ((IClassificationFilter) filter).add(UUID.fromString(value.toString()));
-                              }
-                          }
-                          try {
-                              final GridXPanel gridpanel = findParent(GridXPanel.class);
-                              final UIGrid uiGrid = gridpanel.getModelObject();
-                              final boolean updateColumns = uiGrid.getValues().size() == 0;
-                              uiGrid.reload();
-                              _target.appendJavaScript(GridXComponent.getDataReloadJS(uiGrid, updateColumns));
-                          } catch (final EFapsException e) {
-                              GridXPanel.LOG.error("Catched error", e);
-                          }
+                            final List<StringValue> values = getPage().getRequest().getRequestParameters()
+                                            .getParameterValues(ClassificationFilter.INPUTNAME);
+                            ((IClassificationFilter) filter).clear();
+                            if (CollectionUtils.isNotEmpty(values)) {
+                                for (final StringValue value : values) {
+                                    ((IClassificationFilter) filter).add(UUID.fromString(value.toString()));
+                                }
+                            }
+                            try {
+                                final GridXPanel gridpanel = findParent(GridXPanel.class);
+                                final UIGrid uiGrid = gridpanel.getModelObject();
+                                uiGrid.reload();
+                                _target.appendJavaScript(GridXComponent.getDataReloadJS(uiGrid));
+                            } catch (final EFapsException e) {
+                                GridXPanel.LOG.error("Catched error", e);
+                            }
                         }
                     });
                     break;
