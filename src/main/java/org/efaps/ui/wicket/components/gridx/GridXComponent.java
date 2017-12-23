@@ -821,12 +821,11 @@ public class GridXComponent
     {
         final StringBuilder js = new StringBuilder()
             .append("var grid = registry.byId('grid');\n")
-            .append("var items= ").append(GridXComponent.getDataJS(_uiGrid))
-            .append("grid.model.clearCache();\n");
+            .append("var items = ").append(GridXComponent.getDataJS(_uiGrid));
 
+        final StringBuilder dialogJs = new StringBuilder();
         if (!_uiGrid.isColumnsUpToDate()) {
             // lazy setting of data type when first time data
-            final StringBuilder dialogJs = new StringBuilder();
             _uiGrid.setColumnsUpToDate(true);
             js.append("array.forEach(grid.structure, function(entry){\n");
             for (final Column column : _uiGrid.getColumns()) {
@@ -851,9 +850,11 @@ public class GridXComponent
                 }
             }
             js.append("});\n")
-                .append("grid.setColumns(grid.structure);\n").append(dialogJs);
+                .append("grid.setColumns(grid.structure);\n")
+                .append(dialogJs);
         }
-        js.append("grid.model.store.setData(items);\n")
+        js.append("grid.model.clearCache();\n")
+            .append("grid.model.store.setData(items);\n")
             .append("grid.body.refresh();\n");
         return DojoWrapper.require(js, DojoClasses.registry, DojoClasses.array, DojoClasses.dom, DojoClasses.query);
     }
