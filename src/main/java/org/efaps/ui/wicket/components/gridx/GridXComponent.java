@@ -57,7 +57,6 @@ import org.efaps.admin.ui.AbstractMenu;
 import org.efaps.admin.ui.Menu;
 import org.efaps.api.ci.UITableFieldProperty;
 import org.efaps.api.ui.FilterBase;
-import org.efaps.api.ui.FilterType;
 import org.efaps.api.ui.HRef;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.behaviors.dojo.AbstractDojoBehavior;
@@ -835,12 +834,15 @@ public class GridXComponent
                         .append("entry.comparator = grid.comparators.").append(column.getDataType()).append(";\n")
                         .append("}\n");
                 }
-                if (!FilterType.NONE.equals(column.getFilter().getType())) {
+                if (_uiGrid.getFilterList().stream()
+                                .filter(filter -> filter.getFieldId() == column.getField().getId())
+                                .findFirst().isPresent()) {
                     // to prevent jumping of the modal filter dialog, close and open it
                     final String varName = RandomUtil.randomAlphabetic(4);
                     dialogJs.append("var ").append(varName)
                         .append(" = registry.byId('").append("fttd_" + column.getField().getId()).append("');\n")
-                        .append("if (!(").append(varName).append(".domNode.offsetHeight == 0 && ")
+                        .append("if (").append(varName).append(" && !(").append(varName)
+                            .append(".domNode.offsetHeight == 0 && ")
                             .append(varName).append(".domNode.offsetWidth == 0)) {\n")
                         .append(varName).append(".onBlur();\n")
                         .append("var nl = query(\".gridxHeaderMenuBtn\", dom.byId('grid-")
