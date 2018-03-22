@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.components.split;
@@ -44,7 +41,6 @@ import org.efaps.util.EFapsException;
  * Class is used to render a Panel which contains a ListMenu.
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class SidePanel
     extends Panel
@@ -159,14 +155,10 @@ public class SidePanel
         _response.render(AbstractEFapsHeaderItem.forCss(SidePanel.CSS));
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.wicket.MarkupContainer#onAfterRenderChildren()
-     */
     @Override
-    protected void onAfterRenderChildren()
+    protected void onAfterRender()
     {
-        super.onAfterRenderChildren();
+        super.onAfterRender();
         ((ContentContainerPage) getWebPage()).setMenuTree(this.menuTree);
     }
 }

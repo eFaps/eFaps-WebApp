@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.behaviors.dojo;
@@ -26,7 +23,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.ajax.WicketEventJQueryResourceReference;
+import org.apache.wicket.ajax.WicketAjaxJQueryResourceReference;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.HeaderItem;
@@ -55,7 +52,6 @@ import org.slf4j.LoggerFactory;
  * using Dojo.
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public abstract class AbstractDojoBehavior
     extends Behavior
@@ -259,7 +255,7 @@ public abstract class AbstractDojoBehavior
         public List<HeaderItem> getDependencies()
         {
             final List<HeaderItem> ret = new ArrayList<>();
-            ret.addAll(WicketEventJQueryResourceReference.get().getDependencies());
+            ret.addAll(WicketAjaxJQueryResourceReference.get().getDependencies());
             return ret;
         }
     }
