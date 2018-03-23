@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.http.WebRequest;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.IResource;
-import org.apache.wicket.resource.DynamicJQueryResourceReference;
+import org.apache.wicket.resource.JQueryResourceReference;
 import org.apache.wicket.util.lang.Bytes;
 import org.apache.wicket.util.string.AppendingStringBuffer;
 import org.efaps.admin.AppConfigHandler;
@@ -168,7 +168,7 @@ public class EFapsApplication
         }
         AppConfigHandler.init(map);
 
-        getJavaScriptLibrarySettings().setJQueryReference(new DynamicJQueryResourceReference());
+        getJavaScriptLibrarySettings().setJQueryReference(JQueryResourceReference.getV3());
 
         getApplicationSettings().setPageExpiredErrorPage(MainPage.class);
         getApplicationSettings().setInternalErrorPage(UnexpectedErrorPage.class);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,6 @@ public class PersistUserAttributesBehavior
         super.renderHead(_component, _response);
         final StringBuilder js = new StringBuilder().append("var eFaps = eFaps || {};\n")
                         .append("eFaps.persistUserAttr = function(_key, _value){\n")
-                        .append("console.log('what a trick to do something like that');")
                         .append(getCallbackFunctionBody(CallbackParameter.explicit("_key"),
                                         CallbackParameter.explicit("_value")))
                         .append("};");

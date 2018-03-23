@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.efaps.ui.wicket.request;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
@@ -34,7 +33,7 @@ import org.apache.wicket.markup.head.HeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
-import org.apache.wicket.markup.html.DecoratingHeaderResponse;
+import org.apache.wicket.markup.head.ResourceAggregator;
 import org.apache.wicket.request.Response;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.efaps.admin.program.bundle.BundleMaker;
@@ -58,7 +57,7 @@ import org.slf4j.LoggerFactory;
  * @author The eFaps Team
  */
 public class EFapsResourceAggregator
-    extends DecoratingHeaderResponse
+    extends ResourceAggregator
 {
 
     /**
@@ -112,7 +111,7 @@ public class EFapsResourceAggregator
         } else if (_item instanceof RequireHeaderItem) {
             this.requireHeaderItems.add((RequireHeaderItem) _item);
         } else {
-            getRealResponse().render(_item);
+            super.render(_item);
         }
     }
 
@@ -134,16 +133,7 @@ public class EFapsResourceAggregator
      */
     private void renderEFapsHeaderItems()
     {
-        Collections.sort(this.eFapsHeaderItems, new Comparator<AbstractEFapsHeaderItem>()
-        {
-
-            @Override
-            public int compare(final AbstractEFapsHeaderItem _item0,
-                               final AbstractEFapsHeaderItem _item1)
-            {
-                return _item0.getSortWeight().compareTo(_item1.getSortWeight());
-            }
-        });
+        Collections.sort(this.eFapsHeaderItems, (_item0, _item1) -> _item0.getSortWeight().compareTo(_item1.getSortWeight()));
 
         final List<String> css = new ArrayList<>();
         final List<String> js = new ArrayList<>();
@@ -159,14 +149,14 @@ public class EFapsResourceAggregator
                 final String key = BundleMaker.getBundleKey(css, TempFileBundle.class);
                 final TempFileBundle bundle = (TempFileBundle) BundleMaker.getBundle(key);
                 bundle.setContentType("text/css");
-                getRealResponse().render(CssHeaderItem.forUrl(EFapsApplication.get().getServletContext()
+                super.render(CssHeaderItem.forUrl(EFapsApplication.get().getServletContext()
                                 .getContextPath() + "/servlet/static/" + key));
             }
             if (!js.isEmpty()) {
                 final String key = BundleMaker.getBundleKey(js, TempFileBundle.class);
                 final TempFileBundle bundle = (TempFileBundle) BundleMaker.getBundle(key);
                 bundle.setContentType("text/javascript");
-                getRealResponse().render(JavaScriptHeaderItem.forUrl(EFapsApplication.get().getServletContext()
+                super.render(JavaScriptHeaderItem.forUrl(EFapsApplication.get().getServletContext()
                                 .getContextPath() + "/servlet/static/" + key));
             }
         } catch (final EFapsException e) {
@@ -189,7 +179,7 @@ public class EFapsResourceAggregator
         }
 
         if (combinedScript.length() > 0) {
-            getRealResponse().render(OnDojoReadyHeaderItem.forScript(combinedScript.append("\n").toString()));
+            super.render(OnDojoReadyHeaderItem.forScript(combinedScript.append("\n").toString()));
         }
     }
 
@@ -215,11 +205,10 @@ public class EFapsResourceAggregator
 
         if (combinedScript.length() > 0) {
             if (RequestCycle.get().getActiveRequestHandler() instanceof AjaxRequestHandler) {
-                getRealResponse().render(new OnDomReadyHeaderItem(AutoCompleteHeaderItem.writeJavaScript(
+                super.render(new OnDomReadyHeaderItem(AutoCompleteHeaderItem.writeJavaScript(
                                 combinedScript.append("\n"), types, false)));
             } else {
-                getRealResponse().render(
-                                AutoCompleteHeaderItem.forScript(combinedScript.append("\n").toString(), types));
+                super.render(AutoCompleteHeaderItem.forScript(combinedScript.append("\n").toString(), types));
             }
         }
     }
@@ -232,7 +221,7 @@ public class EFapsResourceAggregator
         final Set<DojoClass> dojoClasses = this.requireHeaderItems.stream().flatMap(o -> o.getDojoClasses().stream())
                         .collect(Collectors.toSet());
         if (CollectionUtils.isNotEmpty(dojoClasses)) {
-            getRealResponse().render(new HeaderItem()
+            super.render(new HeaderItem()
             {
 
                 /** The Constant serialVersionUID. */

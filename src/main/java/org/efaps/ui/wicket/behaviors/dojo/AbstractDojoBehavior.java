@@ -211,7 +211,7 @@ public abstract class AbstractDojoBehavior
         public void render(final Response _response)
         {
             final String url = getUrl();
-            _response.write("<script type=\"text/javascript\"> ");
+            _response.write("<script type=\"text/javascript\">\n");
             _response.write(" var dojoConfig = {");
             _response.write("baseUrl:\"");
             _response.write(url.substring(0, url.lastIndexOf("/")));
@@ -230,7 +230,7 @@ public abstract class AbstractDojoBehavior
             _response.write("\",");
             _response.write("parseOnLoad: true");
             _response.write(" };");
-            _response.write("</script>");
+            _response.write("</script>\n");
             _response.write("<script type=\"text/javascript\"");
             if (this.id != null) {
                 _response.write(" id=\"" + this.id + "\" ");

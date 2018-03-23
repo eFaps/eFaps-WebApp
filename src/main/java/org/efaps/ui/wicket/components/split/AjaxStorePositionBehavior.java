@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,13 +31,14 @@ import org.apache.wicket.util.time.Duration;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
+import org.efaps.ui.wicket.util.DojoClasses;
+import org.efaps.ui.wicket.util.DojoWrapper;
 
 /**
  * Class renders an ajax post link which is used to store the position of the
  * horizontal splitter.
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class AjaxStorePositionBehavior
     extends AbstractDefaultAjaxBehavior
@@ -112,48 +113,51 @@ public class AjaxStorePositionBehavior
         final String leftPanelId = _component.getMarkupId(true);
         final String topPanelId = ((SidePanel) _component).getTopPanelId();
 
-        final StringBuilder js = new StringBuilder();
+        final StringBuilder storeJs = new StringBuilder();
         if (this.vertical) {
-            js.append("var storePosV = ")
+            storeJs.append("var storePosV = ")
                 .append(getCallbackFunction(
                             CallbackParameter.explicit(AjaxStorePositionBehavior.PARAMETER_VERTICALPOSITION)));
         }
-        js.append("var storePosH = ").
+        storeJs.append("var storePosH = ").
                 append(getCallbackFunction(
-                            CallbackParameter.explicit(AjaxStorePositionBehavior.PARAMETER_HORIZONTALPOSITION)))
-            .append("dojo.ready(function() {\n")
-            .append("var bp = dijit.registry.byId(\"").append(borderPanelId).append("\");\n")
-            .append("var lp = dijit.registry.byId(\"").append(leftPanelId).append("\");\n")
+                            CallbackParameter.explicit(AjaxStorePositionBehavior.PARAMETER_HORIZONTALPOSITION)));
+
+        final StringBuilder js = new StringBuilder()
+            .append("ready(function() {\n")
+            .append("var bp = registry.byId(\"").append(borderPanelId).append("\");\n")
+            .append("var lp = registry.byId(\"").append(leftPanelId).append("\");\n")
             .append("var hs = bp.getSplitter(\"leading\");\n");
 
         if (this.vertical) {
-            js.append("var tp = dijit.registry.byId(\"").append(topPanelId).append("\");\n")
+            js.append("var tp = registry.byId(\"").append(topPanelId).append("\");\n")
                 .append("var vs = lp.getSplitter(\"top\");\n");
         }
 
-        js.append(" dojo.connect(hs, \"onOpen\",function(pane){\n")
+        js.append(" aspect.after(hs, \"onOpen\",function(pane){\n")
             .append("storePosH(pane.domNode.clientWidth);")
             .append("});\n")
-            .append(" dojo.connect(hs, \"onClosed\",function(pane){\n")
+            .append(" aspect.after(hs, \"onClosed\",function(pane){\n")
             .append("storePosH(pane.domNode.clientWidth);")
             .append("});\n")
-            .append(" dojo.connect(hs, \"_stopDrag\",function(e){\n")
+            .append(" aspect.after(hs, \"_stopDrag\",function(e){\n")
             .append("storePosH(lp.domNode.clientWidth);")
             .append("});\n");
 
         if (this.vertical) {
-            js.append(" dojo.connect(vs, \"onOpen\",function(pane){\n")
+            js.append(" aspect.after(vs, \"onOpen\",function(pane){\n")
                 .append("storePosV(pane.domNode.clientHeight);")
                 .append("});\n")
-                .append(" dojo.connect(vs, \"onClosed\",function(pane){\n")
+                .append(" aspect.after(vs, \"onClosed\",function(pane){\n")
                 .append("storePosV(pane.domNode.clientHeight);")
                 .append("});\n")
-                .append(" dojo.connect(vs, \"_stopDrag\",function(e){\n")
+                .append(" aspect.after(vs, \"_stopDrag\",function(e){\n")
                 .append("storePosV(tp.domNode.clientHeight);")
                 .append("});\n");
         }
         js.append("});");
-        return js.toString();
+        return storeJs.toString() + DojoWrapper.require(js, DojoClasses.ready, DojoClasses.registry,
+                        DojoClasses.aspect);
     }
 
     @Override
