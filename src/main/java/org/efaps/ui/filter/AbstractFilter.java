@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.filter;
@@ -38,7 +35,6 @@ import org.efaps.jaas.AppAccessHandler;
 
 /**
  * @author The eFaps Team
- * @version $Id$
  */
 public abstract class AbstractFilter
     implements Filter
@@ -80,6 +76,7 @@ public abstract class AbstractFilter
      * @see #loginhandler
      * @throws ServletException on error
      */
+    @Override
     public void init(final FilterConfig _filterConfig)
         throws ServletException
     {
@@ -89,7 +86,7 @@ public abstract class AbstractFilter
         if (loginName != null) {
             this.sessionParameterLoginName = loginName;
         }
-        final Set<UUID> temp = new HashSet<UUID>();
+        final Set<UUID> temp = new HashSet<>();
         if (loginRolesTmp != null) {
             final String[] loginRolesAr = loginRolesTmp.split(",");
             for (final String loginRole : loginRolesAr) {
@@ -112,6 +109,7 @@ public abstract class AbstractFilter
      * sure that any persistent state is synchronized with the filter's current
      * state in memory.
      */
+    @Override
     public void destroy()
     {
     }
@@ -132,14 +130,15 @@ public abstract class AbstractFilter
      * @see #checkLogin
      * @throws IOException on error
      */
+    @Override
     public void doFilter(final ServletRequest _request,
                          final ServletResponse _response,
                          final FilterChain _chain)
         throws IOException, ServletException
     {
 
-        if ((_request instanceof HttpServletRequest)
-                        && (_response instanceof HttpServletResponse)) {
+        if (_request instanceof HttpServletRequest
+                        && _response instanceof HttpServletResponse) {
 
             doFilter((HttpServletRequest) _request, (HttpServletResponse) _response, _chain);
         } else {

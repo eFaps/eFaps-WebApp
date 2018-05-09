@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.filter;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.Set;
 
 import javax.servlet.FilterChain;
@@ -34,6 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.efaps.admin.user.UserAttributesSet;
+import org.efaps.api.ui.ILoginProvider;
 import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
@@ -46,12 +47,6 @@ import org.slf4j.LoggerFactory;
 public class TransactionFilter
     extends AbstractFilter
 {
-    /**
-     * Name of the session variable for the login forward (after the login is
-     * done this is the next page).
-     */
-    public static final String SESSIONPARAM_LOGIN_FORWARD = "login.forward";
-
     /**
      * Logging instance used in this class.
      */
@@ -79,6 +74,8 @@ public class TransactionFilter
      * logged in.
      */
     private String notLoggedInForward = null;
+
+    private final List<ILoginProvider> loginProviders = new ArrayList<>();
 
     /**
      * Called by the web container to indicate to a filter that it is being
@@ -110,6 +107,12 @@ public class TransactionFilter
 
         this.exludeUris.add((root + this.notLoggedInForward).replaceAll("//+", "/"));
         this.exludeUris.add((root + "/servlet/login").replaceAll("//+", "/"));
+
+        final ServiceLoader<ILoginProvider> serviceLoaderLogins = ServiceLoader.load(ILoginProvider.class);
+        for (final ILoginProvider loginProvider : serviceLoaderLogins) {
+            LOG.info("[TransactionFilter] registered: {}", loginProvider);
+            this.loginProviders .add(loginProvider);
+        }
     }
 
     /**
@@ -184,5 +187,17 @@ public class TransactionFilter
                             .getAttribute(UserAttributesSet.CONTEXTMAPKEY));
         }
         return map;
+    }
+
+    @Override
+    protected String getLoggedInUser(final HttpServletRequest _request)
+    {
+        String ret = null;
+        if (_request.getUserPrincipal() != null) {
+            ret = _request.getUserPrincipal().getName();
+        } else {
+            ret = super.getLoggedInUser(_request);
+        }
+        return ret;
     }
 }
