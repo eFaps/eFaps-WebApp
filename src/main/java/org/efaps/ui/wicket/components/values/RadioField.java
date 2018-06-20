@@ -28,6 +28,7 @@ import org.efaps.admin.datamodel.IEnum;
 import org.efaps.api.ci.UIFormFieldProperty;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.field.FieldConfiguration;
+import org.efaps.ui.wicket.models.objects.AbstractOption;
 import org.efaps.ui.wicket.models.objects.RadioOption;
 import org.efaps.ui.wicket.request.EFapsRequestParametersAdapter;
 import org.efaps.util.EFapsException;
@@ -180,8 +181,15 @@ public class RadioField
         if (!getFieldConfig().getName().equals(this.inputName)) {
             final EFapsRequestParametersAdapter parameters = (EFapsRequestParametersAdapter) getRequest()
                             .getRequestParameters();
-            parameters.addParameterValue(getFieldConfig().getName(),
-                            getConvertedInput() == null ? "" : getConvertedInput().toString());
+            final String value;
+            if (getConvertedInput() == null) {
+                value = null;
+            } else if (getConvertedInput() instanceof AbstractOption) {
+                value = ((AbstractOption) getConvertedInput()).getValue();
+            } else {
+                value = getConvertedInput().toString();
+            }
+            parameters.addParameterValue(getFieldConfig().getName(), value);
         }
     }
 

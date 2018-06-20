@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.models.objects;
@@ -33,22 +30,24 @@ import org.efaps.api.ui.IOption;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.util.EnumUtil;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class RadioOption
     extends AbstractOption
     implements Serializable
 {
 
-    /**
-     *
-     */
+    /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
+
+    /** The Constant LOG. */
+    private static final Logger LOG = LoggerFactory.getLogger(RadioOption.class);
 
     /**
      * @param _value
@@ -81,7 +80,7 @@ public class RadioOption
     public static List<RadioOption> getChoices(final AbstractUIField _field)
         throws EFapsException
     {
-        final List<RadioOption> ret = new ArrayList<RadioOption>();
+        final List<RadioOption> ret = new ArrayList<>();
         final Attribute attr = _field.getValue().getAttribute();
         final IUIProvider uiProvider = attr.getAttributeType().getUIProvider();
         if (uiProvider instanceof EnumUI) {
@@ -93,8 +92,7 @@ public class RadioOption
                     ret.add(new RadioOption(enumConst));
                 }
             } catch (final ClassNotFoundException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                LOG.error("Catched", e);
             }
         }
         return ret;
