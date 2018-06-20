@@ -26,6 +26,7 @@ import org.efaps.admin.datamodel.IEnum;
 import org.efaps.admin.datamodel.ui.EnumUI;
 import org.efaps.ui.wicket.components.values.RadioField;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
+import org.efaps.ui.wicket.models.field.set.UIFieldSetValue;
 import org.efaps.ui.wicket.util.EnumUtil;
 import org.efaps.util.EFapsException;
 
@@ -65,7 +66,8 @@ public final class EnumUIFactory
         if (applies(_uiField)) {
             ret = new RadioField(_wicketId, Model.of(_uiField), _uiField.getValue().getEditValue(
                             _uiField.getParent().getMode()),
-                            _uiField.getFieldConfiguration());
+                            _uiField.getFieldConfiguration(),
+                            _uiField instanceof UIFieldSetValue);
         }
         return ret;
     }

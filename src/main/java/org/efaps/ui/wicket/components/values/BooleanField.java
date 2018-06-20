@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ import org.efaps.ui.wicket.request.EFapsRequestParametersAdapter;
 import org.efaps.util.RandomUtil;
 
 /**
- * TODO comment!
+ * Field to render a Boolean using two radio buttons.
  *
  * @author The eFaps Team
  */

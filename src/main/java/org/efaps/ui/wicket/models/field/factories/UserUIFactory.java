@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ package org.efaps.ui.wicket.models.field.factories;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.text.StrSubstitutor;
+import org.apache.commons.text.StringSubstitutor;
 import org.apache.wicket.Component;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.EFapsSystemConfiguration;
@@ -87,7 +87,7 @@ public final class UserUIFactory
             for (final AttrName attr : AttrName.values()) {
                 values.put(attr.name(), person.getAttrValue(attr));
             }
-            final StrSubstitutor sub = new StrSubstitutor(values);
+            final StringSubstitutor sub = new StringSubstitutor(values);
             strValue = sub.replace(display);
         } else if (valueTmp instanceof AbstractUserObject) {
             final AbstractUserObject userObj = (AbstractUserObject) valueTmp;

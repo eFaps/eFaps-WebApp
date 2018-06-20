@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,12 +29,14 @@ import org.efaps.api.ci.UIFormFieldProperty;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.field.FieldConfiguration;
 import org.efaps.ui.wicket.models.objects.RadioOption;
+import org.efaps.ui.wicket.request.EFapsRequestParametersAdapter;
 import org.efaps.util.EFapsException;
+import org.efaps.util.RandomUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO comment!
+ * Renders a radio field.
  *
  * @author The eFaps Team
  */
@@ -57,6 +59,9 @@ public class RadioField
     /** The cellvalue. */
     private final AbstractUIField cellvalue;
 
+    /** The input name. */
+    private String inputName;
+
     /**
      * Instantiates a new radio field.
      *
@@ -64,14 +69,19 @@ public class RadioField
      * @param _model the model
      * @param _value the value
      * @param _fieldConfiguration the field configuration
+     * @param _uniqueName the unique name
      */
     public RadioField(final String _id,
                       final Model<AbstractUIField> _model,
                       final Object _value,
-                      final FieldConfiguration _fieldConfiguration)
+                      final FieldConfiguration _fieldConfiguration,
+                      final boolean _uniqueName)
     {
         super(_id);
         this.fieldConfig = _fieldConfiguration;
+        // make a unique name if in a fieldset
+        this.inputName = getFieldConfig().getName()
+                        + (_uniqueName ? "_" + RandomUtil.randomAlphabetic(4) : "");
         this.cellvalue = _model.getObject();
         final Serializable value = this.cellvalue.getValue().getDbValue();
         try {
@@ -140,7 +150,7 @@ public class RadioField
     @Override
     public String getInputName()
     {
-        return getFieldConfig().getName();
+        return this.inputName;
     }
 
     @Override
@@ -159,6 +169,20 @@ public class RadioField
             ret = getSuffix();
         }
         return ret;
+    }
+
+    @Override
+    public void convertInput()
+    {
+        super.convertInput();
+
+        // if a unique name was generated set the values in teh parameters
+        if (!getFieldConfig().getName().equals(this.inputName)) {
+            final EFapsRequestParametersAdapter parameters = (EFapsRequestParametersAdapter) getRequest()
+                            .getRequestParameters();
+            parameters.addParameterValue(getFieldConfig().getName(),
+                            getConvertedInput() == null ? "" : getConvertedInput().toString());
+        }
     }
 
     /**
