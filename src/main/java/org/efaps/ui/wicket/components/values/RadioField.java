@@ -61,7 +61,7 @@ public class RadioField
     private final AbstractUIField cellvalue;
 
     /** The input name. */
-    private String inputName;
+    private final String inputName;
 
     /**
      * Instantiates a new radio field.
@@ -121,6 +121,7 @@ public class RadioField
         }
         this.cellvalue = _model.getObject();
         this.fieldConfig = this.cellvalue.getFieldConfiguration();
+        this.inputName = getFieldConfig().getName();
         try {
             Model<?> model = null;
             if (_radios != null) {
