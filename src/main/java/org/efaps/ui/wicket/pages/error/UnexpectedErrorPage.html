@@ -23,38 +23,48 @@
 <title>Unexpected Error</title>
 <style type="text/css">
 body {
-    margin-left: 2em;
-    font-family: 'Lucida Sans', 'Helvetica', 'Sans-serif', 'sans',
-        sans-serif;
-    font-size: 9pt;
-    line-height: 1.8em;
+  margin-left: 2em;
+  font-family: 'Lucida Sans', 'Helvetica', 'Sans-serif', 'sans',
+    sans-serif;
+  font-size: 9pt;
+  line-height: 1.8em;
 }
 
-h1,h2,h3,h4,h5,h6 {
-    color: #E9601A;
+h1, h2, h3, h4, h5, h6 {
+  color: #E9601A;
 }
 
 h1 {
-    font-size: 1.5em;
+  font-size: 1.5em;
 }
 
-pre,table,td {
-    font-family: 'MS Trebuchet', 'Verdana', Arial, Helvetica, serif;
-    font-size: 10pt;
-    line-height: 1.2em;
+pre, table, td {
+  font-family: 'MS Trebuchet', 'Verdana', Arial, Helvetica, serif;
+  font-size: 10pt;
+  line-height: 1.2em;
+}
+
+img {
+  width: 250px;
+}
+
+div {
+  text-align: center;
 }
 </style>
 </head>
 <body>
-    <h1>Unexpected error</h1>
-    <wicket:link>
-        <img src="oops.png" alt="OOPS" />
-    </wicket:link>
-    <p>
-        <a wicket:id="homePageLink" href="">Return to home page</a>
-    </p>
-    <p>
-        <span wicket:id="date"></span>
-    </p>
+    <div>
+        <h1>Unexpected error</h1>
+        <wicket:link>
+            <img src="oops.png" alt="OOPS" />
+        </wicket:link>
+        <p>
+            <a wicket:id="homePageLink" href="">Return to home page</a>
+        </p>
+        <p>
+            <span wicket:id="date"></span>
+        </p>
+    </div>
 </body>
 </html>
