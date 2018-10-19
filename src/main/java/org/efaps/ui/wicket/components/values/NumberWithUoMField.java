@@ -26,6 +26,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.datamodel.Dimension;
+import org.efaps.admin.datamodel.Dimension.UoM;
 import org.efaps.admin.datamodel.ui.AbstractWithUoMProvider;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.field.FieldConfiguration;
@@ -48,20 +49,22 @@ public class NumberWithUoMField
     private static final Logger LOG = LoggerFactory.getLogger(NumberWithUoMField.class);
 
     public NumberWithUoMField(final String _wicketId,
-                              final IModel<AbstractUIField> _model)
+                              final IModel<AbstractUIField> _model) throws EFapsException
     {
         super(_wicketId, _model);
         final FieldConfiguration config = _model.getObject().getFieldConfiguration();
-        final TextField<Number> valueField = new TextField<Number>("value", Model.of())
+        final Object[] value = (Object[]) _model.getObject().getValue().getEditValue(_model.getObject().getParent().getMode());
+        Model<Number> numberModel;
+        if (value == null) {
+            numberModel = Model.of();
+        } else {
+            numberModel = Model.of((Number) value[0]);
+        }
+
+        final TextField<Number> valueField = new TextField<Number>("value", numberModel)
         {
 
             private static final long serialVersionUID = 1L;
-
-            @Override
-            public String[] getInputAsArray()
-            {
-                return new String[] { "text" };
-            }
 
             @Override
             public String getInputName()
@@ -70,6 +73,7 @@ public class NumberWithUoMField
             }
         };
         valueField.setRequired(config.getField().isRequired());
+        valueField.setOutputMarkupId(true);
         add(valueField);
 
         final DropDownChoice<DropDownOption> uomField = new DropDownChoice<DropDownOption>("uom")
@@ -85,16 +89,21 @@ public class NumberWithUoMField
         };
         try {
             final Dimension dimension = _model.getObject().getValue().getAttribute().getDimension();
-            uomField.setDefaultModel(Model.of(new DropDownOption(String.valueOf(dimension.getBaseUoM().getId()),
-                            dimension.getBaseUoM().getSymbol())));
+            UoM uom;
+            if (value != null && value[1] instanceof UoM) {
+                uom = (UoM) value[1];
+            } else {
+                uom = dimension.getBaseUoM();
+            }
+            uomField.setDefaultModel(Model.of(new DropDownOption(String.valueOf(uom.getId()), uom.getSymbol())));
             uomField.setChoices(dimension.getUoMs().stream()
-                            .map(uom -> new DropDownOption(String.valueOf(uom.getId()),
-                                            uom.getSymbol()))
+                            .map(auom -> new DropDownOption(String.valueOf(auom.getId()), auom.getSymbol()))
                             .collect(Collectors.toList()));
             uomField.setChoiceRenderer(new DropDownField.ChoiceRenderer());
         } catch (final CacheReloadException e) {
             LOG.error("Catched error while evaluating dimension", e);
         }
+        uomField.setOutputMarkupId(true);
         add(uomField);
     }
 
