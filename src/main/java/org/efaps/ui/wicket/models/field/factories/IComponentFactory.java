@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.models.field.factories;
@@ -25,11 +22,9 @@ import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.util.EFapsException;
 
 /**
- * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id: IComponentFactory.java 14033 2014-09-15 21:44:25Z
- *          jan@moxter.net $
+ *
  */
 public interface IComponentFactory
 {
@@ -98,7 +93,7 @@ public interface IComponentFactory
      * @return comparable
      * @throws EFapsException on error
      */
-    boolean applies(final AbstractUIField _abstractUIField)
+    boolean applies(final AbstractUIField _uiField)
                     throws EFapsException;
 
     /**

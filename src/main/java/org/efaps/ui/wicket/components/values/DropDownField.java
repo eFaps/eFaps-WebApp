@@ -309,7 +309,7 @@ public class DropDownField
     /**
      * The renderer for this dropdown.
      */
-    public final class ChoiceRenderer
+    public final static class ChoiceRenderer
         implements IChoiceRenderer<DropDownOption>
     {
         /**
