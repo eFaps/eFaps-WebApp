@@ -101,6 +101,8 @@ public class MenuBarPanel
                             item = new TaskAdminItem(idGenerator.newChildId(), Model.of(childItem));
                         } else if (childItem.getReference().endsWith("/connection")) {
                             item = new ConnectionItem(idGenerator.newChildId(), Model.of(childItem));
+                        } else if (childItem.getReference().endsWith("/pivot")) {
+                            item = new PivotItem(idGenerator.newChildId(), Model.of(childItem));
                         }
                     }
                     if (item == null) {

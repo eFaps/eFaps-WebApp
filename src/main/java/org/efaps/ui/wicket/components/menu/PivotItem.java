@@ -14,41 +14,30 @@
  * limitations under the License.
  *
  */
-
 package org.efaps.ui.wicket.components.menu;
 
 import org.apache.wicket.model.IModel;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
-import org.efaps.ui.wicket.pages.connection.ConnectionPage;
-import org.efaps.util.EFapsException;
+import org.efaps.ui.wicket.pages.pivot.PivotPage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Render an home link.
- *
- * @author The eFaps Team
+ * The Class PivotItem.
  */
-public class ConnectionItem
+public class PivotItem
     extends LinkItem
 {
 
-    /**
-     * Needed for serialization.
-     */
     private static final long serialVersionUID = 1L;
 
     /**
      * Logger for this class.
      */
-    private static final Logger LOG = LoggerFactory.getLogger(ConnectionItem.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PivotItem.class);
 
-    /**
-     * @param _wicketId     wicketId for this item
-     * @param _model        model for this item
-     */
-    public ConnectionItem(final String _wicketId,
-                         final IModel<UIMenuItem> _model)
+    public PivotItem(final String _wicketId,
+                     final IModel<UIMenuItem> _model)
     {
         super(_wicketId, _model);
     }
@@ -59,10 +48,7 @@ public class ConnectionItem
     @Override
     public void onClick()
     {
-        try {
-            setResponsePage(new ConnectionPage(getPage().getPageReference()));
-        } catch (final EFapsException e) {
-            ConnectionItem.LOG.error("", e);
-        }
+        LOG.debug("Opened PivotPage");
+        setResponsePage(new PivotPage());
     }
 }

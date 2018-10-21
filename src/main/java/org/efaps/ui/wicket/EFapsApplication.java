@@ -216,6 +216,7 @@ public class EFapsApplication
         final IPackageResourceGuard guard = getResourceSettings().getPackageResourceGuard();
         if (guard instanceof SecurePackageResourceGuard) {
             ((SecurePackageResourceGuard) guard).addPattern("+*.svg");
+            ((SecurePackageResourceGuard) guard).addPattern("+*.json");
         }
 
         setHeaderResponseDecorator(_response -> new EFapsResourceAggregator(_response));
