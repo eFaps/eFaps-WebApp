@@ -60,8 +60,8 @@ public class PivotPage
 
     private final static PackageResourceReference LOG_ES = new PackageResourceReference(PivotPage.class, "loc/es.json");
 
-    public PivotPage() {
-
+    public PivotPage()
+    {
         final String providerClass = Configuration.getAttribute(ConfigAttribute.PIVOT_PROVIDER);
         if (providerClass != null) {
             try {
@@ -69,9 +69,10 @@ public class PivotPage
                 final IPivotProvider provider = (IPivotProvider) clazz.newInstance();
                 final List<IOption> datasources = provider.getDataSources();
 
-                final DropDownChoice<IOption> dsDropDown =  new DropDownChoice<>("dataSources");
+                final DropDownChoice<IOption> dsDropDown = new DropDownChoice<>("dataSources");
                 dsDropDown.setChoices(datasources);
-                dsDropDown.setChoiceRenderer(new ChoiceRenderer<IOption>() {
+                dsDropDown.setChoiceRenderer(new ChoiceRenderer<IOption>()
+                {
 
                     private static final long serialVersionUID = 1L;
 
@@ -80,6 +81,7 @@ public class PivotPage
                     {
                         return _object.getLabel();
                     }
+
                     @Override
                     public String getIdValue(final IOption _object, final int _index)
                     {

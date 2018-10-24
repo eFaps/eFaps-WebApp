@@ -22,11 +22,19 @@ import org.apache.wicket.request.http.WebResponse;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.StringValue;
 import org.drools.core.util.StringUtils;
+import org.efaps.admin.program.esjp.EFapsClassLoader;
+import org.efaps.api.ui.IPivotProvider;
+import org.efaps.ui.wicket.util.Configuration;
+import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JsonResponsePage
     extends WebPage
 {
     private static final long serialVersionUID = 1L;
+
+    private static final Logger LOG = LoggerFactory.getLogger(JsonResponsePage.class);
 
     public JsonResponsePage(final PageParameters _pageParameters)
     {
@@ -38,16 +46,14 @@ public class JsonResponsePage
             if (StringUtils.isEmpty(val)) {
                 response.write("[]");
             } else {
-                response.write("[\n" +
-                                "    {\n" +
-                                "        \"Product\": \"Apple\",\n" +
-                                "        \"Price\": 2.50\n" +
-                                "    },\n" +
-                                "    {\n" +
-                                "        \"Product\": \"Cherry\",\n" +
-                                "        \"Price\": 5.25\n" +
-                                "    }\n" +
-                                "]");
+                try {
+                    final String providerClass = Configuration.getAttribute(ConfigAttribute.PIVOT_PROVIDER);
+                    final Class<?> clazz = Class.forName(providerClass, false, EFapsClassLoader.getInstance());
+                    final IPivotProvider provider = (IPivotProvider) clazz.newInstance();
+                    response.write(provider.getJsonData(val));
+                } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+                    LOG.error("Could not find/instantiate Provider Class", e);
+                }
             }
         });
         setStatelessHint(true);
