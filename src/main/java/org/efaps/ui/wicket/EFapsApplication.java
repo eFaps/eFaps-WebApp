@@ -79,6 +79,7 @@ import org.efaps.ui.wicket.connectionregistry.RegistryManager;
 import org.efaps.ui.wicket.pages.error.UnexpectedErrorPage;
 import org.efaps.ui.wicket.pages.login.LoginPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
+import org.efaps.ui.wicket.pages.pivot.JsonResponsePage;
 import org.efaps.ui.wicket.request.EFapsRequest;
 import org.efaps.ui.wicket.request.EFapsRequestCycleListener;
 import org.efaps.ui.wicket.request.EFapsResourceAggregator;
@@ -236,6 +237,7 @@ public class EFapsApplication
             LOG.info("[{}] registered: {}", getName(), loginProvider);
             this.loginProviders.add(loginProvider);
         }
+        mountPage("/" + RandomUtil.randomAlphabetic(16), JsonResponsePage.class);
     }
 
     /**

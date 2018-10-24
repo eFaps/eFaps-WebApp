@@ -125,6 +125,10 @@ public final class Configuration
         BOARD_PROVIDER(false, true, "DashBoard.Provider", "org.efaps.esjp.common.dashboard.DashboardProvider",
                         String.class,
                         "Class name of the DashboardProvider class"),
+        /** */
+        PIVOT_PROVIDER(false, true, "Pivot.Provider", "org.efaps.esjp.common.pivot.PivotProvider",
+                        String.class,
+                        "Class name of the PivotProvider class"),
         /** MainToolBar. */
         TOOLBAR(false, true,  "MainToolBar", "87001cc3-c45c-44de-b8f1-776df507f268", String.class, ""),
 
