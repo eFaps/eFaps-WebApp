@@ -95,8 +95,7 @@ public class PivotPage
                 });
                 add(dsDropDown);
 
-                dsDropDown.add(new AttributeAppender("onchange", new Model<>("load(this.value)"), ";"));
-
+                dsDropDown.add(new AttributeAppender("onchange", new Model<>("loadDataSource(this.value)"), ";"));
 
                 final DropDownChoice<IOption> repDropDown = new DropDownChoice<>("reports");
                 repDropDown.setChoices(reports);
@@ -118,6 +117,8 @@ public class PivotPage
                     }
                 });
                 add(repDropDown);
+                repDropDown.add(new AttributeAppender("onchange", new Model<>("loadReport(this.value)"), ";"));
+
                 final ModalWindow modal = new AbstractModalWindow("modal")
                 {
                     private static final long serialVersionUID = 1L;
@@ -158,7 +159,7 @@ public class PivotPage
                 final CharSequence locUrl = RequestCycle.get().urlFor(handler);
                 final CharSequence url = RequestCycle.get().urlFor(JsonResponsePage.class, new PageParameters());
                 final StringBuilder js = new StringBuilder()
-                        .append("function load(_datasource) {\n")
+                        .append("function loadDataSource(_datasource) {\n")
                         .append("var url = new URL('").append(url)
                             .append("?datasource=' + _datasource, window.location);\n")
                         .append("webdatarocks.updateData({\n")
@@ -186,10 +187,13 @@ public class PivotPage
                         .append("_toolbar.getTabs = function() {\n")
                         .append("return [tabs[3], tabs[4], tabs[5], tabs[6]];\n")
                         .append("}\n")
-                        .append("\n")
-                        .append("\n")
-                        .append("}\n");
-//webdatarocks.getReport()
+                        .append("}\n")
+                        .append("function loadReport(_report) {\n")
+                        .append("var url = new URL('").append(url)
+                            .append("?report=' + _report, window.location);\n")
+                        .append("webdatarocks.load(url.href);\n")
+                        .append("}\n")
+                        ;
 //var pivotDataSource= new URL(report.dataSource.filename).searchParams.get('datasource');
                 replaceComponentTagBody(_markupStream, _openTag, js);
             }

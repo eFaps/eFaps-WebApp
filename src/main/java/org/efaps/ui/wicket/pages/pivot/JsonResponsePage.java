@@ -17,10 +17,14 @@
 
 package org.efaps.ui.wicket.pages.pivot;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.wicket.markup.html.WebPage;
+import org.apache.wicket.request.Url;
+import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.http.WebResponse;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.apache.wicket.util.string.StringValue;
 import org.drools.core.util.StringUtils;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.api.ui.IPivotProvider;
@@ -38,21 +42,43 @@ public class JsonResponsePage
 
     public JsonResponsePage(final PageParameters _pageParameters)
     {
-        final StringValue parameter = _pageParameters.get("datasource");
-        final String val = parameter.toOptionalString();
+        final String datasource = _pageParameters.get("datasource").toOptionalString();
+        final String report = _pageParameters.get("report").toOptionalString();
+
         getRequestCycle().scheduleRequestHandlerAfterCurrent(_requestCycle -> {
             final WebResponse response = (WebResponse) _requestCycle.getResponse();
             response.setContentType("application/json");
-            if (StringUtils.isEmpty(val)) {
-                response.write("[]");
-            } else {
+
+            if (datasource == null) {
                 try {
                     final String providerClass = Configuration.getAttribute(ConfigAttribute.PIVOT_PROVIDER);
                     final Class<?> clazz = Class.forName(providerClass, false, EFapsClassLoader.getInstance());
                     final IPivotProvider provider = (IPivotProvider) clazz.newInstance();
-                    response.write(provider.getJsonData(val));
+                    final CharSequence pivotReport = provider.getReport(report);
+                    final Pattern r = Pattern.compile("(datasource=)(\\d*.\\d)");
+                    final Matcher m = r.matcher(pivotReport);
+                    final PageParameters pageParameters = new PageParameters();
+                    if (m.find()) {
+                        pageParameters.set("datasource", m.group(2));
+                    }
+                    final CharSequence path = RequestCycle.get().urlFor(JsonResponsePage.class, pageParameters);
+                    final String finalUrl = RequestCycle.get().getUrlRenderer().renderFullUrl(Url.parse(path));
+                    response.write(pivotReport.toString().replaceAll("http(:|/|\\w|\\?|=|\\.|&)*", finalUrl));
                 } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
                     LOG.error("Could not find/instantiate Provider Class", e);
+                }
+            } else {
+                if (StringUtils.isEmpty(datasource)) {
+                    response.write("[]");
+                } else {
+                    try {
+                        final String providerClass = Configuration.getAttribute(ConfigAttribute.PIVOT_PROVIDER);
+                        final Class<?> clazz = Class.forName(providerClass, false, EFapsClassLoader.getInstance());
+                        final IPivotProvider provider = (IPivotProvider) clazz.newInstance();
+                        response.write(provider.getJsonData(datasource));
+                    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+                        LOG.error("Could not find/instantiate Provider Class", e);
+                    }
                 }
             }
         });
