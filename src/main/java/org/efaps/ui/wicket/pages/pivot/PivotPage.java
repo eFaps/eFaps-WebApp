@@ -18,7 +18,9 @@ package org.efaps.ui.wicket.pages.pivot;
 
 import java.util.List;
 
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.behavior.AttributeAppender;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.head.CssHeaderItem;
@@ -39,6 +41,8 @@ import org.apache.wicket.request.resource.PackageResourceReference;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.api.ui.IOption;
 import org.efaps.api.ui.IPivotProvider;
+import org.efaps.ui.wicket.components.button.AjaxButton;
+import org.efaps.ui.wicket.components.modalwindow.AbstractModalWindow;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 import org.slf4j.Logger;
@@ -68,6 +72,7 @@ public class PivotPage
                 final Class<?> clazz = Class.forName(providerClass, false, EFapsClassLoader.getInstance());
                 final IPivotProvider provider = (IPivotProvider) clazz.newInstance();
                 final List<IOption> datasources = provider.getDataSources();
+                final List<IOption> reports = provider.getReports();
 
                 final DropDownChoice<IOption> dsDropDown = new DropDownChoice<>("dataSources");
                 dsDropDown.setChoices(datasources);
@@ -92,6 +97,52 @@ public class PivotPage
 
                 dsDropDown.add(new AttributeAppender("onchange", new Model<>("load(this.value)"), ";"));
 
+
+                final DropDownChoice<IOption> repDropDown = new DropDownChoice<>("reports");
+                repDropDown.setChoices(reports);
+                repDropDown.setChoiceRenderer(new ChoiceRenderer<IOption>()
+                {
+
+                    private static final long serialVersionUID = 1L;
+
+                    @Override
+                    public Object getDisplayValue(final IOption _object)
+                    {
+                        return _object.getLabel();
+                    }
+
+                    @Override
+                    public String getIdValue(final IOption _object, final int _index)
+                    {
+                        return String.valueOf(_object.getValue());
+                    }
+                });
+                add(repDropDown);
+                final ModalWindow modal = new AbstractModalWindow("modal")
+                {
+                    private static final long serialVersionUID = 1L;
+                };
+                add(modal);
+                modal.setInitialWidth(500);
+                modal.setInitialHeight(500);
+                modal.setContent(new SaveReportPanel(modal.getContentId(), provider, reports));
+
+                add(new AjaxButton<Void>("showModal")
+                {
+                    private static final long serialVersionUID = 1L;
+
+                    @Override
+                    public void onRequest(final AjaxRequestTarget target)
+                    {
+                        modal.show(target);
+                    }
+
+                    @Override
+                    protected boolean isSubmit()
+                    {
+                        return false;
+                    }
+                });
             } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
                 LOG.error("Could not find/instantiate Provider Class", e);
             }

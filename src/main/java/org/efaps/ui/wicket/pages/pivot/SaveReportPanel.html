@@ -1,6 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-
+<?xml version="1.0" encoding="UTF-8" ?>
 <!--
 
   Copyright 2003 - 2018 The eFaps Team
@@ -18,19 +16,11 @@
   limitations under the License.
 
 -->
-
-<html xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:wicket="http://wicket.apache.org">
-<head>
-
-</head>
-<body>
-    <select wicket:id="dataSources"></select>
-    <select wicket:id="reports"></select>
-    <a wicket:id="showModal">Save</a>
-    <div id="wdr-component"></div>
-    <script wicket:id="wdr"></script>
-    <div wicket:id="modal"></div>
-</body>
-</html>
+<wicket:panel xmlns:wicket="http://wicket.apache.org">
+    <form wicket:id="saveform">
+        <input type="text" wicket:id="reportName"></input>
+        <select wicket:id="reports"></select>
+        <button wicket:id="close">Save</button>
+    </form>
+</wicket:panel>
 
