@@ -19,9 +19,11 @@ package org.efaps.ui.wicket.pages.pivot;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -68,6 +70,10 @@ public class SaveReportPanel
             }
         });
         form.add(repDropDown);
+        repDropDown.add(new AttributeAppender("onchange",
+                        new Model<>("this.value == '' ? $('#reportName4save').val('').prop('disabled', false) "
+                                        + ": $('#reportName4save').val(this.options[this.selectedIndex].innerHTML)"
+                                        + ".prop('disabled', true)"), ";"));
 
         form.add(new AjaxButton("close")
         {
@@ -81,7 +87,8 @@ public class SaveReportPanel
                 final IRequestParameters parameters = getRequest().getPostParameters();
                 final String pivotReport = parameters.getParameterValue("pivotReport").toString();
                 final String reportName = parameters.getParameterValue("reportName").toString();
-                _provider.save(reportName, pivotReport);
+                final String reports = parameters.getParameterValue("reports").toString();
+                _provider.save(StringUtils.isNotEmpty(reportName) ? reportName : reports, pivotReport);
             }
 
             @Override

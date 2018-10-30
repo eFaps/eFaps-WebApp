@@ -125,7 +125,7 @@ public class PivotPage
                 };
                 add(modal);
                 modal.setInitialWidth(500);
-                modal.setInitialHeight(500);
+                modal.setInitialHeight(300);
                 modal.setContent(new SaveReportPanel(modal.getContentId(), provider, reports));
 
                 add(new AjaxButton<Void>("showModal")

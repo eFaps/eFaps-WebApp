@@ -18,7 +18,8 @@
 -->
 <wicket:panel xmlns:wicket="http://wicket.apache.org">
     <form wicket:id="saveform">
-        <input type="text" wicket:id="reportName"></input>
+        <label wicket:for="reportName">Nombre:</label>
+        <input type="text" wicket:id="reportName" id="reportName4save"></input>
         <select wicket:id="reports"></select>
         <button wicket:id="close">Save</button>
     </form>
