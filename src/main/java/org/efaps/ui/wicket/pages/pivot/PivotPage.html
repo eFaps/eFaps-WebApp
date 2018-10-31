@@ -22,12 +22,33 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
     xmlns:wicket="http://wicket.apache.org">
 <head>
-
+    <style>
+        #pivot {
+            position: absolute;
+            top: 20px;
+            z-index: 5;
+        }
+        #pivot > span {
+            left: 10px;
+            top: -1px;
+            position: relative;
+        }
+        #pivot >span .btnlabel {
+            font-size: 11pt
+        }
+        label {
+            font-family: Arial, sans-serif;
+        }
+    </style>
 </head>
 <body>
-    <select wicket:id="dataSources"></select>
-    <select wicket:id="reports"></select>
-    <a wicket:id="showModal">Save</a>
+    <div id="pivot">
+        <label wicket:for="dataSources">DataSources:</label>
+        <select wicket:id="dataSources"></select>
+        <label wicket:for="reports">Reports:</label>
+        <select wicket:id="reports"></select>
+        <span wicket:id="showModal"></span>
+    </div>
     <div id="wdr-component"></div>
     <script wicket:id="wdr"></script>
     <div wicket:id="modal"></div>

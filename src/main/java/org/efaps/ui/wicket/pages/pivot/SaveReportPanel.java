@@ -88,7 +88,10 @@ public class SaveReportPanel
                 final String pivotReport = parameters.getParameterValue("pivotReport").toString();
                 final String reportName = parameters.getParameterValue("reportName").toString();
                 final String reports = parameters.getParameterValue("reports").toString();
-                _provider.save(StringUtils.isNotEmpty(reportName) ? reportName : reports, pivotReport);
+                final String key = StringUtils.isNotEmpty(reportName) ? reportName : reports;
+                if (StringUtils.isNotEmpty(key)) {
+                    _provider.save(key, pivotReport);
+                }
             }
 
             @Override

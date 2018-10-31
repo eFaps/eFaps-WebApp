@@ -128,7 +128,7 @@ public class PivotPage
                 modal.setInitialHeight(300);
                 modal.setContent(new SaveReportPanel(modal.getContentId(), provider, reports));
 
-                add(new AjaxButton<Void>("showModal")
+                add(new AjaxButton<Void>("showModal", "Edit")
                 {
                     private static final long serialVersionUID = 1L;
 
@@ -159,15 +159,7 @@ public class PivotPage
                 final CharSequence locUrl = RequestCycle.get().urlFor(handler);
                 final CharSequence url = RequestCycle.get().urlFor(JsonResponsePage.class, new PageParameters());
                 final StringBuilder js = new StringBuilder()
-                        .append("function loadDataSource(_datasource) {\n")
-                        .append("var url = new URL('").append(url)
-                            .append("?datasource=' + _datasource, window.location);\n")
-                        .append("webdatarocks.updateData({\n")
-                        .append("dataSourceType: 'json',\n")
-                        .append("filename: url.href\n")
-                        .append("});\n")
-                    .append("document.getElementById('wdr-component').style.height=window.innerHeight - 50 + 'px';\n")
-                        .append("}\n")
+                        .append("\n")
                         .append("var pivot = new WebDataRocks({\n")
                         .append("container : '#wdr-component',\n")
                         .append("beforetoolbarcreated: customizeToolbar,\n")
@@ -184,17 +176,28 @@ public class PivotPage
                         .append("});\n")
                         .append("function customizeToolbar(_toolbar) {\n")
                         .append("var tabs = _toolbar.getTabs();\n")
+                        .append("tabs[3].rightGroup = true;")
                         .append("_toolbar.getTabs = function() {\n")
                         .append("return [tabs[3], tabs[4], tabs[5], tabs[6]];\n")
                         .append("}\n")
+                        .append("}\n")
+                        .append("function loadDataSource(_datasource) {\n")
+                        .append("var url = new URL('").append(url)
+                            .append("?datasource=' + _datasource, window.location);\n")
+                        .append("webdatarocks.updateData({\n")
+                        .append("dataSourceType: 'json',\n")
+                        .append("filename: url.href\n")
+                        .append("});\n")
+                        .append("document.getElementById('wdr-component').style.height = ")
+                            .append("window.innerHeight - 30 + 'px';\n")
                         .append("}\n")
                         .append("function loadReport(_report) {\n")
                         .append("var url = new URL('").append(url)
                             .append("?report=' + _report, window.location);\n")
                         .append("webdatarocks.load(url.href);\n")
-                        .append("}\n")
-                        ;
-//var pivotDataSource= new URL(report.dataSource.filename).searchParams.get('datasource');
+                        .append("document.getElementById('wdr-component').style.height = ")
+                            .append("window.innerHeight - 30 + 'px';\n")
+                        .append("}\n");
                 replaceComponentTagBody(_markupStream, _openTag, js);
             }
         });
