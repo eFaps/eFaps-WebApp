@@ -75,6 +75,7 @@ public class PivotPage
                 final List<IOption> reports = provider.getReports();
 
                 final DropDownChoice<IOption> dsDropDown = new DropDownChoice<>("dataSources");
+                dsDropDown.setOutputMarkupId(true);
                 dsDropDown.setChoices(datasources);
                 dsDropDown.setChoiceRenderer(new ChoiceRenderer<IOption>()
                 {
@@ -95,9 +96,8 @@ public class PivotPage
                 });
                 add(dsDropDown);
 
-                dsDropDown.add(new AttributeAppender("onchange", new Model<>("loadDataSource(this.value)"), ";"));
-
                 final DropDownChoice<IOption> repDropDown = new DropDownChoice<>("reports");
+                repDropDown.setOutputMarkupId(true);
                 repDropDown.setChoices(reports);
                 repDropDown.setChoiceRenderer(new ChoiceRenderer<IOption>()
                 {
@@ -117,7 +117,13 @@ public class PivotPage
                     }
                 });
                 add(repDropDown);
-                repDropDown.add(new AttributeAppender("onchange", new Model<>("loadReport(this.value)"), ";"));
+
+                dsDropDown.add(new AttributeAppender("onchange",
+                                new Model<>("$('#" + repDropDown.getMarkupId(true)  + "').val(''); "
+                                                + "loadDataSource(this.value);"), ";"));
+                repDropDown.add(new AttributeAppender("onchange",
+                                new Model<>("$('#" + dsDropDown.getMarkupId(true)  + "').val('');"
+                                                + "loadReport(this.value)"), ";"));
 
                 final ModalWindow modal = new AbstractModalWindow("modal")
                 {
