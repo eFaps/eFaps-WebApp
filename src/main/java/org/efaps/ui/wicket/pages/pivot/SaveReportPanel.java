@@ -49,7 +49,7 @@ public class SaveReportPanel
         add(form);
 
         form.add(new TextField<>("reportName", Model.of("")));
-        final DropDownChoice<IOption> repDropDown = new DropDownChoice<>("reports");
+        final DropDownChoice<IOption> repDropDown = new DropDownChoice<>("reports4save");
         repDropDown.setDefaultModel(Model.of());
         repDropDown.setChoices(_reports);
         repDropDown.setChoiceRenderer(new ChoiceRenderer<IOption>()
@@ -75,7 +75,7 @@ public class SaveReportPanel
                                         + ": $('#reportName4save').val(this.options[this.selectedIndex].innerHTML)"
                                         + ".prop('disabled', true)"), ";"));
 
-        form.add(new AjaxButton("close")
+        form.add(new AjaxButton("save")
         {
 
             private static final long serialVersionUID = 1L;
@@ -86,7 +86,7 @@ public class SaveReportPanel
                 ModalWindow.closeCurrent(_target);
                 final IRequestParameters parameters = getRequest().getPostParameters();
                 final String pivotReport = parameters.getParameterValue("pivotReport").toString();
-                final String reportName = parameters.getParameterValue("reportName").toString();
+                final String reportName = parameters.getParameterValue("reports4save").toString();
                 final String reports = parameters.getParameterValue("reports").toString();
                 final String key = StringUtils.isNotEmpty(reportName) ? reportName : reports;
                 if (StringUtils.isNotEmpty(key)) {
@@ -103,6 +103,49 @@ public class SaveReportPanel
                                 .append("'pivotReport': JSON.stringify(webdatarocks.getReport())\n")
                                 .append("}\n");
                 _attributes.getDynamicExtraParameters().add(js);
+            }
+        });
+
+
+        final Form<Void> delForm = new Form<>("deleteform");
+        add(delForm);
+
+        final DropDownChoice<IOption> delRepDropDown = new DropDownChoice<>("reports4delete");
+        delRepDropDown.setDefaultModel(Model.of());
+        delRepDropDown.setChoices(_reports);
+        delRepDropDown.setChoiceRenderer(new ChoiceRenderer<IOption>()
+        {
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public Object getDisplayValue(final IOption _object)
+            {
+                return _object.getLabel();
+            }
+
+            @Override
+            public String getIdValue(final IOption _object, final int _index)
+            {
+                return String.valueOf(_object.getValue());
+            }
+        });
+        delForm.add(delRepDropDown);
+
+        delForm.add(new AjaxButton("delete")
+        {
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            protected void onSubmit(final AjaxRequestTarget _target)
+            {
+                ModalWindow.closeCurrent(_target);
+                final IRequestParameters parameters = getRequest().getPostParameters();
+                final String key = parameters.getParameterValue("reports4delete").toString();
+                if (StringUtils.isNotEmpty(key)) {
+                    _provider.delete(key);
+                }
             }
         });
     }

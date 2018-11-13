@@ -17,12 +17,21 @@
 
 -->
 <wicket:panel xmlns:wicket="http://wicket.apache.org">
-    <label>Store</label>
     <form wicket:id="saveform">
-        <label wicket:for="reportName">Nombre:</label>
-        <input type="text" wicket:id="reportName" id="reportName4save"></input>
-        <select wicket:id="reports"></select>
-        <button wicket:id="close">Save</button>
+        <fieldset>
+            <legend>Archivar:</legend>
+            <label wicket:for="reportName">Nombre:</label>
+            <input type="text" wicket:id="reportName" id="reportName4save"></input>
+            <select wicket:id="reports4save"></select>
+            <button wicket:id="save">Save</button>
+        </fieldset>
+    </form>
+    <form wicket:id="deleteform">
+        <fieldset>
+            <legend>Borar:</legend>
+            <select wicket:id="reports4delete"></select>
+            <button wicket:id="delete">Borar</button>
+        </fieldset>
     </form>
 </wicket:panel>
 

@@ -134,7 +134,7 @@ public class PivotPage
                 modal.setInitialHeight(300);
                 modal.setContent(new SaveReportPanel(modal.getContentId(), provider, reports));
 
-                add(new AjaxButton<Void>("showModal", "Edit")
+                add(new AjaxButton<Void>("showModal", AjaxButton.ICON.CONFIG.getReference())
                 {
                     private static final long serialVersionUID = 1L;
 
