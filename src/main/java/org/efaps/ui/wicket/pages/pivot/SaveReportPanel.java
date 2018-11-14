@@ -86,8 +86,8 @@ public class SaveReportPanel
                 ModalWindow.closeCurrent(_target);
                 final IRequestParameters parameters = getRequest().getPostParameters();
                 final String pivotReport = parameters.getParameterValue("pivotReport").toString();
-                final String reportName = parameters.getParameterValue("reports4save").toString();
-                final String reports = parameters.getParameterValue("reports").toString();
+                final String reportName = parameters.getParameterValue("reportName").toString();
+                final String reports = parameters.getParameterValue("reports4save").toString();
                 final String key = StringUtils.isNotEmpty(reportName) ? reportName : reports;
                 if (StringUtils.isNotEmpty(key)) {
                     _provider.save(key, pivotReport);
@@ -105,7 +105,6 @@ public class SaveReportPanel
                 _attributes.getDynamicExtraParameters().add(js);
             }
         });
-
 
         final Form<Void> delForm = new Form<>("deleteform");
         add(delForm);

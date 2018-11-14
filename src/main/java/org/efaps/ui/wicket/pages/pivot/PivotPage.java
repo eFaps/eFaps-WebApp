@@ -130,7 +130,7 @@ public class PivotPage
                     private static final long serialVersionUID = 1L;
                 };
                 add(modal);
-                modal.setInitialWidth(500);
+                modal.setInitialWidth(700);
                 modal.setInitialHeight(300);
                 modal.setContent(new SaveReportPanel(modal.getContentId(), provider, reports));
 
