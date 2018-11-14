@@ -80,6 +80,7 @@ public class SaveReportPanel
 
             private static final long serialVersionUID = 1L;
 
+            @SuppressWarnings("unchecked")
             @Override
             protected void onSubmit(final AjaxRequestTarget _target)
             {
@@ -91,6 +92,12 @@ public class SaveReportPanel
                 final String key = StringUtils.isNotEmpty(reportName) ? reportName : reports;
                 if (StringUtils.isNotEmpty(key)) {
                     _provider.save(key, pivotReport);
+                    findPage().visitChildren(DropDownChoice.class, (_dropDown, _visit) -> {
+                        if ("reports".equals(_dropDown.getId())) {
+                            ((DropDownChoice<IOption>) _dropDown).setChoices(_provider.getReports());
+                            _target.add(_dropDown);
+                        }
+                    });
                 }
             }
 
@@ -136,6 +143,7 @@ public class SaveReportPanel
 
             private static final long serialVersionUID = 1L;
 
+            @SuppressWarnings("unchecked")
             @Override
             protected void onSubmit(final AjaxRequestTarget _target)
             {
@@ -144,6 +152,12 @@ public class SaveReportPanel
                 final String key = parameters.getParameterValue("reports4delete").toString();
                 if (StringUtils.isNotEmpty(key)) {
                     _provider.delete(key);
+                    findPage().visitChildren(DropDownChoice.class, (_dropDown, _visit) -> {
+                        if ("reports".equals(_dropDown.getId())) {
+                            ((DropDownChoice<IOption>) _dropDown).setChoices(_provider.getReports());
+                            _target.add(_dropDown);
+                        }
+                    });
                 }
             }
         });
