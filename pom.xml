@@ -322,7 +322,7 @@
         <dependency>
             <groupId>org.wicketstuff</groupId>
             <artifactId>wicket-datetime</artifactId>
-            <version>${wicket.version}</version>
+            <version>${wicketstuff.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.wicket</groupId>
