@@ -480,8 +480,8 @@ public class GridXComponent
                     for (int i = 0; i < conditionsArray.length(); i++) {
                         final JSONObject colObj = (JSONObject) conditionsArray.get(i);
                         if (colObj.has("colId")) {
-                            final Long colid = colObj.getLong("colId");
-                            if (!colIds.contains(colid)) {
+                            final Long colid = colObj.optLong("colId");
+                            if (colid > 0 && !colIds.contains(colid)) {
                                 add = false;
                                 break;
                             }
