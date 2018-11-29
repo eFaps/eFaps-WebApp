@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.admin.dbproperty.DBProperties;
-import org.efaps.ui.wicket.components.bpm.AbstractSortableProvider;
+import org.efaps.ui.wicket.components.AbstractSortableProvider;
 import org.efaps.ui.wicket.connectionregistry.RegistryManager;
 import org.efaps.ui.wicket.models.objects.UIUserSession;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;

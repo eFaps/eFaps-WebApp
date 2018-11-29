@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
 package org.efaps.ui.wicket.components.connection;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -26,14 +25,12 @@ import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.db.Context;
-import org.efaps.ui.wicket.components.bpm.AbstractSortableProvider;
+import org.efaps.ui.wicket.components.AbstractSortableProvider;
 import org.efaps.ui.wicket.models.objects.UIUser;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.util.EFapsException;
 
 /**
- * TODO comment!
- *
  * @author The eFaps Team
  */
 public class UserProvider
@@ -61,28 +58,21 @@ public class UserProvider
             AbstractSortableProvider.LOG.error("error on setting UserAttributes", e);
         }
 
-        Collections.sort(getValues(), new Comparator<UIUser>()
-        {
-
-            @Override
-            public int compare(final UIUser _user0,
-                               final UIUser _user1)
-            {
-                final UIUser user0;
-                final UIUser user1;
-                if (asc) {
-                    user0 = _user0;
-                    user1 = _user1;
-                } else {
-                    user1 = _user0;
-                    user0 = _user1;
-                }
-                int ret = 0;
-                if ("userName".equals(sortprop)) {
-                    ret = user0.getUserName().compareTo(user1.getUserName());
-                }
-                return ret;
+        Collections.sort(getValues(), (_user0, _user1) -> {
+            final UIUser user0;
+            final UIUser user1;
+            if (asc) {
+                user0 = _user0;
+                user1 = _user1;
+            } else {
+                user1 = _user0;
+                user0 = _user1;
             }
+            int ret = 0;
+            if ("userName".equals(sortprop)) {
+                ret = user0.getUserName().compareTo(user1.getUserName());
+            }
+            return ret;
         });
         return getValues().subList(Long.valueOf(_first).intValue(), Long.valueOf(_first + _count).intValue())
                         .iterator();

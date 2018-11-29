@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,10 +30,8 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.ws.WebSocketSettings;
 import org.apache.wicket.protocol.ws.api.IWebSocketConnection;
 import org.apache.wicket.protocol.ws.api.WebSocketPushBroadcaster;
-import org.apache.wicket.util.visit.IVisit;
-import org.apache.wicket.util.visit.IVisitor;
 import org.efaps.ui.wicket.EFapsApplication;
-import org.efaps.ui.wicket.components.bpm.AbstractSortableProvider;
+import org.efaps.ui.wicket.components.AbstractSortableProvider;
 import org.efaps.ui.wicket.components.connection.MessageTablePanel.CheckBoxPanel;
 import org.efaps.ui.wicket.connectionregistry.RegistryManager;
 import org.efaps.ui.wicket.models.PushMsg;
@@ -83,35 +81,22 @@ public class MessagePanel
             protected void onAfterSubmit(final AjaxRequestTarget _target)
             {
                 final StringBuilder msg = new StringBuilder();
-                msgForm.visitChildren(TextArea.class, new IVisitor<TextArea<String>, Void>()
-                {
-                    @Override
-                    public void component(final TextArea<String> _textArea,
-                                          final IVisit<Void> _visit)
-                    {
-                        _textArea.setEscapeModelStrings(false);
-                        msg.append(_textArea.getDefaultModelObjectAsString());
-                        _visit.stop();
-                    }
+                msgForm.visitChildren(TextArea.class, (_textArea, _visit) -> {
+                    _textArea.setEscapeModelStrings(false);
+                    msg.append(_textArea.getDefaultModelObjectAsString());
+                    _visit.stop();
                 });
 
                 if (msg.length() > 0) {
-                    msgForm.visitChildren(CheckBox.class, new IVisitor<CheckBox, Void>()
-                    {
-
-                        @Override
-                        public void component(final CheckBox _checkBox,
-                                              final IVisit<Void> _visit)
-                        {
-                            final Boolean selected = (Boolean) _checkBox.getDefaultModelObject();
-                            if (selected) {
-                                final CheckBoxPanel panel = (CheckBoxPanel) _checkBox.getParent();
-                                final UIUser user = (UIUser) panel.getDefaultModelObject();
-                                final List<IWebSocketConnection> conns = RegistryManager
-                                                .getConnections4User(user.getUserName());
-                                for (final IWebSocketConnection conn : conns) {
-                                    conn.sendMessage(new PushMsg(msg.toString()));
-                                }
+                    msgForm.visitChildren(CheckBox.class, (_checkBox, _visit) -> {
+                        final Boolean selected = (Boolean) _checkBox.getDefaultModelObject();
+                        if (selected) {
+                            final CheckBoxPanel panel = (CheckBoxPanel) _checkBox.getParent();
+                            final UIUser user = (UIUser) panel.getDefaultModelObject();
+                            final List<IWebSocketConnection> conns = RegistryManager
+                                            .getConnections4User(user.getUserName());
+                            for (final IWebSocketConnection conn : conns) {
+                                conn.sendMessage(new PushMsg(msg.toString()));
                             }
                         }
                     });
@@ -130,17 +115,10 @@ public class MessagePanel
             {
 
                 final StringBuilder msg = new StringBuilder();
-                msgForm.visitChildren(TextArea.class, new IVisitor<TextArea<String>, Void>()
-                {
-
-                    @Override
-                    public void component(final TextArea<String> _textArea,
-                                          final IVisit<Void> _visit)
-                    {
-                        _textArea.setEscapeModelStrings(false);
-                        msg.append(_textArea.getDefaultModelObjectAsString());
-                        _visit.stop();
-                    }
+                msgForm.visitChildren(TextArea.class, (_textArea, _visit) -> {
+                    _textArea.setEscapeModelStrings(false);
+                    msg.append(_textArea.getDefaultModelObjectAsString());
+                    _visit.stop();
                 });
 
                 if (msg.length() > 0) {

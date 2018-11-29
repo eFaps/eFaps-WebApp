@@ -40,7 +40,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.util.resource.IResourceStream;
 import org.apache.wicket.util.resource.StringResourceStream;
 import org.efaps.admin.dbproperty.DBProperties;
-import org.efaps.ui.wicket.components.bpm.AbstractSortableProvider;
+import org.efaps.ui.wicket.components.AbstractSortableProvider;
 import org.efaps.ui.wicket.models.objects.UIUser;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
@@ -86,9 +86,9 @@ public class MessageTablePanel
         super(_wicketId);
         this.dataProvider = _dataProvider;
 
-        final List<IColumn<UIUser, String>> columns = new ArrayList<IColumn<UIUser, String>>();
+        final List<IColumn<UIUser, String>> columns = new ArrayList<>();
 
-        columns.add(new AbstractColumn<UIUser, String>(new Model<String>(""))
+        columns.add(new AbstractColumn<UIUser, String>(new Model<>(""))
         {
 
             private static final long serialVersionUID = 1L;
@@ -104,9 +104,9 @@ public class MessageTablePanel
 
         final String userName = DBProperties.getProperty(MessageTablePanel.class.getName() + ".UserName");
 
-        columns.add(new PropertyColumn<UIUser, String>(new Model<String>(userName), "userName", "userName"));
+        columns.add(new PropertyColumn<UIUser, String>(new Model<>(userName), "userName", "userName"));
 
-        add(new AjaxFallbackDefaultDataTable<UIUser, String>("table", columns, this.dataProvider,
+        add(new AjaxFallbackDefaultDataTable<>("table", columns, this.dataProvider,
                         this.dataProvider.getRowsPerPage()));
     }
 

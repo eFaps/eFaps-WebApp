@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,14 +15,13 @@
  *
  */
 
-
 package org.efaps.ui.wicket.components.values;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.model.Model;
-import org.drools.core.util.StringUtils;
 import org.efaps.admin.datamodel.ui.UIValue;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.api.ci.UIFormFieldProperty;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2015 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,32 +16,17 @@
  */
 package org.efaps.ui.wicket.components.dashboard;
 
-import java.util.UUID;
-
 import org.apache.wicket.PageReference;
 import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
-import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.time.Duration;
-import org.efaps.admin.EFapsSystemConfiguration;
-import org.efaps.admin.KernelSettings;
-import org.efaps.admin.common.SystemConfiguration;
-import org.efaps.admin.dbproperty.DBProperties;
-import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
-import org.efaps.admin.ui.Command;
 import org.efaps.api.ui.IDashboard;
 import org.efaps.db.Context;
-import org.efaps.ui.wicket.components.bpm.task.AssignedTaskSummaryProvider;
-import org.efaps.ui.wicket.components.bpm.task.OwnedTaskSummaryProvider;
-import org.efaps.ui.wicket.components.bpm.task.TaskTablePanel;
 import org.efaps.ui.wicket.models.EsjpInvoker;
 import org.efaps.ui.wicket.pages.dashboard.DashboardPage;
-import org.efaps.ui.wicket.util.Configuration;
-import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +44,7 @@ public class DachboardContainerPanel
     private static final Logger LOG = LoggerFactory.getLogger(DachboardContainerPanel.class);
 
     /**
-     * Instantiates a new dachboard container panel.
+     * Instantiates a new dashboard container panel.
      *
      * @param _wicketId the _wicket id
      * @param _pageReference the _page reference
@@ -74,75 +59,7 @@ public class DachboardContainerPanel
         throws EFapsException
     {
         super(_wicketId);
-        final SystemConfiguration config = EFapsSystemConfiguration.get();
-        boolean used = false;
-        final boolean active = _main && config != null ? config.getAttributeValueAsBoolean(KernelSettings.ACTIVATE_BPM)
-                        : false;
-        // BPM_DashBoard_AssignedTask
-        final Command assCmd = Command.get(UUID.fromString("63933a70-82d3-4fbc-bef2-cdf06c77013f"));
-        if (active && assCmd != null && assCmd.hasAccess(TargetMode.VIEW, null)) {
-            final WebMarkupContainer assignedTask = new WebMarkupContainer("assignedTask");
-            add(assignedTask);
-
-            final TaskTablePanel assignedTaskTable = new TaskTablePanel("assignedTaskTable", _pageReference,
-                            new AssignedTaskSummaryProvider());
-            assignedTask.add(assignedTaskTable);
-
-            final int duration1 = Configuration.getAttributeAsInteger(ConfigAttribute.BOARD_ASSIGNED_AUTIME);
-            if (duration1 > 0) {
-                final SelfUpdatingTimerBehavior ajaxUpdate = new SelfUpdatingTimerBehavior(Duration.seconds(duration1));
-                assignedTaskTable.add(ajaxUpdate);
-
-                if (Configuration.getAttributeAsBoolean(ConfigAttribute.BOARD_ASSIGNEDTASK_AU)) {
-                    assignedTask.add(new AutomaticUpdateCheckbox("assignedTaskAU", ajaxUpdate));
-                } else {
-                    assignedTask.add(new WebMarkupContainer("assignedTaskAU").setVisible(false));
-                }
-            } else {
-                assignedTask.add(new WebMarkupContainer("assignedTaskAU").setVisible(false));
-            }
-            assignedTask.add(new Label("assignedTaskHeader", DBProperties.getProperty(DashboardPage.class.getName()
-                            + ".assignedTaskHeader")));
-            used = true;
-        } else {
-            add(new WebMarkupContainer("assignedTask").setVisible(false));
-        }
-
-        // BPM_DashBoard_OwnedTask
-        final Command ownCmd = Command.get(UUID.fromString("60a9bfcd-928e-4b96-a617-94d70fb0c8ab"));
-        if (active && ownCmd != null && ownCmd.hasAccess(TargetMode.VIEW, null)) {
-            final WebMarkupContainer ownedTask = new WebMarkupContainer("ownedTask");
-            add(ownedTask);
-            final TaskTablePanel ownedTaskTable = new TaskTablePanel("ownedTaskTable", _pageReference,
-                            new OwnedTaskSummaryProvider());
-            ownedTask.add(ownedTaskTable);
-
-            final int duration2 = Configuration.getAttributeAsInteger(ConfigAttribute.BOARD_OWNEDTASK_AUTIME);
-            if (duration2 > 0) {
-                final SelfUpdatingTimerBehavior ajaxUpdate = new SelfUpdatingTimerBehavior(Duration.seconds(duration2));
-                ownedTaskTable.add(ajaxUpdate);
-                if (Configuration.getAttributeAsBoolean(ConfigAttribute.BOARD_OWNEDTASK_AU)) {
-                    ownedTask.add(new AutomaticUpdateCheckbox("ownedTaskAU", ajaxUpdate));
-                } else {
-                    ownedTask.add(new WebMarkupContainer("ownedTaskAU").setVisible(false));
-                }
-            } else {
-                ownedTask.add(new WebMarkupContainer("ownedTaskAU").setVisible(false));
-            }
-            ownedTask.add(new Label("ownedTaskHeader", DBProperties.getProperty(DashboardPage.class.getName()
-                            + ".ownedTaskHeader")));
-            used = true;
-        } else {
-            add(new WebMarkupContainer("ownedTask").setVisible(false));
-        }
-
-        if (used) {
-            add(new WebMarkupContainer("dashBoard11").setVisible(false));
-        }
-
-        if (!used) {
-            add(new DashboardPanel("dashBoard11", Model.of(new EsjpInvoker(_dashboard, "11"))));
-        }
+        add(new DashboardPanel("dashBoard11", Model.of(new EsjpInvoker(_dashboard, "11"))));
         add(new DashboardPanel("dashBoard12", Model.of(new EsjpInvoker(_dashboard, "12"))));
         add(new DashboardPanel("dashBoard13", Model.of(new EsjpInvoker(_dashboard, "13"))));
         add(new DashboardPanel("dashBoard21", Model.of(new EsjpInvoker(_dashboard, "21"))));
@@ -247,9 +164,6 @@ public class DachboardContainerPanel
             if (this.deactivate) {
                 this.deactivate = false;
                 stop(_target);
-            } else {
-                ((TaskTablePanel) getComponent()).updateData();
-                _target.add(getComponent());
             }
         }
     }

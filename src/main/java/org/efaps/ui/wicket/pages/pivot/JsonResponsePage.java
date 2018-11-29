@@ -20,12 +20,12 @@ package org.efaps.ui.wicket.pages.pivot;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.request.Url;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.http.WebResponse;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.drools.core.util.StringUtils;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.api.ui.IPivotProvider;
 import org.efaps.ui.wicket.util.Configuration;

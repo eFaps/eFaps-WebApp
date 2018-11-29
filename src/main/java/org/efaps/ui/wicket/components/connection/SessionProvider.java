@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.components.connection;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -29,16 +25,13 @@ import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.efaps.db.Context;
-import org.efaps.ui.wicket.components.bpm.AbstractSortableProvider;
+import org.efaps.ui.wicket.components.AbstractSortableProvider;
 import org.efaps.ui.wicket.models.objects.UIUserSession;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.util.EFapsException;
 
 /**
- * TODO comment!
- *
  * @author The eFaps Team
- * @version $Id$
  */
 public class SessionProvider
     extends AbstractSortableProvider<UIUserSession>
@@ -65,32 +58,25 @@ public class SessionProvider
             AbstractSortableProvider.LOG.error("error on setting UserAttributes", e);
         }
 
-        Collections.sort(getValues(), new Comparator<UIUserSession>()
-        {
-
-            @Override
-            public int compare(final UIUserSession _session0,
-                               final UIUserSession _session1)
-            {
-                final UIUserSession session0;
-                final UIUserSession session1;
-                if (asc) {
-                    session0 = _session0;
-                    session1 = _session1;
-                } else {
-                    session1 = _session0;
-                    session0 = _session1;
-                }
-                int ret = 0;
-                if ("userName".equals(sortprop)) {
-                    ret = session0.getUserName().compareTo(session1.getUserName());
-                } else if ("sessionId".equals(sortprop)) {
-                    ret = session0.getSessionId().compareTo(session1.getSessionId());
-                } else if ("lastActivity".equals(sortprop)) {
-                    ret = session0.getLastActivity().compareTo(session1.getLastActivity());
-                }
-                return ret;
+        Collections.sort(getValues(), (_session0, _session1) -> {
+            final UIUserSession session0;
+            final UIUserSession session1;
+            if (asc) {
+                session0 = _session0;
+                session1 = _session1;
+            } else {
+                session1 = _session0;
+                session0 = _session1;
             }
+            int ret = 0;
+            if ("userName".equals(sortprop)) {
+                ret = session0.getUserName().compareTo(session1.getUserName());
+            } else if ("sessionId".equals(sortprop)) {
+                ret = session0.getSessionId().compareTo(session1.getSessionId());
+            } else if ("lastActivity".equals(sortprop)) {
+                ret = session0.getLastActivity().compareTo(session1.getLastActivity());
+            }
+            return ret;
         });
         return getValues().subList(Long.valueOf(_first).intValue(), Long.valueOf(_first + _count).intValue())
                         .iterator();
