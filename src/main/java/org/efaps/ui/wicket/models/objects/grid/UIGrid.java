@@ -19,6 +19,7 @@ package org.efaps.ui.wicket.models.objects.grid;
 import java.io.File;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -56,6 +58,7 @@ import org.efaps.admin.user.Role;
 import org.efaps.api.ci.UITableFieldProperty;
 import org.efaps.api.ui.FilterBase;
 import org.efaps.api.ui.IFilter;
+import org.efaps.api.ui.ITree;
 import org.efaps.beans.ValueList;
 import org.efaps.beans.valueparser.ParseException;
 import org.efaps.beans.valueparser.ValueParser;
@@ -179,8 +182,8 @@ public class UIGrid
                     }
                 }
             }
-            final List<Instance> instances = getInstances();
-            setColumnsUpToDate(CollectionUtils.isNotEmpty(instances));
+            final ITree<Instance> instances = getInstances();
+            setColumnsUpToDate(CollectionUtils.isNotEmpty(instances.getChildren()) || instances.getNode() != null);
             load(instances);
         }
     }
@@ -191,15 +194,19 @@ public class UIGrid
      * @param _instances the instances
      * @throws EFapsException the eFaps exception
      */
-    protected void load(final List<Instance> _instances)
+    protected void load(final ITree<Instance> _tree)
         throws EFapsException
     {
-        if (CollectionUtils.isNotEmpty(_instances)) {
+        if (CollectionUtils.isNotEmpty(_tree.getChildren())) {
             /** The factories. */
             final Map<Long, JSField> jsFields = new HashMap<>();
 
             final Set<String> altOIDSel = new HashSet<>();
-            final MultiPrintQuery multi = new MultiPrintQuery(_instances);
+            final List<Instance> instances = _tree.getChildren().stream()
+                .map(node -> node.getNode())
+                .collect(Collectors.toList());
+
+            final MultiPrintQuery multi = new MultiPrintQuery(instances);
             for (final GridColumn column : this.columns) {
                 final Field field = column.getField();
                 if (field.getSelect() != null) {
@@ -344,22 +351,27 @@ public class UIGrid
      * @throws EFapsException the e faps exception
      */
     @SuppressWarnings("unchecked")
-    protected List<Instance> getInstances()
+    protected ITree<Instance> getInstances()
         throws EFapsException
     {
-        final List<Return> ret = getEventObject().executeEvents(EventType.UI_TABLE_EVALUATE,
+        final List<Return> returns = getEventObject().executeEvents(EventType.UI_TABLE_EVALUATE,
                         ParameterValues.INSTANCE, getCallInstance(),
                         ParameterValues.CALL_INSTANCE, getCallInstance(),
                         ParameterValues.PARAMETERS, Context.getThreadContext().getParameters(),
                         ParameterValues.CLASS, this,
                         ParameterValues.OTHERS, this.filterList);
-        List<Instance> lists = null;
-        if (ret.size() < 1) {
+        ITree<Instance> ret = null;
+        if (returns.size() < 1) {
             throw new EFapsException(UIGrid.class, "getInstanceList");
         } else {
-            lists = (List<Instance>) ret.get(0).get(ReturnValues.VALUES);
+            final Object result = returns.get(0).get(ReturnValues.VALUES);
+            if (result instanceof ITree) {
+                ret = (ITree<Instance>) result;
+            } else if (result instanceof List) {
+                ret = GridTree.get((Collection<Instance>) result);
+            }
         }
-        return lists;
+        return ret;
     }
 
     /**
