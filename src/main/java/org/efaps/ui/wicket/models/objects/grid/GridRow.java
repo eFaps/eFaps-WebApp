@@ -21,8 +21,8 @@ import java.util.ArrayList;
 
 import org.efaps.db.Instance;
 
-public class Row
-    extends ArrayList<Cell>
+public class GridRow
+    extends ArrayList<GridCell>
 {
 
     /** The Constant serialVersionUID. */
@@ -36,7 +36,7 @@ public class Row
      *
      * @param _instance the instance
      */
-    public Row(final Instance _instance)
+    public GridRow(final Instance _instance)
     {
         this.instance = _instance;
     }

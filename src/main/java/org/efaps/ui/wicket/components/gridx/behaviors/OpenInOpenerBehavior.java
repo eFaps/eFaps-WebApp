@@ -28,7 +28,7 @@ import org.apache.wicket.core.request.handler.RenderPageRequestHandler;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.util.string.StringValue;
 import org.efaps.admin.ui.Menu;
-import org.efaps.ui.wicket.models.objects.grid.Cell;
+import org.efaps.ui.wicket.models.objects.grid.GridCell;
 import org.efaps.ui.wicket.models.objects.grid.UIGrid;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
@@ -65,8 +65,8 @@ public class OpenInOpenerBehavior
 
         final UIGrid uiGrid = (UIGrid) getComponent().getPage().getDefaultModelObject();
         try {
-            final List<Cell> row = uiGrid.getValues().get(rowId.toInt());
-            final Cell cell = row.get(colId.toInt());
+            final List<GridCell> row = uiGrid.getValues().get(rowId.toInt());
+            final GridCell cell = row.get(colId.toInt());
 
             if (cell.getInstance() != null) {
                 Menu menu = null;

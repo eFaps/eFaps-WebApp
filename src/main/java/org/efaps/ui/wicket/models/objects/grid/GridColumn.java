@@ -24,7 +24,7 @@ import org.efaps.admin.ui.field.Field;
 import org.efaps.admin.ui.field.Filter;
 import org.efaps.ui.wicket.models.field.FieldConfiguration;
 
-public class Column
+public class GridColumn
     implements Serializable
 {
 
@@ -98,7 +98,7 @@ public class Column
      * @param _fieldConfig the field config
      * @return the column
      */
-    protected Column setFieldConfig(final FieldConfiguration _fieldConfig)
+    protected GridColumn setFieldConfig(final FieldConfiguration _fieldConfig)
     {
         this.fieldConfig = _fieldConfig;
         return this;
@@ -120,7 +120,7 @@ public class Column
      * @param _dataType value for instance variable {@link #dataType}
      * @return the column
      */
-    protected Column setDataType(final String _dataType)
+    protected GridColumn setDataType(final String _dataType)
     {
         this.dataType = _dataType;
         return this;

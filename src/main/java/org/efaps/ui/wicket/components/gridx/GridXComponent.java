@@ -73,8 +73,8 @@ import org.efaps.ui.wicket.models.objects.PagePosition;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.models.objects.grid.CacheKey;
-import org.efaps.ui.wicket.models.objects.grid.Cell;
-import org.efaps.ui.wicket.models.objects.grid.Column;
+import org.efaps.ui.wicket.models.objects.grid.GridCell;
+import org.efaps.ui.wicket.models.objects.grid.GridColumn;
 import org.efaps.ui.wicket.models.objects.grid.UIFieldGrid;
 import org.efaps.ui.wicket.models.objects.grid.UIGrid;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
@@ -210,7 +210,7 @@ public class GridXComponent
             int j = 0;
             final Set<Long> checkOutCols = new HashSet<>();
             final Set<Long> linkCols = new HashSet<>();
-            for (final Column column : uiGrid.getColumns()) {
+            for (final GridColumn column : uiGrid.getColumns()) {
                 if (first) {
                     first = false;
                 } else {
@@ -678,8 +678,8 @@ public class GridXComponent
 
         try {
             final UIGrid uiGrid = (UIGrid) getDefaultModelObject();
-            final List<Cell> row = uiGrid.getValues().get(rowId.toInt());
-            final Cell cell = row.get(colId.toInt());
+            final List<GridCell> row = uiGrid.getValues().get(rowId.toInt());
+            final GridCell cell = row.get(colId.toInt());
 
             if (cell.getInstance() != null) {
                 Menu menu = null;
@@ -772,12 +772,12 @@ public class GridXComponent
     {
         final StringBuilder ret = new StringBuilder().append(" [\n");
         int i = 0;
-        for (final List<Cell> row : _uiGrid.getValues()) {
+        for (final List<GridCell> row : _uiGrid.getValues()) {
             if (i > 0) {
                 ret.append(",\n");
             }
             ret.append("{ id:").append(i);
-            for (final Cell cell : row) {
+            for (final GridCell cell : row) {
 
                 ret.append(",").append(cell.getFieldConfig().getName()).append(":").append("'")
                     .append(StringEscapeUtils.escapeEcmaScript(StringEscapeUtils.escapeHtml4(cell.getValue())))
@@ -828,7 +828,7 @@ public class GridXComponent
             // lazy setting of data type when first time data
             _uiGrid.setColumnsUpToDate(true);
             js.append("array.forEach(grid.structure, function(entry){\n");
-            for (final Column column : _uiGrid.getColumns()) {
+            for (final GridColumn column : _uiGrid.getColumns()) {
                 if (column.getDataType() != null) {
                     js.append("if ('").append(column.getField().getId()).append("'== entry.id) {\n")
                         .append("entry.dataType='").append(column.getDataType()).append("';\n")

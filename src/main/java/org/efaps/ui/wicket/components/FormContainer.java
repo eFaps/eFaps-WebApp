@@ -56,7 +56,7 @@ import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIForm.Element;
 import org.efaps.ui.wicket.models.objects.UIForm.ElementType;
 import org.efaps.ui.wicket.models.objects.UIForm.FormRow;
-import org.efaps.ui.wicket.models.objects.grid.Row;
+import org.efaps.ui.wicket.models.objects.grid.GridRow;
 import org.efaps.ui.wicket.models.objects.grid.UIGrid;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.request.EFapsRequest;
@@ -254,7 +254,7 @@ public class FormContainer
                     final List<StringValue> newValues = new ArrayList<>();
                     for (final StringValue value : selectedRows) {
                         final UIGrid uiGrid = (UIGrid) _gridX.getDefaultModelObject();
-                        final Row row = uiGrid.getValues().get(value.toInt());
+                        final GridRow row = uiGrid.getValues().get(value.toInt());
                         newValues.add(StringValue.valueOf(row.getInstance().getOid()));
                     }
                     parameters.setParameterValues("selectedRow", newValues);

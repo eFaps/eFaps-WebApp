@@ -26,7 +26,7 @@ import org.apache.wicket.ajax.IAjaxIndicatorAware;
 import org.apache.wicket.util.string.StringValue;
 import org.apache.wicket.util.string.StringValueConversionException;
 import org.efaps.ui.wicket.EFapsSession;
-import org.efaps.ui.wicket.models.objects.grid.Cell;
+import org.efaps.ui.wicket.models.objects.grid.GridCell;
 import org.efaps.ui.wicket.models.objects.grid.UIGrid;
 import org.efaps.ui.wicket.pages.content.grid.GridPage;
 import org.efaps.util.EFapsException;
@@ -66,8 +66,8 @@ public class CheckoutBehavior
         try {
 
             final UIGrid uiGrid = (UIGrid) getComponent().getPage().getDefaultModelObject();
-            final List<Cell> row = uiGrid.getValues().get(rowId.toInt());
-            final Cell cell = row.get(colId.toInt());
+            final List<GridCell> row = uiGrid.getValues().get(rowId.toInt());
+            final GridCell cell = row.get(colId.toInt());
 
             if (cell.getInstance() != null) {
                 final File file = UIGrid.checkout(cell.getInstance());

@@ -5,7 +5,7 @@ import java.io.Serializable;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.models.field.FieldConfiguration;
 
-public class Cell
+public class GridCell
     implements Serializable
 {
 
@@ -40,7 +40,7 @@ public class Cell
      * @param _instance the instance
      * @return the cell
      */
-    protected Cell setInstance(final Instance _instance)
+    protected GridCell setInstance(final Instance _instance)
     {
         this.instance = _instance;
         return this;
@@ -62,7 +62,7 @@ public class Cell
      * @param _value the value
      * @return the cell
      */
-    protected Cell setValue(final Object _value)
+    protected GridCell setValue(final Object _value)
     {
         this.value = _value;
         return this;
@@ -84,7 +84,7 @@ public class Cell
      * @param _sortValue the sort value
      * @return the cell
      */
-    protected Cell setSortValue(final Object _sortValue)
+    protected GridCell setSortValue(final Object _sortValue)
     {
         this.sortValue = _sortValue;
         return this;
@@ -106,7 +106,7 @@ public class Cell
      * @param _fieldConfig the field config
      * @return the cell
      */
-    protected Cell setFieldConfig(final FieldConfiguration _fieldConfig)
+    protected GridCell setFieldConfig(final FieldConfiguration _fieldConfig)
     {
         this.fieldConfig = _fieldConfig;
         return this;

@@ -112,10 +112,10 @@ public class UIGrid
     private boolean initialized;
 
     /** The columns. */
-    private final List<Column> columns = new ArrayList<>();
+    private final List<GridColumn> columns = new ArrayList<>();
 
     /** The values. */
-    private final List<Row> values = new ArrayList<>();
+    private final List<GridRow> values = new ArrayList<>();
 
     /** The filter list. */
     private final FilterList filterList = new FilterList();
@@ -169,7 +169,7 @@ public class UIGrid
             for (final Field field : fields) {
                 if (field.hasAccess(TargetMode.VIEW, null, getCommand(), null) && !field.isNoneDisplay(
                                 TargetMode.VIEW)) {
-                    final Column column = new Column().setFieldConfig(new FieldConfiguration(field.getId()));
+                    final GridColumn column = new GridColumn().setFieldConfig(new FieldConfiguration(field.getId()));
                     this.columns.add(column);
                     // before executing the esjp add the filters that are
                     // working against the database to
@@ -200,7 +200,7 @@ public class UIGrid
 
             final Set<String> altOIDSel = new HashSet<>();
             final MultiPrintQuery multi = new MultiPrintQuery(_instances);
-            for (final Column column : this.columns) {
+            for (final GridColumn column : this.columns) {
                 final Field field = column.getField();
                 if (field.getSelect() != null) {
                     multi.addSelect(field.getSelect());
@@ -226,9 +226,9 @@ public class UIGrid
             }
             multi.execute();
             while (multi.next()) {
-                final Row row = new Row(multi.getCurrentInstance());
+                final GridRow row = new GridRow(multi.getCurrentInstance());
                 this.values.add(row);
-                for (final Column column : this.columns) {
+                for (final GridColumn column : this.columns) {
                     final Field field = column.getField();
                     final Instance instance = evaluateFieldInstance(multi, field);
                     Object value = null;
@@ -259,7 +259,7 @@ public class UIGrid
                                     .setRequestInstances(multi.getInstanceList())
                                     .setCallInstance(getCallInstance());
 
-                    final Cell cell = getCell(column, uiValue, sortValue, jsFields);
+                    final GridCell cell = getCell(column, uiValue, sortValue, jsFields);
                     if (column.getFieldConfig().getField().getReference() != null) {
                         cell.setInstance(instance);
                     }
@@ -279,7 +279,7 @@ public class UIGrid
      * @return the cell
      * @throws EFapsException the e faps exception
      */
-    protected Cell getCell(final Column _column,
+    protected GridCell getCell(final GridColumn _column,
                            final UIValue _uiValue,
                            final Object _sortValue,
                            final Map<Long, JSField> _fields)
@@ -317,7 +317,7 @@ public class UIGrid
             jsField.setValue(_uiValue);
             value = jsField.getFactory().getStringValue(jsField);
         }
-        return  new Cell().setValue(value)
+        return  new GridCell().setValue(value)
                         .setSortValue(_sortValue)
                         .setFieldConfig(_column.getFieldConfig());
     }
@@ -407,7 +407,7 @@ public class UIGrid
      * @return the values
      * @throws EFapsException on error
      */
-    public List<Row> getValues()
+    public List<GridRow> getValues()
         throws EFapsException
     {
         init();
@@ -486,7 +486,7 @@ public class UIGrid
      * @return the columns
      * @throws EFapsException on error
      */
-    public List<Column> getColumns()
+    public List<GridColumn> getColumns()
         throws EFapsException
     {
         init();
@@ -499,7 +499,7 @@ public class UIGrid
      * @param _header the header
      * @return the filter pick list
      */
-    public List<String> getFilterPickList(final Column _header)
+    public List<String> getFilterPickList(final GridColumn _header)
     {
         // TODO Auto-generated method stub
         return null;
