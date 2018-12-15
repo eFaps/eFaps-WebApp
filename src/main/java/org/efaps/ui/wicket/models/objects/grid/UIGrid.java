@@ -14,13 +14,11 @@
  * limitations under the License.
  *
  */
-package org.efaps.ui.wicket.models.objects;
+package org.efaps.ui.wicket.models.objects.grid;
 
 import java.io.File;
-import java.io.Serializable;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -54,16 +52,10 @@ import org.efaps.admin.ui.Command;
 import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.Table;
 import org.efaps.admin.ui.field.Field;
-import org.efaps.admin.ui.field.Filter;
 import org.efaps.admin.user.Role;
 import org.efaps.api.ci.UITableFieldProperty;
 import org.efaps.api.ui.FilterBase;
-import org.efaps.api.ui.IClassificationFilter;
 import org.efaps.api.ui.IFilter;
-import org.efaps.api.ui.IFilterList;
-import org.efaps.api.ui.IListFilter;
-import org.efaps.api.ui.IMapFilter;
-import org.efaps.api.ui.IOption;
 import org.efaps.beans.ValueList;
 import org.efaps.beans.valueparser.ParseException;
 import org.efaps.beans.valueparser.ValueParser;
@@ -81,6 +73,12 @@ import org.efaps.ui.wicket.models.field.factories.DateUIFactory;
 import org.efaps.ui.wicket.models.field.factories.DecimalUIFactory;
 import org.efaps.ui.wicket.models.field.factories.IComponentFactory;
 import org.efaps.ui.wicket.models.field.factories.NumberUIFactory;
+import org.efaps.ui.wicket.models.objects.AbstractUI;
+import org.efaps.ui.wicket.models.objects.ICmdUIObject;
+import org.efaps.ui.wicket.models.objects.IPageObject;
+import org.efaps.ui.wicket.models.objects.IWizardElement;
+import org.efaps.ui.wicket.models.objects.PagePosition;
+import org.efaps.ui.wicket.models.objects.UIWizardObject;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
@@ -191,7 +189,7 @@ public class UIGrid
      * Load.
      *
      * @param _instances the instances
-     * @throws EFapsException the e faps exception
+     * @throws EFapsException the eFaps exception
      */
     protected void load(final List<Instance> _instances)
         throws EFapsException
@@ -357,7 +355,7 @@ public class UIGrid
                         ParameterValues.OTHERS, this.filterList);
         List<Instance> lists = null;
         if (ret.size() < 1) {
-            throw new EFapsException(UITable.class, "getInstanceList");
+            throw new EFapsException(UIGrid.class, "getInstanceList");
         } else {
             lists = (List<Instance>) ret.get(0).get(ReturnValues.VALUES);
         }
@@ -894,452 +892,5 @@ public class UIGrid
             UIGrid.LOG.error("Catched", e);
         }
         return ret;
-    }
-
-    /**
-     * The Class Row.
-     *
-     * @author The eFaps Team
-     */
-    public static class Row extends ArrayList<Cell>
-    {
-        /** The Constant serialVersionUID. */
-        private static final long serialVersionUID = 1L;
-
-        /** The instance. */
-        private final Instance instance;
-
-        /**
-         * Instantiates a new row.
-         *
-         * @param _instance the instance
-         */
-        public Row(final Instance _instance)
-        {
-            this.instance = _instance;
-        }
-
-        /**
-         * Gets the single instance of Row.
-         *
-         * @return single instance of Row
-         */
-        public Instance getInstance()
-        {
-            return this.instance;
-        }
-    }
-
-    /**
-     * The Class Cell.
-     *
-     * @author The eFaps Team
-     */
-    public static class Cell
-        implements Serializable
-    {
-
-        /** The Constant serialVersionUID. */
-        private static final long serialVersionUID = 1L;
-
-        /** The field config. */
-        private FieldConfiguration fieldConfig;
-
-        /** The value. */
-        private Object value;
-
-        /** The sort value. */
-        private Object sortValue;
-
-        /** The instance. */
-        private Instance instance;
-
-        /**
-         * Gets the single instance of Cell.
-         *
-         * @return single instance of Cell
-         */
-        public Instance getInstance()
-        {
-            return this.instance;
-        }
-
-        /**
-         * Sets the instance.
-         *
-         * @param _instance the instance
-         * @return the cell
-         */
-        protected Cell setInstance(final Instance _instance)
-        {
-            this.instance = _instance;
-            return this;
-        }
-
-        /**
-         * Gets the value.
-         *
-         * @return the value
-         */
-        public String getValue()
-        {
-            return String.valueOf(this.value);
-        }
-
-        /**
-         * Sets the value.
-         *
-         * @param _value the value
-         * @return the cell
-         */
-        protected Cell setValue(final Object _value)
-        {
-            this.value = _value;
-            return this;
-        }
-
-        /**
-         * Gets the sort value.
-         *
-         * @return the sort value
-         */
-        public Object getSortValue()
-        {
-            return this.sortValue;
-        }
-
-        /**
-         * Sets the sort value.
-         *
-         * @param _sortValue the sort value
-         * @return the cell
-         */
-        protected Cell setSortValue(final Object _sortValue)
-        {
-            this.sortValue = _sortValue;
-            return this;
-        }
-
-        /**
-         * Gets the field config.
-         *
-         * @return the field config
-         */
-        public FieldConfiguration getFieldConfig()
-        {
-            return this.fieldConfig;
-        }
-
-        /**
-         * Sets the field config.
-         *
-         * @param _fieldConfig the field config
-         * @return the cell
-         */
-        protected Cell setFieldConfig(final FieldConfiguration _fieldConfig)
-        {
-            this.fieldConfig = _fieldConfig;
-            return this;
-        }
-    }
-
-    /**
-     * The Class Column.
-     *
-     * @author The eFaps Team
-     */
-    public static class Column
-        implements Serializable
-    {
-
-        /** The Constant serialVersionUID. */
-        private static final long serialVersionUID = 1L;
-
-        /**
-         * Id of the field this UITableHeader belongs to.
-         */
-        private FieldConfiguration fieldConfig;
-
-        /** The data type. */
-        private String dataType;
-
-        /** The enum values. */
-        private Collection<String> enumValues;
-
-        /**
-         * Gets the field name.
-         *
-         * @return the field name
-         */
-        public String getFieldName()
-        {
-            return getFieldConfig().getName();
-        }
-
-        /**
-         * Gets the filter.
-         *
-         * @return the filter belonging to this header.
-         */
-        public Filter getFilter()
-        {
-            return getField().getFilter();
-        }
-
-        /**
-         * Gets the field.
-         *
-         * @return the field this haeder belongs to.
-         */
-        public Field getField()
-        {
-            return getFieldConfig().getField();
-        }
-
-        /**
-         * Gets the id of the field this UITableHeader belongs to.
-         *
-         * @return the id of the field this UITableHeader belongs to
-         */
-        public FieldConfiguration getFieldConfig()
-        {
-            return this.fieldConfig;
-        }
-
-        /**
-         * Gets the label.
-         *
-         * @return translated label
-         */
-        public String getLabel()
-        {
-            return getFieldConfig().getLabel();
-        }
-
-        /**
-         * Sets the field config.
-         *
-         * @param _fieldConfig the field config
-         * @return the column
-         */
-        protected Column setFieldConfig(final FieldConfiguration _fieldConfig)
-        {
-            this.fieldConfig = _fieldConfig;
-            return this;
-        }
-
-        /**
-         * Getter method for the instance variable {@link #dataType}.
-         *
-         * @return value of instance variable {@link #dataType}
-         */
-        public String getDataType()
-        {
-            return this.dataType;
-        }
-
-        /**
-         * Setter method for instance variable {@link #dataType}.
-         *
-         * @param _dataType value for instance variable {@link #dataType}
-         * @return the column
-         */
-        protected Column setDataType(final String _dataType)
-        {
-            this.dataType = _dataType;
-            return this;
-        }
-
-        /**
-         * Gets the enum values.
-         *
-         * @return the enum values
-         */
-        public Collection<String> getEnumValues()
-        {
-            return this.enumValues;
-        }
-
-        /**
-         * Sets the enum values.
-         *
-         * @param _enumValues the new enum values
-         */
-        protected void setEnumValues(final Collection<String> _enumValues)
-        {
-            this.enumValues = _enumValues;
-        }
-    }
-
-    /**
-     * The Class FilterList.
-     *
-     * @author The eFaps Team
-     */
-    public static class FilterList
-        extends HashSet<IFilter>
-        implements IFilterList
-    {
-
-        /** The Constant serialVersionUID. */
-        private static final long serialVersionUID = 1L;
-    }
-
-    /**
-     * The Class ListFilter.
-     *
-     * @author The eFaps Team
-     */
-    public static class ListFilter
-        extends ArrayList<IOption>
-        implements IListFilter
-    {
-
-        /** The Constant serialVersionUID. */
-        private static final long serialVersionUID = 1L;
-        /** The field id. */
-        private final long fieldId;
-
-        /**
-         * Instantiates a new map filter.
-         *
-         * @param _fieldId the field id
-         */
-        public ListFilter(final long _fieldId)
-        {
-            this.fieldId = _fieldId;
-        }
-
-        @Override
-        public long getFieldId()
-        {
-            return this.fieldId;
-        }
-    }
-
-    /**
-     * The Class MapFilter.
-     *
-     * @author The eFaps Team
-     */
-    public static class MapFilter
-        extends HashMap<String, Object>
-        implements IMapFilter
-    {
-
-        /** The Constant serialVersionUID. */
-        private static final long serialVersionUID = 1L;
-
-        /** The field id. */
-        private final long fieldId;
-
-        /**
-         * Instantiates a new map filter.
-         *
-         * @param _fieldId the field id
-         */
-        public MapFilter(final long _fieldId)
-        {
-            this.fieldId = _fieldId;
-        }
-
-        @Override
-        public long getFieldId()
-        {
-            return this.fieldId;
-        }
-
-        @Override
-        public boolean equals(final Object _obj)
-        {
-            final boolean ret;
-            if (_obj instanceof MapFilter) {
-                ret = ((MapFilter) _obj).getFieldId() == this.fieldId && super.equals(_obj);
-            } else {
-                ret = super.equals(_obj);
-            }
-            return ret;
-        }
-
-        @Override
-        public int hashCode()
-        {
-            return super.hashCode() + Long.valueOf(this.fieldId).intValue();
-        }
-    }
-
-    /**
-     * The Class FilterList.
-     *
-     * @author The eFaps Team
-     */
-    public static class ClassificationFilter
-        extends HashSet<UUID>
-        implements IClassificationFilter
-    {
-
-        /** The Constant serialVersionUID. */
-        private static final long serialVersionUID = 1L;
-
-        /** The field id. */
-        private final long fieldId;
-
-        /**
-         * Instantiates a new map filter.
-         *
-         * @param _fieldId the field id
-         */
-        public ClassificationFilter(final long _fieldId)
-        {
-            this.fieldId = _fieldId;
-        }
-
-        @Override
-        public long getFieldId()
-        {
-            return this.fieldId;
-        }
-    }
-
-    /**
-     * This enum holds the Values used as part of the key for the UserAttributes
-     * or SessionAttribute witch belong to a TableModel.
-     *
-     * @author The eFaps Team
-     */
-    public enum CacheKey
-    {
-        /** The DB filter. */
-        DBFILTER("dbFilter"),
-
-        /**
-         * Key for SessionAttribute used for the filter of a table.
-         */
-        GRIDX("gridx");
-
-        /**
-         * Value of the user attribute.
-         */
-        private final String value;
-
-        /**
-         * Constructor setting the instance variable.
-         *
-         * @param _value Value
-         */
-        CacheKey(final String _value)
-        {
-            this.value = _value;
-        }
-
-        /**
-         * Gets the value of the user attribute.
-         *
-         * @return the value
-         */
-        public String getValue()
-        {
-            return this.value;
-        }
     }
 }

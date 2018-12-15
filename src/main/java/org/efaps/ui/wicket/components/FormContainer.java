@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +39,6 @@ import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.util.string.StringValue;
 import org.apache.wicket.util.string.StringValueConversionException;
-import org.apache.wicket.util.visit.IVisit;
-import org.apache.wicket.util.visit.IVisitor;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.EFapsSession.FileParameter;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
@@ -58,8 +56,8 @@ import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIForm.Element;
 import org.efaps.ui.wicket.models.objects.UIForm.ElementType;
 import org.efaps.ui.wicket.models.objects.UIForm.FormRow;
-import org.efaps.ui.wicket.models.objects.UIGrid;
-import org.efaps.ui.wicket.models.objects.UIGrid.Row;
+import org.efaps.ui.wicket.models.objects.grid.Row;
+import org.efaps.ui.wicket.models.objects.grid.UIGrid;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.request.EFapsRequest;
 import org.efaps.ui.wicket.request.EFapsRequestParametersAdapter;
@@ -214,7 +212,7 @@ public class FormContainer
                         i = 0;
                     }
                     for (final FileItem fileItem : entry.getValue()) {
-                        final String key = i > -1 ? (entry.getKey() + "_" + i) : entry.getKey();
+                        final String key = i > -1 ? entry.getKey() + "_" + i : entry.getKey();
                         final FileParameter parameter = new FileParameter(key, fileItem);
                         Context.getThreadContext().getFileParameters().put(key, parameter);
                         if (i > -1) {
@@ -247,28 +245,22 @@ public class FormContainer
     public void process(final IFormSubmitter _submittingComponent)
     {
         // if their is a GridXComponent convert the ids to oids
-        visitChildren(GridXComponent.class, new IVisitor<GridXComponent, Void>()
-        {
-            @Override
-            public void component(final GridXComponent _gridX,
-                                  final IVisit<Void> _visit)
-            {
-                try {
-                    final EFapsRequestParametersAdapter parameters = (EFapsRequestParametersAdapter) getRequest()
-                                    .getRequestParameters();
-                    final List<StringValue> selectedRows = parameters.getParameterValues("selectedRow");
-                    if (CollectionUtils.isNotEmpty(selectedRows)) {
-                        final List<StringValue> newValues = new ArrayList<>();
-                        for (final StringValue value : selectedRows) {
-                            final UIGrid uiGrid = (UIGrid) _gridX.getDefaultModelObject();
-                            final Row row = uiGrid.getValues().get(value.toInt());
-                            newValues.add(StringValue.valueOf(row.getInstance().getOid()));
-                        }
-                        parameters.setParameterValues("selectedRow", newValues);
+        visitChildren(GridXComponent.class, (_gridX, _visit) -> {
+            try {
+                final EFapsRequestParametersAdapter parameters = (EFapsRequestParametersAdapter) getRequest()
+                                .getRequestParameters();
+                final List<StringValue> selectedRows = parameters.getParameterValues("selectedRow");
+                if (CollectionUtils.isNotEmpty(selectedRows)) {
+                    final List<StringValue> newValues = new ArrayList<>();
+                    for (final StringValue value : selectedRows) {
+                        final UIGrid uiGrid = (UIGrid) _gridX.getDefaultModelObject();
+                        final Row row = uiGrid.getValues().get(value.toInt());
+                        newValues.add(StringValue.valueOf(row.getInstance().getOid()));
                     }
-                } catch (final StringValueConversionException | EFapsException e) {
-                    FormContainer.LOG.error("Catched exeption", e);
+                    parameters.setParameterValues("selectedRow", newValues);
                 }
+            } catch (final StringValueConversionException | EFapsException e) {
+                FormContainer.LOG.error("Catched exeption", e);
             }
         });
 

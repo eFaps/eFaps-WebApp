@@ -30,7 +30,7 @@ import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import org.efaps.admin.ui.Command;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
-import org.efaps.ui.wicket.models.objects.UIGrid;
+import org.efaps.ui.wicket.models.objects.grid.UIGrid;
 import org.efaps.ui.wicket.pages.dialog.DialogPage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

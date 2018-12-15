@@ -15,7 +15,7 @@
  *
  */
 
-package org.efaps.ui.wicket.models.objects;
+package org.efaps.ui.wicket.models.objects.grid;
 
 import java.util.UUID;
 
@@ -23,6 +23,8 @@ import org.efaps.admin.AbstractAdminObject;
 import org.efaps.admin.ui.Table;
 import org.efaps.admin.ui.field.FieldTable;
 import org.efaps.db.Instance;
+import org.efaps.ui.wicket.models.objects.IFormElement;
+import org.efaps.ui.wicket.models.objects.PagePosition;
 import org.efaps.util.cache.CacheReloadException;
 
 /**

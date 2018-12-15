@@ -44,8 +44,8 @@ import org.efaps.ui.wicket.components.menutree.MenuTree;
 import org.efaps.ui.wicket.components.split.SidePanel;
 import org.efaps.ui.wicket.models.objects.PagePosition;
 import org.efaps.ui.wicket.models.objects.UIForm;
-import org.efaps.ui.wicket.models.objects.UIGrid;
 import org.efaps.ui.wicket.models.objects.UITable;
+import org.efaps.ui.wicket.models.objects.grid.UIGrid;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.grid.GridPage;
@@ -235,7 +235,12 @@ public class ContentContainerPage
                                 page = new TablePage(Model.of(uiTable));
                             }
                         } else {
-                            page = new StructurBrowserPage(uuid4NewPage, _instanceKey, getPageReference());
+                            if ("GridX".equals(Configuration.getAttribute(ConfigAttribute.STRUCBRWSRDEFAULTTYPETREE))) {
+                                page = new GridPage(Model.of(UIGrid.get(uuid4NewPage, PagePosition.TREE)
+                                                .setCallInstance(Instance.get(_instanceKey))));
+                            } else {
+                                page = new StructurBrowserPage(uuid4NewPage, _instanceKey, getPageReference());
+                            }
                         }
                     }
                 } catch (final EFapsException e) {

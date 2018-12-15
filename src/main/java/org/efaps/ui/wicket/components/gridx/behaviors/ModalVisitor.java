@@ -33,7 +33,7 @@ import org.efaps.ui.wicket.components.modalwindow.ModalWindowAjaxPageCreator;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.objects.ICmdUIObject;
 import org.efaps.ui.wicket.models.objects.PagePosition;
-import org.efaps.ui.wicket.models.objects.UIGrid;
+import org.efaps.ui.wicket.models.objects.grid.UIGrid;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 

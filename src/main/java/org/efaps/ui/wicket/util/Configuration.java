@@ -197,6 +197,12 @@ public final class Configuration
         INDEXACCESSCMD(false, true, "IndexAccessCmd", "88c9ce19-d759-443e-b791-0e725fe58f52", String.class,
                         "UUID of the command that is used to define the access to the index search."),
         /** */
+        STRUCBRWSRDEFAULTTYPECONTENT(true, true, "StructurBrowserDefaultType4Content", "StructurBrowser", String.class,
+                        "Type of StructurBrowser used as default content page StructurBrowser"),
+        /** */
+        STRUCBRWSRDEFAULTTYPETREE(true, true, "StructurBrowserDefaultType4Tree", "StructurBrowser", String.class,
+                        "Type of StructurBrowser used as default tree page StructurBrowser"),
+        /** */
         TABLEDEFAULTTYPECONTENT(true, true, "TableDefaultType4Content", "Table", String.class,
                         "Type of table used as default content  page table"),
 

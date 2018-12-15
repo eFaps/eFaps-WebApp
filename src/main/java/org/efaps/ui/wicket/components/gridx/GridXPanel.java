@@ -50,7 +50,7 @@ import org.efaps.ui.wicket.components.gridx.filter.DateFilterPanel;
 import org.efaps.ui.wicket.components.gridx.filter.FormFilterPanel;
 import org.efaps.ui.wicket.components.gridx.filter.ListFilterPanel;
 import org.efaps.ui.wicket.components.gridx.filter.TextFilterPanel;
-import org.efaps.ui.wicket.models.objects.UIGrid;
+import org.efaps.ui.wicket.models.objects.grid.UIGrid;
 import org.efaps.util.DateTimeUtil;
 import org.efaps.util.EFapsException;
 import org.joda.time.DateTime;

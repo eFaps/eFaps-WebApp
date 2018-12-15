@@ -68,6 +68,7 @@ import org.efaps.ui.wicket.models.field.UIPicker;
 import org.efaps.ui.wicket.models.field.set.UIFieldSet;
 import org.efaps.ui.wicket.models.field.set.UIFieldSetColHeader;
 import org.efaps.ui.wicket.models.field.set.UIFieldSetValue;
+import org.efaps.ui.wicket.models.objects.grid.UIFieldGrid;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;

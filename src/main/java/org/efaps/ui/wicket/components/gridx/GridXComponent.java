@@ -70,12 +70,13 @@ import org.efaps.ui.wicket.components.gridx.behaviors.SubmitBehavior;
 import org.efaps.ui.wicket.components.gridx.behaviors.SubmitModalBehavior;
 import org.efaps.ui.wicket.components.menutree.CallUpdateTreeMenuBehavior;
 import org.efaps.ui.wicket.models.objects.PagePosition;
-import org.efaps.ui.wicket.models.objects.UIFieldGrid;
 import org.efaps.ui.wicket.models.objects.UIForm;
-import org.efaps.ui.wicket.models.objects.UIGrid;
-import org.efaps.ui.wicket.models.objects.UIGrid.Cell;
-import org.efaps.ui.wicket.models.objects.UIGrid.Column;
 import org.efaps.ui.wicket.models.objects.UITable;
+import org.efaps.ui.wicket.models.objects.grid.CacheKey;
+import org.efaps.ui.wicket.models.objects.grid.Cell;
+import org.efaps.ui.wicket.models.objects.grid.Column;
+import org.efaps.ui.wicket.models.objects.grid.UIFieldGrid;
+import org.efaps.ui.wicket.models.objects.grid.UIGrid;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.grid.GridPage;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
@@ -456,14 +457,14 @@ public class GridXComponent
     {
         final StringBuilder ret = new StringBuilder();
         ret.append("persistGet: function(_key) {");
-        if (Context.getThreadContext().containsUserAttribute(_uiGrid.getCacheKey(UIGrid.CacheKey.GRIDX))) {
+        if (Context.getThreadContext().containsUserAttribute(_uiGrid.getCacheKey(CacheKey.GRIDX))) {
             final Set<Long> colIds = _uiGrid.getColumns()
                             .stream()
                             .map(col -> col.getField().getId())
                             .collect(Collectors.toSet());
             boolean add = true;
             final JSONObject json = new JSONObject(new JSONTokener(Context.getThreadContext().getUserAttribute(
-                            _uiGrid.getCacheKey(UIGrid.CacheKey.GRIDX))));
+                            _uiGrid.getCacheKey(CacheKey.GRIDX))));
             final JSONArray columnsArray = json.getJSONArray("column");
             for (int i = 0; i < columnsArray.length(); i++) {
                 final JSONObject colObj = (JSONObject) columnsArray.get(i);
@@ -502,7 +503,7 @@ public class GridXComponent
             .append("    value = {expires: -1};\n")
             .append("  }\n")
             .append("top.eFaps.persistUserAttr('")
-                .append(_uiGrid.getCacheKey(UIGrid.CacheKey.GRIDX)).append("', value);")
+                .append(_uiGrid.getCacheKey(CacheKey.GRIDX)).append("', value);")
             .append("},\n");
         return ret;
     }
