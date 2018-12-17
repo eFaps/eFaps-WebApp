@@ -231,7 +231,7 @@ public class UIGrid
                     multi.addMsgPhrase(field.getProperty(UITableFieldProperty.SORT_MSG_PHRASE));
                 }
             }
-            multi.execute();
+            multi.executeWithoutAccessCheck();
             while (multi.next()) {
                 final GridRow row = new GridRow(multi.getCurrentInstance());
                 this.values.add(row);
