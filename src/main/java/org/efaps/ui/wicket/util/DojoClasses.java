@@ -77,6 +77,7 @@ public enum DojoClasses
     SyncCache("gridx/core/model/cache/Sync", "Cache"),
     TextBox("dijit/form/TextBox", "TextBox"),
     Tree("dijit/Tree", "Tree"),
+    GridTree("gridx/modules/Tree", "Tree"),
     ObjectStoreModel("dijit/tree/ObjectStoreModel", "ObjectStoreModel"),
     ToggleSplitter("dojox/layout/ToggleSplitter", "ToggleSplitter"),
     TooltipDialog("dijit/TooltipDialog", "TooltipDialog"),

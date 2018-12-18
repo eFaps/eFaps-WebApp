@@ -75,6 +75,7 @@ import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.models.objects.grid.CacheKey;
 import org.efaps.ui.wicket.models.objects.grid.GridCell;
 import org.efaps.ui.wicket.models.objects.grid.GridColumn;
+import org.efaps.ui.wicket.models.objects.grid.GridRow;
 import org.efaps.ui.wicket.models.objects.grid.UIFieldGrid;
 import org.efaps.ui.wicket.models.objects.grid.UIGrid;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
@@ -157,7 +158,7 @@ public class GridXComponent
                             DojoClasses.HScroller, DojoClasses.SingleSort, DojoClasses.SyncCache,
                             DojoClasses.HeaderDialog, DojoClasses.MoveColumn, DojoClasses.SelectColumn,
                             DojoClasses.SelectCell, DojoClasses.DnDColumn, DojoClasses.HiddenColumns,
-                            DojoClasses.GridConfig, DojoClasses.GridSort, DojoClasses.Summary,
+                            DojoClasses.GridConfig, DojoClasses.GridSort, DojoClasses.Summary, DojoClasses.GridTree,
                             DojoClasses.GridQuickFilter, DojoClasses.GridAggregate,
                             DojoClasses.Bar, DojoClasses.Persist, DojoClasses.Filter, DojoClasses.FilterBar,
                             DojoClasses.DropDownButton, DojoClasses.TextBox, DojoClasses.TooltipDialog,
@@ -202,14 +203,25 @@ public class GridXComponent
                 .append("var store = new Memory({\n")
                 .append("data: ")
                 .append(GridXComponent.getDataJS(uiGrid))
-                .append("});\n")
-                .append("var structure = [\n");
+                .append("});\n");
+
+            if (uiGrid.isStructureTree()) {
+                js.append("store.hasChildren = function(id, item){\n")
+                    .append("return item && item.children && item.children.length;\n")
+                    .append("};\n")
+                    .append("store.getChildren = function(item, req){\n")
+                    .append("return item.children;\n")
+                    .append("};\n");
+            }
+
+            js.append("var structure = [\n");
 
             boolean first = true;
             boolean aggregate = false;
             int j = 0;
             final Set<Long> checkOutCols = new HashSet<>();
             final Set<Long> linkCols = new HashSet<>();
+
             for (final GridColumn column : uiGrid.getColumns()) {
                 if (first) {
                     first = false;
@@ -219,6 +231,11 @@ public class GridXComponent
                 js.append("{ id:'").append(column.getField().getId()).append("',")
                     .append(" field:'").append(column.getFieldName()).append("',")
                     .append(" name:'").append(column.getLabel()).append("'\n");
+
+                if (uiGrid.isStructureTree()
+                        && uiGrid.getCommand().getTargetStructurBrowserField().equals(column.getFieldName())) {
+                    js.append(",expandLevel:'all'");
+                }
 
                 if (!"left".equals(column.getField().getAlign())) {
                     js.append(", style:'text-align:right'");
@@ -328,6 +345,10 @@ public class GridXComponent
             js.append("modules: [")
                 .append("VirtualVScroller, ColumnLock, ColumnResizer, SingleSort, MoveColumn, SelectColumn, ")
                 .append("SelectCell, DnDColumn, HeaderDialog, Bar, HScroller, HiddenColumns, Persist");
+
+            if (uiGrid.isStructureTree()) {
+                js.append(", Tree");
+            }
 
             if (!isField) {
                 js.append(", Filter, FilterBar");
@@ -678,7 +699,15 @@ public class GridXComponent
 
         try {
             final UIGrid uiGrid = (UIGrid) getDefaultModelObject();
-            final List<GridCell> row = uiGrid.getValues().get(rowId.toInt());
+            final String[] rowIds = rowId.toString().split("-");
+            GridRow row = null;
+            for (final String id : rowIds) {
+                if (row == null) {
+                    row = uiGrid.getValues().get(Integer.parseInt(id));
+                } else {
+                    row = row.getChildren().get(Integer.parseInt(id));
+                }
+            }
             final GridCell cell = row.get(colId.toInt());
 
             if (cell.getInstance() != null) {
@@ -772,40 +801,58 @@ public class GridXComponent
     {
         final StringBuilder ret = new StringBuilder().append(" [\n");
         int i = 0;
-        for (final List<GridCell> row : _uiGrid.getValues()) {
+        for (final GridRow row : _uiGrid.getValues()) {
             if (i > 0) {
                 ret.append(",\n");
             }
-            ret.append("{ id:").append(i);
-            for (final GridCell cell : row) {
-
-                ret.append(",").append(cell.getFieldConfig().getName()).append(":").append("'")
-                    .append(StringEscapeUtils.escapeEcmaScript(StringEscapeUtils.escapeHtml4(cell.getValue())))
-                    .append("'");
-
-                final Comparable<?> orderObject = (Comparable<?>) cell.getSortValue();
-                if (orderObject != null) {
-                    final String orderVal;
-                    final boolean ps;
-                    if (orderObject instanceof Number) {
-                        orderVal = ((Number) orderObject).toString();
-                        ps = false;
-                    } else {
-                        orderVal = String.valueOf(orderObject);
-                        ps = true;
-                    }
-                    if (cell.getValue() != null && !cell.getValue().equals(orderVal)) {
-                        ret.append(",").append(cell.getFieldConfig().getName()).append("_sort:")
-                                        .append(ps ? "'" : "")
-                                        .append(StringEscapeUtils.escapeEcmaScript(orderVal))
-                                        .append(ps ? "'" : "");
-                    }
-                }
-            }
-            ret.append("}");
+            ret.append(getRowJS(row, String.valueOf(i)));
             i++;
         }
         ret.append("]\n");
+        return ret;
+    }
+
+    public static CharSequence getRowJS(final GridRow _row, final String _id)
+    {
+        final StringBuilder ret = new StringBuilder();
+        ret.append("{ id:'").append(_id).append("'");
+        for (final GridCell cell : _row) {
+            ret.append(",").append(cell.getFieldConfig().getName()).append(":").append("'")
+                .append(StringEscapeUtils.escapeEcmaScript(StringEscapeUtils.escapeHtml4(cell.getValue())))
+                .append("'");
+
+            final Comparable<?> orderObject = (Comparable<?>) cell.getSortValue();
+            if (orderObject != null) {
+                final String orderVal;
+                final boolean ps;
+                if (orderObject instanceof Number) {
+                    orderVal = ((Number) orderObject).toString();
+                    ps = false;
+                } else {
+                    orderVal = String.valueOf(orderObject);
+                    ps = true;
+                }
+                if (cell.getValue() != null && !cell.getValue().equals(orderVal)) {
+                    ret.append(",").append(cell.getFieldConfig().getName()).append("_sort:")
+                                    .append(ps ? "'" : "")
+                                    .append(StringEscapeUtils.escapeEcmaScript(orderVal))
+                                    .append(ps ? "'" : "");
+                }
+            }
+        }
+        if (CollectionUtils.isNotEmpty(_row.getChildren())) {
+            ret.append(",children: [");
+            int j = 0;
+            for (final GridRow row : _row.getChildren()) {
+                if (j > 0) {
+                    ret.append(",");
+                }
+                ret.append(getRowJS(row, _id + "-" + j));
+                j++;
+            }
+            ret.append("]");
+        }
+        ret.append("}");
         return ret;
     }
 

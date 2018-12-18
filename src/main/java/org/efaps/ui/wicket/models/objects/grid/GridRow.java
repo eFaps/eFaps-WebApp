@@ -18,7 +18,9 @@
 package org.efaps.ui.wicket.models.objects.grid;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.db.Instance;
 
 public class GridRow
@@ -30,6 +32,9 @@ public class GridRow
 
     /** The instance. */
     private final Instance instance;
+
+    /** The children. */
+    private final List<GridRow> children = new ArrayList<>();
 
     /**
      * Instantiates a new row.
@@ -49,5 +54,32 @@ public class GridRow
     public Instance getInstance()
     {
         return this.instance;
+    }
+
+    /**
+     * Adds the child.
+     *
+     * @param _gridRow the grid row
+     * @return the grid row
+     */
+    public GridRow addChild(final GridRow _gridRow)
+    {
+        this.children.add(_gridRow);
+        return this;
+    }
+
+    /**
+     * Gets the children.
+     *
+     * @return the children
+     */
+    public List<GridRow> getChildren()
+    {
+        return this.children;
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 }

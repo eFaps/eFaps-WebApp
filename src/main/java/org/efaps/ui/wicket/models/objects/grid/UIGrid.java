@@ -22,14 +22,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.collections4.map.LinkedMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.RestartResponseException;
 import org.efaps.admin.AbstractAdminObject;
@@ -58,7 +58,6 @@ import org.efaps.admin.user.Role;
 import org.efaps.api.ci.UITableFieldProperty;
 import org.efaps.api.ui.FilterBase;
 import org.efaps.api.ui.IFilter;
-import org.efaps.api.ui.ITree;
 import org.efaps.beans.ValueList;
 import org.efaps.beans.valueparser.ParseException;
 import org.efaps.beans.valueparser.ValueParser;
@@ -68,6 +67,10 @@ import org.efaps.db.Instance;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.PrintQuery;
 import org.efaps.db.SelectBuilder;
+import org.efaps.db.stmt.PrintStmt;
+import org.efaps.db.stmt.selection.Evaluator;
+import org.efaps.eql2.EQL;
+import org.efaps.eql2.IPrintStatement;
 import org.efaps.ui.wicket.models.field.FieldConfiguration;
 import org.efaps.ui.wicket.models.field.JSField;
 import org.efaps.ui.wicket.models.field.factories.BooleanUIFactory;
@@ -182,10 +185,166 @@ public class UIGrid
                     }
                 }
             }
-            final ITree<Instance> instances = getInstances();
-            setColumnsUpToDate(CollectionUtils.isNotEmpty(instances.getChildren()) || instances.getNode() != null);
-            load(instances);
+            if (isStructureTree()) {
+                load(getPrint(getMainQueryStmt()), Collections.emptyMap());
+            } else {
+                final List<Instance> instances = getInstances();
+                setColumnsUpToDate(CollectionUtils.isNotEmpty(instances));
+                load(instances);
+            }
         }
+    }
+
+    protected String getMainQueryStmt()
+        throws EFapsException
+    {
+        final List<Return> returns = getEventObject().executeEvents(EventType.UI_TABLE_EVALUATE,
+                        ParameterValues.INSTANCE, getCallInstance(),
+                        ParameterValues.CALL_INSTANCE, getCallInstance(),
+                        ParameterValues.PARAMETERS, Context.getThreadContext().getParameters(),
+                        ParameterValues.CLASS, this,
+                        ParameterValues.OTHERS, this.filterList);
+        String ret = null;
+        if (returns.size() < 1) {
+            throw new EFapsException(UIGrid.class, "getInstanceList");
+        } else {
+            final Object result = returns.get(0).get(ReturnValues.VALUES);
+            if (result instanceof String) {
+                ret =  (String) result;
+            }
+        }
+        return ret;
+    }
+
+    protected String getChildQueryStmt(final Collection<Instance> _instances)
+        throws EFapsException
+    {
+        final List<Return> returns = getEventObject().executeEvents(EventType.UI_TABLE_EVALUATE,
+                        ParameterValues.INSTANCE, getCallInstance(),
+                        ParameterValues.CALL_INSTANCE, getCallInstance(),
+                        ParameterValues.REQUEST_INSTANCES, _instances,
+                        ParameterValues.PARAMETERS, Context.getThreadContext().getParameters(),
+                        ParameterValues.CLASS, this,
+                        ParameterValues.OTHERS, this.filterList);
+        String ret = null;
+        if (returns.size() < 1) {
+            throw new EFapsException(UIGrid.class, "getInstanceList");
+        } else {
+            final Object result = returns.get(0).get(ReturnValues.VALUES);
+            if (result instanceof String) {
+                ret = (String) result;
+            }
+        }
+        return ret;
+    }
+
+    protected CharSequence getPrint(final String _queryStmt)
+        throws EFapsException
+    {
+        final StringBuilder stmtBdlr = new StringBuilder().append(_queryStmt);
+        if (!_queryStmt.contains(" select ")) {
+            stmtBdlr.append(" select ");
+        } else {
+            stmtBdlr.append(", ");
+        }
+        final List<String> selects = new ArrayList<>();
+        for (final GridColumn column : this.columns) {
+            final Field field = column.getField();
+            if (field.getSelect() != null) {
+                selects.add(field.getSelect() + " as " + field.getName());
+            } else if (field.getAttribute() != null) {
+                selects.add("attribute[" + field.getAttribute() + "]  as " + field.getName());
+            }
+            if (field.getSelectAlternateOID() != null) {
+                selects.add(field.getSelectAlternateOID() + " as " + field.getName() + "AOID");
+            }
+            if (field.containsProperty(UITableFieldProperty.SORT_SELECT)) {
+                selects.add(field.getProperty(UITableFieldProperty.SORT_SELECT) + " as " + field.getName() + "SORT");
+            } else if (field.containsProperty(UITableFieldProperty.SORT_PHRASE)) {
+                // sortValue = multi.getPhrase(field.getProperty(UITableFieldProperty.SORT_PHRASE));
+            } else if (field.containsProperty(UITableFieldProperty.SORT_MSG_PHRASE)) {
+                // sortValue = multi.getMsgPhrase(field.getProperty(UITableFieldProperty.SORT_MSG_PHRASE));
+            }
+        }
+        stmtBdlr.append(selects.stream().collect(Collectors.joining(", ")));
+        return stmtBdlr;
+    }
+
+    protected void load(final CharSequence _printStmt, final Map<Instance, GridRow> _parents)
+        throws EFapsException
+    {
+        final Map<Long, JSField> jsFields = new HashMap<>();
+        final IPrintStatement<?> stmt = (IPrintStatement<?>) EQL.parse(_printStmt);
+        final Evaluator evaluator = PrintStmt.get(stmt).evaluate();
+        final Map<Instance, GridRow> instances = new LinkedMap<>();
+        while (evaluator.next()) {
+            final GridRow row = new GridRow(evaluator.inst());
+            instances.put(evaluator.inst(), row);
+            if (_parents.isEmpty()) {
+                this.values.add(row);
+            } else {
+                final Instance parentInstance = evaluator.get("ParentInstance");
+                if (_parents.containsKey(parentInstance)) {
+                    _parents.get(parentInstance).addChild(row);
+                }
+            }
+            for (final GridColumn column : this.columns) {
+                final Field field = column.getField();
+                final Instance instance = evaluateFieldInstance(evaluator, field);
+                final Object value = evaluator.get(field.getName());
+                Object sortValue = null;
+                if (field.containsProperty(UITableFieldProperty.SORT_SELECT)
+                                || field.containsProperty(UITableFieldProperty.SORT_PHRASE)
+                                || field.containsProperty(UITableFieldProperty.SORT_MSG_PHRASE)) {
+                    sortValue =  evaluator.get(field.getName() + "SORT");
+                }
+
+                final Attribute attr = evaluator.attribute(field.getName());
+                final UIValue uiValue = UIValue.get(field, attr, value)
+                                .setInstance(instance)
+                                .setRequestInstances(null)
+                                .setCallInstance(getCallInstance());
+
+                final GridCell cell = getCell(column, uiValue, sortValue, jsFields);
+                if (column.getFieldConfig().getField().getReference() != null) {
+                    cell.setInstance(instance);
+                }
+                row.add(cell);
+            }
+        }
+        if (isStructureTree() && MapUtils.isNotEmpty(instances)) {
+            load(getPrint(getChildQueryStmt(instances.keySet())), instances);
+        }
+    }
+
+    protected Instance evaluateFieldInstance(final Evaluator _evaluator,
+                                             final Field _field)
+        throws EFapsException
+    {
+        Instance ret = _evaluator.inst();
+        if (_field.getSelectAlternateOID() != null) {
+            try {
+                final Object alternateObj = _evaluator.get(_field.getName() + "AOID");
+                if (alternateObj instanceof String) {
+                    ret = Instance.get((String) alternateObj);
+                } else if (alternateObj instanceof Instance) {
+                    ret = (Instance) alternateObj;
+                }
+            } catch (final ClassCastException e) {
+                UIGrid.LOG.error("Field '{}' has invalid SelectAlternateOID value", _field);
+            }
+        } else if (_field.hasEvents(EventType.UI_FIELD_ALTINST)) {
+            final List<Return> retTmps = _field.executeEvents(EventType.UI_FIELD_ALTINST, ParameterValues.INSTANCE, ret,
+                            ParameterValues.CALL_INSTANCE, null, ParameterValues.REQUEST_INSTANCES, null,
+                            ParameterValues.PARAMETERS, Context.getThreadContext()
+                                                            .getParameters(), ParameterValues.CLASS, this);
+            for (final Return retTmp : retTmps) {
+                if (retTmp.contains(ReturnValues.INSTANCE) && retTmp.get(ReturnValues.INSTANCE) != null) {
+                    ret = (Instance) retTmp.get(ReturnValues.INSTANCE);
+                }
+            }
+        }
+        return ret;
     }
 
     /**
@@ -194,19 +353,14 @@ public class UIGrid
      * @param _instances the instances
      * @throws EFapsException the eFaps exception
      */
-    protected void load(final ITree<Instance> _tree)
+    protected void load(final List<Instance> _instance)
         throws EFapsException
     {
-        if (CollectionUtils.isNotEmpty(_tree.getChildren())) {
+        if (CollectionUtils.isNotEmpty(_instance)) {
             /** The factories. */
             final Map<Long, JSField> jsFields = new HashMap<>();
 
-            final Set<String> altOIDSel = new HashSet<>();
-            final List<Instance> instances = _tree.getChildren().stream()
-                .map(node -> node.getNode())
-                .collect(Collectors.toList());
-
-            final MultiPrintQuery multi = new MultiPrintQuery(instances);
+            final MultiPrintQuery multi = new MultiPrintQuery(_instance);
             for (final GridColumn column : this.columns) {
                 final Field field = column.getField();
                 if (field.getSelect() != null) {
@@ -220,7 +374,6 @@ public class UIGrid
                 }
                 if (field.getSelectAlternateOID() != null) {
                     multi.addSelect(field.getSelectAlternateOID());
-                    altOIDSel.add(field.getSelectAlternateOID());
                 }
                 if (field.containsProperty(UITableFieldProperty.SORT_SELECT)) {
                     multi.addSelect(field.getProperty(UITableFieldProperty.SORT_SELECT));
@@ -351,7 +504,7 @@ public class UIGrid
      * @throws EFapsException the e faps exception
      */
     @SuppressWarnings("unchecked")
-    protected ITree<Instance> getInstances()
+    protected List<Instance> getInstances()
         throws EFapsException
     {
         final List<Return> returns = getEventObject().executeEvents(EventType.UI_TABLE_EVALUATE,
@@ -360,15 +513,13 @@ public class UIGrid
                         ParameterValues.PARAMETERS, Context.getThreadContext().getParameters(),
                         ParameterValues.CLASS, this,
                         ParameterValues.OTHERS, this.filterList);
-        ITree<Instance> ret = null;
+        List<Instance> ret = null;
         if (returns.size() < 1) {
             throw new EFapsException(UIGrid.class, "getInstanceList");
         } else {
             final Object result = returns.get(0).get(ReturnValues.VALUES);
-            if (result instanceof ITree) {
-                ret = (ITree<Instance>) result;
-            } else if (result instanceof List) {
-                ret = GridTree.get((Collection<Instance>) result);
+            if (result instanceof List) {
+                ret = (List<Instance>) result;
             }
         }
         return ret;
@@ -468,7 +619,17 @@ public class UIGrid
         return cmd;
     }
 
-
+    /**
+     * Checks if is structure tree.
+     *
+     * @return true, if is structure tree
+     * @throws CacheReloadException the cache reload exception
+     */
+    public boolean isStructureTree()
+        throws CacheReloadException
+    {
+        return getCommand().getTargetStructurBrowserField() != null;
+    }
 
     /**
      * Gets the cmd UUID.
