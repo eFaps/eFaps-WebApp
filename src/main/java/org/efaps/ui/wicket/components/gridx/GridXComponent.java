@@ -428,7 +428,8 @@ public class GridXComponent
             if (uiGrid.isShowCheckBoxes()) {
                 js.append("aspect.after(grid.select.row, 'onSelectionChange', function (_defferd) {\n")
                     .append("query(\"input[name='selectedRow']\").forEach(domConstruct.destroy);\n")
-                    .append("array.forEach(registry.byId('grid').select.row.getSelected(), function (_item) {\n")
+                    .append("array.forEach(registry.byId('").append(getGridId())
+                        .append("').select.row.getSelected(), function (_item) {\n")
                     .append("domConstruct.create('input', {\n")
                     .append("type: 'hidden',\n")
                     .append("name:'selectedRow',\n")
@@ -698,15 +699,7 @@ public class GridXComponent
 
         try {
             final UIGrid uiGrid = (UIGrid) getDefaultModelObject();
-            final String[] rowIds = rowId.toString().split("-");
-            GridRow row = null;
-            for (final String id : rowIds) {
-                if (row == null) {
-                    row = uiGrid.getValues().get(Integer.parseInt(id));
-                } else {
-                    row = row.getChildren().get(Integer.parseInt(id));
-                }
-            }
+            final GridRow row = uiGrid.getRow4Id(rowId.toString());
             final GridCell cell = row.get(colId.toInt());
 
             if (cell.getInstance() != null) {

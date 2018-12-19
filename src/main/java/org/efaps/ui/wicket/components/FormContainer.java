@@ -254,7 +254,7 @@ public class FormContainer
                     final List<StringValue> newValues = new ArrayList<>();
                     for (final StringValue value : selectedRows) {
                         final UIGrid uiGrid = (UIGrid) _gridX.getDefaultModelObject();
-                        final GridRow row = uiGrid.getValues().get(value.toInt());
+                        final GridRow row = uiGrid.getRow4Id(value.toString());
                         newValues.add(StringValue.valueOf(row.getInstance().getOid()));
                     }
                     parameters.setParameterValues("selectedRow", newValues);

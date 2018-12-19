@@ -1005,6 +1005,28 @@ public class UIGrid
     }
 
     /**
+     * Gets the row for id.
+     *
+     * @param _rowId the row id
+     * @return the row for id
+     * @throws EFapsException the e faps exception
+     */
+    public GridRow getRow4Id(final String _rowId)
+        throws EFapsException
+    {
+        final String[] rowIds = _rowId.split("-");
+        GridRow row = null;
+        for (final String id : rowIds) {
+            if (row == null) {
+                row = getValues().get(Integer.parseInt(id));
+            } else {
+                row = row.getChildren().get(Integer.parseInt(id));
+            }
+        }
+        return row;
+    }
+
+    /**
      * Gets the.
      *
      * @param _commandUUID the command UUID
