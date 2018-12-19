@@ -343,11 +343,18 @@ public class UIForm
                                 }
                             }
                         } else {
-                            final UIFieldStructurBrowser uiFieldStrucBrws = new UIFieldStructurBrowser(
+                            if (isViewMode() && "GridX".equals(Configuration.getAttribute(
+                                            ConfigAttribute.STRUCBRWSR_DEFAULTTYPEFORM))) {
+                                final UIFieldGrid grid = UIFieldGrid.get(getCommandUUID(), getPagePosition(),
+                                                getInstance(), (FieldTable) field);
+                                this.elements.add(new Element(UIForm.ElementType.GRID, grid));
+                            } else {
+                                final UIFieldStructurBrowser uiFieldStrucBrws = new UIFieldStructurBrowser(
                                             getCommandUUID(),
                                             getInstanceKey(), (FieldTable) field);
-                            uiFieldStrucBrws.setMode(getMode());
-                            this.elements.add(new Element(UIForm.ElementType.STRUCBRWS, uiFieldStrucBrws));
+                                uiFieldStrucBrws.setMode(getMode());
+                                this.elements.add(new Element(UIForm.ElementType.STRUCBRWS, uiFieldStrucBrws));
+                            }
                         }
                         addNew = true;
                     } else if (field instanceof FieldHeading) {
@@ -672,9 +679,15 @@ public class UIForm
                             uiFieldTable.setFirstTable(false);
                         }
                     } else {
-                        final UIFieldStructurBrowser uiFieldStrucBrws = new UIFieldStructurBrowser(getCommandUUID(),
+                        if ("GridX".equals(Configuration.getAttribute(ConfigAttribute.STRUCBRWSR_DEFAULTTYPEFORM))) {
+                            final UIFieldGrid grid = UIFieldGrid.get(getCommandUUID(), getPagePosition(),
+                                            getInstance(), (FieldTable) field);
+                            this.elements.add(new Element(UIForm.ElementType.GRID, grid));
+                        } else {
+                            final UIFieldStructurBrowser uiFieldStrucBrws = new UIFieldStructurBrowser(getCommandUUID(),
                                         getInstanceKey(), (FieldTable) field);
-                        this.elements.add(new Element(UIForm.ElementType.STRUCBRWS, uiFieldStrucBrws));
+                            this.elements.add(new Element(UIForm.ElementType.STRUCBRWS, uiFieldStrucBrws));
+                        }
                     }
                     addNew = true;
                 } else {

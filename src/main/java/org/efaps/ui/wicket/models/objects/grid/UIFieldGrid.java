@@ -121,4 +121,25 @@ public final class UIFieldGrid
     {
         return getFieldTable();
     }
+
+    @Override
+    public boolean isStructureTree()
+        throws CacheReloadException
+    {
+        return getFieldTable().getTargetStructurBrowserField() != null;
+    }
+
+    @Override
+    public String getStructurBrowserField()
+        throws CacheReloadException
+    {
+        return getFieldTable().getTargetStructurBrowserField();
+    }
+
+    @Override
+    public boolean isShowCheckBoxes()
+        throws CacheReloadException
+    {
+        return getFieldTable().isTargetShowCheckBoxes();
+    }
 }

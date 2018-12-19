@@ -204,7 +204,7 @@ public final class Configuration
                         "Type of StructurBrowser used as default tree page StructurBrowser"),
 
         /** */
-        STRUCBRWSR_DEFAULTTYPEFORM(true, true, "StructurBrowserType4Form", "StructurBrowser", String.class,
+        STRUCBRWSR_DEFAULTTYPEFORM(true, true, "StructurBrowserDefaultType4Form", "StructurBrowser", String.class,
                         "Type of StructurBrowser used as table inside a form"),
 
         /** */

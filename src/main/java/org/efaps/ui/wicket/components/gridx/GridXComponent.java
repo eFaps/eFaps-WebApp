@@ -232,8 +232,7 @@ public class GridXComponent
                     .append(" field:'").append(column.getFieldName()).append("',")
                     .append(" name:'").append(column.getLabel()).append("'\n");
 
-                if (uiGrid.isStructureTree()
-                        && uiGrid.getCommand().getTargetStructurBrowserField().equals(column.getFieldName())) {
+                if (uiGrid.isStructureTree() && uiGrid.getStructurBrowserField().equals(column.getFieldName())) {
                     js.append(",expandLevel:'all'");
                 }
 

@@ -632,6 +632,18 @@ public class UIGrid
     }
 
     /**
+     * Gets the structur browser field.
+     *
+     * @return the structur browser field
+     * @throws CacheReloadException the cache reload exception
+     */
+    public String getStructurBrowserField()
+        throws CacheReloadException
+    {
+        return getCommand().getTargetStructurBrowserField();
+    }
+
+    /**
      * Gets the cmd UUID.
      *
      * @return the cmd UUID
