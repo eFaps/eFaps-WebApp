@@ -96,7 +96,7 @@ public class LinkItem
             if (command.getTargetTable() != null) {
                 final WebPage page;
                 if (command.getTargetStructurBrowserField() != null) {
-                    if ("GridX".equals(Configuration.getAttribute(ConfigAttribute.STRUCBRWSRDEFAULTTYPECONTENT))) {
+                    if ("GridX".equals(Configuration.getAttribute(ConfigAttribute.STRUCBRWSR_DEFAULTTYPECONTENT))) {
                         page = new GridPage(Model.of(UIGrid.get(command.getUUID(), pagePosition)));
                     } else {
                         final UIStructurBrowser uiStrBrws = new UIStructurBrowser(model.getCommandUUID(),
@@ -104,7 +104,7 @@ public class LinkItem
                         page = new StructurBrowserPage(Model.of(uiStrBrws), getPage().getPageReference());
                     }
                 } else {
-                    if ("GridX".equals(Configuration.getAttribute(ConfigAttribute.TABLEDEFAULTTYPECONTENT))) {
+                    if ("GridX".equals(Configuration.getAttribute(ConfigAttribute.TABLE_DEFAULTTYPECONTENT))) {
                         page = new GridPage(Model.of(UIGrid.get(command.getUUID(), pagePosition)));
                     } else {
                         final UITable uiTable = new UITable(model.getCommandUUID(), model.getInstanceKey())
@@ -154,7 +154,7 @@ public class LinkItem
                                 .getInstanceKey());
                 setResponsePage(page);
             } else {
-                if ("GridX".equals(Configuration.getAttribute(ConfigAttribute.TABLEDEFAULTTYPECONTENT))) {
+                if ("GridX".equals(Configuration.getAttribute(ConfigAttribute.TABLE_DEFAULTTYPECONTENT))) {
                     final GridPage page = new GridPage(Model.of(UIGrid.get(command.getUUID(), PagePosition.CONTENT)));
                     setResponsePage(page);
                 } else {

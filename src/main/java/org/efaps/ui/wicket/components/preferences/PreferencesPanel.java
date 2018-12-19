@@ -121,12 +121,12 @@ public class PreferencesPanel
 
         final WebMarkupContainer pref2 = new WebMarkupContainer("pref2");
         form.add(pref2);
-        pref2.setVisible(prefMap.containsKey(ConfigAttribute.TABLEDEFAULTTYPECONTENT.getKey()));
-        final boolean tdtB = BooleanUtils.toBoolean(prefMap.get(ConfigAttribute.TABLEDEFAULTTYPECONTENT.getKey()));
+        pref2.setVisible(prefMap.containsKey(ConfigAttribute.TABLE_DEFAULTTYPECONTENT.getKey()));
+        final boolean tdtB = BooleanUtils.toBoolean(prefMap.get(ConfigAttribute.TABLE_DEFAULTTYPECONTENT.getKey()));
         final PreferenceComponent tdtContent = new PreferenceComponent("tableDefaultType4Content")
-                .setLabel(DBProperties.getProperty(ConfigAttribute.TABLEDEFAULTTYPECONTENT.getKey() + ".Label"));
+                .setLabel(DBProperties.getProperty(ConfigAttribute.TABLE_DEFAULTTYPECONTENT.getKey() + ".Label"));
         tdtContent.add(new SwitchBehavior()
-                        .setInputName(ConfigAttribute.TABLEDEFAULTTYPECONTENT.getKey())
+                        .setInputName(ConfigAttribute.TABLE_DEFAULTTYPECONTENT.getKey())
                         .setLeftLabel("Table")
                         .setRightLabel("Grid")
                         .setOn(tdtB));
@@ -134,12 +134,12 @@ public class PreferencesPanel
 
         final WebMarkupContainer pref3 = new WebMarkupContainer("pref3");
         form.add(pref3);
-        pref3.setVisible(prefMap.containsKey(ConfigAttribute.TABLEDEFAULTTYPESEARCH.getKey()));
-        final boolean tdtS = BooleanUtils.toBoolean(prefMap.get(ConfigAttribute.TABLEDEFAULTTYPESEARCH.getKey()));
+        pref3.setVisible(prefMap.containsKey(ConfigAttribute.TABLE_DEFAULTTYPESEARCH.getKey()));
+        final boolean tdtS = BooleanUtils.toBoolean(prefMap.get(ConfigAttribute.TABLE_DEFAULTTYPESEARCH.getKey()));
         final PreferenceComponent tdtSearch = new PreferenceComponent("tableDefaultType4Search")
-                    .setLabel(DBProperties.getProperty(ConfigAttribute.TABLEDEFAULTTYPESEARCH.getKey() + ".Label"));
+                    .setLabel(DBProperties.getProperty(ConfigAttribute.TABLE_DEFAULTTYPESEARCH.getKey() + ".Label"));
         tdtSearch.add(new SwitchBehavior()
-                        .setInputName(ConfigAttribute.TABLEDEFAULTTYPESEARCH.getKey())
+                        .setInputName(ConfigAttribute.TABLE_DEFAULTTYPESEARCH.getKey())
                         .setLeftLabel("Table")
                         .setRightLabel("Grid")
                         .setOn(tdtS));
@@ -148,12 +148,12 @@ public class PreferencesPanel
 
         final WebMarkupContainer pref4 = new WebMarkupContainer("pref4");
         form.add(pref4);
-        pref4.setVisible(prefMap.containsKey(ConfigAttribute.TABLEDEFAULTTYPETREE.getKey()));
-        final boolean tdtT = BooleanUtils.toBoolean(prefMap.get(ConfigAttribute.TABLEDEFAULTTYPETREE.getKey()));
+        pref4.setVisible(prefMap.containsKey(ConfigAttribute.TABLE_DEFAULTTYPETREE.getKey()));
+        final boolean tdtT = BooleanUtils.toBoolean(prefMap.get(ConfigAttribute.TABLE_DEFAULTTYPETREE.getKey()));
         final PreferenceComponent tdtTree = new PreferenceComponent("tableDefaultType4Tree")
-                    .setLabel(DBProperties.getProperty(ConfigAttribute.TABLEDEFAULTTYPETREE.getKey() + ".Label"));
+                    .setLabel(DBProperties.getProperty(ConfigAttribute.TABLE_DEFAULTTYPETREE.getKey() + ".Label"));
         tdtTree.add(new SwitchBehavior()
-                        .setInputName(ConfigAttribute.TABLEDEFAULTTYPETREE.getKey())
+                        .setInputName(ConfigAttribute.TABLE_DEFAULTTYPETREE.getKey())
                         .setLeftLabel("Table")
                         .setRightLabel("Grid")
                         .setOn(tdtT));
@@ -162,12 +162,12 @@ public class PreferencesPanel
 
         final WebMarkupContainer pref5 = new WebMarkupContainer("pref5");
         form.add(pref5);
-        pref5.setVisible(prefMap.containsKey(ConfigAttribute.TABLEDEFAULTTYPEFORM.getKey()));
-        final boolean tdtF = BooleanUtils.toBoolean(prefMap.get(ConfigAttribute.TABLEDEFAULTTYPEFORM.getKey()));
+        pref5.setVisible(prefMap.containsKey(ConfigAttribute.TABLE_DEFAULTTYPEFORM.getKey()));
+        final boolean tdtF = BooleanUtils.toBoolean(prefMap.get(ConfigAttribute.TABLE_DEFAULTTYPEFORM.getKey()));
         final PreferenceComponent tdtForm = new PreferenceComponent("tableDefaultType4Form")
-                    .setLabel(DBProperties.getProperty(ConfigAttribute.TABLEDEFAULTTYPEFORM.getKey() + ".Label"));
+                    .setLabel(DBProperties.getProperty(ConfigAttribute.TABLE_DEFAULTTYPEFORM.getKey() + ".Label"));
         tdtForm.add(new SwitchBehavior()
-                        .setInputName(ConfigAttribute.TABLEDEFAULTTYPEFORM.getKey())
+                        .setInputName(ConfigAttribute.TABLE_DEFAULTTYPEFORM.getKey())
                         .setLeftLabel("Table")
                         .setRightLabel("Grid")
                         .setOn(tdtF));

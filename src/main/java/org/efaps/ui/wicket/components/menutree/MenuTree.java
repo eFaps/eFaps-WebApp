@@ -335,7 +335,7 @@ public class MenuTree
                                     menuItem.getInstanceKey()).setPagePosition(PagePosition.TREE)),
                                     getPage().getPageReference());
                 } else {
-                    if ("GridX".equals(Configuration.getAttribute(ConfigAttribute.TABLEDEFAULTTYPETREE))) {
+                    if ("GridX".equals(Configuration.getAttribute(ConfigAttribute.TABLE_DEFAULTTYPETREE))) {
                         page = new GridPage(Model.of(UIGrid.get(menuItem.getCommandUUID(), PagePosition.TREE)
                                         .setCallInstance(menuItem.getInstance())));
                     } else {

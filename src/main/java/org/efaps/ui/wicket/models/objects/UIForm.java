@@ -326,7 +326,7 @@ public class UIForm
                     } else if (field instanceof FieldTable) {
                         if (((FieldTable) field).getTargetStructurBrowserField() == null) {
                             if (isViewMode() && "GridX".equals(Configuration.getAttribute(
-                                            ConfigAttribute.TABLEDEFAULTTYPEFORM))) {
+                                            ConfigAttribute.TABLE_DEFAULTTYPEFORM))) {
                                 final UIFieldGrid grid = UIFieldGrid.get(getCommandUUID(), getPagePosition(),
                                                 getInstance(), (FieldTable) field);
                                 this.elements.add(new Element(UIForm.ElementType.GRID, grid));

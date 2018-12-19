@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -106,19 +106,19 @@ public final class UIFieldGrid
     public Table getTable()
         throws CacheReloadException
     {
-        return this.getFieldTable().getTargetTable();
+        return getFieldTable().getTargetTable();
     }
 
     @Override
     public String getCacheKey(final CacheKey _key)
     {
-        return this.getCmdUUID() + "-" + this.getFieldTable().getName() + "-" + _key.getValue();
+        return getCmdUUID() + "-" + getFieldTable().getName() + "-" + _key.getValue();
     }
 
     @Override
     public AbstractAdminObject getEventObject()
         throws CacheReloadException
     {
-        return this.getFieldTable();
+        return getFieldTable();
     }
 }

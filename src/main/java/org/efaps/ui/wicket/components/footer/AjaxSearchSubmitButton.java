@@ -72,7 +72,7 @@ public class AjaxSearchSubmitButton
     {
         final AbstractUIPageObject uiObject = (AbstractUIPageObject) getDefaultModelObject();
         try {
-            if ("GridX".equals(Configuration.getAttribute(ConfigAttribute.TABLEDEFAULTTYPESEARCH))) {
+            if ("GridX".equals(Configuration.getAttribute(ConfigAttribute.TABLE_DEFAULTTYPESEARCH))) {
                 final UIGrid uiGrid = UIGrid.get(uiObject.getCommandUUID(), ((IPageObject) uiObject).getPagePosition());
                 uiGrid.setCallInstance(uiObject.getInstance());
                 final UIWizardObject wizard = new UIWizardObject(uiGrid);

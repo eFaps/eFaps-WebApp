@@ -226,7 +226,7 @@ public class ContentContainerPage
                         page = new FormPage(Model.of(uiForm), getPageReference());
                     } else {
                         if (getCommand(uuid4NewPage).getTargetStructurBrowserField() == null) {
-                            if ("GridX".equals(Configuration.getAttribute(ConfigAttribute.TABLEDEFAULTTYPETREE))) {
+                            if ("GridX".equals(Configuration.getAttribute(ConfigAttribute.TABLE_DEFAULTTYPETREE))) {
                                 page = new GridPage(Model.of(UIGrid.get(uuid4NewPage, PagePosition.TREE)
                                                 .setCallInstance(Instance.get(_instanceKey))));
                             } else {
@@ -235,7 +235,8 @@ public class ContentContainerPage
                                 page = new TablePage(Model.of(uiTable));
                             }
                         } else {
-                            if ("GridX".equals(Configuration.getAttribute(ConfigAttribute.STRUCBRWSRDEFAULTTYPETREE))) {
+                            if ("GridX".equals(Configuration.getAttribute(
+                                            ConfigAttribute.STRUCBRWSR_DEFAULTTYPETREE))) {
                                 page = new GridPage(Model.of(UIGrid.get(uuid4NewPage, PagePosition.TREE)
                                                 .setCallInstance(Instance.get(_instanceKey))));
                             } else {

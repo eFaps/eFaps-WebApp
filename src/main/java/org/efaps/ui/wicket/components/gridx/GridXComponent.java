@@ -731,7 +731,7 @@ public class GridXComponent
                             if (menu.getTargetTable() != null) {
                                 if (menu.getTargetStructurBrowserField() == null) {
                                     if ("GridX".equals(Configuration.getAttribute(
-                                                    ConfigAttribute.TABLEDEFAULTTYPETREE))) {
+                                                    ConfigAttribute.TABLE_DEFAULTTYPETREE))) {
                                         page = new GridPage(Model.of(UIGrid.get(menu.getUUID(), PagePosition.TREE)
                                                         .setCallInstance(cell.getInstance())));
                                     } else {
@@ -741,7 +741,7 @@ public class GridXComponent
                                     }
                                 } else {
                                     if ("GridX".equals(Configuration.getAttribute(
-                                                    ConfigAttribute.STRUCBRWSRDEFAULTTYPETREE))) {
+                                                    ConfigAttribute.STRUCBRWSR_DEFAULTTYPETREE))) {
                                         page = new GridPage(Model.of(UIGrid.get(menu.getUUID(), PagePosition.TREE)
                                                         .setCallInstance(cell.getInstance())));
                                     } else {

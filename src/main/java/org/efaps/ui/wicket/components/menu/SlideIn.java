@@ -413,7 +413,7 @@ public class SlideIn
                                         .getCommandUUID(), menuItem.getInstanceKey()).setPagePosition(pagePosition)));
                         setResponsePage(page);
                     } else {
-                        if ("GridX".equals(Configuration.getAttribute(ConfigAttribute.TABLEDEFAULTTYPECONTENT))) {
+                        if ("GridX".equals(Configuration.getAttribute(ConfigAttribute.TABLE_DEFAULTTYPECONTENT))) {
                             final GridPage page = new GridPage(Model.of(UIGrid.get(command.getUUID(), pagePosition)));
                             setResponsePage(page);
                         } else {
