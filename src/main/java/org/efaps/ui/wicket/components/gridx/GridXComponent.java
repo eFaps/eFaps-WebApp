@@ -740,7 +740,13 @@ public class GridXComponent
                                         page = new TablePage(Model.of(uiTable));
                                     }
                                 } else {
-                                    page = new StructurBrowserPage(menu.getUUID(), cell.getInstance().getOid());
+                                    if ("GridX".equals(Configuration.getAttribute(
+                                                    ConfigAttribute.STRUCBRWSRDEFAULTTYPETREE))) {
+                                        page = new GridPage(Model.of(UIGrid.get(menu.getUUID(), PagePosition.TREE)
+                                                        .setCallInstance(cell.getInstance())));
+                                    } else {
+                                        page = new StructurBrowserPage(menu.getUUID(), cell.getInstance().getOid());
+                                    }
                                 }
                             } else {
                                 final UIForm uiForm = new UIForm(menu.getUUID(), cell.getInstance().getOid())
@@ -751,7 +757,8 @@ public class GridXComponent
                             break;
                         case CONTENT:
                         default:
-                            page = new ContentContainerPage(menu.getUUID(), cell.getInstance().getKey(), false);
+                            page = new ContentContainerPage(menu.getUUID(), cell.getInstance().getKey(),
+                                            uiGrid.isStructureTree());
                             break;
                     }
                 } catch (final EFapsException e) {
