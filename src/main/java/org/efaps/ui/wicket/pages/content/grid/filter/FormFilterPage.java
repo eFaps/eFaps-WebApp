@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,6 @@
 
 package org.efaps.ui.wicket.pages.content.grid.filter;
 
-
-
 import org.apache.wicket.PageReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.form.Form;
@@ -32,6 +30,7 @@ import org.efaps.api.ui.IMapFilter;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.button.AjaxButton;
 import org.efaps.ui.wicket.components.gridx.GridXComponent;
+import org.efaps.ui.wicket.models.objects.PagePosition;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.grid.UIGrid;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
@@ -76,7 +75,7 @@ public class FormFilterPage
         setDefaultModel(Model.of(_uiGrid));
         final String cmdName = Field.get(_model.getObject().getFieldId()).getProperty(UIFormFieldProperty.FILTER_CMD);
         final Command cmd = Command.get(cmdName);
-        final UIForm uiform = new UIForm(cmd.getUUID(), null);
+        final UIForm uiform = new UIForm(cmd.getUUID(), null).setPagePosition(PagePosition.CONTENTMODAL);
         uiform.setCallingCommandUUID(_uiGrid.getCmdUUID());
         final FormPage formPage = new FormPage(Model.of(uiform));
         final FormContainer formContainer = new FormContainer("form");

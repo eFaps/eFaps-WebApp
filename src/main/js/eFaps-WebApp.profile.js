@@ -5,9 +5,9 @@ var profile = (function(){
 
         action: 'release',
 
-        optimize: 'closure',
+        optimize: 'shrinksafe', //shrinksafe
 
-        layerOptimize: 'closure', //empty to deactivate
+        layerOptimize: 'shrinksafe', //shrinksafe empty to deactivate
 
         cssOptimize: 'comments',
 
@@ -20,6 +20,9 @@ var profile = (function(){
         },{
             name:"dijit",
             location:"./dijit"
+        }, {
+            name:"dijit-themes",
+            location:"./dijit-themes"
         },{
             name:"themes",
             location:"./themes"
@@ -135,6 +138,7 @@ var profile = (function(){
                     "gridx/modules/Persist",
                     "gridx/modules/RowHeader",
                     "gridx/modules/SingleSort",
+                    "gridx/modules/Tree",
                     "gridx/modules/VirtualVScroller",
                     "gridx/modules/dnd/Column",
                     "gridx/modules/extendedSelect/Cell",

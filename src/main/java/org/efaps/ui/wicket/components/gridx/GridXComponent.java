@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -97,8 +97,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO comment!
- *
  * @author The eFaps Team
  */
 public class GridXComponent
@@ -449,11 +447,13 @@ public class GridXComponent
                         .append("').prevSelected, function (_item) {\n")
                     .append("registry.byId('").append(getGridId()).append("').select.row.selectById(_item);\n")
                     .append("});\n")
-                    .append("};\n")
-                    .append("aspect.before(grid.filter, 'setFilter', ftb);\n")
-                    .append("aspect.before(grid.filter, 'clearFilter', ftb);\n")
-                    .append("aspect.after(grid.filter, 'setFilter', fta);\n")
-                    .append("aspect.after(grid.filter, 'clearFilter', fta);\n");
+                    .append("};\n");
+                if (!isField) {
+                    js.append("aspect.before(grid.filter, 'setFilter', ftb);\n")
+                        .append("aspect.before(grid.filter, 'clearFilter', ftb);\n")
+                        .append("aspect.after(grid.filter, 'setFilter', fta);\n")
+                        .append("aspect.after(grid.filter, 'clearFilter', fta);\n");
+                }
             }
 
             final StringBuilder html = new StringBuilder().append("<script type=\"text/javascript\">")
@@ -772,20 +772,7 @@ public class GridXComponent
     protected String getGridId()
         throws EFapsException
     {
-        return GridXComponent.getGridId((UIGrid) getDefaultModelObject());
-    }
-
-    /**
-     * Gets the grid id.
-     *
-     * @param _uiGrid the ui grid
-     * @return the grid id
-     * @throws EFapsException on error
-     */
-    public static String getGridId(final UIGrid _uiGrid)
-        throws EFapsException
-    {
-        return _uiGrid instanceof UIFieldGrid ? "grid_" + ((UIFieldGrid) _uiGrid).getFieldTable().getName() : "grid";
+        return ((UIGrid) getDefaultModelObject()).getMarkupId();
     }
 
     /**

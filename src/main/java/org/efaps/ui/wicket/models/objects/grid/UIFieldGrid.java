@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -141,5 +141,11 @@ public final class UIFieldGrid
         throws CacheReloadException
     {
         return getFieldTable().isTargetShowCheckBoxes();
+    }
+
+    @Override
+    public String getMarkupId()
+    {
+        return "grid_" + getFieldTable().getName();
     }
 }
