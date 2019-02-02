@@ -69,7 +69,7 @@ import org.efaps.db.PrintQuery;
 import org.efaps.db.SelectBuilder;
 import org.efaps.db.stmt.PrintStmt;
 import org.efaps.db.stmt.selection.Evaluator;
-import org.efaps.eql2.EQL;
+import org.efaps.eql2.EQL2;
 import org.efaps.eql2.IPrintStatement;
 import org.efaps.ui.wicket.models.field.FieldConfiguration;
 import org.efaps.ui.wicket.models.field.JSField;
@@ -274,7 +274,7 @@ public class UIGrid
         throws EFapsException
     {
         final Map<Long, JSField> jsFields = new HashMap<>();
-        final IPrintStatement<?> stmt = (IPrintStatement<?>) EQL.parse(_printStmt);
+        final IPrintStatement<?> stmt = (IPrintStatement<?>) EQL2.parse(_printStmt);
         final Evaluator evaluator = PrintStmt.get(stmt).evaluate();
         final Map<Instance, GridRow> instances = new LinkedMap<>();
         while (evaluator.next()) {
