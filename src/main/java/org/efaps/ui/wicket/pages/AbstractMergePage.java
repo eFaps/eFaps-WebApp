@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,15 +96,16 @@ public abstract class AbstractMergePage
     public AbstractMergePage(final IModel<?> _model)
     {
         super(_model);
-        this.add(this.downloadBehavior);
-        this.body = new TransparentWebMarkupContainer("body");
+        this.add(downloadBehavior);
+        body = new TransparentWebMarkupContainer("body");
         try {
-            this.body.add(AttributeModifier.append("class", AppAccessHandler.getApplicationKey()));
+            body.add(AttributeModifier.append("class", AppAccessHandler.getApplicationKey()));
+            body.add(AttributeModifier.append("class", Configuration.getAttribute(ConfigAttribute.MAIN_BODY_CLASS)));
         } catch (final EFapsException e) {
             AbstractMergePage.LOG.error("Could not set class attribute for body", e);
         }
-        this.body.add(AttributeModifier.append("class", Configuration.getAttribute(ConfigAttribute.DOJO_CLASS)));
-        super.add(this.body);
+        body.add(AttributeModifier.append("class", Configuration.getAttribute(ConfigAttribute.DOJO_CLASS)));
+        super.add(body);
 
     }
 
@@ -123,7 +124,7 @@ public abstract class AbstractMergePage
      */
     public AjaxDownloadBehavior getDownloadBehavior()
     {
-        return this.downloadBehavior;
+        return downloadBehavior;
     }
 
     /**
@@ -141,7 +142,7 @@ public abstract class AbstractMergePage
             if (child instanceof HtmlHeaderContainer) {
                 ret = add2Page(child);
             } else {
-                ret = this.body.add(_childs);
+                ret = body.add(_childs);
             }
         }
         return ret;

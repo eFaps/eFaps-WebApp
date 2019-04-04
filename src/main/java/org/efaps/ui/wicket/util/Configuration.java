@@ -244,6 +244,9 @@ public final class Configuration
         /** Menu used for SlideIn. */
         SLIDEINMENU(false, true,  "SlideInMenu", "", String.class, "Menu used for SlideIn"),
 
+        /** Class name to be added to body tag. */
+        MAIN_BODY_CLASS(false, true,  "MainBodyClass", "", String.class, "Class name to be added to body tag"),
+
         /** */
         PREF_PROVIDER(false, true, "Preferences.Provider", "org.efaps.esjp.common.preferences.PreferencesProvider",
                         String.class, "Class name of the PreferencesProvider class");
@@ -291,12 +294,12 @@ public final class Configuration
                         final Class<?> _class,
                         final String _description)
         {
-            this.system = _system;
-            this.user = _user;
-            this.key = Configuration.BASEKEY + _key;
-            this.defaultvalue = _defaultValue;
-            this.attrClass = _class;
-            this.description = _description == null ? "" : _description;
+            system = _system;
+            user = _user;
+            key = Configuration.BASEKEY + _key;
+            defaultvalue = _defaultValue;
+            attrClass = _class;
+            description = _description == null ? "" : _description;
         }
 
         /**
@@ -306,7 +309,7 @@ public final class Configuration
          */
         public String getKey()
         {
-            return this.key;
+            return key;
         }
 
         /**
@@ -316,7 +319,7 @@ public final class Configuration
          */
         public String getDefaultvalue()
         {
-            return this.defaultvalue;
+            return defaultvalue;
         }
 
         /**
@@ -326,7 +329,7 @@ public final class Configuration
          */
         public boolean isSystem()
         {
-            return this.system;
+            return system;
         }
 
         /**
@@ -336,7 +339,7 @@ public final class Configuration
          */
         public boolean isUser()
         {
-            return this.user;
+            return user;
         }
 
         /**
@@ -346,7 +349,7 @@ public final class Configuration
          */
         public Class<?> getAttrClass()
         {
-            return this.attrClass;
+            return attrClass;
         }
 
         /**
@@ -356,7 +359,7 @@ public final class Configuration
          */
         public String getDescription()
         {
-            return this.description;
+            return description;
         }
 
         @Override
