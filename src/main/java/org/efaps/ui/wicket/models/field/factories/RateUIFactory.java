@@ -103,6 +103,9 @@ public final class RateUIFactory
         } else if (valueTmp instanceof RateUI.Value) {
             final DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Context.getThreadContext()
                             .getLocale());
+            if (_abstractUIField.getValue().getAttribute() != null) {
+                formatter.setMaximumFractionDigits(_abstractUIField.getValue().getAttribute().getScale());
+            }
             strValue = formatter.format(((RateUI.Value) valueTmp).getRate());
         }
         return strValue;
