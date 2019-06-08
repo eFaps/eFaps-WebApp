@@ -58,8 +58,16 @@ public final class DateUIFactory
     {
         Component ret = null;
         if (applies(_abstractUIField)) {
-            ret = new DatePanel(_wicketId, Model.of(_abstractUIField), _abstractUIField.getFieldConfiguration(),
-                            _abstractUIField.getValue().getEditValue(_abstractUIField.getParent().getMode()));
+            Object value = _abstractUIField.getValue().getEditValue(_abstractUIField.getParent().getMode());
+            if (value instanceof DateTime) {
+                final DateTime datetime = (DateTime) value;
+                value = new DateTime().withChronology(Context.getThreadContext().getChronology())
+                    .withTimeAtStartOfDay()
+                    .withYear(datetime.getYear())
+                    .withMonthOfYear(datetime.getMonthOfYear())
+                    .withDayOfMonth(datetime.getDayOfMonth());
+            }
+            ret = new DatePanel(_wicketId, Model.of(_abstractUIField), _abstractUIField.getFieldConfiguration(), value);
         }
         return ret;
     }
