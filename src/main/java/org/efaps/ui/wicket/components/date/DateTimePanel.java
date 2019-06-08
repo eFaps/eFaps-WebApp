@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -112,7 +112,7 @@ public class DateTimePanel
      * @param _model the model
      * @param _fieldConf the field conf
      * @param _dateObject object containing a DateTime, if null or not DateTime
-     *                       a new DateTime will be instantiated
+     *                       and field is required new DateTime will be instantiated
      * @param _time must the time be rendered also
      * @throws EFapsException on error
      */
@@ -124,17 +124,21 @@ public class DateTimePanel
         throws EFapsException
     {
         super(_wicketId, Model.<DateTime>of());
-        this.uiField = _model.getObject();
-        this.fieldConfig = _fieldConf;
-        this.datetime = _dateObject == null || !(_dateObject instanceof DateTime)
-                        ? new DateTime(Context.getThreadContext().getChronology())
-                        : (DateTime) _dateObject;
-        if (this.uiField != null) {
-            setLabel(Model.of(getFieldConfig().evalLabel(this.uiField.getValue(), this.uiField.getInstance())));
+        uiField = _model.getObject();
+        fieldConfig = _fieldConf;
+        if (_dateObject instanceof DateTime) {
+            datetime = (DateTime) _dateObject;
+        } else if (_fieldConf.getField().isRequired()) {
+            datetime = new DateTime(Context.getThreadContext().getChronology());
+        } else {
+            datetime = null;
+        }
+        if (uiField != null) {
+            setLabel(Model.of(getFieldConfig().evalLabel(uiField.getValue(), uiField.getInstance())));
         } else {
             setLabel(Model.of(getFieldConfig().getLabel()));
         }
-        this.converter = new StyleDateConverter(false) {
+        converter = new StyleDateConverter(false) {
 
             private static final long serialVersionUID = 1L;
 
@@ -155,8 +159,8 @@ public class DateTimePanel
             }
         };
 
-        final DateTextField dateField = new DateTextField("date", new Model<>(this.datetime.toDate()),
-                        this.converter)
+        final DateTextField dateField = new DateTextField("date", new Model<>(datetime == null ? null : datetime.toDate()),
+                        converter)
         {
 
             private static final long serialVersionUID = 1L;
@@ -173,12 +177,12 @@ public class DateTimePanel
             add(new AttributeModifier("maxlength", getFieldConfig().getProperty(UIFormFieldProperty.COLUMNS)));
         }
         if (getFieldConfig().hasProperty(UIFormFieldProperty.WIDTH)
-                        && this.uiField != null && !(this.uiField.getParent() instanceof UITable)) {
+                        && uiField != null && !(uiField.getParent() instanceof UITable)) {
             add(new AttributeAppender("style", "width:" + getFieldConfig().getWidth(), ";"));
         }
 
-        this.datePicker = new DatePickerBehavior();
-        dateField.add(this.datePicker);
+        datePicker = new DatePickerBehavior();
+        dateField.add(datePicker);
 
         final WebComponent hour = new WebComponent("hours")
         {
@@ -189,7 +193,7 @@ public class DateTimePanel
             protected void onComponentTag(final ComponentTag _tag)
             {
                 super.onComponentTag(_tag);
-                int hourTmp = DateTimePanel.this.datetime.getHourOfDay();
+                int hourTmp = datetime.getHourOfDay();
                 if (use12HourFormat()) {
                     if (hourTmp == 0) {
                         hourTmp = 12;
@@ -216,7 +220,7 @@ public class DateTimePanel
             protected void onComponentTag(final ComponentTag _tag)
             {
                 super.onComponentTag(_tag);
-                _tag.put("value", String.format("%02d", DateTimePanel.this.datetime.getMinuteOfHour()));
+                _tag.put("value", String.format("%02d", datetime.getMinuteOfHour()));
                 _tag.put("name", DateTimePanel.this.getMinuteFieldName());
                 _tag.put("maxlength", 2);
 
@@ -247,7 +251,7 @@ public class DateTimePanel
                 super.onComponentTagBody(_markupStream, _openTag);
                 final StringBuilder html = new StringBuilder();
                 html.append("<option ");
-                final int hourTmp = DateTimePanel.this.datetime.getHourOfDay();
+                final int hourTmp = datetime.getHourOfDay();
                 if (hourTmp < 12) {
                     html.append("selected=\"true\"");
                 }
@@ -272,12 +276,12 @@ public class DateTimePanel
             for (final EventDefinition event : events) {
                 eventName = event.getProperty("Event") == null ? "change" : event.getProperty("Event");
             }
-            dateField.add(new AjaxFieldUpdateBehavior(eventName, Model.of(this.uiField), false));
+            dateField.add(new AjaxFieldUpdateBehavior(eventName, Model.of(uiField), false));
             if (_time) {
-                hour.add(new AjaxFieldUpdateBehavior(eventName, Model.of(this.uiField), false));
-                minutes.add(new AjaxFieldUpdateBehavior(eventName, Model.of(this.uiField), false));
+                hour.add(new AjaxFieldUpdateBehavior(eventName, Model.of(uiField), false));
+                minutes.add(new AjaxFieldUpdateBehavior(eventName, Model.of(uiField), false));
                 if (use12HourFormat()) {
-                    ampm.add(new AjaxFieldUpdateBehavior(eventName, Model.of(this.uiField), false));
+                    ampm.add(new AjaxFieldUpdateBehavior(eventName, Model.of(uiField), false));
                 }
             }
         }
@@ -302,7 +306,7 @@ public class DateTimePanel
      */
     public DatePickerBehavior getDatePicker()
     {
-        return this.datePicker;
+        return datePicker;
     }
 
     /**
@@ -406,7 +410,7 @@ public class DateTimePanel
             for (final StringValue date : _date) {
                 if (!date.isNull() && !date.isEmpty()) {
                     final DateTimeFormatter fmt = DateTimeFormat.forPattern(
-                                    this.converter.getDatePattern(Context.getThreadContext().getLocale()))
+                                    converter.getDatePattern(Context.getThreadContext().getLocale()))
                                     .withChronology(Context.getThreadContext().getChronology());
                     fmt.withLocale(getLocale());
                     final MutableDateTime mdt = fmt.parseMutableDateTime(date.toString());
@@ -458,7 +462,7 @@ public class DateTimePanel
     {
         if (getUIField() != null) {
             try {
-                this.converted = true;
+                converted = true;
                 int i = 0;
                 if (getUIField() instanceof UIFieldSetValue) {
                     final UIFieldSet cellset = ((UIFieldSetValue) getUIField()).getCellSet();
@@ -489,13 +493,13 @@ public class DateTimePanel
      */
     protected AbstractUIField getUIField()
     {
-        return this.uiField;
+        return uiField;
     }
 
     @Override
     public void updateModel()
     {
-        if (!this.converted) {
+        if (!converted) {
             convertInput();
         }
         setModelObject(getConvertedInput());
@@ -629,6 +633,6 @@ public class DateTimePanel
     @Override
     public FieldConfiguration getFieldConfig()
     {
-        return this.fieldConfig;
+        return fieldConfig;
     }
 }

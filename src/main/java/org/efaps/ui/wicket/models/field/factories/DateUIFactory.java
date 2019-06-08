@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,8 +29,6 @@ import org.efaps.util.EFapsException;
 import org.joda.time.DateTime;
 
 /**
- * TODO comment!
- *
  * @author The eFaps Team
  */
 @SuppressWarnings("checkstyle:abstractclassname")
@@ -88,8 +86,11 @@ public final class DateUIFactory
                         .getReadOnlyValue(_abstractUIField.getParent().getMode());
         if (valueTmp instanceof DateTime) {
             final DateTime datetime = (DateTime) valueTmp;
-            final DateTime dateTmp = datetime.withChronology(Context.getThreadContext().getChronology())
-                            .withTimeAtStartOfDay();
+            final DateTime dateTmp = new DateTime().withChronology(Context.getThreadContext().getChronology())
+                .withTimeAtStartOfDay()
+                .withYear(datetime.getYear())
+                .withMonthOfYear(datetime.getMonthOfYear())
+                .withDayOfMonth(datetime.getDayOfMonth());
             strValue = dateTmp.toString(DateUtil.getDateFormatter());
         }
         return strValue;
