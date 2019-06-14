@@ -319,6 +319,10 @@ public class GridXComponent
                 .append("store: store,")
                 .append("structure: structure,\n");
 
+            if (uiGrid.isStructureTree()) {
+               js.append("selectRowTreeMode: false,\n");
+            }
+
             if (isField) {
                 js.append("autoHeight: true,\n");
             } else {
