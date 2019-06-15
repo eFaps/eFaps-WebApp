@@ -370,8 +370,12 @@ public class DateTimePanel
         final List<StringValue> ret = new ArrayList<>();
         final List<DateTime> dates = getDateList(_date, _hour, _minute, _ampm);
         for (final DateTime date : dates) {
-            final DateTimeFormatter isofmt = ISODateTimeFormat.dateTime();
-            ret.add(StringValue.valueOf(date.toString(isofmt)));
+            if (date == null) {
+                ret.add(StringValue.valueOf(""));
+            } else {
+                final DateTimeFormatter isofmt = ISODateTimeFormat.dateTime();
+                ret.add(StringValue.valueOf(date.toString(isofmt)));
+            }
         }
         return ret;
     }
@@ -437,6 +441,8 @@ public class DateTimePanel
                         }
                     }
                     ret.add(mdt.toDateTime());
+                } else {
+                    ret.add(null);
                 }
             }
         }
