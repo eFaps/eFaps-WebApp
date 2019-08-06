@@ -147,7 +147,7 @@ public class EFapsSession
                         final String _appKey)
     {
         super(_request);
-        this.stackSize = Configuration.getAttributeAsInteger(ConfigAttribute.RECENTCACHESIZE);
+        stackSize = Configuration.getAttributeAsInteger(ConfigAttribute.RECENTCACHESIZE);
     }
 
     /**
@@ -158,7 +158,7 @@ public class EFapsSession
     public synchronized void addExecutionBridge(final IExecutionBridge _bridge)
     {
         bind();
-        this.executionBridges.add(_bridge);
+        executionBridges.add(_bridge);
     }
 
     /**
@@ -167,12 +167,12 @@ public class EFapsSession
     public synchronized void  pruneFinishedTasks()
     {
         final ArrayList<IExecutionBridge> nonFinishedBridges = new ArrayList<>();
-        for (final IExecutionBridge bridge: this.executionBridges) {
+        for (final IExecutionBridge bridge: executionBridges) {
             if (!bridge.isFinished()) {
                 nonFinishedBridges.add(bridge);
             }
         }
-        this.executionBridges = nonFinishedBridges;
+        executionBridges = nonFinishedBridges;
     }
 
     /**
@@ -185,8 +185,8 @@ public class EFapsSession
     public Iterator<IExecutionBridge> getJobsPage(final int _start,
                                                   final int _size)
     {
-        final int min = Math.min(_size, this.executionBridges.size());
-        return new ArrayList<>(this.executionBridges.subList(_start, min)).iterator();
+        final int min = Math.min(_size, executionBridges.size());
+        return new ArrayList<>(executionBridges.subList(_start, min)).iterator();
     }
 
     /**
@@ -200,11 +200,11 @@ public class EFapsSession
                                           final boolean _prune)
     {
         IExecutionBridge ret = null;
-        for (final IExecutionBridge bridge : this.executionBridges) {
+        for (final IExecutionBridge bridge : executionBridges) {
             if (bridge.getJobName().equals(_jobName)) {
                 ret = bridge;
                 if (_prune && ret.isFinished()) {
-                    this.executionBridges.remove(ret);
+                    executionBridges.remove(ret);
                 }
                 break;
             }
@@ -219,7 +219,7 @@ public class EFapsSession
      */
     public long countJobs()
     {
-        return this.executionBridges.size();
+        return executionBridges.size();
     }
 
     /**
@@ -227,10 +227,10 @@ public class EFapsSession
      */
     public void addRecent(final IRecent _recent)
     {
-        if (this.stackSize > 0) {
-            this.recentStack.push(_recent);
-            if (this.recentStack.size() > this.stackSize) {
-                this.recentStack.remove(0);
+        if (stackSize > 0) {
+            recentStack.push(_recent);
+            if (recentStack.size() > stackSize) {
+                recentStack.remove(0);
             }
         }
         if (_recent instanceof LinkItem) {
@@ -244,11 +244,11 @@ public class EFapsSession
     @Override
     public WebClientInfo getClientInfo()
     {
-        if (this.clientInfo == null) {
+        if (clientInfo == null) {
             final RequestCycle requestCycle = RequestCycle.get();
-            this.clientInfo = new WebClientInfo(requestCycle);
+            clientInfo = new WebClientInfo(requestCycle);
         }
-        return (WebClientInfo) this.clientInfo;
+        return (WebClientInfo) clientInfo;
     }
 
     /**
@@ -256,7 +256,7 @@ public class EFapsSession
      */
     public IRecent getRecent()
     {
-        return this.recentStack.empty() ? null : this.recentStack.peek();
+        return recentStack.empty() ? null : recentStack.peek();
     }
 
     /**
@@ -266,7 +266,7 @@ public class EFapsSession
     public List<IRecent> getAllRecents()
     {
         @SuppressWarnings("unchecked")
-        final Stack<IRecent> clone = (Stack<IRecent>) this.recentStack.clone();
+        final Stack<IRecent> clone = (Stack<IRecent>) recentStack.clone();
         Collections.reverse(clone);
         return clone;
     }
@@ -280,7 +280,7 @@ public class EFapsSession
     public boolean isLogedIn()
     {
         boolean ret = false;
-        if (this.userName != null) {
+        if (userName != null) {
             ret = true;
         } else if (!isSessionInvalidated())  {
             ret = lazyLogin();
@@ -301,21 +301,21 @@ public class EFapsSession
         final HttpSession httpSession = httpRequest.getSession(false);
         if (httpSession != null && !(httpSession instanceof HttpSessionCopy)) {
             for (final ILoginProvider loginProvider : EFapsApplication.get().getLoginProviders()) {
-                this.userName = loginProvider.login(httpSession);
-                if (this.userName != null) {
+                userName = loginProvider.login(httpSession);
+                if (userName != null) {
                     break;
                 }
             }
-            if (this.userName != null) {
+            if (userName != null) {
                 openContext();
                 try {
-                    setAttribute(EFapsSession.LOGIN_ATTRIBUTE_NAME, this.userName);
-                    this.sessionAttributes.put(UserAttributesSet.CONTEXTMAPKEY, new UserAttributesSet(
-                                    this.userName));
+                    setAttribute(EFapsSession.LOGIN_ATTRIBUTE_NAME, userName);
+                    sessionAttributes.put(UserAttributesSet.CONTEXTMAPKEY, new UserAttributesSet(
+                                    userName));
                 } catch (final EFapsException e) {
                     EFapsSession.LOG.error("Problems with setting UserAttribues.", e);
                 }
-                RegistryManager.registerUserSession(this.userName, getId());
+                RegistryManager.registerUserSession(userName, getId());
                 ret = true;
                 RequestCycle.get().setResponsePage(GatherInfoPage.class);
             }
@@ -334,16 +334,16 @@ public class EFapsSession
         final StringValue name = paras.getParameterValue("name");
         final StringValue pwd = paras.getParameterValue("password");
         if (checkLogin(name.toString(), pwd.toString())) {
-            this.userName = name.toString();
+            userName = name.toString();
             // on login a valid Context for the User must be opened to ensure that the
             // session attributes that depend on the user are set correctly before any
             // further requests are made (e.g. setting the current company
             openContext();
-            setAttribute(EFapsSession.LOGIN_ATTRIBUTE_NAME, this.userName);
-            RegistryManager.registerUserSession(this.userName, getId());
+            setAttribute(EFapsSession.LOGIN_ATTRIBUTE_NAME, userName);
+            RegistryManager.registerUserSession(userName, getId());
         } else {
-            this.userName = null;
-            this.sessionAttributes.clear();
+            userName = null;
+            sessionAttributes.clear();
         }
     }
 
@@ -352,21 +352,21 @@ public class EFapsSession
      */
     public final void logout()
     {
-        if (this.sessionAttributes.containsKey(UserAttributesSet.CONTEXTMAPKEY)) {
+        if (sessionAttributes.containsKey(UserAttributesSet.CONTEXTMAPKEY)) {
             try {
                 UsageRegistry.store();
-                ((UserAttributesSet) this.sessionAttributes.get(UserAttributesSet.CONTEXTMAPKEY)).storeInDb();
+                ((UserAttributesSet) sessionAttributes.get(UserAttributesSet.CONTEXTMAPKEY)).storeInDb();
                 AccessCache.clean4Person(Context.getThreadContext().getPersonId());
             } catch (final EFapsException e) {
                 EFapsSession.LOG.error("Error on logout", e);
             } finally {
-                this.sessionAttributes.clear();
+                sessionAttributes.clear();
                 removeAttribute(EFapsSession.LOGIN_ATTRIBUTE_NAME);
                 invalidate();
             }
         }
         closeContext();
-        this.userName = null;
+        userName = null;
     }
 
     /**
@@ -401,7 +401,7 @@ public class EFapsSession
                 final Person person = loginHandler.checkLogin(_name, _passwd);
                 if (person != null && !person.getRoles().isEmpty()) {
                     loginOk = true;
-                    this.sessionAttributes.put(UserAttributesSet.CONTEXTMAPKEY, new UserAttributesSet(_name));
+                    sessionAttributes.put(UserAttributesSet.CONTEXTMAPKEY, new UserAttributesSet(_name));
                 }
                 ok = true;
             } finally {
@@ -453,8 +453,10 @@ public class EFapsSession
                             }
                             parameters.put(name, valArray);
                         }
-
-                        Context.begin(this.userName, super.getLocale(), this.sessionAttributes, parameters, null,
+                        if (Context.isThreadActive()) {
+                            Context.getThreadContext().close();
+                        }
+                        Context.begin(userName, super.getLocale(), sessionAttributes, parameters, null,
                                         Context.Inheritance.Inheritable);
                         // set the locale in the context and in the session
                         setLocale(Context.getThreadContext().getLocale());
@@ -510,7 +512,7 @@ public class EFapsSession
      */
     public void setFile(final File _file)
     {
-        this.file = _file;
+        file = _file;
     }
 
     /**
@@ -520,7 +522,7 @@ public class EFapsSession
      */
     public File getFile()
     {
-        return this.file;
+        return file;
     }
 
     /**
@@ -528,7 +530,7 @@ public class EFapsSession
      */
     public void addEmbededLink(final EmbeddedLink _embededLink)
     {
-        this.embededlinks.add(_embededLink);
+        embededlinks.add(_embededLink);
     }
 
     /**
@@ -538,7 +540,7 @@ public class EFapsSession
      */
     public List<EmbeddedLink> getEmbededLinks()
     {
-        return this.embededlinks;
+        return embededlinks;
     }
 
     @Override
@@ -548,8 +550,8 @@ public class EFapsSession
         RegistryManager.removeUserSession(getId());
         InfinispanPageStore.removePages4Session(getId());
         // invalidation came from other process
-        if (this.userName != null) {
-            this.userName = null;
+        if (userName != null) {
+            userName = null;
         }
         super.onInvalidate();
         final RequestCycle cycle = RequestCycle.get();
@@ -568,7 +570,7 @@ public class EFapsSession
     @Override
     public String toString()
     {
-        return new ToStringBuilder(this).append("userName", this.userName)
+        return new ToStringBuilder(this).append("userName", userName)
                         .append("sessionId", getId()).build();
     }
 
@@ -605,8 +607,8 @@ public class EFapsSession
          */
         public FileParameter(final String _parameterName, final FileItem _fileItem)
         {
-            this.parameterName = _parameterName;
-            this.fileItem = _fileItem;
+            parameterName = _parameterName;
+            fileItem = _fileItem;
         }
 
         /**
@@ -626,7 +628,7 @@ public class EFapsSession
         @Override
         public String getContentType()
         {
-            return this.fileItem.getContentType();
+            return fileItem.getContentType();
         }
 
         /**
@@ -638,7 +640,7 @@ public class EFapsSession
         @Override
         public InputStream getInputStream() throws IOException
         {
-            return this.fileItem.getInputStream();
+            return fileItem.getInputStream();
         }
 
         /**
@@ -649,7 +651,7 @@ public class EFapsSession
         @Override
         public String getName()
         {
-            return this.fileItem.getName();
+            return fileItem.getName();
         }
 
         /**
@@ -660,7 +662,7 @@ public class EFapsSession
         @Override
         public String getParameterName()
         {
-            return this.parameterName;
+            return parameterName;
         }
 
         /**
@@ -671,7 +673,7 @@ public class EFapsSession
         @Override
         public long getSize()
         {
-            return this.fileItem.getSize();
+            return fileItem.getSize();
         }
     }
 }
