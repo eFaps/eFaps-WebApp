@@ -303,15 +303,6 @@
             <artifactId>commons-collections4</artifactId>
             <version>${commons.collections.version}</version>
         </dependency>
-
-        <!-- To Create HTML Codes used in the WebDAV integration -->
-        <dependency>
-            <groupId>ecs</groupId>
-            <artifactId>ecs</artifactId>
-            <version>1.4.2</version>
-            <scope>compile</scope>
-        </dependency>
-
         <!-- wicket -->
         <dependency>
             <groupId>org.apache.wicket</groupId>
