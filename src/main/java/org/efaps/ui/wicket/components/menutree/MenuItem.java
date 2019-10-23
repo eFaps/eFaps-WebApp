@@ -96,7 +96,7 @@ public class MenuItem
                     final IModel<UIMenuItem> _model)
     {
         super(_wicketID, _model);
-        this.tree = _tree;
+        tree = _tree;
         setOutputMarkupId(true);
         add(new SelectedAttributeModifier());
 
@@ -183,10 +183,14 @@ public class MenuItem
             try {
                 if (menuItem.getCommand().getTargetTable() != null) {
                     if (menuItem.getCommand().getTargetStructurBrowserField() != null) {
-                        final UIStructurBrowser uiStrBrws = new UIStructurBrowser(menuItem.getCommandUUID(),
+                        if ("GridX".equals(Configuration.getAttribute(ConfigAttribute.STRUCBRWSR_DEFAULTTYPETREE))) {
+                            page = new GridPage(Model.of(UIGrid.get(menuItem.getCommandUUID(), PagePosition.TREE)
+                                            .setCallInstance(menuItem.getInstance())));
+                        } else {
+                            final UIStructurBrowser uiStrBrws = new UIStructurBrowser(menuItem.getCommandUUID(),
                                         menuItem.getInstanceKey()).setPagePosition(PagePosition.TREE);
-
-                        page = new StructurBrowserPage(Model.of(uiStrBrws), getPage().getPageReference());
+                            page = new StructurBrowserPage(Model.of(uiStrBrws), getPage().getPageReference());
+                        }
                     } else {
                         if ("GridX".equals(Configuration.getAttribute(ConfigAttribute.TABLE_DEFAULTTYPETREE))) {
                             page = new GridPage(Model.of(UIGrid.get(menuItem.getCommandUUID(), PagePosition.TREE)
@@ -253,14 +257,14 @@ public class MenuItem
         @Override
         protected void onEvent(final AjaxRequestTarget _target)
         {
-            if (MenuItem.this.tree.getSelected() != null) {
-                _target.add(MenuItem.this.tree.getSelected());
-                final UIMenuItem menuItem = (UIMenuItem) MenuItem.this.tree.getSelected().getDefaultModelObject();
+            if (tree.getSelected() != null) {
+                _target.add(tree.getSelected());
+                final UIMenuItem menuItem = (UIMenuItem) tree.getSelected().getDefaultModelObject();
                 menuItem.setSelected(false);
             }
             _target.add(getComponent().findParent(MenuItem.class));
-            MenuItem.this.tree.setSelected(getComponent().findParent(MenuItem.class));
-            final UIMenuItem menuItem = (UIMenuItem) MenuItem.this.tree.getSelected().getDefaultModelObject();
+            tree.setSelected(getComponent().findParent(MenuItem.class));
+            final UIMenuItem menuItem = (UIMenuItem) tree.getSelected().getDefaultModelObject();
             menuItem.setSelected(true);
         }
 
