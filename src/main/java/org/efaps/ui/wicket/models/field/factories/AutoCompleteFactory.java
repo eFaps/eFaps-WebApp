@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,17 +21,16 @@ package org.efaps.ui.wicket.models.field.factories;
 import org.apache.wicket.Component;
 import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.components.autocomplete.AutoCompleteComboBox;
+import org.efaps.ui.wicket.components.values.StringField;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.ui.wicket.models.field.IAutoComplete;
 import org.efaps.util.EFapsException;
 
 
 /**
- * TODO comment!
  *
  * @author The eFaps Team
  */
-@SuppressWarnings("checkstyle:abstractclassname")
 public class AutoCompleteFactory
     implements IComponentFactory
 {
@@ -48,7 +47,6 @@ public class AutoCompleteFactory
     {
     }
 
-
     @Override
     public Component getEditable(final String _wicketId,
                                  final AbstractUIField _uiField)
@@ -56,8 +54,12 @@ public class AutoCompleteFactory
     {
         Component ret = null;
         if (applies(_uiField)) {
-            ret = new AutoCompleteComboBox(_wicketId, Model.of((IAutoComplete) _uiField), false)
+            if (_uiField.isHide()) {
+                ret = new StringField(_wicketId, Model.of(_uiField), _uiField.getFieldConfiguration());
+            } else {
+                ret = new AutoCompleteComboBox(_wicketId, Model.of((IAutoComplete) _uiField), false)
                         .setRequired(_uiField.getFieldConfiguration().getField().isRequired());
+            }
         }
         return ret;
     }
