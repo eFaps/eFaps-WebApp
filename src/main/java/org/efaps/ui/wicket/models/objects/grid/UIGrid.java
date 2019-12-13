@@ -18,6 +18,7 @@ package org.efaps.ui.wicket.models.objects.grid;
 
 import java.io.File;
 import java.io.StringReader;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -158,8 +159,8 @@ public class UIGrid
     private void init()
         throws EFapsException
     {
-        if (!this.initialized) {
-            this.initialized = true;
+        if (!initialized) {
+            initialized = true;
             final List<Field> fields = getTable().getFields();
 
             boolean check4Filter = true;
@@ -168,7 +169,7 @@ public class UIGrid
                 final FilterList tmpFilterList = (FilterList) Context.getThreadContext().getSessionAttribute(
                                 getCacheKey(CacheKey.DBFILTER));
                 for (final IFilter filter : tmpFilterList) {
-                    this.filterList.add(filter);
+                    filterList.add(filter);
                 }
             }
 
@@ -176,12 +177,12 @@ public class UIGrid
                 if (field.hasAccess(TargetMode.VIEW, null, getCommand(), null) && !field.isNoneDisplay(
                                 TargetMode.VIEW)) {
                     final GridColumn column = new GridColumn().setFieldConfig(new FieldConfiguration(field.getId()));
-                    this.columns.add(column);
+                    columns.add(column);
                     // before executing the esjp add the filters that are
                     // working against the database to
                     // get them filled with the defaults
                     if (check4Filter && FilterBase.DATABASE.equals(field.getFilter().getBase())) {
-                        this.filterList.add(getFilter4Field(column.getField()));
+                        filterList.add(getFilter4Field(column.getField()));
                     }
                 }
             }
@@ -203,7 +204,7 @@ public class UIGrid
                         ParameterValues.CALL_INSTANCE, getCallInstance(),
                         ParameterValues.PARAMETERS, Context.getThreadContext().getParameters(),
                         ParameterValues.CLASS, this,
-                        ParameterValues.OTHERS, this.filterList);
+                        ParameterValues.OTHERS, filterList);
         String ret = null;
         if (returns.size() < 1) {
             throw new EFapsException(UIGrid.class, "getInstanceList");
@@ -225,7 +226,7 @@ public class UIGrid
                         ParameterValues.REQUEST_INSTANCES, _instances,
                         ParameterValues.PARAMETERS, Context.getThreadContext().getParameters(),
                         ParameterValues.CLASS, this,
-                        ParameterValues.OTHERS, this.filterList);
+                        ParameterValues.OTHERS, filterList);
         String ret = null;
         if (returns.size() < 1) {
             throw new EFapsException(UIGrid.class, "getInstanceList");
@@ -248,7 +249,7 @@ public class UIGrid
             stmtBdlr.append(", ");
         }
         final List<String> selects = new ArrayList<>();
-        for (final GridColumn column : this.columns) {
+        for (final GridColumn column : columns) {
             final Field field = column.getField();
             if (field.getSelect() != null) {
                 selects.add(field.getSelect() + " as " + field.getName());
@@ -281,14 +282,14 @@ public class UIGrid
             final GridRow row = new GridRow(evaluator.inst());
             instances.put(evaluator.inst(), row);
             if (_parents.isEmpty()) {
-                this.values.add(row);
+                values.add(row);
             } else {
                 final Instance parentInstance = evaluator.get("ParentInstance");
                 if (_parents.containsKey(parentInstance)) {
                     _parents.get(parentInstance).addChild(row);
                 }
             }
-            for (final GridColumn column : this.columns) {
+            for (final GridColumn column : columns) {
                 final Field field = column.getField();
                 final Instance instance = evaluateFieldInstance(evaluator, field);
                 final Object value = evaluator.get(field.getName());
@@ -361,7 +362,7 @@ public class UIGrid
             final Map<Long, JSField> jsFields = new HashMap<>();
 
             final MultiPrintQuery multi = new MultiPrintQuery(_instance);
-            for (final GridColumn column : this.columns) {
+            for (final GridColumn column : columns) {
                 final Field field = column.getField();
                 if (field.getSelect() != null) {
                     multi.addSelect(field.getSelect());
@@ -387,8 +388,8 @@ public class UIGrid
             multi.executeWithoutAccessCheck();
             while (multi.next()) {
                 final GridRow row = new GridRow(multi.getCurrentInstance());
-                this.values.add(row);
-                for (final GridColumn column : this.columns) {
+                values.add(row);
+                for (final GridColumn column : columns) {
                     final Field field = column.getField();
                     final Instance instance = evaluateFieldInstance(multi, field);
                     Object value = null;
@@ -512,7 +513,7 @@ public class UIGrid
                         ParameterValues.CALL_INSTANCE, getCallInstance(),
                         ParameterValues.PARAMETERS, Context.getThreadContext().getParameters(),
                         ParameterValues.CLASS, this,
-                        ParameterValues.OTHERS, this.filterList);
+                        ParameterValues.OTHERS, filterList);
         List<Instance> ret = null;
         if (returns.size() < 1) {
             throw new EFapsException(UIGrid.class, "getInstanceList");
@@ -574,7 +575,7 @@ public class UIGrid
         throws EFapsException
     {
         init();
-        return Collections.unmodifiableList(this.values);
+        return Collections.unmodifiableList(values);
     }
 
     /**
@@ -587,7 +588,7 @@ public class UIGrid
         throws EFapsException
     {
         init();
-        return this.filterList;
+        return filterList;
     }
 
     /**
@@ -650,7 +651,7 @@ public class UIGrid
      */
     public UUID getCmdUUID()
     {
-        return this.cmdUUID;
+        return cmdUUID;
     }
 
     /**
@@ -661,7 +662,7 @@ public class UIGrid
      */
     public UIGrid setCmdUUID(final UUID _cmdUUID)
     {
-        this.cmdUUID = _cmdUUID;
+        cmdUUID = _cmdUUID;
         return this;
     }
 
@@ -675,7 +676,7 @@ public class UIGrid
         throws EFapsException
     {
         init();
-        return Collections.unmodifiableList(this.columns);
+        return Collections.unmodifiableList(columns);
     }
 
     /**
@@ -699,7 +700,7 @@ public class UIGrid
     public boolean isShowCheckBoxes()
         throws CacheReloadException
     {
-        return this.showCheckBoxes == null ? getCommand().isTargetShowCheckBoxes() : this.showCheckBoxes;
+        return showCheckBoxes == null ? getCommand().isTargetShowCheckBoxes() : showCheckBoxes;
     }
 
     /**
@@ -709,7 +710,7 @@ public class UIGrid
      */
     public void setShowCheckBoxes(final Boolean _showCheckBoxes)
     {
-        this.showCheckBoxes = _showCheckBoxes;
+        showCheckBoxes = _showCheckBoxes;
     }
 
     /**
@@ -883,7 +884,7 @@ public class UIGrid
      */
     public Instance getCallInstance()
     {
-        return this.callInstance;
+        return callInstance;
     }
 
     /**
@@ -894,7 +895,7 @@ public class UIGrid
      */
     public UIGrid setCallInstance(final Instance _callInstance)
     {
-        this.callInstance = _callInstance;
+        callInstance = _callInstance;
         return this;
     }
 
@@ -906,7 +907,7 @@ public class UIGrid
     @Override
     public PagePosition getPagePosition()
     {
-        return this.pagePosition;
+        return pagePosition;
     }
 
     /**
@@ -917,7 +918,7 @@ public class UIGrid
      */
     public UIGrid setPagePosition(final PagePosition _pagePosition)
     {
-        this.pagePosition = _pagePosition;
+        pagePosition = _pagePosition;
         return this;
     }
 
@@ -929,11 +930,11 @@ public class UIGrid
     public void reload()
         throws EFapsException
     {
-        if (!this.initialized) {
+        if (!initialized) {
             init();
         } else {
-            this.values.clear();
-            Context.getThreadContext().setSessionAttribute(getCacheKey(CacheKey.DBFILTER), this.filterList);
+            values.clear();
+            Context.getThreadContext().setSessionAttribute(getCacheKey(CacheKey.DBFILTER), filterList);
             load(getInstances());
         }
     }
@@ -947,13 +948,13 @@ public class UIGrid
     @Override
     public UIWizardObject getUIWizardObject()
     {
-        return this.uiWizardObject;
+        return uiWizardObject;
     }
 
     @Override
     public IWizardElement setUIWizardObject(final UIWizardObject _uiWizardObject)
     {
-        this.uiWizardObject = _uiWizardObject;
+        uiWizardObject = _uiWizardObject;
         return this;
     }
 
@@ -991,7 +992,7 @@ public class UIGrid
      */
     public boolean isColumnsUpToDate()
     {
-        return this.columnsUpToDate;
+        return columnsUpToDate;
     }
 
     /**
@@ -1001,7 +1002,7 @@ public class UIGrid
      */
     public void setColumnsUpToDate(final boolean _columnsUpToDate)
     {
-        this.columnsUpToDate = _columnsUpToDate;
+        columnsUpToDate = _columnsUpToDate;
     }
 
     /**
@@ -1056,23 +1057,24 @@ public class UIGrid
     {
         File ret = null;
         final String clazzName = Configuration.getAttribute(ConfigAttribute.GRIDPRINTESJP);
-        try {
-            UIGrid.LOG.debug("Print method executed for {}", _uiGrid);
-
-            final Class<?> clazz = Class.forName(clazzName, false, EFapsClassLoader.getInstance());
-            final EventExecution event = (EventExecution) clazz.newInstance();
-            final Parameter param = new Parameter();
-            param.put(ParameterValues.PARAMETERS, Context.getThreadContext().getParameters());
-            param.put(ParameterValues.CLASS, _uiGrid);
-            final Return retu = event.execute(param);
-            if (retu != null) {
-                ret = (File) retu.get(ReturnValues.VALUES);
+            try {
+                UIGrid.LOG.debug("Print method executed for {}", _uiGrid);
+                final Class<?> clazz = Class.forName(clazzName, false, EFapsClassLoader.getInstance());
+                final EventExecution event = (EventExecution) clazz.getDeclaredConstructor().newInstance();
+                final Parameter param = new Parameter();
+                param.put(ParameterValues.PARAMETERS, Context.getThreadContext().getParameters());
+                param.put(ParameterValues.CLASS, _uiGrid);
+                final Return retu = event.execute(param);
+                if (retu != null) {
+                    ret = (File) retu.get(ReturnValues.VALUES);
+                }
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException
+                            | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+                UIGrid.LOG.error("Catched", e);
+            } catch (final EFapsException e) {
+                UIGrid.LOG.error("Catched", e);
             }
-        } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-            UIGrid.LOG.error("Catched", e);
-        } catch (final EFapsException e) {
-            UIGrid.LOG.error("Catched", e);
-        }
+
         return ret;
     }
 
@@ -1088,9 +1090,8 @@ public class UIGrid
         final String clazzName = Configuration.getAttribute(ConfigAttribute.GRIDCHECKOUTESJP);
         try {
             UIGrid.LOG.debug("Checkout method executed for {}", _instance);
-
             final Class<?> clazz = Class.forName(clazzName, false, EFapsClassLoader.getInstance());
-            final EventExecution event = (EventExecution) clazz.newInstance();
+            final EventExecution event = (EventExecution) clazz.getDeclaredConstructor().newInstance();
             final Parameter param = new Parameter();
             param.put(ParameterValues.PARAMETERS, Context.getThreadContext().getParameters());
             param.put(ParameterValues.INSTANCE, _instance);
@@ -1098,7 +1099,8 @@ public class UIGrid
             if (retu != null) {
                 ret = (File) retu.get(ReturnValues.VALUES);
             }
-        } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException
+                        | InvocationTargetException | NoSuchMethodException | SecurityException e) {
             UIGrid.LOG.error("Catched", e);
         } catch (final EFapsException e) {
             UIGrid.LOG.error("Catched", e);
