@@ -242,12 +242,10 @@ public class UIGrid
     protected CharSequence getPrint(final String _queryStmt)
         throws EFapsException
     {
-        final StringBuilder stmtBdlr = new StringBuilder().append(_queryStmt);
-        if (!_queryStmt.contains(" select ")) {
-            stmtBdlr.append(" select ");
-        } else {
-            stmtBdlr.append(", ");
-        }
+        final String[] split = _queryStmt.split("select");
+        final String prefix = split[0];
+        final String postfix = split.length > 1 ? split[1] : "";
+        final StringBuilder stmtBdlr = new StringBuilder().append(prefix);
         final List<String> selects = new ArrayList<>();
         for (final GridColumn column : columns) {
             final Field field = column.getField();
@@ -267,7 +265,16 @@ public class UIGrid
                 // sortValue = multi.getMsgPhrase(field.getProperty(UITableFieldProperty.SORT_MSG_PHRASE));
             }
         }
-        stmtBdlr.append(selects.stream().collect(Collectors.joining(", ")));
+        stmtBdlr.append(" select ").append(" ")
+            .append(selects.stream().collect(Collectors.joining(", ")));
+
+        if (!postfix.trim().isEmpty()) {
+            if (postfix.trim().startsWith("order")) {
+                stmtBdlr.append(postfix);
+            } else {
+                stmtBdlr.append(", ").append(postfix);
+            }
+        }
         return stmtBdlr;
     }
 
