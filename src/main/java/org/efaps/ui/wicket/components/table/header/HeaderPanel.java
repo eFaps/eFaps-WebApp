@@ -123,15 +123,15 @@ public class HeaderPanel
         throws CacheReloadException
     {
         super(_wicketId, _model);
-        this.tablePanel = _panel;
+        tablePanel = _panel;
         final AbstractUIHeaderObject uitable = (AbstractUIHeaderObject) super.getDefaultModelObject();
         if (uitable instanceof UIFieldTable) {
-            this.tableName = ((UIFieldTable) _model.getObject()).getName();
+            tableName = ((UIFieldTable) _model.getObject()).getName();
         } else {
-            this.tableName = uitable.getTable().getName();
+            tableName = uitable.getTable().getName();
         }
         final boolean  dnd = uitable.isDnD();
-        this.headerProperties = "eFapsTable" + uitable.getTableId();
+        headerProperties = "eFapsTable" + uitable.getTableId();
 
         this.add(new AjaxStoreColumnWidthBehavior());
         this.add(new AjaxStoreColumnOrderBehavior());
@@ -139,9 +139,9 @@ public class HeaderPanel
         this.add(AttributeModifier.append("class", "eFapsTableHeader"));
 
         if (dnd) {
-            final DnDBehavior dndBehavior = DnDBehavior.getSourceBehavior(this.headerProperties);
-            dndBehavior.setAppendJavaScript(this.headerProperties + ".storeColumnOrder(getColumnOrder("
-                        + this.headerProperties + "));\n" + this.headerProperties + ".reloadTable()\n");
+            final DnDBehavior dndBehavior = DnDBehavior.getSourceBehavior(headerProperties);
+            dndBehavior.setAppendJavaScript(headerProperties + ".storeColumnOrder(getColumnOrder("
+                        + headerProperties + "));\n" + headerProperties + ".reloadTable()\n");
             this.add(dndBehavior);
         }
 
@@ -210,7 +210,7 @@ public class HeaderPanel
                     cell.add(AttributeModifier.append("class", "eFapsTableHeaderCell eFapsCellWidth" + i));
                 }
                 if (dnd) {
-                    cell.add(DnDBehavior.getItemBehavior(this.headerProperties));
+                    cell.add(DnDBehavior.getItemBehavior(headerProperties));
                 }
             }
             cell.setOutputMarkupId(true);
@@ -225,15 +225,15 @@ public class HeaderPanel
                     }
                 }
                 if (add) {
-                    final Seperator seperator = new Seperator(cellRepeater.newChildId(), i, this.headerProperties);
+                    final Seperator seperator = new Seperator(cellRepeater.newChildId(), i, headerProperties);
                     cellRepeater.add(seperator);
-                    this.js.append("addMoveable(\"").append(seperator.getMarkupId())
-                            .append("\", ").append(this.headerProperties).append(");");
+                    js.append("addMoveable(\"").append(seperator.getMarkupId())
+                            .append("\", ").append(headerProperties).append(");");
                 }
             }
             i++;
         }
-        this.css = getWidthStyle(widthsTmp);
+        css = getWidthStyle(widthsTmp);
     }
 
     /**
@@ -243,7 +243,7 @@ public class HeaderPanel
      */
     public Panel getTablePanel()
     {
-        return this.tablePanel;
+        return tablePanel;
     }
 
     /**
@@ -251,7 +251,7 @@ public class HeaderPanel
      */
     private boolean isStructurBrowser()
     {
-        return this.tablePanel instanceof StructurBrowserTreeTable;
+        return tablePanel instanceof StructurBrowserTreeTable;
     }
 
     @Override
@@ -259,7 +259,7 @@ public class HeaderPanel
     {
         super.renderHead(_response);
         final AbstractUIHeaderObject uitable = (AbstractUIHeaderObject) super.getDefaultModelObject();
-        _response.render(CssHeaderItem.forCSS(this.css, HeaderPanel.class.getName() + "_css_" + uitable.getTableId()));
+        _response.render(CssHeaderItem.forCSS(css, HeaderPanel.class.getName() + "_css_" + uitable.getTableId()));
         _response.render(JavaScriptHeaderItem.forScript(getScript(),
                         HeaderPanel.class.getName() + "_js_" + uitable.getTableId()));
         _response.render(new PriorityHeaderItem(AbstractEFapsHeaderItem.forJavaScript(HeaderPanel.JAVASCRIPT)));
@@ -272,26 +272,27 @@ public class HeaderPanel
     {
         final StringBuilder jsTmp = new StringBuilder()
             .append("require([\"dojo/ready\"]);\n")
-            .append("  var ").append(this.headerProperties).append(" = new headerProperties();\n  ")
-            .append(this.headerProperties).append(".tableName = \"").append(this.tableName).append("\";\n  ")
-            .append(this.headerProperties).append(".headerID = \"").append(this.getMarkupId()).append("\";\n  ")
-            .append(this.headerProperties + ".bodyID = \"").append(this.tablePanel.getMarkupId()).append("\";\n  ")
-            .append(this.headerProperties + ".modelID = ")
+            .append("  var ").append(headerProperties).append(" = new headerProperties();\n  ")
+            .append(headerProperties).append(".tableName = \"").append(tableName).append("\";\n  ")
+            .append(headerProperties).append(".headerID = \"").append(this.getMarkupId()).append("\";\n  ")
+            .append(headerProperties + ".bodyID = \"").append(tablePanel.getMarkupId()).append("\";\n  ")
+            .append(headerProperties + ".modelID = ")
             .append(((AbstractUIHeaderObject) super.getDefaultModelObject()).getTableId()).append(";\n  ")
-            .append(this.headerProperties).append(".storeColumnWidths = ")
+            .append(headerProperties).append(".storeColumnWidths = ")
             .append(this.getBehaviors(AjaxStoreColumnWidthBehavior.class).get(0).getJavaScript())
             .append("; ")
-            .append(this.headerProperties).append(".storeColumnOrder = ")
+            .append(headerProperties).append(".storeColumnOrder = ")
             .append(this.getBehaviors(AjaxStoreColumnOrderBehavior.class).get(0).getJavaScript())
             .append("; ")
-            .append(this.headerProperties + ".reloadTable = ")
+            .append(headerProperties + ".reloadTable = ")
             .append(this.getBehaviors(AjaxReloadTableBehavior.class).get(0).getJavaScript())
             .append("; ")
             .append("  addOnResizeEvent(function (){ positionTableColumns(")
-            .append(this.headerProperties)
+            .append(headerProperties)
             .append(");});\n")
-            .append("dojo.ready(function (){ positionTableColumns(").append(this.headerProperties).append(");")
-            .append(this.js)
+            .append("dojo.ready(function (){")
+            .append("positionTableColumns(").append(headerProperties).append(");")
+            .append(js)
             .append("});\n");
         return jsTmp.toString();
     }

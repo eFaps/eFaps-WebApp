@@ -315,9 +315,9 @@ public class UIStructurBrowser
         throws EFapsException
     {
         super(_commandUUID, _instanceKey);
-        this.root = _root;
+        root = _root;
         if (isRoot()) {
-            this.allowChildren = true;
+            allowChildren = true;
         }
         setSortDirectionInternal(_sortdirection);
         initialise();
@@ -360,11 +360,11 @@ public class UIStructurBrowser
         final AbstractCommand command = getCommand();
         if (command != null && command.getTargetTable() != null) {
             setTableUUID(command.getTargetTable().getUUID());
-            this.browserFieldName = command.getTargetStructurBrowserField();
+            browserFieldName = command.getTargetStructurBrowserField();
             setShowCheckBoxes(command.isTargetShowCheckBoxes());
         } else if (getInstance() != null) {
             final String tmplabel = Menu.getTypeTreeMenu(getInstance().getType()).getLabel();
-            this.valueLabel = DBProperties.getProperty(tmplabel);
+            valueLabel = DBProperties.getProperty(tmplabel);
         }
 
         // set default sort
@@ -441,7 +441,7 @@ public class UIStructurBrowser
             for (final Instance inst : _map.keySet()) {
                 instances.add(inst);
             }
-            final ValueParser parser = new ValueParser(new StringReader(this.valueLabel));
+            final ValueParser parser = new ValueParser(new StringReader(valueLabel));
             final ValueList valuelist = parser.ExpressionString();
             final MultiPrintQuery print = new MultiPrintQuery(instances);
             valuelist.makeSelect(print);
@@ -451,7 +451,7 @@ public class UIStructurBrowser
                 final Instance instance = print.getCurrentInstance();
                 value = valuelist.makeString(getInstance(), print, getMode());
                 final UIStructurBrowser child = getNewStructurBrowser(instance, this);
-                this.children.add(child);
+                children.add(child);
                 child.setDirection(_map.get(instance));
                 child.setLabel(value.toString());
                 child.setAllowChildren(checkForAllowChildren(instance));
@@ -531,7 +531,8 @@ public class UIStructurBrowser
                             getHeaders().add(uiTableHeader);
                             if (!fieldConfig.isFixedWidth()) {
                                 if (userWidthList != null && userWidthList.size() > i) {
-                                    if (isShowCheckBoxes() && userWidthList.size() > i + 1) {
+                                    if ((isShowCheckBoxes() || this instanceof UIFieldStructurBrowser)
+                                                    && userWidthList.size() > i + 1) {
                                         uiTableHeader.setWidth(userWidthList.get(i + 1));
                                     } else {
                                         uiTableHeader.setWidth(userWidthList.get(i));
@@ -604,7 +605,7 @@ public class UIStructurBrowser
                         }
                     }
                 }
-                this.children.add(child);
+                children.add(child);
                 child.checkHideColumn4Row();
             }
         } catch (final EFapsException e) {
@@ -623,7 +624,7 @@ public class UIStructurBrowser
     @Override
     public List<IHidden> getHidden()
     {
-        return this.hidden;
+        return hidden;
     }
 
     /**
@@ -636,10 +637,10 @@ public class UIStructurBrowser
         try {
             // only if the element was opened the first time e.g. reload etc.
             if ((isRoot() || _expand)
-                       && (Context.getThreadContext().containsSessionAttribute(getCacheKey()) || this.forceExpanded)) {
+                       && (Context.getThreadContext().containsSessionAttribute(getCacheKey()) || forceExpanded)) {
                 final Map<String, Boolean> sessMap = (Map<String, Boolean>) Context
                                 .getThreadContext().getSessionAttribute(getCacheKey());
-                for (final UIStructurBrowser uiChild : this.children) {
+                for (final UIStructurBrowser uiChild : children) {
                     if (isForceExpanded() || sessMap == null || sessMap.containsKey(uiChild.getInstanceKey())) {
                         final Boolean expandedTmp = sessMap == null || isForceExpanded()
                                                 ? true : sessMap.get(uiChild.getInstanceKey());
@@ -674,7 +675,7 @@ public class UIStructurBrowser
     {
         final Set<UIStructurBrowser> ret;
         if (isRoot()) {
-            ret = this.expandedBrowsers;
+            ret = expandedBrowsers;
         } else {
             ret = getParentBrws().getExpandedBrowsers();
         }
@@ -687,8 +688,8 @@ public class UIStructurBrowser
     protected void add2ExpandedBrowsers(final UIStructurBrowser _structBrowser)
     {
         if (isRoot()) {
-            this.expandedBrowsers.add(_structBrowser);
-            this.expanded = true;
+            expandedBrowsers.add(_structBrowser);
+            expanded = true;
         } else {
             getParentBrws().add2ExpandedBrowsers(_structBrowser);
         }
@@ -704,7 +705,7 @@ public class UIStructurBrowser
             getObject4Event().executeEvents(EventType.UI_TABLE_EVALUATE, ParameterValues.CLASS, this);
 
             if (getSortDirection() == SortDirection.DESCENDING) {
-                Collections.reverse(this.children);
+                Collections.reverse(children);
             }
         } catch (final EFapsException e) {
             throw new RestartResponseException(new ErrorPage(e));
@@ -718,7 +719,7 @@ public class UIStructurBrowser
     public void sort()
     {
         sortModel();
-        for (final UIStructurBrowser child : this.children) {
+        for (final UIStructurBrowser child : children) {
             child.sort();
         }
     }
@@ -730,7 +731,7 @@ public class UIStructurBrowser
      */
     public boolean isForceExpanded()
     {
-        return this.forceExpanded;
+        return forceExpanded;
     }
 
     /**
@@ -740,7 +741,7 @@ public class UIStructurBrowser
      */
     protected void setForceExpanded(final boolean _forceExpanded)
     {
-        this.forceExpanded = _forceExpanded;
+        forceExpanded = _forceExpanded;
     }
 
     /**
@@ -750,7 +751,7 @@ public class UIStructurBrowser
      */
     public boolean isAllowChildren()
     {
-        return this.allowChildren;
+        return allowChildren;
     }
 
 
@@ -762,7 +763,7 @@ public class UIStructurBrowser
 
     public void setAllowChildren(final boolean _allowChildren)
     {
-        this.allowChildren = _allowChildren;
+        allowChildren = _allowChildren;
     }
 
     /**
@@ -772,7 +773,7 @@ public class UIStructurBrowser
      */
     public boolean hasChildren()
     {
-        return !this.children.isEmpty();
+        return !children.isEmpty();
     }
 
     /**
@@ -782,7 +783,7 @@ public class UIStructurBrowser
      */
     public List<UIStructurBrowser> getChildren()
     {
-        return this.children;
+        return children;
     }
 
     /**
@@ -792,7 +793,7 @@ public class UIStructurBrowser
      */
     public boolean isAllowItems()
     {
-        return this.allowItems;
+        return allowItems;
     }
 
     /**
@@ -802,7 +803,7 @@ public class UIStructurBrowser
      */
     public void setAllowItems(final boolean _allowItems)
     {
-        this.allowItems = _allowItems;
+        allowItems = _allowItems;
     }
 
     /**
@@ -989,7 +990,7 @@ public class UIStructurBrowser
      */
     public boolean isParent()
     {
-        return this.parent;
+        return parent;
     }
 
     /**
@@ -999,7 +1000,7 @@ public class UIStructurBrowser
      */
     public void setParent(final boolean _parent)
     {
-        this.parent = _parent;
+        parent = _parent;
     }
 
     /**
@@ -1012,7 +1013,7 @@ public class UIStructurBrowser
     {
         super.setInitialized(false);
         getHeaders().clear();
-        this.children.clear();
+        children.clear();
     }
 
     /**
@@ -1060,7 +1061,7 @@ public class UIStructurBrowser
      */
     public AbstractUIField getColumnValue(final int _index)
     {
-        return this.columns.isEmpty() ? null : this.columns.get(_index);
+        return columns.isEmpty() ? null : columns.get(_index);
     }
 
     /**
@@ -1071,7 +1072,7 @@ public class UIStructurBrowser
     private void setLabel(final Object _label)
     {
         if (_label != null) {
-            this.label = String.valueOf(_label);
+            label = String.valueOf(_label);
         }
     }
 
@@ -1082,7 +1083,7 @@ public class UIStructurBrowser
      */
     public List<AbstractUIField> getColumns()
     {
-        return this.columns;
+        return columns;
     }
 
     /**
@@ -1093,7 +1094,7 @@ public class UIStructurBrowser
 
     protected void setBrowserFieldName(final String _browserFieldName)
     {
-        this.browserFieldName = _browserFieldName;
+        browserFieldName = _browserFieldName;
     }
 
     /**
@@ -1104,7 +1105,7 @@ public class UIStructurBrowser
 
     protected void setBrowserFieldIndex(final int _browserFieldIndex)
     {
-        this.browserFieldIndex = _browserFieldIndex;
+        browserFieldIndex = _browserFieldIndex;
     }
 
     /**
@@ -1114,7 +1115,7 @@ public class UIStructurBrowser
      */
     public int getBrowserFieldIndex()
     {
-        return this.browserFieldIndex;
+        return browserFieldIndex;
     }
 
     /**
@@ -1125,7 +1126,7 @@ public class UIStructurBrowser
      */
     public String getBrowserFieldName()
     {
-        return this.browserFieldName;
+        return browserFieldName;
     }
 
     /**
@@ -1136,7 +1137,7 @@ public class UIStructurBrowser
 
     public String getImage()
     {
-        return this.image;
+        return image;
     }
 
     /**
@@ -1160,7 +1161,7 @@ public class UIStructurBrowser
     private void setImage(final String _url)
     {
         if (_url != null) {
-            this.image = _url;
+            image = _url;
         }
     }
 
@@ -1171,7 +1172,7 @@ public class UIStructurBrowser
      */
     public Boolean getDirection()
     {
-        return this.direction;
+        return direction;
     }
 
     /**
@@ -1181,7 +1182,7 @@ public class UIStructurBrowser
      */
     public void setDirection(final Boolean _direction)
     {
-        this.direction = _direction;
+        direction = _direction;
     }
 
     /**
@@ -1191,7 +1192,7 @@ public class UIStructurBrowser
      */
     public ExecutionStatus getExecutionStatus()
     {
-        return this.executionStatus;
+        return executionStatus;
     }
 
     /**
@@ -1200,7 +1201,7 @@ public class UIStructurBrowser
     public void requeryLabel()
     {
         try {
-            final ValueParser parser = new ValueParser(new StringReader(this.valueLabel));
+            final ValueParser parser = new ValueParser(new StringReader(valueLabel));
             final ValueList valList = parser.ExpressionString();
             final PrintQuery print = new PrintQuery(getInstance());
             valList.makeSelect(print);
@@ -1221,7 +1222,7 @@ public class UIStructurBrowser
      */
     public String getLabel()
     {
-        return this.label;
+        return label;
     }
 
     /**
@@ -1234,7 +1235,7 @@ public class UIStructurBrowser
     public void setSortDirection(final SortDirection _sortDirection)
     {
         super.setSortDirection(_sortDirection);
-        for (final UIStructurBrowser child : this.children) {
+        for (final UIStructurBrowser child : children) {
             child.setSortDirectionInternal(_sortDirection);
         }
     }
@@ -1246,7 +1247,7 @@ public class UIStructurBrowser
      */
     public boolean isExpanded()
     {
-        return this.expanded;
+        return expanded;
     }
 
     /**
@@ -1256,7 +1257,7 @@ public class UIStructurBrowser
      */
     public void setExpanded(final boolean _expanded)
     {
-        this.expanded = _expanded;
+        expanded = _expanded;
         storeInSession();
     }
 
@@ -1302,7 +1303,7 @@ public class UIStructurBrowser
      */
     protected void setExecutionStatus(final ExecutionStatus _executionStatus)
     {
-        this.executionStatus = _executionStatus;
+        executionStatus = _executionStatus;
     }
 
     /**
@@ -1324,7 +1325,7 @@ public class UIStructurBrowser
      */
     public boolean isRoot()
     {
-        return this.root;
+        return root;
     }
 
     /**
@@ -1334,7 +1335,7 @@ public class UIStructurBrowser
      */
     public UIStructurBrowser getParentBrws()
     {
-        return this.parentBrws;
+        return parentBrws;
     }
 
     /**
@@ -1344,7 +1345,7 @@ public class UIStructurBrowser
      */
     protected void setParentBrws(final UIStructurBrowser _parentBrws)
     {
-        this.parentBrws = _parentBrws;
+        parentBrws = _parentBrws;
     }
 
     /**
@@ -1354,7 +1355,7 @@ public class UIStructurBrowser
      */
     public int getLevel()
     {
-        return this.level;
+        return level;
     }
 
     /**
@@ -1364,19 +1365,19 @@ public class UIStructurBrowser
      */
     protected void setLevel(final int _level)
     {
-        this.level = _level;
+        level = _level;
     }
 
     @Override
     public PagePosition getPagePosition()
     {
         final PagePosition ret;
-        if (this.pagePosition == null) {
+        if (pagePosition == null) {
             //TODO remove
             UIStructurBrowser.LOG.error("MISSING PAGEPOSITION!!!");
             ret = PagePosition.CONTENT;
         } else {
-            ret = this.pagePosition;
+            ret = pagePosition;
         }
         return ret;
     }
@@ -1389,7 +1390,7 @@ public class UIStructurBrowser
      */
     public UIStructurBrowser setPagePosition(final PagePosition _pagePosition)
     {
-        this.pagePosition = _pagePosition;
+        pagePosition = _pagePosition;
         return this;
     }
 
@@ -1402,6 +1403,6 @@ public class UIStructurBrowser
     @Override
     public String toString()
     {
-        return this.label;
+        return label;
     }
 }
