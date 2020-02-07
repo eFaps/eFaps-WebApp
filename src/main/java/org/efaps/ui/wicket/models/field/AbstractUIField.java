@@ -173,9 +173,9 @@ public abstract class AbstractUIField
         throws EFapsException
     {
         super(_instanceKey);
-        this.parent = _parent;
-        this.value = _value;
-        this.fieldConfiguration = getNewFieldConfiguration();
+        parent = _parent;
+        value = _value;
+        fieldConfiguration = getNewFieldConfiguration();
     }
 
     /**
@@ -186,55 +186,55 @@ public abstract class AbstractUIField
     @Override
     public AutoCompleteSettings getAutoCompleteSetting()
     {
-        if (this.autoCompleteSetting == null && isAutoComplete()) {
-            this.autoCompleteSetting = new AutoCompleteSettings(getFieldConfiguration());
+        if (autoCompleteSetting == null && isAutoComplete()) {
+            autoCompleteSetting = new AutoCompleteSettings(getFieldConfiguration());
 
             final List<EventDefinition> events = getFieldConfiguration().getField().getEvents(
                             EventType.UI_FIELD_AUTOCOMPLETE);
             for (final EventDefinition event : events) {
-                this.autoCompleteSetting.setMinInputLength(event.getProperty("MinInputLength") == null
+                autoCompleteSetting.setMinInputLength(event.getProperty("MinInputLength") == null
                                 ? 1 : Integer.valueOf(event.getProperty("MinInputLength")));
-                this.autoCompleteSetting.setMaxChoiceLength(event.getProperty("MaxChoiceLength") == null
+                autoCompleteSetting.setMaxChoiceLength(event.getProperty("MaxChoiceLength") == null
                                 ? -1 : Integer.valueOf(event.getProperty("MaxChoiceLength")));
-                this.autoCompleteSetting.setMaxValueLength(event.getProperty("MaxValueLength") == null
+                autoCompleteSetting.setMaxValueLength(event.getProperty("MaxValueLength") == null
                                 ? -1 : Integer.valueOf(event.getProperty("MaxValueLength")));
                 if (event.getProperty("MaxResult") != null) {
-                    this.autoCompleteSetting.setMaxResult(Integer.valueOf(event.getProperty("MaxResult")));
+                    autoCompleteSetting.setMaxResult(Integer.valueOf(event.getProperty("MaxResult")));
                 }
                 if (event.getProperty("HasDownArrow") != null) {
-                    this.autoCompleteSetting
+                    autoCompleteSetting
                                     .setHasDownArrow("true".equalsIgnoreCase(event.getProperty("HasDownArrow")));
                 }
                 if (event.getProperty("Required") != null) {
-                    this.autoCompleteSetting
+                    autoCompleteSetting
                                     .setRequired(!"false".equalsIgnoreCase(event.getProperty("Required")));
                 }
 
                 if (event.getProperty("AutoType") != null) {
-                    this.autoCompleteSetting.setAutoType(EnumUtils.getEnum(AutoCompleteBehavior.Type.class,
+                    autoCompleteSetting.setAutoType(EnumUtils.getEnum(AutoCompleteBehavior.Type.class,
                                     event.getProperty("AutoType")));
                 }
 
                 // add the ExtraParameter definitions
                 final String ep = event.getProperty("ExtraParameter");
                 if (ep != null) {
-                    this.autoCompleteSetting.getExtraParameters().add(ep);
+                    autoCompleteSetting.getExtraParameters().add(ep);
                 }
                 int i = 1;
                 String keyTmp = "ExtraParameter" + String.format("%02d", i);
                 while (event.getProperty(keyTmp) != null) {
-                    this.autoCompleteSetting.getExtraParameters().add(event.getProperty(keyTmp));
+                    autoCompleteSetting.getExtraParameters().add(event.getProperty(keyTmp));
                     i++;
                     keyTmp = "ExtraParameter" + String.format("%02d", i);
                 }
 
                 final String value4EditStr = event.getProperty("Value4Edit");
                 if (value4EditStr != null) {
-                    this.autoCompleteSetting.setValue4Edit(EditValue.valueOf(value4EditStr));
+                    autoCompleteSetting.setValue4Edit(EditValue.valueOf(value4EditStr));
                 }
             }
         }
-        return this.autoCompleteSetting;
+        return autoCompleteSetting;
     }
 
     /**
@@ -245,7 +245,7 @@ public abstract class AbstractUIField
     @Override
     public AbstractUIModeObject getParent()
     {
-        return this.parent;
+        return parent;
     }
 
     /**
@@ -275,7 +275,7 @@ public abstract class AbstractUIField
      */
     public UIValue getValue()
     {
-        return this.value;
+        return value;
     }
 
     /**
@@ -285,7 +285,7 @@ public abstract class AbstractUIField
      */
     public void setValue(final UIValue _value)
     {
-        this.value = _value;
+        value = _value;
     }
 
     /**
@@ -295,7 +295,7 @@ public abstract class AbstractUIField
      */
     public FieldConfiguration getFieldConfiguration()
     {
-        return this.fieldConfiguration;
+        return fieldConfiguration;
     }
 
     /**
@@ -323,7 +323,7 @@ public abstract class AbstractUIField
 
     protected void setFieldConfiguration(final FieldConfiguration _fieldConfiguration)
     {
-        this.fieldConfiguration = _fieldConfiguration;
+        fieldConfiguration = _fieldConfiguration;
     }
 
     /**
@@ -379,7 +379,7 @@ public abstract class AbstractUIField
         final IComponentFactory factory = getFactory();
         if (factory == null) {
             ret = new LabelField(_wicketId, Model.of("No Factory was applied successfully"),
-                            this.fieldConfiguration, "NONE");
+                            fieldConfiguration, "NONE");
         } else {
             if (hidden()) {
                 ret = factory.getHidden(_wicketId, this);
@@ -436,7 +436,7 @@ public abstract class AbstractUIField
     @Override
     public UIPicker getPicker()
     {
-        return this.picker;
+        return picker;
     }
 
     /**
@@ -446,7 +446,7 @@ public abstract class AbstractUIField
      */
     public void setPicker(final UIPicker _picker)
     {
-        this.picker = _picker;
+        picker = _picker;
     }
 
     /**
@@ -478,14 +478,14 @@ public abstract class AbstractUIField
     @Override
     public IHidden setAdded(final boolean _added)
     {
-        this.added = _added;
+        added = _added;
         return this;
     }
 
     @Override
     public boolean isAdded()
     {
-        return this.added;
+        return added;
     }
 
     @Override
@@ -498,10 +498,10 @@ public abstract class AbstractUIField
     public String getPickListValue()
         throws EFapsException
     {
-        if (this.pickListValue == null) {
-            this.pickListValue = getFactory().getPickListValue(this);
+        if (pickListValue == null) {
+            pickListValue = getFactory().getPickListValue(this);
         }
-        return this.pickListValue;
+        return pickListValue;
     }
 
     /**
@@ -512,10 +512,10 @@ public abstract class AbstractUIField
     {
         Comparable<?> ret = null;
         try {
-            if (this.sortValue == null) {
+            if (sortValue == null) {
                 ret = getFactory().getCompareValue(this);
             } else {
-                ret = this.sortValue;
+                ret = sortValue;
             }
         } catch (final EFapsException e) {
             LOG.error("Catched error", e);
@@ -527,7 +527,7 @@ public abstract class AbstractUIField
     public ISortable setCompareValue(final Object _object)
     {
         if (_object != null && _object instanceof Comparable) {
-            this.sortValue = (Comparable<?>) _object;
+            sortValue = (Comparable<?>) _object;
         }
         return this;
     }
@@ -558,7 +558,7 @@ public abstract class AbstractUIField
                 }
             }
             if (getFactoryKey() == null) {
-                LOG.error("Could not find factory for field '{}' in '{}'", getFieldConfiguration().getName(),
+                LOG.warn("Could not find factory for field '{}' in '{}'", getFieldConfiguration().getName(),
                                 getFieldConfiguration().getField().getCollection().getName());
             }
         }
@@ -572,7 +572,7 @@ public abstract class AbstractUIField
      */
     public void setFactory(final IComponentFactory _factory)
     {
-        this.factoryKey = _factory.getKey();
+        factoryKey = _factory.getKey();
     }
 
     /**
@@ -582,7 +582,7 @@ public abstract class AbstractUIField
      */
     public String getFactoryKey()
     {
-        return this.factoryKey;
+        return factoryKey;
     }
 
     /**
@@ -592,7 +592,7 @@ public abstract class AbstractUIField
      */
     public void setPickListValue(final String _pickListValue)
     {
-        this.pickListValue = _pickListValue;
+        pickListValue = _pickListValue;
     }
 
     /**
@@ -667,7 +667,7 @@ public abstract class AbstractUIField
      */
     public boolean isHide()
     {
-        return this.hide;
+        return hide;
     }
 
     /**
@@ -677,6 +677,6 @@ public abstract class AbstractUIField
      */
     public void setHide(final boolean _hide)
     {
-        this.hide = _hide;
+        hide = _hide;
     }
 }
