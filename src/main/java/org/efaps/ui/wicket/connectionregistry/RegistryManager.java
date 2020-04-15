@@ -314,6 +314,7 @@ public final class RegistryManager
                             .getCacheConfiguration(RegistryManager.SESSIONCACHE);
             final ConfigurationBuilder bldr = new ConfigurationBuilder().read(config);
             bldr.indexing().addIndexedEntity(UserSession.class);
+            bldr.template(false);
             ((EmbeddedCacheManager) InfinispanCache.get().getContainer()).undefineConfiguration(
                             RegistryManager.SESSIONCACHE);
 
