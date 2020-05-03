@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2020 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  */
 package org.efaps.ui.wicket.components.dashboard;
 
-import org.apache.wicket.PageReference;
 import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
@@ -53,7 +52,6 @@ public class DachboardContainerPanel
      * @throws EFapsException on error
      */
     public DachboardContainerPanel(final String _wicketId,
-                                   final PageReference _pageReference,
                                    final IDashboard _dashboard,
                                    final boolean _main)
         throws EFapsException
@@ -100,9 +98,9 @@ public class DachboardContainerPanel
             final boolean activated = !"false".equalsIgnoreCase(Context.getThreadContext().getUserAttribute(
                             DashboardPage.class.getName() + "." + _wicketId));
             setModel(Model.of(activated));
-            this.ajaxUpdate = _ajaxUpdate;
+            ajaxUpdate = _ajaxUpdate;
             if (!activated) {
-                this.ajaxUpdate.deactivate();
+                ajaxUpdate.deactivate();
             }
         }
 
@@ -116,9 +114,9 @@ public class DachboardContainerPanel
                 LOG.error("error on saving UserAttribute", e);
             }
             if (getConvertedInput()) {
-                this.ajaxUpdate.restart(_target);
+                ajaxUpdate.restart(_target);
             } else {
-                this.ajaxUpdate.stop(_target);
+                ajaxUpdate.stop(_target);
             }
         }
     }
@@ -155,14 +153,14 @@ public class DachboardContainerPanel
          */
         public void deactivate()
         {
-            this.deactivate = true;
+            deactivate = true;
         }
 
         @Override
         protected final void onTimer(final AjaxRequestTarget _target)
         {
-            if (this.deactivate) {
-                this.deactivate = false;
+            if (deactivate) {
+                deactivate = false;
                 stop(_target);
             }
         }

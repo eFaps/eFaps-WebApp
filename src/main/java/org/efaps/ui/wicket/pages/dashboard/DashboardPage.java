@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2020 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 
 package org.efaps.ui.wicket.pages.dashboard;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,8 +46,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO comment!
- *
  * @author The eFaps Team
  */
 public class DashboardPage
@@ -68,6 +67,12 @@ public class DashboardPage
     private static final EFapsContentReference CSS = new EFapsContentReference(DashboardPage.class,
                     "DashboardPage.css");
 
+    public DashboardPage()
+        throws EFapsException
+    {
+        this(null);
+    }
+
     /**
      * @param _pageReference Reference to the calling page
      * @throws EFapsException on error
@@ -87,12 +92,13 @@ public class DashboardPage
             final Class<?> clazz;
             try {
                 clazz = Class.forName(providerClass, false, EFapsClassLoader.getInstance());
-                final IDashboardProvider provider = (IDashboardProvider) clazz.newInstance();
+
+                final IDashboardProvider provider = (IDashboardProvider) clazz.getConstructor().newInstance();
                 final List<IDashboard> dashboards = provider.getDashboards();
                 if (dashboards.isEmpty()) {
                     add(new WebMarkupContainer("tabs").setVisible(false));
                 } else if (dashboards.size() == 1) {
-                    add(new DachboardContainerPanel("tabs", _pageReference, dashboards.get(0), true));
+                    add(new DachboardContainerPanel("tabs", dashboards.get(0), true));
                 } else {
                     boolean first = true;
                     for (final IDashboard dashboard : dashboards) {
@@ -108,7 +114,7 @@ public class DashboardPage
                             {
                                 Panel ret = null;
                                 try {
-                                    ret = new DachboardContainerPanel(_panelId, _pageReference, dashboard, main);
+                                    ret = new DachboardContainerPanel(_panelId, dashboard, main);
                                 } catch (final EFapsException e) {
                                     LOG.error("Could not load DashboardContainerPanel", e);
                                 }
@@ -124,7 +130,9 @@ public class DashboardPage
                     }
                     add(tabbedPanel);
                 }
-            } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+            } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException
+                            | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
+                            | SecurityException e) {
                 LOG.error("Could not find/instantiate Provider Class", e);
             } catch (final EFapsBaseException e1) {
                 LOG.error("Could not retrieve dashboard classes", e1);
