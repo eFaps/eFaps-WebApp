@@ -16,17 +16,21 @@
  */
 package org.efaps.ui.wicket.pages.content.grid;
 
+import java.util.UUID;
+
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.footer.FooterPanel;
 import org.efaps.ui.wicket.components.gridx.GridXPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
+import org.efaps.ui.wicket.models.objects.PagePosition;
 import org.efaps.ui.wicket.models.objects.grid.UIGrid;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
@@ -57,6 +61,11 @@ public class GridPage
      * Logging instance used in this class.
      */
     private static final Logger LOG = LoggerFactory.getLogger(GridPage.class);
+
+    public GridPage(final PageParameters _pageParameters)
+    {
+        this(Model.of(UIGrid.get(UUID.fromString(_pageParameters.get("id").toString()), PagePosition.CONTENT)), null);
+    }
 
     /**
      * Instantiates a new grid page.
