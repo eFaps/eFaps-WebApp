@@ -65,6 +65,8 @@ public class SPAServlet
         }
         final String mimeType = tika.detect(file);
         _resp.setContentType(mimeType);
+        _resp.setHeader("Cache-Control", "private, max-age=2629746");
+
         FileUtils.copyFile(file, _resp.getOutputStream());
     }
 }
