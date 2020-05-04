@@ -18,11 +18,8 @@
 
 package org.efaps.ui.wicket.components.gridx;
 
-import com.github.openjson.JSONArray;
-import com.github.openjson.JSONObject;
-import com.github.openjson.JSONTokener;
-
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -96,6 +93,10 @@ import org.efaps.util.RandomUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.openjson.JSONArray;
+import com.github.openjson.JSONObject;
+import com.github.openjson.JSONTokener;
+
 /**
  * @author The eFaps Team
  */
@@ -162,7 +163,7 @@ public class GridXComponent
                             DojoClasses.DropDownButton, DojoClasses.TextBox, DojoClasses.TooltipDialog,
                             DojoClasses.domGeom, DojoClasses.ColumnLock, DojoClasses.DateLocale);
 
-            final DecimalFormat format = (DecimalFormat) DecimalFormat.getInstance(
+            final DecimalFormat format = (DecimalFormat) NumberFormat.getInstance(
                             Context.getThreadContext().getLocale());
             final char decSep = format.getDecimalFormatSymbols().getDecimalSeparator();
             final char grpSep = format.getDecimalFormatSymbols().getGroupingSeparator();
@@ -527,9 +528,10 @@ public class GridXComponent
             .append("  }else{\n")
             .append("    value = {expires: -1};\n")
             .append("  }\n")
+            .append("if (top.eFaps) {")
             .append("top.eFaps.persistUserAttr('")
                 .append(_uiGrid.getCacheKey(CacheKey.GRIDX)).append("', value);")
-            .append("},\n");
+            .append("}},\n");
         return ret;
     }
 
