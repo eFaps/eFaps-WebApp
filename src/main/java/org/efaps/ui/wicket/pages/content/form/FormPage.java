@@ -18,6 +18,7 @@
 package org.efaps.ui.wicket.pages.content.form;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Page;
@@ -27,6 +28,7 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.classification.ClassificationPathPanel;
 import org.efaps.ui.wicket.components.form.FormPanel;
@@ -45,8 +47,8 @@ import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIForm.Element;
 import org.efaps.ui.wicket.models.objects.UIForm.ElementType;
 import org.efaps.ui.wicket.models.objects.UIForm.FormElement;
-import org.efaps.ui.wicket.models.objects.grid.UIFieldGrid;
 import org.efaps.ui.wicket.models.objects.UIHeading;
+import org.efaps.ui.wicket.models.objects.grid.UIFieldGrid;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
@@ -68,6 +70,12 @@ public class FormPage
      * Needed for serialization.
      */
     private static final long serialVersionUID = 8884911406648729094L;
+
+    public FormPage(final PageParameters _pageParameters)
+        throws EFapsException
+    {
+        this(Model.of(new UIForm(UUID.fromString(_pageParameters.get("id").toString()), null)));
+    }
 
     /**
      * @param _model model for the page
@@ -138,7 +146,7 @@ public class FormPage
         form.add(AttributeModifier.append("class", uiForm.getMode().toString()));
         if (uiForm.isMultiPart() && (uiForm.isCreateMode() || uiForm.isEditMode())) {
             form.setMultiPart(true);
-            form.setMaxSize(this.getApplication().getApplicationSettings().getDefaultMaximumUploadSize());
+            form.setMaxSize(getApplication().getApplicationSettings().getDefaultMaximumUploadSize());
         }
 
         super.addComponents(form);
