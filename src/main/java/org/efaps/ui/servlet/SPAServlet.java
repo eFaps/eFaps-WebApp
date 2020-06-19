@@ -52,21 +52,23 @@ public class SPAServlet
     {
         var path = _req.getPathInfo();
         LOG.info("Serving SPA for: {}", path);
-        if (path != null && path.length() > 1 && path.contains("/")) {
-            final var pathArray = path.split("\\/");
-            path = pathArray[pathArray.length - 1];
-        }
+        File file = null;
         if (path == null ) {
-            path = "index.html";
+            file = new File(resourceBase, "index.html");
+        } else if (path != null && path.length() > 1 && path.contains("/")) {
+            file = new File(resourceBase, path);
+            if (!file.exists() || file.isDirectory()) {
+                final var pathArray = path.split("\\/");
+                path = pathArray[pathArray.length - 1];
+                file = new File(resourceBase, path);
+            }
         }
-        File file = new File(resourceBase, path);
-        if (!file.exists() || file.isDirectory()) {
+        if (file == null || !file.exists() || file.isDirectory()) {
             file = new File(resourceBase, "index.html");
         }
         final String mimeType = tika.detect(file);
         _resp.setContentType(mimeType);
         _resp.setHeader("Cache-Control", "private, max-age=2629746");
-
         FileUtils.copyFile(file, _resp.getOutputStream());
     }
 }
