@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2020 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -100,7 +100,7 @@ public class LinkItem
                         page = new GridPage(Model.of(UIGrid.get(command.getUUID(), pagePosition)));
                     } else {
                         final UIStructurBrowser uiStrBrws = new UIStructurBrowser(model.getCommandUUID(),
-                                    model.getInstanceKey()).setPagePosition(pagePosition);
+                                        model.getInstanceKey()).setPagePosition(pagePosition);
                         page = new StructurBrowserPage(Model.of(uiStrBrws), getPage().getPageReference());
                     }
                 } else {
@@ -150,16 +150,23 @@ public class LinkItem
         _openComponent.getPage();
         if (command.getTargetTable() != null) {
             if (command.getTargetStructurBrowserField() != null) {
-                final StructurBrowserPage page = new StructurBrowserPage(model.getCommandUUID(), model
-                                .getInstanceKey());
-                setResponsePage(page);
+                if ("GridX".equals(Configuration.getAttribute(ConfigAttribute.TABLE_DEFAULTTYPECONTENT))) {
+                    final GridPage page = new GridPage(Model.of(UIGrid.get(command.getUUID(), PagePosition.CONTENT)));
+                    setResponsePage(page);
+                } else {
+                    final UIStructurBrowser uiStrBrws = new UIStructurBrowser(model.getCommandUUID(),
+                                    model.getInstanceKey());
+                    uiStrBrws.setPagePosition(PagePosition.CONTENT);
+                    final StructurBrowserPage page = new StructurBrowserPage(Model.of(uiStrBrws));
+                    setResponsePage(page);
+                }
             } else {
                 if ("GridX".equals(Configuration.getAttribute(ConfigAttribute.TABLE_DEFAULTTYPECONTENT))) {
                     final GridPage page = new GridPage(Model.of(UIGrid.get(command.getUUID(), PagePosition.CONTENT)));
                     setResponsePage(page);
                 } else {
                     final UITable uiTable = new UITable(model.getCommandUUID(), model.getInstanceKey())
-                                    .setPagePosition( PagePosition.CONTENT);
+                                    .setPagePosition(PagePosition.CONTENT);
                     final TablePage page = new TablePage(Model.of(uiTable));
                     setResponsePage(page);
                 }
@@ -208,9 +215,11 @@ public class LinkItem
     {
         final StringBuilder js = new StringBuilder()
                         .append("registry.byId(\"").append("mainPanel").append(
-                                        "\").set(\"content\", domConstruct.create(\"iframe\", {").append("\"id\": \"")
+                                        "\").set(\"content\", domConstruct.create(\"iframe\", {")
+                        .append("\"id\": \"")
                         .append(MainPage.IFRAME_ID).append("\",\"src\": \"").append(_url).append(
-                                        "\",\"style\": \"border: 0; width: 100%; height: 99%\"").append(",\"id\": \"")
+                                        "\",\"style\": \"border: 0; width: 100%; height: 99%\"")
+                        .append(",\"id\": \"")
                         .append(MainPage.IFRAME_ID).append("\"").append("}));");
         return DojoWrapper.require(js, DojoClasses.registry, DojoClasses.domConstruct);
     }
