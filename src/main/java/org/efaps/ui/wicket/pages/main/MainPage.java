@@ -17,8 +17,6 @@
 
 package org.efaps.ui.wicket.pages.main;
 
-
-
 import java.util.UUID;
 
 import org.apache.commons.lang3.BooleanUtils;
@@ -77,6 +75,7 @@ import org.efaps.ui.wicket.behaviors.dojo.MessageListenerBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.RequireBehavior;
 import org.efaps.ui.wicket.components.LazyIframe;
 import org.efaps.ui.wicket.components.LazyIframe.IFrameProvider;
+import org.efaps.ui.wicket.components.dashboard.DashboardV2Panel;
 import org.efaps.ui.wicket.components.help.ShowHelpBehavior;
 import org.efaps.ui.wicket.components.menu.LinkItem;
 import org.efaps.ui.wicket.components.menu.MenuBarPanel;
@@ -116,6 +115,7 @@ import org.slf4j.LoggerFactory;
 public class MainPage
     extends AbstractMergePage
 {
+
     /**
      * this static variable contains the id for the htmlFrame.
      */
@@ -165,13 +165,15 @@ public class MainPage
 
     /**
      * Constructor adding all Components to this Page.
+     *
      * @throws CacheReloadException on error
      */
     public MainPage()
         throws CacheReloadException
     {
         super();
-        // add the debug bar for administration role, in case of an erro only log it
+        // add the debug bar for administration role, in case of an erro only
+        // log it
         Component debug = null;
         try {
             // Administration
@@ -203,7 +205,7 @@ public class MainPage
         // set the title for the Page
         add2Page(new Label("pageTitle", DBProperties.getProperty("Logo.Version.Label")));
 
-        add(this.modal);
+        add(modal);
         add(new ResizeEventBehavior());
 
         final boolean slidein = BooleanUtils.toBoolean(Configuration.getAttribute(ConfigAttribute.SLIDEIN));
@@ -232,24 +234,34 @@ public class MainPage
         this.add(borderPanel);
         borderPanel.add(new BorderContainerBehavior(slidein ? Design.SIDEBAR : Design.HEADLINE, false));
 
-        final LazyIframe mainPanel = new LazyIframe("mainPanel", new IFrameProvider()
-        {
+        final Component mainPanel;
+        if (Configuration.getAttributeAsBoolean(ConfigAttribute.BOARDV2_ACTIVE)) {
+            mainPanel = new DashboardV2Panel("mainPanel");
+        } else {
 
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public Page getPage(final Component _component)
+            mainPanel = new LazyIframe("mainPanel", new IFrameProvider()
             {
-                Page error = null;
-                WebPage page = null;
-                try {
-                    page = new DashboardPage(getPageReference());
-                } catch (final EFapsException e) {
-                    error = new ErrorPage(e);
+
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                public Page getPage(final Component _component)
+                {
+                    Page error = null;
+                    WebPage page = null;
+                    try {
+                        if (Configuration.getAttributeAsBoolean(ConfigAttribute.BOARDV2_ACTIVE)) {
+                          //  page = new DashboardV2Page();
+                        } else {
+                            page = new DashboardPage(getPageReference());
+                        }
+                    } catch (final EFapsException e) {
+                        error = new ErrorPage(e);
+                    }
+                    return error == null ? page : error;
                 }
-                return error == null ? page : error;
-            }
-        }, MainPage.IFRAME_ID);
+            }, MainPage.IFRAME_ID);
+        }
 
         borderPanel.add(mainPanel);
         mainPanel.add(new ContentPaneBehavior(Region.CENTER, slidein));
@@ -309,7 +321,7 @@ public class MainPage
                 logo.add(welcome);
 
                 final Label userNameLabel = new Label("userName", String.format("%s %s",
-                    context.getPerson().getFirstName(), context.getPerson().getLastName()));
+                                context.getPerson().getFirstName(), context.getPerson().getLastName()));
                 userNameLabel.setMarkupId("eFapsUserName");
                 if (preferences.hasPreferences()) {
                     userNameLabel.add(new LoadPreferencesBehavior());
@@ -332,7 +344,7 @@ public class MainPage
 
                 @Override
                 public void onComponentTagBody(final MarkupStream _markupStream,
-                                                  final ComponentTag _openTag)
+                                               final ComponentTag _openTag)
                 {
                     try {
                         replaceComponentTagBody(_markupStream, _openTag,
@@ -353,9 +365,9 @@ public class MainPage
             add(socketMsgContainer);
             if (Configuration.getAttributeAsBoolean(ConfigAttribute.WEBSOCKET_ACTVATE)) {
                 socketMsgContainer.setOutputMarkupPlaceholderTag(true);
-                this.socketMsg = new Label("socketMsg", "none yet").setEscapeModelStrings(false);
-                this.socketMsg.setOutputMarkupPlaceholderTag(true);
-                this.socketMsg.add(new WebSocketBehavior()
+                socketMsg = new Label("socketMsg", "none yet").setEscapeModelStrings(false);
+                socketMsg.setOutputMarkupPlaceholderTag(true);
+                socketMsg.add(new WebSocketBehavior()
                 {
 
                     private static final long serialVersionUID = 1L;
@@ -366,16 +378,17 @@ public class MainPage
                         RegistryManager.addMsgConnection(_message.getSessionId(), _message.getKey());
                     }
                 });
-                socketMsgContainer.add(this.socketMsg);
+                socketMsgContainer.add(socketMsg);
 
-                final AjaxLink<Void> close = new AjaxLink<Void>("socketMsgClose") {
+                final AjaxLink<Void> close = new AjaxLink<Void>("socketMsgClose")
+                {
 
                     private static final long serialVersionUID = 1L;
 
                     @Override
                     public void onClick(final AjaxRequestTarget _target)
                     {
-                        final MarkupContainer msgContainer = MainPage.this.socketMsg.getParent();
+                        final MarkupContainer msgContainer = socketMsg.getParent();
                         msgContainer.add(new AttributeModifier("style", new Model<>("display:none")));
                         _target.add(msgContainer);
                     }
@@ -396,8 +409,8 @@ public class MainPage
         _response.render(AbstractEFapsHeaderItem.forCss(MainPage.CSS));
         final StringBuilder js = new StringBuilder();
         js.append("  if (top.location != location) {\n")
-            .append("    top.location.href = document.location.href;\n")
-            .append("  }\n");
+                        .append("    top.location.href = document.location.href;\n")
+                        .append("  }\n");
         _response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forScript(js, MainPage.class.getName())));
     }
 
@@ -408,7 +421,7 @@ public class MainPage
      */
     public final ModalWindowContainer getModal()
     {
-        return this.modal;
+        return modal;
     }
 
     @Override
@@ -419,8 +432,8 @@ public class MainPage
             if (wsEvent != null) {
                 final IWebSocketPushMessage msg = wsEvent.getMessage();
                 if (msg instanceof PushMsg) {
-                    this.socketMsg.setDefaultModelObject(wsEvent.getMessage().toString());
-                    final MarkupContainer msgContainer = this.socketMsg.getParent();
+                    socketMsg.setDefaultModelObject(wsEvent.getMessage().toString());
+                    final MarkupContainer msgContainer = socketMsg.getParent();
                     msgContainer.add(new AttributeModifier("style", new Model<>("display:block")));
                     wsEvent.getHandler().add(msgContainer);
                 } else if (msg instanceof UIUserSession) {
@@ -439,6 +452,7 @@ public class MainPage
     public class ResizeEventBehavior
         extends AjaxEventBehavior
     {
+
         /**
          * Needed for serialization.
          */
@@ -460,12 +474,12 @@ public class MainPage
         public CharSequence getCallbackScript()
         {
             final StringBuilder js = new StringBuilder()
-                .append("window.onresize = function(event) {\n")
-                .append("var ").append(MainPage.WIDTH_PARAMETERNAME).append("=window.innerWidth;\n")
-                .append("var ").append(MainPage.HEIGTH_PARAMETERNAME).append("=window.innerHeight;\n")
-                .append(getCallbackFunctionBody(CallbackParameter.explicit(MainPage.WIDTH_PARAMETERNAME),
-                                CallbackParameter.explicit(MainPage.HEIGTH_PARAMETERNAME)))
-                .append("}\n");
+                            .append("window.onresize = function(event) {\n")
+                            .append("var ").append(MainPage.WIDTH_PARAMETERNAME).append("=window.innerWidth;\n")
+                            .append("var ").append(MainPage.HEIGTH_PARAMETERNAME).append("=window.innerHeight;\n")
+                            .append(getCallbackFunctionBody(CallbackParameter.explicit(MainPage.WIDTH_PARAMETERNAME),
+                                            CallbackParameter.explicit(MainPage.HEIGTH_PARAMETERNAME)))
+                            .append("}\n");
             return js.toString();
         }
 
@@ -537,8 +551,8 @@ public class MainPage
                 final Class<?> clazz;
                 try {
                     clazz = Class.forName(providerClass, false, EFapsClassLoader.getInstance());
-                    this.provider = (ILoginAlertProvider) clazz.newInstance();
-                    this.esjpSnipplet = this.provider.getEsjpSnipplet("LoginAlert");
+                    provider = (ILoginAlertProvider) clazz.newInstance();
+                    esjpSnipplet = provider.getEsjpSnipplet("LoginAlert");
                 } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException e) {
                     MainPage.LOG.error("Could not find/instantiate Provider Class", e);
                 }
@@ -559,7 +573,7 @@ public class MainPage
                 {
                     Page page;
                     try {
-                        page = new AlertPage(Model.of(OpenWindowOnLoadBehavior.this.esjpSnipplet.getHtmlSnipplet()
+                        page = new AlertPage(Model.of(esjpSnipplet.getHtmlSnipplet()
                                         .toString()));
                     } catch (final EFapsBaseException e) {
                         MainPage.LOG.error("Catched error.", e);
@@ -577,7 +591,7 @@ public class MainPage
                 @Override
                 public void onClose(final AjaxRequestTarget _target)
                 {
-                    OpenWindowOnLoadBehavior.this.provider.onClose();
+                    provider.onClose();
                 }
             });
 
@@ -589,7 +603,7 @@ public class MainPage
                                final IHeaderResponse _response)
         {
             try {
-                if (this.esjpSnipplet != null && this.esjpSnipplet.isVisible()) {
+                if (esjpSnipplet != null && esjpSnipplet.isVisible()) {
                     _response.render(OnDomReadyHeaderItem.forScript(getCallbackScript()));
                 }
             } catch (final EFapsBaseException e) {
