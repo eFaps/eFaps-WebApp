@@ -238,7 +238,6 @@ public class MainPage
         if (Configuration.getAttributeAsBoolean(ConfigAttribute.BOARDV2_ACTIVE)) {
             mainPanel = new DashboardV2Panel("mainPanel");
         } else {
-
             mainPanel = new LazyIframe("mainPanel", new IFrameProvider()
             {
 
@@ -250,11 +249,7 @@ public class MainPage
                     Page error = null;
                     WebPage page = null;
                     try {
-                        if (Configuration.getAttributeAsBoolean(ConfigAttribute.BOARDV2_ACTIVE)) {
-                          //  page = new DashboardV2Page();
-                        } else {
-                            page = new DashboardPage(getPageReference());
-                        }
+                        page = new DashboardPage(getPageReference());
                     } catch (final EFapsException e) {
                         error = new ErrorPage(e);
                     }

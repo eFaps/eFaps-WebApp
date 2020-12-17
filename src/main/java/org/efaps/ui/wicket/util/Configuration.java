@@ -126,7 +126,7 @@ public final class Configuration
                         String.class,
                         "Class name of the DashboardProvider class"),
         /** */
-        BOARDV2_ACTIVE(false, true, "DashBoardV2.Active", "true", Boolean.class,
+        BOARDV2_ACTIVE(false, true, "DashBoardV2.Active", "false", Boolean.class,
                         "Activate Dashboard 2.0"),
         /** */
         PIVOT_PROVIDER(false, true, "Pivot.Provider", "org.efaps.esjp.common.pivot.PivotProvider",
