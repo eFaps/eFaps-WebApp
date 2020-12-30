@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2020 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -106,7 +106,7 @@ public class DialogPage
 
             add(new Label("textLabel", DBProperties.getProperty(cmdName + ".Question")).setOutputMarkupId(true));
 
-            add(new AjaxSubmitBtn("submitButton",  _model, _oids, DialogPage.getLabel(cmdName, "Submit")));
+            add(new AjaxSubmitBtn("submitButton", _model, _oids, DialogPage.getLabel(cmdName, "Submit")));
 
             add(new AjaxCloseBtn("closeButton", DialogPage.getLabel(cmdName, "Cancel")));
 
@@ -319,19 +319,19 @@ public class DialogPage
         {
             final ICmdUIObject model = getModelObject();
             try {
+                final boolean showFile = model.getCommand().isTargetShowFile();
                 if (isValidated() || validate(_target)) {
                     model.executeEvents(EventType.UI_COMMAND_EXECUTE, ParameterValues.OTHERS, this.oids);
 
                     DialogPage.this.pageReference.getPage().visitChildren(ModalWindowContainer.class,
                                     new IVisitor<ModalWindowContainer, Void>()
                         {
-
                             @Override
                             public void component(final ModalWindowContainer _modal,
                                                   final IVisit<Void> _visit)
                             {
                                 _modal.setWindowClosedCallback(new UpdateParentCallback(
-                                                DialogPage.this.pageReference, _modal));
+                                                DialogPage.this.pageReference, _modal, true, showFile));
                                 _modal.setUpdateParent(true);
                                 _modal.close(_target);
                             }

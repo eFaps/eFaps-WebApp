@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2015 The eFaps Team
+ * Copyright 2003 - 2020 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,8 +36,6 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.string.StringValue;
-import org.apache.wicket.util.visit.IVisit;
-import org.apache.wicket.util.visit.IVisitor;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.api.ui.FilterBase;
 import org.efaps.api.ui.FilterType;
@@ -65,9 +63,9 @@ import org.efaps.ui.wicket.resources.AbstractEFapsHeaderItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.util.ParameterUtil;
 import org.efaps.util.EFapsException;
+
 /**
  * @author The eFaps Team
- * @version $Id:FilterPage.java 1491 2007-10-15 23:40:43Z jmox $
  */
 public class FilterPage
     extends AbstractContentPage
@@ -158,7 +156,7 @@ public class FilterPage
                         uiTable.addFilterParameters(_uitableHeader,
                                         ParameterUtil.parameter2Map(getRequest().getRequestParameters()));
                         modal.setWindowClosedCallback(new UpdateParentCallback(FilterPage.this
-                                        .getCalledByPageReference(), modal, true));
+                                        .getCalledByPageReference(), modal, true, false));
                         modal.setUpdateParent(true);
                         modal.close(_target);
                     } else if (_uitableHeader.getFilter().getType().equals(FilterType.PICKLIST)) {
@@ -179,7 +177,7 @@ public class FilterPage
                                 uiTable.addFilterList(_uitableHeader, filterList);
                             }
                             modal.setWindowClosedCallback(new UpdateParentCallback(FilterPage.this
-                                            .getCalledByPageReference(), modal, false));
+                                            .getCalledByPageReference(), modal, false, false));
                             modal.setUpdateParent(true);
                         } else {
                             modal.setUpdateParent(false);
@@ -191,7 +189,7 @@ public class FilterPage
                         uiTable.addFilterClassifcation(_uitableHeader, uiClass);
                         modal.setWindowClosedCallback(new UpdateParentCallback(FilterPage.this
                                         .getCalledByPageReference(), modal, _uitableHeader.getFilter().getBase().equals(
-                                                        FilterBase.DATABASE)));
+                                                        FilterBase.DATABASE), false));
                         modal.setUpdateParent(true);
                         modal.close(_target);
                     } else if (_uitableHeader.getFilter().getType().equals(FilterType.STATUS)) {
@@ -213,7 +211,7 @@ public class FilterPage
                             }
                             modal.setWindowClosedCallback(new UpdateParentCallback(FilterPage.this
                                             .getCalledByPageReference(), modal, _uitableHeader.getFilter().getBase()
-                                                            .equals(FilterBase.DATABASE)));
+                                                            .equals(FilterBase.DATABASE), false));
                             modal.setUpdateParent(true);
                         }  else {
                             modal.setUpdateParent(false);
@@ -255,40 +253,28 @@ public class FilterPage
                         uiTable.addFilterRange(_uitableHeader, from, to);
                         modal.setWindowClosedCallback(new UpdateParentCallback(FilterPage.this
                                         .getCalledByPageReference(), modal, _uitableHeader.getFilter().getBase().equals(
-                                                        FilterBase.DATABASE)));
+                                                        FilterBase.DATABASE), false));
                         modal.setUpdateParent(true);
                         modal.close(_target);
                     } else if (_uitableHeader.getFilterType().equals(FilterValueType.TEXT)) {
                         final FreeTextPanel freeTextPanel = (FreeTextPanel) panel;
 
                         final String from = freeTextPanel.visitChildren(TextField.class,
-                                        new IVisitor<TextField<?>, String>()
-                            {
-                                @Override
-                                public void component(final TextField<?> _object,
-                                                      final IVisit<String> _visit)
-                                {
-                                    @SuppressWarnings("unchecked")
-                                    final TextField<String> stringFilter = (TextField<String>) _object;
-                                    _visit.stop(stringFilter.getDefaultModelObjectAsString());
-                                }
-                            });
+                                        (_object, _visit) -> {
+                                            @SuppressWarnings("unchecked")
+                                            final TextField<String> stringFilter = (TextField<String>) _object;
+                                            _visit.stop(stringFilter.getDefaultModelObjectAsString());
+                                        });
 
                         final Map<String, Boolean> modes = new HashMap<>();
                         modes.put("expertMode", false);
                         modes.put("ignoreCase", false);
 
-                        freeTextPanel.visitChildren(CheckBox.class, new IVisitor<CheckBox, Void>()
-                        {
-                            @Override
-                            public void component(final CheckBox _object,
-                                                  final IVisit<Void> _visit)
-                            {
-                                if ("expertMode".equals(_object.getId())) {
-                                    modes.put("expertMode", (boolean) _object.getDefaultModelObject());
-                                } else {
-                                    modes.put("ignoreCase", (boolean) _object.getDefaultModelObject());
-                                }
+                        freeTextPanel.visitChildren(CheckBox.class, (_object, _visit) -> {
+                            if ("expertMode".equals(_object.getId())) {
+                                modes.put("expertMode", (boolean) _object.getDefaultModelObject());
+                            } else {
+                                modes.put("ignoreCase", (boolean) _object.getDefaultModelObject());
                             }
                         });
 
@@ -298,7 +284,7 @@ public class FilterPage
                         uiTable.addFilterTextLike(_uitableHeader, from, expertMode, ignoreCase);
                         modal.setWindowClosedCallback(new UpdateParentCallback(FilterPage.this
                                         .getCalledByPageReference(), modal, _uitableHeader.getFilter().getBase().equals(
-                                                        FilterBase.DATABASE)));
+                                                        FilterBase.DATABASE), false));
                         modal.setUpdateParent(true);
                         modal.close(_target);
                     }
@@ -327,7 +313,7 @@ public class FilterPage
                                     .getPage()).getModal();
                     modal.setUpdateParent(true);
                     modal.setWindowClosedCallback(new UpdateParentCallback(FilterPage.this.getCalledByPageReference(),
-                                    modal, _uitableHeader.getFilter().getBase().equals(FilterBase.DATABASE)));
+                                    modal, _uitableHeader.getFilter().getBase().equals(FilterBase.DATABASE), false));
                     modal.close(_target);
                 }
 
