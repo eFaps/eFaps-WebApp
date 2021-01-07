@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2021 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ package org.efaps.ui.wicket.resources;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Instant;
 import java.util.Locale;
 
 import org.apache.commons.io.IOUtils;
@@ -31,7 +32,6 @@ import org.apache.wicket.request.resource.AbstractResource;
 import org.apache.wicket.util.lang.Bytes;
 import org.apache.wicket.util.resource.IResourceStream;
 import org.apache.wicket.util.resource.ResourceStreamNotFoundException;
-import org.apache.wicket.util.time.Time;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Checkout;
 import org.efaps.db.InstanceQuery;
@@ -78,9 +78,9 @@ public abstract class AbstractEFapsResource
                                  final String _type)
     {
         super();
-        this.name = _name;
-        this.type = _type;
-        this.stream = setNewResourceStream();
+        name = _name;
+        type = _type;
+        stream = setNewResourceStream();
     }
 
     /**
@@ -124,7 +124,7 @@ public abstract class AbstractEFapsResource
          * @see #AbstractEFapsResource()
          * @see #lastModifiedTime()
          */
-        private final Time time;
+        private final Instant time;
 
         /**
          * this instance variiable stores the actual data wich will be returned
@@ -140,7 +140,7 @@ public abstract class AbstractEFapsResource
          */
         public AbstractEFapsResourceStream()
         {
-            this.time = Time.now();
+            time = Instant.now();
         }
 
         /**
@@ -151,9 +151,9 @@ public abstract class AbstractEFapsResource
         public void close()
             throws IOException
         {
-            if (this.inputStream != null) {
-                this.inputStream.close();
-                this.inputStream = null;
+            if (inputStream != null) {
+                inputStream.close();
+                inputStream = null;
             }
         }
 
@@ -162,19 +162,21 @@ public abstract class AbstractEFapsResource
          * @return InputStream
          * @throws ResourceStreamNotFoundException on error
          */
+        @Override
         public InputStream getInputStream()
             throws ResourceStreamNotFoundException
         {
-            if (this.inputStream == null) {
+            if (inputStream == null) {
                 checkData(false);
-                this.inputStream = new ByteArrayInputStream(this.data);
+                inputStream = new ByteArrayInputStream(data);
             }
-            return this.inputStream;
+            return inputStream;
         }
 
         /**
          * @return The Locale where this stream did resolve to
          */
+        @Override
         public Locale getLocale()
         {
             return null;
@@ -185,10 +187,11 @@ public abstract class AbstractEFapsResource
         *
         * @return The size of this resource in the number of bytes, or -1 if unknown
         */
+        @Override
         public Bytes length()
         {
             checkData(true);
-            return this.data != null ? Bytes.bytes(this.data.length) : Bytes.bytes(0);
+            return data != null ? Bytes.bytes(data.length) : Bytes.bytes(0);
         }
 
         /**
@@ -197,6 +200,7 @@ public abstract class AbstractEFapsResource
          *
          * @param _locale The Locale where this stream did resolve to.
          */
+        @Override
         public void setLocale(final Locale _locale)
         {
             // not used here
@@ -207,9 +211,10 @@ public abstract class AbstractEFapsResource
          *
          * @return the last modification <code>Time</code>
          */
-        public Time lastModifiedTime()
+        @Override
+        public Instant lastModifiedTime()
         {
-            return this.time;
+            return time;
         }
 
         /**
@@ -221,7 +226,7 @@ public abstract class AbstractEFapsResource
          */
         protected void checkData(final boolean _checkDuration)
         {
-            if (this.data == null) {
+            if (data == null) {
                 setData();
             }
         }
@@ -232,14 +237,14 @@ public abstract class AbstractEFapsResource
         protected void setData()
         {
             try {
-                final QueryBuilder queryBldr = new QueryBuilder(Type.get(AbstractEFapsResource.this.type));
-                queryBldr.addWhereAttrMatchValue("Name", AbstractEFapsResource.this.name);
+                final QueryBuilder queryBldr = new QueryBuilder(Type.get(type));
+                queryBldr.addWhereAttrMatchValue("Name", name);
                 final InstanceQuery query = queryBldr.getQuery();
                 query.execute();
                 if (query.next()) {
                     final Checkout checkout = new Checkout(query.getCurrentValue());
                     final InputStream tmp = checkout.execute();
-                    this.data = IOUtils.toByteArray(tmp);
+                    data = IOUtils.toByteArray(tmp);
                     tmp.close();
                     checkout.close();
                 }
@@ -259,6 +264,6 @@ public abstract class AbstractEFapsResource
      */
     public AbstractEFapsResourceStream getStream()
     {
-        return this.stream;
+        return stream;
     }
 }

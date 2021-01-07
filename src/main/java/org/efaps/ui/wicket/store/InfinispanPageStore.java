@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2021 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.wicket.page.IManageablePage;
+import org.apache.wicket.pageStore.IPageContext;
 import org.apache.wicket.pageStore.IPageStore;
 import org.efaps.ui.wicket.EFapsApplication;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
@@ -67,33 +68,31 @@ public class InfinispanPageStore
     }
 
     @Override
+    public boolean supportsVersioning()
+    {
+        return true;
+    }
+
+    @Override
     public void destroy()
     {
         // do nothing
     }
 
     @Override
-    public IManageablePage getPage(final String _sessionId,
-                                   final int _pageId)
+    public IManageablePage getPage(final IPageContext context, final int _pageId)
     {
         final StoredPage ret = InfinispanCache.get().<String, StoredPage>getIgnReCache(InfinispanPageStore.PAGECACHE)
-                        .get(_sessionId + "::" + _pageId);
+                        .get(context.getSessionId(false) + "::" + _pageId);
         return ret == null ? null : ret.getPage();
     }
 
     @Override
-    public void removePage(final String _sessionId,
-                           final int _pageId)
+    public void addPage(final IPageContext _context, final IManageablePage _page)
     {
-        // do nothing
-    }
-
-    @Override
-    public void storePage(final String _sessionId,
-                          final IManageablePage _page)
-    {
-        final StoredPage storedPage = new StoredPage().setPage(_page).setSessionId(_sessionId);
-        final String key = _sessionId + "::" + _page.getPageId();
+        final var sessionId = _context.getSessionId(false);
+        final StoredPage storedPage = new StoredPage().setPage(_page).setSessionId(sessionId);
+        final String key = sessionId + "::" + _page.getPageId();
         if (_page instanceof MainPage) {
             InfinispanCache.get().getIgnReCache(InfinispanPageStore.PAGECACHE).put(key, storedPage, -1,
                             TimeUnit.SECONDS, getIdleSeconds(), TimeUnit.SECONDS);
@@ -107,34 +106,17 @@ public class InfinispanPageStore
     }
 
     @Override
-    public void unbind(final String _sessionId)
+    public void removePage(final IPageContext context, final IManageablePage page)
     {
-        // do nothing
+        // TODO Auto-generated method stub
+
     }
 
     @Override
-    public Serializable prepareForSerialization(final String _sessionId,
-                                                final Serializable _page)
+    public void removeAllPages(final IPageContext context)
     {
-        return null;
-    }
+        // TODO Auto-generated method stub
 
-    @Override
-    public Object restoreAfterSerialization(final Serializable _serializable)
-    {
-        return null;
-    }
-
-    @Override
-    public IManageablePage convertToPage(final Object _page)
-    {
-        return null;
-    }
-
-    @Override
-    public boolean canBeAsynchronous()
-    {
-        return false;
     }
 
     /**
@@ -185,7 +167,7 @@ public class InfinispanPageStore
          */
         public IManageablePage getPage()
         {
-            return this.page;
+            return page;
         }
 
         /**
@@ -196,7 +178,7 @@ public class InfinispanPageStore
          */
         public StoredPage setPage(final IManageablePage _page)
         {
-            this.page = _page;
+            page = _page;
             return this;
         }
 
@@ -207,7 +189,7 @@ public class InfinispanPageStore
          */
         public String getSessionId()
         {
-            return this.sessionId;
+            return sessionId;
         }
 
         /**
@@ -218,7 +200,7 @@ public class InfinispanPageStore
          */
         public StoredPage setSessionId(final String _sessionId)
         {
-            this.sessionId = _sessionId;
+            sessionId = _sessionId;
             return this;
         }
     }

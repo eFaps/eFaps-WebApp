@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2021 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
  */
 package org.efaps.ui.wicket.components.dashboard;
 
+import java.time.Duration;
 import java.util.Iterator;
 
 import org.apache.wicket.Component;
@@ -32,7 +33,6 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.IRequestHandler;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.handler.resource.ResourceReferenceRequestHandler;
-import org.apache.wicket.util.time.Duration;
 import org.efaps.api.background.IExecutionBridge;
 import org.efaps.ui.wicket.EFapsApplication;
 import org.efaps.ui.wicket.EFapsSession;
@@ -90,7 +90,7 @@ public class DashboardPanel
         setOutputMarkupId(true);
         add(new WebMarkupContainer("hiddenRepeater").setOutputMarkupId(true).setVisible(false));
 
-        add(new AbstractAjaxTimerBehavior(Duration.milliseconds(500))
+        add(new AbstractAjaxTimerBehavior(Duration.ofMillis(500))
         {
 
             private static final long serialVersionUID = 1L;
@@ -98,9 +98,9 @@ public class DashboardPanel
             @Override
             protected void onTimer(final AjaxRequestTarget _target)
             {
-                if (DashboardPanel.this.state < 2) {
-                    if (DashboardPanel.this.jobName != null) {
-                        final IExecutionBridge bridge = EFapsSession.get().getBridge4Job(DashboardPanel.this.jobName,
+                if (state < 2) {
+                    if (jobName != null) {
+                        final IExecutionBridge bridge = EFapsSession.get().getBridge4Job(jobName,
                                         true);
                         if (bridge == null) {
                             stop(_target);
@@ -112,13 +112,13 @@ public class DashboardPanel
                             stop(_target);
                         }
                     }
-                    setUpdateInterval(Duration.seconds(3));
+                    setUpdateInterval(Duration.ofSeconds(3));
                     final RepeatingView hiddenRepeater = new RepeatingView("hiddenRepeater");
                     DashboardPanel.this.replace(hiddenRepeater);
                     final Iterator<EmbeddedLink> linksIter = EFapsSession.get().getEmbededLinks().iterator();
                     while (linksIter.hasNext()) {
                         final EmbeddedLink link = linksIter.next();
-                        if (DashboardPanel.this.jobName.equals(link.getIdentifier())) {
+                        if (jobName.equals(link.getIdentifier())) {
                             hiddenRepeater.add(new LinkElementLink(hiddenRepeater.newChildId(), link));
                             linksIter.remove();
                         }
@@ -166,17 +166,17 @@ public class DashboardPanel
     @Override
     protected void onBeforeRender()
     {
-        if (this.state == 0) {
+        if (state == 0) {
             add(getLoadingComponent(LAZY_LOAD_COMPONENT_ID));
             setState((byte) 1);
             try {
-                this.jobName = ((EsjpInvoker) getDefaultModelObject()).getSnipplet().getIdentifier();
-                IExecutionBridge bridge = EFapsSession.get().getBridge4Job(this.jobName, false);
+                jobName = ((EsjpInvoker) getDefaultModelObject()).getSnipplet().getIdentifier();
+                IExecutionBridge bridge = EFapsSession.get().getBridge4Job(jobName, false);
                 if (bridge == null) {
                     bridge = EFapsApplication.get().launch(new DashboardJob(
-                                    (EsjpInvoker) getDefaultModelObject()), this.jobName);
+                                    (EsjpInvoker) getDefaultModelObject()), jobName);
                 }
-                this.jobName = bridge.getJobName();
+                jobName = bridge.getJobName();
             } catch (final EFapsBaseException e) {
                 LOG.error("Catched error on startng background job.", e);
             }
@@ -191,7 +191,7 @@ public class DashboardPanel
      */
     private void setState(final byte _state)
     {
-        this.state = _state;
+        state = _state;
         getPage().dirty();
     }
 

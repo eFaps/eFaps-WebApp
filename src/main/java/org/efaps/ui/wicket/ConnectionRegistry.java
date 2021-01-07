@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2021 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import javax.servlet.http.HttpServletRequest;
@@ -47,7 +48,6 @@ import org.apache.wicket.protocol.ws.api.registry.IKey;
 import org.apache.wicket.protocol.ws.api.registry.IWebSocketConnectionRegistry;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.http.WebRequest;
-import org.apache.wicket.util.collections.ConcurrentHashSet;
 import org.apache.wicket.util.lang.Generics;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.db.Context;
@@ -75,8 +75,8 @@ public class ConnectionRegistry
     /**
      * MetaDataKey for User to Session Mapping.
      */
-    private static final MetaDataKey<ConcurrentMap<String, ConcurrentHashSet<String>>> USER2SESSION =
-                    new MetaDataKey<ConcurrentMap<String, ConcurrentHashSet<String>>>()
+    private static final MetaDataKey<ConcurrentMap<String, Set<String>>> USER2SESSION =
+                    new MetaDataKey<ConcurrentMap<String, Set<String>>>()
             {
                 private static final long serialVersionUID = 1L;
             };
@@ -93,8 +93,8 @@ public class ConnectionRegistry
     /**
      * MetaDataKey for Session that must be invalidated on next request.
      */
-    private static final MetaDataKey<ConcurrentHashSet<String>> INVALIDATED =
-                    new MetaDataKey<ConcurrentHashSet<String>>()
+    private static final MetaDataKey<Set<String>> INVALIDATED =
+                    new MetaDataKey<Set<String>>()
             {
                 private static final long serialVersionUID = 1L;
             };
@@ -128,14 +128,13 @@ public class ConnectionRegistry
      */
     public boolean sessionValid(final String _sessionID)
     {
-        ConcurrentHashSet<String> invalidated = Session.get().getApplication()
-                        .getMetaData(ConnectionRegistry.INVALIDATED);
+        Set<String> invalidated = Session.get().getApplication().getMetaData(ConnectionRegistry.INVALIDATED);
 
         if (invalidated == null) {
             synchronized (ConnectionRegistry.INVALIDATED) {
                 invalidated = Session.get().getApplication().getMetaData(ConnectionRegistry.INVALIDATED);
                 if (invalidated == null) {
-                    invalidated = new ConcurrentHashSet<>();
+                    invalidated = ConcurrentHashMap.newKeySet();
                     Session.get().getApplication().setMetaData(ConnectionRegistry.INVALIDATED, invalidated);
                 }
             }
@@ -194,14 +193,13 @@ public class ConnectionRegistry
      */
     public void markSessionAsInvalid(final String _sessionID)
     {
-        ConcurrentHashSet<String> invalidated = Session.get().getApplication()
-                        .getMetaData(ConnectionRegistry.INVALIDATED);
+        Set<String> invalidated = Session.get().getApplication().getMetaData(ConnectionRegistry.INVALIDATED);
 
         if (invalidated == null) {
             synchronized (ConnectionRegistry.INVALIDATED) {
                 invalidated = Session.get().getApplication().getMetaData(ConnectionRegistry.INVALIDATED);
                 if (invalidated == null) {
-                    invalidated = new ConcurrentHashSet<>();
+                    invalidated = ConcurrentHashMap.newKeySet();
                     Session.get().getApplication().setMetaData(ConnectionRegistry.INVALIDATED, invalidated);
                 }
             }
@@ -301,7 +299,7 @@ public class ConnectionRegistry
                            final String _sessionID)
     {
         ConnectionRegistry.LOG.debug("register user: '{}', session: '{}'", _userName, _sessionID);
-        ConcurrentMap<String, ConcurrentHashSet<String>> user2session = Session.get().getApplication()
+        ConcurrentMap<String, Set<String>> user2session = Session.get().getApplication()
                         .getMetaData(ConnectionRegistry.USER2SESSION);
 
         if (user2session == null) {
@@ -309,17 +307,17 @@ public class ConnectionRegistry
             synchronized (ConnectionRegistry.USER2SESSION) {
                 user2session = Session.get().getApplication().getMetaData(ConnectionRegistry.USER2SESSION);
                 if (user2session == null) {
-                    user2session = Generics.<String, ConcurrentHashSet<String>>newConcurrentHashMap();
+                    user2session = Generics.<String, Set<String>>newConcurrentHashMap();
                     Session.get().getApplication().setMetaData(ConnectionRegistry.USER2SESSION, user2session);
                 }
             }
         }
-        ConcurrentHashSet<String> sessions = user2session.get(_userName);
+        Set<String> sessions = user2session.get(_userName);
         if (sessions == null) {
             synchronized (ConnectionRegistry.USER2SESSION) {
                 sessions = user2session.get(_userName);
                 if (sessions == null) {
-                    sessions = new ConcurrentHashSet<>();
+                    sessions = ConcurrentHashMap.newKeySet();
                     user2session.put(_userName, sessions);
                 }
             }
@@ -373,12 +371,12 @@ public class ConnectionRegistry
     {
         if (_login != null) {
             ConnectionRegistry.LOG.debug("remove user: '{}', session: '{}'", _login, _sessionID);
-            ConcurrentMap<String, ConcurrentHashSet<String>> user2session = _application.getMetaData(
+            ConcurrentMap<String, Set<String>> user2session = _application.getMetaData(
                             ConnectionRegistry.USER2SESSION);
             synchronized (ConnectionRegistry.USER2SESSION) {
                 user2session = _application.getMetaData(ConnectionRegistry.USER2SESSION);
                 if (user2session != null) {
-                    final ConcurrentHashSet<String> sessions = user2session.get(_login);
+                    final Set<String> sessions = user2session.get(_login);
                     sessions.remove(_sessionID);
                     if (sessions.isEmpty()) {
                         user2session.remove(_login);
@@ -403,11 +401,11 @@ public class ConnectionRegistry
     public List<IWebSocketConnection> getConnections4User(final String _login)
     {
         final List<IWebSocketConnection> ret = new ArrayList<>();
-        final ConcurrentMap<String, ConcurrentHashSet<String>> user2session = Session.get().getApplication()
+        final ConcurrentMap<String, Set<String>> user2session = Session.get().getApplication()
                         .getMetaData(ConnectionRegistry.USER2SESSION);
         final ConcurrentMap<String, IKey> sessionId2pageId = Session.get().getApplication()
                         .getMetaData(ConnectionRegistry.SESSION2KEY);
-        final ConcurrentHashSet<String> sessionIds = user2session.get(_login);
+        final Set<String> sessionIds = user2session.get(_login);
 
         if (sessionIds != null && !sessionIds.isEmpty()) {
             final Iterator<String> iter = sessionIds.iterator();
@@ -436,11 +434,11 @@ public class ConnectionRegistry
                                                           final String _sessionId)
     {
         IWebSocketConnection ret = null;
-        final ConcurrentMap<String, ConcurrentHashSet<String>> user2session = Session.get().getApplication()
+        final ConcurrentMap<String, Set<String>> user2session = Session.get().getApplication()
                         .getMetaData(ConnectionRegistry.USER2SESSION);
         final ConcurrentMap<String, IKey> sessionId2key = Session.get().getApplication()
                         .getMetaData(ConnectionRegistry.SESSION2KEY);
-        final ConcurrentHashSet<String> sessionIds = user2session.get(_login);
+        final Set<String> sessionIds = user2session.get(_login);
 
         if (sessionIds.contains(_sessionId)) {
             final IKey key = sessionId2key.get(_sessionId);
@@ -460,10 +458,10 @@ public class ConnectionRegistry
     public List<String> getSession4User(final String _userName)
     {
         List<String> ret = new ArrayList<>();
-        final ConcurrentMap<String, ConcurrentHashSet<String>> user2session = Session.get().getApplication()
+        final ConcurrentMap<String, Set<String>> user2session = Session.get().getApplication()
                         .getMetaData(ConnectionRegistry.USER2SESSION);
         if (user2session != null) {
-            final ConcurrentHashSet<String> sessions = user2session.get(_userName);
+            final Set<String> sessions = user2session.get(_userName);
             ret = new ArrayList<>(sessions);
         }
         return ret;
@@ -475,7 +473,7 @@ public class ConnectionRegistry
     public List<String> getUsers()
     {
         List<String> ret = new ArrayList<>();
-        final ConcurrentMap<String, ConcurrentHashSet<String>> user2session = Session.get().getApplication()
+        final ConcurrentMap<String, Set<String>> user2session = Session.get().getApplication()
                         .getMetaData(ConnectionRegistry.USER2SESSION);
         if (user2session != null) {
             ret = new ArrayList<>(user2session.keySet());
@@ -488,11 +486,11 @@ public class ConnectionRegistry
      */
     public Map<String, Set<String>> getSessions4Users()
     {
-        final ConcurrentMap<String, ConcurrentHashSet<String>> user2session = Session.get().getApplication()
+        final ConcurrentMap<String, Set<String>> user2session = Session.get().getApplication()
                         .getMetaData(ConnectionRegistry.USER2SESSION);
         final Map<String, Set<String>> tmpmap = new TreeMap<>();
         if (user2session != null) {
-            for (final Entry<String, ConcurrentHashSet<String>> entry : user2session.entrySet()) {
+            for (final Entry<String, Set<String>> entry : user2session.entrySet()) {
                 tmpmap.put(entry.getKey(), Collections.unmodifiableSet(entry.getValue()));
             }
         }
@@ -552,8 +550,8 @@ public class ConnectionRegistry
      */
     private void initKeepAlive()
     {
-        if (!this.keepAlive) {
-            this.keepAlive = true;
+        if (!keepAlive) {
+            keepAlive = true;
             final KeepAliveTask keepAliveTask = new KeepAliveTask(EFapsApplication.get().getApplicationKey());
             final Timer timer = new Timer(true);
             // every two minutes
@@ -578,13 +576,13 @@ public class ConnectionRegistry
          */
         KeepAliveTask(final String _applicationKey)
         {
-            this.applicationKey = _applicationKey;
+            applicationKey = _applicationKey;
         }
 
         @Override
         public void run()
         {
-            final EFapsApplication app = (EFapsApplication) Application.get(this.applicationKey);
+            Application.get(applicationKey);
 
         }
     }

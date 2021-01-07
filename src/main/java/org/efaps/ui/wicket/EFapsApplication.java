@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2021 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -197,8 +197,6 @@ public class EFapsApplication
 
         getStoreSettings().setMaxSizePerSession(Bytes.megabytes(Configuration.getAttributeAsInteger(
                         ConfigAttribute.STORE_MAXSIZEPERSESSION)));
-        getStoreSettings().setInmemoryCacheSize(Configuration.getAttributeAsInteger(
-                        ConfigAttribute.STORE_INMEMORYCACHE));
 
         getMarkupSettings().setStripWicketTags(true);
         getMarkupSettings().setStripComments(true);
@@ -220,7 +218,7 @@ public class EFapsApplication
             ((SecurePackageResourceGuard) guard).addPattern("+*.json");
         }
 
-        setHeaderResponseDecorator(_response -> new EFapsResourceAggregator(_response));
+        getHeaderResponseDecorators().add(_response -> new EFapsResourceAggregator(_response));
         getRequestCycleSettings().addResponseFilter(_responseBuffer -> {
             final AppendingStringBuffer ret;
             if (RequestCycle.get().getActiveRequestHandler() instanceof ACAjaxRequestTarget) {
@@ -235,7 +233,7 @@ public class EFapsApplication
         final ServiceLoader<ILoginProvider> serviceLoaderLogins = ServiceLoader.load(ILoginProvider.class);
         for (final ILoginProvider loginProvider : serviceLoaderLogins) {
             LOG.info("[{}] registered: {}", getName(), loginProvider);
-            this.loginProviders.add(loginProvider);
+            loginProviders.add(loginProvider);
         }
         mountPage("/" + RandomUtil.randomAlphabetic(16), JsonResponsePage.class);
     }
@@ -293,10 +291,10 @@ public class EFapsApplication
     @Override
     protected void onDestroy()
     {
-        this.executorService.shutdown();
+        executorService.shutdown();
         try {
-            if (!this.executorService.awaitTermination(2, TimeUnit.SECONDS)) {
-                this.executorService.shutdownNow();
+            if (!executorService.awaitTermination(2, TimeUnit.SECONDS)) {
+                executorService.shutdownNow();
             }
         } catch (final InterruptedException e) {
             e.printStackTrace();
@@ -330,7 +328,7 @@ public class EFapsApplication
 
         EFapsSession.get().addExecutionBridge(bridge);
         // run the task
-        this.executorService.execute(new JobRunnable(_job, bridge));
+        executorService.execute(new JobRunnable(_job, bridge));
         return bridge;
     }
 
@@ -341,7 +339,7 @@ public class EFapsApplication
      */
     public List<ILoginProvider> getLoginProviders()
     {
-        return Collections.unmodifiableList(this.loginProviders);
+        return Collections.unmodifiableList(loginProviders);
     }
 
     /**

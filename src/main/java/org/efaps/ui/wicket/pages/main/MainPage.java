@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2021 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 
 package org.efaps.ui.wicket.pages.main;
 
+import java.time.Duration;
 import java.util.UUID;
 
 import org.apache.commons.lang3.BooleanUtils;
@@ -55,7 +56,6 @@ import org.apache.wicket.protocol.ws.api.event.WebSocketPushPayload;
 import org.apache.wicket.protocol.ws.api.message.ConnectedMessage;
 import org.apache.wicket.protocol.ws.api.message.IWebSocketPushMessage;
 import org.apache.wicket.util.string.StringValue;
-import org.apache.wicket.util.time.Duration;
 import org.efaps.admin.EFapsSystemConfiguration;
 import org.efaps.admin.KernelSettings;
 import org.efaps.admin.dbproperty.DBProperties;
@@ -482,7 +482,7 @@ public class MainPage
         protected void updateAjaxAttributes(final AjaxRequestAttributes _attributes)
         {
             super.updateAjaxAttributes(_attributes);
-            _attributes.setThrottlingSettings(new ThrottlingSettings("mainThrottel", Duration.seconds(2), true));
+            _attributes.setThrottlingSettings(new ThrottlingSettings("mainThrottel", Duration.ofSeconds(2), true));
             _attributes.setMethod(Method.POST);
         }
 

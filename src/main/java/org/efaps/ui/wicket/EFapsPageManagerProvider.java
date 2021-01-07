@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2021 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package org.efaps.ui.wicket;
 
 import org.apache.wicket.Application;
 import org.apache.wicket.DefaultPageManagerProvider;
-import org.apache.wicket.pageStore.IDataStore;
 import org.apache.wicket.pageStore.IPageStore;
 import org.efaps.ui.wicket.store.InfinispanPageStore;
 
@@ -42,7 +41,7 @@ public class EFapsPageManagerProvider
     }
 
     @Override
-    protected IPageStore newPageStore(final IDataStore _dataStore)
+    protected IPageStore newPersistentStore()
     {
         return new InfinispanPageStore();
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2021 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,6 @@ import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.protocol.http.ClientProperties;
-import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Command;
 import org.efaps.admin.ui.Menu;
@@ -170,7 +168,7 @@ public class ContentContainerPage
         throws EFapsException
     {
         super();
-        this.structurbrowser = _addStructurBrowser;
+        structurbrowser = _addStructurBrowser;
         initialise(_uuid, _instanceKey, _selectedCmdUUID);
     }
 
@@ -190,20 +188,20 @@ public class ContentContainerPage
         final WebMarkupContainer borderPanel = new WebMarkupContainer("borderPanel");
         this.add(borderPanel);
         borderPanel.add(new BorderContainerBehavior(Design.SIDEBAR, true));
-        this.borderPanelId = borderPanel.getMarkupId(true);
+        borderPanelId = borderPanel.getMarkupId(true);
 
         final AbstractCommand cmd = getCommand(_uuid);
         UUID tmpUUID = _uuid;
-        this.webForm = cmd.getTargetForm() != null;
+        webForm = cmd.getTargetForm() != null;
         if (cmd instanceof Menu) {
             for (final AbstractCommand childcmd : ((Menu) cmd).getCommands()) {
                 if (_selectCmdUUID == null && childcmd.isDefaultSelected()) {
                     tmpUUID = childcmd.getUUID();
-                    this.webForm = childcmd.getTargetForm() != null;
+                    webForm = childcmd.getTargetForm() != null;
                     break;
                 } else if (childcmd.getUUID().equals(_selectCmdUUID)) {
                     tmpUUID = childcmd.getUUID();
-                    this.webForm = childcmd.getTargetForm() != null;
+                    webForm = childcmd.getTargetForm() != null;
                     break;
                 }
             }
@@ -221,7 +219,7 @@ public class ContentContainerPage
                 Page error = null;
                 WebPage page = null;
                 try {
-                    if (ContentContainerPage.this.webForm) {
+                    if (webForm) {
                         final UIForm uiForm = new UIForm(uuid4NewPage, _instanceKey).setPagePosition(PagePosition.TREE);
                         page = new FormPage(Model.of(uiForm), getPageReference());
                     } else {
@@ -253,23 +251,17 @@ public class ContentContainerPage
 
         borderPanel.add(centerPanel);
         centerPanel.add(new ContentPaneBehavior(Region.CENTER, false));
-        this.centerPanelId = centerPanel.getMarkupId(true);
+        centerPanelId = centerPanel.getMarkupId(true);
 
         borderPanel.add(new SidePanel("leftPanel", _uuid, _instanceKey, _selectCmdUUID,
-                        this.structurbrowser));
+                        structurbrowser));
     }
 
     @Override
     public void renderHead(final IHeaderResponse _response)
     {
         super.renderHead(_response);
-        final ClientProperties properties = ((WebClientInfo) getSession().getClientInfo()).getProperties();
-        // we use different StyleSheets for different Browsers
-        if (properties.isBrowserInternetExplorer()) {
-            _response.render(AbstractEFapsHeaderItem.forCss(ContentContainerPage.CSS_IE));
-        } else {
-            _response.render(AbstractEFapsHeaderItem.forCss(ContentContainerPage.CSS));
-        }
+        _response.render(AbstractEFapsHeaderItem.forCss(ContentContainerPage.CSS));
     }
 
     /**
@@ -297,7 +289,7 @@ public class ContentContainerPage
      */
     public void setMenuTree(final MenuTree _menuTree)
     {
-        this.menuTree = _menuTree;
+        menuTree = _menuTree;
     }
 
     /**
@@ -307,7 +299,7 @@ public class ContentContainerPage
      */
     public MenuTree getMenuTree()
     {
-        return this.menuTree;
+        return menuTree;
     }
 
     /**
@@ -317,7 +309,7 @@ public class ContentContainerPage
      */
     public String getCenterPanelId()
     {
-        return this.centerPanelId;
+        return centerPanelId;
     }
 
     /**
@@ -327,6 +319,6 @@ public class ContentContainerPage
      */
     public String getBorderPanelId()
     {
-        return this.borderPanelId;
+        return borderPanelId;
     }
 }

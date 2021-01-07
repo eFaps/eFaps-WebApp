@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2021 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 
 package org.efaps.ui.wicket.components.split;
 
+import java.time.Duration;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -27,7 +29,6 @@ import org.apache.wicket.ajax.attributes.ThrottlingSettings;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.util.string.StringValue;
-import org.apache.wicket.util.time.Duration;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
@@ -69,7 +70,7 @@ public class AjaxStorePositionBehavior
      */
     public AjaxStorePositionBehavior(final boolean _vertical)
     {
-        this.vertical = _vertical;
+        vertical = _vertical;
     }
 
     /**
@@ -114,7 +115,7 @@ public class AjaxStorePositionBehavior
         final String topPanelId = ((SidePanel) _component).getTopPanelId();
 
         final StringBuilder storeJs = new StringBuilder();
-        if (this.vertical) {
+        if (vertical) {
             storeJs.append("var storePosV = ")
                 .append(getCallbackFunction(
                             CallbackParameter.explicit(AjaxStorePositionBehavior.PARAMETER_VERTICALPOSITION)));
@@ -129,7 +130,7 @@ public class AjaxStorePositionBehavior
             .append("var lp = registry.byId(\"").append(leftPanelId).append("\");\n")
             .append("var hs = bp.getSplitter(\"leading\");\n");
 
-        if (this.vertical) {
+        if (vertical) {
             js.append("var tp = registry.byId(\"").append(topPanelId).append("\");\n")
                 .append("var vs = lp.getSplitter(\"top\");\n");
         }
@@ -144,7 +145,7 @@ public class AjaxStorePositionBehavior
             .append("storePosH(lp.domNode.clientWidth);")
             .append("});\n");
 
-        if (this.vertical) {
+        if (vertical) {
             js.append(" aspect.after(vs, \"onOpen\",function(pane){\n")
                 .append("storePosV(pane.domNode.clientHeight);")
                 .append("});\n")
@@ -164,7 +165,7 @@ public class AjaxStorePositionBehavior
     protected void updateAjaxAttributes(final AjaxRequestAttributes _attributes)
     {
         super.updateAjaxAttributes(_attributes);
-        _attributes.setThrottlingSettings(new ThrottlingSettings("storeThrottel", Duration.seconds(2)));
+        _attributes.setThrottlingSettings(new ThrottlingSettings("storeThrottel", Duration.ofSeconds(2)));
         _attributes.setMethod(Method.POST);
     }
 }
