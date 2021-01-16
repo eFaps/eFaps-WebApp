@@ -207,6 +207,8 @@ public class EFapsApplication
         getRequestCycleListeners().add(new EFapsRequestCycleListener());
         getRequestLoggerSettings().setRequestLoggerEnabled(false);
 
+        getCspSettings().blocking().disabled();
+
         getSecuritySettings().setAuthorizationStrategy(new EFapsFormBasedAuthorizationStartegy());
 
         getResourceSettings().setJavaScriptCompressor(new DefaultJavaScriptCompressor());
