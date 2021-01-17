@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2021 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,9 +33,10 @@ import org.apache.wicket.markup.head.HeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
-import org.apache.wicket.markup.head.ResourceAggregator;
+import org.apache.wicket.markup.html.DecoratingHeaderResponse;
 import org.apache.wicket.request.Response;
 import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.util.value.AttributeMap;
 import org.efaps.admin.program.bundle.BundleMaker;
 import org.efaps.admin.program.bundle.TempFileBundle;
 import org.efaps.ui.wicket.EFapsApplication;
@@ -52,12 +53,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO comment!
  *
  * @author The eFaps Team
  */
 public class EFapsResourceAggregator
-    extends ResourceAggregator
+    extends DecoratingHeaderResponse
 {
 
     /**
@@ -71,8 +71,8 @@ public class EFapsResourceAggregator
     private final List<OnDojoReadyHeaderItem> dojoReadyItems = new ArrayList<>();
 
     /**
-    * List of HeaderItems that will be rendered in on dojo ready script.
-    */
+     * List of HeaderItems that will be rendered in on dojo ready script.
+     */
     private final List<AutoCompleteHeaderItem> autoCompleteItems = new ArrayList<>();
 
     /**
@@ -95,21 +95,22 @@ public class EFapsResourceAggregator
 
     /**
      * Renders the given {@link HeaderItem} to the response if none of the
-     * {@linkplain HeaderItem#getRenderTokens() tokens} of the item has been rendered before.
+     * {@linkplain HeaderItem#getRenderTokens() tokens} of the item has been
+     * rendered before.
      *
-     * @param _item  The item to render.
+     * @param _item The item to render.
      */
     @Override
     public void render(final HeaderItem _item)
     {
         if (_item instanceof OnDojoReadyHeaderItem) {
-            this.dojoReadyItems.add((OnDojoReadyHeaderItem) _item);
+            dojoReadyItems.add((OnDojoReadyHeaderItem) _item);
         } else if (_item instanceof AbstractEFapsHeaderItem) {
-            this.eFapsHeaderItems.add((AbstractEFapsHeaderItem) _item);
+            eFapsHeaderItems.add((AbstractEFapsHeaderItem) _item);
         } else if (_item instanceof AutoCompleteHeaderItem) {
-            this.autoCompleteItems.add((AutoCompleteHeaderItem) _item);
+            autoCompleteItems.add((AutoCompleteHeaderItem) _item);
         } else if (_item instanceof RequireHeaderItem) {
-            this.requireHeaderItems.add((RequireHeaderItem) _item);
+            requireHeaderItems.add((RequireHeaderItem) _item);
         } else {
             super.render(_item);
         }
@@ -133,11 +134,12 @@ public class EFapsResourceAggregator
      */
     private void renderEFapsHeaderItems()
     {
-        Collections.sort(this.eFapsHeaderItems, (_item0, _item1) -> _item0.getSortWeight().compareTo(_item1.getSortWeight()));
+        Collections.sort(eFapsHeaderItems,
+                        (_item0, _item1) -> _item0.getSortWeight().compareTo(_item1.getSortWeight()));
 
         final List<String> css = new ArrayList<>();
         final List<String> js = new ArrayList<>();
-        for (final AbstractEFapsHeaderItem item : this.eFapsHeaderItems) {
+        for (final AbstractEFapsHeaderItem item : eFapsHeaderItems) {
             if (item instanceof EFapsJavaScriptHeaderItem) {
                 js.add(item.getReference().getName());
             } else {
@@ -149,14 +151,14 @@ public class EFapsResourceAggregator
                 final String key = BundleMaker.getBundleKey(css, TempFileBundle.class);
                 final TempFileBundle bundle = (TempFileBundle) BundleMaker.getBundle(key);
                 bundle.setContentType("text/css");
-                super.render(CssHeaderItem.forUrl(EFapsApplication.get().getServletContext()
+                getRealResponse().render(CssHeaderItem.forUrl(EFapsApplication.get().getServletContext()
                                 .getContextPath() + "/servlet/static/" + key));
             }
             if (!js.isEmpty()) {
                 final String key = BundleMaker.getBundleKey(js, TempFileBundle.class);
                 final TempFileBundle bundle = (TempFileBundle) BundleMaker.getBundle(key);
                 bundle.setContentType("text/javascript");
-                super.render(JavaScriptHeaderItem.forUrl(EFapsApplication.get().getServletContext()
+                getRealResponse().render(JavaScriptHeaderItem.forUrl(EFapsApplication.get().getServletContext()
                                 .getContextPath() + "/servlet/static/" + key));
             }
         } catch (final EFapsException e) {
@@ -172,17 +174,16 @@ public class EFapsResourceAggregator
     {
         final StringBuilder combinedScript = new StringBuilder();
 
-        for (final OnDojoReadyHeaderItem curItem : this.dojoReadyItems) {
+        for (final OnDojoReadyHeaderItem curItem : dojoReadyItems) {
             combinedScript.append("\n");
             combinedScript.append(curItem.getJavaScript());
             combinedScript.append(";");
         }
 
         if (combinedScript.length() > 0) {
-            super.render(OnDojoReadyHeaderItem.forScript(combinedScript.append("\n").toString()));
+            getRealResponse().render(OnDojoReadyHeaderItem.forScript(combinedScript.append("\n").toString()));
         }
     }
-
 
     /**
      * Combines all DOM ready and onLoad scripts and renders them as 2 script
@@ -192,7 +193,7 @@ public class EFapsResourceAggregator
     {
         final StringBuilder combinedScript = new StringBuilder();
         final EnumSet<AutoCompleteBehavior.Type> types = EnumSet.noneOf(AutoCompleteBehavior.Type.class);
-        for (final AutoCompleteHeaderItem curItem : this.autoCompleteItems) {
+        for (final AutoCompleteHeaderItem curItem : autoCompleteItems) {
             for (final AutoCompleteBehavior.Type type : curItem.getTypes()) {
                 if (!types.contains(type)) {
                     types.add(type);
@@ -205,10 +206,11 @@ public class EFapsResourceAggregator
 
         if (combinedScript.length() > 0) {
             if (RequestCycle.get().getActiveRequestHandler() instanceof AjaxRequestHandler) {
-                super.render(new OnDomReadyHeaderItem(AutoCompleteHeaderItem.writeJavaScript(
+                getRealResponse().render(new OnDomReadyHeaderItem(AutoCompleteHeaderItem.writeJavaScript(
                                 combinedScript.append("\n"), types, false)));
             } else {
-                super.render(AutoCompleteHeaderItem.forScript(combinedScript.append("\n").toString(), types));
+                getRealResponse().render(
+                                AutoCompleteHeaderItem.forScript(combinedScript.append("\n").toString(), types));
             }
         }
     }
@@ -218,10 +220,10 @@ public class EFapsResourceAggregator
      */
     private void renderCombinedRequireScripts()
     {
-        final Set<DojoClass> dojoClasses = this.requireHeaderItems.stream().flatMap(o -> o.getDojoClasses().stream())
+        final Set<DojoClass> dojoClasses = requireHeaderItems.stream().flatMap(o -> o.getDojoClasses().stream())
                         .collect(Collectors.toSet());
         if (CollectionUtils.isNotEmpty(dojoClasses)) {
-            super.render(new HeaderItem()
+            getRealResponse().render(new HeaderItem()
             {
 
                 /** The Constant serialVersionUID. */
@@ -236,9 +238,11 @@ public class EFapsResourceAggregator
                 @Override
                 public void render(final Response _response)
                 {
-                    JavaScriptUtils.writeJavaScript(_response,
+                    final var attrMap = new AttributeMap();
+                    attrMap.add("id", RequireHeaderItem.class.getName());
+                    JavaScriptUtils.writeInlineScript(_response,
                                     DojoWrapper.require(null, dojoClasses.toArray(new DojoClass[dojoClasses.size()])),
-                                    RequireHeaderItem.class.getName());
+                                    attrMap);
                 }
             });
         }

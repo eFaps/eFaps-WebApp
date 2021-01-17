@@ -211,13 +211,19 @@ public class LinkItem
     }
 
     @Override
-    protected CharSequence getOnClickScript(final CharSequence _url)
+    protected void onComponentTag(final ComponentTag tag)
+    {
+        super.onComponentTag(tag);
+        tag.put("onClick", getOnClickScript());
+    }
+
+    protected CharSequence getOnClickScript()
     {
         final StringBuilder js = new StringBuilder()
                         .append("registry.byId(\"").append("mainPanel").append(
                                         "\").set(\"content\", domConstruct.create(\"iframe\", {")
                         .append("\"id\": \"")
-                        .append(MainPage.IFRAME_ID).append("\",\"src\": \"").append(_url).append(
+                        .append(MainPage.IFRAME_ID).append("\",\"src\": \"").append(getURL()).append(
                                         "\",\"style\": \"border: 0; width: 100%; height: 99%\"")
                         .append(",\"id\": \"")
                         .append(MainPage.IFRAME_ID).append("\"").append("}));");
@@ -230,6 +236,12 @@ public class LinkItem
      * @return true, if is popup
      */
     protected boolean isPopup()
+    {
+        return false;
+    }
+
+    @Override
+    protected boolean useJSEventBindingWhenNeeded()
     {
         return false;
     }
