@@ -474,7 +474,7 @@ public class UIGrid
                     _column.setDataType("enum");
                     @SuppressWarnings("unchecked")
                     final Map<String, ?> enumValues = (Map<String, ?>) _uiValue.getReadOnlyValue(TargetMode.VIEW);
-                    _column.setEnumValues(enumValues.keySet());
+                    _column.setEnumValues(enumValues.keySet().stream().collect(Collectors.toSet()));
                 }
             }
         }

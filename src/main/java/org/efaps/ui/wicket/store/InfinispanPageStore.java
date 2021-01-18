@@ -119,6 +119,12 @@ public class InfinispanPageStore
 
     }
 
+    @Override
+    public boolean canBeAsynchronous(final IPageContext context)
+    {
+        return true;
+    }
+
     /**
      * Gets the idle seconds.
      *
@@ -139,7 +145,8 @@ public class InfinispanPageStore
         final AdvancedCache<String, StoredPage> cache = InfinispanCache.get().<String, StoredPage>getIgnReCache(
                         InfinispanPageStore.PAGECACHE);
         final QueryFactory queryFactory = Search.getQueryFactory(cache);
-        final Query query = queryFactory.from(StoredPage.class).having("sessionId").eq(_sessionId).build();
+        final Query query = queryFactory.create(" select * from org.efaps.ui.wicket.store.InfinispanPageStore.StoredPage "
+                        + "where sessionId : \"" + _sessionId + "\"");
         query.<StoredPage>list().forEach(storedPage -> cache.remove(storedPage.getSessionId() + "::" + storedPage
                         .getPage().getPageId()));
     }
