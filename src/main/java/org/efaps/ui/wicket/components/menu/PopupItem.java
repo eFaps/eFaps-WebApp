@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2021 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 
@@ -26,18 +23,9 @@ import org.apache.wicket.model.IModel;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 
 
-/**
- * TODO comment!
- *
- * @author The eFaps Team
- * @version $Id$
- */
 public class PopupItem
     extends LinkItem
 {
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
     /**
@@ -56,23 +44,18 @@ public class PopupItem
     }
 
     /**
-     * The original behavior is wanted therefore return null.
-     * @param _url url for the script
-     * @return null to deactivate
-     */
-    @Override
-    protected CharSequence getOnClickScript(final CharSequence _url)
-    {
-        return null;
-    }
-
-    /**
      * Checks if is popup.
      *
      * @return true, if is popup
      */
     @Override
     protected boolean isPopup()
+    {
+        return true;
+    }
+
+    @Override
+    protected boolean useJSEventBindingWhenNeeded()
     {
         return true;
     }
