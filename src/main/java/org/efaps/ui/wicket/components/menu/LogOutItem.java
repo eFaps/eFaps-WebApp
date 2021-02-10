@@ -18,6 +18,7 @@
 package org.efaps.ui.wicket.components.menu;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.flow.RedirectToUrlException;
 import org.efaps.ui.wicket.EFapsSession;
@@ -63,10 +64,17 @@ public class LogOutItem
     }
 
     @Override
-    protected CharSequence getOnClickScript(final CharSequence _url)
+    protected void onComponentTag(final ComponentTag tag)
+    {
+        super.onComponentTag(tag);
+        tag.put("onClick", getOnClickScript());
+    }
+
+    @Override
+    protected CharSequence getOnClickScript()
     {
         final StringBuilder js = new StringBuilder()
-            .append("window.location.href=\"").append(_url)
+            .append("window.location.href=\"").append(getURL())
             .append("\";");
         return js;
     }
