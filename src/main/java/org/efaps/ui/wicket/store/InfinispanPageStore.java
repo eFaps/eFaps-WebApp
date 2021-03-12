@@ -32,7 +32,6 @@ import org.infinispan.AdvancedCache;
 import org.infinispan.Cache;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.query.Search;
-import org.infinispan.query.dsl.Query;
 import org.infinispan.query.dsl.QueryFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -145,9 +144,10 @@ public class InfinispanPageStore
         final AdvancedCache<String, StoredPage> cache = InfinispanCache.get().<String, StoredPage>getIgnReCache(
                         InfinispanPageStore.PAGECACHE);
         final QueryFactory queryFactory = Search.getQueryFactory(cache);
-        final Query query = queryFactory.create(" select * from org.efaps.ui.wicket.store.InfinispanPageStore.StoredPage "
-                        + "where sessionId : \"" + _sessionId + "\"");
-        query.<StoredPage>list().forEach(storedPage -> cache.remove(storedPage.getSessionId() + "::" + storedPage
+        final var query = queryFactory
+                        .<StoredPage>create("FROM org.efaps.ui.wicket.store.InfinispanPageStore$StoredPage "
+                                        + "WHERE sessionId = \"" + _sessionId + "\"");
+        query.execute().list().forEach(storedPage -> cache.remove(storedPage.getSessionId() + "::" + storedPage
                         .getPage().getPageId()));
     }
 

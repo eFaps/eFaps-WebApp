@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2021 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,8 @@ package org.efaps.ui.wicket.connectionregistry;
 import java.util.Date;
 
 import org.apache.wicket.protocol.ws.api.registry.IKey;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Indexed;
-
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 /**
  * The Class UserSession.
  *
@@ -32,7 +31,7 @@ public class UserSession
 {
 
     /** The user name. */
-    @Field
+    @KeywordField
     private String userName;
 
     /** The session id. */
@@ -52,7 +51,7 @@ public class UserSession
      */
     public UserSession()
     {
-        this.lastActivity = new Date().getTime();
+        lastActivity = new Date().getTime();
     }
 
     /**
@@ -62,7 +61,7 @@ public class UserSession
      */
     public String getUserName()
     {
-        return this.userName;
+        return userName;
     }
 
     /**
@@ -73,7 +72,7 @@ public class UserSession
      */
     public UserSession setUserName(final String _userName)
     {
-        this.userName = _userName;
+        userName = _userName;
         return this;
     }
 
@@ -84,7 +83,7 @@ public class UserSession
      */
     public String getSessionId()
     {
-        return this.sessionId;
+        return sessionId;
     }
 
     /**
@@ -95,7 +94,7 @@ public class UserSession
      */
     public UserSession setSessionId(final String _sessionId)
     {
-        this.sessionId = _sessionId;
+        sessionId = _sessionId;
         return this;
     }
 
@@ -106,7 +105,7 @@ public class UserSession
      */
     public UserSession registerActivity()
     {
-        this.lastActivity = new Date().getTime();
+        lastActivity = new Date().getTime();
         return this;
     }
 
@@ -117,7 +116,7 @@ public class UserSession
      */
     public long getLastActivity()
     {
-        return this.lastActivity;
+        return lastActivity;
     }
 
     /**
@@ -127,7 +126,7 @@ public class UserSession
      */
     public boolean isInvalidated()
     {
-        return this.invalidated;
+        return invalidated;
     }
 
     /**
@@ -137,7 +136,7 @@ public class UserSession
      */
     public UserSession markInvalid()
     {
-        this.invalidated = true;
+        invalidated = true;
         return this;
     }
 
@@ -148,7 +147,7 @@ public class UserSession
      */
     public IKey getConnectionKey()
     {
-        return this.connectionKey;
+        return connectionKey;
     }
 
     /**
@@ -159,7 +158,7 @@ public class UserSession
      */
     public UserSession setConnectionKey(final IKey _connectionKey)
     {
-        this.connectionKey = _connectionKey;
+        connectionKey = _connectionKey;
         return this;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2021 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,15 +41,11 @@ import org.efaps.ui.wicket.EFapsApplication;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.InfinispanCache;
-import org.hibernate.search.query.dsl.QueryBuilder;
 import org.infinispan.Cache;
 import org.infinispan.configuration.cache.Configuration;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.manager.EmbeddedCacheManager;
-import org.infinispan.query.CacheQuery;
-import org.infinispan.query.ResultIterator;
 import org.infinispan.query.Search;
-import org.infinispan.query.SearchManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,6 +56,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class RegistryManager
 {
+
     /**
      * Name of the Cache for Instances.
      */
@@ -69,7 +66,6 @@ public final class RegistryManager
      * Logger for this class.
      */
     private static final Logger LOG = LoggerFactory.getLogger(RegistryManager.class);
-
 
     /**
      * Instantiates a new registry manager.
@@ -114,7 +110,7 @@ public final class RegistryManager
             }
             final Class<?> clazz = Class.forName("org.efaps.esjp.common.history.LoginHistory", true,
                             EFapsClassLoader.getInstance());
-            final Object obj = clazz.newInstance();
+            final Object obj = clazz.getDeclaredConstructor().newInstance();
             final Method method = clazz.getMethod("register", String.class, String.class, String.class);
             method.invoke(obj, _userName, _sessionId, ipAddress);
         } catch (final ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException
@@ -122,7 +118,6 @@ public final class RegistryManager
             RegistryManager.LOG.error("Error on registering Login", e);
         }
     }
-
 
     /**
      * Register activity.
@@ -208,7 +203,7 @@ public final class RegistryManager
             }
             final Class<?> clazz = Class.forName("org.efaps.esjp.common.history.LogoutHistory", true, EFapsClassLoader
                             .getInstance());
-            final Object obj = clazz.newInstance();
+            final Object obj = clazz.getDeclaredConstructor().newInstance();
             final Method method = clazz.getMethod("register", String.class, String.class, String.class);
             method.invoke(obj, _userName, _sessionId, "N.A.");
         } catch (final ClassNotFoundException | EFapsException | InstantiationException | IllegalAccessException
@@ -259,24 +254,20 @@ public final class RegistryManager
     public static List<IWebSocketConnection> getConnections4User(final String _login)
     {
         final List<IWebSocketConnection> ret = new ArrayList<>();
-        final SearchManager searchManager = Search.getSearchManager(RegistryManager.getCache());
-        final QueryBuilder qbldr = searchManager.buildQueryBuilderForClass(UserSession.class).get();
-        final CacheQuery<?> query = searchManager.getQuery(qbldr.keyword().onField("userName").matching(_login)
-                        .createQuery());
-        try (ResultIterator<?> iter = query.iterator()) {
-            while (iter.hasNext()) {
-                final UserSession userSession = (UserSession) iter.next();
-                if (userSession.getConnectionKey() != null) {
-                    final IWebSocketConnectionRegistry registry = WebSocketSettings.Holder.get(EFapsApplication.get())
-                                    .getConnectionRegistry();
-                    final IWebSocketConnection conn = registry.getConnection(EFapsApplication.get(), userSession
-                                    .getSessionId(), userSession.getConnectionKey());
-                    if (conn != null) {
-                        ret.add(conn);
-                    }
+        final var queryFactory = Search.getQueryFactory(RegistryManager.getCache());
+        final var query = queryFactory.<UserSession>create("FROM org.efaps.ui.wicket.connectionregistry.UserSession u "
+                        + "WHERE u.userName:'" + _login + "'");
+        query.execute().list().forEach(userSession -> {
+            if (userSession.getConnectionKey() != null) {
+                final IWebSocketConnectionRegistry registry = WebSocketSettings.Holder.get(EFapsApplication.get())
+                                .getConnectionRegistry();
+                final IWebSocketConnection conn = registry.getConnection(EFapsApplication.get(), userSession
+                                .getSessionId(), userSession.getConnectionKey());
+                if (conn != null) {
+                    ret.add(conn);
                 }
             }
-        }
+        });
         return ret;
     }
 
