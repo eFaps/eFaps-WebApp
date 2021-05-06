@@ -23,8 +23,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.EnumUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.wicket.Component;
 import org.apache.wicket.model.Model;
@@ -535,10 +535,11 @@ public abstract class AbstractUIField
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public int compareTo(final ISortable _arg0)
     {
-        return ObjectUtils.compare(getCompareValue(), _arg0.getCompareValue());
+        return ObjectUtils.compare((Comparable) getCompareValue(), (Comparable)_arg0.getCompareValue());
     }
 
     /**
