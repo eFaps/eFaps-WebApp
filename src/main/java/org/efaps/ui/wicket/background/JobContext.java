@@ -19,7 +19,7 @@ package org.efaps.ui.wicket.background;
 import java.util.Locale;
 import java.util.UUID;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.api.background.IJobContext;
 
 public class JobContext
