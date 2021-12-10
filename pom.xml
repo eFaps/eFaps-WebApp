@@ -18,7 +18,8 @@
 
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
@@ -136,7 +137,7 @@
                                     <toDir>lib</toDir>
                                 </configuration>
                             </execution>
-                       </executions>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>
@@ -212,9 +213,11 @@
                                 <id>unpack-gridx</id>
                                 <configuration>
                                     <target>
-                                        <untar compression="gzip" src="lib/gridx-${gridx.version}.tar.gz"
+                                        <untar compression="gzip"
+                                            src="lib/gridx-${gridx.version}.tar.gz"
                                             dest="src/main/js/gridx">
-                                            <cutdirsmapper dirs="1" />
+                                            <cutdirsmapper
+                                                dirs="1" />
                                         </untar>
                                     </target>
                                 </configuration>
@@ -228,8 +231,10 @@
                                 <configuration>
                                     <target>
                                         <untar compression="gzip"
-                                            src="lib/dojo-release-${dojo.version}-src.tar.gz" dest="src/main/js">
-                                            <cutdirsmapper dirs="1" />
+                                            src="lib/dojo-release-${dojo.version}-src.tar.gz"
+                                            dest="src/main/js">
+                                            <cutdirsmapper
+                                                dirs="1" />
                                         </untar>
                                     </target>
                                 </configuration>
@@ -242,14 +247,20 @@
                                 <id>WebApp Build</id>
                                 <phase>generate-resources</phase>
                                 <configuration>
-                                     <target>
-                                        <java classname="org.mozilla.javascript.tools.shell.Main" fork="true" maxmemory="512m" failonerror="false"
+                                    <target>
+                                        <java
+                                            classname="org.mozilla.javascript.tools.shell.Main"
+                                            fork="true" maxmemory="512m"
+                                            failonerror="false"
                                             classpath="${basedir}/src/main/js/util/shrinksafe/js.jar${path.separator}${basedir}/src/main/js/util/closureCompiler/compiler.jar${path.separator}${basedir}/src/main/js/util/shrinksafe/shrinksafe.jar">
-                                            <arg value="${basedir}/src/main/js/dojo/dojo.js"/>
-                                            <arg value="baseUrl=${basedir}/src/main/js/dojo"/>
-                                            <arg value="load=build"/>
-                                            <arg line="--profile ${basedir}/src/main/js/eFaps-WebApp.profile.js"/>
-                                            <arg value="--release"/>
+                                            <arg
+                                                value="${basedir}/src/main/js/dojo/dojo.js" />
+                                            <arg
+                                                value="baseUrl=${basedir}/src/main/js/dojo" />
+                                            <arg value="load=build" />
+                                            <arg
+                                                line="--profile ${basedir}/src/main/js/eFaps-WebApp.profile.js" />
+                                            <arg value="--release" />
                                         </java>
                                     </target>
                                 </configuration>
