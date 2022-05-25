@@ -20,13 +20,20 @@ package org.efaps.ui.wicket.components.menu;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
+import org.apache.wicket.protocol.ws.api.HttpSessionCopy;
+import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.flow.RedirectToUrlException;
+import org.efaps.ui.wicket.EFapsApplication;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.login.LoginPage;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 
 /**
@@ -53,11 +60,27 @@ public class LogOutItem
     @Override
     public void onClick()
     {
+        var logoutProviders = EFapsApplication.get().getLogoutProviders();
         final String url = Configuration.getAttribute(ConfigAttribute.LOGOUT_URL);
-        if (StringUtils.isEmpty(url)) {
+        if (logoutProviders.isEmpty() && StringUtils.isEmpty(url)) {
             this.setResponsePage(LoginPage.class);
         }
         ((EFapsSession) getSession()).logout();
+
+        if (!logoutProviders.isEmpty()) {
+            final HttpServletRequest httpRequest = ((ServletWebRequest) RequestCycle.get().getRequest())
+                            .getContainerRequest();
+            final HttpSession httpSession = httpRequest.getSession(false);
+            if (httpSession != null && !(httpSession instanceof HttpSessionCopy)) {
+                for (var logoutProvider: logoutProviders) {
+                    var logoutUrl = logoutProvider.logoutUrl(httpSession);
+                    if (logoutUrl != null) {
+                        throw new RedirectToUrlException(logoutUrl);
+                    }
+                }
+            }
+        }
+
         if (StringUtils.isNotEmpty(url)) {
             throw new RedirectToUrlException(url);
         }

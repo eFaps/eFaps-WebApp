@@ -33,8 +33,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import javax.servlet.http.HttpServletRequest;
-
+import org.apache.poi.ss.formula.functions.T;
 import org.apache.wicket.Application;
 import org.apache.wicket.Component;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
@@ -66,6 +65,7 @@ import org.efaps.admin.AppConfigHandler;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.api.background.IJob;
 import org.efaps.api.ui.ILoginProvider;
+import org.efaps.api.ui.ILogoutProvider;
 import org.efaps.db.Context;
 import org.efaps.jaas.AppAccessHandler;
 import org.efaps.ui.filter.AbstractFilter;
@@ -89,6 +89,9 @@ import org.efaps.util.RandomUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 /**
  * This Class presents the WebApplication for eFaps using the Wicket-Framework.
  * <br/>
@@ -125,6 +128,9 @@ public class EFapsApplication
 
     /** The loginProviders. */
     private final List<ILoginProvider> loginProviders = new ArrayList<>();
+
+    /** The loginProviders. */
+    private final List<ILogoutProvider> logoutProviders = new ArrayList<>();
 
     /**
      * @see org.apache.wicket.Application#getHomePage()
@@ -236,6 +242,12 @@ public class EFapsApplication
             LOG.info("[{}] registered: {}", getName(), loginProvider);
             loginProviders.add(loginProvider);
         }
+
+        var serviceLoaderLogouts = ServiceLoader.load(ILogoutProvider.class);
+        for (final var logoutProvider : serviceLoaderLogouts) {
+            LOG.info("[{}] registered: {}", getName(), logoutProvider);
+            logoutProviders.add(logoutProvider);
+        }
         mountPage("/" + RandomUtil.randomAlphabetic(16), JsonResponsePage.class);
     }
 
@@ -341,6 +353,11 @@ public class EFapsApplication
     public List<ILoginProvider> getLoginProviders()
     {
         return Collections.unmodifiableList(loginProviders);
+    }
+
+    public List<ILogoutProvider> getLogoutProviders()
+    {
+        return Collections.unmodifiableList(logoutProviders);
     }
 
     /**
