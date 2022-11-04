@@ -76,7 +76,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Must be set on the file missing also -->
         <gridx.version>1.3.9</gridx.version>
-        <dojo.version>1.16.2</dojo.version>
+        <dojo.version>1.17.3</dojo.version>
     </properties>
 
     <issueManagement>
@@ -114,7 +114,7 @@
             <activation>
                 <file>
                     <!-- does not work with properties therefore it must be set including the dojo version -->
-                    <missing>lib/dojo-release-1.16.2-src.tar.gz</missing>
+                    <missing>lib/dojo-release-1.17.3-src.tar.gz</missing>
                 </file>
             </activation>
             <build>
