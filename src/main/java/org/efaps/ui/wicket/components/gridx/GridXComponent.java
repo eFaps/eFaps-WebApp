@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.wicket.IRequestListener;
@@ -321,7 +322,12 @@ public class GridXComponent
                 .append("structure: structure,\n");
 
             if (uiGrid.isStructureTree()) {
-               js.append("selectRowTreeMode: false,\n");
+                boolean selectRowTreeMode = false;
+                if (isField) {
+                    selectRowTreeMode = BooleanUtils.toBoolean(
+                        ((UIFieldGrid) uiGrid).getFieldTable().getProperty("GridxSelectRowTreeMode"));
+                }
+                js.append("selectRowTreeMode: ").append(selectRowTreeMode).append(",\n");
             }
 
             if (isField) {
