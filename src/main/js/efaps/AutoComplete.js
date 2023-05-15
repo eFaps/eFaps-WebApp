@@ -5,8 +5,9 @@ define("efaps/AutoComplete", [
     "dojo/when",
     "dijit/form/FilteringSelect",
     "dojo/dom-style",
-    "dojo/dom-form"
-], function(declare, lang, string, when, FilteringSelect, domStyle, domForm){
+    "dojo/dom-form",
+    "dojo/keys",
+], function(declare, lang, string, when, FilteringSelect, domStyle, domForm, keys){
 
     // module:
     // efaps/AutoComplete
@@ -28,6 +29,115 @@ define("efaps/AutoComplete", [
         // overwrite the search delay default
         searchDelay: 500,
 
+
+        isBarcode:  function(val) {
+            const re = /(^\d{8}$)|(^\d{10}$)|(^\d{13}$)/m;
+            return val.match(re);
+        },
+
+        _onKey: function(/*Event*/ evt){
+			// summary:
+			//		Handles keyboard events
+			if(evt.charCode >= 32){
+				return;
+			} // alphanumeric reserved for searching
+
+			var key = evt.charCode || evt.keyCode;
+
+			// except for cutting/pasting case - ctrl + x/v
+			if(key == keys.ALT || key == keys.CTRL || key == keys.META || key == keys.SHIFT){
+				return; // throw out spurious events
+			}
+            // detect a barcode by using regex plus ENTER
+            if (key == keys.ENTER && this._lastInput && this.isBarcode(this._lastInput)) {
+                return
+            }
+
+			var pw = this.dropDown;
+			var highlighted = null;
+			this._abortQuery();
+
+			// _HasDropDown will do some of the work:
+			//
+			//	1. when drop down is not yet shown:
+			//		- if user presses the down arrow key, call loadDropDown()
+			//	2. when drop down is already displayed:
+			//		- on ESC key, call closeDropDown()
+			//		- otherwise, call dropDown.handleKey() to process the keystroke
+            this.inherited(arguments);
+
+			if(evt.altKey || evt.ctrlKey || evt.metaKey){
+				return;
+			} // don't process keys with modifiers  - but we want shift+TAB
+
+			if(this._opened){
+				highlighted = pw.getHighlightedOption();
+			}
+			switch(key){
+				case keys.PAGE_DOWN:
+				case keys.DOWN_ARROW:
+				case keys.PAGE_UP:
+				case keys.UP_ARROW:
+					// Keystroke caused ComboBox_menu to move to a different item.
+					// Copy new item to <input> box.
+					if(this._opened){
+						this._announceOption(highlighted);
+					}
+					evt.stopPropagation();
+					evt.preventDefault();
+					break;
+
+				case keys.ENTER:
+					// prevent submitting form if user presses enter. Also
+					// prevent accepting the value if either Next or Previous
+					// are selected
+					if(highlighted){
+						// only stop event on prev/next
+						if(highlighted == pw.nextButton){
+							this._nextSearch(1);
+							// prevent submit
+							evt.stopPropagation();
+							evt.preventDefault();
+							break;
+						}else if(highlighted == pw.previousButton){
+							this._nextSearch(-1);
+							// prevent submit
+							evt.stopPropagation();
+							evt.preventDefault();
+							break;
+						}
+						// prevent submit if ENTER was to choose an item
+						evt.stopPropagation();
+						evt.preventDefault();
+					}else{
+						// Update 'value' (ex: KY) according to currently displayed text
+						this._setBlurValue(); // set value if needed
+						this._setCaretPos(this.focusNode, this.focusNode.value.length); // move cursor to end and cancel highlighting
+					}
+				// fall through
+
+				case keys.TAB:
+					var newvalue = this.get('displayedValue');
+					//	if the user had More Choices selected fall into the
+					//	_onBlur handler
+					if(pw && (newvalue == pw._messages["previousMessage"] || newvalue == pw._messages["nextMessage"])){
+						break;
+					}
+					if(highlighted){
+						this._selectOption(highlighted);
+					}
+				// fall through
+
+				case keys.ESCAPE:
+					if(this._opened){
+						this._lastQuery = null; // in case results come back later
+						this.closeDropDown();
+					}
+					break;
+			}
+		},
+
+
         _setBlurValue : function() {
             // if the user clicks away from the textbox OR tabs away, set the value to the textbox value
             // #4617:
@@ -36,6 +146,7 @@ define("efaps/AutoComplete", [
             if (newvalue.length == 0) {
                 this.valueNode.value="";
             }
+
             var pw = this.dropDown;
             if (pw && (newvalue == pw._messages["previousMessage"] || newvalue == pw._messages["nextMessage"])) {
                 this._setValueAttr(this._lastValueReported, true);
@@ -187,6 +298,7 @@ define("efaps/AutoComplete", [
         // The constructor
         constructor: function(args){
             declare.safeMixin(this,args);
+           // _AutoCompleterMixin._onKey = myOnKey
         }
 
     });
