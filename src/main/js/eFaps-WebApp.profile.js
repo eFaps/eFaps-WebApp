@@ -5,7 +5,7 @@ var profile = (function(){
 
         action: 'release',
 
-        optimize: 'shrinksafe', //shrinksafe
+        optimize: '', //shrinksafe
 
         layerOptimize: 'shrinksafe', //shrinksafe empty to deactivate
 
