@@ -31,7 +31,7 @@ define("efaps/AutoComplete", [
 
 
         isBarcode:  function(val) {
-            const re = /(^\d{8}$)|(^\d{10}$)|(^\d{13}$)/m;
+            var re = /(^\d{8}$)|(^\d{10}$)|(^\d{13}$)/m;
             return val.match(re);
         },
 
