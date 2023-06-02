@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2023 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * @author The eFaps Team
- * @version $Id$
  */
 public class TransactionFilter
     extends AbstractFilter
@@ -187,17 +186,5 @@ public class TransactionFilter
                             .getAttribute(UserAttributesSet.CONTEXTMAPKEY));
         }
         return map;
-    }
-
-    @Override
-    protected String getLoggedInUser(final HttpServletRequest _request)
-    {
-        String ret = null;
-        if (_request.getUserPrincipal() != null) {
-            ret = _request.getUserPrincipal().getName();
-        } else {
-            ret = super.getLoggedInUser(_request);
-        }
-        return ret;
     }
 }

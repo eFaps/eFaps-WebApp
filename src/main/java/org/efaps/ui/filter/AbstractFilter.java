@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2023 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,6 @@ public abstract class AbstractFilter
      * Name of the session variable for the login name.
      */
     private String sessionParameterLoginName = "org.efaps.login.name";
-
 
     /**
      * Called by the web container to indicate to a filter that it is being
@@ -196,6 +195,15 @@ public abstract class AbstractFilter
      */
     protected String getLoggedInUser(final HttpServletRequest _request)
     {
-        return (String) _request.getSession(true).getAttribute(this.sessionParameterLoginName);
+        // first check session parameter
+        var userName = (String) _request.getSession(true).getAttribute(this.sessionParameterLoginName);
+        // maybe a bearer request
+        if (userName == null) {
+            final String authHeader = _request.getHeader("Authorization");
+            if (authHeader != null && authHeader.startsWith("Bearer") && _request.getUserPrincipal() != null) {
+                userName = _request.getUserPrincipal().getName();
+            }
+        }
+        return userName;
     }
 }
