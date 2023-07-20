@@ -73,7 +73,7 @@ public class FormFilterPage
         throws EFapsException
     {
         setDefaultModel(Model.of(_uiGrid));
-        final String cmdName = Field.get(_model.getObject().getFieldId()).getProperty(UIFormFieldProperty.FILTER_CMD);
+        final String cmdName = Field.get(_model.getObject().getFieldId()).getProperty(UIFormFieldProperty.FILTER_CMD.value());
         final Command cmd = Command.get(cmdName);
         final UIForm uiform = new UIForm(cmd.getUUID(), null).setPagePosition(PagePosition.CONTENTMODAL);
         uiform.setCallingCommandUUID(_uiGrid.getCmdUUID());
@@ -82,7 +82,7 @@ public class FormFilterPage
         add(formContainer);
         FormPage.updateFormContainer(formPage, formContainer, uiform);
 
-        add(new AjaxButton<Long>("btn", Model.of(_model.getObject().getFieldId()),
+        add(new AjaxButton<>("btn", Model.of(_model.getObject().getFieldId()),
                         AjaxButton.ICON.ACCEPT.getReference())
         {
 

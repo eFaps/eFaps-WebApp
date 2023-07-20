@@ -19,7 +19,6 @@ package org.efaps.ui.wicket.models.objects;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -332,13 +331,13 @@ public class UITable
                         multi.addSelect(field.getSelectAlternateOID());
                         altOIDSel.add(field.getSelectAlternateOID());
                     }
-                    if (field.containsProperty(UITableFieldProperty.SORT_SELECT)) {
-                        multi.addSelect(field.getProperty(UITableFieldProperty.SORT_SELECT));
-                    } else if (field.containsProperty(UITableFieldProperty.SORT_PHRASE)) {
-                        multi.addPhrase(field.getProperty(UITableFieldProperty.SORT_PHRASE),
-                                        field.getProperty(UITableFieldProperty.SORT_PHRASE));
-                    } else if (field.containsProperty(UITableFieldProperty.SORT_MSG_PHRASE)) {
-                        multi.addMsgPhrase(field.getProperty(UITableFieldProperty.SORT_MSG_PHRASE));
+                    if (field.containsProperty(UITableFieldProperty.SORT_SELECT.value())) {
+                        multi.addSelect(field.getProperty(UITableFieldProperty.SORT_SELECT.value()));
+                    } else if (field.containsProperty(UITableFieldProperty.SORT_PHRASE.value())) {
+                        multi.addPhrase(field.getProperty(UITableFieldProperty.SORT_PHRASE.value()),
+                                        field.getProperty(UITableFieldProperty.SORT_PHRASE.value()));
+                    } else if (field.containsProperty(UITableFieldProperty.SORT_MSG_PHRASE.value())) {
+                        multi.addMsgPhrase(field.getProperty(UITableFieldProperty.SORT_MSG_PHRASE.value()));
                     }
                 }
                 if (field.getAttribute() != null && type != null) {
@@ -355,12 +354,10 @@ public class UITable
                         } else {
                             attr = type.getAttribute(field.getFilter().getAttributes().split(",")[0]);
                         }
+                    } else if (field.getFilter().getAttributes().contains("/")) {
+                        attr = Attribute.get(field.getFilter().getAttributes());
                     } else {
-                        if (field.getFilter().getAttributes().contains("/")) {
-                            attr = Attribute.get(field.getFilter().getAttributes());
-                        } else {
-                            attr = type.getAttribute(field.getFilter().getAttributes());
-                        }
+                        attr = type.getAttribute(field.getFilter().getAttributes());
                     }
                 }
                 if (!field.isHiddenDisplay(getMode())) {
@@ -441,12 +438,12 @@ public class UITable
                         value = _multi.getMsgPhrase(new SelectBuilder(getBaseSelect4MsgPhrase(field)),
                                         field.getMsgPhrase());
                     }
-                    if (field.containsProperty(UITableFieldProperty.SORT_SELECT)) {
-                        sortValue = _multi.getSelect(field.getProperty(UITableFieldProperty.SORT_SELECT));
-                    } else if (field.containsProperty(UITableFieldProperty.SORT_PHRASE)) {
-                        sortValue = _multi.getPhrase(field.getProperty(UITableFieldProperty.SORT_PHRASE));
-                    } else if (field.containsProperty(UITableFieldProperty.SORT_MSG_PHRASE)) {
-                        sortValue = _multi.getMsgPhrase(field.getProperty(UITableFieldProperty.SORT_MSG_PHRASE));
+                    if (field.containsProperty(UITableFieldProperty.SORT_SELECT.value())) {
+                        sortValue = _multi.getSelect(field.getProperty(UITableFieldProperty.SORT_SELECT.value()));
+                    } else if (field.containsProperty(UITableFieldProperty.SORT_PHRASE.value())) {
+                        sortValue = _multi.getPhrase(field.getProperty(UITableFieldProperty.SORT_PHRASE.value()));
+                    } else if (field.containsProperty(UITableFieldProperty.SORT_MSG_PHRASE.value())) {
+                        sortValue = _multi.getMsgPhrase(field.getProperty(UITableFieldProperty.SORT_MSG_PHRASE.value()));
                     }
 
                     final boolean hidden = false;
@@ -928,8 +925,7 @@ public class UITable
         if (getSortKey() != null && getSortKey().length() > 0) {
             int sortKeyTmp = 0;
             final List<Field> fields = getUserSortedColumns();
-            for (int i = 0; i < fields.size(); i++) {
-                final Field field = fields.get(i);
+            for (final Field field : fields) {
                 if (field.hasAccess(getMode(), getInstance(), getCommand(), getInstance())
                                 && !field.isNoneDisplay(getMode()) && !field.isHiddenDisplay(getMode())) {
                     if (field.getName().equals(getSortKey())) {
@@ -940,17 +936,11 @@ public class UITable
             }
             if (sortKeyTmp < getTable().getFields().size()) {
                 final int index = sortKeyTmp;
-                Collections.sort(this.values, new Comparator<UIRow>()
-                {
-
-                    @Override
-                    public int compare(final UIRow _rowModel1,
-                                       final UIRow _rowModel2)
-                    {
-                        final ISortable cellModel1 = _rowModel1.getCells().get(index);
-                        final ISortable cellModel2 = _rowModel2.getCells().get(index);
-                        return cellModel1.compareTo(cellModel2);
-                    }
+                Collections.sort(this.values, (_rowModel1,
+                 _rowModel2) -> {
+                    final ISortable cellModel1 = _rowModel1.getCells().get(index);
+                    final ISortable cellModel2 = _rowModel2.getCells().get(index);
+                    return cellModel1.compareTo(cellModel2);
                 });
                 if (getSortDirection() == SortDirection.DESCENDING) {
                     Collections.reverse(this.values);

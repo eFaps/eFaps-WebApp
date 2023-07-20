@@ -23,8 +23,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.IRequestListener;
 import org.apache.wicket.MarkupContainer;
@@ -196,7 +196,7 @@ public class AutoCompleteBehavior
                 break;
         }
 
-        if (this.settings.getFieldConfiguration().hasProperty(UIFormFieldProperty.WIDTH)
+        if (this.settings.getFieldConfiguration().hasProperty(UIFormFieldProperty.WIDTH.value())
                         && !this.settings.getFieldConfiguration().isTableField()) {
             js.append("style:\"width:").append(this.settings.getFieldConfiguration().getWidth()).append("\",");
         }

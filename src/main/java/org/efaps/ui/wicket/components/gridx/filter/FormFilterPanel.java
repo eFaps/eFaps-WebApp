@@ -102,7 +102,7 @@ public class FormFilterPanel
         frame.setDefaultModel(_model);
         this.add(frame);
 
-        final String cmdName = Field.get(_model.getObject().getFieldId()).getProperty(UIFormFieldProperty.FILTER_CMD);
+        final String cmdName = Field.get(_model.getObject().getFieldId()).getProperty(UIFormFieldProperty.FILTER_CMD.value());
         final Command cmd = Command.get(cmdName);
         this.add(AttributeModifier.append("style", "width:" + cmd.getWindowWidth() + "px"));
     }

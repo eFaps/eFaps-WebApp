@@ -164,18 +164,18 @@ public class NumberField
         super.onComponentTag(_tag);
         // must rempove teh html5 tags if not set explecitely
         final IValueMap attributes = _tag.getAttributes();
-        if (getFieldConfig().getField().containsProperty(UIFormFieldProperty.NUMBER_MINIMUM)) {
-            attributes.put("min", getFieldConfig().getField().getProperty(UIFormFieldProperty.NUMBER_MINIMUM));
+        if (getFieldConfig().getField().containsProperty(UIFormFieldProperty.NUMBER_MINIMUM.value())) {
+            attributes.put("min", getFieldConfig().getField().getProperty(UIFormFieldProperty.NUMBER_MINIMUM.value()));
         } else {
             attributes.remove("min");
         }
-        if (getFieldConfig().getField().containsProperty(UIFormFieldProperty.NUMBER_MAXIMUM)) {
-            attributes.put("max", getFieldConfig().getField().getProperty(UIFormFieldProperty.NUMBER_MAXIMUM));
+        if (getFieldConfig().getField().containsProperty(UIFormFieldProperty.NUMBER_MAXIMUM.value())) {
+            attributes.put("max", getFieldConfig().getField().getProperty(UIFormFieldProperty.NUMBER_MAXIMUM.value()));
         } else {
             attributes.remove("max");
         }
-        if (getFieldConfig().getField().containsProperty(UIFormFieldProperty.NUMBER_STEP)) {
-            attributes.put("step", getFieldConfig().getField().getProperty(UIFormFieldProperty.NUMBER_STEP));
+        if (getFieldConfig().getField().containsProperty(UIFormFieldProperty.NUMBER_STEP.value())) {
+            attributes.put("step", getFieldConfig().getField().getProperty(UIFormFieldProperty.NUMBER_STEP.value()));
         } else if (this.any) {
             attributes.put("step", "any");
         } else {

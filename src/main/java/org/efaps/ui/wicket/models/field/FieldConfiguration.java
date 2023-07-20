@@ -26,10 +26,10 @@ import org.efaps.admin.datamodel.ui.UIValue;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.Table;
 import org.efaps.admin.ui.field.Field;
-import org.efaps.api.IEnumValue;
 import org.efaps.api.ci.UIFormFieldProperty;
 import org.efaps.api.ui.UIType;
 import org.efaps.db.Instance;
+import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -110,8 +110,8 @@ public class FieldConfiguration
      */
     public int getColSpan()
     {
-        return getField().containsProperty(UIFormFieldProperty.COL_SPAN)
-                        ? Integer.valueOf(getField().getProperty(UIFormFieldProperty.COL_SPAN)) : 1;
+        return getField().containsProperty(UIFormFieldProperty.COL_SPAN.value())
+                        ? Integer.valueOf(getField().getProperty(UIFormFieldProperty.COL_SPAN.value())) : 1;
     }
 
     /**
@@ -120,8 +120,8 @@ public class FieldConfiguration
     public String getWidth()
     {
         String ret = "";
-        if (hasProperty(UIFormFieldProperty.WIDTH)) {
-            final String widthTmp = getProperty(UIFormFieldProperty.WIDTH);
+        if (hasProperty(UIFormFieldProperty.WIDTH.value())) {
+            final String widthTmp = getProperty(UIFormFieldProperty.WIDTH.value());
             if (StringUtils.isNumeric(widthTmp)) {
                 ret = widthTmp + "ch";
             } else {
@@ -139,8 +139,8 @@ public class FieldConfiguration
     public int getWidthWeight()
     {
         int ret = 1;
-        if (!isFixedWidth() && hasProperty(UIFormFieldProperty.WIDTH)) {
-            ret = Integer.valueOf(getProperty(UIFormFieldProperty.WIDTH));
+        if (!isFixedWidth() && hasProperty(UIFormFieldProperty.WIDTH.value())) {
+            ret = Integer.valueOf(getProperty(UIFormFieldProperty.WIDTH.value()));
         }
         return ret;
     }
@@ -151,7 +151,7 @@ public class FieldConfiguration
      * @param _enum the _enum
      * @return true, if successful
      */
-    public boolean hasProperty(final IEnumValue _enum)
+    public boolean hasProperty(final String _enum)
     {
         return getField().containsProperty(_enum);
     }
@@ -162,7 +162,7 @@ public class FieldConfiguration
      * @param _enum the _enum
      * @return the property
      */
-    public String getProperty(final IEnumValue _enum)
+    public String getProperty(final String _enum)
     {
         return getField().getProperty(_enum);
     }
@@ -172,8 +172,8 @@ public class FieldConfiguration
      */
     public boolean isFixedWidth()
     {
-        return hasProperty(UIFormFieldProperty.WIDTH)
-                        && !StringUtils.isNumeric(getField().getProperty(UIFormFieldProperty.WIDTH));
+        return hasProperty(UIFormFieldProperty.WIDTH.value())
+                        && !StringUtils.isNumeric(getField().getProperty(UIFormFieldProperty.WIDTH.value()));
     }
 
     /**
@@ -253,7 +253,7 @@ public class FieldConfiguration
     public UIType getUIType()
     {
         final UIType ret;
-        final String uiTypeStr = getProperty(UIFormFieldProperty.UI_TYPE);
+        final String uiTypeStr = getProperty(UIFormFieldProperty.UI_TYPE.value());
         if (EnumUtils.isValidEnum(UIType.class, uiTypeStr)) {
             ret = UIType.valueOf(uiTypeStr);
         } else {

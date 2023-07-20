@@ -257,11 +257,11 @@ public class UIGrid
             if (field.getSelectAlternateOID() != null) {
                 selects.add(field.getSelectAlternateOID() + " as " + field.getName() + "AOID");
             }
-            if (field.containsProperty(UITableFieldProperty.SORT_SELECT)) {
-                selects.add(field.getProperty(UITableFieldProperty.SORT_SELECT) + " as " + field.getName() + "SORT");
-            } else if (field.containsProperty(UITableFieldProperty.SORT_PHRASE)) {
+            if (field.containsProperty(UITableFieldProperty.SORT_SELECT.value())) {
+                selects.add(field.getProperty(UITableFieldProperty.SORT_SELECT.value()) + " as " + field.getName() + "SORT");
+            } else if (field.containsProperty(UITableFieldProperty.SORT_PHRASE.value())) {
                 // sortValue = multi.getPhrase(field.getProperty(UITableFieldProperty.SORT_PHRASE));
-            } else if (field.containsProperty(UITableFieldProperty.SORT_MSG_PHRASE)) {
+            } else if (field.containsProperty(UITableFieldProperty.SORT_MSG_PHRASE.value())) {
                 // sortValue = multi.getMsgPhrase(field.getProperty(UITableFieldProperty.SORT_MSG_PHRASE));
             }
         }
@@ -301,9 +301,9 @@ public class UIGrid
                 final Instance instance = evaluateFieldInstance(evaluator, field);
                 final Object value = evaluator.get(field.getName());
                 Object sortValue = null;
-                if (field.containsProperty(UITableFieldProperty.SORT_SELECT)
-                                || field.containsProperty(UITableFieldProperty.SORT_PHRASE)
-                                || field.containsProperty(UITableFieldProperty.SORT_MSG_PHRASE)) {
+                if (field.containsProperty(UITableFieldProperty.SORT_SELECT.value())
+                                || field.containsProperty(UITableFieldProperty.SORT_PHRASE.value())
+                                || field.containsProperty(UITableFieldProperty.SORT_MSG_PHRASE.value())) {
                     sortValue =  evaluator.get(field.getName() + "SORT");
                 }
 
@@ -383,13 +383,13 @@ public class UIGrid
                 if (field.getSelectAlternateOID() != null) {
                     multi.addSelect(field.getSelectAlternateOID());
                 }
-                if (field.containsProperty(UITableFieldProperty.SORT_SELECT)) {
-                    multi.addSelect(field.getProperty(UITableFieldProperty.SORT_SELECT));
-                } else if (field.containsProperty(UITableFieldProperty.SORT_PHRASE)) {
-                    multi.addPhrase(field.getProperty(UITableFieldProperty.SORT_PHRASE), field.getProperty(
-                                    UITableFieldProperty.SORT_PHRASE));
-                } else if (field.containsProperty(UITableFieldProperty.SORT_MSG_PHRASE)) {
-                    multi.addMsgPhrase(field.getProperty(UITableFieldProperty.SORT_MSG_PHRASE));
+                if (field.containsProperty(UITableFieldProperty.SORT_SELECT.value())) {
+                    multi.addSelect(field.getProperty(UITableFieldProperty.SORT_SELECT.value()));
+                } else if (field.containsProperty(UITableFieldProperty.SORT_PHRASE.value())) {
+                    multi.addPhrase(field.getProperty(UITableFieldProperty.SORT_PHRASE.value()), field.getProperty(
+                                    UITableFieldProperty.SORT_PHRASE.value()));
+                } else if (field.containsProperty(UITableFieldProperty.SORT_MSG_PHRASE.value())) {
+                    multi.addMsgPhrase(field.getProperty(UITableFieldProperty.SORT_MSG_PHRASE.value()));
                 }
             }
             multi.executeWithoutAccessCheck();
@@ -414,12 +414,12 @@ public class UIGrid
                         value = multi.getMsgPhrase(new SelectBuilder(getBaseSelect4MsgPhrase(field)), field
                                         .getMsgPhrase());
                     }
-                    if (field.containsProperty(UITableFieldProperty.SORT_SELECT)) {
-                        sortValue = multi.getSelect(field.getProperty(UITableFieldProperty.SORT_SELECT));
-                    } else if (field.containsProperty(UITableFieldProperty.SORT_PHRASE)) {
-                        sortValue = multi.getPhrase(field.getProperty(UITableFieldProperty.SORT_PHRASE));
-                    } else if (field.containsProperty(UITableFieldProperty.SORT_MSG_PHRASE)) {
-                        sortValue = multi.getMsgPhrase(field.getProperty(UITableFieldProperty.SORT_MSG_PHRASE));
+                    if (field.containsProperty(UITableFieldProperty.SORT_SELECT.value())) {
+                        sortValue = multi.getSelect(field.getProperty(UITableFieldProperty.SORT_SELECT.value()));
+                    } else if (field.containsProperty(UITableFieldProperty.SORT_PHRASE.value())) {
+                        sortValue = multi.getPhrase(field.getProperty(UITableFieldProperty.SORT_PHRASE.value()));
+                    } else if (field.containsProperty(UITableFieldProperty.SORT_MSG_PHRASE.value())) {
+                        sortValue = multi.getMsgPhrase(field.getProperty(UITableFieldProperty.SORT_MSG_PHRASE.value()));
                     }
 
                     final UIValue uiValue = UIValue.get(field, attr, value)

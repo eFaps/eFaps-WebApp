@@ -507,13 +507,13 @@ public class UIStructurBrowser
                         if (field.getSelectAlternateOID() != null) {
                             multi.addSelect(field.getSelectAlternateOID());
                         }
-                        if (field.containsProperty(UITableFieldProperty.SORT_SELECT)) {
-                            multi.addSelect(field.getProperty(UITableFieldProperty.SORT_SELECT));
-                        } else if (field.containsProperty(UITableFieldProperty.SORT_PHRASE)) {
-                            multi.addPhrase(field.getProperty(UITableFieldProperty.SORT_PHRASE),
-                                            field.getProperty(UITableFieldProperty.SORT_PHRASE));
-                        } else if (field.containsProperty(UITableFieldProperty.SORT_MSG_PHRASE)) {
-                            multi.addMsgPhrase(field.getProperty(UITableFieldProperty.SORT_MSG_PHRASE));
+                        if (field.containsProperty(UITableFieldProperty.SORT_SELECT.value())) {
+                            multi.addSelect(field.getProperty(UITableFieldProperty.SORT_SELECT.value()));
+                        } else if (field.containsProperty(UITableFieldProperty.SORT_PHRASE.value())) {
+                            multi.addPhrase(field.getProperty(UITableFieldProperty.SORT_PHRASE.value()),
+                                            field.getProperty(UITableFieldProperty.SORT_PHRASE.value()));
+                        } else if (field.containsProperty(UITableFieldProperty.SORT_MSG_PHRASE.value())) {
+                            multi.addMsgPhrase(field.getProperty(UITableFieldProperty.SORT_MSG_PHRASE.value()));
                         }
                     }
                     if (field.getAttribute() != null && type != null) {
@@ -571,12 +571,12 @@ public class UIStructurBrowser
                             value = multi.getMsgPhrase(new SelectBuilder(getBaseSelect4MsgPhrase(field)),
                                             field.getMsgPhrase());
                         }
-                        if (field.containsProperty(UITableFieldProperty.SORT_SELECT)) {
-                            sortValue = multi.getSelect(field.getProperty(UITableFieldProperty.SORT_SELECT));
-                        } else if (field.containsProperty(UITableFieldProperty.SORT_PHRASE)) {
-                            sortValue = multi.getPhrase(field.getProperty(UITableFieldProperty.SORT_PHRASE));
-                        } else if (field.containsProperty(UITableFieldProperty.SORT_MSG_PHRASE)) {
-                            sortValue = multi.getMsgPhrase(field.getProperty(UITableFieldProperty.SORT_MSG_PHRASE));
+                        if (field.containsProperty(UITableFieldProperty.SORT_SELECT.value())) {
+                            sortValue = multi.getSelect(field.getProperty(UITableFieldProperty.SORT_SELECT.value()));
+                        } else if (field.containsProperty(UITableFieldProperty.SORT_PHRASE.value())) {
+                            sortValue = multi.getPhrase(field.getProperty(UITableFieldProperty.SORT_PHRASE.value()));
+                        } else if (field.containsProperty(UITableFieldProperty.SORT_MSG_PHRASE.value())) {
+                            sortValue = multi.getMsgPhrase(field.getProperty(UITableFieldProperty.SORT_MSG_PHRASE.value()));
                         }
 
                         final UIField uiField = new UIField(this, instance.getKey(),
@@ -1027,7 +1027,6 @@ public class UIStructurBrowser
         throws EFapsException
     {
         final Enumeration<?> preOrdEnum = ((DefaultMutableTreeNode) _node.getRoot()).preorderEnumeration();
-        int i = 0;
         while (preOrdEnum.hasMoreElements()) {
             final DefaultMutableTreeNode node = (DefaultMutableTreeNode) preOrdEnum.nextElement();
             if (!node.isRoot()) {
@@ -1040,13 +1039,10 @@ public class UIStructurBrowser
                           //  final String[] autoValues = _parameters.get(cell.getName() + "AutoComplete");
                           //  cell.setCellTitle(autoValues[i]);
                           //  cell.setInstanceKey(values[i]);
-                        } else {
-                            if (values != null) {
-                           //     cell.setValueFromUI(values[i]);
-                            }
+                        } else if (values != null) {
+                     //     cell.setValueFromUI(values[i]);
                         }
                     }
-                    i++;
                 }
             }
         }

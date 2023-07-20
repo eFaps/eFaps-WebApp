@@ -173,10 +173,10 @@ public class DateTimePanel
         };
         this.add(dateField);
 
-        if (getFieldConfig().hasProperty(UIFormFieldProperty.COLUMNS)) {
-            add(new AttributeModifier("maxlength", getFieldConfig().getProperty(UIFormFieldProperty.COLUMNS)));
+        if (getFieldConfig().hasProperty(UIFormFieldProperty.COLUMNS.value())) {
+            add(new AttributeModifier("maxlength", getFieldConfig().getProperty(UIFormFieldProperty.COLUMNS.value())));
         }
-        if (getFieldConfig().hasProperty(UIFormFieldProperty.WIDTH)
+        if (getFieldConfig().hasProperty(UIFormFieldProperty.WIDTH.value())
                         && uiField != null && !(uiField.getParent() instanceof UITable)) {
             add(new AttributeAppender("style", "width:" + getFieldConfig().getWidth(), ";"));
         }
@@ -428,10 +428,8 @@ public class DateTimePanel
                                 if (hour == 12) {
                                     mdt.setHourOfDay(0);
                                 }
-                            } else {
-                                if (hour != 12) {
-                                    mdt.setHourOfDay(hour + 12);
-                                }
+                            } else if (hour != 12) {
+                                mdt.setHourOfDay(hour + 12);
                             }
                         }
                         if (minuteIter != null) {

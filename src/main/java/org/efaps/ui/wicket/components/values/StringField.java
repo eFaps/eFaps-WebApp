@@ -83,8 +83,8 @@ public class StringField
         if (rows > 1) {
             _tag.setName("textarea");
             _tag.put("rows", rows);
-            if (getFieldConfig().hasProperty(UIFormFieldProperty.COLUMNS)) {
-                _tag.put("cols", getFieldConfig().getProperty(UIFormFieldProperty.COLUMNS));
+            if (getFieldConfig().hasProperty(UIFormFieldProperty.COLUMNS.value())) {
+                _tag.put("cols", getFieldConfig().getProperty(UIFormFieldProperty.COLUMNS.value()));
                 _tag.remove("maxlength");
             }
         }

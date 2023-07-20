@@ -218,12 +218,10 @@ public class UIForm
             if (evaluate4Instance()) {
                 if (isCreateMode() || isSearchMode()) {
                     execute4NoInstance();
+                } else if (getInstance() == null) {
+                    execute4NoInstance();
                 } else {
-                    if (getInstance() == null) {
-                        execute4NoInstance();
-                    } else {
-                        execute4Instance();
-                    }
+                    execute4Instance();
                 }
             }
         } catch (final EFapsException e) {
@@ -313,8 +311,7 @@ public class UIForm
                 final Instance instance = evaluateFieldInstance(print, field);
                 if (field.hasAccess(getMode(), instance, this.getCommand(), getInstance())
                                 && !field.isNoneDisplay(getMode())) {
-                    if (field instanceof FieldGroup) {
-                        final FieldGroup group = (FieldGroup) field;
+                    if (field instanceof final FieldGroup group) {
                         // in case that the first field is a group the element
                         // must be initiated
                         if (currentFormElement == null) {
@@ -342,19 +339,17 @@ public class UIForm
                                     uiFieldTable.setFirstTable(false);
                                 }
                             }
+                        } else if (isViewMode() && "GridX".equals(Configuration.getAttribute(
+                                        ConfigAttribute.STRUCBRWSR_DEFAULTTYPEFORM))) {
+                            final UIFieldGrid grid = UIFieldGrid.get(getCommandUUID(), getPagePosition(),
+                                            getInstance(), (FieldTable) field);
+                            this.elements.add(new Element(UIForm.ElementType.GRID, grid));
                         } else {
-                            if (isViewMode() && "GridX".equals(Configuration.getAttribute(
-                                            ConfigAttribute.STRUCBRWSR_DEFAULTTYPEFORM))) {
-                                final UIFieldGrid grid = UIFieldGrid.get(getCommandUUID(), getPagePosition(),
-                                                getInstance(), (FieldTable) field);
-                                this.elements.add(new Element(UIForm.ElementType.GRID, grid));
-                            } else {
-                                final UIFieldStructurBrowser uiFieldStrucBrws = new UIFieldStructurBrowser(
-                                            getCommandUUID(),
-                                            getInstanceKey(), (FieldTable) field);
-                                uiFieldStrucBrws.setMode(getMode());
-                                this.elements.add(new Element(UIForm.ElementType.STRUCBRWS, uiFieldStrucBrws));
-                            }
+                            final UIFieldStructurBrowser uiFieldStrucBrws = new UIFieldStructurBrowser(
+                                        getCommandUUID(),
+                                        getInstanceKey(), (FieldTable) field);
+                            uiFieldStrucBrws.setMode(getMode());
+                            this.elements.add(new Element(UIForm.ElementType.STRUCBRWS, uiFieldStrucBrws));
                         }
                         addNew = true;
                     } else if (field instanceof FieldHeading) {
@@ -466,23 +461,21 @@ public class UIForm
             }
             addHidden(evaluateUIProvider(_query, _field, fieldInstance, attr));
             ret = false;
+        } else // fieldset
+        if (_field instanceof FieldSet) {
+            _formElement.addValue(evaluateFieldSet(_query, _field, fieldInstance));
+        } else if (_field instanceof FieldCommand) {
+            final UICmdField cell = new UICmdField(this, (FieldCommand) _field, getInstance());
+            _formElement.addValue(cell);
+        } else if (_field instanceof FieldPicker) {
+            final UIField cell = new UIField(this, getInstance().getKey(),
+                            UIValue.get(_field, attr, null).setClassObject(this).setInstance(getInstance())
+                                .setCallInstance(getInstance()));
+            final UIPicker picker = new UIPicker((FieldPicker) _field, cell);
+            cell.setPicker(picker);
+            _formElement.addValue(cell);
         } else {
-            // fieldset
-            if (_field instanceof FieldSet) {
-                _formElement.addValue(evaluateFieldSet(_query, _field, fieldInstance));
-            } else if (_field instanceof FieldCommand) {
-                final UICmdField cell = new UICmdField(this, (FieldCommand) _field, getInstance());
-                _formElement.addValue(cell);
-            } else if (_field instanceof FieldPicker) {
-                final UIField cell = new UIField(this, getInstance().getKey(),
-                                UIValue.get(_field, attr, null).setClassObject(this).setInstance(getInstance())
-                                    .setCallInstance(getInstance()));
-                final UIPicker picker = new UIPicker((FieldPicker) _field, cell);
-                cell.setPicker(picker);
-                _formElement.addValue(cell);
-            } else {
-                _formElement.addValue(evaluateUIProvider(_query, _field, fieldInstance, attr));
-            }
+            _formElement.addValue(evaluateUIProvider(_query, _field, fieldInstance, attr));
         }
         return ret;
     }
@@ -553,10 +546,8 @@ public class UIForm
             ret.addHeader(column);
         }
 
-        final Iterator<Instance> iter = fieldins.iterator();
         final Map<String, Iterator<?>> values = new HashMap<>();
-        while (iter.hasNext()) {
-            final Instance rowInstance = iter.next();
+        for (Instance rowInstance : fieldins) {
             ret.addRow(rowInstance);
             for (final String attrName : ((FieldSet) _field).getOrder()) {
                 final Attribute child = attrSet.getAttribute(attrName);
@@ -651,8 +642,7 @@ public class UIForm
         for (final Field field : form.getFields()) {
             if (field.hasAccess(getMode(), AbstractInstanceObject.getInstance4Create(type), this.getCommand(),
                             getInstance()) && !field.isNoneDisplay(getMode())) {
-                if (field instanceof FieldGroup) {
-                    final FieldGroup group = (FieldGroup) field;
+                if (field instanceof final FieldGroup group) {
                     // in case that the first field is a group the element must be initiated
                     if (currentFormElement == null) {
                         currentFormElement = new FormElement();
@@ -678,16 +668,14 @@ public class UIForm
                         } else {
                             uiFieldTable.setFirstTable(false);
                         }
+                    } else if ("GridX".equals(Configuration.getAttribute(ConfigAttribute.STRUCBRWSR_DEFAULTTYPEFORM))) {
+                        final UIFieldGrid grid = UIFieldGrid.get(getCommandUUID(), getPagePosition(),
+                                        getInstance(), (FieldTable) field);
+                        this.elements.add(new Element(UIForm.ElementType.GRID, grid));
                     } else {
-                        if ("GridX".equals(Configuration.getAttribute(ConfigAttribute.STRUCBRWSR_DEFAULTTYPEFORM))) {
-                            final UIFieldGrid grid = UIFieldGrid.get(getCommandUUID(), getPagePosition(),
-                                            getInstance(), (FieldTable) field);
-                            this.elements.add(new Element(UIForm.ElementType.GRID, grid));
-                        } else {
-                            final UIFieldStructurBrowser uiFieldStrucBrws = new UIFieldStructurBrowser(getCommandUUID(),
-                                        getInstanceKey(), (FieldTable) field);
-                            this.elements.add(new Element(UIForm.ElementType.STRUCBRWS, uiFieldStrucBrws));
-                        }
+                        final UIFieldStructurBrowser uiFieldStrucBrws = new UIFieldStructurBrowser(getCommandUUID(),
+                                    getInstanceKey(), (FieldTable) field);
+                        this.elements.add(new Element(UIForm.ElementType.STRUCBRWS, uiFieldStrucBrws));
                     }
                     addNew = true;
                 } else {
@@ -763,7 +751,7 @@ public class UIForm
             if (!uiclass.isInitialized()) {
                 uiclass.execute(null);
             }
-            this.elements.addAll(getClassElements(uiclass, new HashMap<UUID, String>()));
+            this.elements.addAll(getClassElements(uiclass, new HashMap<>()));
         }
     }
 
@@ -824,7 +812,7 @@ public class UIForm
     {
         this.formUUID = _formUUID;
         if (_formUUID != null) {
-            this.multiPart = "true".equalsIgnoreCase(getForm().getProperty(UIFormProperty.MULTI_PART));
+            this.multiPart = "true".equalsIgnoreCase(getForm().getProperty(UIFormProperty.MULTI_PART.value()));
         }
     }
 

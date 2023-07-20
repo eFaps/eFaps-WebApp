@@ -89,7 +89,7 @@ public class RadioField
             if (value != null && value instanceof IEnum) {
                 setDefaultModel(Model.of(new RadioOption((IEnum) _value)));
             } else {
-                setDefaultModel(new Model<String>());
+                setDefaultModel(new Model<>());
             }
             setChoices(RadioOption.getChoices(this.cellvalue));
             if (getChoices() != null && getChoices().size() > 1) {
@@ -160,8 +160,8 @@ public class RadioField
                                final RadioOption _choice)
     {
         final String ret;
-        if (getFieldConfig().hasProperty(UIFormFieldProperty.RADIO_ROW_LENGTH)) {
-            final int rowLength = Integer.parseInt(getFieldConfig().getProperty(UIFormFieldProperty.RADIO_ROW_LENGTH));
+        if (getFieldConfig().hasProperty(UIFormFieldProperty.RADIO_ROW_LENGTH.value())) {
+            final int rowLength = Integer.parseInt(getFieldConfig().getProperty(UIFormFieldProperty.RADIO_ROW_LENGTH.value()));
             if (rowLength < 0 || _index + 1 < rowLength || _index % rowLength == 0) {
                 ret = "";
             } else {

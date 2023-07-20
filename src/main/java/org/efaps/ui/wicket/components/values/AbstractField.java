@@ -76,7 +76,7 @@ public abstract class AbstractField<T extends Serializable>
                         _model.getObject().getParent().getMode())));
         this.config = _config;
         this.uiField = _model.getObject();
-        this.add(new StandartValidator<T>(this));
+        this.add(new StandartValidator<>(this));
         setOutputMarkupId(true);
         setLabel(Model.of(this.uiField.getLabel()));
 
@@ -89,7 +89,7 @@ public abstract class AbstractField<T extends Serializable>
             add(new AjaxFieldUpdateBehavior(eventName, Model.of(this.uiField), false));
         }
         // only if explecitely set and not part of a table set the with here
-        if (getFieldConfig().hasProperty(UIFormFieldProperty.WIDTH)
+        if (getFieldConfig().hasProperty(UIFormFieldProperty.WIDTH.value())
                         && !(_model.getObject().getParent() instanceof UITable)) {
             add(new AttributeAppender("style", "width:" + getFieldConfig().getWidth(), ";"));
         }
@@ -126,8 +126,8 @@ public abstract class AbstractField<T extends Serializable>
     protected void onComponentTag(final ComponentTag _tag)
     {
         _tag.setName("input");
-        if (getFieldConfig().hasProperty(UIFormFieldProperty.COLUMNS)) {
-            _tag.put("maxlength", getFieldConfig().getProperty(UIFormFieldProperty.COLUMNS));
+        if (getFieldConfig().hasProperty(UIFormFieldProperty.COLUMNS.value())) {
+            _tag.put("maxlength", getFieldConfig().getProperty(UIFormFieldProperty.COLUMNS.value()));
         }
         if (getInputTypes() != null) {
             _tag.put("type", getInputTypes()[0]);

@@ -95,7 +95,7 @@ public class DropDownField
         if (value != null) {
             setDefaultModel(Model.of(new DropDownOption(String.valueOf(value), null)));
         } else {
-            setDefaultModel(new Model<String>());
+            setDefaultModel(new Model<>());
         }
         setChoices(DropDownField.getSelectChoices(_choices.getObject()));
         setChoiceRenderer(new ChoiceRenderer());
@@ -121,7 +121,7 @@ public class DropDownField
         }
         if (getDefaultModel() == null) {
             if (_choices.isEmpty()) {
-                setDefaultModel(new Model<String>());
+                setDefaultModel(new Model<>());
             } else {
                 // check if value is set before
                 for (final DropDownOption choice : _choices) {
@@ -180,7 +180,7 @@ public class DropDownField
         }
         add(new AttributeAppender("style", "text-align:" + getFieldConfig().getAlign(), ";"));
         // add the width only if not in a table
-        if (getFieldConfig().hasProperty(UIFormFieldProperty.WIDTH) && !getFieldConfig().isTableField()) {
+        if (getFieldConfig().hasProperty(UIFormFieldProperty.WIDTH.value()) && !getFieldConfig().isTableField()) {
             add(new AttributeAppender("style", "width:" + getFieldConfig().getWidth(), ";"));
         }
     }

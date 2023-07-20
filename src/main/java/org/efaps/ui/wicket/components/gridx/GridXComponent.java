@@ -303,10 +303,10 @@ public class GridXComponent
                     js.append(", comparator: cp\n");
                 }
 
-                if (column.getField().containsProperty(UITableFieldProperty.AGGREGATE)) {
+                if (column.getField().containsProperty(UITableFieldProperty.AGGREGATE.value())) {
                     aggregate = true;
                     js.append(", aggregate: '")
-                        .append(column.getField().getProperty(UITableFieldProperty.AGGREGATE))
+                        .append(column.getField().getProperty(UITableFieldProperty.AGGREGATE.value()))
                         .append("'");
                 }
                 js.append("}");
@@ -743,14 +743,12 @@ public class GridXComponent
                                                         .setPagePosition(PagePosition.TREE);
                                         page = new TablePage(Model.of(uiTable));
                                     }
+                                } else if ("GridX".equals(Configuration.getAttribute(
+                                                ConfigAttribute.STRUCBRWSR_DEFAULTTYPETREE))) {
+                                    page = new GridPage(Model.of(UIGrid.get(menu.getUUID(), PagePosition.TREE)
+                                                    .setCallInstance(cell.getInstance())));
                                 } else {
-                                    if ("GridX".equals(Configuration.getAttribute(
-                                                    ConfigAttribute.STRUCBRWSR_DEFAULTTYPETREE))) {
-                                        page = new GridPage(Model.of(UIGrid.get(menu.getUUID(), PagePosition.TREE)
-                                                        .setCallInstance(cell.getInstance())));
-                                    } else {
-                                        page = new StructurBrowserPage(menu.getUUID(), cell.getInstance().getOid());
-                                    }
+                                    page = new StructurBrowserPage(menu.getUUID(), cell.getInstance().getOid());
                                 }
                             } else {
                                 final UIForm uiForm = new UIForm(menu.getUUID(), cell.getInstance().getOid())
