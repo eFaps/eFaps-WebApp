@@ -22,9 +22,8 @@ package org.efaps.ui.wicket.components.menu.ajax;
 
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow.PageCreator;
 import org.apache.wicket.model.IModel;
+import org.efaps.ui.wicket.components.modalwindow.LegacyModalWindow;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.company.CompanyPage;
@@ -113,7 +112,7 @@ public class SetCompanyItem
             modal.setInitialHeight(((UIMenuItem) getDefaultModelObject()).getWindowHeight());
             modal.setInitialWidth(((UIMenuItem) getDefaultModelObject()).getWindowWidth());
 
-            modal.setWindowClosedCallback(new ModalWindow.WindowClosedCallback()
+            modal.setWindowClosedCallback(new LegacyModalWindow.WindowClosedCallback()
             {
 
                 private static final long serialVersionUID = 1L;
@@ -128,7 +127,7 @@ public class SetCompanyItem
 
             });
 
-            final PageCreator pageCreator = new ModalWindow.PageCreator()
+            final var pageCreator = new LegacyModalWindow.PageCreator()
             {
 
                 private static final long serialVersionUID = 1L;

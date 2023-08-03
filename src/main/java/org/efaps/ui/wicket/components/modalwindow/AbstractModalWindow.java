@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2023 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
-
 
 package org.efaps.ui.wicket.components.modalwindow;
 
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.model.IModel;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.util.Configuration;
@@ -32,10 +27,9 @@ import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
  * Abstract Modal window to set the stylesheets equaly for all modal in eFaps.
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public abstract class AbstractModalWindow
-    extends ModalWindow
+    extends LegacyModalWindow
 {
     /**
      * Needed for serialization.
@@ -68,9 +62,9 @@ public abstract class AbstractModalWindow
     protected void initialize()
     {
         if ("w_silver".equals(Configuration.getAttribute(ConfigAttribute.DOJO_MODALCLASS))) {
-            setCssClassName(ModalWindow.CSS_CLASS_GRAY);
+            setCssClassName(LegacyModalWindow.CSS_CLASS_GRAY);
         } else if ("w_blue".equals(Configuration.getAttribute(ConfigAttribute.DOJO_MODALCLASS))) {
-            setCssClassName(ModalWindow.CSS_CLASS_BLUE);
+            setCssClassName(LegacyModalWindow.CSS_CLASS_BLUE);
         }
         showUnloadConfirmation(false);
         setTitle(DBProperties.getProperty("Logo.Version.Label"));

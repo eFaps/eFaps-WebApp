@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2023 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.core.request.handler.IPartialPageRequestHandler;
 import org.apache.wicket.core.request.handler.PageProvider;
 import org.apache.wicket.core.request.handler.RenderPageRequestHandler;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.mock.MockHomePage;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.http.request.WebClientInfo;
@@ -171,20 +170,16 @@ public class ModalWindowContainer
             try {
                 final Page page;
                 final Object modelObject = getPage().getDefaultModelObject();
-                if (modelObject instanceof UIGrid) {
-                    final UIGrid uiGrid = (UIGrid) modelObject;
+                if (modelObject instanceof final UIGrid uiGrid) {
                     page = new GridPage(Model.of(UIGrid.get(uiGrid.getCmdUUID(), uiGrid.getPagePosition())
                                     .setCallInstance(uiGrid.getCallInstance())));
-                } else if (modelObject instanceof UIForm) {
-                    final UIForm uiForm = (UIForm) modelObject;
+                } else if (modelObject instanceof final UIForm uiForm) {
                     uiForm.resetModel();
                     page = new FormPage(Model.of(uiForm));
-                } else if (modelObject instanceof UITable) {
-                    final UITable uiTable = (UITable) modelObject;
+                } else if (modelObject instanceof final UITable uiTable) {
                     uiTable.resetModel();
                     page = new TablePage(Model.of(uiTable));
-                } else if (modelObject instanceof UIStructurBrowser) {
-                    final UIStructurBrowser uiStrBrws = (UIStructurBrowser) modelObject;
+                } else if (modelObject instanceof final UIStructurBrowser uiStrBrws) {
                     uiStrBrws.resetModel();
                     page = new StructurBrowserPage(Model.of(uiStrBrws));
                 } else {
@@ -376,22 +371,24 @@ public class ModalWindowContainer
      */
     private static String getCloseJavacriptInternal()
     {
-        return "var win;\n" //
-            + "try {\n"
-            + " win = top.window.parent.Wicket.Window;\n"
-            + "} catch (ignore) {\n"
-            + "}\n"
-            + "if (typeof(win) == \"undefined\" || typeof(win.current) == \"undefined\") {\n"
-            + "  try {\n"
-            + "     win = window.Wicket.Window;\n"
-            + "  } catch (ignore) {\n"
-            + "  }\n"
-            + "}\n"
-            + "if (typeof(win) != \"undefined\" && typeof(win.current) != \"undefined\") {\n"
-            + " var close = function(w) { w.setTimeout(function() {\n"
-            + "     win.current.close();\n"
-            + " }, 0);  } \n"
-            + " try { close(window.parent); } catch (ignore) { close(window); };\n" + "}";
+        return """
+            var win;
+            try {
+             win = top.window.parent.Wicket.Window;
+            } catch (ignore) {
+            }
+            if (typeof(win) == "undefined" || typeof(win.current) == "undefined") {
+              try {
+                 win = window.Wicket.Window;
+              } catch (ignore) {
+              }
+            }
+            if (typeof(win) != "undefined" && typeof(win.current) != "undefined") {
+             var close = function(w) { w.setTimeout(function() {
+                 win.current.close();
+             }, 0);  }\s
+             try { close(window.parent); } catch (ignore) { close(window); };
+            }""";
     }
 
     @Override
@@ -409,7 +406,7 @@ public class ModalWindowContainer
      * @return this Modalwindow
      */
     @Override
-    public ModalWindow setInitialHeight(final int _initialHeight)
+    public LegacyModalWindow setInitialHeight(final int _initialHeight)
     {
         int height = _initialHeight;
         final WebClientInfo wcInfo = (WebClientInfo) getSession().getClientInfo();
@@ -428,7 +425,7 @@ public class ModalWindowContainer
      * @return this Modalwindow
      */
     @Override
-    public ModalWindow setInitialWidth(final int _initialWidth)
+    public LegacyModalWindow setInitialWidth(final int _initialWidth)
     {
         int width = _initialWidth;
         final WebClientInfo wcInfo = (WebClientInfo) getSession().getClientInfo();

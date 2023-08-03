@@ -19,9 +19,9 @@ package org.efaps.ui.wicket.components.menu.ajax;
 
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.IRequestParameters;
+import org.efaps.ui.wicket.components.modalwindow.LegacyModalWindow;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowAjaxPageCreator;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.objects.IPageObject;
@@ -196,7 +196,7 @@ public class OpenModalItem
                 modal.setInitialWidth(((UIMenuItem) getDefaultModelObject()).getWindowWidth());
                 modal.show(_target);
             } else {
-                modal.setPageCreator(new ModalWindow.PageCreator()
+                modal.setPageCreator(new LegacyModalWindow.PageCreator()
                 {
                     private static final long serialVersionUID = 1L;
 

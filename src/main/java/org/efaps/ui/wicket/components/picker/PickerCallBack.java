@@ -27,7 +27,7 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.efaps.ui.wicket.components.modalwindow.LegacyModalWindow;
 import org.efaps.ui.wicket.models.field.UIPicker;
 import org.efaps.ui.wicket.models.objects.AbstractUIPageObject;
 import org.efaps.ui.wicket.util.EFapsKey;
@@ -40,7 +40,7 @@ import org.efaps.ui.wicket.util.EFapsKey;
  * @version $Id$
  */
 public class PickerCallBack
-    implements ModalWindow.WindowClosedCallback
+    implements LegacyModalWindow.WindowClosedCallback
 {
     /**
      * Needed for serialization.

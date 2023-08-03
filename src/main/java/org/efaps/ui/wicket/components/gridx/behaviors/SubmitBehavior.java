@@ -19,7 +19,7 @@ package org.efaps.ui.wicket.components.gridx.behaviors;
 
 import java.io.File;
 import java.util.List;
-
+import org.efaps.ui.wicket.components.modalwindow.*;
 import org.apache.wicket.Page;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.RestartResponseException;
@@ -184,7 +184,7 @@ public class SubmitBehavior
      * The Class DialogPageCreate.
      */
     static class AskDialogPageCreator
-        implements ModalWindow.PageCreator
+        implements LegacyModalWindow.PageCreator
     {
 
         /** The Constant serialVersionUID. */
@@ -239,7 +239,7 @@ public class SubmitBehavior
      * The Class DialogPageCreate.
      */
     static class WarnDialogPageCreator
-        implements ModalWindow.PageCreator
+        implements LegacyModalWindow.PageCreator
     {
 
         /** The Constant serialVersionUID. */

@@ -23,12 +23,12 @@ import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.IAjaxIndicatorAware;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.util.string.StringValue;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import org.efaps.admin.ui.Command;
+import org.efaps.ui.wicket.components.modalwindow.LegacyModalWindow;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.objects.grid.UIGrid;
 import org.efaps.ui.wicket.pages.dialog.DialogPage;
@@ -96,7 +96,7 @@ public class SubmitModalBehavior
                                     public void component(final ModalWindowContainer _modal,
                                                           final IVisit<Void> _visit)
                                     {
-                                        _modal.setPageCreator(new ModalWindow.PageCreator()
+                                        _modal.setPageCreator(new LegacyModalWindow.PageCreator()
                                         {
 
                                             private static final long serialVersionUID = 1L;

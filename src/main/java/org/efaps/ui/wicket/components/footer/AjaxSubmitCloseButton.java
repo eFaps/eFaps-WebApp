@@ -37,8 +37,6 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.AjaxCallListener;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow.WindowClosedCallback;
 import org.apache.wicket.feedback.FeedbackCollector;
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -65,6 +63,7 @@ import org.efaps.ui.wicket.components.autocomplete.AutoCompleteComboBox;
 import org.efaps.ui.wicket.components.datagrid.SetDataGrid;
 import org.efaps.ui.wicket.components.date.DateTimePanel;
 import org.efaps.ui.wicket.components.form.FormPanel;
+import org.efaps.ui.wicket.components.modalwindow.LegacyModalWindow;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.values.DropDownField;
 import org.efaps.ui.wicket.components.values.ErrorMessageResource;
@@ -181,8 +180,7 @@ public class AjaxSubmitCloseButton
         final ICmdUIObject cmdUIObject = (ICmdUIObject) getDefaultModelObject();
         final List<Classification> classifications = new ArrayList<>();
         try {
-            if (cmdUIObject instanceof UIForm) {
-                final UIForm uiform = (UIForm) cmdUIObject;
+            if (cmdUIObject instanceof final UIForm uiform) {
                 others.putAll(uiform.getNewValues());
                 // if the form contains classifications, they are added to a list and passed on to the esjp
                 if (uiform.isClassified()) {
@@ -260,7 +258,7 @@ public class AjaxSubmitCloseButton
             }
         } catch (final EFapsException e) {
             final ModalWindowContainer modal = ((AbstractContentPage) getPage()).getModal();
-            modal.setPageCreator(new ModalWindow.PageCreator() {
+            modal.setPageCreator(new LegacyModalWindow.PageCreator() {
 
                 private static final long serialVersionUID = 1L;
 
@@ -490,8 +488,7 @@ public class AjaxSubmitCloseButton
         final ICmdUIObject uiobject = (ICmdUIObject) getPage().getDefaultModelObject();
         final StringBuilder html = new StringBuilder();
         html.append("<table class=\"eFapsValidateFieldValuesTable\">");
-        if (uiobject instanceof UIForm) {
-            final UIForm uiform = (UIForm) uiobject;
+        if (uiobject instanceof final UIForm uiform) {
             ret = evalFormElement(_target, html, uiform);
         }
         if (!ret) {
@@ -602,11 +599,9 @@ public class AjaxSubmitCloseButton
                     if (oneReturn.get(ReturnValues.TRUE) == null) {
                         goOn = false;
                     }
-                } else {
-                    if (oneReturn.get(ReturnValues.TRUE) == null) {
-                        ret = false;
-                        // that is the case if it is wrong configured!
-                    }
+                } else if (oneReturn.get(ReturnValues.TRUE) == null) {
+                    ret = false;
+                    // that is the case if it is wrong configured!
                 }
             }
             if (!ret) {
@@ -657,13 +652,9 @@ public class AjaxSubmitCloseButton
     {
         AjaxSubmitCloseButton.LOG.trace("entering getFormPanels");
         final List<FormPanel> ret = new ArrayList<>();
-        final Iterator<?> iterator = getForm().iterator();
-        while (iterator.hasNext()) {
-            final Object object = iterator.next();
+        for (final Object object : getForm()) {
             if (object instanceof WebMarkupContainer) {
-                final Iterator<?> iterator2 = ((WebMarkupContainer) object).iterator();
-                while (iterator2.hasNext()) {
-                    final Object object2 = iterator2.next();
+                for (final Object object2 : (WebMarkupContainer) object) {
                     if (object2 instanceof FormPanel) {
                         ret.add((FormPanel) object2);
                     }
@@ -694,7 +685,7 @@ public class AjaxSubmitCloseButton
         modal.setInitialWidth(350);
         modal.setInitialHeight(200);
 
-        modal.setPageCreator(new ModalWindow.PageCreator() {
+        modal.setPageCreator(new LegacyModalWindow.PageCreator() {
 
             private static final long serialVersionUID = 1L;
 
@@ -707,7 +698,7 @@ public class AjaxSubmitCloseButton
         });
 
         if (_goOnButton) {
-            modal.setWindowClosedCallback(new WindowClosedCallback()
+            modal.setWindowClosedCallback(new LegacyModalWindow.WindowClosedCallback()
             {
 
                 private static final long serialVersionUID = 1L;

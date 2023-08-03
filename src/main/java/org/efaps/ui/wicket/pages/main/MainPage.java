@@ -38,7 +38,6 @@ import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.devutils.debugbar.DebugBar;
 import org.apache.wicket.event.IEvent;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.head.IHeaderResponse;
@@ -80,6 +79,7 @@ import org.efaps.ui.wicket.components.help.ShowHelpBehavior;
 import org.efaps.ui.wicket.components.menu.LinkItem;
 import org.efaps.ui.wicket.components.menu.MenuBarPanel;
 import org.efaps.ui.wicket.components.menu.SlideInPanel;
+import org.efaps.ui.wicket.components.modalwindow.LegacyModalWindow;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.preferences.LoadPreferencesBehavior;
 import org.efaps.ui.wicket.components.preferences.PreferencesPanel;
@@ -375,7 +375,7 @@ public class MainPage
                 });
                 socketMsgContainer.add(socketMsg);
 
-                final AjaxLink<Void> close = new AjaxLink<Void>("socketMsgClose")
+                final AjaxLink<Void> close = new AjaxLink<>("socketMsgClose")
                 {
 
                     private static final long serialVersionUID = 1L;
@@ -558,7 +558,7 @@ public class MainPage
         protected void respond(final AjaxRequestTarget _target)
         {
             final ModalWindowContainer modalTmp = getModal();
-            modalTmp.setPageCreator(new ModalWindow.PageCreator()
+            modalTmp.setPageCreator(new LegacyModalWindow.PageCreator()
             {
 
                 private static final long serialVersionUID = 1L;
@@ -577,7 +577,7 @@ public class MainPage
                     return page;
                 }
             });
-            modalTmp.setWindowClosedCallback(new ModalWindow.WindowClosedCallback()
+            modalTmp.setWindowClosedCallback(new LegacyModalWindow.WindowClosedCallback()
             {
 
                 /** The Constant serialVersionUID. */

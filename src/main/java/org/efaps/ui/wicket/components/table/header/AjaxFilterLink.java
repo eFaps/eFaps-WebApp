@@ -21,9 +21,9 @@ import org.apache.wicket.Page;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.model.IModel;
 import org.efaps.admin.dbproperty.DBProperties;
+import org.efaps.ui.wicket.components.modalwindow.LegacyModalWindow;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.objects.UITableHeader;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
@@ -75,8 +75,8 @@ public class AjaxFilterLink
     /**
      * Class is used to create the filter page lazily.
      */
-    private class FilterPageCreator
-        implements ModalWindow.PageCreator
+    private static class FilterPageCreator
+        implements LegacyModalWindow.PageCreator
     {
         /**
          * Needed for serialization.

@@ -19,8 +19,6 @@ package org.efaps.ui.wicket.components.footer;
 
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow.WindowClosedCallback;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -29,6 +27,7 @@ import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.ui.wicket.components.button.AjaxButton;
+import org.efaps.ui.wicket.components.modalwindow.LegacyModalWindow;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.objects.ICmdUIObject;
 import org.efaps.ui.wicket.models.objects.IWizardElement;
@@ -101,7 +100,7 @@ public class FooterPanel
         // if we want a SucessDialog we add it here, it will be opened after
         // closing the window
         if ("true".equals(cmdUIObject.getCommand().getProperty("SuccessDialog"))) {
-            FooterPanel.this.modalWindow.setWindowClosedCallback(new WindowClosedCallback()
+            FooterPanel.this.modalWindow.setWindowClosedCallback(new LegacyModalWindow.WindowClosedCallback()
             {
 
                 private static final long serialVersionUID = 1L;
@@ -116,7 +115,7 @@ public class FooterPanel
                         FooterPanel.this.modalWindow.setWidthUnit("em");
                         FooterPanel.this.modalWindow.setHeightUnit("em");
 
-                        FooterPanel.this.modalWindow.setPageCreator(new ModalWindow.PageCreator()
+                        FooterPanel.this.modalWindow.setPageCreator(new LegacyModalWindow.PageCreator()
                         {
 
                             private static final long serialVersionUID = 1L;
@@ -190,7 +189,7 @@ public class FooterPanel
                     ((UIGrid) cmdUIObject).setShowCheckBoxes(true);
                 }
             }
-        } else if ((cmdUIObject.getCommand().isSubmit() && cmdUIObject instanceof UITable) || !TargetMode.SEARCH.equals(
+        } else if (cmdUIObject.getCommand().isSubmit() && cmdUIObject instanceof UITable || !TargetMode.SEARCH.equals(
                         cmdUIObject.getCommand().getTargetMode())) {
             add(new AjaxSubmitCloseButton("createeditsearch", _model, AjaxButton.ICON.ACCEPT.getReference(), label));
         } else if (TargetMode.SEARCH.equals(cmdUIObject.getCommand().getTargetMode())

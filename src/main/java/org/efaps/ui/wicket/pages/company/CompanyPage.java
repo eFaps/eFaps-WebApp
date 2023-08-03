@@ -27,7 +27,6 @@ import java.util.List;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow.WindowClosedCallback;
 import org.apache.wicket.extensions.markup.html.form.select.IOptionRenderer;
 import org.apache.wicket.extensions.markup.html.form.select.Select;
 import org.apache.wicket.extensions.markup.html.form.select.SelectOptions;
@@ -46,6 +45,7 @@ import org.efaps.admin.user.Company;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.button.AjaxButton;
+import org.efaps.ui.wicket.components.modalwindow.LegacyModalWindow;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
@@ -96,7 +96,7 @@ public class CompanyPage
         add(new LabelComponent("title",
                         DBProperties.getProperty("org.efaps.ui.wicket.pages.company.title.Label")));
 
-        final Form<Object> form = new Form<Object>("form")
+        final Form<Object> form = new Form<>("form")
         {
 
             private static final long serialVersionUID = 1L;
@@ -116,7 +116,7 @@ public class CompanyPage
         };
         add(form);
 
-        final IOptionRenderer<CompanyObject> renderer = new IOptionRenderer<CompanyObject>()
+        final IOptionRenderer<CompanyObject> renderer = new IOptionRenderer<>()
         {
 
             private static final long serialVersionUID = 1L;
@@ -147,17 +147,7 @@ public class CompanyPage
         } catch (final EFapsException e) {
             throw new RestartResponseException(new ErrorPage(e));
         }
-        Collections.sort(companies, new Comparator<CompanyObject>()
-        {
-
-            @Override
-            public int compare(final CompanyObject _o1,
-                               final CompanyObject _o2)
-            {
-                return _o1.getName().compareTo(_o2.getName());
-            }
-
-        });
+        Collections.sort(companies, Comparator.comparing(CompanyObject::getName));
         @SuppressWarnings({ "rawtypes", "unchecked" })
         final IModel<Collection<? extends CompanyObject>> model = new Model((Serializable) companies);
         final SelectOptions<CompanyObject> options = new SelectOptions<>("manychoices", model, renderer);
@@ -265,16 +255,8 @@ public class CompanyPage
         public void onRequest(final AjaxRequestTarget _target)
         {
             final CompanyObject obj = getPage().visitChildren(Select.class,
-                            new IVisitor<Select<CompanyObject>, CompanyObject>()
-                {
-
-                    @Override
-                    public void component(final Select<CompanyObject> _select,
-                                          final IVisit<CompanyObject> _visit)
-                    {
-                        _visit.stop((CompanyObject) _select.getDefaultModelObject());
-                    }
-                });
+                            (_select,
+                             _visit) -> _visit.stop((CompanyObject) _select.getDefaultModelObject()));
 
             try {
                 Context.getThreadContext().setUserAttribute(Context.CURRENTCOMPANY, obj.id);
@@ -284,7 +266,7 @@ public class CompanyPage
             }
             final ModalWindowContainer modal = ((MainPage) CompanyPage.this.calledByReference.getPage()).getModal();
             modal.close(_target);
-            modal.setWindowClosedCallback(new WindowClosedCallback()
+            modal.setWindowClosedCallback(new LegacyModalWindow.WindowClosedCallback()
             {
 
                 private static final long serialVersionUID = 1L;

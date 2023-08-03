@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2023 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
 package org.efaps.ui.wicket.components.modalwindow;
 
 import org.apache.wicket.Page;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.request.cycle.RequestCycle;
@@ -40,7 +39,7 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  */
 public class ModalWindowAjaxPageCreator
-    implements ModalWindow.PageCreator
+    implements LegacyModalWindow.PageCreator
 {
 
     /**
@@ -107,20 +106,18 @@ public class ModalWindowAjaxPageCreator
                     ret = new FormPage(Model.of(uiform), this.modalWindow, this.modalWindow.getPage()
                                     .getPageReference());
                 }
+            } else if (this.uiObject.getCommand().getTargetStructurBrowserField() == null) {
+                final UITable uitable = new UITable(this.uiObject.getCommand().getUUID(), instKey)
+                                .setPagePosition(this.pagePosition);
+                uitable.setPicker(this.uiObject);
+                ret = new TablePage(Model.of(uitable), this.modalWindow, this.modalWindow.getPage()
+                                .getPageReference());
             } else {
-                if (this.uiObject.getCommand().getTargetStructurBrowserField() == null) {
-                    final UITable uitable = new UITable(this.uiObject.getCommand().getUUID(), instKey)
-                                    .setPagePosition(this.pagePosition);
-                    uitable.setPicker(this.uiObject);
-                    ret = new TablePage(Model.of(uitable), this.modalWindow, this.modalWindow.getPage()
-                                    .getPageReference());
-                } else {
-                    final UIStructurBrowser uiPageObject = new UIStructurBrowser(this.uiObject.getCommand().getUUID(),
-                                    instKey);
-                    uiPageObject.setPicker(this.uiObject);
-                    ret = new StructurBrowserPage(Model.of(uiPageObject), this.modalWindow,
-                                    this.modalWindow.getPage().getPageReference());
-                }
+                final UIStructurBrowser uiPageObject = new UIStructurBrowser(this.uiObject.getCommand().getUUID(),
+                                instKey);
+                uiPageObject.setPicker(this.uiObject);
+                ret = new StructurBrowserPage(Model.of(uiPageObject), this.modalWindow,
+                                this.modalWindow.getPage().getPageReference());
             }
         } catch (final EFapsException e) {
             ret = new ErrorPage(e);

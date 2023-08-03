@@ -27,7 +27,6 @@ import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.feedback.FeedbackCollector;
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.head.IHeaderResponse;
@@ -36,6 +35,7 @@ import org.apache.wicket.model.IModel;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.ui.wicket.components.modalwindow.LegacyModalWindow;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.values.ErrorMessageResource;
 import org.efaps.ui.wicket.components.values.IFieldConfig;
@@ -176,7 +176,7 @@ public class AjaxFieldUpdateBehavior
             modal.setInitialWidth(350);
             modal.setInitialHeight(200);
 
-            modal.setPageCreator(new ModalWindow.PageCreator()
+            modal.setPageCreator(new LegacyModalWindow.PageCreator()
             {
 
                 private static final long serialVersionUID = 1L;
@@ -217,7 +217,7 @@ public class AjaxFieldUpdateBehavior
         } else {
             uiObject = this.model.getObject();
         }
-        final List<Map<String, Object>> values = new ArrayList<Map<String, Object>>();
+        final List<Map<String, Object>> values = new ArrayList<>();
 
         try {
             final AbstractUIPageObject pageObject = (AbstractUIPageObject) getComponent().getPage()

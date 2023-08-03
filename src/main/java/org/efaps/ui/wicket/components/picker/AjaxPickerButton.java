@@ -18,7 +18,6 @@
 package org.efaps.ui.wicket.components.picker;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow.PageCreator;
 import org.apache.wicket.model.IModel;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.components.button.AjaxButton;
@@ -81,7 +80,7 @@ public class AjaxPickerButton
         try {
             final UIPicker picker = ((IPickable) getDefaultModelObject()).getPicker();
             picker.setParentParameters(Context.getThreadContext().getParameters());
-            final PageCreator pageCreator = new ModalWindowAjaxPageCreator(picker, modal, PagePosition.PICKER);
+            final var pageCreator = new ModalWindowAjaxPageCreator(picker, modal, PagePosition.PICKER);
             modal.setPageCreator(pageCreator);
             modal.setInitialHeight(picker.getWindowHeight());
             modal.setInitialWidth(picker.getWindowWidth());

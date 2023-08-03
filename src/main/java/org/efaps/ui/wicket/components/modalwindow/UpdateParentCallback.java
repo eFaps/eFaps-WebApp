@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2020 The eFaps Team
+ * Copyright 2003 - 2023 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import java.io.File;
 
 import org.apache.wicket.PageReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.efaps.ui.wicket.EFapsSession;
@@ -45,7 +44,7 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  */
 public class UpdateParentCallback
-    implements ModalWindow.WindowClosedCallback
+    implements LegacyModalWindow.WindowClosedCallback
 {
 
     /**
@@ -116,9 +115,8 @@ public class UpdateParentCallback
         if (modalwindow.isUpdateParent()) {
             final Object object = pageReference.getPage().getDefaultModelObject();
             try {
-                if (object instanceof AbstractUIObject) {
+                if (object instanceof final AbstractUIObject uiObject) {
 
-                    final AbstractUIObject uiObject = (AbstractUIObject) object;
                     if (clearmodel) {
                         uiObject.resetModel();
                     }
@@ -146,8 +144,7 @@ public class UpdateParentCallback
                             page.getDownloadBehavior().initiate();
                         }
                     }
-                } else if (object instanceof UIGrid) {
-                    final UIGrid uiGrid = (UIGrid) object;
+                } else if (object instanceof final UIGrid uiGrid) {
                     uiGrid.reload();
                     final var gridPage = new GridPage(Model.of(uiGrid));
                     RequestCycle.get().setResponsePage(gridPage);
