@@ -33,7 +33,8 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.poi.ss.formula.functions.T;
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.wicket.Application;
 import org.apache.wicket.Component;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
@@ -89,9 +90,6 @@ import org.efaps.util.RandomUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 /**
  * This Class presents the WebApplication for eFaps using the Wicket-Framework.
  * <br/>
@@ -114,7 +112,7 @@ public class EFapsApplication
 
     /** The executor service. */
     private final ExecutorService executorService = new ThreadPoolExecutor(10, 10, 0L, TimeUnit.MILLISECONDS,
-                    new LinkedBlockingQueue<Runnable>(), (ThreadFactory) _r -> {
+                    new LinkedBlockingQueue<>(), (ThreadFactory) _r -> {
                         final Thread ret = Executors.defaultThreadFactory().newThread(_r);
                         ret.setName("eFaps-Process-" + ret.getId());
                         ret.setContextClassLoader(EFapsClassLoader.getInstance());
@@ -225,7 +223,7 @@ public class EFapsApplication
             ((SecurePackageResourceGuard) guard).addPattern("+*.json");
         }
 
-        getHeaderResponseDecorators().add(_response -> new EFapsResourceAggregator(_response));
+        getHeaderResponseDecorators().add(EFapsResourceAggregator::new);
         getRequestCycleSettings().addResponseFilter(_responseBuffer -> {
             final AppendingStringBuffer ret;
             if (RequestCycle.get().getActiveRequestHandler() instanceof ACAjaxRequestTarget) {
@@ -243,7 +241,7 @@ public class EFapsApplication
             loginProviders.add(loginProvider);
         }
 
-        var serviceLoaderLogouts = ServiceLoader.load(ILogoutProvider.class);
+        final var serviceLoaderLogouts = ServiceLoader.load(ILogoutProvider.class);
         for (final var logoutProvider : serviceLoaderLogouts) {
             LOG.info("[{}] registered: {}", getName(), logoutProvider);
             logoutProviders.add(logoutProvider);
@@ -384,7 +382,7 @@ public class EFapsApplication
      * The Class presents the Strategy to authorize pages in this
      * WebApplication.
      */
-    private class EFapsFormBasedAuthorizationStartegy
+    private static class EFapsFormBasedAuthorizationStartegy
         implements IAuthorizationStrategy
     {
 

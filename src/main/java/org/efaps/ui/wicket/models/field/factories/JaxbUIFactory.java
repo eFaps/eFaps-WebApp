@@ -20,6 +20,8 @@
 
 package org.efaps.ui.wicket.models.field.factories;
 
+import java.lang.reflect.InvocationTargetException;
+
 import org.apache.wicket.Component;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.IJaxb;
@@ -111,7 +113,7 @@ public final class JaxbUIFactory
             try {
                 final Class<?> clazz = Class.forName(attr.getClassName(), false,
                                 EFapsClassLoader.getInstance());
-                final IJaxb jaxb = (IJaxb) clazz.newInstance();
+                final IJaxb jaxb = (IJaxb) clazz.getConstructor().newInstance();
                 ret = jaxb.getUISnipplet(_abstractUIField.getParent().getMode(), _abstractUIField.getValue());
             } catch (final ClassNotFoundException e) {
                 JaxbUIFactory.LOG.error("ClassNotFoundException", e);
@@ -119,6 +121,14 @@ public final class JaxbUIFactory
                 JaxbUIFactory.LOG.error("InstantiationException", e);
             } catch (final IllegalAccessException e) {
                 JaxbUIFactory.LOG.error("IllegalAccessException", e);
+            } catch (final IllegalArgumentException e) {
+                JaxbUIFactory.LOG.error("IllegalArgumentException", e);
+            } catch (final InvocationTargetException e) {
+                JaxbUIFactory.LOG.error("InvocationTargetException", e);
+            } catch (final NoSuchMethodException e) {
+                JaxbUIFactory.LOG.error("NoSuchMethodException", e);
+            } catch (final SecurityException e) {
+                JaxbUIFactory.LOG.error("SecurityException", e);
             }
         }
         return ret;

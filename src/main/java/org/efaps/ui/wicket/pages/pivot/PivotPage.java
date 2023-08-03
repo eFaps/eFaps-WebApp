@@ -16,6 +16,7 @@
  */
 package org.efaps.ui.wicket.pages.pivot;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -69,7 +70,7 @@ public class PivotPage
         if (providerClass != null) {
             try {
                 final Class<?> clazz = Class.forName(providerClass, false, EFapsClassLoader.getInstance());
-                final IPivotProvider provider = (IPivotProvider) clazz.newInstance();
+                final IPivotProvider provider = (IPivotProvider) clazz.getConstructor().newInstance();
                 final List<IOption> datasources = provider.getDataSources();
                 final List<IOption> reports = provider.getReports();
 
@@ -88,7 +89,8 @@ public class PivotPage
                     }
 
                     @Override
-                    public String getIdValue(final IOption _object, final int _index)
+                    public String getIdValue(final IOption _object,
+                                             final int _index)
                     {
                         return String.valueOf(_object.getValue());
                     }
@@ -110,7 +112,8 @@ public class PivotPage
                     }
 
                     @Override
-                    public String getIdValue(final IOption _object, final int _index)
+                    public String getIdValue(final IOption _object,
+                                             final int _index)
                     {
                         return String.valueOf(_object.getValue());
                     }
@@ -118,14 +121,17 @@ public class PivotPage
                 add(repDropDown);
 
                 dsDropDown.add(new AttributeAppender("onchange",
-                                new Model<>("$('#" + repDropDown.getMarkupId(true)  + "').val(''); "
-                                                + "loadDataSource(this.value);"), ";"));
+                                new Model<>("$('#" + repDropDown.getMarkupId(true) + "').val(''); "
+                                                + "loadDataSource(this.value);"),
+                                ";"));
                 repDropDown.add(new AttributeAppender("onchange",
-                                new Model<>("$('#" + dsDropDown.getMarkupId(true)  + "').val('');"
-                                                + "loadReport(this.value)"), ";"));
+                                new Model<>("$('#" + dsDropDown.getMarkupId(true) + "').val('');"
+                                                + "loadReport(this.value)"),
+                                ";"));
 
                 final var modal = new AbstractModalWindow("modal")
                 {
+
                     private static final long serialVersionUID = 1L;
                 };
                 add(modal);
@@ -135,6 +141,7 @@ public class PivotPage
 
                 add(new AjaxButton<Void>("showModal", AjaxButton.ICON.CONFIG.getReference())
                 {
+
                     private static final long serialVersionUID = 1L;
 
                     @Override
@@ -149,60 +156,64 @@ public class PivotPage
                         return false;
                     }
                 });
-            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException
+                            | InvocationTargetException | NoSuchMethodException | SecurityException e) {
                 LOG.error("Could not find/instantiate Provider Class", e);
             }
         }
 
-        add(new WebMarkupContainer("wdr") {
+        add(new WebMarkupContainer("wdr")
+        {
+
             private static final long serialVersionUID = 1L;
 
             @Override
-            public void onComponentTagBody(final MarkupStream _markupStream, final ComponentTag _openTag)
+            public void onComponentTagBody(final MarkupStream _markupStream,
+                                           final ComponentTag _openTag)
             {
                 final IRequestHandler handler = new ResourceReferenceRequestHandler(LOG_ES, getPageParameters());
                 final CharSequence locUrl = RequestCycle.get().urlFor(handler);
                 final CharSequence url = RequestCycle.get().urlFor(JsonResponsePage.class, new PageParameters());
                 final StringBuilder js = new StringBuilder()
-                        .append("\n")
-                        .append("var pivot = new WebDataRocks({\n")
-                        .append("container : '#wdr-component',\n")
-                        .append("beforetoolbarcreated: customizeToolbar,\n")
-                        .append("toolbar : true,\n")
-                        .append("report : {\n")
-                        .append("dataSource : {\n")
-                        .append("dataSourceType: 'json',\n")
-                        .append("data : []\n")
-                        .append("}\n")
-                        .append("},\n")
-                        .append("global: {\n")
-                        .append("localization: '").append(locUrl).append("'\n")
-                        .append("}\n")
-                        .append("});\n")
-                        .append("function customizeToolbar(_toolbar) {\n")
-                        .append("var tabs = _toolbar.getTabs();\n")
-                        .append("tabs[3].rightGroup = true;")
-                        .append("_toolbar.getTabs = function() {\n")
-                        .append("return [tabs[3], tabs[4], tabs[5], tabs[6]];\n")
-                        .append("}\n")
-                        .append("}\n")
-                        .append("function loadDataSource(_datasource) {\n")
-                        .append("var url = new URL('").append(url)
-                            .append("?datasource=' + _datasource, window.location);\n")
-                        .append("webdatarocks.updateData({\n")
-                        .append("dataSourceType: 'json',\n")
-                        .append("filename: url.href\n")
-                        .append("});\n")
-                        .append("document.getElementById('wdr-component').style.height = ")
-                            .append("window.innerHeight - 30 + 'px';\n")
-                        .append("}\n")
-                        .append("function loadReport(_report) {\n")
-                        .append("var url = new URL('").append(url)
-                            .append("?report=' + _report, window.location);\n")
-                        .append("webdatarocks.load(url.href);\n")
-                        .append("document.getElementById('wdr-component').style.height = ")
-                            .append("window.innerHeight - 30 + 'px';\n")
-                        .append("}\n");
+                                .append("\n")
+                                .append("var pivot = new WebDataRocks({\n")
+                                .append("container : '#wdr-component',\n")
+                                .append("beforetoolbarcreated: customizeToolbar,\n")
+                                .append("toolbar : true,\n")
+                                .append("report : {\n")
+                                .append("dataSource : {\n")
+                                .append("dataSourceType: 'json',\n")
+                                .append("data : []\n")
+                                .append("}\n")
+                                .append("},\n")
+                                .append("global: {\n")
+                                .append("localization: '").append(locUrl).append("'\n")
+                                .append("}\n")
+                                .append("});\n")
+                                .append("function customizeToolbar(_toolbar) {\n")
+                                .append("var tabs = _toolbar.getTabs();\n")
+                                .append("tabs[3].rightGroup = true;")
+                                .append("_toolbar.getTabs = function() {\n")
+                                .append("return [tabs[3], tabs[4], tabs[5], tabs[6]];\n")
+                                .append("}\n")
+                                .append("}\n")
+                                .append("function loadDataSource(_datasource) {\n")
+                                .append("var url = new URL('").append(url)
+                                .append("?datasource=' + _datasource, window.location);\n")
+                                .append("webdatarocks.updateData({\n")
+                                .append("dataSourceType: 'json',\n")
+                                .append("filename: url.href\n")
+                                .append("});\n")
+                                .append("document.getElementById('wdr-component').style.height = ")
+                                .append("window.innerHeight - 30 + 'px';\n")
+                                .append("}\n")
+                                .append("function loadReport(_report) {\n")
+                                .append("var url = new URL('").append(url)
+                                .append("?report=' + _report, window.location);\n")
+                                .append("webdatarocks.load(url.href);\n")
+                                .append("document.getElementById('wdr-component').style.height = ")
+                                .append("window.innerHeight - 30 + 'px';\n")
+                                .append("}\n");
                 replaceComponentTagBody(_markupStream, _openTag, js);
             }
         });

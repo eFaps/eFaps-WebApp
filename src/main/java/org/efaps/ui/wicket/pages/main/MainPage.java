@@ -17,6 +17,7 @@
 
 package org.efaps.ui.wicket.pages.main;
 
+import java.lang.reflect.InvocationTargetException;
 import java.time.Duration;
 import java.util.UUID;
 
@@ -546,9 +547,11 @@ public class MainPage
                 final Class<?> clazz;
                 try {
                     clazz = Class.forName(providerClass, false, EFapsClassLoader.getInstance());
-                    provider = (ILoginAlertProvider) clazz.newInstance();
+                    provider = (ILoginAlertProvider) clazz.getConstructor().newInstance();
                     esjpSnipplet = provider.getEsjpSnipplet("LoginAlert");
-                } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+                } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException
+                                | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
+                                | SecurityException e) {
                     MainPage.LOG.error("Could not find/instantiate Provider Class", e);
                 }
             }

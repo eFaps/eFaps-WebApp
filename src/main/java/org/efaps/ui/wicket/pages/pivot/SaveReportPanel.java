@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2018 The eFaps Team
+ * Copyright 2003 - 2023 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.behavior.AttributeAppender;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
@@ -34,6 +33,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.request.IRequestParameters;
 import org.efaps.api.ui.IOption;
 import org.efaps.api.ui.IPivotProvider;
+import org.efaps.ui.wicket.components.modalwindow.LegacyModalWindow;
 
 public class SaveReportPanel
     extends Panel
@@ -71,9 +71,10 @@ public class SaveReportPanel
         });
         form.add(repDropDown);
         repDropDown.add(new AttributeAppender("onchange",
-                        new Model<>("this.value == '' ? $('#reportName4save').val('').prop('disabled', false) "
-                                        + ": $('#reportName4save').val(this.options[this.selectedIndex].innerHTML)"
-                                        + ".prop('disabled', true)"), ";"));
+                        new Model<>("""
+                            this.value == '' ? $('#reportName4save').val('').prop('disabled', false)\s\
+                            : $('#reportName4save').val(this.options[this.selectedIndex].innerHTML)\
+                            .prop('disabled', true)"""), ";"));
 
         form.add(new AjaxButton("save")
         {
@@ -84,7 +85,7 @@ public class SaveReportPanel
             @Override
             protected void onSubmit(final AjaxRequestTarget _target)
             {
-                ModalWindow.closeCurrent(_target);
+                LegacyModalWindow.closeCurrent(_target);
                 final IRequestParameters parameters = getRequest().getPostParameters();
                 final String pivotReport = parameters.getParameterValue("pivotReport").toString();
                 final String reportName = parameters.getParameterValue("reportName").toString();
@@ -147,7 +148,7 @@ public class SaveReportPanel
             @Override
             protected void onSubmit(final AjaxRequestTarget _target)
             {
-                ModalWindow.closeCurrent(_target);
+                LegacyModalWindow.closeCurrent(_target);
                 final IRequestParameters parameters = getRequest().getPostParameters();
                 final String key = parameters.getParameterValue("reports4delete").toString();
                 if (StringUtils.isNotEmpty(key)) {

@@ -17,6 +17,7 @@
 
 package org.efaps.ui.wicket.components.preferences;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,6 +54,7 @@ import org.slf4j.LoggerFactory;
 public class PreferencesPanel
     extends GenericPanel<Void>
 {
+
     /**
      * Reference to the style sheet.
      */
@@ -82,16 +84,17 @@ public class PreferencesPanel
         final String providerClass = Configuration.getAttribute(ConfigAttribute.PREF_PROVIDER);
         try {
             final Class<?> clazz = Class.forName(providerClass, false, EFapsClassLoader.getInstance());
-            final IPreferencesProvider provider = (IPreferencesProvider) clazz.newInstance();
+            final IPreferencesProvider provider = (IPreferencesProvider) clazz.getConstructor().newInstance();
             prefMap.putAll(provider.getPreferences());
             this.prefs = !prefMap.isEmpty();
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+        } catch (ClassNotFoundException | InstantiationException | SecurityException | IllegalAccessException
+                        | IllegalArgumentException | InvocationTargetException | NoSuchMethodException e) {
             LOG.error("Catched", e);
         } catch (final EFapsBaseException e) {
             LOG.error("Catched", e);
         }
 
-        final Form<Void> form = new Form<Void>("preferencesForm")
+        final Form<Void> form = new Form<>("preferencesForm")
         {
 
             /** The Constant serialVersionUID. */
@@ -124,7 +127,8 @@ public class PreferencesPanel
         pref2.setVisible(prefMap.containsKey(ConfigAttribute.TABLE_DEFAULTTYPECONTENT.getKey()));
         final boolean tdtB = BooleanUtils.toBoolean(prefMap.get(ConfigAttribute.TABLE_DEFAULTTYPECONTENT.getKey()));
         final PreferenceComponent tdtContent = new PreferenceComponent("tableDefaultType4Content")
-                .setLabel(DBProperties.getProperty(ConfigAttribute.TABLE_DEFAULTTYPECONTENT.getKey() + ".Label"));
+                        .setLabel(DBProperties
+                                        .getProperty(ConfigAttribute.TABLE_DEFAULTTYPECONTENT.getKey() + ".Label"));
         tdtContent.add(new SwitchBehavior()
                         .setInputName(ConfigAttribute.TABLE_DEFAULTTYPECONTENT.getKey())
                         .setLeftLabel("Table")
@@ -137,7 +141,8 @@ public class PreferencesPanel
         pref3.setVisible(prefMap.containsKey(ConfigAttribute.TABLE_DEFAULTTYPESEARCH.getKey()));
         final boolean tdtS = BooleanUtils.toBoolean(prefMap.get(ConfigAttribute.TABLE_DEFAULTTYPESEARCH.getKey()));
         final PreferenceComponent tdtSearch = new PreferenceComponent("tableDefaultType4Search")
-                    .setLabel(DBProperties.getProperty(ConfigAttribute.TABLE_DEFAULTTYPESEARCH.getKey() + ".Label"));
+                        .setLabel(DBProperties
+                                        .getProperty(ConfigAttribute.TABLE_DEFAULTTYPESEARCH.getKey() + ".Label"));
         tdtSearch.add(new SwitchBehavior()
                         .setInputName(ConfigAttribute.TABLE_DEFAULTTYPESEARCH.getKey())
                         .setLeftLabel("Table")
@@ -145,13 +150,12 @@ public class PreferencesPanel
                         .setOn(tdtS));
         pref3.add(tdtSearch);
 
-
         final WebMarkupContainer pref4 = new WebMarkupContainer("pref4");
         form.add(pref4);
         pref4.setVisible(prefMap.containsKey(ConfigAttribute.TABLE_DEFAULTTYPETREE.getKey()));
         final boolean tdtT = BooleanUtils.toBoolean(prefMap.get(ConfigAttribute.TABLE_DEFAULTTYPETREE.getKey()));
         final PreferenceComponent tdtTree = new PreferenceComponent("tableDefaultType4Tree")
-                    .setLabel(DBProperties.getProperty(ConfigAttribute.TABLE_DEFAULTTYPETREE.getKey() + ".Label"));
+                        .setLabel(DBProperties.getProperty(ConfigAttribute.TABLE_DEFAULTTYPETREE.getKey() + ".Label"));
         tdtTree.add(new SwitchBehavior()
                         .setInputName(ConfigAttribute.TABLE_DEFAULTTYPETREE.getKey())
                         .setLeftLabel("Table")
@@ -159,13 +163,12 @@ public class PreferencesPanel
                         .setOn(tdtT));
         pref4.add(tdtTree);
 
-
         final WebMarkupContainer pref5 = new WebMarkupContainer("pref5");
         form.add(pref5);
         pref5.setVisible(prefMap.containsKey(ConfigAttribute.TABLE_DEFAULTTYPEFORM.getKey()));
         final boolean tdtF = BooleanUtils.toBoolean(prefMap.get(ConfigAttribute.TABLE_DEFAULTTYPEFORM.getKey()));
         final PreferenceComponent tdtForm = new PreferenceComponent("tableDefaultType4Form")
-                    .setLabel(DBProperties.getProperty(ConfigAttribute.TABLE_DEFAULTTYPEFORM.getKey() + ".Label"));
+                        .setLabel(DBProperties.getProperty(ConfigAttribute.TABLE_DEFAULTTYPEFORM.getKey() + ".Label"));
         tdtForm.add(new SwitchBehavior()
                         .setInputName(ConfigAttribute.TABLE_DEFAULTTYPEFORM.getKey())
                         .setLeftLabel("Table")
@@ -173,7 +176,7 @@ public class PreferencesPanel
                         .setOn(tdtF));
         pref5.add(tdtForm);
 
-        final AjaxButton<Void> saveBtn = new AjaxButton<Void>("saveBtn", ICON.ACCEPT.getReference(), "Save")
+        final AjaxButton<Void> saveBtn = new AjaxButton<>("saveBtn", ICON.ACCEPT.getReference(), "Save")
         {
 
             /** The Constant serialVersionUID. */
@@ -189,11 +192,19 @@ public class PreferencesPanel
                 }
                 try {
                     final Class<?> clazz = Class.forName(providerClass, false, EFapsClassLoader.getInstance());
-                    final IPreferencesProvider provider = (IPreferencesProvider) clazz.newInstance();
+                    final IPreferencesProvider provider = (IPreferencesProvider) clazz.getConstructor().newInstance();
                     provider.updatePreferences(prefMap);
                 } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
                     LOG.error("Catched", e);
                 } catch (final EFapsBaseException e) {
+                    LOG.error("Catched", e);
+                } catch (final IllegalArgumentException e) {
+                    LOG.error("Catched", e);
+                } catch (final InvocationTargetException e) {
+                    LOG.error("Catched", e);
+                } catch (final NoSuchMethodException e) {
+                    LOG.error("Catched", e);
+                } catch (final SecurityException e) {
                     LOG.error("Catched", e);
                 }
                 RequestCycle.get().setResponsePage(MainPage.class);
@@ -216,7 +227,8 @@ public class PreferencesPanel
      * Render to the web response the eFapsContentReference.
      *
      * @param _response Response object
-     */@Override
+     */
+    @Override
     public void renderHead(final IHeaderResponse _response)
     {
         super.renderHead(_response);

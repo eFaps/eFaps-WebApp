@@ -17,6 +17,7 @@
 
 package org.efaps.ui.wicket.pages.pivot;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -36,6 +37,7 @@ import org.slf4j.LoggerFactory;
 public class JsonResponsePage
     extends WebPage
 {
+
     private static final long serialVersionUID = 1L;
 
     private static final Logger LOG = LoggerFactory.getLogger(JsonResponsePage.class);
@@ -53,7 +55,7 @@ public class JsonResponsePage
                 try {
                     final String providerClass = Configuration.getAttribute(ConfigAttribute.PIVOT_PROVIDER);
                     final Class<?> clazz = Class.forName(providerClass, false, EFapsClassLoader.getInstance());
-                    final IPivotProvider provider = (IPivotProvider) clazz.newInstance();
+                    final IPivotProvider provider = (IPivotProvider) clazz.getConstructor().newInstance();
                     final CharSequence pivotReport = provider.getReport(report);
                     final Pattern r = Pattern.compile("(datasource=)(\\d*.\\d)");
                     final Matcher m = r.matcher(pivotReport);
@@ -64,21 +66,23 @@ public class JsonResponsePage
                     final CharSequence path = RequestCycle.get().urlFor(JsonResponsePage.class, pageParameters);
                     final String finalUrl = RequestCycle.get().getUrlRenderer().renderFullUrl(Url.parse(path));
                     response.write(pivotReport.toString().replaceAll("http(:|/|\\w|\\?|=|\\.|&)*", finalUrl));
-                } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+                } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+                                | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
+                                | SecurityException e) {
                     LOG.error("Could not find/instantiate Provider Class", e);
                 }
+            } else if (StringUtils.isEmpty(datasource)) {
+                response.write("[]");
             } else {
-                if (StringUtils.isEmpty(datasource)) {
-                    response.write("[]");
-                } else {
-                    try {
-                        final String providerClass = Configuration.getAttribute(ConfigAttribute.PIVOT_PROVIDER);
-                        final Class<?> clazz = Class.forName(providerClass, false, EFapsClassLoader.getInstance());
-                        final IPivotProvider provider = (IPivotProvider) clazz.newInstance();
-                        response.write(provider.getJsonData(datasource));
-                    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-                        LOG.error("Could not find/instantiate Provider Class", e);
-                    }
+                try {
+                    final String providerClass = Configuration.getAttribute(ConfigAttribute.PIVOT_PROVIDER);
+                    final Class<?> clazz = Class.forName(providerClass, false, EFapsClassLoader.getInstance());
+                    final IPivotProvider provider = (IPivotProvider) clazz.getConstructor().newInstance();
+                    response.write(provider.getJsonData(datasource));
+                } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+                                | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
+                                | SecurityException e) {
+                    LOG.error("Could not find/instantiate Provider Class", e);
                 }
             }
         });

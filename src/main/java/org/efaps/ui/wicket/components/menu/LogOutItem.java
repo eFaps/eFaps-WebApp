@@ -17,6 +17,9 @@
 
 package org.efaps.ui.wicket.components.menu;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.model.IModel;
@@ -30,10 +33,6 @@ import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.login.LoginPage;
 import org.efaps.ui.wicket.util.Configuration;
 import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 
 /**
@@ -60,7 +59,7 @@ public class LogOutItem
     @Override
     public void onClick()
     {
-        var logoutProviders = EFapsApplication.get().getLogoutProviders();
+        final var logoutProviders = EFapsApplication.get().getLogoutProviders();
         final String url = Configuration.getAttribute(ConfigAttribute.LOGOUT_URL);
         if (logoutProviders.isEmpty() && StringUtils.isEmpty(url)) {
             this.setResponsePage(LoginPage.class);
@@ -72,8 +71,8 @@ public class LogOutItem
                             .getContainerRequest();
             final HttpSession httpSession = httpRequest.getSession(false);
             if (httpSession != null && !(httpSession instanceof HttpSessionCopy)) {
-                for (var logoutProvider: logoutProviders) {
-                    var logoutUrl = logoutProvider.logoutUrl(httpSession);
+                for (final var logoutProvider: logoutProviders) {
+                    final var logoutUrl = logoutProvider.logoutUrl(httpSession);
                     if (logoutUrl != null) {
                         throw new RedirectToUrlException(logoutUrl);
                     }

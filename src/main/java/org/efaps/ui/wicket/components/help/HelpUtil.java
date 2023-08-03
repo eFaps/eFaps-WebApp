@@ -15,9 +15,9 @@
  *
  */
 
-
 package org.efaps.ui.wicket.components.help;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.UUID;
 
 import org.efaps.admin.program.esjp.EFapsClassLoader;
@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class HelpUtil
 {
+
     /**
      * Logging instance used in this class.
      */
@@ -63,10 +64,11 @@ public final class HelpUtil
         try {
             final Class<?> clazz = Class.forName(Configuration.getAttribute(Configuration.ConfigAttribute.HELPSNIPPROV),
                             false, EFapsClassLoader.getInstance());
-            final IHelpProvider provider = (IHelpProvider) clazz.newInstance();
+            final IHelpProvider provider = (IHelpProvider) clazz.getConstructor().newInstance();
             ret = provider.hasHelp(_cmdId);
         } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException
-                        | EFapsBaseException e) {
+                        | EFapsBaseException | IllegalArgumentException | InvocationTargetException
+                        | NoSuchMethodException | SecurityException e) {
             HelpUtil.LOG.error("ClassNotFoundException", e);
         }
         return ret;
@@ -83,10 +85,11 @@ public final class HelpUtil
         try {
             final Class<?> clazz = Class.forName(Configuration.getAttribute(Configuration.ConfigAttribute.HELPSNIPPROV),
                             false, EFapsClassLoader.getInstance());
-            final IHelpProvider provider = (IHelpProvider) clazz.newInstance();
+            final IHelpProvider provider = (IHelpProvider) clazz.getConstructor().newInstance();
             ret = provider.isHelpAdmin();
         } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException
-                        | EFapsBaseException e) {
+                        | EFapsBaseException | IllegalArgumentException | InvocationTargetException
+                        | NoSuchMethodException | SecurityException e) {
             HelpUtil.LOG.error("ClassNotFoundException", e);
         }
         return ret;
@@ -103,10 +106,11 @@ public final class HelpUtil
         try {
             final Class<?> clazz = Class.forName(Configuration.getAttribute(Configuration.ConfigAttribute.HELPSNIPPROV),
                             false, EFapsClassLoader.getInstance());
-            final IHelpProvider provider = (IHelpProvider) clazz.newInstance();
+            final IHelpProvider provider = (IHelpProvider) clazz.getConstructor().newInstance();
             ret = provider.isEditMode();
         } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException
-                        | EFapsBaseException e) {
+                        | EFapsBaseException | IllegalArgumentException | InvocationTargetException
+                        | NoSuchMethodException | SecurityException e) {
             HelpUtil.LOG.error("ClassNotFoundException", e);
         }
         return ret;
@@ -124,10 +128,11 @@ public final class HelpUtil
         try {
             final Class<?> clazz = Class.forName(Configuration.getAttribute(Configuration.ConfigAttribute.HELPSNIPPROV),
                             false, EFapsClassLoader.getInstance());
-            final IHelpProvider provider = (IHelpProvider) clazz.newInstance();
+            final IHelpProvider provider = (IHelpProvider) clazz.getConstructor().newInstance();
             ret = provider.getHelp(_cmdId);
         } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException
-                        | EFapsBaseException e) {
+                        | EFapsBaseException | IllegalArgumentException | InvocationTargetException
+                        | NoSuchMethodException | SecurityException e) {
             HelpUtil.LOG.error("ClassNotFoundException", e);
             ret = "";
         }

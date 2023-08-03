@@ -8,7 +8,6 @@ import org.apache.wicket.ajax.json.JSONFunction;
 import org.apache.wicket.core.request.handler.IPartialPageRequestHandler;
 import org.apache.wicket.core.request.handler.PageProvider;
 import org.apache.wicket.core.request.handler.RenderPageRequestHandler;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
@@ -74,14 +73,6 @@ public class LegacyModalWindow extends Panel
     private CloseButtonCallback closeButtonCallback = null;
     private WindowClosedCallback windowClosedCallback = null;
 
-    /**
-     * Interface for lazy page creation. The advantage of creating page using this interface over
-     * just passing a page instance is that page created in <code>{@link #createPage()}</code> will
-     * have the pagemap automatically set to the pagemap specified for
-     * <code>{@link ModalWindow}</code>.
-     *
-     * @author Matej Knopp
-     */
     public interface PageCreator extends IClusterable
     {
         /**
@@ -95,7 +86,6 @@ public class LegacyModalWindow extends Panel
     /**
      * Callback for close button that contains a method that is invoked after the button has been
      * clicked. If no callback instance is specified using
-     * <code>{@link ModalWindow#setCloseButtonCallback(ModalWindow.CloseButtonCallback)}</code>, no
      * ajax request will be fired. Clicking the button will just close the window.
      *
      * @author Matej Knopp
@@ -118,7 +108,6 @@ public class LegacyModalWindow extends Panel
 
     /**
      * Callback called after the window has been closed. If no callback instance is specified using
-     * {@link ModalWindow#setWindowClosedCallback(ModalWindow.WindowClosedCallback)}, no ajax
      * request will be fired.
      *
      * @author Matej Knopp

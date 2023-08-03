@@ -16,12 +16,13 @@
  */
 package org.efaps.ui.wicket.components.dashboard;
 
+import java.time.Duration;
+
 import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.util.time.Duration;
 import org.efaps.api.ui.IDashboard;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.models.EsjpInvoker;

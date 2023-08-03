@@ -103,7 +103,7 @@ public class IndexSearch
                 clazzname = "org.efaps.esjp.admin.index.LucenceQueryBuilder";
             }
             final Class<?> clazz = Class.forName(clazzname, false, EFapsClassLoader.getInstance());
-            final Object obj = clazz.newInstance();
+            final Object obj = clazz.getConstructor().newInstance();
             final Method method = clazz.getMethod("getQuery4DimValues", String.class, List.class, List.class);
             final Object newQuery = method.invoke(obj, getCurrentQuery(), getIncluded(), getExcluded());
             ret.append(newQuery);
@@ -158,7 +158,7 @@ public class IndexSearch
                         final List<SearchConfig> ret = new ArrayList<>();
                         ret.add(SearchConfig.ACTIVATE_DIMENSION);
                         return ret;
-                    };
+                    }
                 };
                 final SearchResult tmpResult = Searcher.search(tmpSearch);
                 this.dimensions = tmpResult.getDimensions();
@@ -238,17 +238,11 @@ public class IndexSearch
         if (_updateDim && dims.isEmpty()) {
             provider.getRootList().clear();
         } else {
-            Collections.sort(dims, new Comparator<Dimension>()
-            {
-
-                @Override
-                public int compare(final Dimension _arg0,
-                                   final Dimension _arg1)
-                {
-                    final String dim0 = DBProperties.getProperty(DimensionPanel.class.getName() + "." + _arg0.getKey());
-                    final String dim1 = DBProperties.getProperty(DimensionPanel.class.getName() + "." + _arg1.getKey());
-                    return dim0.compareTo(dim1);
-                }
+            Collections.sort(dims, (_arg0,
+             _arg1) -> {
+                final String dim0 = DBProperties.getProperty(DimensionPanel.class.getName() + "." + _arg0.getKey());
+                final String dim1 = DBProperties.getProperty(DimensionPanel.class.getName() + "." + _arg1.getKey());
+                return dim0.compareTo(dim1);
             });
 
             final Iterator<Dimension> newDimsIter = dims.iterator();
@@ -511,16 +505,7 @@ public class IndexSearch
         public void update(final Set<DimValue> _set)
         {
             final List<DimValue> values = new ArrayList<>(_set);
-            Collections.sort(values, new Comparator<DimValue>()
-            {
-
-                @Override
-                public int compare(final DimValue _o1,
-                                   final DimValue _o2)
-                {
-                    return _o1.getLabel().compareTo(_o2.getLabel());
-                }
-            });
+            Collections.sort(values, Comparator.comparing(DimValue::getLabel));
             final List<DimTreeNode> newChildren = new ArrayList<>();
             for (final DimValue val : values) {
                 final DimTreeNode existing = getChild(val);
@@ -598,31 +583,13 @@ public class IndexSearch
             this.value = _value;
             if (_value instanceof Dimension) {
                 final List<DimValue> values = new ArrayList<>(((Dimension) _value).getValues());
-                Collections.sort(values, new Comparator<DimValue>()
-                {
-
-                    @Override
-                    public int compare(final DimValue _o1,
-                                       final DimValue _o2)
-                    {
-                        return _o1.getLabel().compareTo(_o2.getLabel());
-                    }
-                });
+                Collections.sort(values, Comparator.comparing(DimValue::getLabel));
                 for (final DimValue dimvalue : values) {
                     this.children.add(new DimTreeNode().setValue(dimvalue));
                 }
             } else {
                 final List<DimValue> values = new ArrayList<>(((DimValue) _value).getChildren());
-                Collections.sort(values, new Comparator<DimValue>()
-                {
-
-                    @Override
-                    public int compare(final DimValue _o1,
-                                       final DimValue _o2)
-                    {
-                        return _o1.getLabel().compareTo(_o2.getLabel());
-                    }
-                });
+                Collections.sort(values, Comparator.comparing(DimValue::getLabel));
                 for (final DimValue dimvalue : values) {
                     this.children.add(new DimTreeNode().setValue(dimvalue));
                 }
