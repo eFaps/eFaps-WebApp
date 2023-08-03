@@ -18,6 +18,7 @@
 package org.efaps.ui.wicket.models;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.api.ui.IEsjpSnipplet;
@@ -107,7 +108,7 @@ public class EsjpInvoker
             if (!this.init) {
                 if (this.esjp != null) {
                     final Class<?> clazz = Class.forName(this.esjp, false, EFapsClassLoader.getInstance());
-                    this.snipplet = (IEsjpSnipplet) clazz.newInstance();
+                    this.snipplet = (IEsjpSnipplet) clazz.getConstructor().newInstance();
                     this.init = true;
                 } else if (this.provider != null) {
                     this.snipplet = this.provider.getEsjpSnipplet(this.key);
@@ -124,6 +125,10 @@ public class EsjpInvoker
             EsjpInvoker.LOG.error("IllegalArgumentException", e);
         } catch (final InstantiationException e) {
             EsjpInvoker.LOG.error("InstantiationException", e);
+        } catch (final InvocationTargetException e) {
+            EsjpInvoker.LOG.error("InvocationTargetException", e);
+        } catch (final NoSuchMethodException e) {
+            EsjpInvoker.LOG.error("NoSuchMethodException", e);
         }
     }
 

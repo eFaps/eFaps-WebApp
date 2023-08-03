@@ -26,7 +26,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -76,7 +75,7 @@ public class ConnectionRegistry
      * MetaDataKey for User to Session Mapping.
      */
     private static final MetaDataKey<ConcurrentMap<String, Set<String>>> USER2SESSION =
-                    new MetaDataKey<ConcurrentMap<String, Set<String>>>()
+                    new MetaDataKey<>()
             {
                 private static final long serialVersionUID = 1L;
             };
@@ -85,7 +84,7 @@ public class ConnectionRegistry
      * MetaDataKey for Session to Page Mapping.
      */
     private static final MetaDataKey<ConcurrentMap<String, IKey>> SESSION2KEY =
-                    new MetaDataKey<ConcurrentMap<String, IKey>>()
+                    new MetaDataKey<>()
             {
                 private static final long serialVersionUID = 1L;
             };
@@ -94,7 +93,7 @@ public class ConnectionRegistry
      * MetaDataKey for Session that must be invalidated on next request.
      */
     private static final MetaDataKey<Set<String>> INVALIDATED =
-                    new MetaDataKey<Set<String>>()
+                    new MetaDataKey<>()
             {
                 private static final long serialVersionUID = 1L;
             };
@@ -103,7 +102,7 @@ public class ConnectionRegistry
      * MetaDataKey for the last Request Time of a Session.
      */
     private static final MetaDataKey<ConcurrentMap<String, Long>> LASTACTIVE =
-                    new MetaDataKey<ConcurrentMap<String, Long>>()
+                    new MetaDataKey<>()
             {
                 private static final long serialVersionUID = 1L;
             };
@@ -112,7 +111,7 @@ public class ConnectionRegistry
      * MetaDataKey for the last Request Time of a Session.
      */
     private static final MetaDataKey<ConcurrentMap<String, Long>> KEEPALIVE =
-                    new MetaDataKey<ConcurrentMap<String, Long>>()
+                    new MetaDataKey<>()
             {
                 private static final long serialVersionUID = 1L;
             };
@@ -225,7 +224,7 @@ public class ConnectionRegistry
 
             final Class<?> clazz = Class.forName("org.efaps.esjp.common.history.LoginHistory", true,
                             EFapsClassLoader.getInstance());
-            final Object obj = clazz.newInstance();
+            final Object obj = clazz.getConstructor().newInstance();
             final Method method = clazz.getMethod("register", String.class, String.class, String.class);
             method.invoke(obj, _userName, _sessionId, ipAddress);
         } catch (final ClassNotFoundException e) {
@@ -260,7 +259,7 @@ public class ConnectionRegistry
             }
             final Class<?> clazz = Class.forName("org.efaps.esjp.common.history.LogoutHistory", true,
                             EFapsClassLoader.getInstance());
-            final Object obj = clazz.newInstance();
+            final Object obj = clazz.getConstructor().newInstance();
             final Method method = clazz.getMethod("register", String.class, String.class, String.class);
             method.invoke(obj, _userName, _sessionId, "N.A.");
         } catch (final ClassNotFoundException e) {
@@ -408,9 +407,7 @@ public class ConnectionRegistry
         final Set<String> sessionIds = user2session.get(_login);
 
         if (sessionIds != null && !sessionIds.isEmpty()) {
-            final Iterator<String> iter = sessionIds.iterator();
-            while (iter.hasNext()) {
-                final String sessionId = iter.next();
+            for (final String sessionId : sessionIds) {
                 final IKey key = sessionId2pageId.get(sessionId);
                 if (key != null) {
                     final IWebSocketConnectionRegistry registry = WebSocketSettings.Holder.get(EFapsApplication.get())
@@ -563,7 +560,7 @@ public class ConnectionRegistry
     /**
      * task to send the keep alive messages.
      */
-    private class KeepAliveTask
+    private static class KeepAliveTask
         extends TimerTask
     {
         /**

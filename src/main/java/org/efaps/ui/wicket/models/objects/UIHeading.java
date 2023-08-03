@@ -81,7 +81,7 @@ public class UIHeading
         if (_heading.getProperty("Collapsed") == null) {
             this.collapsed = null;
         } else {
-            this.collapsed = new Boolean(_heading.getProperty("Collapsed"));
+            this.collapsed = Boolean.valueOf(_heading.getProperty("Collapsed"));
         }
     }
 

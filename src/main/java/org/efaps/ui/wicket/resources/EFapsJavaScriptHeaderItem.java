@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.apache.wicket.core.util.string.JavaScriptUtils;
 import org.apache.wicket.request.Response;
+import org.apache.wicket.util.value.AttributeMap;
 import org.efaps.ui.wicket.EFapsApplication;
 
 /**
@@ -58,9 +59,13 @@ public class EFapsJavaScriptHeaderItem
     }
 
     @Override
-    public void render(final Response _response)
+    public void render(final Response response)
     {
-        JavaScriptUtils.writeJavaScriptUrl(_response, EFapsApplication.get().getServletContext().getContextPath()
-                        + "/servlet/static/" + getReference().getName());
+        final AttributeMap attributes = new AttributeMap();
+        attributes.putAttribute(JavaScriptUtils.ATTR_TYPE, "text/javascript");
+        attributes.putAttribute(JavaScriptUtils.ATTR_SCRIPT_SRC,
+                        EFapsApplication.get().getServletContext().getContextPath()
+                                        + "/servlet/static/" + getReference().getName());
+        JavaScriptUtils.writeScript(response, attributes);
     }
 }

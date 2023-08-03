@@ -78,7 +78,7 @@ public class FreeTextPanel
 
         if (filterType.equals(FilterValueType.TEXT)) {
             this.add(new Label("textFrom", DBProperties.getProperty("FilterPage.textFilter")));
-            final IModel<String> model = new IModel<String>()
+            final IModel<String> model = new IModel<>()
             {
 
                 private static final long serialVersionUID = 1L;
@@ -113,11 +113,11 @@ public class FreeTextPanel
             options.add(new Label("expertModeLabel", DBProperties.getProperty("FilterPage.expertModeLabel")));
             options.add(new Label("ignoreCaseLabel", DBProperties.getProperty("FilterPage.ignoreCaseLabel")));
             final CheckBox checkBox = new CheckBox("expertMode",
-                            Model.of(new Boolean(uitable.getFilter(tableHeader).isExpertMode())));
+                            Model.of(uitable.getFilter(tableHeader).isExpertMode()));
             checkBox.setOutputMarkupId(true);
             options.add(checkBox);
             final CheckBox checkBox2 = new CheckBox("ignoreCase",
-                            Model.of(new Boolean(uitable.getFilter(tableHeader).isIgnoreCase())));
+                            Model.of(uitable.getFilter(tableHeader).isIgnoreCase()));
             checkBox2.setOutputMarkupId(true);
             options.add(checkBox2);
 
