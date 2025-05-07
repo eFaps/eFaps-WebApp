@@ -131,7 +131,7 @@
                                 </goals>
                                 <configuration>
                                     <serverId>dojotoolkit</serverId>
-                                    <url>http://download.dojotoolkit.org/release-${dojo.version}</url>
+                                    <url>https://download.dojotoolkit.org/release-${dojo.version}</url>
                                     <fromFile>dojo-release-${dojo.version}-src.tar.gz</fromFile>
                                     <toDir>lib</toDir>
                                 </configuration>
