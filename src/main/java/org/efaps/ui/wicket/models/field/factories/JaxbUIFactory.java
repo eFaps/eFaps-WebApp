@@ -20,9 +20,9 @@ import java.lang.reflect.InvocationTargetException;
 import org.apache.wicket.Component;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.IJaxb;
+import org.efaps.admin.datamodel.ui.IUIValue;
 import org.efaps.admin.datamodel.ui.JaxbUI;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
-import org.efaps.ui.wicket.components.values.LabelField;
 import org.efaps.ui.wicket.models.field.AbstractUIField;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
@@ -68,7 +68,7 @@ public final class JaxbUIFactory
     {
         final Component ret = super.getReadOnly(_wicketId, _abstractUIField);
         if (ret != null) {
-            ((LabelField) ret).setEscapeModelStrings(false);
+            ret.setEscapeModelStrings(false);
         }
         return ret;
     }
@@ -109,7 +109,7 @@ public final class JaxbUIFactory
                 final Class<?> clazz = Class.forName(attr.getClassName(), false,
                                 EFapsClassLoader.getInstance());
                 final IJaxb jaxb = (IJaxb) clazz.getConstructor().newInstance();
-                ret = jaxb.getUISnipplet(_abstractUIField.getParent().getMode(), _abstractUIField.getValue());
+                ret = jaxb.getUISnipplet(_abstractUIField.getParent().getMode(), (IUIValue) _abstractUIField.getValue());
             } catch (final ClassNotFoundException e) {
                 JaxbUIFactory.LOG.error("ClassNotFoundException", e);
             } catch (final InstantiationException e) {
