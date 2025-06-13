@@ -78,35 +78,6 @@
         <dojo.version>1.17.3</dojo.version>
     </properties>
 
-    <issueManagement>
-        <url>http://code.google.com/p/efaps/issues/list</url>
-    </issueManagement>
-
-    <scm>
-        <connection>scm:git:git://github.com/eFaps/eFaps-WebApp.git</connection>
-        <developerConnection>scm:git:git@github.com:eFaps/eFaps-WebApp.git</developerConnection>
-        <url>https://github.com/eFaps/eFaps-WebApp/</url>
-        <tag>HEAD</tag>
-    </scm>
-
-    <distributionManagement>
-        <site>
-            <id>efaps.googlecode.com</id>
-            <name>eFaps WebApp Site</name>
-            <url>scm:svn:https://efaps.googlecode.com/svn/site/eFaps-WebApp</url>
-        </site>
-        <snapshotRepository>
-            <id>sonatype-nexus-snapshots</id>
-            <name>Sonatype Nexus Snapshots</name>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-        <repository>
-            <id>sonatype-nexus-staging</id>
-            <name>Nexus Release Repository</name>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-    </distributionManagement>
-
     <profiles>
         <profile>
             <id>dojo-install</id>
