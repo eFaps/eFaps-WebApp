@@ -151,7 +151,7 @@ public class UIFieldTable
     protected List<Instance> getInstanceList()
         throws EFapsException
     {
-        final List<Return> ret = FieldTable.get(this.fieldId).executeEvents(EventType.UI_TABLE_EVALUATE,
+        final List<Return> ret = FieldTable.get(this.fieldId).executeEvents(EventType.UI_CONTENT_EVALUATE,
                         ParameterValues.INSTANCE, getInstance());
         final List<Instance> lists = (List<Instance>) ret.get(0).get(ReturnValues.VALUES);
         return lists;

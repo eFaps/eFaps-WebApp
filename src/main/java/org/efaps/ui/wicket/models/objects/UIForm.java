@@ -240,7 +240,7 @@ public class UIForm
     {
         boolean ret = true;
         if (!isSearchMode()) {
-            final List<Return> returns = this.getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
+            final List<Return> returns = this.getCommand().executeEvents(EventType.UI_CONTENT_EVALUATE,
                             ParameterValues.INSTANCE, getInstance(),
                             ParameterValues.PARAMETERS, Context.getThreadContext().getParameters(),
                             ParameterValues.CLASS, this);
@@ -545,7 +545,7 @@ public class UIForm
         }
 
         final Map<String, Iterator<?>> values = new HashMap<>();
-        for (Instance rowInstance : fieldins) {
+        for (final Instance rowInstance : fieldins) {
             ret.addRow(rowInstance);
             for (final String attrName : ((FieldSet) _field).getOrder()) {
                 final Attribute child = attrSet.getAttribute(attrName);
@@ -613,7 +613,7 @@ public class UIForm
         if (isCreateMode() || isEditMode()) {
             type = getCreateTargetType();
         } else {
-            final List<EventDefinition> events = this.getCommand().getEvents(EventType.UI_TABLE_EVALUATE);
+            final List<EventDefinition> events = this.getCommand().getEvents(EventType.UI_CONTENT_EVALUATE);
             if (events != null) {
                 for (final EventDefinition eventDef : events) {
                     String tmp = eventDef.getProperty("Type");

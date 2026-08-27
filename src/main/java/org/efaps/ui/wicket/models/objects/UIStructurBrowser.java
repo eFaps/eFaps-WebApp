@@ -410,7 +410,7 @@ public class UIStructurBrowser
             } else {
                 final Map<Instance, Boolean> map = new LinkedHashMap<>();
                 if (!isCreateMode()) {
-                    ret = getObject4Event().executeEvents(EventType.UI_TABLE_EVALUATE, ParameterValues.CLASS, this,
+                    ret = getObject4Event().executeEvents(EventType.UI_CONTENT_EVALUATE, ParameterValues.CLASS, this,
                                 ParameterValues.INSTANCE, getInstance());
                     map.putAll((Map<Instance, Boolean>) ret.get(0).get(ReturnValues.VALUES));
                 }
@@ -641,7 +641,7 @@ public class UIStructurBrowser
                                                 ? true : sessMap.get(uiChild.getInstanceKey());
                         if (expandedTmp != null && expandedTmp && uiChild.isParent()) {
                             uiChild.setExecutionStatus(UIStructurBrowser.ExecutionStatus.ADDCHILDREN);
-                            final List<Return> ret = getObject4Event().executeEvents(EventType.UI_TABLE_EVALUATE,
+                            final List<Return> ret = getObject4Event().executeEvents(EventType.UI_CONTENT_EVALUATE,
                                                 ParameterValues.INSTANCE, uiChild.getInstance(),
                                                 ParameterValues.CLASS, uiChild);
                             final Map<Instance, Boolean> map = (Map<Instance, Boolean>) ret.get(0).get(
@@ -697,7 +697,7 @@ public class UIStructurBrowser
     {
         setExecutionStatus(UIStructurBrowser.ExecutionStatus.SORT);
         try {
-            getObject4Event().executeEvents(EventType.UI_TABLE_EVALUATE, ParameterValues.CLASS, this);
+            getObject4Event().executeEvents(EventType.UI_CONTENT_EVALUATE, ParameterValues.CLASS, this);
 
             if (getSortDirection() == SortDirection.DESCENDING) {
                 Collections.reverse(children);
@@ -811,7 +811,7 @@ public class UIStructurBrowser
     protected Type getTypeFromEvent()
         throws EFapsException
     {
-        final List<EventDefinition> events =  getObject4Event().getEvents(EventType.UI_TABLE_EVALUATE);
+        final List<EventDefinition> events =  getObject4Event().getEvents(EventType.UI_CONTENT_EVALUATE);
         String typeName = null;
         if (events.size() > 1) {
             throw new EFapsException(this.getClass(), "execute4NoInstance.moreThanOneEvaluate");
@@ -845,7 +845,7 @@ public class UIStructurBrowser
     {
         setExecutionStatus(UIStructurBrowser.ExecutionStatus.CHECKHIDECOLUMN4ROW);
         try {
-            getObject4Event().executeEvents(EventType.UI_TABLE_EVALUATE,
+            getObject4Event().executeEvents(EventType.UI_CONTENT_EVALUATE,
                             ParameterValues.INSTANCE, getInstance(),
                             ParameterValues.CLASS, this);
         } catch (final EFapsException e) {
@@ -857,7 +857,7 @@ public class UIStructurBrowser
      * This method should be called to add children to a Node in the Tree.<br>
      * e.g. in a standard implementation the children would be added to the Tree
      * on the expand-Event of the tree. The children a retrieved from an esjp
-     * with the EventType UI_TABLE_EVALUATE.
+     * with the EventType UI_CONTENT_EVALUATE.
      */
     @SuppressWarnings("unchecked")
     public void addChildren()
@@ -865,7 +865,7 @@ public class UIStructurBrowser
         setExecutionStatus(UIStructurBrowser.ExecutionStatus.ADDCHILDREN);
         final List<Return> ret;
         try {
-            ret = getObject4Event().executeEvents(EventType.UI_TABLE_EVALUATE, ParameterValues.INSTANCE, getInstance(),
+            ret = getObject4Event().executeEvents(EventType.UI_CONTENT_EVALUATE, ParameterValues.INSTANCE, getInstance(),
                             ParameterValues.CLASS, this);
             final Map<Instance, Boolean> map = (Map<Instance, Boolean>) ret.get(0).get(ReturnValues.VALUES);
 
@@ -889,7 +889,7 @@ public class UIStructurBrowser
     {
         setExecutionStatus(UIStructurBrowser.ExecutionStatus.ALLOWSCHILDREN);
         try {
-            final List<Return> ret = getObject4Event().executeEvents(EventType.UI_TABLE_EVALUATE,
+            final List<Return> ret = getObject4Event().executeEvents(EventType.UI_CONTENT_EVALUATE,
                             ParameterValues.INSTANCE, _instance,
                             ParameterValues.CLASS, this);
             return ret.isEmpty() ? false : ret.get(0).get(ReturnValues.TRUE) != null;
@@ -908,7 +908,7 @@ public class UIStructurBrowser
     {
         setExecutionStatus(_status);
         try {
-            getObject4Event().executeEvents(EventType.UI_TABLE_EVALUATE,
+            getObject4Event().executeEvents(EventType.UI_CONTENT_EVALUATE,
                             ParameterValues.INSTANCE, getInstance(),
                             ParameterValues.CLASS, this,
                             ParameterValues.OIDMAP4UI,  _uiID2Oid);
@@ -927,7 +927,7 @@ public class UIStructurBrowser
     {
         setExecutionStatus(UIStructurBrowser.ExecutionStatus.ALLOWSITEM);
         try {
-            final List<Return> ret = getObject4Event().executeEvents(EventType.UI_TABLE_EVALUATE,
+            final List<Return> ret = getObject4Event().executeEvents(EventType.UI_CONTENT_EVALUATE,
                             ParameterValues.INSTANCE, _instance,
                             ParameterValues.CLASS, this);
             return ret.isEmpty() ? false : ret.get(0) == null ? false : ret.get(0).get(ReturnValues.TRUE) != null;
@@ -946,7 +946,7 @@ public class UIStructurBrowser
     {
         setExecutionStatus(UIStructurBrowser.ExecutionStatus.CHECKFORCHILDREN);
         try {
-            final List<Return> ret = getObject4Event().executeEvents(EventType.UI_TABLE_EVALUATE,
+            final List<Return> ret = getObject4Event().executeEvents(EventType.UI_CONTENT_EVALUATE,
                             ParameterValues.INSTANCE, _instance,
                             ParameterValues.CLASS, this);
             return ret.isEmpty() ? false : ret.get(0).get(ReturnValues.TRUE) != null;
@@ -967,7 +967,7 @@ public class UIStructurBrowser
         final String ret;
         setExecutionStatus(UIStructurBrowser.ExecutionStatus.GETJAVASCRIPT4TARGET);
         try {
-            final List<Return> retList = getObject4Event().executeEvents(EventType.UI_TABLE_EVALUATE,
+            final List<Return> retList = getObject4Event().executeEvents(EventType.UI_CONTENT_EVALUATE,
                                 ParameterValues.INSTANCE, getInstance(),
                                 ParameterValues.CLASS, this,
                                 ParameterValues.PARAMETERS, _parameters);

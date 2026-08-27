@@ -198,7 +198,7 @@ public class UIGrid
     protected String getMainQueryStmt()
         throws EFapsException
     {
-        final List<Return> returns = getEventObject().executeEvents(EventType.UI_TABLE_EVALUATE,
+        final List<Return> returns = getEventObject().executeEvents(EventType.UI_CONTENT_EVALUATE,
                         ParameterValues.INSTANCE, getCallInstance(),
                         ParameterValues.CALL_INSTANCE, getCallInstance(),
                         ParameterValues.PARAMETERS, Context.getThreadContext().getParameters(),
@@ -219,7 +219,7 @@ public class UIGrid
     protected String getChildQueryStmt(final Collection<Instance> _instances)
         throws EFapsException
     {
-        final List<Return> returns = getEventObject().executeEvents(EventType.UI_TABLE_EVALUATE,
+        final List<Return> returns = getEventObject().executeEvents(EventType.UI_CONTENT_EVALUATE,
                         ParameterValues.INSTANCE, getCallInstance(),
                         ParameterValues.CALL_INSTANCE, getCallInstance(),
                         ParameterValues.REQUEST_INSTANCES, _instances,
@@ -514,7 +514,7 @@ public class UIGrid
     protected List<Instance> getInstances()
         throws EFapsException
     {
-        final List<Return> returns = getEventObject().executeEvents(EventType.UI_TABLE_EVALUATE,
+        final List<Return> returns = getEventObject().executeEvents(EventType.UI_CONTENT_EVALUATE,
                         ParameterValues.INSTANCE, getCallInstance(),
                         ParameterValues.CALL_INSTANCE, getCallInstance(),
                         ParameterValues.PARAMETERS, Context.getThreadContext().getParameters(),
@@ -540,34 +540,33 @@ public class UIGrid
      */
     protected IFilter getFilter4Field(final Field _field)
     {
-        final IFilter ret;
-        switch (_field.getFilter().getType()) {
-            case STATUS:
-            case PICKLIST:
-                ret = new ListFilter(_field.getId());
-                break;
-            case FREETEXT:
-            case FORM:
-                ret = new MapFilter(_field.getId());
-                break;
-            case CLASSIFICATION:
-                ret = new ClassificationFilter(_field.getId());
-                break;
-            case NONE:
-            default:
-                ret = new IFilter()
-                {
-                    /** The Constant serialVersionUID. */
-                    private static final long serialVersionUID = 1L;
+        final IFilter ret = switch (_field.getFilter().getType()) {
+            case STATUS, PICKLIST -> new ListFilter(_field.getId());
+            case FREETEXT, FORM -> new MapFilter(_field.getId());
+            case CLASSIFICATION -> new ClassificationFilter(_field.getId());
+            case NONE -> new IFilter()
+                            {
+                                /** The Constant serialVersionUID. */
+                                private static final long serialVersionUID = 1L;
 
-                    @Override
-                    public long getFieldId()
-                    {
-                        return _field.getId();
-                    }
-                };
-                break;
-        }
+                                @Override
+                                public long getFieldId()
+                                {
+                                    return _field.getId();
+                                }
+                            }; /** The Constant serialVersionUID. */
+            default -> new IFilter()
+                            {
+                                /** The Constant serialVersionUID. */
+                                private static final long serialVersionUID = 1L;
+
+                                @Override
+                                public long getFieldId()
+                                {
+                                    return _field.getId();
+                                }
+                            }; /** The Constant serialVersionUID. */
+        };
         return ret;
     }
 
@@ -820,7 +819,7 @@ public class UIGrid
         init();
         final Type ret;
         if (getValues().isEmpty()) {
-            final List<EventDefinition> events =  getCommand().getEvents(EventType.UI_TABLE_EVALUATE);
+            final List<EventDefinition> events =  getCommand().getEvents(EventType.UI_CONTENT_EVALUATE);
             String typeName = null;
             if (events.size() > 1) {
                 throw new EFapsException(this.getClass(), "execute4NoInstance.moreThanOneEvaluate");

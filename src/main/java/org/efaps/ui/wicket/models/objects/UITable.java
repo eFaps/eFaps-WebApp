@@ -252,7 +252,7 @@ public class UITable
             iter.remove();
         }
 
-        final List<Return> ret = getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
+        final List<Return> ret = getCommand().executeEvents(EventType.UI_CONTENT_EVALUATE,
                         ParameterValues.INSTANCE, getInstance(),
                         ParameterValues.PARAMETERS, Context.getThreadContext().getParameters(),
                         ParameterValues.CLASS, this,
@@ -564,7 +564,7 @@ public class UITable
     private Type getTypeFromEvent()
         throws EFapsException
     {
-        final List<EventDefinition> events = getEvents(EventType.UI_TABLE_EVALUATE);
+        final List<EventDefinition> events = getEvents(EventType.UI_CONTENT_EVALUATE);
         String typeName = null;
         if (events.size() > 1) {
             throw new EFapsException(this.getClass(), "execute4NoInstance.moreThanOneEvaluate");
